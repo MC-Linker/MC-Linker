@@ -1,7 +1,7 @@
 console.log('Loading...')
 
 const Discord = require('discord.js')
-const { prefix, token } = require('./config.json');
+const { prefix, token } = require('../config.json');
 const client = new Discord.Client()
 const fs = require('fs');
 const fetch = require('node-fetch');
@@ -137,6 +137,7 @@ client.on('message', (message) => {
 
                             fs.readFile('./stats/' + minecraftId + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
+                                    message.channel.send('Could not find stat file in Server. Member most likely never joined the server.')
                                     console.log('Error reading file from disk: ', err);
                                     return;
                                 } else {
@@ -176,7 +177,9 @@ client.on('message', (message) => {
                     { name: 'PREFIX', value: 'This Bot uses the PREFIX: ^ \IMPORTANT: Use this PREFIX at the start of every command.'},
                     { name: 'RANDOM', value: 'Random Message \nUSAGE: random'},
                     { name: 'STATS', value: 'See your minecraft server stats. \nUSAGE: stats @<username> <Statkategorie> <Statitem/block/entity> \n All Categories can be find either with ^stat help or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!'},
-                    { name: 'PINGCHAIN', value: 'Ping a User up to 100 times with configurable delay. \n USAGE: Pingchain @<username> <Pinganzahl> <Delay zwischen Pings in Millisekungen> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.'}
+                    { name: 'PINGCHAIN', value: 'Ping a User up to 100 times with configurable delay. \n USAGE: Pingchain @<username> <Pinganzahl> <Delay zwischen Pings in Millisekungen> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.'},
+                    { name: 'FTP', value: 'Connect your minecraft Server with the bot. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to stats folder. Default Path: minecraft/WORLDNAME/stats>' },
+                    { name: 'connect', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'}
                 );
 
                 console.log(message.member.user.tag + ' executed ^help')
@@ -190,6 +193,8 @@ client.on('message', (message) => {
                 .addFields(
                     {name: 'picked_up', value: 'Counts how often the player picked up an item.'}
                 ) 
+                message.channel.send(statHelpEmbed)
+                message.channel.send('Currently OUTDATED. WIll be updated.')
             } else if(command === 'connect') {
 
                 const ingameName = (args[0]);
