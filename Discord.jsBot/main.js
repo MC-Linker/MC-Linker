@@ -1,7 +1,7 @@
 console.log('Loading...')
 
 const Discord = require('discord.js')
-const { prefix, token } = require('../config.json');
+const { prefix, token } = require('./config.json');
 const client = new Discord.Client()
 const fs = require('fs');
 const fetch = require('node-fetch');
@@ -77,7 +77,7 @@ client.on('message', (message) => {
 
                 console.log(message.member.user.tag + ' executed ^stats with taggedUser: ' + taggedUser.tag);
 
-                fs.readFile('../connections/' + taggedUser.tag + '.json', 'utf8', (err, jsonString) => {
+                fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', (err, jsonString) => {
                     if(err) {
                         message.channel.send('User isnt connected!')
                         console.log('Error reading file from disk: ', err);
@@ -91,7 +91,7 @@ client.on('message', (message) => {
                             const files = readdirSync('./stats');
                             
                             
-                            fs.readFile('../ftp/' + message.guild.name + '.json', 'utf8', (err, jsonString) => {
+                            fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log('Error reading file from disk: ', err);
                                     return;
@@ -216,7 +216,7 @@ client.on('message', (message) => {
                   }
                   const jsonString = JSON.stringify(connectionJson, null, 2);
 
-                fs.writeFile('../connections/' + message.member.user.tag + '.json', jsonString, err => {
+                fs.writeFile('./connections/' + message.member.user.tag + '.json', jsonString, err => {
                     if (err) {
                         console.log('Error writing file', err)
                     } else {
@@ -252,7 +252,7 @@ client.on('message', (message) => {
 
                 const jsonString = JSON.stringify(jsonFtp, null, 2);
 
-                fs.writeFile('../ftp/' + message.guild.name + '.json', jsonString, err => {
+                fs.writeFile('./ftp/' + message.guild.name + '.json', jsonString, err => {
                     if (err) {
                         console.log('Error writing file', err)
                     } else {
