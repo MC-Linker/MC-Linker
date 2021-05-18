@@ -176,10 +176,10 @@ client.on('message', (message) => {
                 .addFields(
                     { name: 'PREFIX', value: 'This Bot uses the PREFIX: ^ \IMPORTANT: Use this PREFIX at the start of every command.'},
                     { name: 'RANDOM', value: 'Random Message \nUSAGE: random'},
-                    { name: 'STATS', value: 'See your minecraft server stats. \nUSAGE: stats @<username> <Statkategorie> <Statitem/block/entity> \n All Categories can be find either with ^stat help or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!'},
+                    { name: 'STATS', value: 'See your minecraft server stats. Stats will be updated every time the server restarts. \nUSAGE: stats @<username> <Statkategorie> <Statitem/block/entity> \n All Categories can be find either with ^stat help or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!'},
                     { name: 'PINGCHAIN', value: 'Ping a User up to 100 times with configurable delay. \n USAGE: Pingchain @<username> <Pinganzahl> <Delay zwischen Pings in Millisekungen> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.'},
-                    { name: 'FTP', value: 'Connect your minecraft Server with the bot. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to stats folder. Default Path: minecraft/WORLDNAME/stats>' },
-                    { name: 'connect', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'}
+                    { name: 'FTP', value: 'Connect your minecraft Server with the bot. Can only be used by Admins. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to stats folder. Default Path: minecraft/WORLDNAME/stats>' },
+                    { name: 'CONNECT', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'}
                 );
 
                 console.log(message.member.user.tag + ' executed ^help')
@@ -232,6 +232,11 @@ client.on('message', (message) => {
                 let path = (args[4])
 
                 console.log(message.member.user.tag + ' executed ^ftp in Server: ' + message.guild.name)
+
+                if (!message.member.hasPermission('ADMINISTRATOR')) {
+                    message.channel.send("You are not an Admin!")
+                    return;
+                }
                 
                 if(!port) {
                     port = 21
