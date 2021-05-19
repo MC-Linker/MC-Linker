@@ -85,7 +85,7 @@ client.on('message', (message) => {
                     } else {
                         try {
 
-                            fs.readFile('./stats/disable/category/' + statType + '.json', 'utf8', (err, jsonString) => {
+                            fs.readFile('./stats/disable/category' + statType + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log('Stat not disabled. Could not find file. ', err);
                                 } else {
@@ -100,10 +100,8 @@ client.on('message', (message) => {
                                 }
                             }) 
 
-                            fs.readFile('./stats/disable/object/' + statObject + '.json', 'utf8', (err, jsonString) => {
-                                if(err) {
-                                    console.log('Object not disabled. Could not find file. ', err);
-                                } else {
+                            try {
+                               fs.readFile('./stats/disable/object/' + statObject + '.json', 'utf8', (err, jsonString) => {
                                     const data = JSON.parse(jsonString)
                                     if(data.statObject === 'disabled') {
                                         console.log('Object disabled.')
@@ -112,9 +110,11 @@ client.on('message', (message) => {
                                     } else if(data.statObject === 'enabled') {
                                         console.log('Object enabled.')
                                     } 
-                                    
-                                }
-                            })
+                            }) 
+                            } catch (err) {
+                                console.log('Object not disabled. Could not find file. ', err);
+                            }
+                            
 
                             const data = JSON.parse(jsonString);
                             let minecraftId = data.id;
