@@ -191,10 +191,11 @@ client.on('message', (message) => {
                 .setDescription('All Stat Categories!')
                 .setColor('#000000')
                 .addFields(
-                    {name: 'picked_up', value: 'Counts how often the player picked up an item.'}
+                    {name: 'picked_up', value: 'Counts how often the player picked up an item.'},
+                    {name: 'OUTDATED', value: `This command is currently OUTDATED. It wIll be updated soon. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now`}
                 ); 
                 message.channel.send(statHelpEmbed)
-                message.channel.send(`Currently OUTDATED. WIll be updated. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.`)
+                
             } else if(command === 'connect') {
 
                 const ingameName = (args[0]);
@@ -203,7 +204,7 @@ client.on('message', (message) => {
                     return fetch(`https://api.mojang.com/users/profiles/minecraft/${playername}`)
                       .then(data => data.json())
                       .then(player => player.id);
-                  }
+                }
                 
                 const minecraftId = getId(ingameName).then(id => {
                     message.channel.send(`Connected with Id: ${id}`)
