@@ -85,7 +85,7 @@ client.on('message', (message) => {
                     } else {
                         try {
 
-                            fs.readFile('./stats/disable/category' + statType + '.json', 'utf8', (err, jsonString) => {
+                            fs.readFile('./stats/disable/category/' + statType + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log('Stat not disabled. Could not find file. ', err);
                                 } else {
@@ -100,7 +100,7 @@ client.on('message', (message) => {
                                 }
                             }) 
 
-                            fs.readFile('./stats/disable/object' + statObject + '.json', 'utf8', (err, jsonString) => {
+                            fs.readFile('./stats/disable/object/' + statObject + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log('Object not disabled. Could not find file. ', err);
                                 } else {
