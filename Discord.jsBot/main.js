@@ -176,10 +176,12 @@ client.on('message', (message) => {
                 .addFields(
                     { name: 'PREFIX', value: 'This Bot uses the PREFIX: ^ \IMPORTANT: Use this PREFIX at the start of every command.'},
                     { name: 'RANDOM', value: 'Random Message \nUSAGE: random'},
-                    { name: 'STATS', value: `Look at your and other member's minecraft server stats. Stats will be updated every time the server restarts. \nUSAGE: stats @<username> <Statkategorie> <Statitem/block/entity> \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!`},
-                    { name: 'PINGCHAIN', value: 'Ping a User up to 100 times with configurable delay. \n USAGE: Pingchain @<username> <Pinganzahl> <Delay zwischen Pings in Millisekungen> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.'},
+                    { name: 'STATS', value: `Look at your and other member's minecraft server stats. Stats will be updated every time the server restarts. \nUSAGE: stats @<username> <Statcategory> <Statitem/block/entity> \n EXAMPLE: stats @Lianecx mined iron_ore \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!`},
+                    { name: 'PINGCHAIN', value: 'Ping a User up to 100 times with configurable delay. \n USAGE: Pingchain @<username> <Pingnumber> <Delay between Pings in milliseconds> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.'},
                     { name: 'FTP', value: 'Connect your minecraft Server with the bot. Can only be used by Admins. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to world folder. Default Path: minecraft/WORLDNAME>' },
-                    { name: 'CONNECT', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'}
+                    { name: 'CONNECT', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'},
+                    { name: 'STATHELP', value: `Currently WIP, just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.`},
+                    { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. Currently WIP. \nUSAGE: statdisable category/object <category/object> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'}
                 );
 
                 console.log(message.member.user.tag + ' executed ^help')
@@ -195,7 +197,7 @@ client.on('message', (message) => {
                     {name: 'OUTDATED', value: `This command is currently OUTDATED. It wIll be updated soon. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now`}
                 ); 
                 message.channel.send(statHelpEmbed)
-                
+
             } else if(command === 'connect') {
 
                 const ingameName = (args[0]);
@@ -232,13 +234,14 @@ client.on('message', (message) => {
                 let port = parseInt(args[3]);
                 let path = (args[4])
 
-                console.log(message.member.user.tag + ' executed ^ftp in Server: ' + message.guild.name)
-
                 if (!message.member.hasPermission('ADMINISTRATOR')) {
                     message.channel.send("You are not an Admin!")
+                    console.log(message.member.user.tag + ' executed ^ftp without admin!')
                     return;
                 }
-                
+
+                console.log(message.member.user.tag + ' executed ^ftp in Server: ' + message.guild.name)
+
                 if(!port) {
                     port = 21
                 }
@@ -261,7 +264,17 @@ client.on('message', (message) => {
                         message.channel.send('Succesfully connected with server.')
                     }
                 })
-            } 
+            } else if(command === 'statdisable') {
+
+                if (!message.member.hasPermission('ADMINISTRATOR')) {
+                    message.channel.send("You are not an Admin!")
+                    console.log(message.member.user.tag + ' executed ^statdisable without admin!')
+                    return;
+                }
+
+                console.log(message.member.user.tag + ' executed ^statdisable.')
+
+            }
         })
 client.login(process.env.token)
 
