@@ -176,7 +176,7 @@ client.on('message', (message) => {
                 .addFields(
                     { name: 'PREFIX', value: 'This Bot uses the PREFIX: ^ \IMPORTANT: Use this PREFIX at the start of every command.'},
                     { name: 'RANDOM', value: 'Random Message \nUSAGE: random'},
-                    { name: 'STATS', value: `Look at your and other member's minecraft server stats. Stats will be updated every time the server restarts. \nUSAGE: stats @<username> <Statkategorie> <Statitem/block/entity> \n All Categories can be find either with ^stat help or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!`},
+                    { name: 'STATS', value: `Look at your and other member's minecraft server stats. Stats will be updated every time the server restarts. \nUSAGE: stats @<username> <Statkategorie> <Statitem/block/entity> \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!`},
                     { name: 'PINGCHAIN', value: 'Ping a User up to 100 times with configurable delay. \n USAGE: Pingchain @<username> <Pinganzahl> <Delay zwischen Pings in Millisekungen> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.'},
                     { name: 'FTP', value: 'Connect your minecraft Server with the bot. Can only be used by Admins. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to world folder. Default Path: minecraft/WORLDNAME>' },
                     { name: 'CONNECT', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'}
@@ -184,7 +184,7 @@ client.on('message', (message) => {
 
                 console.log(message.member.user.tag + ' executed ^help')
                 message.channel.send(HelpEmbed)
-            } else if(command === 'stat help') {
+            } else if(command === 'stathelp') {
 
                 const statHelpEmbed = new Discord.MessageEmbed()
                 .setTitle('Stat Help')
@@ -192,7 +192,7 @@ client.on('message', (message) => {
                 .setColor('#000000')
                 .addFields(
                     {name: 'picked_up', value: 'Counts how often the player picked up an item.'}
-                ) 
+                ); 
                 message.channel.send(statHelpEmbed)
                 message.channel.send('Currently OUTDATED. WIll be updated. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now')
             } else if(command === 'connect') {
