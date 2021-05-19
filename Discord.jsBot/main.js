@@ -25,13 +25,15 @@ client.on('guildMemberAdd', async member => {
 client.on('message', (message) => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
+    if(message.mentions.user.first().tag === "SMP Bot#7784") {
+            console.log(message.member.user.tag + "pinged Bot")
+            message.channel.send("Prefix = ^ \n^help for detailed description of commands.")
+    }
+
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
 
-        if(message.mentions.user.first().tag === "SMP Bot#7784") {
-            console.log(message.member.user.tag + "pinged Bot")
-            message.channel.send("Prefix = ^ \n^help for detailed description of commands.")
-        }
+        
 
         if(command === 'pingchain') {
             
