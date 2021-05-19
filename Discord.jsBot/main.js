@@ -277,9 +277,15 @@ client.on('message', (message) => {
 
                 console.log(message.member.user.tag + ' executed ^statdisable.')
 
+                const disableJson = {
+                    object: "disabled" 
+                }
+
+                const jsonString = JSON.stringify(disableJson, null, 2);
+
                 if(mode === 'category') {
 
-                    fs.writeFile('./stats/disable/category/' + object + '.json', jsonString, err => {
+                    fs.writeFile('./stats/disable/category' + object + '.json', jsonString, err => {
                         if (err) {
                             console.log('Error writing file', err)
                             message.channel.send("Error, please check ^help for correct usage.")
@@ -290,7 +296,7 @@ client.on('message', (message) => {
                     })
                 } else if(mode === 'object') {
 
-                        fs.writeFile('./stats/disable/object/' + object + '.json', jsonString, err => {
+                        fs.writeFile('./stats/disable/object' + object + '.json', jsonString, err => {
                             if (err) {
                                 console.log('Error writing file', err)
                                 message.channel.send("Error, please check ^help for correct usage.")
