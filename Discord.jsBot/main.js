@@ -194,7 +194,7 @@ client.on('message', (message) => {
                     {name: 'picked_up', value: 'Counts how often the player picked up an item.'}
                 ); 
                 message.channel.send(statHelpEmbed)
-                message.channel.send('Currently OUTDATED. WIll be updated. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now')
+                message.channel.send(`Currently OUTDATED. WIll be updated. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.`)
             } else if(command === 'connect') {
 
                 const ingameName = (args[0]);
