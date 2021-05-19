@@ -174,7 +174,7 @@ client.on('message', (message) => {
                 .setColor('#000000')
                 .setImage("https://cdn.discordapp.com/attachments/838107054290894911/841973239299178526/smp.png")
                 .addFields(
-                    { name: 'PREFIX', value: 'This Bot uses the PREFIX: ^ \IMPORTANT: Use this PREFIX at the start of every command.'},
+                    { name: 'PREFIX', value: 'This Bot uses the PREFIX: ^ \nIMPORTANT: Use this PREFIX at the start of every command.'},
                     { name: 'RANDOM', value: 'Random Message \nUSAGE: random'},
                     { name: 'STATS', value: `Look at your and other member's minecraft server stats. Stats will be updated every time the server restarts. \nUSAGE: stats @<username> <Statcategory> <Statitem/block/entity> \n EXAMPLE: stats @Lianecx mined iron_ore \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!`},
                     { name: 'PINGCHAIN', value: 'Ping a User up to 100 times with configurable delay. \n USAGE: Pingchain @<username> <Pingnumber> <Delay between Pings in milliseconds> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.'},
