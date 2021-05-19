@@ -266,6 +266,9 @@ client.on('message', (message) => {
                 })
             } else if(command === 'statdisable') {
 
+                const mode = (args[0]);
+                const object = args[1];
+
                 if (!message.member.hasPermission('ADMINISTRATOR')) {
                     message.channel.send("You are not an Admin!")
                     console.log(message.member.user.tag + ' executed ^statdisable without admin!')
@@ -274,6 +277,35 @@ client.on('message', (message) => {
 
                 console.log(message.member.user.tag + ' executed ^statdisable.')
 
+                if(mode === "category") {
+
+                    fs.writeFile('./stats/disable/category/' + object + '.json', jsonString, err => {
+                        if (err) {
+                            console.log('Error writing file', err)
+                            message.channel.send("Error, please check ^help for correct usage.")
+                        } else {
+                            console.log('Successfully wrote file')
+                            message.channel.send("Disabling succesful.")
+                        }
+                    })
+                } else if(mode === "object") {
+
+                    if(mode === "category") {
+
+                        fs.writeFile('./stats/disable/object/' + object + '.json', jsonString, err => {
+                            if (err) {
+                                console.log('Error writing file', err)
+                                message.channel.send("Error, please check ^help for correct usage.")
+                            } else {
+                                console.log('Successfully wrote file')
+                                message.channel.send("Disabling succesful.")
+                            }
+                        })
+                    } else {
+                    message.channel.send("Wrong Usage!")
+                    return;
+                    }
+                }
             }
         })
 client.login(process.env.token)
