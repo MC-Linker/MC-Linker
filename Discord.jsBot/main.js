@@ -290,8 +290,6 @@ client.on('message', (message) => {
                     })
                 } else if(mode === 'object') {
 
-                    if(mode === 'category') {
-
                         fs.writeFile('./stats/disable/object/' + object + '.json', jsonString, err => {
                             if (err) {
                                 console.log('Error writing file', err)
@@ -301,10 +299,9 @@ client.on('message', (message) => {
                                 message.channel.send("Disabling succesful.")
                             }
                         })
-                    } else {
+                } else {
                     message.channel.send("Wrong Usage!")
                     return;
-                    }
                 }
             }
         })
