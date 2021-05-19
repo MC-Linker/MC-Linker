@@ -84,6 +84,38 @@ client.on('message', (message) => {
                             return;
                     } else {
                         try {
+
+                            fs.readFile('./stats/disable/category' + statType + '.json', 'utf8', (err, jsonString) => {
+                                if(err) {
+                                    console.log('Stat not disabled. Could not find file. ', err);
+                                } else {
+                                    const data = JSON.parse(jsonString)
+                                    if(data.statType === 'disabled') {
+                                        console.log('Category disabled.')
+                                        message.channel.send('Object disabled!')
+                                        return;
+                                    } else if(data.statType === 'enabled') {
+                                        console.log('Category enabled.')
+                                    } 
+                                }
+                            }) 
+
+                            fs.readFile('./stats/disable/object' + statObject + '.json', 'utf8', (err, jsonString) => {
+                                if(err) {
+                                    console.log('Object not disabled. Could not find file. ', err);
+                                } else {
+                                    const data = JSON.parse(jsonString)
+                                    if(data.statObject === 'disabled') {
+                                        console.log('Object disabled.')
+                                        message.channel.send('Object disabled!')
+                                        return;
+                                    } else if(data.statObject === 'enabled') {
+                                        console.log('Object enabled.')
+                                    } 
+                                    
+                                }
+                            })
+
                             const data = JSON.parse(jsonString);
                             let minecraftId = data.id;
                             const { join } = require('path');
@@ -114,7 +146,7 @@ client.on('message', (message) => {
                                             },
                                         clientFtp = new ftpClient(config, options);
                                         clientFtp.connect(function () {
-                                        clientFtp.download(data.path + '/stats', './stats', {
+                                        clientFtp.download(data.path + '/stats/', './stats', {
                                             overwrite: 'all'
                                         }, function () {
                                             console.log('Tried downloading Stats.')
