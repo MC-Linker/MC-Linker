@@ -150,8 +150,7 @@ client.on('message', (message) => {
                                                     logging: 'basic'
                                             },
                                         clientFtp = new ftpClient(config, options);
-                                        const ftp = new ftp();
-                                        ftp.on('error',console.dir);
+                                        clientFtp.on('error',console.dir);
                                             clientFtp.connect(function (err) {
                                                 if (err) {
                                                     console.log('Could not connect to server. ', err);
