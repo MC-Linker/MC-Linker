@@ -150,31 +150,20 @@ client.on('message', (message) => {
                                                     logging: 'basic'
                                             },
                                         clientFtp = new ftpClient(config, options);
-                                        try {
+                                        ftpClient.on('error',console.dir);
                                             clientFtp.connect(function (err) {
                                                 if (err) {
                                                     console.log('Could not connect to server. ', err);
                                                     message.channel.send('Could not connect to server.')
                                                     return;
                                                 } else {
-                                                    try {
                                                       clientFtp.download(data.path + '/stats/', './stats', {
                                                         overwrite: 'all'
                                                         }, function () {
                                                             console.log('Tried downloading Stats.')
-                                                        });  
-                                                    } catch (err) {
-                                                        console.log('Could not connect to server.', err)
-                                                        message.channel.send('Could not connect to server.')
-                                                        return;
-                                                    }                
+                                                        });               
                                                 }
                                             });
-                                        } catch (err) {
-                                            console.log('Could not connect to server.', err)
-                                            message.channel.send('Could not connect to server.')
-                                            return;
-                                        }
                                 }                                
                             
                             })
