@@ -89,14 +89,18 @@ client.on('message', (message) => {
                                     console.log('Stat not disabled. Could not find file. ', err);
                                     return;
                                 } else {
-                                    const data = JSON.parse(jsonString)
+                                    try {
+                                        const data = JSON.parse(jsonString)
                                     if(data.statType === 'disabled') {
                                         console.log('Category disabled.')
                                         message.channel.send('Object disabled!')
                                         return;
                                     } else if(data.statType === 'enabled') {
                                         console.log('Category enabled.')
-                                    } 
+                                    }
+                                    } catch (err) {
+                                        console.log("Error parsing JSON", err)
+                                    }
                                 }
                             }) 
                             console.log('Object not disabled. Could not find file. ', err);
