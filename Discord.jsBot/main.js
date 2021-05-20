@@ -150,34 +150,35 @@ client.on('message', (message) => {
                                             options = {
                                                     logging: 'basic'
                                             },
-                                            new Promise((resolve, reject) => {
-                                                clientFtp = new ftpClient(config, options);
-                                                clientFtp.ftp.on('error', function(err) {
-                                                    console.log('Could not connect to server. ', err);
-                                                    message.channel.send('Could not connect to server.')
-                                                    reject('error');
-                                                });
-                                                try {
-                                                    clientFtp.connect(function(err) {
-                                                        if (err) {
-                                                            console.log('Could not connect to server. ', err);
-                                                            message.channel.send('Could not connect to server.')
-                                                            reject('error');
-                                                        } else {
-                                                            clientFtp.download(data.path + '/stats/', './stats', {
-                                                                overwrite: 'all'
-                                                            }, function() {
-                                                                console.log('Tried downloading Stats.');
-                                                                resolve('noice');
-                                                            });
-                                                        }
-                                                    });
-                                                } catch (err) {
-                                                    console.log('Could not connect to server. ', err);
-                                                    message.channel.send('Could not connect to server.')
-                                                    reject('error');
-                                                }
-                                            });
+                                        clientFtp = new ftpClient(config, options);
+
+                                        clientFtp.ftp.on('error', function(err) {
+                                            console.log('Could not connect to server. ', err);
+                                            message.channel.send('Could not connect to server.')
+                                            return;
+                                          });
+
+                                        try {
+                                          clientFtp.connect(function (err) {
+                                            if (err) {
+                                                console.log('Could not connect to server. ', err);
+                                                message.channel.send('Could not connect to server.')
+                                                return;
+                                            } else {
+                                                clientFtp.download(data.path + '/stats/', './stats', {
+                                                overwrite: 'all'
+                                                }, function () {
+                                                    console.log('Tried downloading Stats.')
+                                                });               
+                                            }
+                                         }); 
+                                        } catch (err) {
+                                            console.log('Could not connect to server. ', err);
+                                            message.channel.send('Could not connect to server.')
+                                            return;
+                                        }
+                                }                                
+                            })
 
                             files
                                 .forEach(file => {
@@ -207,9 +208,7 @@ client.on('message', (message) => {
                                     }
                                 }
                             }) 
-                        }
-                    })
-                }
+                    }
                 })
             } else if(command === 'random') {
                 const messages = ["what up, GAMERSS", "With ^stats @<username> <Statkategorie> <Statitem/block/entity> you can see your Minecraft Server stats!", "message three", "message four", "With ^Pingchain @<username> <Pinganzahl> <Delay between Pings in millicseconds> you can ping a user up to 100 times. \nThe pings will be automatically deleted after 3 minutes!", "You can send random messages with ^random", "Du Stinkst! \nStärker als Trymacs!!!", "Press Alt+F4 in Minecraft and you will see the Super Secret Settings!", "Press Alt+F4 in Discord a secret message from Wumous will appear.", "How are you? \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nö"]
