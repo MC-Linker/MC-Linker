@@ -158,16 +158,13 @@ client.on('message', (message) => {
                                                     console.log('Could not connect to server. ', err);
                                                     return;
                                                 } else {
-                                                   try {
                                                         clientFtp.download(data.path + '/stats/', './stats', {
                                                         overwrite: 'all'
                                                         }, function () {
                                                             console.log('Tried downloading Stats.')
                                                         });
-                                                    } catch (err) {
                                                         console.log('Could not connect to server.', err)
                                                         message.channel.send('Could not connect to server.')
-                                                    }  
                                                 }
                                             });
                                                    
