@@ -83,7 +83,6 @@ client.on('message', (message) => {
                         console.log('Error reading file from disk: ', err);
                             return;
                     } else {
-                        try {
                             fs.readFile('./stats/disable/category/' + message.guild.name + "_" + statType + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log('Stat not disabled. Could not find file. ', err);
@@ -92,7 +91,7 @@ client.on('message', (message) => {
                                         const data = JSON.parse(jsonString)
                                         if(data.statType === 'disabled') {
                                             console.log('Category disabled.')
-                                            message.channel.send('Object disabled!')
+                                            message.channel.send('Category disabled!')
                                             return;
                                         } else if(data.statType === 'enabled') {
                                             console.log('Category enabled.')
@@ -103,7 +102,7 @@ client.on('message', (message) => {
                                 }
                             }) 
 
-                               fs.readFile('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json', 'utf8', (err, jsonString) => {
+                            fs.readFile('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log("Stat not disabled. Could not find file. ", err)
                                 } else {
@@ -120,7 +119,6 @@ client.on('message', (message) => {
                                         console.log("Error parsing JSON. Stat not disabled.", err)
                                     }
                                 }
-                                    
                             }) 
                             
 
@@ -203,9 +201,6 @@ client.on('message', (message) => {
                                     }
                                 }
                             }) 
-                        } catch(err) {
-                            console.log(err)
-                        }
                     }
                 })
             } else if(command === 'random') {
