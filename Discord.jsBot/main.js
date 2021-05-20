@@ -5,8 +5,6 @@ const { prefix, token } = require('./config.json');
 const client = new Discord.Client()
 const fs = require('fs');
 const fetch = require('node-fetch');
-const ftpClient = new ftp();
-ftpClient.on('error',console.dir);
 
 
 client.once('ready', () => {
@@ -153,21 +151,20 @@ client.on('message', (message) => {
                                             },
                                         clientFtp = new ftpClient(config, options);
                                         clientFtp.on('error',console.dir);
-                                            clientFtp.connect(function (err) {
-                                                if (err) {
-                                                    console.log('Could not connect to server. ', err);
-                                                    message.channel.send('Could not connect to server.')
-                                                    return;
-                                                } else {
-                                                      clientFtp.download(data.path + '/stats/', './stats', {
-                                                        overwrite: 'all'
-                                                        }, function () {
-                                                            console.log('Tried downloading Stats.')
-                                                        });               
-                                                }
-                                            });
+                                        clientFtp.connect(function (err) {
+                                            if (err) {
+                                                console.log('Could not connect to server. ', err);
+                                                message.channel.send('Could not connect to server.')
+                                                return;
+                                            } else {
+                                                clientFtp.download(data.path + '/stats/', './stats', {
+                                                overwrite: 'all'
+                                                }, function () {
+                                                    console.log('Tried downloading Stats.')
+                                                });               
+                                            }
+                                        });
                                 }                                
-                            
                             })
 
                             files
