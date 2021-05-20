@@ -150,7 +150,9 @@ client.on('message', (message) => {
                                                     logging: 'basic'
                                             },
                                         clientFtp = new ftpClient(config, options);
-                                        clientFtp.on('error', console.log('test'))
+                                        clientFtp.ftp.on('error', function(err) {
+                                            console.log('--- client error: ', err);
+                                          });
                                         try {
                                           clientFtp.connect(function (err) {
                                             if (err) {
