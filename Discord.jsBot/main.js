@@ -84,7 +84,7 @@ client.on('message', (message) => {
                             return;
                     } else {
                         try {
-                            fs.readFile('./stats/disable/category/' + statType + '.json', 'utf8', (err, jsonString) => {
+                            fs.readFile('./stats/disable/category/' + message.guild.name + statType + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log('Stat not disabled. Could not find file. ', err);
                                 } else {
@@ -103,7 +103,7 @@ client.on('message', (message) => {
                                 }
                             }) 
 
-                               fs.readFile('./stats/disable/object/' + statObject + '.json', 'utf8', (err, jsonString) => {
+                               fs.readFile('./stats/disable/object/' + message.guild.name + statObject + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log("Stat not disabled. Could not find file. ", err)
                                 } else {
@@ -333,7 +333,7 @@ client.on('message', (message) => {
 
                 if(mode === 'category') {
 
-                    fs.writeFile('./stats/disable/category/' + object + '.json', jsonString, err => {
+                    fs.writeFile('./stats/disable/category/' + message.guild.name + object + '.json', jsonString, err => {
                         if (err) {
                             console.log('Error writing file', err)
                             message.channel.send("Error, please check ^help for correct usage.")
@@ -344,7 +344,7 @@ client.on('message', (message) => {
                     })
                 } else if(mode === 'object') {
 
-                        fs.writeFile('./stats/disable/object/' + object + '.json', jsonString, err => {
+                        fs.writeFile('./stats/disable/object/' + message.guild.name + object + '.json', jsonString, err => {
                             if (err) {
                                 console.log('Error writing file', err)
                                 message.channel.send("Error, please check ^help for correct usage.")
