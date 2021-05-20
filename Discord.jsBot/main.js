@@ -92,7 +92,7 @@ client.on('message', (message) => {
                                         if(data.statType === 'disabled') {
                                             console.log('Category disabled.')
                                             message.channel.send('Category disabled!')
-                                            return;
+                                            return err("test");
                                         } else if(data.statType === 'enabled') {
                                             console.log('Category enabled.')
                                         }
@@ -111,7 +111,7 @@ client.on('message', (message) => {
                                         if(data.statObject === 'disabled') {
                                             console.log('Object disabled.')
                                             message.channel.send('Object disabled!')
-                                            return;
+                                            return err("test");
                                         } else if(data.statObject === 'enabled') {
                                             console.log('Object enabled.')
                                         } 
