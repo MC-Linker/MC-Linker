@@ -91,13 +91,13 @@ client.on('message', (message) => {
                                 } else {
                                     try {
                                         const data = JSON.parse(jsonString)
-                                    if(data.statType === 'disabled') {
-                                        console.log('Category disabled.')
-                                        message.channel.send('Object disabled!')
-                                        return;
-                                    } else if(data.statType === 'enabled') {
-                                        console.log('Category enabled.')
-                                    }
+                                        if(data.statType === 'disabled') {
+                                            console.log('Category disabled.')
+                                            message.channel.send('Object disabled!')
+                                            return;
+                                        } else if(data.statType === 'enabled') {
+                                            console.log('Category enabled.')
+                                        }
                                     } catch (err) {
                                         console.log("Error parsing JSON", err)
                                     }
