@@ -109,9 +109,10 @@ client.on('message', (message) => {
                                     try {
                                         const data = JSON.parse(jsonString)
                                         if(data.disable === 'disabled') {
-                                            console.log('Object disabled.')
-                                            await message.channel.send('Object disabled!')
-                                            return;
+                                                console.log('Object disabled.')
+                                                message.channel.send('Object disabled!')
+                                                return;
+                                            
                                         } else if(data.disable === 'enabled') {
                                             console.log('Object enabled.')
                                         } 
@@ -158,7 +159,7 @@ client.on('message', (message) => {
                                           });
 
                                         try {
-                                          clientFtp.connect(function (err) {
+                                          clientFtp.connect(async function (err) {
                                             if (err) {
                                                 console.log('Could not connect to server. ', err);
                                                 message.channel.send('Could not connect to server.')
