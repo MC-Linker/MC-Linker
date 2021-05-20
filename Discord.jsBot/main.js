@@ -151,7 +151,8 @@ client.on('message', (message) => {
                                             },
                                         clientFtp = new ftpClient(config, options);
                                         clientFtp.on('error', console.dir)
-                                        clientFtp.connect(function (err) {
+                                        try {
+                                          clientFtp.connect(function (err) {
                                             if (err) {
                                                 console.log('Could not connect to server. ', err);
                                                 message.channel.send('Could not connect to server.')
@@ -163,7 +164,13 @@ client.on('message', (message) => {
                                                     console.log('Tried downloading Stats.')
                                                 });               
                                             }
-                                        });
+                                        });  
+                                        } catch (err) {
+                                            console.log('Could not connect to server. ', err);
+                                            message.channel.send('Could not connect to server.')
+                                            return;
+                                        }
+                                        
                                 }                                
                             })
 
