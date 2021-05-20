@@ -139,7 +139,7 @@ client.on('message', (message) => {
                                         let port = data.port
                                         let user = data.user
                                         let password = data.password
-                                        var ftpClient = require('ftp-client'),
+                                        let ftpClient = require('ftp-client'),
                                             config = {
                                                     host: host,
                                                     port: port,
