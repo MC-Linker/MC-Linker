@@ -92,7 +92,7 @@ client.on('message', (message) => {
                                         if(data.disable === 'disabled') {
                                             console.log('Category disabled.')
                                             message.channel.send('Category disabled!')
-                                            return err("test");
+                                            return;
                                         } else if(data.disable === 'enabled') {
                                             console.log('Category enabled.')
                                         }
@@ -111,7 +111,7 @@ client.on('message', (message) => {
                                         if(data.disable === 'disabled') {
                                             console.log('Object disabled.')
                                             message.channel.send('Object disabled!')
-                                            return err("test");
+                                            return;
                                         } else if(data.disable === 'enabled') {
                                             console.log('Object enabled.')
                                         } 
