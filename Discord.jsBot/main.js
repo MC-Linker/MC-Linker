@@ -136,7 +136,6 @@ client.on('message', (message) => {
                                     console.log('Error reading file from disk: ', err);
                                     return;
                                 } else {
-                                    try {
                                         const data = JSON.parse(jsonString);
                                         let host = data.host
                                         let port = data.port
@@ -172,11 +171,6 @@ client.on('message', (message) => {
                                             message.channel.send('Could not connect to server.')
                                             return;
                                         }
-                                            
-                                                   
-                                    } catch (err) {
-                                        console.log('Error parsing JSON string: ', err);
-                                    }
                                 }                                
                             
                             })
