@@ -84,10 +84,10 @@ client.on('message', (message) => {
                             return;
                     } else {
                         try {
-                            try {
                             fs.readFile('./stats/disable/category/' + statType + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log('Stat not disabled. Could not find file. ', err);
+                                    return;
                                 } else {
                                     const data = JSON.parse(jsonString)
                                     if(data.statType === 'disabled') {
@@ -99,10 +99,8 @@ client.on('message', (message) => {
                                     } 
                                 }
                             }) 
-                            } catch (err) {
                             console.log('Object not disabled. Could not find file. ', err);
-                            }
-                            try {
+
                                fs.readFile('./stats/disable/object/' + statObject + '.json', 'utf8', (err, jsonString) => {
                                     const data = JSON.parse(jsonString)
                                     if(data.statObject === 'disabled') {
@@ -113,9 +111,7 @@ client.on('message', (message) => {
                                         console.log('Object enabled.')
                                     } 
                             }) 
-                            } catch (err) {
                                 console.log('Object not disabled. Could not find file. ', err);
-                            }
                             
 
                             const data = JSON.parse(jsonString);
