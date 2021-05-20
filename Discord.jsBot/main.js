@@ -108,13 +108,14 @@ client.on('message', (message) => {
                                 } else {
                                     try {
                                         const data = JSON.parse(jsonString)
-                                        if(data.disable === 'disabled') {
+                                        async function disableCheck () {
+                                            if(data.disable === 'disabled') {
                                                 console.log('Object disabled.')
-                                                message.channel.send('Object disabled!')
-                                                return;
-                                            
-                                        } else if(data.disable === 'enabled') {
-                                            console.log('Object enabled.')
+                                                await message.channel.send('Object disabled!')
+                                                return; 
+                                            } else if(data.disable === 'enabled') {
+                                                console.log('Object enabled.')
+                                        } 
                                         } 
                                     } catch (err) {
                                         console.log("Error parsing JSON. Stat not disabled.", err)
@@ -159,7 +160,8 @@ client.on('message', (message) => {
                                           });
 
                                         try {
-                                          clientFtp.connect(function (err) {
+                                            async function ftpConnect () {
+                                                await clientFtp.connect(function (err) {
                                             if (err) {
                                                 console.log('Could not connect to server. ', err);
                                                 message.channel.send('Could not connect to server.')
@@ -172,6 +174,8 @@ client.on('message', (message) => {
                                                 });               
                                             }
                                          }); 
+                                            }
+                                          
                                         } catch (err) {
                                             console.log('Could not connect to server. ', err);
                                             message.channel.send('Could not connect to server.')
