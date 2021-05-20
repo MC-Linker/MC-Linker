@@ -5,6 +5,8 @@ const { prefix, token } = require('./config.json');
 const client = new Discord.Client()
 const fs = require('fs');
 const fetch = require('node-fetch');
+const ftpClient = new ftp();
+ftpClient.on('error',console.dir);
 
 
 client.once('ready', () => {
