@@ -87,7 +87,6 @@ client.on('message', (message) => {
                             fs.readFile('./stats/disable/category/' + statType + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log('Stat not disabled. Could not find file. ', err);
-                                    return;
                                 } else {
                                     try {
                                         const data = JSON.parse(jsonString)
@@ -99,23 +98,30 @@ client.on('message', (message) => {
                                             console.log('Category enabled.')
                                         }
                                     } catch (err) {
-                                        console.log("Error parsing JSON", err)
+                                        console.log("Error parsing JSON. Stat not disabled", err)
                                     }
                                 }
                             }) 
-                            console.log('Object not disabled. Could not find file. ', err);
 
                                fs.readFile('./stats/disable/object/' + statObject + '.json', 'utf8', (err, jsonString) => {
-                                    const data = JSON.parse(jsonString)
-                                    if(data.statObject === 'disabled') {
-                                        console.log('Object disabled.')
-                                        message.channel.send('Object disabled!')
-                                        return;
-                                    } else if(data.statObject === 'enabled') {
-                                        console.log('Object enabled.')
-                                    } 
+                                if(err) {
+                                    console.log("Stat not disabled. Could not find file. ", err)
+                                } else{
+                                    try {
+                                        const data = JSON.parse(jsonString)
+                                        if(data.statObject === 'disabled') {
+                                            console.log('Object disabled.')
+                                            message.channel.send('Object disabled!')
+                                            return;
+                                        } else if(data.statObject === 'enabled') {
+                                            console.log('Object enabled.')
+                                        } 
+                                    } catch (err) {
+                                        console.log("Error parsing JSON. Stat not disabled.", err)
+                                    }
+                                }
+                                    
                             }) 
-                                console.log('Object not disabled. Could not find file. ', err);
                             
 
                             const data = JSON.parse(jsonString);
