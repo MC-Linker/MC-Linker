@@ -106,7 +106,7 @@ client.on('message', (message) => {
                                fs.readFile('./stats/disable/object/' + statObject + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     console.log("Stat not disabled. Could not find file. ", err)
-                                } else{
+                                } else {
                                     try {
                                         const data = JSON.parse(jsonString)
                                         if(data.statObject === 'disabled') {
@@ -153,19 +153,24 @@ client.on('message', (message) => {
                                                     logging: 'basic'
                                             },
                                         clientFtp = new ftpClient(config, options);
-                                        try {
-                                            clientFtp.connect(function () {
-                                        clientFtp.download(data.path + '/stats/', './stats', {
-                                            overwrite: 'all'
-                                        }, function () {
-                                            console.log('Tried downloading Stats.')
-                                        });
-                                        });
-                                        } catch (err) {
-                                            console.log('Could not connect to server.')
-                                            message.channel.send('Could not connect to server.')
-                                        }
-                                        
+                                            clientFtp.connect(function (err) {
+                                                if (err) {
+                                                    console.log('Could not connect to server. ', err);
+                                                    return;
+                                                } else {
+                                                   try {
+                                                        clientFtp.download(data.path + '/stats/', './stats', {
+                                                        overwrite: 'all'
+                                                        }, function () {
+                                                            console.log('Tried downloading Stats.')
+                                                        });
+                                                    } catch (err) {
+                                                        console.log('Could not connect to server.', err)
+                                                        message.channel.send('Could not connect to server.')
+                                                    }  
+                                                }
+                                            });
+                                                   
                                     } catch (err) {
                                         console.log('Error parsing JSON string: ', err);
                                     }
