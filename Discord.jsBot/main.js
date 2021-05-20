@@ -154,27 +154,29 @@ client.on('message', (message) => {
                                         clientFtp = new ftpClient(config, options);
 
                                         clientFtp.ftp.on('error', function(err) {
-                                            console.log('Could not connect to server. ', err);
-                                            message.channel.send('Could not connect to server.')
-                                            return;
+                                            async function errorAwait() {
+                                                console.log('Could not connect to server. ', err);
+                                                await message.channel.send('Could not connect to server.')
+                                                return;
+                                            }
                                           });
 
                                         try {
                                             async function ftpConnect () {
                                                 await clientFtp.connect(function (err) {
-                                            if (err) {
-                                                console.log('Could not connect to server. ', err);
-                                                message.channel.send('Could not connect to server.')
-                                                return;
-                                            } else {
-                                                clientFtp.download(data.path + '/stats/', './stats', {
-                                                overwrite: 'all'
-                                                }, function () {
-                                                    console.log('Tried downloading Stats.')
-                                                });               
-                                            }
-                                         }); 
-                                            }
+                                                if (err) {
+                                                    console.log('Could not connect to server. ', err);
+                                                    message.channel.send('Could not connect to server.')
+                                                    return;
+                                                } else {
+                                                    clientFtp.download(data.path + '/stats/', './stats', {
+                                                    overwrite: 'all'
+                                                    }, function () {
+                                                        console.log('Tried downloading Stats.')
+                                                    });               
+                                                }
+                                                }); 
+                                        }   
                                           
                                         } catch (err) {
                                             console.log('Could not connect to server. ', err);
