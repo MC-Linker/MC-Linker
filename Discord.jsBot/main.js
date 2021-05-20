@@ -150,7 +150,7 @@ client.on('message', (message) => {
                                             options = {
                                                     logging: 'basic'
                                             },
-                                            const promise = new Promise((resolve, reject) => {
+                                            new Promise((resolve, reject) => {
                                                 clientFtp = new ftpClient(config, options);
                                                 clientFtp.ftp.on('error', function(err) {
                                                     console.log('Could not connect to server. ', err);
