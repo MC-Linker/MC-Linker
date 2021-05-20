@@ -89,11 +89,11 @@ client.on('message', (message) => {
                                 } else {
                                     try {
                                         const data = JSON.parse(jsonString)
-                                        if(data.statType === 'disabled') {
+                                        if(data.disable === 'disabled') {
                                             console.log('Category disabled.')
                                             message.channel.send('Category disabled!')
                                             return err("test");
-                                        } else if(data.statType === 'enabled') {
+                                        } else if(data.disable === 'enabled') {
                                             console.log('Category enabled.')
                                         }
                                     } catch (err) {
@@ -108,11 +108,11 @@ client.on('message', (message) => {
                                 } else {
                                     try {
                                         const data = JSON.parse(jsonString)
-                                        if(data.statObject === 'disabled') {
+                                        if(data.disable === 'disabled') {
                                             console.log('Object disabled.')
                                             message.channel.send('Object disabled!')
                                             return err("test");
-                                        } else if(data.statObject === 'enabled') {
+                                        } else if(data.disable === 'enabled') {
                                             console.log('Object enabled.')
                                         } 
                                     } catch (err) {
@@ -321,7 +321,7 @@ client.on('message', (message) => {
                 console.log(message.member.user.tag + ' executed ^statdisable.')
 
                 const disableJson = {
-                    object: "disabled" 
+                    "disable": "disabled" 
                 }
 
                 const jsonString = JSON.stringify(disableJson, null, 2);
