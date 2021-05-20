@@ -110,7 +110,7 @@ client.on('message', (message) => {
                                         const data = JSON.parse(jsonString)
                                         if(data.disable === 'disabled') {
                                             console.log('Object disabled.')
-                                            message.channel.send('Object disabled!')
+                                            await message.channel.send('Object disabled!')
                                             return;
                                         } else if(data.disable === 'enabled') {
                                             console.log('Object enabled.')
@@ -164,7 +164,7 @@ client.on('message', (message) => {
                                                 message.channel.send('Could not connect to server.')
                                                 return;
                                             } else {
-                                                clientFtp.download(data.path + '/stats/', './stats', {
+                                                await clientFtp.download(data.path + '/stats/', './stats', {
                                                 overwrite: 'all'
                                                 }, function () {
                                                     console.log('Tried downloading Stats.')
