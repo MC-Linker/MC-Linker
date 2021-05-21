@@ -184,7 +184,6 @@ client.on('message', (message) => {
                                             return;
                                         }
                                 }                                
-                            })
 
                             files
                                 .forEach(file => {
@@ -214,6 +213,7 @@ client.on('message', (message) => {
                                     }
                                 }
                             }) 
+                        })
                     }
                 })
             } else if(command === 'random') {
