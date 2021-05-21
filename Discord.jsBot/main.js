@@ -133,8 +133,11 @@ client.on('message', (message) => {
                             
                             fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
-                                    console.log('Error reading file from disk: ', err);
-                                    return;
+                                    async function errorAwait() {
+                                        console.log('Error reading file from disk: ', err);
+                                        await message.channel.send('Could not connect to server.')
+                                        return;
+                                    }
                                 } else {
                                         const data = JSON.parse(jsonString);
                                         let host = data.host
