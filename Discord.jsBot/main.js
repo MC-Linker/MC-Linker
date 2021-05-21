@@ -91,7 +91,7 @@ client.on('message', (message) => {
                                         const data = JSON.parse(jsonString)
                                         if(data.disable === 'disabled') {
                                             console.log('Category [' + statType + '] disabled.')
-                                            message.channel.send('Category disabled!')
+                                            message.channel.send('Category [' + statType + '] disabled!')
                                             return;
                                         } else if(data.disable === 'enabled') {
                                             console.log('Category enabled.')
@@ -110,7 +110,7 @@ client.on('message', (message) => {
                                         const data = JSON.parse(jsonString)
                                             if(data.disable === 'disabled') {
                                                 console.log('Object [' + statObject + '] disabled.')
-                                                message.channel.send('Object disabled!')
+                                                message.channel.send('Object [' + statObject + '] disabled!')
                                                 return; 
                                             } else if(data.disable === 'enabled') {
                                                 console.log('Object enabled.')
