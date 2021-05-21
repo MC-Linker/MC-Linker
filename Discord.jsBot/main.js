@@ -171,9 +171,7 @@ client.on('message', (message) => {
                                                         console.log('Tried downloading Stats.')
                                                     });               
                                                 }
-                                                }); 
- 
-                                          
+                                                });    
                                         } catch (err) {
                                             console.log('Could not connect to server. ', err);
                                             message.channel.send('Could not connect to server.')
