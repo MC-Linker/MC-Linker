@@ -135,11 +135,9 @@ client.on('message', (message) => {
                             
                             fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
-                                    async function errorAwait() {
                                         console.log('Error reading file from disk: ', err);
-                                        await message.channel.send('Could not connect to server.')
+                                        message.channel.send('Could not connect to server with Ftp credentials.')
                                         return;
-                                    }
                                 } else {
                                         const data = JSON.parse(jsonString);
                                         let host = data.host
@@ -154,21 +152,18 @@ client.on('message', (message) => {
                                                     password: password
                                             },
                                             options = {
-                                                    logging: 'debug'
+                                                    logging: 'basic'
                                             },
                                         clientFtp = new ftpClient(config, options);
 
                                         clientFtp.ftp.on('error', function(err) {
-                                            async function errorAwait() {
                                                 console.log('Could not connect to server. ', err);
-                                                await message.channel.send('Could not connect to server.')
+                                                message.channel.send('Could not connect to server.')
                                                 return;
-                                            }
                                           });
 
                                         try {
-                                            async function ftpConnect () {
-                                                await clientFtp.connect(function (err) {
+                                                clientFtp.connect(function (err) {
                                                 if (err) {
                                                     console.log('Could not connect to server. ', err);
                                                     message.channel.send('Could not connect to server.')
@@ -181,7 +176,7 @@ client.on('message', (message) => {
                                                     });               
                                                 }
                                                 }); 
-                                        }   
+ 
                                           
                                         } catch (err) {
                                             console.log('Could not connect to server. ', err);
