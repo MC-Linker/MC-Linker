@@ -269,22 +269,23 @@ client.on('message', (message) => {
                       .then(player => player.id);
                 }
                 
-                const minecraftId = getId(ingameName).then(id => {
+                getId(ingameName).then(id => {
                     message.channel.send(`Connected with Id: ${id}`)
-                    console.log(id)
+                    console.log(message.member.user.tag + " connected with ID: " + id)
                 })
 
                 getId(ingameName).then(id => {
                   const connectionJson = {
                     "id": id
                   }
-                  const jsonString = JSON.stringify(connectionJson, null, 2);
+
+                const jsonString = JSON.stringify(connectionJson, null, 2);
 
                 fs.writeFile('./connections/' + message.member.user.tag + '.json', jsonString, err => {
                     if (err) {
                         console.log('Error writing file', err)
                     } else {
-                        console.log('Successfully wrote file')
+                        console.log('Successfully wrote connectionfile')
                     }
                 })
                 });
