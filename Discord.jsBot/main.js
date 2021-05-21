@@ -154,7 +154,7 @@ client.on('message', (message) => {
                                                     password: password
                                             },
                                             options = {
-                                                    logging: 'basic'
+                                                    logging: 'debug'
                                             },
                                         clientFtp = new ftpClient(config, options);
 
