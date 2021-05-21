@@ -75,7 +75,7 @@ client.on('message', (message) => {
                 const statObject = (args[2]);
                 const taggedUser = message.mentions.users.first();
 
-                console.log(message.member.user.tag + ' executed ^stats' + statType + statObject + 'with taggedUser: ' + taggedUser.tag);
+                console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedUser.tag);
 
                 fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', (err, jsonString) => {
                     if(err) {
