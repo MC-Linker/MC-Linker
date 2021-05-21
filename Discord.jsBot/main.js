@@ -89,12 +89,14 @@ client.on('message', (message) => {
                                 } else {
                                     try {
                                         const data = JSON.parse(jsonString)
+                                        async function disableCheck () {
                                         if(data.disable === 'disabled') {
-                                            console.log('Category disabled.')
-                                            message.channel.send('Category disabled!')
+                                            console.log('Category [' + statType + '] disabled.')
+                                            await message.channel.send('Category disabled!')
                                             return;
                                         } else if(data.disable === 'enabled') {
                                             console.log('Category enabled.')
+                                        }
                                         }
                                     } catch (err) {
                                         console.log("Error parsing JSON. Stat not disabled", err)
@@ -110,7 +112,7 @@ client.on('message', (message) => {
                                         const data = JSON.parse(jsonString)
                                         async function disableCheck () {
                                             if(data.disable === 'disabled') {
-                                                console.log('Object disabled.')
+                                                console.log('Object [' + statObject + '] disabled.')
                                                 await message.channel.send('Object disabled!')
                                                 return; 
                                             } else if(data.disable === 'enabled') {
