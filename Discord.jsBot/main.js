@@ -155,7 +155,7 @@ client.on('message', (message) => {
                                                     message.channel.send('Could not connect to server.')
                                                     return;
                                                 } else {
-                                                    await clientFtp.download(data.path + '/stats/', './stats', {
+                                                    clientFtp.download(data.path + '/stats/', './stats', {
                                                     overwrite: 'all'
                                                     }, function () {
                                                         console.log('Tried downloading Stats.')
@@ -224,7 +224,7 @@ client.on('message', (message) => {
                     { name: 'CONNECT', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'},
                     { name: 'STATHELP', value: `Currently WIP, just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.`},
                     { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. \nUSAGE: statdisable category/object <category/object> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'},
-                    { name: 'STATENABLE', value: 'Enable a specific statcategory/item/entity/block (category/item/entity/block needs to be disabled when using this command). \nUSAGE: statenable category/object <category/object> \n EXAMPLE: statenable category picked_up OR statenable object blaze OR statenable object netherite_ingot'}
+                    { name: 'STATENABLE', value: 'Enable a disabled statcategory/item/entity/block. \nUSAGE: statenable category/object <category/object> \n EXAMPLE: statenable category picked_up OR statenable object blaze OR statenable object netherite_ingot'}
                 );
 
                 console.log(message.member.user.tag + ' executed ^help')
