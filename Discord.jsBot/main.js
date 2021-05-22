@@ -16,12 +16,6 @@ async function sleep(msec) {
     return new Promise(resolve => setTimeout(resolve, msec));
 } 
 
-client.on('guildMemberAdd', async member => {
-    const channel = member.guild.channels.cache.get('800751473309777950');
-    if (!channel) return;
-    channel.send(`Welcome to the Boringcraft SMP <@${member.id}> \n The Minecraft Server in which you definitely get bored.`)
-});
-
 client.on('message', (message) => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
@@ -146,28 +140,34 @@ client.on('message', (message) => {
                                                 message.channel.send('Could not connect to server.')
                                                 return;
                                           });
-
-                                          async function connectFtp () {
+                                        
+                                        async function connectFtp () {
+                                        const promise = new Promise((resolve, reject) => {
+                                            await promise
+                                            console.log('Connecting...')
                                             try {
-                                                await clientFtp.connect(function (err) {
+                                                clientFtp.connect(function (err) {
                                                 if (err) {
                                                     console.log('Could not connect to server. ', err);
                                                     message.channel.send('Could not connect to server.')
-                                                    return;
+                                                    reject('error')
                                                 } else {
                                                     clientFtp.download(data.path + '/stats/', './stats', {
                                                     overwrite: 'all'
                                                     }, function () {
                                                         console.log('Tried downloading Stats.')
+                                                        resolve('noice')
                                                     });               
                                                 }
                                                 });    
                                             } catch (err) {
                                                 console.log('Could not connect to server. ', err);
                                                 message.channel.send('Could not connect to server.')
-                                                return;
+                                                reject('error')
                                             }                                      
+                                        })  
                                         }
+                                    connectFtp()
                                 }                                
 
                                 files
@@ -223,8 +223,7 @@ client.on('message', (message) => {
                     { name: 'FTP', value: 'Connect your minecraft Server with the bot. Can only be used by Admins. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to world folder. Default Path: minecraft/WORLDNAME>' },
                     { name: 'CONNECT', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'},
                     { name: 'STATHELP', value: `Currently WIP, just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.`},
-                    { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. \nUSAGE: statdisable category/object <category/object> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'},
-                    { name: 'STATENABLE', value: 'Enable a disabled statcategory/item/entity/block. \nUSAGE: statenable category/object <category/object> \n EXAMPLE: statenable category picked_up OR statenable object blaze OR statenable object netherite_ingot'}
+                    { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. Currently WIP. \nUSAGE: statdisable category/object <category/object> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'}
                 );
 
                 console.log(message.member.user.tag + ' executed ^help')
