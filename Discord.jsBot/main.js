@@ -83,44 +83,33 @@ client.on('message', (message) => {
                         console.log('Error reading file from disk: ', err);
                         return;
                     } else {
-                            fs.readFile('./stats/disable/category/' + message.guild.name + "_" + statType + '.json', 'utf8', (err, jsonString) => {
-                                if(err) {
-                                    console.log('Stat not disabled. Could not find file. ', err);
-                                } else {
-                                    try {
-                                        const data = JSON.parse(jsonString)
-                                        if(data.disable === 'disabled') {
-                                            console.log('Category [' + statType + '] disabled.')
-                                            message.channel.send('Category [' + statType + '] disabled!')
-                                            return;
-                                        } else if(data.disable === 'enabled') {
-                                            console.log('Category enabled.')
-                                        }
-                                    } catch (err) {
-                                        console.log("Error parsing JSON. Stat not disabled", err)
-                                    }
+                        try {
+                            const jsonString = fs.readFileSync('./stats/disable/category/' + message.guild.name + "_" + statType + '.json')
+                            const data = JSON.parse(jsonString)
+                                if(data.disable === 'disabled') {
+                                    console.log('Category [' + statType + '] disabled.')
+                                    message.channel.send('Category [' + statType + '] disabled!')
+                                    return;
+                                } else if(data.disable === 'enabled') {
+                                    console.log('Category enabled.')
                                 }
-                            }) 
+                            } catch (err) {
+                                console.log("Error reading/parsing JSON. Stat not disabled", err)
+                            }
 
-                            fs.readFile('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json', 'utf8', (err, jsonString) => {
-                                if(err) {
-                                    console.log("Stat not disabled. Could not find file. ", err)
-                                } else {
-                                    try {
-                                        const data = JSON.parse(jsonString)
-                                            if(data.disable === 'disabled') {
-                                                console.log('Object [' + statObject + '] disabled.')
-                                                message.channel.send('Object [' + statObject + '] disabled!')
-                                                return; 
-                                            } else if(data.disable === 'enabled') {
-                                                console.log('Object enabled.')
-                                        } 
-                                    } catch (err) {
-                                        console.log("Error parsing JSON. Stat not disabled.", err)
-                                    }
-                                }
-                            }) 
-                            
+                        try {
+                            const jsonString = fs.readFileSync('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json')
+                            const data = JSON.parse(jsonString)
+                            if(data.disable === 'disabled') {
+                                console.log('Object [' + statObject + '] disabled.')
+                                message.channel.send('Object [' + statObject + '] disabled!')
+                                return; 
+                            } else if(data.disable === 'enabled') {
+                                console.log('Object enabled.')
+                            } 
+                        } catch (err) {
+                            console.log("Error reading/parsing JSON. Stat not disabled.", err)
+                        }
 
                             const data = JSON.parse(jsonString);
                             let minecraftId = data.id;
@@ -179,7 +168,7 @@ client.on('message', (message) => {
                                         }
                                 }                                
 
-                            files
+                                files
                                 .forEach(file => {
                                     const filePath = join('./stats', file);
                                     const newFilePath = join('./stats', file.replace(/\-/g, ''));
@@ -190,20 +179,21 @@ client.on('message', (message) => {
                             fs.readFile('./stats/' + minecraftId + '.json', 'utf8', (err, jsonString) => {
                                 if(err) {
                                     message.channel.send('Could not find stat file in Server. Member most likely never joined the server.')
-                                    console.log('Error reading file from disk: ', err);
+                                    console.log('Error reading stat file from disk: ', err);
                                     return;
                                 } else {
                                     try {
                                         const data = JSON.parse(jsonString);
                                         let searchName = data.stats["minecraft:" + statType]["minecraft:" + statObject]
                                             if (searchName){
+                                                console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser + " : " + searchName)
                                                 message.channel.send(searchName)
                                             } else {
                                                 console.log("No Match found!")
                                                 message.channel.send('No Match found! Stat is either 0 or mispelled!')
                                             }
                                     } catch (err) {
-                                        console.log('Error parsing JSON string: ', err);
+                                        console.log('Error parsing Stat JSON string: ', err);
                                     }
                                 }
                             }) 
@@ -362,6 +352,6 @@ client.on('message', (message) => {
                 }
             }
         })
-client.login(process.env.token)
+client.login(token)
 
     
