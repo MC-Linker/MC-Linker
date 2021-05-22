@@ -147,24 +147,26 @@ client.on('message', (message) => {
                                                 return;
                                           });
 
-                                        try {
-                                                clientFtp.connect(function (err) {
+                                          async function connectFtp () {
+                                            try {
+                                                await clientFtp.connect(function (err) {
                                                 if (err) {
                                                     console.log('Could not connect to server. ', err);
                                                     message.channel.send('Could not connect to server.')
                                                     return;
                                                 } else {
-                                                    clientFtp.download(data.path + '/stats/', './stats', {
+                                                    await clientFtp.download(data.path + '/stats/', './stats', {
                                                     overwrite: 'all'
                                                     }, function () {
                                                         console.log('Tried downloading Stats.')
                                                     });               
                                                 }
                                                 });    
-                                        } catch (err) {
-                                            console.log('Could not connect to server. ', err);
-                                            message.channel.send('Could not connect to server.')
-                                            return;
+                                            } catch (err) {
+                                                console.log('Could not connect to server. ', err);
+                                                message.channel.send('Could not connect to server.')
+                                                return;
+                                            }                                      
                                         }
                                 }                                
 
