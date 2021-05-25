@@ -108,7 +108,7 @@ client.on('message', (message) => {
 
                             const data = JSON.parse(jsonString);
                             let minecraftId = data.id;
-                            
+
                             const { join } = require('path');
                             const { readdirSync, renameSync } = require('fs');
                             const files = readdirSync('./stats');
@@ -171,51 +171,6 @@ client.on('message', (message) => {
                                                 }    
                                         }
                                         ftpconnect()
-                                        
-                                        /*let ftpClient = require('ftp-client'),
-                                            config = {
-                                                    host: host,
-                                                    port: port,
-                                                    user: user,
-                                                    password: password
-                                            },
-                                            options = {
-                                                    logging: 'basic'
-                                            },
-                                        clientFtp = new ftpClient(config, options);
-
-                                        clientFtp.ftp.on('error', function(err) {
-                                                console.log('Could not connect to server. ', err);
-                                                message.channel.send('Could not connect to server.')
-                                                return;
-                                          });
-                                        
-                                        async function connectFtp () {
-                                            await new Promise((resolve, reject) => {
-                                                console.log('Connecting...')
-                                                try {
-                                                    clientFtp.connect(function (err) {
-                                                    if (err) {
-                                                        console.log('Could not connect to server. ', err);
-                                                        message.channel.send('Could not connect to server.')
-                                                        reject('error')
-                                                    } else {
-                                                        clientFtp.download(data.path + '/stats/', './stats', {
-                                                        overwrite: 'all'
-                                                        }, function () {
-                                                            console.log('Tried downloading Stats.')
-                                                            resolve('noice')
-                                                        });               
-                                                    }
-                                                    });    
-                                                } catch (err) {
-                                                    console.log('Could not connect to server. ', err);
-                                                    message.channel.send('Could not connect to server.')
-                                                    reject('error')
-                                                }                                      
-                                            })  
-                                        }
-                                        connectFtp()*/
                                 }                                
 
                                 files.forEach(file => {
