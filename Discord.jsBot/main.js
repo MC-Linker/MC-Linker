@@ -5,6 +5,7 @@ const { prefix, token } = require('./config.json');
 const client = new Discord.Client()
 const fs = require('fs');
 const fetch = require('node-fetch');
+const ftp = require('ftp')
 
 
 client.once('ready', () => {
@@ -88,7 +89,7 @@ client.on('message', (message) => {
                                     console.log('Category enabled.')
                                 }
                             } catch (err) {
-                                console.log("Error reading/parsing JSON. Stat not disabled", err)
+                                console.log("Error reading/parsing JSON. Stat not disabled")
                             }
 
                         try {
@@ -102,11 +103,12 @@ client.on('message', (message) => {
                                 console.log('Object enabled.')
                             } 
                         } catch (err) {
-                            console.log("Error reading/parsing JSON. Stat not disabled.", err)
+                            console.log("Error reading/parsing JSON. Stat not disabled.")
                         }
 
                             const data = JSON.parse(jsonString);
                             let minecraftId = data.id;
+                            
                             const { join } = require('path');
                             const { readdirSync, renameSync } = require('fs');
                             const files = readdirSync('./stats');
@@ -123,7 +125,54 @@ client.on('message', (message) => {
                                         let port = data.port
                                         let user = data.user
                                         let password = data.password
-                                        let ftpClient = require('ftp-client'),
+
+                                        async function ftpconnect() {
+                                            const ftpClient = new ftp();
+                                                ftpClient.on('error', function(err) {
+                                                    console.log('Error! ', err);
+                                                    message.reply('Could not connect to server.')
+                                                    return;
+                                                })
+
+                                                ftpClient.on('ready', function() {
+                                                    ftpClient.list(data.path + '/stats', function(err, list) {
+                                                        if(err) {
+                                                            console.log('Could not list stat files. ', err);
+                                                            message.reply('Could not list stat files. ')
+                                                            return;
+                                                        }
+                                                        list.map((element) => {
+                                                            ftpClient.get(data.path + '/stats/' + element.name, function(err, stream) {
+                                                                if(err) {
+                                                                    console.log('Could not download stats. ', err);
+                                                                    message.reply('Could not download stats. ')
+                                                                    return;
+                                                                }
+                                                                stream.once('close', function() {
+                                                                    ftpClient.end(); 
+                                                                });
+                                                                stream.pipe(fs.createWriteStream('./stats/' + element.name));
+                                                                console.log('File [' + element.name + '] succesfully downloaded')
+                                                            });
+                                                        })  
+                                                    })  
+                                                });
+                                                try {
+                                                    ftpClient.connect({
+                                                    host: host,
+                                                    port: port,
+                                                    user: user,
+                                                    password: password,
+                                                    });
+                                                } catch (err) {
+                                                    console.log('Could not connect to server. ', err);
+                                                    message.reply('Could not connect to server.')
+                                                    return;
+                                                }    
+                                        }
+                                        ftpconnect()
+                                        
+                                        /*let ftpClient = require('ftp-client'),
                                             config = {
                                                     host: host,
                                                     port: port,
@@ -142,36 +191,34 @@ client.on('message', (message) => {
                                           });
                                         
                                         async function connectFtp () {
-                                        const promise = new Promise((resolve, reject) => {
-                                            await promise
-                                            console.log('Connecting...')
-                                            try {
-                                                clientFtp.connect(function (err) {
-                                                if (err) {
+                                            await new Promise((resolve, reject) => {
+                                                console.log('Connecting...')
+                                                try {
+                                                    clientFtp.connect(function (err) {
+                                                    if (err) {
+                                                        console.log('Could not connect to server. ', err);
+                                                        message.channel.send('Could not connect to server.')
+                                                        reject('error')
+                                                    } else {
+                                                        clientFtp.download(data.path + '/stats/', './stats', {
+                                                        overwrite: 'all'
+                                                        }, function () {
+                                                            console.log('Tried downloading Stats.')
+                                                            resolve('noice')
+                                                        });               
+                                                    }
+                                                    });    
+                                                } catch (err) {
                                                     console.log('Could not connect to server. ', err);
                                                     message.channel.send('Could not connect to server.')
                                                     reject('error')
-                                                } else {
-                                                    clientFtp.download(data.path + '/stats/', './stats', {
-                                                    overwrite: 'all'
-                                                    }, function () {
-                                                        console.log('Tried downloading Stats.')
-                                                        resolve('noice')
-                                                    });               
-                                                }
-                                                });    
-                                            } catch (err) {
-                                                console.log('Could not connect to server. ', err);
-                                                message.channel.send('Could not connect to server.')
-                                                reject('error')
-                                            }                                      
-                                        })  
+                                                }                                      
+                                            })  
                                         }
-                                    connectFtp()
+                                        connectFtp()*/
                                 }                                
 
-                                files
-                                .forEach(file => {
+                                files.forEach(file => {
                                     const filePath = join('./stats', file);
                                     const newFilePath = join('./stats', file.replace(/\-/g, ''));
 
@@ -188,11 +235,11 @@ client.on('message', (message) => {
                                         const data = JSON.parse(jsonString);
                                         let searchName = data.stats["minecraft:" + statType]["minecraft:" + statObject]
                                             if (searchName){
-                                                console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser + " : " + searchName)
-                                                message.channel.send(searchName)
+                                                console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
+                                                message.reply(searchName)
                                             } else {
                                                 console.log("No Match found!")
-                                                message.channel.send('No Match found! Stat is either 0 or mispelled!')
+                                                message.reply('No Match found! Stat is either 0 or mispelled!')
                                             }
                                     } catch (err) {
                                         console.log('Error parsing Stat JSON string: ', err);
