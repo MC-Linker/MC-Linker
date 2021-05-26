@@ -72,20 +72,20 @@ client.on('message', (message) => {
 
                 console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedUser.tag);
 
-                fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', (err, jsonString) => {
+                fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', (err, connectionJson) => {
                     if(err) {
                         message.channel.send('User isnt connected!')
                         console.log('Error reading file from disk: ', err);
                         return;
                     } else {
                         try {
-                            const jsonString = fs.readFileSync('./stats/disable/category/' + message.guild.name + "_" + statType + '.json')
-                            const data = JSON.parse(jsonString)
-                                if(data.disable === 'disabled') {
+                            const disableJson = fs.readFileSync('./stats/disable/category/' + message.guild.name + "_" + statType + '.json')
+                            const disableData = JSON.parse(disableJson)
+                                if(disableData.disable === 'disabled') {
                                     console.log('Category [' + statType + '] disabled.')
-                                    message.channel.send('Category [' + statType + '] disabled!')
+                                    message.reply('Category [' + statType + '] disabled!')
                                     return;
-                                } else if(data.disable === 'enabled') {
+                                } else if(disableData.disable === 'enabled') {
                                     console.log('Category enabled.')
                                 }
                             } catch (err) {
@@ -93,69 +93,60 @@ client.on('message', (message) => {
                             }
 
                         try {
-                            const jsonString = fs.readFileSync('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json')
-                            const data = JSON.parse(jsonString)
-                            if(data.disable === 'disabled') {
+                            const disableJson2 = fs.readFileSync('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json')
+                            const disableData2 = JSON.parse(disableJson2)
+                            if(disableData2.disable === 'disabled') {
                                 console.log('Object [' + statObject + '] disabled.')
-                                message.channel.send('Object [' + statObject + '] disabled!')
+                                message.reply('Object [' + statObject + '] disabled!')
                                 return; 
-                            } else if(data.disable === 'enabled') {
+                            } else if(disableData2.disable === 'enabled') {
                                 console.log('Object enabled.')
                             } 
                         } catch (err) {
                             console.log("Error reading/parsing JSON. Stat not disabled.")
                         }
 
-                            const data = JSON.parse(jsonString);
-                            let minecraftId = data.id;
+                            const connectionData = JSON.parse(connectionJson);
+                            const minecraftId = connectionData.id;
 
-                            const { join } = require('path');
-                            const { readdirSync, renameSync } = require('fs');
-                            const files = readdirSync('./stats');
-                            
-                            
-                            fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, jsonString) => {
+                            let uuidv4 = minecraftId.split('')
+                            for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');                       
+                            uuidv4 = uuidv4.join("");
+
+                            fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', async function(err, ftpJson) {
                                 if(err) {
                                         console.log('Error reading file from disk: ', err);
-                                        message.channel.send('Could not connect to server with Ftp credentials.')
+                                        message.channel.send('Could not find ftpcredentials. ')
                                         return;
                                 } else {
-                                        const data = JSON.parse(jsonString);
-                                        let host = data.host
-                                        let port = data.port
-                                        let user = data.user
-                                        let password = data.password
+                                        const ftpData = JSON.parse(ftpJson);
+                                        let host = ftpData.host
+                                        let port = ftpData.port
+                                        let user = ftpData.user
+                                        let password = ftpData.password
 
-                                        async function ftpconnect() {
+                                         async function ftpconnect() {
                                             const ftpClient = new ftp();
+                                            return await new Promise((resolve, reject) => {
                                                 ftpClient.on('error', function(err) {
                                                     console.log('Error! ', err);
                                                     message.reply('Could not connect to server.')
-                                                    return;
+                                                    reject('error')
                                                 })
-
                                                 ftpClient.on('ready', function() {
-                                                    ftpClient.list(data.path + '/stats', function(err, list) {
+                                                    ftpClient.get(ftpData.path + '/stats/' + uuidv4 + '.json', function(err, stream) {
                                                         if(err) {
-                                                            console.log('Could not list stat files. ', err);
-                                                            message.reply('Could not list stat files. ')
-                                                            return;
+                                                            console.log('Could not download stats. ', err);
+                                                            message.reply('Could not download stats. ')
+                                                            reject('error')
                                                         }
-                                                        list.map((element) => {
-                                                            ftpClient.get(data.path + '/stats/' + element.name, function(err, stream) {
-                                                                if(err) {
-                                                                    console.log('Could not download stats. ', err);
-                                                                    message.reply('Could not download stats. ')
-                                                                    return;
-                                                                }
-                                                                stream.once('close', function() {
-                                                                    ftpClient.end(); 
-                                                                });
-                                                                stream.pipe(fs.createWriteStream('./stats/' + element.name));
-                                                                console.log('File [' + element.name + '] succesfully downloaded')
-                                                            });
-                                                        })  
-                                                    })  
+                                                        stream.once('close', function() {
+                                                            ftpClient.end();
+                                                            resolve('noice') 
+                                                        });
+                                                        stream.pipe(fs.createWriteStream('./stats/' + uuidv4 + '.json'));
+                                                        console.log('File [' + uuidv4 + '.json' + '] succesfully downloaded')
+                                                    });
                                                 });
                                                 try {
                                                     ftpClient.connect({
@@ -163,44 +154,39 @@ client.on('message', (message) => {
                                                     port: port,
                                                     user: user,
                                                     password: password,
-                                                    });
+                                                });
                                                 } catch (err) {
                                                     console.log('Could not connect to server. ', err);
                                                     message.reply('Could not connect to server.')
-                                                    return;
-                                                }    
+                                                    reject('error')
+                                                }  
+                                            })
+                                            
                                         }
-                                        ftpconnect()
-                                }                                
+                                        await ftpconnect()
+                                    }
 
-                                files.forEach(file => {
-                                    const filePath = join('./stats', file);
-                                    const newFilePath = join('./stats', file.replace(/\-/g, ''));
-
-                                    renameSync(filePath, newFilePath);
-                                });
-
-                            fs.readFile('./stats/' + minecraftId + '.json', 'utf8', (err, jsonString) => {
+                            fs.readFile('./stats/' + uuidv4 + '.json', 'utf8', (err, statJson) => {
                                 if(err) {
                                     message.channel.send('Could not find stat file in Server. Member most likely never joined the server.')
                                     console.log('Error reading stat file from disk: ', err);
                                     return;
-                                } else {
-                                    try {
-                                        const data = JSON.parse(jsonString);
-                                        let searchName = data.stats["minecraft:" + statType]["minecraft:" + statObject]
-                                            if (searchName){
-                                                console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
-                                                message.reply(searchName)
-                                            } else {
-                                                console.log("No Match found!")
-                                                message.reply('No Match found! Stat is either 0 or mispelled!')
-                                            }
-                                    } catch (err) {
-                                        console.log('Error parsing Stat JSON string: ', err);
-                                    }
                                 }
-                            }) 
+                                try {
+                                    const statData = JSON.parse(statJson);
+                                    let searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
+                                        if (searchName){
+                                            console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
+                                            message.reply(searchName)
+                                        } else {
+                                            console.log("No Match found!")
+                                            message.reply('No Match found! Stat is either 0 or mispelled!')
+                                        }
+                                } catch (err) {
+                                    console.log('Error parsing Stat JSON string: ', err);
+                                    message.reply('Could not find stat file.')
+                                }
+                            })
                         })
                     }
                 })
@@ -225,7 +211,9 @@ client.on('message', (message) => {
                     { name: 'FTP', value: 'Connect your minecraft Server with the bot. Can only be used by Admins. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to world folder. Default Path: minecraft/WORLDNAME>' },
                     { name: 'CONNECT', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'},
                     { name: 'STATHELP', value: `Currently WIP, just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.`},
-                    { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. Currently WIP. \nUSAGE: statdisable category/object <category/object> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'}
+                    { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. \nUSAGE: statdisable category/object <category/item/entity/block> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'},
+                    { name: 'STATENABLE', value: 'Enable a disabled statcategory/item/entity/block. \nUSAGE: statenable category/object <category/item/entity/block> \n EXAMPLE: e.g. STATDISABLE'},
+                    { name: 'STATSTATE', value: '**WIP** Look at the state(enabled/disabled) of a statcategory/item/entity/block. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all categorys/objects) \n EXAMPLE: e.g. STATDISABLE'}
                 );
 
                 console.log(message.member.user.tag + ' executed ^help')
@@ -238,7 +226,7 @@ client.on('message', (message) => {
                 .setColor('#000000')
                 .addFields(
                     {name: 'picked_up', value: 'Counts how often the player picked up an item.'},
-                    {name: 'OUTDATED', value: `This command is currently OUTDATED. It wIll be updated soon. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now`}
+                    {name: 'WIP', value: `This command is currently WIP. It wIll be updated soon. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now`}
                 ); 
                 message.channel.send(statHelpEmbed)
 
@@ -262,15 +250,15 @@ client.on('message', (message) => {
                     "id": id
                   }
 
-                const jsonString = JSON.stringify(connectionJson, null, 2);
+                    const connectionString = JSON.stringify(connectionJson, null, 2);
 
-                fs.writeFile('./connections/' + message.member.user.tag + '.json', jsonString, err => {
-                    if (err) {
-                        console.log('Error writing file', err)
-                    } else {
-                        console.log('Successfully wrote connectionfile')
-                    }
-                })
+                    fs.writeFile('./connections/' + message.member.user.tag + '.json', connectionString, err => {
+                        if (err) {
+                            console.log('Error writing file', err)
+                        } else {
+                            console.log('Successfully wrote connectionfile')
+                        }
+                    })
                 });
             } else if(command === 'ftp') {
                 let host = (args[0]);
@@ -299,9 +287,9 @@ client.on('message', (message) => {
                     "path": path
                 }
 
-                const jsonString = JSON.stringify(jsonFtp, null, 2);
+                const ftpString = JSON.stringify(jsonFtp, null, 2);
 
-                fs.writeFile('./ftp/' + message.guild.name + '.json', jsonString, err => {
+                fs.writeFile('./ftp/' + message.guild.name + '.json', ftpString, err => {
                     if (err) {
                         console.log('Error writing file', err)
                     } else {
@@ -326,33 +314,140 @@ client.on('message', (message) => {
                     "disable": "disabled" 
                 }
 
-                const jsonString = JSON.stringify(disableJson, null, 2);
+                const disableString = JSON.stringify(disableJson, null, 2);
 
                 if(mode === 'category') {
 
-                    fs.writeFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', jsonString, err => {
+                    fs.writeFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', disableString, err => {
                         if (err) {
-                            console.log('Error writing file', err)
+                            console.log('Error writing disableJSON ', err)
                             message.channel.send("Error, please check ^help for correct usage.")
                         } else {
-                            console.log('Successfully wrote file')
-                            message.channel.send("Disabling succesful.")
+                            console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
+                            message.channel.send('Disabling of ' + mode + ' ' + object + ' succesful.')
                         }
                     })
                 } else if(mode === 'object') {
 
-                        fs.writeFile('./stats/disable/object/' + message.guild.name + "_" + object + '.json', jsonString, err => {
+                        fs.writeFile('./stats/disable/object/' + message.guild.name + "_" + object + '.json', disableString, err => {
                             if (err) {
-                                console.log('Error writing file', err)
+                                console.log('Error writing disableJSON ', err)
                                 message.channel.send("Error, please check ^help for correct usage.")
                             } else {
-                                console.log('Successfully wrote file')
-                                message.channel.send("Disabling succesful.")
+                                console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
+                                message.channel.send('Disabling of ' + mode + ' ' + object + ' succesful.')
                             }
                         })
                 } else {
                     message.channel.send("Wrong Usage!")
                     return;
+                }
+            } else if(command === 'statenable') {
+                const mode = (args[0]);
+                const object = (args[1]);
+
+                if (!message.member.hasPermission('ADMINISTRATOR')) {
+                    message.channel.send("You are not an Admin!")
+                    console.log(message.member.user.tag + ' executed ^statdisable without admin!')
+                    return;
+                }
+
+                console.log(message.member.user.tag + ' executed ^statdisable.')
+
+                const enableJson = {
+                    "disable": "enabled" 
+                }
+
+                const enableString = JSON.stringify(enableJson, null, 2);
+
+                if(mode === 'category') {
+
+                    fs.writeFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', enableString, err => {
+                        if (err) {
+                            console.log('Error writing enableJSON ', err)
+                            message.channel.send("Error, please check ^help for correct usage.")
+                        } else {
+                            console.log('Successfully wrote enableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
+                            message.channel.send('Enabling of ' + mode + ' ' + object + ' succesful.')
+                        }
+                    })
+                } else if(mode === 'object') {
+
+                        fs.writeFile('./stats/disable/object/' + message.guild.name + "_" + object + '.json', enableString, err => {
+                            if (err) {
+                                console.log('Error writing enableJSON ', err)
+                                message.channel.send("Error, please check ^help for correct usage.")
+                            } else {
+                                console.log('Successfully wrote enableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
+                                message.channel.send('Enabling of ' + mode + ' ' + object + ' succesful.')
+                            }
+                        })
+                } else {
+                    message.channel.send("Wrong Usage!")
+                    return;
+                }
+            } else if (command === 'statstate') {
+                const mode = (args[0]);
+                const object = (args[1]);
+
+                if (!mode) {
+                    console.log(message.member.user.tag + ' executed ^statstate without args.')
+
+                    const stateEmbed = new Discord.MessageEmbed()
+                    .setTitle('Statstates')
+                    .attachFiles(attachment)
+                    .setColor('#5c1204');
+                } else if (!object) {
+                    console.log('Wrong Usage!')
+                    message.reply('Wrong Usage! Check ^help for correct usage.')
+                    return;
+                }
+                console.log(message.member.user.tag + ' executed ^statstate ' + mode + ' ' + object)
+
+                if(mode === 'category') {
+                    fs.readFile('./stats/disable/category/' + object + '.json', 'utf8', (err, stateJson) => {
+                        if(err) {
+                            message.channel.send('Category [' + object + '] enabled!')
+                            console.log('Could not find state file. Category [' + object + '] not disabled! ', err);
+                            return;
+                        }
+                        try {
+                            const stateData = JSON.parse(stateJson);
+                                if (stateData.disable === 'disable'){
+                                    console.log('Category [' + object + '] disabled')
+                                    message.reply('Category [' + object + '] disabled')
+                                } else {
+                                    console.log("Error reading stateJson.")
+                                    message.reply('Error! Try again!')
+                                }
+                        } catch (err) {
+                            console.log('Error parsing stateJSON string: ', err);
+                            message.reply('Error! Try again!')
+                        }
+                    })
+                } else if (mode === 'object') {
+                    fs.readFile('./stats/disable/object/' + object + '.json', 'utf8', (err, stateJson) => {
+                        if(err) {
+                            message.channel.send('Object [' + object + '] enabled!')
+                            console.log('Could not find state file. Object [' + object + '] not disabled! ', err);
+                            return;
+                        }
+                        try {
+                            const stateData = JSON.parse(stateJson);
+                                if (stateData.disable === 'disable'){
+                                    console.log('Object [' + object + '] disabled')
+                                    message.reply('Object [' + object + '] disabled')
+                                } else {
+                                    console.log("Error reading stateJson.")
+                                    message.reply('Error! Try again!')
+                                }
+                        } catch (err) {
+                            console.log('Error parsing stateJSON string: ', err);
+                            message.reply('Error! Try again!')
+                        }
+                    })
+                } else {
+                    message.reply('Wrong Usage! Check ^help for correct usage.')
                 }
             }
         })
