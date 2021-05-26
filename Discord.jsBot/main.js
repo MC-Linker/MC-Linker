@@ -74,7 +74,7 @@ client.on('message', (message) => {
 
                 fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', (err, connectionJson) => {
                     if(err) {
-                        message.channel.send('User isnt connected!')
+                        message.reply('User isnt connected!')
                         console.log('Error reading file from disk: ', err);
                         return;
                     } else {
@@ -85,11 +85,9 @@ client.on('message', (message) => {
                                     console.log('Category [' + statType + '] disabled.')
                                     message.reply('Category [' + statType + '] disabled!')
                                     return;
-                                } else if(disableData.disable === 'enabled') {
-                                    console.log('Category enabled.')
                                 }
                             } catch (err) {
-                                console.log("Error reading/parsing JSON. Stat not disabled")
+                                console.log("Could not find disableJson. Stat not disabled.")
                             }
 
                         try {
@@ -99,11 +97,9 @@ client.on('message', (message) => {
                                 console.log('Object [' + statObject + '] disabled.')
                                 message.reply('Object [' + statObject + '] disabled!')
                                 return; 
-                            } else if(disableData2.disable === 'enabled') {
-                                console.log('Object enabled.')
-                            } 
+                            }
                         } catch (err) {
-                            console.log("Error reading/parsing JSON. Stat not disabled.")
+                            console.log("Could not find disableJson. Stat not disabled.")
                         }
 
                             const connectionData = JSON.parse(connectionJson);
@@ -116,7 +112,7 @@ client.on('message', (message) => {
                             fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', async function(err, ftpJson) {
                                 if(err) {
                                         console.log('Error reading file from disk: ', err);
-                                        message.channel.send('Could not find ftpcredentials. ')
+                                        message.reply('Could not find ftpcredentials. ')
                                         return;
                                 } else {
                                         const ftpData = JSON.parse(ftpJson);
@@ -168,7 +164,7 @@ client.on('message', (message) => {
 
                             fs.readFile('./stats/' + uuidv4 + '.json', 'utf8', (err, statJson) => {
                                 if(err) {
-                                    message.channel.send('Could not find stat file in Server. Member most likely never joined the server.')
+                                    message.reply('Could not find stat file in Server. Member most likely never joined the server.')
                                     console.log('Error reading stat file from disk: ', err);
                                     return;
                                 }
@@ -211,9 +207,9 @@ client.on('message', (message) => {
                     { name: 'FTP', value: 'Connect your minecraft Server with the bot. Can only be used by Admins. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to world folder. Default Path: minecraft/WORLDNAME>' },
                     { name: 'CONNECT', value: 'Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>'},
                     { name: 'STATHELP', value: `Currently WIP, just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.`},
-                    { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. \nUSAGE: statdisable category/object <category/item/entity/block> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'},
+                    { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. \nIMPORTANT: Renaming the server will result in resetting all disabled stats!\nUSAGE: statdisable category/object <category/item/entity/block> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'},
                     { name: 'STATENABLE', value: 'Enable a disabled statcategory/item/entity/block. \nUSAGE: statenable category/object <category/item/entity/block> \n EXAMPLE: e.g. STATDISABLE'},
-                    { name: 'STATSTATE', value: '**WIP** Look at the state(enabled/disabled) of a statcategory/item/entity/block. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all categorys/objects) \n EXAMPLE: e.g. STATDISABLE'}
+                    { name: 'STATSTATE', value: 'Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE'}
                 );
 
                 console.log(message.member.user.tag + ' executed ^help')
@@ -241,7 +237,7 @@ client.on('message', (message) => {
                 }
                 
                 getId(ingameName).then(id => {
-                    message.channel.send(`Connected with Id: ${id}`)
+                    message.reply(`Connected with Id: ${id}`)
                     console.log(message.member.user.tag + " connected with ID: " + id)
                 })
 
@@ -268,7 +264,7 @@ client.on('message', (message) => {
                 let path = (args[4])
 
                 if (!message.member.hasPermission('ADMINISTRATOR')) {
-                    message.channel.send("You are not an Admin!")
+                    message.reply("You are not an Admin!")
                     console.log(message.member.user.tag + ' executed ^ftp without admin!')
                     return;
                 }
@@ -294,7 +290,7 @@ client.on('message', (message) => {
                         console.log('Error writing file', err)
                     } else {
                         console.log('Successfully wrote file')
-                        message.channel.send('Succesfully connected with server.')
+                        message.reply('Succesfully connected with server.')
                     }
                 })
             } else if(command === 'statdisable') {
@@ -303,12 +299,12 @@ client.on('message', (message) => {
                 const object = (args[1]);
 
                 if (!message.member.hasPermission('ADMINISTRATOR')) {
-                    message.channel.send("You are not an Admin!")
+                    message.reply("You are not an Admin!")
                     console.log(message.member.user.tag + ' executed ^statdisable without admin!')
                     return;
                 }
 
-                console.log(message.member.user.tag + ' executed ^statdisable.')
+                console.log(message.member.user.tag + ' executed ^statdisable ' + mode + ' ' + object)
 
                 const disableJson = {
                     "disable": "disabled" 
@@ -321,10 +317,10 @@ client.on('message', (message) => {
                     fs.writeFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', disableString, err => {
                         if (err) {
                             console.log('Error writing disableJSON ', err)
-                            message.channel.send("Error, please check ^help for correct usage.")
+                            message.reply("Error, please check ^help for correct usage.")
                         } else {
                             console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
-                            message.channel.send('Disabling of ' + mode + ' ' + object + ' succesful.')
+                            message.reply('Disabling of ' + mode + ' ' + object + ' succesful.')
                         }
                     })
                 } else if(mode === 'object') {
@@ -332,14 +328,14 @@ client.on('message', (message) => {
                         fs.writeFile('./stats/disable/object/' + message.guild.name + "_" + object + '.json', disableString, err => {
                             if (err) {
                                 console.log('Error writing disableJSON ', err)
-                                message.channel.send("Error, please check ^help for correct usage.")
+                                message.reply("Error, please check ^help for correct usage.")
                             } else {
                                 console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
-                                message.channel.send('Disabling of ' + mode + ' ' + object + ' succesful.')
+                                message.reply('Disabling of ' + mode + ' ' + object + ' succesful.')
                             }
                         })
                 } else {
-                    message.channel.send("Wrong Usage!")
+                    message.reply("Wrong Usage!")
                     return;
                 }
             } else if(command === 'statenable') {
@@ -347,73 +343,104 @@ client.on('message', (message) => {
                 const object = (args[1]);
 
                 if (!message.member.hasPermission('ADMINISTRATOR')) {
-                    message.channel.send("You are not an Admin!")
-                    console.log(message.member.user.tag + ' executed ^statdisable without admin!')
+                    message.reply("You are not an Admin!")
+                    console.log(message.member.user.tag + ' executed ^statenable without admin!')
                     return;
                 }
 
-                console.log(message.member.user.tag + ' executed ^statdisable.')
-
-                const enableJson = {
-                    "disable": "enabled" 
-                }
-
-                const enableString = JSON.stringify(enableJson, null, 2);
+                console.log(message.member.user.tag + ' executed ^statenable ' + mode + ' ' + object)
 
                 if(mode === 'category') {
-
-                    fs.writeFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', enableString, err => {
-                        if (err) {
-                            console.log('Error writing enableJSON ', err)
-                            message.channel.send("Error, please check ^help for correct usage.")
-                        } else {
-                            console.log('Successfully wrote enableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
-                            message.channel.send('Enabling of ' + mode + ' ' + object + ' succesful.')
+                    fs.unlink('./stats/disable/category/' + message.guild.name + '_' + object + '.json', (err => {
+                        if(err) {
+                            console.log('Error deleting disableJSON ', err)
+                            message.reply("Error, please check ^help for correct usage.")
                         }
-                    })
-                } else if(mode === 'object') {
-
-                        fs.writeFile('./stats/disable/object/' + message.guild.name + "_" + object + '.json', enableString, err => {
-                            if (err) {
-                                console.log('Error writing enableJSON ', err)
-                                message.channel.send("Error, please check ^help for correct usage.")
-                            } else {
-                                console.log('Successfully wrote enableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
-                                message.channel.send('Enabling of ' + mode + ' ' + object + ' succesful.')
-                            }
-                        })
+                        console.log('Deleted disableJson: ' + message.guild.name + '_' + object + '.json')
+                        message.reply('Category ['  + object + '] succesfully enabled!')
+                    }));
+                } else if (mode === 'object') {
+                    fs.unlink('./stats/disable/object/' + message.guild.name + '_' + object + '.json', (err => {
+                        if(err) {
+                            console.log('Error deleting disableJSON ', err)
+                            message.reply("Error, please check ^help for correct usage.")
+                        }
+                        console.log('Deleted disableJson: ' + message.guild.name + '_' + object + '.json')
+                        message.reply('Object ['  + object + '] succesfully enabled!')
+                    }));
                 } else {
-                    message.channel.send("Wrong Usage!")
+                    message.reply("Wrong Usage! Check ^help for correct usage.")
                     return;
                 }
+                    
             } else if (command === 'statstate') {
                 const mode = (args[0]);
                 const object = (args[1]);
 
                 if (!mode) {
-                    console.log(message.member.user.tag + ' executed ^statstate without args.')
+                    console.log(message.member.user.tag + ' executed ^statstate without args. Showing all disabled stats.')
+
+                    const categoryFiles = fs.readdirSync('./stats/disable/category')
+                    const objectFiles = fs.readdirSync('./stats/disable/object')
+
+                    if(categoryFiles.length === 0 && objectFiles.length === 0) {
+                        console.log('No disabled stats.')
+                        message.reply('No disabled stats :)')
+                        return;
+                    } else if(categoryFiles.length === 0) {
+                        const stateEmbed = new Discord.MessageEmbed()
+                            .setTitle('Statstates')
+                            .setColor('#5c1204')
+                            .setAuthor('SMP Bot')
+                            .addField('============\nDisabled Objects', '**============**');
+                            objectFiles.forEach(entry => {
+                                stateEmbed.addField(entry, 'disabled');
+                            });
+                        message.channel.send(stateEmbed)
+                        return;
+                    } else if(objectFiles.length === 0) {
+                        const stateEmbed = new Discord.MessageEmbed()
+                            .setTitle('Statstates')
+                            .setColor('#5c1204')
+                            .setAuthor('SMP Bot')
+                            .addField('==============\nDisabled Categorys', '**==============**');
+                            categoryFiles.forEach(entry => {
+                                stateEmbed.addField(entry, 'disabled');
+                            });
+                        message.channel.send(stateEmbed)
+                        return;
+                    }
 
                     const stateEmbed = new Discord.MessageEmbed()
                     .setTitle('Statstates')
-                    .attachFiles(attachment)
-                    .setColor('#5c1204');
-                } else if (!object) {
-                    console.log('Wrong Usage!')
-                    message.reply('Wrong Usage! Check ^help for correct usage.')
+                    .setColor('#5c1204')
+                    .setAuthor('SMP Bot')
+                    .addField('==============\nDisabled Categorys', '**==============**');
+                    categoryFiles.forEach(entry => {
+                        stateEmbed.addField(entry, 'disabled');
+                    });
+                    stateEmbed.addField('============\nDisabled Objects', '**============**')
+                    objectFiles.forEach(entry => {
+                        stateEmbed.addField(entry, 'disabled');
+                    });
+
+
+                    message.channel.send(stateEmbed)
                     return;
                 }
+
                 console.log(message.member.user.tag + ' executed ^statstate ' + mode + ' ' + object)
 
                 if(mode === 'category') {
-                    fs.readFile('./stats/disable/category/' + object + '.json', 'utf8', (err, stateJson) => {
+                    fs.readFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', 'utf8', (err, stateJson) => {
                         if(err) {
-                            message.channel.send('Category [' + object + '] enabled!')
+                            message.reply('Category [' + object + '] enabled!')
                             console.log('Could not find state file. Category [' + object + '] not disabled! ', err);
                             return;
                         }
                         try {
                             const stateData = JSON.parse(stateJson);
-                                if (stateData.disable === 'disable'){
+                                if (stateData.disable === 'disabled'){
                                     console.log('Category [' + object + '] disabled')
                                     message.reply('Category [' + object + '] disabled')
                                 } else {
@@ -421,24 +448,24 @@ client.on('message', (message) => {
                                     message.reply('Error! Try again!')
                                 }
                         } catch (err) {
-                            console.log('Error parsing stateJSON string: ', err);
+                            console.log('Error parsing/reading stateJSON string: ', err);
                             message.reply('Error! Try again!')
                         }
                     })
                 } else if (mode === 'object') {
-                    fs.readFile('./stats/disable/object/' + object + '.json', 'utf8', (err, stateJson) => {
+                    fs.readFile('./stats/disable/object/' +  message.guild.name + "_" + object + '.json', 'utf8', (err, stateJson) => {
                         if(err) {
-                            message.channel.send('Object [' + object + '] enabled!')
+                            message.reply('Object [' + object + '] enabled!')
                             console.log('Could not find state file. Object [' + object + '] not disabled! ', err);
                             return;
                         }
                         try {
                             const stateData = JSON.parse(stateJson);
-                                if (stateData.disable === 'disable'){
+                                if (stateData.disable === 'disabled'){
                                     console.log('Object [' + object + '] disabled')
                                     message.reply('Object [' + object + '] disabled')
                                 } else {
-                                    console.log("Error reading stateJson.")
+                                    console.log("Error reading/parsing stateJson string.")
                                     message.reply('Error! Try again!')
                                 }
                         } catch (err) {
@@ -451,6 +478,6 @@ client.on('message', (message) => {
                 }
             }
         })
-client.login(process.env.token)
+client.login(token)
 
     
