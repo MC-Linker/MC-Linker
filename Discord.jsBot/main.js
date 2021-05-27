@@ -44,7 +44,6 @@ client.on('message', (message) => {
         } else if(command === 'help') {
 
             const command = (args[0]);
-            let smpPic = new Discord.MessageAttachment('./smp.png');
 
             if(!command) {
 
@@ -53,9 +52,9 @@ client.on('message', (message) => {
                 const HelpEmbed = new Discord.MessageEmbed()
                     .setTitle('Help Menu')
                     .setDescription('You can find helpful informations here!')
-                    .setAuthor('SMP Bot', smpPic)
+                    .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .setColor('#000000')
-                    .attachFiles(smpPic)
+                    .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .addFields(
                         { name: 'PREFIX', value: 'This Bot uses the PREFIX: **^** \nIMPORTANT: Use this PREFIX at the start of every command.'},
                         { name: 'HELP', value: 'Useful information about EVERY command. \nUSAGE: help'},
@@ -76,10 +75,10 @@ client.on('message', (message) => {
 
                     const HelpEmbed = new Discord.MessageEmbed()
                         .setTitle('Help Menu')
-                        .setAuthor('SMP Bot', smpPic)
+                        .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                         .setDescription('You can find helpful informations here!')
                         .setColor('#000000')
-                        .attachFiles(smpPic)
+                        .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                         .addFields(
                             { name: command, value: client.commands.get(command).description }
                         );
@@ -119,3 +118,5 @@ client.on('message', (message) => {
         }
     })
 client.login(process.env.token)
+
+    
