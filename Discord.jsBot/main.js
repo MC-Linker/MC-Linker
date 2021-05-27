@@ -87,9 +87,7 @@ client.on('message', (message) => {
         } else if (command === 'statstate') {
 
             client.commands.get('statstate').execute(message, args);
-
-        }
-    })
+    
 client.login(process.env.token)
 
     
