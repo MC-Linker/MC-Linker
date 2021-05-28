@@ -8,9 +8,14 @@ const fs = require('fs');
 
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + '!')
-    console.log('Der Bot ist auf ' + client.guilds.cache.size + ' servers!')
+    console.log('Bot on ' + client.guilds.cache.size + ' servers!')
     client.user.setActivity('^help', {type: "LISTENING"})
 })
+
+client.on("guildCreate", guild => {
+    console.log("Joined a new guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' servers!');
+})
+
 
 async function sleep(msec) {
     return new Promise(resolve => setTimeout(resolve, msec));
@@ -118,6 +123,6 @@ client.on('message', (message) => {
 
         }
     })
-client.login(process.env.token)
+client.login(token)
 
     
