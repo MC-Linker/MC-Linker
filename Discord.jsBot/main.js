@@ -9,6 +9,7 @@ const fs = require('fs');
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + '!')
     console.log('Der Bot ist auf ' + client.guilds.cache.size + ' servers!')
+    client.user.setActivity('^help', {type: "LISTENING"})
 })
 
 async function sleep(msec) {
