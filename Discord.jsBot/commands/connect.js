@@ -4,6 +4,7 @@ module.exports = {
     execute(message, args){
 
         const fetch = require('node-fetch')
+        const fs = require('fs')
 
         const ingameName = (args[0]);
 

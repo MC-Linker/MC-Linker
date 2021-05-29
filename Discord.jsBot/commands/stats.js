@@ -1,3 +1,5 @@
+const { DiscordAPIError } = require('discord.js');
+
 module.exports = {
     name: 'stats',
     description: "Look at your and other member's minecraft server stats. Stats will be updated every time the server restarts. \nUSAGE: stats @<username> <Statcategory> <Statitem/block/entity> \n EXAMPLE: stats @Lianecx mined iron_ore \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
@@ -5,9 +7,13 @@ module.exports = {
 
         const fs = require('fs');
         const ftp = require('ftp')
+        const Discord = require('discord.js')
+        const client = new Discord.Client();
 
         if (!message.mentions.users.size) {
-            return message.reply('you need to tag a user!');
+            console.log(message.member.user.tag + ' executed ^stats without user.')
+            message.reply('you need to tag a user!');
+            return;
         }
         const statType = (args[1]);
         const statObject = (args[2]);
@@ -107,7 +113,7 @@ module.exports = {
 
                     fs.readFile('./stats/' + uuidv4 + '.json', 'utf8', (err, statJson) => {
                         if(err) {
-                            message.reply('Could not find stat file in Server. Member most likely never joined the server.')
+                            message.reply('Could not find stat file. Member most likely never joined the server.')
                             console.log('Error reading stat file from disk: ', err);
                             return;
                         }
@@ -115,15 +121,22 @@ module.exports = {
                             const statData = JSON.parse(statJson);
                             let searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
                                 if (searchName){
-                                    console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
-                                    message.reply(searchName)
+                                    if(statType === 'custom') {
+                                        message.reply('<:alexPick:848151260803629078> ' + taggedUser.tag + ' **' + statObject + ', ' + searchName + '**')
+                                    } else if (statType === 'killed_by') {
+                                        message.reply('<:alexPick:848151260803629078> ' + taggedUser.tag + ' was killed **' + searchName + '** times by a **' + statObject + '**')
+                                    } else {
+                                        console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
+                                        message.reply('<:alexPick:848151260803629078> ' + taggedUser.tag + ' has **'  + statType + ' ' + searchName + ' ' + statObject + 's**')
+                                    }
+                                    
                                 } else {
                                     console.log("No Match found!")
                                     message.reply('No Match found! Stat is either 0 or mispelled!')
                                 }
                         } catch (err) {
                             console.log('Error parsing Stat JSON string: ', err);
-                            message.reply('Could not find stat file.')
+                            message.reply(taggedUser.tag + ' has never done anything in this category.')
                         }
                     })
                 })
