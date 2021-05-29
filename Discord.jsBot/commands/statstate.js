@@ -42,7 +42,7 @@ module.exports = {
                     .setTitle('Statstates')
                     .setColor('#5c1204')
                     .setAuthor('SMP Bot')
-                    .addField('============\nDisabled Objects', '**============**');
+                    .addField('============\nDisabled Objects', '**============**')
                     objectFiles.forEach(file => {
                         stateEmbed.addField(file, 'disabled');
                     });
@@ -53,7 +53,7 @@ module.exports = {
                     .setTitle('Statstates')
                     .setColor('#5c1204')
                     .setAuthor('SMP Bot')
-                    .addField('==============\nDisabled Categorys', '**==============**');
+                    .addField('==============\nDisabled Categorys', '**==============**')
                     categoryFiles.forEach(entry => {
                         stateEmbed.addField(entry, 'disabled');
                     });
@@ -65,7 +65,7 @@ module.exports = {
             .setTitle('Statstates')
             .setColor('#5c1204')
             .setAuthor('SMP Bot')
-            .addField('==============\nDisabled Categorys', '**==============**');
+            .addField('==============\nDisabled Categorys', '**==============**')
             categoryFiles.forEach(entry => {
                 stateEmbed.addField(entry, 'disabled');
             });
