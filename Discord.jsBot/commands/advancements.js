@@ -95,7 +95,8 @@ module.exports = {
                 const baseEmbed = new Discord.MessageEmbed()
                     .setTitle('Advancement')
                     .setColor('#730A85')
-                    .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png');
+                    .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                    .addField(`=======================\n${mode} ${object}`, '**=======================**');
 
                 try {
                     const advancementData = JSON.parse(advancementJson);
@@ -118,19 +119,23 @@ module.exports = {
                                 searchName = searchName.replace(' +0000', '')
 
                                 console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedUser.tag + ' : ' + searchName)
-                                const amEmbed = baseEmbed.addField(`==================\n${mode} ${object}`, '**==================**').addField('unlocked on', searchName).addField('Criteria', key)
+                                const amEmbed = baseEmbed.addField('Criteria', key).addField('unlocked on', searchName, true)
                                 message.channel.send(amEmbed)
                             } catch (err) {
                             }
                         } 
                     } else {
                         try {
+                            let searchName;
+                            let amEmbed;
                             let key = Object.keys(advancementData['minecraft:' + mode + '/' + object]['criteria'])
-                            let searchName = advancementData['minecraft:' + mode + '/' + object]['criteria'][key]
-                            searchName = searchName.replace(' +0000', '')
-
+                            console.log(key)
+                            for (let i=0; i < key.length; i++) {
+                                searchName = advancementData['minecraft:' + mode + '/' + object]['criteria'][key[i]]
+                                searchName = searchName.replace(' +0000', '');
                             console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedUser.tag + ' : ' + searchName)
-                            const amEmbed = baseEmbed.addField(`==================\n${mode} ${object}`, '**==================**').addField('completed on', searchName).addField('Criteria', key)
+                            amEmbed = baseEmbed.addField('Criteria', key[i]).addField('completed on', searchName, true)
+                            }
                             message.channel.send(amEmbed)
                         } catch (err) {
                             console.log('Error sending advancement.', err)

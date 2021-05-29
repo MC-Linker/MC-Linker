@@ -70,9 +70,11 @@ client.on('message', (message) => {
                         { name: 'FTP', value: client.commands.get('ftp').description },
                         { name: 'CONNECT', value: client.commands.get('connect').description },
                         { name: 'STATHELP', value: client.commands.get('stathelp').description },
-                        { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. \nIMPORTANT: Renaming the server will result in resetting all disabled stats!\nUSAGE: statdisable category/object <category/item/entity/block> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'},
-                        { name: 'STATENABLE', value: 'Enable a disabled statcategory/item/entity/block. \nUSAGE: statenable category/object <category/item/entity/block> \n EXAMPLE: e.g. STATDISABLE'},
-                        { name: 'STATSTATE', value: 'Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE'}
+                        { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. \nIMPORTANT: Renaming the server will result in resetting all disabled stats!\nUSAGE: statdisable category/object <category/item/entity/block **id**> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'},
+                        { name: 'STATENABLE', value: 'Enable a disabled statcategory/item/entity/block. \nUSAGE: statenable category/object <category/item/entity/block **id**> \n EXAMPLE: e.g. STATDISABLE'},
+                        { name: 'STATSTATE', value: 'Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE'},
+                        { name: 'ADVANCEMENTS', value: 'Look up your unlocked/completed advancements/recipes. \nUSAGE: am/advancements/advancement <advancementTab, do ^amhelp for list> <advancementid> \nEXAMPLE: ^am story iron_tools **OR** ^am adventure adventuring_time **OR** ^am recipes loom'},
+                        { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**'}
                     );
                 message.channel.send(HelpEmbed)
             } else {
@@ -115,14 +117,18 @@ client.on('message', (message) => {
 
         } else if(command === 'statenable') {
 
-            client.command.get('statenable').execute(message, args);
+            client.commands.get('statenable').execute(message, args);
 
         } else if (command === 'statstate') {
 
             client.commands.get('statstate').execute(message, args);
 
+        } else if (command === 'advancements' || command === 'advancement' || command === 'am') {
+
+            client.commands.get('advancements').execute(message, args);
+
         }
     })
-client.login(process.env.token)
+client.login(token)
 
     
