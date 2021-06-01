@@ -21,7 +21,7 @@ module.exports = {
 
         fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', async function(err, connectionJson) {
             if(err) {
-                message.reply(':warning: ' + 'User isnt connected!')
+                message.reply(':warning: ' + 'User [**' + taggedUser.tag + '**] isnt connected!')
                 console.log('Error reading file from disk: ', err);
                 return;
             }
@@ -30,7 +30,7 @@ module.exports = {
                 console.log('DisableJson [' + './stats/disable/category/' + message.guild.name + "_" + statType + '.json' + '] doesnt exist. Stat not disabled.')
             } else if(categoryDisabled === true) {
                 console.log('Category [' + statType + '] disabled.')
-                message.reply(':no_entry: ' + 'Category [' + statType + '] disabled!')
+                message.reply(':no_entry: ' + 'Category [**' + statType + '**] disabled!')
                 return;
             }
             let objectDisabled = fs.existsSync('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json')
@@ -38,7 +38,7 @@ module.exports = {
                 console.log('DisableJson [' + './stats/disable/object/' + message.guild.name + "_" + statObject + '.json' + '] doesnt exist. Stat not disabled.')
             } else if(objectDisabled === true) {
                 console.log('Object [' + statObject + '] disabled.')
-                message.reply(':no_entry:' + 'Object [' + statObject + '] disabled!')
+                message.reply(':no_entry:' + 'Object [**' + statObject + '**] disabled!')
                 return; 
             }
             

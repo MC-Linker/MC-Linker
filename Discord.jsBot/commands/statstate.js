@@ -82,45 +82,27 @@ module.exports = {
         console.log(message.member.user.tag + ' executed ^statstate ' + mode + ' ' + object + ' in ' + message.guild.name)
 
         if(mode === 'category') {
-            fs.readFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', 'utf8', (err, stateJson) => {
-                if(err) {
-                    message.reply('<:Checkmark:849224496232660992> Category [' + object + '] enabled!')
+            fs.access('./stats/disable/category/' + message.guild.name + "_" + object + '.json', fs.constants.F_OK, (err) => {
+                if (err) {
+                    message.reply('<:Checkmark:849224496232660992> Category [**' + object + '**] enabled!')
                     console.log('Could not find state file. Category [' + object + '] not disabled! ', err);
                     return;
                 }
-                try {
-                    const stateData = JSON.parse(stateJson);
-                        if (stateData.disable === 'disabled'){
-                            console.log('Category [' + object + '] disabled')
-                            message.reply(':no_entry: Category [' + object + '] disabled')
-                        } else {
-                            console.log("Error reading stateJsons.")
-                            message.reply('<:Error:849215023264169985> Error! Try again!')
-                        }
-                } catch (err) {
-                    console.log('Error parsing/reading stateJSON string: ', err);
-                    message.reply('<:Error:849215023264169985> Error! Try again!')
+                else {
+                    console.log('Category [' + object + '] disabled')
+                    message.reply(':no_entry: Category [**' + object + '**] disabled')
                 }
-            })
+            });
         } else if (mode === 'object') {
-            fs.readFile('./stats/disable/object/' +  message.guild.name + "_" + object + '.json', 'utf8', (err, stateJson) => {
-                if(err) {
-                    message.reply('<:Checkmark:849224496232660992> Object [' + object + '] enabled!')
+            fs.access('./stats/disable/object/' + message.guild.name + "_" + object + '.json', fs.constants.F_OK, (err) => {
+                if (err) {
+                    message.reply('<:Checkmark:849224496232660992> Object [**' + object + '**] enabled!')
                     console.log('Could not find state file. Object [' + object + '] not disabled! ', err);
                     return;
                 }
-                try {
-                    const stateData = JSON.parse(stateJson);
-                        if (stateData.disable === 'disabled'){
-                            console.log('Object [' + object + '] disabled')
-                            message.reply(':no_entry: Object [' + object + '] disabled')
-                        } else {
-                            console.log("Error reading/parsing stateJson string.")
-                            message.reply('<:Error:849215023264169985> Error! Try again!')
-                        }
-                } catch (err) {
-                    console.log('Error parsing stateJSON string: ', err);
-                    message.reply('<:Error:849215023264169985> Error! Try again!')
+                else {
+                    console.log('Object [' + object + '] disabled')
+                    message.reply(':no_entry: Object [**' + object + '**] disabled')
                 }
             })
         } else {

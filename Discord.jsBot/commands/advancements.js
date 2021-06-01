@@ -127,13 +127,13 @@ module.exports = {
                             message.channel.send(amEmbed)
                         } catch (err) {
                             console.log('Error sending advancement.', err)
-                            message.reply(':warning: Advancement not completed/unlocked or misspelled!')
+                            message.reply(':warning: Advancement [**' + mode + ' ' + object + '**] not completed/unlocked or misspelled!')
                         }
                     }
 
                 } catch (err) {
                     console.log('Error parsing advancementJSON string: ', err);
-                    message.reply(':warning: Advancement not completed/unlocked or misspelled!')
+                    message.reply(':warning: Advancement [**' + mode + ' ' + object + '**] not completed/unlocked or misspelled!')
                 }
             })
             })

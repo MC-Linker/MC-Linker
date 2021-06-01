@@ -18,9 +18,9 @@ module.exports = {
         if (!user) {
             return message.reply('<:Error:849215023264169985> ' + 'You need to tag a user!');
         } else if(isNaN(amount)) {
-            return message.reply('<:Error:849215023264169985> ' + 'thats not a number lol');
+            return message.reply('<:Error:849215023264169985> ' + 'Thats not a number lol');
         } else if (amount < 2 || amount > 100) {
-            return message.reply('<:Error:849215023264169985> ' + 'too high/low')
+            return message.reply('<:Error:849215023264169985> ' + 'Too high/low')
         }
 
         let loadingGif = new Discord.MessageAttachment('./loading.gif')

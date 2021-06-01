@@ -9,7 +9,7 @@ module.exports = {
         const object = (args[1]);
 
         if (!message.member.hasPermission('ADMINISTRATOR')) {
-            message.reply("You are not an Admin!")
+            message.reply(":warning: You are not an Admin!")
             console.log(message.member.user.tag + ' executed ^statdisable without admin in ' + message.guild.name)
             return;
         }
@@ -30,7 +30,7 @@ module.exports = {
                     message.reply("<:Error:849215023264169985> Error, please check ^help statdisable for correct usage.")
                 } else {
                     console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
-                    message.reply('<:Checkmark:849224496232660992> Disabling of ' + mode + ' ' + object + ' succesful.')
+                    message.reply('<:Checkmark:849224496232660992> Disabling of **' + mode + ' ' + object + '** succesful.')
                 }
             })
         } else if(mode === 'object') {
@@ -41,7 +41,7 @@ module.exports = {
                         message.reply("<:Error:849215023264169985> Error, please check ^help statdisable for correct usage.")
                     } else {
                         console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
-                        message.reply('<:Checkmark:849224496232660992> Disabling of ' + mode + ' ' + object + ' succesful.')
+                        message.reply('<:Checkmark:849224496232660992> Disabling of **' + mode + ' ' + object + '** succesful.')
                     }
                 })
         } else {

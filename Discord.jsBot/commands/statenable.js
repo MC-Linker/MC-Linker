@@ -9,7 +9,7 @@ module.exports = {
         const object = (args[1]);
 
         if (!message.member.hasPermission('ADMINISTRATOR')) {
-            message.reply("<:Error:849215023264169985> You are not an Admin!")
+            message.reply(":warning: You are not an Admin!")
             console.log(message.member.user.tag + ' executed ^statenable without admin in ' + message.guild.name)
             return;
         }
@@ -23,7 +23,7 @@ module.exports = {
                     message.reply("<:Error:849215023264169985> Error, please check ^help statenable for correct usage.")
                 }
                 console.log('Deleted disableJson: ' + message.guild.name + '_' + object + '.json')
-                message.reply('<:Checkmark:849224496232660992> Category ['  + object + '] succesfully enabled!')
+                message.reply('<:Checkmark:849224496232660992> Category [**'  + object + '**] succesfully enabled!')
             }));
         } else if (mode === 'object') {
             fs.unlink('./stats/disable/object/' + message.guild.name + '_' + object + '.json', (err => {
@@ -32,7 +32,7 @@ module.exports = {
                     message.reply("<:Error:849215023264169985> Error, please check ^help for correct usage.")
                 }
                 console.log('Deleted disableJson: ' + message.guild.name + '_' + object + '.json')
-                message.reply('<:Checkmark:849224496232660992> Object ['  + object + '] succesfully enabled!')
+                message.reply('<:Checkmark:849224496232660992> Object [**'  + object + '**] succesfully enabled!')
             }));
         } else {
             message.reply("<:Error:849215023264169985> Wrong Usage! Check ^help statenable for correct usage.")
