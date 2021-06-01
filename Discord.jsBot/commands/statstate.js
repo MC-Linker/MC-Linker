@@ -1,6 +1,6 @@
 module.exports = {
     name: 'statstate',
-    description: "Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE",
+    description: 'Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE',
     execute(message, args){
 
         const Discord = require('discord.js');
@@ -10,7 +10,7 @@ module.exports = {
         const object = (args[1]);
 
         if (!mode) {
-            console.log(message.member.user.tag + ' executed ^statstate without args. Showing all disabled stats.')
+            console.log(message.member.user.tag + ' executed ^statstate without args in ' + message.guild.name + '. Showing all disabled stats.')
 
             const categoryFiles = fs.readdirSync('./stats/disable/category')
             const objectFiles = fs.readdirSync('./stats/disable/object')
@@ -35,7 +35,7 @@ module.exports = {
 
             if(categoryFiles.length === 0 && objectFiles.length === 0) {
                 console.log('No disabled stats.')
-                message.reply('No disabled stats :)')
+                message.reply('<:Checkmark:849224496232660992> No disabled stats :)')
                 return;
             } else if(categoryFiles.length === 0) {
                 const stateEmbed = new Discord.MessageEmbed()
@@ -79,12 +79,12 @@ module.exports = {
             return;
         }
 
-        console.log(message.member.user.tag + ' executed ^statstate ' + mode + ' ' + object)
+        console.log(message.member.user.tag + ' executed ^statstate ' + mode + ' ' + object + ' in ' + message.guild.name)
 
         if(mode === 'category') {
             fs.readFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', 'utf8', (err, stateJson) => {
                 if(err) {
-                    message.reply('Category [' + object + '] enabled!')
+                    message.reply('<:Checkmark:849224496232660992> Category [' + object + '] enabled!')
                     console.log('Could not find state file. Category [' + object + '] not disabled! ', err);
                     return;
                 }
@@ -92,20 +92,20 @@ module.exports = {
                     const stateData = JSON.parse(stateJson);
                         if (stateData.disable === 'disabled'){
                             console.log('Category [' + object + '] disabled')
-                            message.reply('Category [' + object + '] disabled')
+                            message.reply(':no_entry: Category [' + object + '] disabled')
                         } else {
-                            console.log("Error reading stateJson.")
-                            message.reply('Error! Try again!')
+                            console.log("Error reading stateJsons.")
+                            message.reply('<:Error:849215023264169985> Error! Try again!')
                         }
                 } catch (err) {
                     console.log('Error parsing/reading stateJSON string: ', err);
-                    message.reply('Error! Try again!')
+                    message.reply('<:Error:849215023264169985> Error! Try again!')
                 }
             })
         } else if (mode === 'object') {
             fs.readFile('./stats/disable/object/' +  message.guild.name + "_" + object + '.json', 'utf8', (err, stateJson) => {
                 if(err) {
-                    message.reply('Object [' + object + '] enabled!')
+                    message.reply('<:Checkmark:849224496232660992> Object [' + object + '] enabled!')
                     console.log('Could not find state file. Object [' + object + '] not disabled! ', err);
                     return;
                 }
@@ -113,18 +113,19 @@ module.exports = {
                     const stateData = JSON.parse(stateJson);
                         if (stateData.disable === 'disabled'){
                             console.log('Object [' + object + '] disabled')
-                            message.reply('Object [' + object + '] disabled')
+                            message.reply(':no_entry: Object [' + object + '] disabled')
                         } else {
                             console.log("Error reading/parsing stateJson string.")
-                            message.reply('Error! Try again!')
+                            message.reply('<:Error:849215023264169985> Error! Try again!')
                         }
                 } catch (err) {
                     console.log('Error parsing stateJSON string: ', err);
-                    message.reply('Error! Try again!')
+                    message.reply('<:Error:849215023264169985> Error! Try again!')
                 }
             })
         } else {
-            message.reply('Wrong Usage! Check ^help for correct usage.')
+            console.log("Arg neither object or category.")
+            message.reply('<:Error:849215023264169985> Wrong Usage! Check ^help statstate for correct usage.')
         }
     }
 }

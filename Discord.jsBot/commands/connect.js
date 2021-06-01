@@ -15,8 +15,8 @@ module.exports = {
         }
         
         getId(ingameName).then(id => {
-            message.reply(`Connected with Id: ${id}`)
-            console.log(message.member.user.tag + " connected with ID: " + id)
+            message.reply(`<:Checkmark:849224496232660992> Connected with uuid: ${id}`)
+            console.log(message.member.user.tag + " connected with uuid: " + id + ' in ' + message.guild.name)
         })
 
         getId(ingameName).then(id => {

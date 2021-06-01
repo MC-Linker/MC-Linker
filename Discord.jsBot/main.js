@@ -16,11 +16,6 @@ client.on("guildCreate", guild => {
     console.log("Joined a new guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' servers!');
 })
 
-
-async function sleep(msec) {
-    return new Promise(resolve => setTimeout(resolve, msec));
-} 
-
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
 for(const file of commandFiles){
@@ -53,7 +48,7 @@ client.on('message', (message) => {
 
             if(!command) {
 
-                console.log(message.member.user.tag + ' executed ^help without args.')
+                console.log(message.member.user.tag + ' executed ^help without args in ' + message.guild.name)
 
                 const HelpEmbed = new Discord.MessageEmbed()
                     .setTitle('Help Menu')
@@ -62,19 +57,19 @@ client.on('message', (message) => {
                     .setColor('#000000')
                     .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .addFields(
-                        { name: 'PREFIX', value: 'This Bot uses the PREFIX: **^** \nIMPORTANT: Use this PREFIX at the start of every command.'},
-                        { name: 'HELP', value: 'Useful information about EVERY command. \nUSAGE: help'},
+                        { name: 'PREFIX', value: 'This Bot uses the PREFIX: **^** \nIMPORTANT: Use this PREFIX at the start of every command.' },
+                        { name: 'HELP', value: 'Useful information about EVERY command. \nUSAGE: help' },
                         { name: 'RANDOM', value: client.commands.get('random').description },
                         { name: 'STATS', value: client.commands.get('stats').description },
                         { name: 'PINGCHAIN', value: client.commands.get('pingchain').description },
                         { name: 'FTP', value: client.commands.get('ftp').description },
                         { name: 'CONNECT', value: client.commands.get('connect').description },
                         { name: 'STATHELP', value: client.commands.get('stathelp').description },
-                        { name: 'STATDISABLE', value: 'Disable a specific statcategory/item/entity/block. \nIMPORTANT: Renaming the server will result in resetting all disabled stats!\nUSAGE: statdisable category/object <category/item/entity/block **id**> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot'},
-                        { name: 'STATENABLE', value: 'Enable a disabled statcategory/item/entity/block. \nUSAGE: statenable category/object <category/item/entity/block **id**> \n EXAMPLE: e.g. STATDISABLE'},
-                        { name: 'STATSTATE', value: 'Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE'},
-                        { name: 'ADVANCEMENTS', value: 'Look up your unlocked/completed advancements/recipes. \nUSAGE: am/advancements/advancement <advancementTab, do ^amhelp for list> <advancementid> \nEXAMPLE: ^am story iron_tools **OR** ^am adventure adventuring_time **OR** ^am recipes loom'},
-                        { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**'}
+                        { name: 'STATDISABLE', value: client.commands.get('statdisable'.description )},
+                        { name: 'STATENABLE', value: client.commands.get('statenable').description },
+                        { name: 'STATSTATE', value: client.commands.get('statenable').description },
+                        { name: 'ADVANCEMENTS', value: client.commands.get('advancements').description },
+                        { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' }
                     );
                 message.channel.send(HelpEmbed)
             } else {
@@ -94,7 +89,7 @@ client.on('message', (message) => {
 
                 } catch (err) {
                     console.log("Command [" + command + "] doesn't exist.");
-                    message.channel.send("Command [" + command + "] doesn't exist.");
+                    message.channel.send(":warning: Command [" + command + "] doesn't exist.");
                     return;
                 }
             }
@@ -111,11 +106,11 @@ client.on('message', (message) => {
 
             client.commands.get('ftp').execute(message, args);
 
-        } else if(command === 'statdisable') {
+        } else if(command === 'statdisable' || command === 'statsdisable' || command === 'sd') {
 
             client.commands.get('statdisable').execute(message, args);
 
-        } else if(command === 'statenable') {
+        } else if(command === 'statenable' || command === 'statsenable' || command === 'se') {
 
             client.commands.get('statenable').execute(message, args);
 
@@ -129,6 +124,6 @@ client.on('message', (message) => {
 
         }
     })
-client.login(token)
+client.login(process.env.token)
 
     

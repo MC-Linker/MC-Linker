@@ -2,6 +2,9 @@ module.exports = {
     name: 'ftp',
     description: "Connect your minecraft Server with the bot. Can only be used by Admins. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to world folder. Default Path: minecraft/WORLDNAME>",
     execute(message, args){
+
+        const fs = require("fs")
+
         let host = (args[0]);
         let user = (args[1]);
         let password = (args[2]);
@@ -9,8 +12,8 @@ module.exports = {
         let path = (args[4])
 
         if (!message.member.hasPermission('ADMINISTRATOR')) {
-            message.reply("You are not an Admin!")
-            console.log(message.member.user.tag + ' executed ^ftp without admin!')
+            message.reply(':warning: ' + "You are not an Admin!")
+            console.log(message.member.user.tag + ' executed ^ftp without admin in ' + message.guild.name)
             return;
         }
 
@@ -35,7 +38,7 @@ module.exports = {
                 console.log('Error writing file', err)
             } else {
                 console.log('Successfully wrote file')
-                message.reply('Succesfully connected with server.')
+                message.reply('<:Checkmark:849224496232660992> Succesfully connected with server.')
             }
         })
     }

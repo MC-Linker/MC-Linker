@@ -1,6 +1,6 @@
 module.exports = {
     name: 'statdisable',
-    description: "Disable a specific statcategory/item/entity/block. \nIMPORTANT: Renaming the server will result in resetting all disabled stats!\nUSAGE: statdisable category/object <category/item/entity/block> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot",
+    description: 'Disable a specific statcategory/item/entity/block. \nIMPORTANT: Renaming the server will result in resetting all disabled stats!\nUSAGE: statdisable category/object <category/item/entity/block **id**> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot',
     execute(message, args){
 
         const fs = require('fs');
@@ -10,11 +10,11 @@ module.exports = {
 
         if (!message.member.hasPermission('ADMINISTRATOR')) {
             message.reply("You are not an Admin!")
-            console.log(message.member.user.tag + ' executed ^statdisable without admin!')
+            console.log(message.member.user.tag + ' executed ^statdisable without admin in ' + message.guild.name)
             return;
         }
 
-        console.log(message.member.user.tag + ' executed ^statdisable ' + mode + ' ' + object)
+        console.log(message.member.user.tag + ' executed ^statdisable ' + mode + ' ' + object + ' in ' + message.guild.name)
 
         const disableJson = {
             "disable": "disabled" 
@@ -27,10 +27,10 @@ module.exports = {
             fs.writeFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', disableString, err => {
                 if (err) {
                     console.log('Error writing disableJSON ', err)
-                    message.reply("Error, please check ^help for correct usage.")
+                    message.reply("<:Error:849215023264169985> Error, please check ^help statdisable for correct usage.")
                 } else {
                     console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
-                    message.reply('Disabling of ' + mode + ' ' + object + ' succesful.')
+                    message.reply('<:Checkmark:849224496232660992> Disabling of ' + mode + ' ' + object + ' succesful.')
                 }
             })
         } else if(mode === 'object') {
@@ -38,14 +38,14 @@ module.exports = {
                 fs.writeFile('./stats/disable/object/' + message.guild.name + "_" + object + '.json', disableString, err => {
                     if (err) {
                         console.log('Error writing disableJSON ', err)
-                        message.reply("Error, please check ^help for correct usage.")
+                        message.reply("<:Error:849215023264169985> Error, please check ^help statdisable for correct usage.")
                     } else {
                         console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
-                        message.reply('Disabling of ' + mode + ' ' + object + ' succesful.')
+                        message.reply('<:Checkmark:849224496232660992> Disabling of ' + mode + ' ' + object + ' succesful.')
                     }
                 })
         } else {
-            message.reply("Wrong Usage!")
+            message.reply("<:Error:849215023264169985> Wrong Usage!")
             return;
         }
     }
