@@ -15,7 +15,7 @@ module.exports = {
         }
         
         getId(ingameName).then(id => {
-            message.reply(`<:Checkmark:849224496232660992> Connected with uuid: **${id}**`)
+            message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft-username: **${ingameName}** and UUID: **${id}**`)
             console.log(message.member.user.tag + " connected with uuid: " + id + ' in ' + message.guild.name)
         })
 
