@@ -114,7 +114,7 @@ client.on('message', (message) => {
 
             client.commands.get('statenable').execute(message, args);
 
-        } else if (command === 'statstate') {
+        } else if (command === 'statstate' || command === 'ss' || command === 'statsstate' || command === 'statstates' || command === 'statsstates') {
 
             client.commands.get('statstate').execute(message, args);
 
@@ -124,6 +124,6 @@ client.on('message', (message) => {
 
         }
     })
-client.login(process.env.token)
+client.login(token)
 
     
