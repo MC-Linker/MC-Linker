@@ -1,8 +1,6 @@
-const { replace } = require('lodash');
-
 module.exports = {
     name: 'advancements',
-    description: "Look at your and other member's minecraft server advancements. Advancements will be updated every time the server restarts. \nUSAGE: advancements @<user>",
+    description: 'Look up your unlocked/completed recipes/advancements. \nUSAGE: am/advancements/advancement <advancementTab, ^amhelp for list> <advancementid> \nEXAMPLE: ^am story iron_tools **OR** ^am adventure adventuring_time **OR** ^am recipes loom',
     execute(message, args) {
 
         const fs = require('fs');
@@ -10,8 +8,8 @@ module.exports = {
         const Discord = require('discord.js')
 
         if (!message.mentions.users.size) {
-            console.log(message.member.user.tag + ' executed ^advancements without user.')
-            message.reply('you need to tag a user!');
+            console.log(message.member.user.tag + ' executed ^advancements without user in ' + message.guild.name)
+            message.reply(':warning: ' + 'You need to tag a user!');
             return;
         }
 
@@ -19,11 +17,11 @@ module.exports = {
         const mode = (args[1]);
         const object = (args[2]);
 
-        console.log(message.member.user.tag + ' executed ^advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedUser.tag);
+        console.log(message.member.user.tag + ' executed ^advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedUser.tag + ' in ' + message.guild.name);
 
         fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', (err, connectionJson) => {
             if(err) {
-                message.reply('User isnt connected!')
+                message.reply(':warning: ' + 'User isnt connected!')
                 console.log('Error reading file from disk: ', err);
                 return;
             }
@@ -37,7 +35,7 @@ module.exports = {
             fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', async function(err, ftpJson) {
                 if(err) {
                         console.log('Error reading file from disk: ', err);
-                        message.reply('Could not find ftpcredentials. Please contact a server-admin.')
+                        message.reply('<:Error:849215023264169985> ' + 'Could not find ftpcredentials. Please contact a server-admin.')
                         return;
                 }
                 const ftpData = JSON.parse(ftpJson);
@@ -51,14 +49,14 @@ module.exports = {
                 return await new Promise((resolve, reject) => {
                     ftpClient.on('error', function(err) {
                         console.log('Error! ', err);
-                        message.reply('Could not connect to server.')
+                        message.reply('<:Error:849215023264169985> ' + 'Could not connect to server.')
                         reject('error')
                     })
                     ftpClient.on('ready', function() {
                         ftpClient.get(ftpData.path + '/advancements/' + uuidv4 + '.json', function(err, stream) {
                             if(err) {
-                                console.log('Could not download advancements. ', err);
-                                message.reply('Could not download advancements. ')
+                                console.log('Error downloading advancements. ', err);
+                                message.reply('<:Error:849215023264169985> ' + 'Error downloading advancements. ')
                                 reject('error')
                             }
                             stream.once('close', function() {
@@ -78,7 +76,7 @@ module.exports = {
                     });
                     } catch (err) {
                         console.log('Could not connect to server. ', err);
-                        message.reply('Could not connect to server.')
+                        message.reply('<:Error:849215023264169985> ' + 'Could not connect to server.')
                         reject('error')
                     }  
                 })  
@@ -87,7 +85,7 @@ module.exports = {
 
             fs.readFile('./advancements/' + uuidv4 + '.json', 'utf8', (err, advancementJson) => {
                 if(err) {
-                    message.reply('Could not find advancement file. Member most likely never joined the server.')
+                    message.reply(':warning: ' + 'Could not find advancement file. Member most likely never joined the server.')
                     console.log('Error reading stat file from disk: ', err);
                     return;
                 }
@@ -103,49 +101,39 @@ module.exports = {
 
                     if(mode === 'recipes') {
 
-                        const creativeTab = ['tools', 'food', 'decorations', 'building_blocks', 'redstone', 'combat', 'transportation', 'misc', 'brewing']
-                        let key;
-                        let undefinedCounter = 0;
+                        let allKeys = Object.keys(advancementData)
+                        const filteredKeys = allKeys.filter(key => {
+                            return key.startsWith('minecraft:' + mode + '/') && key.endsWith('/' + object);
+                        }).join("")
+                        let criteria = Object.keys(advancementData[filteredKeys]['criteria']).join("")
+                        let searchName = advancementData[filteredKeys]['criteria'][criteria]
+                        searchName = searchName.replace(' +0000', '')
 
-                        for (let i = 0; i<=creativeTab.length; i++) {
-                            if(key === undefined) undefinedCounter++;
-                            if(undefinedCounter === 10) {
-                                console.log('Couldnt find recipe.'); 
-                                message.reply('Advancement not completed or misspelled!')
-                            }
-                            try {
-                                key = Object.keys(advancementData['minecraft:' + mode + '/' + creativeTab[i] + '/' + object]['criteria'])
-                                let searchName = advancementData['minecraft:' + mode + '/' + creativeTab[i] + '/' + object]['criteria'][key]
-                                searchName = searchName.replace(' +0000', '')
-
-                                console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedUser.tag + ' : ' + searchName)
-                                const amEmbed = baseEmbed.addField('Criteria', key).addField('unlocked on', searchName, true)
-                                message.channel.send(amEmbed)
-                            } catch (err) {
-                            }
-                        } 
+                        console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedUser.tag + ' : ' + searchName)
+                        const amEmbed = baseEmbed.addField('Criteria', criteria).addField('unlocked on', searchName)
+                        message.channel.send(amEmbed)
                     } else {
                         try {
                             let searchName;
                             let amEmbed;
                             let key = Object.keys(advancementData['minecraft:' + mode + '/' + object]['criteria'])
-                            console.log(key)
                             for (let i=0; i < key.length; i++) {
                                 searchName = advancementData['minecraft:' + mode + '/' + object]['criteria'][key[i]]
+                                key[i] = key[i].replace('minecraft:', '')
                                 searchName = searchName.replace(' +0000', '');
-                            console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedUser.tag + ' : ' + searchName)
-                            amEmbed = baseEmbed.addField('Criteria', key[i]).addField('completed on', searchName, true)
+                                amEmbed = baseEmbed.addField('Criteria', key[i], true).addField('completed on', searchName, true).addField('\u200b', '\u200b', true)
                             }
+                            console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedUser.tag + ' : ' + searchName)
                             message.channel.send(amEmbed)
                         } catch (err) {
                             console.log('Error sending advancement.', err)
-                            message.reply('Advancement not completed or misspelled!')
+                            message.reply(':warning: Advancement not completed/unlocked or misspelled!')
                         }
                     }
 
                 } catch (err) {
                     console.log('Error parsing advancementJSON string: ', err);
-                    message.reply('Advancement not completed or misspelled!')
+                    message.reply(':warning: Advancement not completed/unlocked or misspelled!')
                 }
             })
             })
