@@ -91,10 +91,11 @@ module.exports = {
                 }
 
                 const baseEmbed = new Discord.MessageEmbed()
-                    .setTitle('Advancement')
                     .setColor('#730A85')
                     .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .addField(`=======================\n${mode} ${object}`, '**=======================**');
+                    .setTitle(taggedUser.tag, 'Advancements')
+                    .addField(`=======================\n${mode} ${object}`, '**=======================**')
+                    .setImage('https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png')
 
                 try {
                     const advancementData = JSON.parse(advancementJson);

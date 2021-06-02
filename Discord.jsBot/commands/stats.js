@@ -124,12 +124,21 @@ module.exports = {
                     let searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
                         if (searchName) {
                             if(statType === 'custom') {
-                                message.reply('<:alexPick:848151260803629078> ' + taggedUser.tag + ' **' + statObject + ', ' + searchName + '**')
+                                const statEmbed = new Discord.MessageEmbed()
+                                    .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
+                                    .addField(taggedUser.tag, '**' + statObject + ' ' + searchName + '**')
+                                message.channel.send(statEmbed)
                             } else if (statType === 'killed_by') {
-                                message.reply('<:alexPick:848151260803629078> ' + taggedUser.tag + ' was killed **' + searchName + '** times by a **' + statObject + '**')
+                                const statEmbed = new Discord.MessageEmbed()
+                                    .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
+                                    .addField(taggedUser.tag, 'was killed **' + searchName + '** times by a **' + statObject + '**')
+                                message.channel.send(statEmbed)
                             } else {
                                 console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
-                                message.reply('<:alexPick:848151260803629078> ' + taggedUser.tag + ' has **'  + statType + ' ' + searchName + ' ' + statObject + 's**')
+                                const statEmbed = new Discord.MessageEmbed()
+                                    .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
+                                    .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + '**')
+                                message.channel.send(statEmbed)
                             }    
                         } else {
                             console.log("No Match found!")

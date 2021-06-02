@@ -96,7 +96,7 @@ client.on('message', (message) => {
 
         } else if(command === 'stathelp') {
 
-            client.commands.get('stathelp').execut(message, args);
+            client.commands.get('stathelp').execute(message, args);
 
         } else if(command === 'connect') {
 
