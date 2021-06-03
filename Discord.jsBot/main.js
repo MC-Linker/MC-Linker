@@ -8,12 +8,12 @@ const fs = require('fs');
 
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + '!')
-    console.log('Bot on ' + client.guilds.cache.size + ' servers!')
+    console.log('Bot on ' + client.guilds.cache.size + ' server!')
     client.user.setActivity('^help', {type: "LISTENING"})
 })
 
 client.on("guildCreate", guild => {
-    console.log("Joined a new guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' servers!');
+    console.log("Joined a new guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' server!');
 })
 
 client.commands = new Discord.Collection();

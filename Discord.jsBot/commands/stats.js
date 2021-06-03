@@ -72,13 +72,14 @@ module.exports = {
                             password = ftpData.password
                         } catch (err) {
                             console.log('Error reading ftpFile from disk: ', err);
+                            message.reply('<:Error:849215023264169985> Could not read serverFile.')
                             reject('error');
                         }
 
                         const ftpClient = new ftp();
                         ftpClient.on('error', function(err) {
                             console.log('Error! ', err);
-                            message.reply('<:Error:849215023264169985> ' + 'Could not connect to server.')
+                            message.reply('<:Error:849215023264169985> Could not connect to server.')
                             reject('error')
                         })
                         ftpClient.on('ready', function() {
@@ -119,14 +120,36 @@ module.exports = {
                     console.log('Error reading stat file from disk: ', err);
                     return;
                 }
-                try {
-                    const statData = JSON.parse(statJson);
-                    let searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
+                fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, ftpJson) => {
+                    if(err) {
+                    message.reply(':warning: ' + 'Could not find ftp file. Please contact a server admin.')
+                    console.log('Error reading ftp file from disk: ', err);
+                    return;
+                    }
+
+                    try {
+
+                        let emoji;
+                        try {
+                            emoji = message.client.emojis.cache.find(emoji => emoji.name === statObject).toString();
+                        } catch (err) {
+                            console.log('No emoji available for ' + statObject)
+                            emoji = '';
+                        }
+
+                        const ftpData = JSON.parse(ftpJson);
+                        const statData = JSON.parse(statJson);
+                        const version = ftpData.version;
+
+                        let searchName;
+                        if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
+                        else if(version === '1.12' || version === '1.11' || version === '1.10' || version === '1.9' || version === '1.8' || version === '1.7') searchName = statData["stat." + statType + '.minecraft.' + statObject]
+
                         if (searchName) {
                             if(statType === 'custom') {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                    .addField(taggedUser.tag, '**' + statObject + ' ' + searchName + '**')
+                                    .addField(taggedUser.tag, '**' + statObject + ' ' + searchName + '** ')
                                 message.channel.send(statEmbed)
                             } else if (statType === 'killed_by') {
                                 const statEmbed = new Discord.MessageEmbed()
@@ -137,17 +160,18 @@ module.exports = {
                                 console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                    .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + '**')
+                                    .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's** ' + emoji)
                                 message.channel.send(statEmbed)
                             }    
                         } else {
                             console.log("No Match found!")
                             message.reply(':warning: ' + 'No Match found! Stat is either 0 or mispelled!')
                         }
-                } catch (err) {
-                    console.log('Error parsing Stat JSON string: ', err);
-                    message.reply('<:Error:849215023264169985> ' + taggedUser.tag + ' has never done anything in this category.')
-                }
+                    } catch (err) {
+                        console.log('Error parsing Stat JSON string: ', err);
+                        message.reply('<:Error:849215023264169985> ' + taggedUser.tag + ' has never done anything in this category.')
+                    }
+                })
             })
         })
     }
