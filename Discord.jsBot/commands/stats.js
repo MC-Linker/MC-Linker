@@ -161,10 +161,7 @@ module.exports = {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's** ' + emoji)
-                                    // @ts-ignore
-                                    .setImage('./minecraftTextures/' + statObject + '.png')
-                                    .setAuthor('a' ,'./minecraftTextures/' + statObject + '.png')
-                                    .setFooter('a', './minecraftTextures/' + statObject + '.png')
+                                    .setImage('https://github.com/Lianecx/SMPBot-Private-Heroku/tree/smpbottest/Discord.jsBot/minecraftTextures/' + statObject + '.png')
                                 message.channel.send(statEmbed)
                             }    
                         } else {
