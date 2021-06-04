@@ -93,7 +93,7 @@ module.exports = {
                 const baseEmbed = new Discord.MessageEmbed()
                     .setColor('#730A85')
                     .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .setTitle(taggedUser.tag, 'Advancements')
+                    .setTitle(taggedUser.tag)
                     .addField(`=======================\n${mode} ${object}`, '**=======================**')
                     .setImage('https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png')
 
