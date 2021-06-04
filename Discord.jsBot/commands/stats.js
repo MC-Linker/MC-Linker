@@ -162,7 +162,7 @@ module.exports = {
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's** ' + emoji)
                                     // @ts-ignore
-                                    .attachFiles('./minecraftTextures/' + statObject)
+                                    .attachFiles('./minecraftTextures/' + statObject + '.png')
                                 message.channel.send(statEmbed)
                             }    
                         } else {
