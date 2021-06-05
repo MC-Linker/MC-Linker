@@ -132,7 +132,7 @@ module.exports = {
                         const statData = JSON.parse(statJson);
                         const version = ftpData.version;
 
-                        const imageExists = fs.existsSync('./minecraftTextures/' + statObject + '.png')
+                        const imageExists = fs.existsSync('./images/' + statObject + '.png')
 
                         let searchName;
                         if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
@@ -146,7 +146,7 @@ module.exports = {
                                     if(imageExists === false) {
                                         console.log('No Image available for ' + statObject)
                                     } else {
-                                        statEmbed.attachFiles(['./minecraftTextures/' + statObject + '.png'])
+                                        statEmbed.attachFiles(['./images/' + statObject + '.png'])
                                         statEmbed.setImage('attachment://' + statObject + '.png')
                                     }
                                 message.channel.send(statEmbed)
@@ -157,7 +157,7 @@ module.exports = {
                                     if(imageExists === false) {
                                         console.log('No Image available for ' + statObject)
                                     } else {
-                                        statEmbed.attachFiles(['./minecraftTextures/' + statObject + '.png'])
+                                        statEmbed.attachFiles(['./images/' + statObject + '.png'])
                                         statEmbed.setImage('attachment://' + statObject + '.png')
                                     }
                                 message.channel.send(statEmbed)
@@ -169,7 +169,7 @@ module.exports = {
                                     if(imageExists === false) {
                                         console.log('No Image available for ' + statObject)
                                     } else {
-                                        statEmbed.attachFiles(['./minecraftTextures/' + statObject + '.png'])
+                                        statEmbed.attachFiles(['./images/' + statObject + '.png'])
                                         statEmbed.setImage('attachment://' + statObject + '.png')
                                     }
                                      
