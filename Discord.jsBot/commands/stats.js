@@ -131,11 +131,8 @@ module.exports = {
                         const ftpData = JSON.parse(ftpJson);
                         const statData = JSON.parse(statJson);
                         const version = ftpData.version;
-                        
+
                         const imageExists = fs.existsSync('./minecraftTextures/' + statObject + '.png')
-                        if(imageExists === false) {
-                            console.log('No Image available for ' + statObject)
-                        }
 
                         let searchName;
                         if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
@@ -146,18 +143,29 @@ module.exports = {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, '**' + statObject + ' ' + searchName + '** ')
+                                    if(imageExists === false) {
+                                        console.log('No Image available for ' + statObject)
+                                    } else {
+                                        statEmbed.attachFiles(['./minecraftTextures/' + statObject + '.png'])
+                                        statEmbed.setImage('attachment://' + statObject + '.png')
+                                    }
                                 message.channel.send(statEmbed)
                             } else if (statType === 'killed_by') {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, 'was killed **' + searchName + '** times by a **' + statObject + '**')
+                                    if(imageExists === false) {
+                                        console.log('No Image available for ' + statObject)
+                                    } else {
+                                        statEmbed.attachFiles(['./minecraftTextures/' + statObject + '.png'])
+                                        statEmbed.setImage('attachment://' + statObject + '.png')
+                                    }
                                 message.channel.send(statEmbed)
                             } else {
                                 console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**');
-                                    const imageExists = fs.existsSync('./minecraftTextures/' + statObject + '.png')
                                     if(imageExists === false) {
                                         console.log('No Image available for ' + statObject)
                                     } else {
