@@ -126,16 +126,7 @@ module.exports = {
                     console.log('Error reading ftp file from disk: ', err);
                     return;
                     }
-
                     try {
-
-                        let image;
-                        try {
-                            image = ['./minecraftTextures/' + statObject + '.png']
-                        } catch (err) {
-                            console.log('No image available for ' + statObject)
-                            image = '';
-                        }
 
                         const ftpData = JSON.parse(ftpJson);
                         const statData = JSON.parse(statJson);
@@ -161,8 +152,12 @@ module.exports = {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**')
-                                    .attachFiles(image)
-                                    .setImage('attachment://' + statObject + '.png')
+                                try{
+                                    statEmbed.attachFiles(['./minecraftTextures/' + statObject + '.png'])
+                                    statEmbed.setImage('attachment://' + statObject + '.png')
+                                } catch (err) {
+                                    console.log('No Image available for ' + statObject)
+                                }     
                                 message.channel.send(statEmbed)
                             }    
                         } else {
