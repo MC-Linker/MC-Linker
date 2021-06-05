@@ -131,7 +131,7 @@ module.exports = {
 
                         let image;
                         try {
-                            image = new Discord.MessageAttachment('./stats/minecraftTextures/' + statObject + '.png')
+                            image = new Discord.MessageAttachment['./minecraftTextures/' + statObject + '.png']
                         } catch (err) {
                             console.log('No image available for ' + statObject)
                             image = '';
