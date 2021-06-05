@@ -129,12 +129,12 @@ module.exports = {
 
                     try {
 
-                        let emoji;
+                        let image;
                         try {
-                            emoji = message.client.emojis.cache.find(emoji => emoji.name === statObject).toString();
+                            image = new Discord.MessageAttachment('./stats/minecraftTextures/' + statObject + '.png')
                         } catch (err) {
-                            console.log('No emoji available for ' + statObject)
-                            emoji = '';
+                            console.log('No image available for ' + statObject)
+                            image = '';
                         }
 
                         const ftpData = JSON.parse(ftpJson);
@@ -161,7 +161,7 @@ module.exports = {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's** ' + emoji)
-                                    .attachFiles(['./minecraftTextures/' + statObject + '.png'])
+                                    .attachFiles(image)
                                     .setImage('attachment://' + statObject + '.png')
                                 message.channel.send(statEmbed)
                             }    
