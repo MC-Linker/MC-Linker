@@ -161,7 +161,8 @@ module.exports = {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's** ' + emoji)
-                                    .setImage('https://raw.githubusercontent.com/Lianecx/SMPBot-Private-Heroku/smpbottest/Discord.jsBot/minecraftTextures/gold_ingot.png?token=AUDC67FVNCWQVXXFAPIUWCDAXMYD6')
+                                    .attachFiles(['./minecraftTextures/' + statObject])
+                                    .setImage('attachment://' + statObject)
                                 message.channel.send(statEmbed)
                             }    
                         } else {
