@@ -160,7 +160,7 @@ module.exports = {
                                 console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                    .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's** ' + emoji)
+                                    .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**')
                                     .attachFiles(image)
                                     .setImage('attachment://' + statObject + '.png')
                                 message.channel.send(statEmbed)
