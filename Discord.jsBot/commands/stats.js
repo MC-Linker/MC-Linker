@@ -6,7 +6,6 @@ module.exports = {
         const fs = require('fs');
         const ftp = require('ftp')
         const Discord = require('discord.js')
-        const client = new Discord.Client();
 
         if (!message.mentions.users.size) {
             console.log(message.member.user.tag + ' executed ^stats without user in ' + message.guild.name)
