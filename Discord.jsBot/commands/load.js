@@ -9,15 +9,12 @@ module.exports = {
 
 		let width;
 		let height;
-		/**
-		 * @param {string} url
-		 */
-		async function getSize(url) {
-			let size = await probe(url);
+		async function getSize() {
+			let size = await probe('https://cdn.discordapp.com/attachments/844493685244297226/850708455156482048/cooked_mutton.png');
 			width = size.width;
 			height = size.height;
 		}
-		getSize(args[0]);
+		getSize();
 		
 		console.log(height + 'x' + width)
 		//const loading = Canvas.createCanvas(baseWidth * 2, baseHeight * 2);
