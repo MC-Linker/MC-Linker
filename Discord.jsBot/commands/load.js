@@ -10,7 +10,7 @@ module.exports = {
 		const baseHeight = base.naturalHeight
 		console.log(baseWidth + 'x' + baseHeight)
 
-		const loading = Canvas.createCanvas(baseWidth * 2, baseHeight * 2);
-		const context = loading.getContext('2d');
+		//const loading = Canvas.createCanvas(baseWidth * 2, baseHeight * 2);
+		//const context = loading.getContext('2d');
 	}
 }
