@@ -9,6 +9,9 @@ module.exports = {
 
 		let width;
 		let height;
+		/**
+		 * @param {string} url
+		 */
 		async function getSize(url) {
 			let size = await probe(url);
 			width = size.width;
