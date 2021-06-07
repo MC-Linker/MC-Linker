@@ -10,9 +10,8 @@ module.exports = {
 
 		let height;
 		let width;
-	
-		function getImgSize() {
-			const downloadImg = function(url, filename, callback){
+		function getImgSize(url) {
+			const downloadImg = function(filename, callback){
 			request.head(url, function(err, res, body){
 				if(err) {
 					console.log(err)
@@ -24,7 +23,7 @@ module.exports = {
 			});
 			};
 			
-			downloadImg(args[0], './images/loadImage.png', function(){
+			downloadImg('./images/loadImage.png', function(){
 				console.log('Downloaded image.');
 			});
 
@@ -33,10 +32,10 @@ module.exports = {
 			width = dimensions.width;
 			height = dimensions.height;
 		}
+		getImgSize(args[0]);
 		
-
 		console.log(height + 'x' + width)
-		//const loading = Canvas.createCanvas(baseWidth * 2, baseHeight * 2);
+		//const loading = Canvas.createCanvas(width * 2, height * 2);
 		//const context = loading.getContext('2d');
 	}
 }
