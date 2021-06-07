@@ -12,7 +12,7 @@ module.exports = {
 		let width;
 	
 		function getImgSize() {
-			var downloadImg = function(url, filename, callback){
+			const downloadImg = function(url, filename, callback){
 			request.head(url, function(err, res, body){
 				console.log('content-type:', res.headers['content-type']);
 				console.log('content-length:', res.headers['content-name']);
@@ -26,6 +26,7 @@ module.exports = {
 			});
 
 			const dimensions = imgsize('./images/loadImage.png');
+			console.log(dimensions.width, dimensions.height);
 			width = dimensions.width;
 			height = dimensions.height;
 		}
