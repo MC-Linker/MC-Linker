@@ -23,11 +23,9 @@ module.exports = {
             return message.reply('<:Error:849215023264169985> ' + 'Too high/low')
         }
 
-        let loadingGif = new Discord.MessageAttachment('./loading.gif')
-
         const LoadingEmbed = new Discord.MessageEmbed()
             .setTitle('Pingchain loading...')
-            .attachFiles(loadingGif)
+            .attachFiles(['./loading.gif'])
             .setColor('#5c1204')
             .setImage('attachment://loading.gif');
 

@@ -6,7 +6,6 @@ module.exports = {
         const fs = require('fs');
         const ftp = require('ftp')
         const Discord = require('discord.js')
-        const client = new Discord.Client();
 
         if (!message.mentions.users.size) {
             console.log(message.member.user.tag + ' executed ^stats without user in ' + message.guild.name)
@@ -126,20 +125,13 @@ module.exports = {
                     console.log('Error reading ftp file from disk: ', err);
                     return;
                     }
-
                     try {
-
-                        let emoji;
-                        try {
-                            emoji = message.client.emojis.cache.find(emoji => emoji.name === statObject).toString();
-                        } catch (err) {
-                            console.log('No emoji available for ' + statObject)
-                            emoji = '';
-                        }
 
                         const ftpData = JSON.parse(ftpJson);
                         const statData = JSON.parse(statJson);
                         const version = ftpData.version;
+
+                        const imageExists = fs.existsSync('./images/' + statObject + '.png')
 
                         let searchName;
                         if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
@@ -150,17 +142,36 @@ module.exports = {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, '**' + statObject + ' ' + searchName + '** ')
+                                    if(imageExists === false) {
+                                        console.log('No Image available for ' + statObject)
+                                    } else {
+                                        statEmbed.attachFiles(['./images/' + statObject + '.png'])
+                                        statEmbed.setImage('attachment://' + statObject + '.png')
+                                    }
                                 message.channel.send(statEmbed)
                             } else if (statType === 'killed_by') {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
                                     .addField(taggedUser.tag, 'was killed **' + searchName + '** times by a **' + statObject + '**')
+                                    if(imageExists === false) {
+                                        console.log('No Image available for ' + statObject)
+                                    } else {
+                                        statEmbed.attachFiles(['./images/' + statObject + '.png'])
+                                        statEmbed.setImage('attachment://' + statObject + '.png')
+                                    }
                                 message.channel.send(statEmbed)
                             } else {
                                 console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                    .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's** ' + emoji)
+                                    .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**');
+                                    if(imageExists === false) {
+                                        console.log('No Image available for ' + statObject)
+                                    } else {
+                                        statEmbed.attachFiles(['./images/' + statObject + '.png'])
+                                        statEmbed.setImage('attachment://' + statObject + '.png')
+                                    }
+                                     
                                 message.channel.send(statEmbed)
                             }    
                         } else {
