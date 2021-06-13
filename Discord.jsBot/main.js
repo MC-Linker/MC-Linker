@@ -9,7 +9,7 @@ const fs = require('fs');
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + '!')
     console.log('Bot on ' + client.guilds.cache.size + ' server!')
-    client.user.setActivity('^help', {type: "LISTENING"})
+    client.user.setActivity(prefix + 'help', {type: "LISTENING"})
 })
 
 client.on("guildCreate", guild => {
