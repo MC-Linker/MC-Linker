@@ -122,6 +122,10 @@ client.on('message', (message) => {
 
             client.commands.get('advancements').execute(message, args);
 
+        } else if (command === 'load' || command === 'loadinscreen') {
+            
+            client.commands.get('load').execute(message, args);
+
         }
     })
 client.login(token)
