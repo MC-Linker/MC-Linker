@@ -1,10 +1,17 @@
 module.exports = {
 	name: 'load',
 	description: 'Create a loading screen for minecraft texturepacks.',
-	execute(message, args) {
+	execute (message, args) {
 		const canvas = require('canvas');
 
-		const image = (args[0]);
-		const 
+		let URL;
+		if (args[0]) {
+			URL = (args[0]);
+		} else if (message.attachments) {
+			const attach = (message.attachments).array();
+			URL = attach[0].url;
+		}
+
+		console.log(URL);
 	}
 }
