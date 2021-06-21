@@ -4,6 +4,7 @@ module.exports = {
 	execute (message, args) {
 		const Canvas = require('canvas');
 		const probe = require('probe-image-size');
+		const Discord = require('discord.js');
 
 		//get URL of image
 		let URL;
@@ -36,6 +37,13 @@ module.exports = {
 		const canvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
 		const context = canvas.getContext('2d');
 
-		context.drawImage(img, imgSize.width / 2, imgSize.height / 2)
+		//position half of image top right
+		context.drawImage(img, 0, 0, 0, 0, imgSize.width + imgSize.width / 2, 0, 0, 0);
+
+		//position 2nd half bottom left
+		
+		//send canvas
+		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'mojang_studios.png');
+		channel.send(attachment);
 	}
 }
