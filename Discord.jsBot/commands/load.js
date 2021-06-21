@@ -5,6 +5,7 @@ module.exports = {
 		const Canvas = require('canvas');
 		const probe = require('probe-image-size');
 
+		//get URL of image
 		let URL;
 		if (args[0]) {
 			URL = (args[0]);
@@ -19,12 +20,22 @@ module.exports = {
 			}
 			
 		}
-		console.log(URL);
 
-		const img = async () => {
+		//log msg
+		console.log(message.member.user.tag + ' executed ^help with imgURL: ' + URL);
+
+		//get imageSize and load image
+		const imgSize = async () => {
 			return await probe(URL, { rejectUnauthorized: false });
 		}
-		
-		const canvas = Canvas.createCanvas(img.width * 2, img.height * 2);
+		const img = async () => {
+			return await Canvas.loadImage(URL);
+		}
+
+		//create doublesized canvas
+		const canvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
+		const context = canvas.getContext('2d');
+
+		context.drawImage(img, imgSize.width / 2, imgSize.height / 2)
 	}
 }
