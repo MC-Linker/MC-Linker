@@ -15,20 +15,19 @@ module.exports = {
 			} catch (err) {
 				console.log('Error getting URL of attach. ', err)
 				message.channel.send('Invalid Image. ^help for correct usage.')
+				return;
 			}
 			
 		}
+		console.log(URL);
 
 		const imgSize = async () => {
-			return await probe(URL);
+			return await probe(URL, { rejectUnauthorized: false });
 		}
 		const img = async () => {
 			return await Canvas.loadImage(URL);
 		}
-
-		console.log(imgSize.width + 'x' + imgSize.height)
+		
 		const canvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
-
-		console.log(URL);
 	}
 }

@@ -2,12 +2,12 @@
 console.log('Loading...')
 
 const Discord = require('discord.js')
-const { prefix, token } = require('./config.json');
+const { prefix, token } = require('../config.json');
 const client = new Discord.Client()
 const fs = require('fs');
 
 client.once('ready', () => {
-    console.log('Bot logged in as ' + client.user.tag + '!')
+    console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix)
     console.log('Bot on ' + client.guilds.cache.size + ' server!')
     client.user.setActivity(prefix + 'help', {type: "LISTENING"})
 })
