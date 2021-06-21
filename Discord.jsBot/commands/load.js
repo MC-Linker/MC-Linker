@@ -12,6 +12,12 @@ module.exports = {
 			URL = attach[0].url;
 		}
 
+		const img = async () => {
+			return await canvas.loadImage(URL);
+		}
+
+		
+
 		console.log(URL);
 	}
 }
