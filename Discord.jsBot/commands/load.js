@@ -21,13 +21,10 @@ module.exports = {
 		}
 		console.log(URL);
 
-		const imgSize = async () => {
+		const img = async () => {
 			return await probe(URL, { rejectUnauthorized: false });
 		}
-		const img = async () => {
-			return await Canvas.loadImage(URL);
-		}
 		
-		const canvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
+		const canvas = Canvas.createCanvas(img.width * 2, img.height * 2);
 	}
 }
