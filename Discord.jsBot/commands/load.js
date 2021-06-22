@@ -35,9 +35,9 @@ module.exports = {
 				return;
 			}
 			
-			if(imgSize.type !== 'png' || imgSize.type !== 'jpg') {
+			if(imgSize.type === 'png' || imgSize.type === 'jpg') {
 				console.log('Invalid imagetype: ' + imgSize.type);
-				message.channel.send('<:Error:849215023264169985> Invalid image type. Supported types: jpg, png');
+				message.channel.send('<:Error:849215023264169985> Invalid image type [' + imgSize.type + ']. Supported types: **jpg, png**');
 				return;
 			}
 
