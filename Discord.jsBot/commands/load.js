@@ -29,26 +29,31 @@ module.exports = {
 			let imgSize;
 			try {
 				imgSize = await probe(URL, { rejectUnauthorized: false });
-				console.log(imgSize);
 			} catch (err) {
 				console.log('Error while trying to get imagesize. ', err);
 				message.channel.send('<:Error:849215023264169985> Cannot get size of image. ^help for correct usage.');
 				return;
 			}
 			
-			const img = await Canvas.loadImage(URL);
+			if(imgSize.type !== 'png' || imgSize.type !== 'jpg') {
+				console.log('Invalid imagetype: ' + imgSize.type);
+				message.channel.send('<:Error:849215023264169985> Invalid image type. Supported types: jpg, png');
+				return;
+			}
 
 			const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
 			const context = loadCanvas.getContext('2d');
+			const img = await Canvas.loadImage(URL);
 
 			//position half of image top right
-			context.drawImage(img, 0, 0, 0, 0, imgSize.width + imgSize.width / 2, 0, 0, 0);
+			//context.drawImage(img, 0, 0, 0, 0, imgSize.width + imgSize.width / 2, 0, 0, 0);
+			context.drawImage(img, 0, 0, canvas.width, canvas.height)
 
 			//position 2nd half bottom left
 			
 			
 			const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojang_studios.png');
-			channel.send(attachment);
+			message.channel.send(attachment);
 		}
 		load();
 	}
