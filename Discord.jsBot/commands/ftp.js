@@ -17,8 +17,8 @@ module.exports = {
             console.log(message.member.user.tag + ' executed ^ftp without admin in ' + message.guild.name)
             return;
         } else if(version === '1.11' || version === '1.10' || version === '1.9' || version === '1.8' || version === '1.7') {
-            message.reply(':warning: The advancement command might not work because there are no advancements in your Minecraft version yet.')
-        } else if(version !== '1.13' && version !== '1.14' && version !== '1.15' && version !== '1.16') {
+            message.reply(':warning: The advancement command might not work because advancements dont exist in your Minecraft version yet.')
+        } else if(version !== '1.13' && version !== '1.14' && version !== '1.15' && version !== '1.16' && version !== '1.17') {
             message.reply(':warning: The stat and advancement commands might not work because your version isnt compatible with it.')
         }
 
