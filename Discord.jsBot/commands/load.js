@@ -49,7 +49,7 @@ module.exports = {
 			context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.width * 1.5, 0, imgSize.width, imgSize.height);
 
 			//position 2nd half bottom left
-			
+			context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width, imgSize.height);
 			
 			const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojang_studios.png');
 			message.channel.send(attachment);
