@@ -23,7 +23,7 @@ module.exports = {
 				
 			}
 
-			console.log(message.member.user.tag + ' executed ^help with imgURL: ' + URL);
+			console.log(message.member.user.tag + ' executed ^load with imgURL: ' + URL);
 
 			//get imageSize
 			let imgSize;
