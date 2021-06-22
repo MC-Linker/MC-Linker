@@ -22,28 +22,23 @@ module.exports = {
 			
 		}
 
-		//log msg
 		console.log(message.member.user.tag + ' executed ^help with imgURL: ' + URL);
 
-		//get imageSize and load image
-		const imgSize = async () => {
-			return await probe(URL, { rejectUnauthorized: false });
-		}
-		const img = async () => {
-			return await Canvas.loadImage(URL);
-		}
+		//get imageSize
+		const imgSize = async () => await probe(URL, { rejectUnauthorized: false });
+		console.log(imgSize());
 
-		//create doublesized canvas
-		const canvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
-		const context = canvas.getContext('2d');
+		const img = async () => await Canvas.loadImage(URL);
+
+		const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
+		const context = loadCanvas.getContext('2d');
 
 		//position half of image top right
 		context.drawImage(img, 0, 0, 0, 0, imgSize.width + imgSize.width / 2, 0, 0, 0);
 
 		//position 2nd half bottom left
 		
-		//send canvas
-		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'mojang_studios.png');
+		const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojang_studios.png');
 		channel.send(attachment);
 	}
 }
