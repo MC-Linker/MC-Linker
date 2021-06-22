@@ -35,19 +35,18 @@ module.exports = {
 				return;
 			}
 			
-			if(imgSize.type === 'png' || imgSize.type === 'jpg') {
+			/*if(imgSize.type !== 'png' && imgSize.type !== 'jpg') {
 				console.log('Invalid imagetype: ' + imgSize.type);
 				message.channel.send('<:Error:849215023264169985> Invalid image type [' + imgSize.type + ']. Supported types: **jpg, png**');
 				return;
-			}
+			}*/
 
 			const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
 			const context = loadCanvas.getContext('2d');
 			const img = await Canvas.loadImage(URL);
 
 			//position half of image top right
-			//context.drawImage(img, 0, 0, 0, 0, imgSize.width + imgSize.width / 2, 0, 0, 0);
-			context.drawImage(img, 0, 0, canvas.width, canvas.height)
+			context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.width * 1.5, 0, imgSize.width, imgSize.height);
 
 			//position 2nd half bottom left
 			
