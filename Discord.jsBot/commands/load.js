@@ -16,8 +16,8 @@ module.exports = {
 					const attach = (message.attachments).array();
 					URL = attach[0].url;
 				} catch (err) {
-					console.log('Error getting URL of attach. ', err)
-					message.channel.send('Invalid Image. ^help for correct usage.')
+					console.log('Error while trying to get imagesize. ', err);
+					message.channel.send('<:Error:849215023264169985> Cannot get URL of image. ^help for correct usage.');
 					return;
 				}
 				
@@ -26,9 +26,16 @@ module.exports = {
 			console.log(message.member.user.tag + ' executed ^help with imgURL: ' + URL);
 
 			//get imageSize
-			const imgSize = await probe(URL, { rejectUnauthorized: false });
-			console.log(imgSize());
-
+			let imgSize;
+			try {
+				imgSize = await probe(URL, { rejectUnauthorized: false });
+				console.log(imgSize);
+			} catch (err) {
+				console.log('Error while trying to get imagesize. ', err);
+				message.channel.send('<:Error:849215023264169985> Cannot get size of image. ^help for correct usage.');
+				return;
+			}
+			
 			const img = await Canvas.loadImage(URL);
 
 			const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
@@ -43,5 +50,6 @@ module.exports = {
 			const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojang_studios.png');
 			channel.send(attachment);
 		}
+		load();
 	}
 }
