@@ -45,7 +45,14 @@ module.exports = {
 	
 				const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
 				const context = loadCanvas.getContext('2d');
-				const img = await Canvas.loadImage(URL);
+				let img;
+				try {
+					img = await Canvas.loadImage(URL);
+				} catch(err) {
+					console.log('Error while trying to load img. ', err);
+					message.channel.send('<:Error:849215023264169985> Unsupported image type. ^help for correct usage.');
+					return;
+				}
 	
 				//position half of image top right
 				context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.width * 1.5, 0, imgSize.width / 2, imgSize.height);
@@ -65,7 +72,7 @@ module.exports = {
 			load();
 		} else if(args[0] === 'black' || args[0] === 'loadblack' || args[0] === 'blackload' || args[0] === 'txpblack') {
 			const file = new Discord.MessageAttachment('./color.properties');
-        	message.channel.send('Make sure to put that file in: `assets/minecraft/optifine`', file);
+        	message.channel.send('Heres your black loading screen file. Make sure to put that file in: `assets/minecraft/optifine`', file);
 		}
 	}
 }
