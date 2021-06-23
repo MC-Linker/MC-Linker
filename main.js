@@ -48,7 +48,7 @@ client.on('message', (message) => {
 
             if(!command) {
 
-                console.log(message.member.user.tag + ' executed ^help without args in ' + message.guild.name)
+                console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name)
 
                 const HelpEmbed = new Discord.MessageEmbed()
                     .setTitle('Help Menu')
@@ -69,7 +69,8 @@ client.on('message', (message) => {
                         { name: 'STATENABLE', value: client.commands.get('statenable').description },
                         { name: 'STATSTATE', value: client.commands.get('statenable').description },
                         { name: 'ADVANCEMENTS', value: client.commands.get('advancements').description },
-                        { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' }
+                        { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' },
+                        { name: 'TXP', valuie: client.commands.get('txp').description }
                     );
                 message.channel.send(HelpEmbed)
             } else {
@@ -122,9 +123,9 @@ client.on('message', (message) => {
 
             client.commands.get('advancements').execute(message, args);
 
-        } else if (command === 'load' || command === 'loadinscreen') {
+        } else if (command === 'texturepack' || command === 'txp') {
             
-            client.commands.get('load').execute(message, args);
+            client.commands.get('txp').execute(message, args);
 
         }
     })
