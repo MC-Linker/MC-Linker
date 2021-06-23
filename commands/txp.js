@@ -63,7 +63,7 @@ module.exports = {
 				const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojangstudios.png');
 				const loadEmbed = new Discord.MessageEmbed()
 				.setTitle("Minecraft Loading Screen")
-				.setDescription("Here's your Minecraft loading screen! Make sure to put it in: `<resourcepack>/assets/minecraft/textures/gui/title`")
+				.setDescription("<:Checkmark:849224496232660992> Here's your Minecraft loading screen! Make sure to put it in: `<resourcepack>/assets/minecraft/textures/gui/title`")
 				// @ts-ignore
 				.attachFiles(attachment)
 				.setImage('attachment://mojangstudios.png');
@@ -72,7 +72,7 @@ module.exports = {
 			load();
 		} else if(args[0] === 'black' || args[0] === 'loadblack' || args[0] === 'blackload' || args[0] === 'txpblack') {
 			const file = new Discord.MessageAttachment('./color.properties');
-        	message.channel.send('Heres your black loading screen file. Make sure to put that file in: `assets/minecraft/optifine`', file);
+        	message.channel.send('<:Checkmark:849224496232660992> Heres your black loading screen file. Make sure to put that file in: `<resourcepack>/assets/minecraft/optifine`', file);
 		}
 	}
 }
