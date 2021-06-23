@@ -52,7 +52,12 @@ module.exports = {
 			context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
 			
 			const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojangstudios.png');
-			message.channel.send(attachment);
+			const loadEmbed = new Discord.MessageEmbed()
+			.setTitle("Minecraft Loading Screen")
+			.setDescription("Here's your Minecraft loading screen! Make sure to put it in: <resourcepack>/assets/minecraft/textures/gui/title")
+			.attachFiles(attachment)
+			.setImage('attachment://mojangstudios.png');
+			message.channel.send(loadEmbed);
 		}
 		load();
 	}
