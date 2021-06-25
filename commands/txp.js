@@ -43,7 +43,7 @@ module.exports = {
 					return;
 				}*/
 	
-				const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.width * 2);
+				const loadCanvas = Canvas.createCanvas(imgSize.height * 2, imgSize.height * 2);
 				const context = loadCanvas.getContext('2d');
 				let img;
 				try {
@@ -55,10 +55,10 @@ module.exports = {
 				}
 	
 				//position half of image top right
-				context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.width * 1.5, 0, imgSize.width / 2, imgSize.height);
+				context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.height * 1.5, 0, imgSize.width / 2, imgSize.height);
 	
 				//position 2nd half bottom left
-				context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.width / 2, imgSize.width / 2, imgSize.height);
+				context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
 				
 				const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojangstudios.png');
 				const loadEmbed = new Discord.MessageEmbed()
