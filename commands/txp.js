@@ -43,7 +43,7 @@ module.exports = {
 					return;
 				}*/
 	
-				const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.height * 2);
+				const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.width * 2);
 				const context = loadCanvas.getContext('2d');
 				let img;
 				try {
