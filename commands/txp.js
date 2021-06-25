@@ -55,7 +55,7 @@ module.exports = {
 				}
 	
 				//position half of image top right
-				context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.height * 1.5, 0, imgSize.height / 2, imgSize.height);
+				context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.height, 0, imgSize.height, imgSize.height);
 	
 				//position 2nd half bottom left
 				context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
