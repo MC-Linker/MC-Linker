@@ -70,7 +70,7 @@ client.on('message', (message) => {
                         { name: 'STATSTATE', value: client.commands.get('statenable').description },
                         { name: 'ADVANCEMENTS', value: client.commands.get('advancements').description },
                         { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' },
-                        { name: 'TXP', valuie: client.commands.get('txp').description }
+                        { name: 'TXP', value: client.commands.get('txp').description }
                     );
                 message.channel.send(HelpEmbed)
             } else {
