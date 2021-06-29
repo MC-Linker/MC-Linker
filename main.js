@@ -33,9 +33,8 @@ client.on('message', (message) => {
         const command = args.shift().toLowerCase();
 
         if(command === 'help') {
-            const command = (args[0]).toLowerCase();
 
-            if(!command) {
+            if(!args[0]) {
 
             console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name)
 
@@ -61,34 +60,49 @@ client.on('message', (message) => {
                     { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' },
                     { name: 'TXP', value: client.commands.get('txp').description }
                 );
-            message.channel.send(HelpEmbed)
+            message.channel.send(HelpEmbed);
         } else {
-            try {
-                console.log(message.member.user.tag + ' executed ^help ' + command);
+            const command = (args[0]).toLowerCase();
 
-                const helpEmbed = new Discord.MessageEmbed()
+            console.log(message.member.user.tag + ' executed ^help ' + command);
+
+            let helpEmbed;
+            try {
+                helpEmbed = new Discord.MessageEmbed()
                     .setTitle('Help Menu')
+                    .setDescription('You can find helpful information here.')
                     .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .setDescription('You can find helpful informations here!')
                     .setColor('#000000')
                     .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .addFields(
-                        { name: command, value: client.commands.get(command).description }
-                    );
-                const disableButton = new disbut.MessageButton()
-                    .setStyle('red')
-                    .setID('disable' + command)
-                    .setLabel('Disable this command!');
-
-                message.channel.send('\u200b', {
-                    embed: helpEmbed,
-                    button: disableButton
-                });
-
+                    .addField(command, client.commands.get(command).description);
             } catch (err) {
                 console.log("Command [" + command + "] doesn't exist.", err);
                 message.reply(":warning: Command [**" + command + "**] doesn't exist.");
                 return;
+            }
+
+            const disableButton = new disbut.MessageButton()
+                .setStyle('red')
+                .setID('disable' + command)
+                .setLabel('Disable this command!');
+            const enableButton = new disbut.MessageButton()
+                .setStyle('green')
+                .setID('enable' + command)
+                .setLabel('Enable this command!');
+
+            const disabled = fs.existsSync('./disable/command/' + message.guild.id + '_' + command);
+            if (disabled === false) {
+                console.log('disableCommandFile doesnt exist. Command not disabled.')
+                message.channel.send('\u200b', {
+                    embed: helpEmbed,
+                    button: disableButton
+                });
+            } else if (disabled === true) {
+                helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
+                message.channel.send('\u200b', {
+                    embed: helpEmbed,
+                    button: enableButton
+                });
             }
         }
         return;
@@ -96,37 +110,47 @@ client.on('message', (message) => {
     fs.access('./disable/command/' + message.guild.id + '_' + command, fs.constants.F_OK, (err) => {
         if (err) {
             console.log('Could not find commandDisableFile of command: ' + command + ' Command not disabled.');
+            try {
+                client.commands.get(command).execute(message, args);
+            } catch (err) {
+                console.log(message.member.user.tag + ' executed ^' + command + '. Couldnt find that command!');
+            }
         } else {
             console.log('Command [' + command + '] disabled!')
             message.reply('<:Error:849215023264169985> Command [**' + command + '**] disabled!');
             return;
         }
     });
-    try {
-        client.commands.get(command).execute(message, args);
-    } catch (err) {
-        console.log(message.member.user.tag + ' executed ^' + command + '. Couldnt find that command!');
-    }
-    
 })
 client.on('clickButton', async (button) => {
     if (button.id.startsWith('disable')) {
-        
+
         const command = button.id.split('disable').pop();
         console.log(button.clicker.user.tag + ' clicked disableButton: ' + command + ' in ' + button.guild.name);
         fs.writeFile('./disable/command/' + button.guild.id + "_" + command, '', err => {
             if (err) {
-                console.log('Error writing commandDisableJSON ', err);
+                console.log('Error writing commandDisableFile ', err);
                 button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
             } else {
-                console.log('Successfully wrote commandDisableJSON: ' + './stats/disable/object/' + button.guild.id + "_" + command);
+                console.log('Successfully wrote commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
                 button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`);
             }
         })
         button.defer();
     } else if (button.id.startsWith('enable')) {
         console.log(button.clicker.user.tag + ' clicked enableButton: ' + button.id);
-        utton.defer();
+
+        const command = button.id.split('enable').pop();
+        fs.unlink('./disable/command/' + button.guild.id + "_" + command, err => {
+            if(err) {
+                console.log('Error deleting commandDisableFile ', err);
+                button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't enable Command!`); 
+            } else {
+                console.log('Successfully deleted commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
+                button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`);
+            }
+        })
+        button.defer();
     }
 });
 client.login(token)
