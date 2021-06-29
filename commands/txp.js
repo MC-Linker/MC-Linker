@@ -53,12 +53,13 @@ module.exports = {
 					message.channel.send('<:Error:849215023264169985> Unsupported image type. ^help for correct usage.');
 					return;
 				}
+
+					//position half of image top right
+					context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.height, 0, imgSize.width / 2, imgSize.height);
 	
-				//position half of image top right
-				context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.height, 0, imgSize.width / 2, imgSize.height);
+					//position 2nd half bottom left
+					context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
 	
-				//position 2nd half bottom left
-				context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
 				
 				const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojangstudios.png');
 				const loadEmbed = new Discord.MessageEmbed()

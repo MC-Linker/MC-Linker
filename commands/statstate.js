@@ -24,11 +24,11 @@ module.exports = {
               objectFiles.splice(indexO, 1);
             }
 
-            for(var i = 0; i < categoryFiles.length; i++) {
+            for(let i = 0; i < categoryFiles.length; i++) {
                 categoryFiles[i] = categoryFiles[i].replace(`${message.guild.name}_`, '');
                 categoryFiles[i] = categoryFiles[i].replace('.json', '');
             }
-            for(var i = 0; i < objectFiles.length; i++) {
+            for(let i = 0; i < objectFiles.length; i++) {
                 objectFiles[i] = objectFiles[i].replace(`${message.guild.name}_`, '');
                 objectFiles[i] = objectFiles[i].replace('.json', '');
             }

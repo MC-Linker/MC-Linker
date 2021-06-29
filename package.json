@@ -13,6 +13,7 @@
     "async": "^3.2.0",
     "basic-ftp": "^4.6.6",
     "canvas": "^2.8.0",
+    "discord-buttons": "^3.2.1",
     "discord.js": "^12.5.3",
     "easy-ftp": "^0.4.2",
     "fetch": "^1.1.0",

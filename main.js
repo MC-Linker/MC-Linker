@@ -5,6 +5,8 @@ const Discord = require('discord.js')
 const { prefix, token } = require('../config.json');
 const client = new Discord.Client()
 const fs = require('fs');
+const disbut = require('discord-buttons');
+disbut(client);
 
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix)
@@ -30,103 +32,101 @@ client.on('message', (message) => {
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
 
-        if(command === 'pingchain') {
-            
-            client.commands.get('pingchain').execute(message, args);
-            
-        } else if(command === 'stats' || command === 'stat') {
-                
-            client.commands.get('stats').execute(message, args);
-
-        } else if(command === 'random') {
-
-            client.commands.get('random').execute(message, args);
-
-        } else if(command === 'help') {
-
-            const command = (args[0]);
+        if(command === 'help') {
+            const command = (args[0]).toLowerCase();
 
             if(!command) {
 
-                console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name)
+            console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name)
 
-                const HelpEmbed = new Discord.MessageEmbed()
+            const HelpEmbed = new Discord.MessageEmbed()
+                .setTitle('Help Menu')
+                .setDescription('You can find helpful informations here!')
+                .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .setColor('#000000')
+                .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .addFields(
+                    { name: 'PREFIX', value: 'This Bot uses the PREFIX: **^** \nIMPORTANT: Use this PREFIX at the start of every command.' },
+                    { name: 'HELP', value: 'Useful information about EVERY command. \nUSAGE: help' },
+                    { name: 'RANDOM', value: client.commands.get('random').description },
+                    { name: 'STATS', value: client.commands.get('stats').description },
+                    { name: 'PINGCHAIN', value: client.commands.get('pingchain').description },
+                    { name: 'FTP', value: client.commands.get('ftp').description },
+                    { name: 'CONNECT', value: client.commands.get('connect').description },
+                    { name: 'STATHELP', value: client.commands.get('stathelp').description },
+                    { name: 'STATDISABLE', value: client.commands.get('statdisable'.description )},
+                    { name: 'STATENABLE', value: client.commands.get('statenable').description },
+                    { name: 'STATSTATE', value: client.commands.get('statenable').description },
+                    { name: 'ADVANCEMENTS', value: client.commands.get('advancements').description },
+                    { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' },
+                    { name: 'TXP', value: client.commands.get('txp').description }
+                );
+            message.channel.send(HelpEmbed)
+        } else {
+            try {
+                console.log(message.member.user.tag + ' executed ^help ' + command);
+
+                const helpEmbed = new Discord.MessageEmbed()
                     .setTitle('Help Menu')
-                    .setDescription('You can find helpful informations here!')
                     .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                    .setDescription('You can find helpful informations here!')
                     .setColor('#000000')
                     .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .addFields(
-                        { name: 'PREFIX', value: 'This Bot uses the PREFIX: **^** \nIMPORTANT: Use this PREFIX at the start of every command.' },
-                        { name: 'HELP', value: 'Useful information about EVERY command. \nUSAGE: help' },
-                        { name: 'RANDOM', value: client.commands.get('random').description },
-                        { name: 'STATS', value: client.commands.get('stats').description },
-                        { name: 'PINGCHAIN', value: client.commands.get('pingchain').description },
-                        { name: 'FTP', value: client.commands.get('ftp').description },
-                        { name: 'CONNECT', value: client.commands.get('connect').description },
-                        { name: 'STATHELP', value: client.commands.get('stathelp').description },
-                        { name: 'STATDISABLE', value: client.commands.get('statdisable'.description )},
-                        { name: 'STATENABLE', value: client.commands.get('statenable').description },
-                        { name: 'STATSTATE', value: client.commands.get('statenable').description },
-                        { name: 'ADVANCEMENTS', value: client.commands.get('advancements').description },
-                        { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' },
-                        { name: 'TXP', value: client.commands.get('txp').description }
+                        { name: command, value: client.commands.get(command).description }
                     );
-                message.channel.send(HelpEmbed)
-            } else {
-                try {
-                    console.log(message.member.user.tag + ' executed ^help ' + command);
+                const disableButton = new disbut.MessageButton()
+                    .setStyle('red')
+                    .setID('disable' + command)
+                    .setLabel('Disable this command!');
 
-                    const HelpEmbed = new Discord.MessageEmbed()
-                        .setTitle('Help Menu')
-                        .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                        .setDescription('You can find helpful informations here!')
-                        .setColor('#000000')
-                        .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                        .addFields(
-                            { name: command, value: client.commands.get(command).description }
-                        );
-                    message.channel.send(HelpEmbed)
+                message.channel.send('\u200b', {
+                    embed: helpEmbed,
+                    button: disableButton
+                });
 
-                } catch (err) {
-                    console.log("Command [" + command + "] doesn't exist.");
-                    message.channel.send(":warning: Command [" + command + "] doesn't exist.");
-                    return;
-                }
+            } catch (err) {
+                console.log("Command [" + command + "] doesn't exist.", err);
+                message.reply(":warning: Command [**" + command + "**] doesn't exist.");
+                return;
             }
-
-        } else if(command === 'stathelp') {
-
-            client.commands.get('stathelp').execute(message, args);
-
-        } else if(command === 'connect') {
-
-            client.commands.get('connect').execute(message, args);
-
-        } else if(command === 'ftp') {
-
-            client.commands.get('ftp').execute(message, args);
-
-        } else if(command === 'statdisable' || command === 'statsdisable' || command === 'sd') {
-
-            client.commands.get('statdisable').execute(message, args);
-
-        } else if(command === 'statenable' || command === 'statsenable' || command === 'se') {
-
-            client.commands.get('statenable').execute(message, args);
-
-        } else if (command === 'statstate' || command === 'ss' || command === 'statsstate' || command === 'statstates' || command === 'statsstates') {
-
-            client.commands.get('statstate').execute(message, args);
-
-        } else if (command === 'advancements' || command === 'advancement' || command === 'am') {
-
-            client.commands.get('advancements').execute(message, args);
-
-        } else if (command === 'texturepack' || command === 'txp') {
-            
-            client.commands.get('txp').execute(message, args);
-
         }
-    })
+        return;
+    }
+    fs.access('./disable/command/' + message.guild.id + '_' + command, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.log('Could not find commandDisableFile of command: ' + command + ' Command not disabled.');
+        } else {
+            console.log('Command [' + command + '] disabled!')
+            message.reply('<:Error:849215023264169985> Command [**' + command + '**] disabled!');
+            return;
+        }
+    });
+    try {
+        client.commands.get(command).execute(message, args);
+    } catch (err) {
+        console.log(message.member.user.tag + ' executed ^' + command + '. Couldnt find that command!');
+    }
+    
+})
+client.on('clickButton', async (button) => {
+    if (button.id.startsWith('disable')) {
+        
+        const command = button.id.split('disable').pop();
+        console.log(button.clicker.user.tag + ' clicked disableButton: ' + command + ' in ' + button.guild.name);
+        fs.writeFile('./disable/command/' + button.guild.id + "_" + command, '', err => {
+            if (err) {
+                console.log('Error writing commandDisableJSON ', err);
+                button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
+            } else {
+                console.log('Successfully wrote commandDisableJSON: ' + './stats/disable/object/' + button.guild.id + "_" + command);
+                button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`);
+            }
+        })
+        button.defer();
+    } else if (button.id.startsWith('enable')) {
+        console.log(button.clicker.user.tag + ' clicked enableButton: ' + button.id);
+        utton.defer();
+    }
+});
 client.login(token)
