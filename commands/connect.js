@@ -9,6 +9,7 @@ module.exports = {
         const ingameName = (args[0]);
 
         function getId(playername) {
+            // @ts-ignore
             return fetch(`https://api.mojang.com/users/profiles/minecraft/${playername}`)
                 .then(data => data.json())
                 .then(player => player.id);

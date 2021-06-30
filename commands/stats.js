@@ -1,6 +1,6 @@
 module.exports = {
     name: 'stats',
-    description: "Look at your and other member's minecraft server stats. Stats will be updated everytime you hit the escape button(not 100% consistent). \nUSAGE: stats @<username> <Statcategory> <Statitem/block/entity> \n EXAMPLE: stats @Lianecx mined iron_ore \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
+    description: "Look at your and other member's minecraft server stats. \nNOTE: Stats are MUCH faster updated in 1.17 \nUSAGE: stats @<username> <Statcategory> <Statitem/block/entity> \n EXAMPLE: stats @Lianecx mined iron_ore \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
     execute(message, args) {
 
         const fs = require('fs');
@@ -134,7 +134,7 @@ module.exports = {
                         const imageExists = fs.existsSync('./images/' + statObject + '.png')
 
                         let searchName;
-                        if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
+                        if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16' || version === '1.17') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject];
                         else if(version === '1.12' || version === '1.11' || version === '1.10' || version === '1.9' || version === '1.8' || version === '1.7') searchName = statData["stat." + statType + '.minecraft.' + statObject]
 
                         if (searchName) {
