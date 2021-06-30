@@ -2,7 +2,8 @@
 console.log('Loading...')
 
 const Discord = require('discord.js')
-const { prefix, token } = require('../config.json');
+const prefix = "^";
+//const { prefix, token } = require('../config.json');
 const client = new Discord.Client()
 const fs = require('fs');
 const disbut = require('discord-buttons');
@@ -197,4 +198,4 @@ client.on('clickButton', async (button) => {
         }
     }
 });
-client.login(token);
+client.login(process.env.token);
