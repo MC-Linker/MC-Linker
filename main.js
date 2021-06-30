@@ -100,10 +100,7 @@ client.on('message', (message) => {
                 });
             } else if (disabled === true) {
                 helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
-                message.channel.send('\u200b', {
-                    embed: helpEmbed,
-                    button: enableButton
-                });
+                message.channel.send({embed: helpEmbed, button: enableButton});
             }
         }
         return;
@@ -124,34 +121,81 @@ client.on('message', (message) => {
     });
 })
 client.on('clickButton', async (button) => {
+    await button.clicker.fetch();
+
     if (button.id.startsWith('disable')) {
 
-        const command = button.id.split('disable').pop();
-        console.log(button.clicker.user.tag + ' clicked disableButton: ' + command + ' in ' + button.guild.name);
-        fs.writeFile('./disable/command/' + button.guild.id + "_" + command, '', err => {
-            if (err) {
-                console.log('Error writing commandDisableFile ', err);
-                button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
-            } else {
-                console.log('Successfully wrote commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
-                button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`);
-            }
-        })
-        button.defer();
-    } else if (button.id.startsWith('enable')) {
-        console.log(button.clicker.user.tag + ' clicked enableButton: ' + button.id);
+        if (button.clicker.member.hasPermission('ADMINISTRATOR')) {
+            const command = button.id.split('disable').pop();
+            console.log(button.clicker.user.tag + ' clicked disableButton: ' + command + ' in ' + button.guild.name);
+            fs.writeFile('./disable/command/' + button.guild.id + "_" + command, '', err => {
+                if (err) {
+                    console.log('Error writing commandDisableFile ', err);
+                    button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
+                } else {
+                    console.log('Successfully wrote commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
+                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`);
+                }
+            })
+            button.defer();
 
-        const command = button.id.split('enable').pop();
-        fs.unlink('./disable/command/' + button.guild.id + "_" + command, err => {
-            if(err) {
-                console.log('Error deleting commandDisableFile ', err);
-                button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't enable Command!`); 
-            } else {
-                console.log('Successfully deleted commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
-                button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`);
-            }
-        })
-        button.defer();
+            helpEmbed = new Discord.MessageEmbed()
+                .setTitle('Help Menu')
+                .setDescription('You can find helpful information here.')
+                .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .setColor('#000000')
+                .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .addField(command, client.commands.get(command).description);
+
+            const enableButton = new disbut.MessageButton()
+                .setStyle('green')
+                .setID('enable' + command)
+                .setLabel('Enable this command!');
+            
+            helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
+            button.message.edit({embed: helpEmbed, button: enableButton});
+
+        } else {
+            console.log('Clicker of ' + button.id + ' doesnt have admin.');
+            button.reply('You need to be an administrator to use that button!');
+            return;
+        }
+
+    } else if (button.id.startsWith('enable')) {
+
+        if (button.clicker.member.hasPermission('ADMINISTRATOR')) {
+            const command = button.id.split('enable').pop();
+            console.log(button.clicker.user.tag + ' clicked enableButton: ' + command + ' in ' + button.guild.name);
+            fs.unlink('./disable/command/' + button.guild.id + "_" + command, err => {
+                if(err) {
+                    console.log('Error deleting commandDisableFile ', err);
+                    button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
+                } else {
+                    console.log('Successfully deleted commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
+                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`);
+                }
+            });
+            helpEmbed = new Discord.MessageEmbed()
+                .setTitle('Help Menu')
+                .setDescription('You can find helpful information here.')
+                .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .setColor('#000000')
+                .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .addField(command, client.commands.get(command).description);
+
+            const disableButton = new disbut.MessageButton()
+                .setStyle('red')
+                .setID('disable' + command)
+                .setLabel('Disable this command!');
+
+            helpEmbed.setDescription('You can find helpful information here. \n```diff\n+ [Command enabled]```')
+            button.message.edit({embed: helpEmbed, button: disableButton})
+            button.defer();
+        } else {
+            console.log('Clicker of ' + button.id + ' doesnt have admin.');
+            button.reply('You need to be an administrator to use that button!');
+            return;
+        }
     }
 });
 client.login(process.env.token);
