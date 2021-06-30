@@ -23,7 +23,7 @@ module.exports = {
             if (indexO > -1) {
               objectFiles.splice(indexO, 1);
             }
-
+          
             for(let i = 0; i < categoryFiles.length; i++) {
                 categoryFiles[i] = categoryFiles[i].replace(`${message.guild.name}_`, '');
                 categoryFiles[i] = categoryFiles[i].replace('.json', '');

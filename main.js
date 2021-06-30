@@ -153,4 +153,4 @@ client.on('clickButton', async (button) => {
         button.defer();
     }
 });
-client.login(token)
+client.login(process.env.token);

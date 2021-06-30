@@ -134,7 +134,7 @@ module.exports = {
                         const imageExists = fs.existsSync('./images/' + statObject + '.png')
 
                         let searchName;
-                        if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16' || version === '1.17') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
+                        if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16' || version === '1.17') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject];
                         else if(version === '1.12' || version === '1.11' || version === '1.10' || version === '1.9' || version === '1.8' || version === '1.7') searchName = statData["stat." + statType + '.minecraft.' + statObject]
 
                         if (searchName) {
