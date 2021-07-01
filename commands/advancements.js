@@ -32,7 +32,7 @@ module.exports = {
             for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');                       
             uuidv4 = uuidv4.join("");
 
-            fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', async function(err, ftpJson) {
+            fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', async function(err, ftpJson) {
                 if(err) {
                         console.log('Error reading file from disk: ', err);
                         message.reply('<:Error:849215023264169985> ' + 'Could not find ftpcredentials. Please contact a server-admin.')
