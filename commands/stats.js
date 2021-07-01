@@ -51,7 +51,7 @@ module.exports = {
 
             async function ftpconnect() {
                 return await new Promise((resolve, reject) => {
-                    fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, ftpJson) => {
+                    fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', (err, ftpJson) => {
                         if(err) {
                             console.log('Error reading ftpFile from disk: ', err);
                             message.reply('<:Error:849215023264169985> ' + 'Could not find ftpcredentials. Please contact a server-admin.')
@@ -119,7 +119,7 @@ module.exports = {
                     console.log('Error reading stat file from disk: ', err);
                     return;
                 }
-                fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, ftpJson) => {
+                fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', (err, ftpJson) => {
                     if(err) {
                     message.reply(':warning: ' + 'Could not find ftp file. Please contact a server admin.')
                     console.log('Error reading ftp file from disk: ', err);

@@ -28,6 +28,7 @@ module.exports = {
 			//get imageSize
 			let imgSize;
 			try {
+				// @ts-ignore
 				imgSize = await probe(URL, { rejectUnauthorized: false });
 			} catch (err) {
 				console.log('Error while trying to get imagesize. ', err);
