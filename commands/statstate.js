@@ -12,8 +12,8 @@ module.exports = {
         if (!mode) {
             console.log(message.member.user.tag + ' executed ^statstate without args in ' + message.guild.name + '. Showing all disabled stats.')
 
-            const categoryFiles = fs.readdirSync('./stats/disable/category')
-            const objectFiles = fs.readdirSync('./stats/disable/object')
+            const categoryFiles = fs.readdirSync('./disable/stats/category');
+            const objectFiles = fs.readdirSync('./disable/stats/object');
 
             const indexC = categoryFiles.indexOf('GitInit.json');
             const indexO = objectFiles.indexOf('GitInit.json');
@@ -23,13 +23,13 @@ module.exports = {
             if (indexO > -1) {
               objectFiles.splice(indexO, 1);
             }
-
-            for(var i = 0; i < categoryFiles.length; i++) {
-                categoryFiles[i] = categoryFiles[i].replace(`${message.guild.name}_`, '');
+          
+            for(let i = 0; i < categoryFiles.length; i++) {
+                categoryFiles[i] = categoryFiles[i].replace(`${message.guild.id}_`, '');
                 categoryFiles[i] = categoryFiles[i].replace('.json', '');
             }
-            for(var i = 0; i < objectFiles.length; i++) {
-                objectFiles[i] = objectFiles[i].replace(`${message.guild.name}_`, '');
+            for(let i = 0; i < objectFiles.length; i++) {
+                objectFiles[i] = objectFiles[i].replace(`${message.guild.id}_`, '');
                 objectFiles[i] = objectFiles[i].replace('.json', '');
             }
 
@@ -82,7 +82,7 @@ module.exports = {
         console.log(message.member.user.tag + ' executed ^statstate ' + mode + ' ' + object + ' in ' + message.guild.name)
 
         if(mode === 'category') {
-            fs.access('./stats/disable/category/' + message.guild.name + "_" + object + '.json', fs.constants.F_OK, (err) => {
+            fs.access('./disable/stats/category/' + message.guild.id + "_" + object, fs.constants.F_OK, (err) => {
                 if (err) {
                     message.reply('<:Checkmark:849224496232660992> Category [**' + object + '**] enabled!')
                     console.log('Could not find state file. Category [' + object + '] not disabled! ', err);
@@ -94,7 +94,7 @@ module.exports = {
                 }
             });
         } else if (mode === 'object') {
-            fs.access('./stats/disable/object/' + message.guild.name + "_" + object + '.json', fs.constants.F_OK, (err) => {
+            fs.access('./disable/stats/object/' + message.guild.id + "_" + object, fs.constants.F_OK, (err) => {
                 if (err) {
                     message.reply('<:Checkmark:849224496232660992> Object [**' + object + '**] enabled!')
                     console.log('Could not find state file. Object [' + object + '] not disabled! ', err);

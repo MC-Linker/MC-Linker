@@ -1,6 +1,6 @@
 module.exports = {
     name: 'stats',
-    description: "Look at your and other member's minecraft server stats. Stats will be updated everytime you hit the escape button(not 100% consistent). \nUSAGE: stats @<username> <Statcategory> <Statitem/block/entity> \n EXAMPLE: stats @Lianecx mined iron_ore \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
+    description: "Look at your and other member's minecraft server stats. \nNOTE: Stats are MUCH faster updated in 1.17 \nUSAGE: stats @<username> <Statcategory> <Statitem/block/entity> \n EXAMPLE: stats @Lianecx mined iron_ore \n All Categories can be find either with ^stathelp or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
     execute(message, args) {
 
         const fs = require('fs');
@@ -24,17 +24,17 @@ module.exports = {
                 console.log('Error reading file from disk: ', err);
                 return;
             }
-            let categoryDisabled = fs.existsSync('./stats/disable/category/' + message.guild.name + "_" + statType + '.json')
+            let categoryDisabled = fs.existsSync('./disable/stats/category/' + message.guild.id + "_" + statType)
             if(categoryDisabled === false) {
-                console.log('DisableJson [' + './stats/disable/category/' + message.guild.name + "_" + statType + '.json' + '] doesnt exist. Stat not disabled.')
+                console.log('DisableJson [' + './disable/stats/category/' + message.guild.id + "_" + statType + '] doesnt exist. Stat not disabled.')
             } else if(categoryDisabled === true) {
                 console.log('Category [' + statType + '] disabled.')
                 message.reply(':no_entry: ' + 'Category [**' + statType + '**] disabled!')
                 return;
             }
-            let objectDisabled = fs.existsSync('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json')
+            let objectDisabled = fs.existsSync('./disable/stats/object/' + message.guild.id + "_" + statObject)
             if(objectDisabled === false) {
-                console.log('DisableJson [' + './stats/disable/object/' + message.guild.name + "_" + statObject + '.json' + '] doesnt exist. Stat not disabled.')
+                console.log('DisableJson [' + './disable/stats/object/' + message.guild.id + "_" + statObject + '] doesnt exist. Stat not disabled.')
             } else if(objectDisabled === true) {
                 console.log('Object [' + statObject + '] disabled.')
                 message.reply(':no_entry:' + 'Object [**' + statObject + '**] disabled!')
@@ -51,7 +51,7 @@ module.exports = {
 
             async function ftpconnect() {
                 return await new Promise((resolve, reject) => {
-                    fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, ftpJson) => {
+                    fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', (err, ftpJson) => {
                         if(err) {
                             console.log('Error reading ftpFile from disk: ', err);
                             message.reply('<:Error:849215023264169985> ' + 'Could not find ftpcredentials. Please contact a server-admin.')
@@ -119,7 +119,7 @@ module.exports = {
                     console.log('Error reading stat file from disk: ', err);
                     return;
                 }
-                fs.readFile('./ftp/' + message.guild.name + '.json', 'utf8', (err, ftpJson) => {
+                fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', (err, ftpJson) => {
                     if(err) {
                     message.reply(':warning: ' + 'Could not find ftp file. Please contact a server admin.')
                     console.log('Error reading ftp file from disk: ', err);
@@ -134,7 +134,7 @@ module.exports = {
                         const imageExists = fs.existsSync('./images/' + statObject + '.png')
 
                         let searchName;
-                        if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject]
+                        if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16' || version === '1.17') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject];
                         else if(version === '1.12' || version === '1.11' || version === '1.10' || version === '1.9' || version === '1.8' || version === '1.7') searchName = statData["stat." + statType + '.minecraft.' + statObject]
 
                         if (searchName) {

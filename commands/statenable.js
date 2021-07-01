@@ -17,21 +17,21 @@ module.exports = {
         console.log(message.member.user.tag + ' executed ^statenable ' + mode + ' ' + object + ' in ' + message.guild.name)
 
         if(mode === 'category') {
-            fs.unlink('./stats/disable/category/' + message.guild.name + '_' + object + '.json', (err => {
+            fs.unlink('./disable/stats/category/' + message.guild.id + '_' + object, (err => {
                 if(err) {
-                    console.log('Error deleting disableJSON ', err)
+                    console.log('Error deleting disableFile ', err)
                     message.reply("<:Error:849215023264169985> Error, please check ^help statenable for correct usage.")
                 }
-                console.log('Deleted disableJson: ' + message.guild.name + '_' + object + '.json')
+                console.log('Deleted disableFile: ' + message.guild.id + '_' + object)
                 message.reply('<:Checkmark:849224496232660992> Category [**'  + object + '**] succesfully enabled!')
             }));
         } else if (mode === 'object') {
-            fs.unlink('./stats/disable/object/' + message.guild.name + '_' + object + '.json', (err => {
+            fs.unlink('./disable/stats/object/' + message.guild.id + '_' + object, (err => {
                 if(err) {
-                    console.log('Error deleting disableJSON ', err)
+                    console.log('Error deleting disableFile ', err)
                     message.reply("<:Error:849215023264169985> Error, please check ^help for correct usage.")
                 }
-                console.log('Deleted disableJson: ' + message.guild.name + '_' + object + '.json')
+                console.log('Deleted disableFile: ' + message.guild.id + '_' + object)
                 message.reply('<:Checkmark:849224496232660992> Object [**'  + object + '**] succesfully enabled!')
             }));
         } else {

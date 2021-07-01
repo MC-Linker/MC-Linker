@@ -1,6 +1,6 @@
 module.exports = {
 	name: 'txp',
-	description: 'Tools for minecraft texturepacks. \n**USAGE**: txp load <attachmenmt/imagelink> => Outputs a loading screen from the attachment or the link. \ntxp black => Outputs a file which makes the loading screen black.',
+	description: 'Tools for minecraft texturepacks. \n**USAGE**: txp load <attachment/imagelink> => Outputs a loading screen from the attachment or the link. \ntxp black => Outputs a file which makes the loading screen black.',
 	execute (message, args) {
 		const Canvas = require('canvas');
 		const probe = require('probe-image-size');
@@ -24,7 +24,7 @@ module.exports = {
 					
 				}
 	
-				console.log(message.member.user.tag + ' executed ^load with imgURL: ' + URL);
+				console.log(message.member.user.tag + ' executed ^txp load with imgURL: ' + URL);
 	
 				//get imageSize
 				let imgSize;
@@ -43,7 +43,7 @@ module.exports = {
 					return;
 				}*/
 	
-				const loadCanvas = Canvas.createCanvas(imgSize.width * 2, imgSize.width * 2);
+				const loadCanvas = Canvas.createCanvas(imgSize.height * 2, imgSize.height * 2);
 				const context = loadCanvas.getContext('2d');
 				let img;
 				try {
@@ -53,12 +53,13 @@ module.exports = {
 					message.channel.send('<:Error:849215023264169985> Unsupported image type. ^help for correct usage.');
 					return;
 				}
+
+					//position half of image top right
+					context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.height, 0, imgSize.width / 2, imgSize.height);
 	
-				//position half of image top right
-				context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.width * 1.5, 0, imgSize.width / 2, imgSize.height);
+					//position 2nd half bottom left
+					context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
 	
-				//position 2nd half bottom left
-				context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
 				
 				const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojangstudios.png');
 				const loadEmbed = new Discord.MessageEmbed()
@@ -71,6 +72,7 @@ module.exports = {
 			}
 			load();
 		} else if(args[0] === 'black' || args[0] === 'loadblack' || args[0] === 'blackload' || args[0] === 'txpblack') {
+			console.log(message.member.user.name + ' executed ^txp black')
 			const file = new Discord.MessageAttachment('./color.properties');
         	message.channel.send('<:Checkmark:849224496232660992> Heres your black loading screen file. Make sure to put that file in: `<resourcepack>/assets/minecraft/optifine`', file);
 		}
