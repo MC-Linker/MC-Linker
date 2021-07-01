@@ -35,7 +35,7 @@ module.exports = {
 
         const ftpString = JSON.stringify(jsonFtp, null, 2);
 
-        fs.writeFile('./ftp/' + message.guild.name + '.json', ftpString, err => {
+        fs.writeFile('./ftp/' + message.guild.id + '.json', ftpString, err => {
             if (err) {
                 console.log('Error writing file', err)
             } else {
