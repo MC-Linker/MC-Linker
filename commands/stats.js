@@ -24,17 +24,17 @@ module.exports = {
                 console.log('Error reading file from disk: ', err);
                 return;
             }
-            let categoryDisabled = fs.existsSync('./stats/disable/category/' + message.guild.name + "_" + statType + '.json')
+            let categoryDisabled = fs.existsSync('./disable/stats/category/' + message.guild.id + "_" + statType)
             if(categoryDisabled === false) {
-                console.log('DisableJson [' + './stats/disable/category/' + message.guild.name + "_" + statType + '.json' + '] doesnt exist. Stat not disabled.')
+                console.log('DisableJson [' + './disable/stats/category/' + message.guild.id + "_" + statType + '] doesnt exist. Stat not disabled.')
             } else if(categoryDisabled === true) {
                 console.log('Category [' + statType + '] disabled.')
                 message.reply(':no_entry: ' + 'Category [**' + statType + '**] disabled!')
                 return;
             }
-            let objectDisabled = fs.existsSync('./stats/disable/object/' + message.guild.name + "_" + statObject + '.json')
+            let objectDisabled = fs.existsSync('./disable/stats/object/' + message.guild.id + "_" + statObject)
             if(objectDisabled === false) {
-                console.log('DisableJson [' + './stats/disable/object/' + message.guild.name + "_" + statObject + '.json' + '] doesnt exist. Stat not disabled.')
+                console.log('DisableJson [' + './disable/stats/object/' + message.guild.id + "_" + statObject + '] doesnt exist. Stat not disabled.')
             } else if(objectDisabled === true) {
                 console.log('Object [' + statObject + '] disabled.')
                 message.reply(':no_entry:' + 'Object [**' + statObject + '**] disabled!')

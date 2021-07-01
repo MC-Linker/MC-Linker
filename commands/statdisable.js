@@ -16,31 +16,25 @@ module.exports = {
 
         console.log(message.member.user.tag + ' executed ^statdisable ' + mode + ' ' + object + ' in ' + message.guild.name)
 
-        const disableJson = {
-            "disable": "disabled" 
-        }
-
-        const disableString = JSON.stringify(disableJson, null, 2);
-
         if(mode === 'category') {
 
-            fs.writeFile('./stats/disable/category/' + message.guild.name + "_" + object + '.json', disableString, err => {
+            fs.writeFile('./disable/stats/category/' + message.guild.id + "_" + object, '\u200b', err => {
                 if (err) {
-                    console.log('Error writing disableJSON ', err)
+                    console.log('Error writing disableFile ', err)
                     message.reply("<:Error:849215023264169985> Error, please check ^help statdisable for correct usage.")
                 } else {
-                    console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
+                    console.log('Successfully wrote disableFile: ' + './disable/stats/object/' + message.guild.id + "_" + object);
                     message.reply('<:Checkmark:849224496232660992> Disabling of **' + mode + ' ' + object + '** succesful.')
                 }
             })
         } else if(mode === 'object') {
 
-                fs.writeFile('./stats/disable/object/' + message.guild.name + "_" + object + '.json', disableString, err => {
+                fs.writeFile('./disable/stats/' + message.guild.id + "_" + object, '\u200b', err => {
                     if (err) {
-                        console.log('Error writing disableJSON ', err)
+                        console.log('Error writing disableFile ', err)
                         message.reply("<:Error:849215023264169985> Error, please check ^help statdisable for correct usage.")
                     } else {
-                        console.log('Successfully wrote disableJSON: ' + './stats/disable/object/' + message.guild.name + "_" + object + '.json')
+                        console.log('Successfully wrote disableFile: ' + './disable/stats/object/' + message.guild.id + "_" + object);
                         message.reply('<:Checkmark:849224496232660992> Disabling of **' + mode + ' ' + object + '** succesful.')
                     }
                 })
