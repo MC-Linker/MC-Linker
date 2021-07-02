@@ -20,16 +20,18 @@ module.exports = {
             fs.unlink('./disable/stats/category/' + message.guild.id + '_' + object, (err => {
                 if(err) {
                     console.log('Error deleting disableFile ', err)
-                    message.reply("<:Error:849215023264169985> Error, please check ^help statenable for correct usage.")
+                    message.reply("<:Error:849215023264169985> Error. Is category already enabled? ^help statenable for correct usage.")
+                } else {
+                    console.log('Deleted disableFile: ' + message.guild.id + '_' + object)
+                    message.reply('<:Checkmark:849224496232660992> Category [**'  + object + '**] succesfully enabled!')
                 }
-                console.log('Deleted disableFile: ' + message.guild.id + '_' + object)
-                message.reply('<:Checkmark:849224496232660992> Category [**'  + object + '**] succesfully enabled!')
+                
             }));
         } else if (mode === 'object') {
             fs.unlink('./disable/stats/object/' + message.guild.id + '_' + object, (err => {
                 if(err) {
                     console.log('Error deleting disableFile ', err)
-                    message.reply("<:Error:849215023264169985> Error. Is stat already enabled? ^help statenable for correct usage.")
+                    message.reply("<:Error:849215023264169985> Error. Is object already enabled? ^help statenable for correct usage.")
                 } else {
                     console.log('Deleted disableFile: ' + message.guild.id + '_' + object)
                     message.reply('<:Checkmark:849224496232660992> Object [**'  + object + '**] succesfully enabled!')
