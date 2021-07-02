@@ -55,7 +55,7 @@ client.on('message', (message) => {
                     { name: 'FTP', value: client.commands.get('ftp').description },
                     { name: 'CONNECT', value: client.commands.get('connect').description },
                     { name: 'STATHELP', value: client.commands.get('stathelp').description },
-                    { name: 'STATDISABLE', value: client.commands.get('statdisable'.description )},
+                    { name: 'STATDISABLE', value: client.commands.get('statdisable').description },
                     { name: 'STATENABLE', value: client.commands.get('statenable').description },
                     { name: 'STATSTATE', value: client.commands.get('statenable').description },
                     { name: 'ADVANCEMENTS', value: client.commands.get('advancements').description },
