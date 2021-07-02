@@ -1,6 +1,6 @@
 module.exports = {
     name: 'statstate',
-    description: 'Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block>/statstate(outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE',
+    description: 'Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block **id**> **//** statstate (outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE',
     execute(message, args){
 
         const Discord = require('discord.js');

@@ -57,7 +57,7 @@ client.on('message', (message) => {
                     { name: 'STATHELP', value: client.commands.get('stathelp').description },
                     { name: 'STATDISABLE', value: client.commands.get('statdisable').description },
                     { name: 'STATENABLE', value: client.commands.get('statenable').description },
-                    { name: 'STATSTATE', value: client.commands.get('statenable').description },
+                    { name: 'STATSTATE', value: client.commands.get('statstate').description },
                     { name: 'ADVANCEMENTS', value: client.commands.get('advancements').description },
                     { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' },
                     { name: 'TXP', value: client.commands.get('txp').description }
