@@ -1,6 +1,6 @@
 module.exports = {
     name: 'connect',
-    description: "Connect your Discord Account with your Minecraft Account. \n USAGE: connect <Minecraftname>",
+    description: "Connect your minecraft account with your discord account. \n USAGE: connect <Minecraftname>",
     execute(message, args){
 
         const fetch = require('node-fetch')

@@ -1,6 +1,6 @@
 module.exports = {
     name: 'stathelp',
-    description: "Currently WIP, just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.",
+    description: "Currently **WIP**. Just use this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names) for now.",
     execute(message, args) {
 
         const Discord = require("discord.js")

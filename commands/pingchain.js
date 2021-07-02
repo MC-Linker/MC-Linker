@@ -1,6 +1,6 @@
 module.exports = {
     name: 'pingchain',
-    description: "Ping a User up to 100 times with configurable delay. \n USAGE: Pingchain @<username> <Pingnumber> <Delay between Pings in milliseconds> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.",
+    description: "Ping a User up to 100 times with configurable delay. \n USAGE: pingchain @<username> <Pingnumber> <Delay between Pings in milliseconds> \IMPORTANT: The Pings will be automatically deleted after 3 minutes.",
     execute(message, args){
 
         const Discord = require('discord.js');
