@@ -1,6 +1,6 @@
 module.exports = {
     name: 'statdisable',
-    description: 'Disable a specific statcategory/item/entity/block. \nUSAGE: statdisable category/object <category/item/entity/block **id**> \n EXAMPLE: statdisable category picked_up OR statdisable object blaze OR statdisable object netherite_ingot',
+    description: 'Disable a specific statcategory/item/entity/block. \nUSAGE: statdisable category/object <category/item/entity/block **id**> \n EXAMPLE: statdisable category picked_up **//** statdisable object blaze **//** statdisable object netherite_ingot',
     execute(message, args){
 
         const fs = require('fs');
