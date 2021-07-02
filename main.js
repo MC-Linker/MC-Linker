@@ -46,6 +46,7 @@ client.on('message', (message) => {
                 .setColor('#000000')
                 .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .addFields(
+                    { name: 'IMPORTANT', value: 'Aliases dont work currently.' },
                     { name: 'PREFIX', value: 'This Bot uses the PREFIX: **^** \nIMPORTANT: Use this PREFIX at the start of every command.' },
                     { name: 'HELP', value: 'Useful information about EVERY command. \nUSAGE: help' },
                     { name: 'RANDOM', value: client.commands.get('random').description },
