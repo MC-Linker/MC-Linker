@@ -47,7 +47,7 @@ client.on('message', (message) => {
                 .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .addFields(
                     { name: 'IMPORTANT', value: 'Aliases dont work currently.' },
-                    { name: 'PREFIX', value: 'This Bot uses the PREFIX: **^** \nIMPORTANT: Use this PREFIX at the start of every command.' },
+                    { name: 'PREFIX', value: 'This Bot uses the PREFIX: **^** \nUse this PREFIX at the start of every command.' },
                     { name: 'HELP', value: 'Useful information about EVERY command. \nUSAGE: help' },
                     { name: 'RANDOM', value: client.commands.get('random').description },
                     { name: 'STATS', value: client.commands.get('stats').description },
@@ -59,7 +59,7 @@ client.on('message', (message) => {
                     { name: 'STATENABLE', value: client.commands.get('statenable').description },
                     { name: 'STATSTATE', value: client.commands.get('statstate').description },
                     { name: 'ADVANCEMENTS', value: client.commands.get('advancements').description },
-                    { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**' },
+                    { name: 'ADVANCEMENTHELP', value: 'Currently **WIP**. Just use this [website](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements) for now.' },
                     { name: 'TXP', value: client.commands.get('txp').description }
                 );
             message.channel.send(HelpEmbed);
