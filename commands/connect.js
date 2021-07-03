@@ -23,24 +23,28 @@ module.exports = {
                 .then(data => data.json())
                 .then(player => player.id);
         }
-        
-        getId(ingameName).then(id => {
-            message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft-username: **${ingameName}** and UUID: **${id}**`)
-            console.log(message.member.user.tag + " connected with uuid: " + id + ' in ' + message.guild.name)
-        })
 
         getId(ingameName).then(id => {
+            id = id.split('');
+            for(let i = 8; i <=23; i+=5) id.splice(i,0,'-');                       
+            id = id.join("");
+
+            console.log(message.member.user.tag + " connected with uuid: " + id + ' in ' + message.guild.name);
+
             const connectionJson = {
-            "id": id
+                "id": id
             }
 
             const connectionString = JSON.stringify(connectionJson, null, 2);
 
-            fs.writeFile('./connections/' + message.member.user.tag + '.json', connectionString, err => {
+            fs.writeFile('./connections/' + message.member.user.id + '.json', connectionString, err => {
                 if (err) {
-                    console.log('Error writing file', err)
+                    message.channel.send('<:Error:849215023264169985> Error while trying to connect.');
+                    console.log('Error writing conectionFile', err);
+                    return;
                 } else {
-                    console.log('Successfully wrote connectionfile')
+                    message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft-username: **${ingameName}** and UUID: **${id}**`);
+                    console.log('Successfully wrote connectionfile');
                 }
             })
         });
