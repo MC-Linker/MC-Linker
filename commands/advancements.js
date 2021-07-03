@@ -29,11 +29,7 @@ module.exports = {
                 return;
             }
             const connectionData = JSON.parse(connectionJson);
-            const minecraftId = connectionData.id;
-
-            let uuidv4 = minecraftId.split('')
-            for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');                       
-            uuidv4 = uuidv4.join("");
+            const uuidv4 = connectionData.id;
 
             fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', async function(err, ftpJson) {
                 if(err) {

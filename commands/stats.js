@@ -4,29 +4,46 @@ module.exports = {
     usage: 'stats @<username> <Statcategory **id**> <Statitem/block/entity **id**> ',
     example: 'stats @Lianecx mined iron_ore **//** stats @Lianecx custom play_time **//** stats @Lianecx killed blaze',
     description: "Look at your and other member's minecraft server stats. \nNOTE: Stats are MUCH faster updated in minecraftversion: 1.17 \n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
-    execute(message, args) {
+    async execute(message, args) {
 
         const fs = require('fs');
         const ftp = require('ftp')
         const Discord = require('discord.js')
+        const fetch = require('node-fetch');
 
-        if (!message.mentions.users.size) {
-            console.log(message.member.user.tag + ' executed ^stats without user in ' + message.guild.name)
-            message.reply(':warning: ' + 'You need to tag a user!');
-            return;
-        }
         const statType = (args[1]);
         const statObject = (args[2]);
-        const taggedUser = message.mentions.users.first();
+        let taggedUser;
+        let taggedName;
+        let uuidv4;
 
-        console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedUser.tag + ' in ' + message.guild.name);
+        if(!message.mentions.users.size) {
+            taggedName = (args[0]);
+            taggedUser = (args[0]);
+            // @ts-ignore
+            const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${taggedUser}`)
+                .then(data => data.json())
+                .then(player => player.id);
+            console.log(minecraftId)
+            uuidv4 = minecraftId.split('');
+            for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');
+            uuidv4 = uuidv4.join("");
+        } else {
+            taggedUser = message.mentions.users.first();
+            taggedName = taggedUser.tag;
+            fs.readFile('./connections/' + taggedUser.id + '.json', 'utf8', function(err, connectionJson) {
+                if(err) {
+                    message.reply('<:Error:849215023264169985> Error reading connectionFile')
+                    console.log('Error reading connectionFile from disk: ', err);
+                    return;
+                }
+                const connectionData = JSON.parse(connectionJson);
+                uuidv4 = connectionData.id;
+            })
+        }
 
-        fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', async function(err, connectionJson) {
-            if(err) {
-                message.reply(':warning: ' + 'User [**' + taggedUser.tag + '**] isnt connected!')
-                console.log('Error reading file from disk: ', err);
-                return;
-            }
+        console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
+
             let categoryDisabled = fs.existsSync('./disable/stats/category/' + message.guild.id + "_" + statType)
             if(categoryDisabled === false) {
                 console.log('DisableJson [' + './disable/stats/category/' + message.guild.id + "_" + statType + '] doesnt exist. Stat not disabled.')
@@ -43,13 +60,6 @@ module.exports = {
                 message.reply(':no_entry:' + 'Object [**' + statObject + '**] disabled!')
                 return; 
             }
-            
-            const connectionData = JSON.parse(connectionJson);
-            const minecraftId = connectionData.id;
-
-            let uuidv4 = minecraftId.split('')
-            for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');                       
-            uuidv4 = uuidv4.join("");
 
 
             async function ftpconnect() {
@@ -128,8 +138,8 @@ module.exports = {
                     console.log('Error reading ftp file from disk: ', err);
                     return;
                     }
-                    try {
 
+                    try {
                         const ftpData = JSON.parse(ftpJson);
                         const statData = JSON.parse(statJson);
                         const version = ftpData.version;
@@ -139,12 +149,12 @@ module.exports = {
                         let searchName;
                         if(version === '1.13' || version === '1.14' || version === '1.15' || version === '1.16' || version === '1.17') searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject];
                         else if(version === '1.12' || version === '1.11' || version === '1.10' || version === '1.9' || version === '1.8' || version === '1.7') searchName = statData["stat." + statType + '.minecraft.' + statObject]
-
+            
                         if (searchName) {
                             if(statType === 'custom') {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                    .addField(taggedUser.tag, '**' + statObject + ' ' + searchName + '** ')
+                                    .addField(taggedName, '**' + statObject + ' ' + searchName + '** ')
                                     if(imageExists === false) {
                                         console.log('No Image available for ' + statObject)
                                     } else {
@@ -155,7 +165,7 @@ module.exports = {
                             } else if (statType === 'killed_by') {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                    .addField(taggedUser.tag, 'was killed **' + searchName + '** times by a **' + statObject + '**')
+                                    .addField(taggedName, 'was killed **' + searchName + '** times by a **' + statObject + '**')
                                     if(imageExists === false) {
                                         console.log('No Image available for ' + statObject)
                                     } else {
@@ -164,10 +174,10 @@ module.exports = {
                                     }
                                 message.channel.send(statEmbed)
                             } else {
-                                console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedUser.tag + " : " + searchName)
+                                console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedName + " : " + searchName)
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                    .addField(taggedUser.tag, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**');
+                                    .addField(taggedName, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**');
                                     if(imageExists === false) {
                                         console.log('No Image available for ' + statObject)
                                     } else {
@@ -183,10 +193,9 @@ module.exports = {
                         }
                     } catch (err) {
                         console.log('Error parsing Stat JSON string: ', err);
-                        message.reply('<:Error:849215023264169985> ' + taggedUser.tag + ' has never done anything in this category.')
+                        message.reply('<:Error:849215023264169985> ' + taggedName + ' has never done anything in this category.')
                     }
                 })
             })
-        })
     }
 }
