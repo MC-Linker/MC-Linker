@@ -58,7 +58,7 @@ client.on('message', (message) => {
             let command = (args[0]).toLowerCase();
             command = client.commands.get(command) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(command));
 
-            console.log(message.member.user.tag + ' executed ^help ' + command);
+            console.log(message.member.user.tag + ' executed ^help ' + command.name);
 
             let helpEmbed;
             try {

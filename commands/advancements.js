@@ -2,7 +2,7 @@ module.exports = {
     name: 'advancements',
     aliases: ['am', 'advancement'],
     usage: 'advancements <advancementTab> <advancementid>',
-    example: '^advancements story iron_tools **//** ^advancements adventure adventuring_time **//** ^advancements recipes loom',
+    example: '^advancements @Lianecx story iron_tools **//** ^advancements @Lianecx adventure adventuring_time **//** ^advancements @Lianecx recipes loom',
     description: 'Look up your unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).',
     execute(message, args) {
 
