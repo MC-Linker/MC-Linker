@@ -1,6 +1,9 @@
 module.exports = {
     name: 'ftp',
-    description: "Connect your minecraft Server with the bot. Can only be used by Admins. \n USAGE: ftp <host> <username> <password> <port (default 21)> <path to world folder. Default Path: minecraft/WORLDNAME> <minecraft-version the minecraft-server is on>",
+    aliases: ['ftpconnect', 'connectftp', 'server', 'connectserver', 'serverconnect'],
+    usage: 'ftp <host> <username> <password> <port> <path to world folder. Default Path: minecraft/WORLDNAME> <minecraft-version the minecraft-server is on>',
+    example: 'ftp localhost lianecx supersecretpassword 21 minecraftbukkit/supercoolworld 1.17',
+    description: "Connect your minecraft Server with the bot. Can only be used by **admins**.",
     execute(message, args){
 
         const fs = require("fs")

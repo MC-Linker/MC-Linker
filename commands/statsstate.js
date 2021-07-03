@@ -1,6 +1,9 @@
 module.exports = {
-    name: 'statstate',
-    description: 'Look at all disabled statcategorys/items/entitys/blocks. \nUSAGE: statstate category/object <category/item/entity/block **id**> **//** statstate (outputs states of all disabled categorys/objects) \n EXAMPLE: e.g. STATDISABLE',
+    name: 'statsstate',
+    aliases: ['statstate', 'ss'],
+    usage: 'statsstate category/object <category/item/entity/block **id**>',
+    example: 'statsstate => outputs all disabled stats **//** e.g. STATSDISABLE',
+    description: 'Look at all disabled statcategorys/items/entitys/blocks.',
     execute(message, args){
 
         const Discord = require('discord.js');

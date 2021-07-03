@@ -1,6 +1,9 @@
 module.exports = {
     name: 'advancements',
-    description: 'Look up your unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements) or with ^advancementhelp (**WIP**).\nUSAGE: am/advancements/advancement <advancementTab> <advancementid> \nEXAMPLE: ^advancements story iron_tools **//** ^advancements adventure adventuring_time **//** ^advancements recipes loom',
+    aliases: ['am', 'advancement'],
+    usage: 'advancements <advancementTab> <advancementid>',
+    example: '^advancements story iron_tools **//** ^advancements adventure adventuring_time **//** ^advancements recipes loom',
+    description: 'Look up your unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).',
     execute(message, args) {
 
         const fs = require('fs');
