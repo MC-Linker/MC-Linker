@@ -1,12 +1,21 @@
 module.exports = {
     name: 'connect',
-    description: "Connect your minecraft account with your discord account. \n USAGE: connect <Minecraftname>",
+    aliases: ['connectuser', 'userconnect'],
+    usage: 'connect <Minecraftname>',
+    example: 'connect Lianecx',
+    description: "Connect your minecraft account with your discord account.",
     execute(message, args){
 
         const fetch = require('node-fetch')
         const fs = require('fs')
 
         const ingameName = (args[0]);
+        
+        if(ingameName.startsWith('<@')) {
+            console.log(message.member.user.tag + ' executed connect with ping.');
+            message.channel.send(`<:Error:849215023264169985> Don't ping someone. Use your minecraft in-game name as argument.`);
+            return;
+        }
 
         function getId(playername) {
             // @ts-ignore

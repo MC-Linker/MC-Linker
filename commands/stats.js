@@ -1,6 +1,9 @@
 module.exports = {
     name: 'stats',
-    description: "Look at your and other member's minecraft server stats. \nNOTE: Stats are MUCH faster updated in minecraftversion: 1.17 \nUSAGE: stats @<username> <Statcategory> <Statitem/block/entity> \n EXAMPLE: stats @Lianecx mined iron_ore \n All Categories (ids) can be found either with ^stathelp (**WIP**) or in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
+    aliases: ['stat'],
+    usage: 'stats @<username> <Statcategory **id**> <Statitem/block/entity **id**> ',
+    example: 'stats @Lianecx mined iron_ore **//** stats @Lianecx custom play_time **//** stats @Lianecx killed blaze',
+    description: "Look at your and other member's minecraft server stats. \nNOTE: Stats are MUCH faster updated in minecraftversion: 1.17 \n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
     execute(message, args) {
 
         const fs = require('fs');

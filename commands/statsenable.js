@@ -1,6 +1,9 @@
 module.exports = {
-    name: 'statenable',
-    description: 'Enable a disabled statcategory/item/entity/block. Can only be used by admins. \nUSAGE: statenable category/object <category/item/entity/block **id**> \n EXAMPLE: e.g. STATDISABLE',
+    name: 'statsenable',
+    aliases: ['se', 'statenable'],
+    usage: 'statsenable category/object <category/item/entity/block **id**> ',
+    example: 'e.g. STATSDISABLE',
+    description: 'Enable a disabled statcategory/item/entity/block. Can only be used by **admins**.',
     execute(message, args){
 
         const fs = require('fs');
