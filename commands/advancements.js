@@ -1,35 +1,55 @@
 module.exports = {
     name: 'advancements',
     aliases: ['am', 'advancement'],
-    usage: 'advancements <advancementTab> <advancementid>',
-    example: '^advancements @Lianecx story iron_tools **//** ^advancements @Lianecx adventure adventuring_time **//** ^advancements @Lianecx recipes loom',
+    usage: 'advancements <@mention>/<ingamename> <advancementTab> <advancementid>',
+    example: '^advancements @Lianecx story iron_tools **//** ^advancements @Memer adventure adventuring_time **//** ^advancements xXgamerboyyXx recipes loom',
     description: 'Look up your unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).',
-    execute(message, args) {
+    async execute(message, args) {
 
         const fs = require('fs');
-        const ftp = require('ftp')
-        const Discord = require('discord.js')
+        const ftp = require('ftp');
+        const Discord = require('discord.js');
+        const fetch = require('node-fetch');
 
-        if (!message.mentions.users.size) {
-            console.log(message.member.user.tag + ' executed ^advancements without user in ' + message.guild.name)
-            message.reply(':warning: ' + 'You need to tag a user!');
-            return;
-        }
-
-        const taggedUser = message.mentions.users.first();
         const mode = (args[1]);
         const object = (args[2]);
+        let taggedUser;
+        let taggedName;
+        let uuidv4;
 
-        console.log(message.member.user.tag + ' executed ^advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedUser.tag + ' in ' + message.guild.name);
-
-        fs.readFile('./connections/' + taggedUser.tag + '.json', 'utf8', (err, connectionJson) => {
-            if(err) {
-                message.reply(':warning: ' + 'User isnt connected!')
-                console.log('Error reading file from disk: ', err);
+        if(!message.mentions.users.size) {
+            taggedName = (args[0]);
+            // @ts-ignore
+            try {
+                // @ts-ignore
+                const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${taggedName}`)
+                .then(data => data.json())
+                .then(player => player.id);
+                console.log(minecraftId);
+                uuidv4 = minecraftId.split('');
+                for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');
+                uuidv4 = uuidv4.join("");
+            } catch (err) {
+                message.reply('Player [**' + taggedName + '**] does not seem to exist.')
+                console.log('Error getting uuid of ' + taggedName, err)
                 return;
             }
-            const connectionData = JSON.parse(connectionJson);
-            const uuidv4 = connectionData.id;
+        } else {
+            taggedUser = message.mentions.users.first();
+            taggedName = taggedUser.tag;
+            fs.readFile('./connections/' + taggedUser.id + '.json', 'utf8', function(err, connectionJson) {
+                if(err) {
+                    message.reply(":warning: User isn't connected");
+                    console.log('Error reading connectionFile from disk: ', err);
+                    return;
+                }
+                const connectionData = JSON.parse(connectionJson);
+                uuidv4 = connectionData.id;
+            })
+        }
+
+        console.log(message.member.user.tag + ' executed ^advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
+
 
             fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', async function(err, ftpJson) {
                 if(err) {
@@ -92,7 +112,7 @@ module.exports = {
                 const baseEmbed = new Discord.MessageEmbed()
                     .setColor('#730A85')
                     .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .setTitle(taggedUser.tag)
+                    .setTitle(taggedName)
                     .addField(`=======================\n${mode} ${object}`, '**=======================**')
                     .setImage('https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png')
 
@@ -109,7 +129,7 @@ module.exports = {
                         let searchName = advancementData[filteredKeys]['criteria'][criteria]
                         searchName = searchName.replace(' +0000', '')
 
-                        console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedUser.tag + ' : ' + searchName)
+                        console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedName + ' : ' + searchName)
                         const amEmbed = baseEmbed.addField('Criteria', criteria).addField('unlocked on', searchName)
                         message.channel.send(amEmbed)
                     } else {
@@ -123,7 +143,7 @@ module.exports = {
                                 searchName = searchName.replace(' +0000', '');
                                 amEmbed = baseEmbed.addField('Criteria', key[i], true).addField('completed on', searchName, true).addField('\u200b', '\u200b', true)
                             }
-                            console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedUser.tag + ' : ' + searchName)
+                            console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedName + ' : ' + searchName)
                             message.channel.send(amEmbed)
                         } catch (err) {
                             console.log('Error sending advancement.', err)
@@ -137,6 +157,5 @@ module.exports = {
                 }
             })
             })
-        })
     }
 }

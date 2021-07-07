@@ -68,7 +68,7 @@ client.on('message', (message) => {
                     .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .setColor('#000000')
                     .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: ${command.usage}\n\n**EXAMPLE**: ${command.example}`);
+                    .addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}\n\n**ALIASES**: \n${command.aliases.join(', ')}`);
             } catch (err) {
                 console.log("Command [" + command + "] doesn't exist.", err);
                 message.reply(":warning: Command [**" + command + "**] doesn't exist.");
@@ -86,11 +86,8 @@ client.on('message', (message) => {
 
             const disabled = fs.existsSync('./disable/command/' + message.guild.id + '_' + command.name);
             if (disabled === false) {
-                console.log('disableCommandFile doesnt exist. Command not disabled.')
-                message.channel.send('\u200b', {
-                    embed: helpEmbed,
-                    button: disableButton
-                });
+                console.log('disableCommandFile doesnt exist. Command not disabled.');
+                message.channel.send({embed: helpEmbed, button: disableButton});
             } else if (disabled === true) {
                 helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
                 message.channel.send({embed: helpEmbed, button: enableButton});
@@ -141,14 +138,15 @@ client.on('clickButton', async (button) => {
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('#000000')
                 .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                .addField(client.commands.get(command).name.toUpperCase(), client.commands.get(command).description + `\n\n**USAGE**: ${client.commands.get(command).usage}\n\n**EXAMPLE**: ${client.commands.get(command).example}`);
+                .addField(client.commands.get(command).name.toUpperCase(), client.commands.get(command).description + `\n\n**USAGE**: ${client.commands.get(command).usage}\n\n**EXAMPLE**: ${client.commands.get(command).example}\n\n**ALIASES**: \n${client.commands.get(command).aliases.join(', ')}`);
 
             const enableButton = new disbut.MessageButton()
                 .setStyle('green')
                 .setID('enable' + command)
                 .setLabel('Enable this command!');
             
-            helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
+            helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```')
+                     .setColor('RED');
             button.message.edit({embed: helpEmbed, button: enableButton});
 
             button.defer();
@@ -178,7 +176,7 @@ client.on('clickButton', async (button) => {
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('#000000')
                 .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                .addField(client.commands.get(command).name.toUpperCase(), client.commands.get(command).description + `\n\n**USAGE**: ${client.commands.get(command).usage}\n\n**EXAMPLE**: ${client.commands.get(command).example}`);
+                .addField(client.commands.get(command).name.toUpperCase(), client.commands.get(command).description + `\n\n**USAGE**: ${client.commands.get(command).usage}\n\n**EXAMPLE**: ${client.commands.get(command).example}\n\n**ALIASES**: \n${client.commands.get(command).aliases.join(', ')}`);
 
             const disableButton = new disbut.MessageButton()
                 .setStyle('red')
@@ -186,6 +184,7 @@ client.on('clickButton', async (button) => {
                 .setLabel('Disable this command!');
 
             helpEmbed.setDescription('You can find helpful information here. \n```diff\n+ [Command enabled]```')
+                     .setColor('GREEN');
             button.message.edit({embed: helpEmbed, button: disableButton})
 
             button.defer();
@@ -197,3 +196,4 @@ client.on('clickButton', async (button) => {
     }
 });
 client.login(process.env.token);
+//client.login(token);
