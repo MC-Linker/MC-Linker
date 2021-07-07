@@ -1,8 +1,8 @@
 module.exports = {
     name: 'stats',
     aliases: ['stat'],
-    usage: 'stats @<username> <Statcategory **id**> <Statitem/block/entity **id**> ',
-    example: 'stats @Lianecx mined iron_ore **//** stats @Lianecx custom play_time **//** stats @Lianecx killed blaze',
+    usage: 'stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**> ',
+    example: 'stats @Lianecx mined iron_ore **//** stats @Memer custom play_time **//** stats xXgamerboyyXx killed blaze',
     description: "Look at your and other member's minecraft server stats. \nNOTE: Stats are MUCH faster updated in minecraftversion: 1.17 \n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
     async execute(message, args) {
 
@@ -20,20 +20,26 @@ module.exports = {
         if(!message.mentions.users.size) {
             taggedName = (args[0]);
             taggedUser = (args[0]);
-            // @ts-ignore
-            const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${taggedUser}`)
+            try {
+                // @ts-ignore
+                const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${taggedUser}`)
                 .then(data => data.json())
                 .then(player => player.id);
-            console.log(minecraftId)
-            uuidv4 = minecraftId.split('');
-            for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');
-            uuidv4 = uuidv4.join("");
+                console.log(minecraftId);
+                uuidv4 = minecraftId.split('');
+                for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');
+                uuidv4 = uuidv4.join("");
+            } catch (err) {
+                message.reply('Player [**' + taggedName + '**] does not seem to exist.');
+                console.log('Error getting uuid of ' + taggedName);
+                return;
+            }
         } else {
             taggedUser = message.mentions.users.first();
             taggedName = taggedUser.tag;
             fs.readFile('./connections/' + taggedUser.id + '.json', 'utf8', function(err, connectionJson) {
                 if(err) {
-                    message.reply('<:Error:849215023264169985> Error reading connectionFile')
+                    message.reply(":warning: User isn't connected");
                     console.log('Error reading connectionFile from disk: ', err);
                     return;
                 }
@@ -69,6 +75,7 @@ module.exports = {
                             console.log('Error reading ftpFile from disk: ', err);
                             message.reply('<:Error:849215023264169985> ' + 'Could not find ftpcredentials. Please contact a server-admin.')
                             reject('error');
+                            return;
                         }
 
                         let ftpData;
@@ -86,20 +93,23 @@ module.exports = {
                             console.log('Error reading ftpFile from disk: ', err);
                             message.reply('<:Error:849215023264169985> Could not read serverFile.')
                             reject('error');
+                            return;
                         }
 
                         const ftpClient = new ftp();
                         ftpClient.on('error', function(err) {
                             console.log('Error! ', err);
                             message.reply('<:Error:849215023264169985> Could not connect to server.')
-                            reject('error')
+                            reject('error');
+                            return;
                         })
                         ftpClient.on('ready', function() {
                             ftpClient.get(ftpData.path + '/stats/' + uuidv4 + '.json', function(err, stream) {
                                 if(err) {
                                     console.log('Could not download stats. ', err);
-                                    message.reply('<:Error:849215023264169985> ' + 'Could not download stats. ')
+                                    message.reply('<:Error:849215023264169985> ' + 'Could not download stats. The User most likely never joined the server.')
                                     reject('error')
+                                    return;
                                 }
                                 stream.once('close', function() {
                                     ftpClient.end();
@@ -120,6 +130,7 @@ module.exports = {
                             console.log('Could not connect to server. ', err);
                             message.reply('<:Error:849215023264169985> ' + 'Could not connect to server.')
                             reject('error')
+                            return;
                         }  
                     })  
                 })
@@ -154,14 +165,17 @@ module.exports = {
                             if(statType === 'custom') {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                    .addField(taggedName, '**' + statObject + ' ' + searchName + '** ')
+                                    // @ts-ignore
+                                    if(statObject === 'play_time' || statObject === 'time_played') {statEmbed.addField(taggedName, `has played for **${(((searchName / 20) / 60) / 60).toFixed(2)}** hours`)}
+                                    else {statEmbed.addField(taggedName, '**' + statObject + ' ' + searchName + '** ')}
                                     if(imageExists === false) {
                                         console.log('No Image available for ' + statObject)
                                     } else {
                                         statEmbed.attachFiles(['./images/' + statObject + '.png'])
                                         statEmbed.setImage('attachment://' + statObject + '.png')
                                     }
-                                message.channel.send(statEmbed)
+                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
+                                message.channel.send(statEmbed);
                             } else if (statType === 'killed_by') {
                                 const statEmbed = new Discord.MessageEmbed()
                                     .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
@@ -172,7 +186,8 @@ module.exports = {
                                         statEmbed.attachFiles(['./images/' + statObject + '.png'])
                                         statEmbed.setImage('attachment://' + statObject + '.png')
                                     }
-                                message.channel.send(statEmbed)
+                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
+                                message.channel.send(statEmbed);
                             } else {
                                 console.log("Sent stat " + statType + " " + statObject + " from User: " + taggedName + " : " + searchName)
                                 const statEmbed = new Discord.MessageEmbed()
@@ -184,8 +199,8 @@ module.exports = {
                                         statEmbed.attachFiles(['./images/' + statObject + '.png'])
                                         statEmbed.setImage('attachment://' + statObject + '.png')
                                     }
-                                     
-                                message.channel.send(statEmbed)
+                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
+                                message.channel.send(statEmbed);
                             }    
                         } else {
                             console.log("No Match found!")
