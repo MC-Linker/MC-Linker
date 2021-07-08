@@ -29,8 +29,8 @@ module.exports = {
 			ftpClient.on('ready', function() {
 				ftpClient.get(getPath, function(err, stream) {
 					if(err) {
-						console.log('Could not download stats. ', err);
-						message.reply('<:Error:849215023264169985> ' + 'Could not download stats. The User most likely never joined the server.');
+						console.log('Could not download files. ', err);
+						message.reply('<:Error:849215023264169985> ' + 'Could not download files. The User most likely never joined the server.');
 						reject('error');
 						return;
 					}
@@ -73,8 +73,8 @@ module.exports = {
 			ftpClient.on('ready', function() {
 				ftpClient.put(getPath, putPath, function(err) {
 					if(err) {
-						console.log('Could not download stats. ', err);
-						message.reply('<:Error:849215023264169985> ' + 'Could not download stats. The User most likely never joined the server.');
+						console.log('Could not download files. ', err);
+						message.reply('<:Error:849215023264169985> ' + 'Could not download files. The User most likely never joined the server.');
 						reject('error');
 						return;
 					}

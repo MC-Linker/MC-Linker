@@ -1,3 +1,5 @@
+const { connect } = require('http2');
+
 module.exports = {
     name: 'stats',
     aliases: ['stat'],
@@ -42,15 +44,16 @@ module.exports = {
         } else {
             taggedUser = message.mentions.users.first();
             taggedName = taggedUser.tag;
-            fs.readFile('./connections/' + taggedUser.id + '.json', 'utf8', async (err, connectionJson) => {
-                if(err) {
-                    message.reply(":warning: User isn't connected");
-                    console.log('Error reading connectionFile from disk: ', err);
-                    return;
-                }
+            try {
+                const connectionJson = fs.readFileSync('./connections/' + taggedUser.id + '.json');
+                // @ts-ignore
                 const connectionData = await JSON.parse(connectionJson);
                 uuidv4 = connectionData.id;
-            })
+            } catch (err) {
+                message.reply(":warning: User isn't connected");
+                console.log('Error reading connectionFile from disk: ', err);
+                return;
+            }
         }
 
         console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
