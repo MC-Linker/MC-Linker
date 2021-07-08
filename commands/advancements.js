@@ -75,7 +75,7 @@ module.exports = {
             console.log('Error reading ftp file from disk: ', err);
             return;
         }
-        await ftp.get(host, user, pass, port, `${worldPath}/advancements/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
+        await ftp.get(host, user, pass, port, `${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
 
         fs.readFile('./advancements/' + uuidv4 + '.json', 'utf8', (err, advancementJson) => {
             if(err) {
