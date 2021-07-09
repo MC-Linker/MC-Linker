@@ -11,17 +11,17 @@ module.exports = {
         const Discord = require('discord.js');
         const fetch = require('node-fetch');
 
-        if(!args[0]) {
-            console.log(message.member.user.tag + ' executed ^stats incorrect!');
-            message.reply('<:Error:849215023264169985> Incorrect Usage of command. ^help stats for correct usage.');
-            return;
-        }
-
         const mode = (args[1]);
         const object = (args[2]);
         let taggedUser;
         let taggedName;
         let uuidv4;
+
+        if(!mode || !object || !args[0]) {
+            console.log(message.member.user.tag + ' executed ^advancements incorrect!');
+            message.reply(":warning: Wrong Usage! Check ^help advancements for correct usage!");
+            return;
+        }
 
         if(!message.mentions.users.size) {
             taggedName = (args[0]);
@@ -52,6 +52,23 @@ module.exports = {
                 console.log('Error reading connectionFile from disk: ', err);
                 return;
             }
+        }
+
+        let categoryDisabled = fs.existsSync('./disable/advancements/category/' + message.guild.id + "_" + mode);
+        if(categoryDisabled === false) {
+            console.log('DisableFile [' + './disable/advancements/category/' + message.guild.id + "_" + mode + '] doesnt exist. Advancement not disabled.')
+        } else if(categoryDisabled === true) {
+            console.log('Category [' + mode + '] disabled.')
+            message.reply(':no_entry: ' + 'Category [**' + mode + '**] disabled!')
+            return;
+        }
+        let objectDisabled = fs.existsSync('./disable/advancements/object/' + message.guild.id + "_" + object);
+        if(objectDisabled === false) {
+            console.log('DisableFile [' + './disable/advancements/object/' + message.guild.id + "_" + object + '] doesnt exist. Advancement not disabled.')
+        } else if(objectDisabled === true) {
+            console.log('Object [' + object + '] disabled.')
+            message.reply(':no_entry:' + 'Object [**' + object + '**] disabled!')
+            return; 
         }
 
         console.log(message.member.user.tag + ' executed ^advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
