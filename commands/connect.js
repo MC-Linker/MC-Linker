@@ -11,6 +11,12 @@ module.exports = {
 
         const ingameName = (args[0]);
         
+        if(!ingameName) {
+            console.log(message.member.user.tag + ' executed ^connect without args');
+            message.reply('Please specify your minecraft-name.');
+            return;
+        }
+
         if(ingameName.startsWith('<@')) {
             console.log(message.member.user.tag + ' executed connect with ping.');
             message.channel.send(`<:Error:849215023264169985> Don't ping someone. Use your minecraft in-game name as argument.`);
