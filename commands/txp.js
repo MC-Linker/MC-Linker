@@ -3,7 +3,7 @@ module.exports = {
 	aliases: [''],
 	usage: 'txp load/black',
     example: 'txp black **//** txp load <imageLink/imageAttachment>',
-	description: 'Tools for minecraft texturepacks. CURRENTLY NOT WORKING!\ntxp load => Outputs a loading screen from the attachment or the link. \ntxp black => Outputs a file which makes the loading screen black.',
+	description: 'Tools for minecraft texturepacks. \ntxp load => Outputs a loading screen from the attachment or the link. \ntxp black => Outputs a file which makes the loading screen black.',
 	execute (message, args) {
 		const Canvas = require('canvas');
 		const probe = require('probe-image-size');
