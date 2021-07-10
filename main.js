@@ -11,8 +11,9 @@ const disbut = require('discord-buttons');
 disbut(client);
 
 client.once('ready', () => {
+    const Guilds = client.guilds.cache.map(guild => guild.name)
     console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix)
-    console.log('Bot on ' + client.guilds.cache.size + ' server!')
+    console.log('Bot on ' + client.guilds.cache.size + ' server: \n')
     client.user.setActivity(prefix + 'help', {type: "LISTENING"})
 })
 
