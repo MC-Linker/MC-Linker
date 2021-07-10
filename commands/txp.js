@@ -9,6 +9,12 @@ module.exports = {
 		const probe = require('probe-image-size');
 		const Discord = require('discord.js');
 
+		if(!args[0]) {
+			console.log(message.member.user.tag + ' executed ^txp without args');
+			message.reply('Do you want to create a loading screen: **^txp load** \n Or do you want a black loading screen: **txp black**');
+			return;
+		}
+
 		if(args[0] === 'load' || args[0] === 'loading' || args[0] === 'loadingscreen' || args[0] === 'txpload') {
 			async function load() {
 				//get URL of image
