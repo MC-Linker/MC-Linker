@@ -9,13 +9,11 @@ module.exports = {
         const fs = require('fs');
         const ftp = require('../ftpConnect');
         const Discord = require('discord.js');
-        const fetch = require('node-fetch');
+        const utils = require('../utils');
 
         const mode = (args[1]);
         const object = (args[2]);
-        let taggedUser;
         let taggedName;
-        let uuidv4;
 
         if(!mode || !object || !args[0]) {
             console.log(message.member.user.tag + ' executed ^advancements incorrect!');
@@ -23,35 +21,11 @@ module.exports = {
             return;
         }
 
+        const uuidv4 = utils.getUUIDv4(args[0], message);
         if(!message.mentions.users.size) {
-            taggedName = (args[0]);
-            // @ts-ignore
-            try {
-                // @ts-ignore
-                const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${taggedName}`)
-                    .then(data => data.json())
-                    .then(player => player.id);
-                uuidv4 = minecraftId.split('');
-                for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');
-                uuidv4 = uuidv4.join("");
-            } catch (err) {
-                message.reply('<:Error:849215023264169985> Player [**' + taggedName + '**] does not seem to exist.')
-                console.log('Error getting uuid of ' + taggedName, err)
-                return;
-            }
+            taggedName = args[0];
         } else {
-            taggedUser = message.mentions.users.first();
-            taggedName = taggedUser.tag;
-            try {
-                const connectionJson = fs.readFileSync('./connections/' + taggedUser.id + '.json');
-                // @ts-ignore
-                const connectionData = await JSON.parse(connectionJson);
-                uuidv4 = connectionData.id;
-            } catch (err) {
-                message.reply(":warning: User isn't connected");
-                console.log('Error reading connectionFile from disk: ', err);
-                return;
-            }
+            taggedName = message.mentions.users.first().tag;
         }
 
         let categoryDisabled = fs.existsSync('./disable/advancements/category/' + message.guild.id + "_" + mode);
@@ -93,7 +67,7 @@ module.exports = {
             console.log('Error reading ftp file from disk: ', err);
             return;
         }
-        await ftp.get(host, user, pass, port, `${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
+        await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
 
         fs.readFile('./advancements/' + uuidv4 + '.json', 'utf8', (err, advancementJson) => {
             if(err) {

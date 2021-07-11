@@ -11,13 +11,11 @@ module.exports = {
         const fs = require('fs');
         const ftp = require('../ftpConnect');
         const Discord = require('discord.js');
-        const fetch = require('node-fetch');
+        const utils = require('../utils');
 
         const statType = (args[1]);
         const statObject = (args[2]);
-        let taggedUser;
         let taggedName;
-        let uuidv4;
 
         if(!statType || !statObject || !args[0]) {
             console.log(message.member.user.tag + ' executed ^stats incorrect!');
@@ -25,35 +23,11 @@ module.exports = {
             return;
         }
 
+        const uuidv4 = utils.getUUIDv4(args[0], message);
         if(!message.mentions.users.size) {
             taggedName = (args[0]);
-            taggedUser = (args[0]);
-            try {
-                // @ts-ignore
-                const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${taggedUser}`)
-                    .then(data => data.json())
-                    .then(player => player.id);
-                uuidv4 = minecraftId.split('');
-                for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');
-                uuidv4 = uuidv4.join("");
-            } catch (err) {
-                message.reply('<:Error:849215023264169985> Player [**' + taggedName + '**] does not seem to exist.');
-                console.log('Error getting uuid of ' + taggedName);
-                return;
-            }
         } else {
-            taggedUser = message.mentions.users.first();
-            taggedName = taggedUser.tag;
-            try {
-                const connectionJson = fs.readFileSync('./connections/' + taggedUser.id + '.json');
-                // @ts-ignore
-                const connectionData = await JSON.parse(connectionJson);
-                uuidv4 = connectionData.id;
-            } catch (err) {
-                message.reply(":warning: User isn't connected");
-                console.log('Error reading connectionFile from disk: ', err);
-                return;
-            }
+            taggedName = message.mentions.users.first().tag;
         }
 
         console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
@@ -95,7 +69,7 @@ module.exports = {
             console.log('Error reading ftp file from disk: ', err);
             return;
         }
-        await ftp.get(host, user, pass, port, `${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
+        await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
 
         fs.readFile('./stats/' + uuidv4 + '.json', 'utf8', (err, statJson) => {
             if(err) {
