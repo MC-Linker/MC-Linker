@@ -21,7 +21,7 @@ module.exports = {
             return;
         }
 
-        const uuidv4 = utils.getUUIDv4(args[0], message);
+        const uuidv4 = await utils.getUUIDv4(args[0], message);
         if(!message.mentions.users.size) {
             taggedName = args[0];
         } else {
@@ -47,27 +47,7 @@ module.exports = {
 
         console.log(message.member.user.tag + ' executed ^advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
 
-        let host;
-        let user;
-        let pass;
-        let port;
-        let worldPath;
-
-        try {
-            const ftpJson = fs.readFileSync('./ftp/' + message.guild.id + '.json');
-            // @ts-ignore
-            const ftpData = JSON.parse(ftpJson);
-            host = ftpData.host;
-            user = ftpData.user;
-            pass = ftpData.password;
-            port = ftpData.port;
-            worldPath = ftpData.path;
-        } catch (err) {
-            message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please contact a server-admin.')
-            console.log('Error reading ftp file from disk: ', err);
-            return;
-        }
-        await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
+        await ftp.get(`/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
 
         fs.readFile('./advancements/' + uuidv4 + '.json', 'utf8', (err, advancementJson) => {
             if(err) {
