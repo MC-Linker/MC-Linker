@@ -1,6 +1,7 @@
 module.exports = {
 	getUUIDv4: async function (user, message) {
 		const fs = require('fs');
+        const fetch = require('node-fetch');
 		
 		if(!message.mentions.users.size) {
             const taggedName = (user);
