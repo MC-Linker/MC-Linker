@@ -78,11 +78,11 @@ module.exports = {
 
                 const itemImgName = id.split('minecraft:').pop();
                 try {
-                    const itemImg = await Canvas.loadImage(`./images/${itemImgName.toLowerCase()}.png`);
+                    const itemImg = await Canvas.loadImage(`./images/${itemImgName}.png`);
                     ctx.drawImage(itemImg, 0, 0, 80, 80, slotDim[0], slotDim[1], 32, 32);
                     if(count > 1) {ctx.font = '14px Minecraft Regular'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
                 } catch (err) {
-                    console.log('Error trying to apply img: ' + id + ' Applying text...', err);
+                    console.log('Error trying to apply img: ' + id + ' Applying text...');
                     ctx.font = '6px Minecraft Regular';
                     ctx.fillStyle = '#000000';
                     ctx.fillText(itemImgName, slotDim[0], slotDim[1] + 16);
