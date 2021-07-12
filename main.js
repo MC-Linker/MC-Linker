@@ -1,8 +1,8 @@
 // @ts-nocheck
 console.log('Loading...')
 
-//const prefix = "^";
-const { prefix, token } = require('../config.json');
+const prefix = "^";
+//const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client()
 const fs = require('fs');
@@ -53,7 +53,7 @@ client.on('message', (message) => {
         client.commands.forEach(cmd => {
             helpEmbed.addField(cmd.name.toUpperCase(), `${cmd.description}`);
         });
-        helpEmbed.addField('\u200B', 'Still need help? => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+        helpEmbed.addField('\u200B', '**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
         message.channel.send(helpEmbed);
 
         } else {
@@ -131,7 +131,7 @@ client.on('clickButton', async (button) => {
                     return;
                 } else {
                     console.log('Successfully wrote commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
-                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`);
+                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`, true);
                 }
             })
 
@@ -149,10 +149,10 @@ client.on('clickButton', async (button) => {
                 .setLabel('Enable this command!');
             
             helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```')
-                     .setColor('RED');
+                     .setColor('DARK_RED');
             button.message.edit({embed: helpEmbed, button: enableButton});
 
-            button.defer();
+            button.reply.defer();
         } else {
             console.log('Clicker of ' + button.id + ' doesnt have admin.');
             button.reply('You must be an administrator to use that button!');
@@ -171,7 +171,7 @@ client.on('clickButton', async (button) => {
                     return;
                 } else {
                     console.log('Successfully deleted commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
-                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`);
+                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`, true);
                 }
             });
             helpEmbed = new Discord.MessageEmbed()
@@ -191,7 +191,7 @@ client.on('clickButton', async (button) => {
                      .setColor('GREEN');
             button.message.edit({embed: helpEmbed, button: disableButton})
 
-            button.defer();
+            button.reply.defer();
         } else {
             console.log('Clicker of ' + button.id + ' doesnt have admin.');
             button.reply('You must be an administrator to use that button!');
@@ -199,5 +199,5 @@ client.on('clickButton', async (button) => {
         }
     }
 });
-//client.login(process.env.token);
-client.login(token);
+client.login(process.env.token);
+//client.login(token);
