@@ -45,16 +45,17 @@ client.on('message', (message) => {
 
         let helpEmbed = new Discord.MessageEmbed()
             .setTitle('Help Menu')
-            .setDescription('You can find helpful information about EVERY command here!')
+            .setDescription('You can find helpful information about EVERY command here!\n**More Help** to a specific command with:\n**^help <command>**')
             .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
             .setColor('#000000')
-            .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png');
+            .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png');
 
         client.commands.forEach(cmd => {
-            helpEmbed.addField(cmd.name.toUpperCase(), `${cmd.description}`)
+            helpEmbed.addField(cmd.name.toUpperCase(), `${cmd.description}`);
         });
-
+        helpEmbed.addField('\u200B', 'Still need help? => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
         message.channel.send(helpEmbed);
+
         } else {
             let command = (args[0]).toLowerCase();
             
