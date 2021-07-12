@@ -45,16 +45,17 @@ client.on('message', (message) => {
 
         let helpEmbed = new Discord.MessageEmbed()
             .setTitle('Help Menu')
-            .setDescription('You can find helpful information about EVERY command here!')
+            .setDescription('You can find helpful information about EVERY command here!\n**More Help** to a specific command with:\n**^help <command>**')
             .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
             .setColor('#000000')
-            .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png');
+            .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png');
 
         client.commands.forEach(cmd => {
-            helpEmbed.addField(cmd.name.toUpperCase(), `${cmd.description}`)
+            helpEmbed.addField(cmd.name.toUpperCase(), `${cmd.description}`);
         });
-
+        helpEmbed.addField('\u200B', '**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
         message.channel.send(helpEmbed);
+
         } else {
             let command = (args[0]).toLowerCase();
             
@@ -71,7 +72,7 @@ client.on('message', (message) => {
                     .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}\n\n**ALIASES**: \n${command.aliases.join(', ')}`);
             } catch (err) {
-                console.log("Command [" + args[0] + "] doesn't exist.", err);
+                console.log("Command [" + args[0] + "] doesn't exist.");
                 message.reply(":warning: Command [**" + args[0] + "**] doesn't exist.");
                 return;
             }
@@ -130,7 +131,7 @@ client.on('clickButton', async (button) => {
                     return;
                 } else {
                     console.log('Successfully wrote commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
-                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`);
+                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`, true);
                 }
             })
 
@@ -148,10 +149,10 @@ client.on('clickButton', async (button) => {
                 .setLabel('Enable this command!');
             
             helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```')
-                     .setColor('RED');
+                     .setColor('DARK_RED');
             button.message.edit({embed: helpEmbed, button: enableButton});
 
-            button.defer();
+            button.reply.defer();
         } else {
             console.log('Clicker of ' + button.id + ' doesnt have admin.');
             button.reply('You must be an administrator to use that button!');
@@ -170,7 +171,7 @@ client.on('clickButton', async (button) => {
                     return;
                 } else {
                     console.log('Successfully deleted commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
-                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`);
+                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`, true);
                 }
             });
             helpEmbed = new Discord.MessageEmbed()
@@ -190,7 +191,7 @@ client.on('clickButton', async (button) => {
                      .setColor('GREEN');
             button.message.edit({embed: helpEmbed, button: disableButton})
 
-            button.defer();
+            button.reply.defer();
         } else {
             console.log('Clicker of ' + button.id + ' doesnt have admin.');
             button.reply('You must be an administrator to use that button!');
