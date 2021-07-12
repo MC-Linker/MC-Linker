@@ -72,7 +72,7 @@ client.on('message', (message) => {
                     .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}\n\n**ALIASES**: \n${command.aliases.join(', ')}`);
             } catch (err) {
-                console.log("Command [" + args[0] + "] doesn't exist.", err);
+                console.log("Command [" + args[0] + "] doesn't exist.");
                 message.reply(":warning: Command [**" + args[0] + "**] doesn't exist.");
                 return;
             }
