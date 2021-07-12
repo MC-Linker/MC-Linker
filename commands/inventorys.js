@@ -3,7 +3,7 @@ module.exports = {
     aliases: ['inv', 'inventory'],
     usage: 'inventory <mention/username>',
     example: 'inventory @Lianecx **//** inventory xXgamerkidXx',
-    description: "**WIP** Get a list of a player's inventory.",
+    description: "Get a list of a player's inventory.",
     async execute(message, args) {
 		const utils = require('../utils');
 		const nbt = require('nbt');
