@@ -82,9 +82,9 @@ module.exports = {
                     ctx.drawImage(itemImg, 0, 0, 80, 80, slotDim[0], slotDim[1], 32, 32);
                     if(count > 1) {ctx.font = '14px Minecraft Regular'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
                 } catch (err) {
+                    console.log('Error trying to apply img: ' + id + ' Applying text...', err);
                     ctx.font = '8px Minecraft Regular';
                     ctx.fillStyle = '#000000';
-                    console.log('Error trying to apply img: ' + id + ' Applying text...');
                     ctx.fillText(itemImgName, slotDim[0], slotDim[1] + 16);
                     if(count > 1) {ctx.font = '14px Minecraft Regular'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
                 }
