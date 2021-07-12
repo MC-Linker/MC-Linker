@@ -21,6 +21,7 @@
     "ftp-client": "^0.2.2",
     "glob": "^7.1.6",
     "lodash": "^4.17.21",
+    "nbt": "^0.8.1",
     "node-fetch": "^2.6.1",
     "node-gyp": "^8.1.0",
     "probe-image-size": "^7.2.1",
