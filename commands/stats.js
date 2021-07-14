@@ -18,7 +18,7 @@ module.exports = {
         let taggedName;
 
         if(!statType || !statObject || !args[0]) {
-            console.log(message.member.user.tag + ' executed ^stats incorrect!');
+            console.log(message.member.user.tag + ' executed ^stats incorrect in ' + message.guild.name);
             message.reply(":warning: Wrong Usage! Check ^help stats for correct usage!");
             return;
         }

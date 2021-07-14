@@ -25,7 +25,7 @@ module.exports = {
             message.reply(':warning: The stat and advancement commands might not work because your version isnt compatible with it.')
         }
 
-        console.log(message.member.user.tag + ` executed ^ftp ${host} ${user} ${password} ${port} ${path} ${version} in Server: ` + message.guild.name)
+        console.log(message.member.user.tag + ` executed ^ftp ${host} ${user} ${password} ${port} ${path} ${version} in ` + message.guild.name)
 
         const jsonFtp = {
             "host": host,

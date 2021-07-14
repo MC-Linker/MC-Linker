@@ -11,8 +11,7 @@ disbut(client);
 
 client.once('ready', () => {
     const Guilds = client.guilds.cache.map(guild => guild.name)
-    console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix)
-    console.log('Bot on ' + client.guilds.cache.size + ' server: \n' + Guilds)
+    console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server: \n' + Guilds)
     client.user.setActivity(prefix + 'help', {type: "LISTENING"})
 })
 

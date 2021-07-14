@@ -16,7 +16,7 @@ module.exports = {
         let taggedName;
 
         if(!mode || !object || !args[0]) {
-            console.log(message.member.user.tag + ' executed ^advancements incorrect!');
+            console.log(message.member.user.tag + ' executed ^advancements incorrect in ' + message.guild.name);
             message.reply(":warning: Wrong Usage! Check ^help advancements for correct usage!");
             return;
         }
