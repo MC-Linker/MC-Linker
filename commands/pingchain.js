@@ -16,7 +16,7 @@ module.exports = {
         const second = parseInt(args[2]);
         const user = message.mentions.users.first();
 
-        console.log(message.member.user.tag + ' executed ^Pingchain ' + user.tag + ' ' + amount + ' ' + second + ' in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed ^pingchain ' + user.tag + ' ' + amount + ' ' + second + ' in ' + message.guild.name);
 
         if (!user) {
             return message.reply('<:Error:849215023264169985> ' + 'You need to tag a user!');

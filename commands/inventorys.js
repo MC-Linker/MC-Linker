@@ -31,7 +31,6 @@ module.exports = {
             return;
         }
 
-
         await ftp.get(`/playerdata/${uuidv4}.dat`, `./playernbt/${uuidv4}.dat`, message);
 		
 		const playerNBT = fs.readFileSync(`./playernbt/${uuidv4}.dat`);

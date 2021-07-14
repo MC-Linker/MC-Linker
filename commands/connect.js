@@ -4,7 +4,7 @@ module.exports = {
     usage: 'connect <Minecraftname>',
     example: 'connect Lianecx',
     description: "Connect your minecraft account with your discord account.",
-    execute(message, args){
+    async execute(message, args){
 
         const fetch = require('node-fetch')
         const fs = require('fs')
@@ -23,14 +23,23 @@ module.exports = {
             return;
         }
 
-        function getId(playername) {
-            // @ts-ignore
-            return fetch(`https://api.mojang.com/users/profiles/minecraft/${playername}`)
-                .then(data => data.json())
-                .then(player => player.id);
+        async function getId(playername) {
+            try {
+                // @ts-ignore
+                return await fetch(`https://api.mojang.com/users/profiles/minecraft/${playername}`)
+                    .then(data => data.json())
+                    .then(player => player.id);
+            } catch (err) {
+                console.log('Couldnt find Player in mojangAPI [' + playername + ']');
+                message.reply('<:Error:849215023264169985> Player [**' + playername + '**] does not seem to exist.');
+                return;
+            }
         }
 
-        getId(ingameName).then(id => {
+        await getId(ingameName).then(id => {
+            if(id === undefined) {
+                return;
+            }
             id = id.split('');
             for(let i = 8; i <=23; i+=5) id.splice(i,0,'-');                       
             id = id.join("");
@@ -45,7 +54,7 @@ module.exports = {
 
             fs.writeFile('./connections/' + message.member.user.id + '.json', connectionString, err => {
                 if (err) {
-                    message.channel.send('<:Error:849215023264169985> Error while trying to connect.');
+                    message.reply('<:Error:849215023264169985> Error trying to connect.');
                     console.log('Error writing conectionFile', err);
                     return;
                 } else {
