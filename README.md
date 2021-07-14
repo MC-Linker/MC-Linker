@@ -22,4 +22,4 @@ Look at the Minecraft server stats or advancements of any member: How many iron 
 **^inventory**: Look in the inventory of any member.
 
 # SECURITY INFORMATION
-The Bot will NOT use the ftp credentials for anything else than downloading the stats and advancements. This Bot is **OPEN SOURCE** and you can find the code in this [Github](https://github.com/Lianecx/Smp-Minecraft-Bot).
+The Bot will NOT use the ftp credentials for anything else than downloading files needed to execute the commands. This Bot is **OPEN SOURCE** and you can find the code in this [Github](https://github.com/Lianecx/Smp-Minecraft-Bot).
