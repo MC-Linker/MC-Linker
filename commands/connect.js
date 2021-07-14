@@ -31,7 +31,7 @@ module.exports = {
                     .then(player => player.id);
             } catch (err) {
                 console.log('Couldnt find Player in mojangAPI [' + playername + ']');
-                message.reply('<:Error:849215023264169985> Player [**' + playername + '**] does not seem to exist.');
+                message.reply('<:Error:849215023264169985> Player [**' + playername + '**] does not seem to exist. Please use your minecraft in-game name as argument.');
                 return;
             }
         }
