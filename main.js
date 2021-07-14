@@ -1,7 +1,7 @@
 // @ts-nocheck
 console.log('Loading...')
 
-const prefix = "^";
+const prefix = '^', token = process.env.token;
 //const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client()
@@ -199,5 +199,4 @@ client.on('clickButton', async (button) => {
         }
     }
 });
-client.login(process.env.token);
-//client.login(token);
+client.login(token);

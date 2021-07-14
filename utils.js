@@ -3,7 +3,7 @@ module.exports = {
 		const fs = require('fs');
         const fetch = require('node-fetch');
 		
-		if(!message.mentions.users.size) {
+        if(!message.mentions.users.size) {
             const taggedName = (user);
             // @ts-ignore
             try {
@@ -17,7 +17,7 @@ module.exports = {
                 return uuidv4.join("");
             } catch (err) {
                 message.reply('<:Error:849215023264169985> Player [**' + taggedName + '**] does not seem to exist.')
-                console.log('Error getting uuid of ' + taggedName, err)
+                console.log('Error getting uuid of ' + taggedName, err);
                 return;
             }
         } else {
@@ -26,7 +26,7 @@ module.exports = {
                 const connectionJson = fs.readFileSync('./connections/' + taggedName.id + '.json');
                 // @ts-ignore
                 const connectionData = await JSON.parse(connectionJson);
-				
+                
                 return connectionData.id;
             } catch (err) {
                 message.reply(":warning: User isn't connected");
@@ -34,7 +34,5 @@ module.exports = {
                 return;
             }
         }
-	}
-
-	
+	}	
 }
