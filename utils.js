@@ -29,7 +29,7 @@ module.exports = {
                 
                 return connectionData.id;
             } catch (err) {
-                message.reply(":warning: User isn't connected");
+                message.reply(":warning: User isn't connected! Instead of pinging someone you can type in their **minecraft-name** or tell the user to use `^connect <minecraftname>`");
                 console.log('Error reading connectionFile from disk: ', err);
                 return;
             }
