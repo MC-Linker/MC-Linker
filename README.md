@@ -1,5 +1,5 @@
-A must-have bot for discord minecraft server. Look at the (minecraft) stats, advancements and inventorys of every member! Also includes texturepack tools.
-Add the bot here: https://discordbotlist.com/bots/smp-minecraft-bot
+Look at the minecraft stats, advancements and inventorys of every member! ALso includes texture pack tools. New features are added on a regular basis.
+Add the bot here: https://discordbotlist.com/bots/smp-minecraft-bot or here (still being reviewed): https://top.gg/bot/712759741528408064
 
 # DESCRIPTION
 Look at the Minecraft server stats or advancements of any member: How many iron ores someone has mined, how long your friend has played on the server or even how many raids you have won, this bot can show it all. You can also disable specific stats.
