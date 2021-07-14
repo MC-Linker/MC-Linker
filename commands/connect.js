@@ -1,7 +1,7 @@
 module.exports = {
     name: 'connect',
     aliases: ['connectuser', 'userconnect'],
-    usage: 'connect <Minecraftname>',
+    usage: 'connect <minecraftname>',
     example: 'connect Lianecx',
     description: "Connect your minecraft account with your discord account.",
     async execute(message, args){
