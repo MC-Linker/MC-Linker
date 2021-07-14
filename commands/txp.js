@@ -33,7 +33,7 @@ module.exports = {
 					
 				}
 	
-				console.log(message.member.user.tag + ' executed ^txp load with imgURL: ' + URL);
+				console.log(message.member.user.tag + ' executed ^txp load with imgURL: ' + URL + ' in ' + message.guild.name);
 	
 				//get imageSize
 				let imgSize;
@@ -81,7 +81,8 @@ module.exports = {
 			}
 			load();
 		} else if(args[0] === 'black' || args[0] === 'loadblack' || args[0] === 'blackload' || args[0] === 'txpblack') {
-			console.log(message.member.user.name + ' executed ^txp black in ' + message.guild.name);
+			console.log(message.member.user.name + ' executed ^txp black in ' + message.guild.name)
+      
 			const file = new Discord.MessageAttachment('./color.properties');
         	message.channel.send('<:Checkmark:849224496232660992> Heres your black loading screen file. Make sure to put that file in: `<resourcepack>/assets/minecraft/optifine`', file);
 		}

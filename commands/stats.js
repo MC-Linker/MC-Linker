@@ -23,14 +23,18 @@ module.exports = {
             return;
         }
 
-        const uuidv4 = await utils.getUUIDv4(args[0], message);
         if(!message.mentions.users.size) {
             taggedName = (args[0]);
         } else {
             taggedName = message.mentions.users.first().tag;
         }
-
         console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
+
+        const uuidv4 = await utils.getUUIDv4(args[0], message);
+        if(uuidv4 === undefined) {
+            return;
+        }
+
 
         let categoryDisabled = fs.existsSync('./disable/stats/category/' + message.guild.id + "_" + statType);
         if(categoryDisabled === false) {

@@ -12,7 +12,7 @@ module.exports = {
         const object = (args[2]);
 
         if(!enableMode || !mode) {
-            console.log(message.member.user.tag + "executed ^enable wrong in " + message.guild.name);
+            console.log(message.member.user.tag + 'executed ^enable wrong in ' + message.guild.name);
             message.reply(":warning: Wrong Usage! Check ^help enable for correct usage!");
             return;
         }

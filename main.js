@@ -1,7 +1,7 @@
 // @ts-nocheck
 console.log('Loading...')
 
-const prefix = "^";
+const prefix = '^', token = process.env.token;
 //const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client()
@@ -11,8 +11,7 @@ disbut(client);
 
 client.once('ready', () => {
     const Guilds = client.guilds.cache.map(guild => guild.name)
-    console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix)
-    console.log('Bot on ' + client.guilds.cache.size + ' server: \n' + Guilds)
+    console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server: \n' + Guilds)
     client.user.setActivity(prefix + 'help', {type: "LISTENING"})
 })
 
@@ -199,5 +198,4 @@ client.on('clickButton', async (button) => {
         }
     }
 });
-client.login(process.env.token);
-//client.login(token);
+client.login(token);

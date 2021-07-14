@@ -12,11 +12,11 @@ module.exports = {
         const object = (args[2]);
 
         if(!disableMode || !mode) {
-            console.log(message.member.user.tag + "executed ^disable wrong in " + message.guild.name);
+            console.log(message.member.user.tag + ' executed ^disable wrong in ' + message.guild.name);
             message.reply(":warning: Wrong Usage! Check ^help disable for correct usage!");
             return;
         }
-        console.log(message.member.user.tag + ' executed ^disable ' + disableMode + ' ' + mode + ' ' + object + ' in ' + message.guild.id);
+        console.log(message.member.user.tag + ' executed ^disable ' + disableMode + ' ' + mode + ' ' + object + ' in ' + message.guild.name);
 
         if (disableMode === 'command') {
             try {

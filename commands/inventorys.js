@@ -18,20 +18,18 @@ module.exports = {
             return;
         }
 
-        const invCanvas = Canvas.createCanvas(352, 332);
-        const ctx = invCanvas.getContext('2d');
-        const background = await Canvas.loadImage('./images/_other/inventoryBlank.png');
-        ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
-
-		let taggedName;
-		const uuidv4 = await utils.getUUIDv4(args[0], message);
+        let taggedName;
         if(!message.mentions.users.size) {
             taggedName = (args[0]);
         } else {
             taggedName = message.mentions.users.first().tag;
         }
-
         console.log(message.member.user.tag + ' executed ^inventorys with user: ' + taggedName + 'in ' + message.guild.name);
+
+		const uuidv4 = await utils.getUUIDv4(args[0], message);
+        if(uuidv4 === undefined) {
+            return;
+        }
 
         await ftp.get(`/playerdata/${uuidv4}.dat`, `./playernbt/${uuidv4}.dat`, message);
 		
@@ -50,6 +48,10 @@ module.exports = {
             //ctx.drawImage(itemImg, 0, 0, 80, 80, 7, 7, 17, 17);
 
             //let invMsg = "Here's the inventory of **" + taggedName + '**:\n';
+            const invCanvas = Canvas.createCanvas(352, 332);
+            const ctx = invCanvas.getContext('2d');
+            const background = await Canvas.loadImage('./images/_other/inventoryBlank.png');
+            ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
             let slotDim = [16, 284];
             Canvas.registerFont('./Minecrafter.ttf', { family: 'Minecrafter' })
