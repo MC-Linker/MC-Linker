@@ -6,12 +6,19 @@ Look at the Minecraft server stats or advancements of any member: How many iron 
 
 # IMPORTANT COMMANDS
 **^help**: Detailed description and usage of every command!
+
 **^stats**: Look up minecraft stats of any member.
+
 **^advancements**: Look up minecraft-advamcements of any member.
+
 **^connect**: Connect your Discord Account with your Minecraft Account.
+
 **^ftp**: Connect your Minecraft Server with the bot. You need: ftpUsername, ftpHost, ftpPort (default 21), ftpPassword, directory path to world, version the server is on
+
 **^txp load**: Create a minecraft loading screen.
+
 **^disable**: Disable specific commands, advancements or stats.
+
 **^inventory**: Look in the inventory of any member.
 
 # SECURITY INFORMATION
