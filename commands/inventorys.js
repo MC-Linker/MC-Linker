@@ -13,7 +13,7 @@ module.exports = {
         const Discord = require('discord.js');
 
         if(!args[0]) {
-            console.log(message.member.user.tag + ' executed ^inv without args');
+            console.log(message.member.user.tag + ' executed ^inv without args in ' + message.guild.name);
             message.reply(':warning: Please specify the user you want to get the inventory from.');
             return;
         }
@@ -31,7 +31,7 @@ module.exports = {
             taggedName = message.mentions.users.first().tag;
         }
 
-        console.log(message.member.user.tag + ' executed ^inventorys with user: ' + taggedName);
+        console.log(message.member.user.tag + ' executed ^inventorys with user: ' + taggedName + 'in ' + message.guild.name);
 
         await ftp.get(`/playerdata/${uuidv4}.dat`, `./playernbt/${uuidv4}.dat`, message);
 		
