@@ -3,7 +3,7 @@ module.exports = {
     aliases: [''],
     usage: 'e.g. DISABLE',
     example: 'e.g. DISABLE',
-    description: 'Enable a disabled command/stat/advancement',
+    description: 'Enable a disabled command/stat/advancement (Theyre all enabled by default)',
     execute(message, args) {
         const fs = require('fs');
 
