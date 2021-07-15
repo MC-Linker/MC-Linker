@@ -52,7 +52,7 @@ client.on('message', (message) => {
         client.commands.forEach(cmd => {
             helpEmbed.addField(cmd.name.toUpperCase(), `${cmd.description}`);
         });
-        helpEmbed.addField('\u200B', '**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+        helpEmbed.addField('\u200B', '**More Help** to a specific command with:\n**^help <command>**').addField('\u200B', '**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
         message.channel.send(helpEmbed);
 
         } else {
