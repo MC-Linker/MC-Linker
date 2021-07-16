@@ -40,7 +40,7 @@ client.on('message', (message) => {
 
         if(!args[0]) {
 
-        console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name)
+        console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name);
 
         let helpEmbed = new Discord.MessageEmbed()
             .setTitle('Help Menu')
@@ -61,6 +61,7 @@ client.on('message', (message) => {
             let helpEmbed;
             try {
                 command = client.commands.get(command) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(command));
+                if (command === undefined) {console.log(message.member.user.tag + ' executed non-existent command' + commandName); return;}
                 console.log(message.member.user.tag + ' executed ^help ' + command.name);
 
                 helpEmbed = new Discord.MessageEmbed()
@@ -97,13 +98,9 @@ client.on('message', (message) => {
         return;
     }
 
-    let command;
-    try {
-        command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-    } catch (err) {
-        console.log(message.member.user.tag + ' executed non-existent command' + commandName);
-        return;
-    }
+    const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    if (command === undefined) {console.log(message.member.user.tag + ' executed non-existent command' + commandName); return;}
+    console.log(message.member.user.tag + ' executed non-existent command' + commandName);
     fs.access('./disable/command/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
         if (err) {
             console.log('Could not find commandDisableFile of command: ' + command.name + ' Command not disabled.');
