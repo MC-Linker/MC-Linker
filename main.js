@@ -97,7 +97,13 @@ client.on('message', (message) => {
         return;
     }
 
-    const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    let command;
+    try {
+        command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    } catch (err) {
+        console.log(message.member.user.tag + ' executed non-existent command' + commandName);
+        return;
+    }
     fs.access('./disable/command/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
         if (err) {
             console.log('Could not find commandDisableFile of command: ' + command.name + ' Command not disabled.');
