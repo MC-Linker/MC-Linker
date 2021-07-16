@@ -100,7 +100,8 @@ client.on('message', (message) => {
 
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
     if (command === undefined) {console.log(message.member.user.tag + ' executed non-existent command' + commandName); return;}
-    console.log(message.member.user.tag + ' executed non-existent command' + commandName);./disable/command/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
+    console.log(message.member.user.tag + ' executed non-existent command' + commandName);
+    fs.access('./disable/command/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
         if (err) {
             console.log('Could not find commandDisableFile of command: ' + command.name + ' Command not disabled.');
             try {
