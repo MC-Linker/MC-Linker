@@ -55,7 +55,7 @@ module.exports = {
 
             let invEmbed = new Discord.MessageEmbed;
             invEmbed
-                .setAuthor('Inventory', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .setAuthor('Inventory Enchantments', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('ORANGE')
             let slotDim = [16, 284];
             Canvas.registerFont('./MinecraftReg.ttf', { family: 'Minecraft Regular' });
@@ -68,10 +68,14 @@ module.exports = {
                 if(inventory[i]['tag'] !== undefined) {
                     let invField = '';
                     if(inventory[i]['tag'].value['Enchantments'] !== undefined) {
-                        invField += `\n**Slot ${slot}: ${id.split('minecraft:').pop()}\nEnchantments:**`;
+                        invField += `\n**Slot ${slot}: ${id.split('minecraft:').pop()}:**`;
                         const enchantments = inventory[i]['tag'].value['Enchantments'].value['value'];
                         for(let b = 0; b < enchantments.length; b++) {
-                            invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()} ${enchantments[b]['lvl'].value}`;
+                            if(enchantments[b]['lvl'].value === 1){
+                                invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()}`;
+                            } else {
+                                invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()} ${enchantments[b]['lvl'].value}`;
+                            }
                         }
                         invEmbed.addField('\u200B', invField, true);
                     }
