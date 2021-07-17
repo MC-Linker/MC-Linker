@@ -2,7 +2,7 @@ Look at the minecraft stats, advancements and inventorys of every member! ALso i
 Add the bot here: https://discordbotlist.com/bots/smp-minecraft-bot or here (still being reviewed): https://top.gg/bot/712759741528408064
 
 # DESCRIPTION
-Look at the Minecraft server stats or advancements of any member: How many iron ores someone has mined, how long your friend has played on the server or even how many raids you have won, this bot can show it all. You can also disable specific stats.
+Look at the Minecraft server stats, advancements and inventorys of any member: When you killed the ender dragon, how long your friend has played on the server or even how many raids you have won, this bot can show it all. You can also disable specific stats.
 **NOTE**: You MUST have **FTP credentials** for your server. Many server hosts show the FTP credentials in their server dashboard.
 
 # IMPORTANT COMMANDS
