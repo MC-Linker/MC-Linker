@@ -21,7 +21,7 @@ module.exports = {
             console.log(message.member.user.tag + ' executed ^pingchain without user in ' + message.guild.name);
             return;
         } else if(isNaN(amount) || isNaN(second)) {
-            message.reply('<:Error:849215023264169985> ' + 'Thats not a number lol');
+            message.reply('<:Error:849215023264169985> ' + 'Thats not a number lol. Check ^help pingchain for correct usage.');
             console.log(message.member.user.tag + ' executed ^pingchain without numbers in ' + message.guild.name);
             return;
         } else if (amount < 2 || amount > 100 || second < 1 || second > 50) {
