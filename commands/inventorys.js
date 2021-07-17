@@ -24,7 +24,7 @@ module.exports = {
         } else {
             taggedName = message.mentions.users.first().tag;
         }
-        console.log(message.member.user.tag + ' executed ^inventorys with user: ' + taggedName + 'in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed ^inventorys with user: ' + taggedName + ' in ' + message.guild.name);
 
 		const uuidv4 = await utils.getUUIDv4(args[0], message);
         if(uuidv4 === undefined) {
@@ -53,13 +53,43 @@ module.exports = {
             const background = await Canvas.loadImage('./images/_other/inventoryBlank.png');
             ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
+            let invEmbed = new Discord.MessageEmbed;
+            invEmbed
+                .setAuthor('Inventory Enchantments', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .setColor('ORANGE')
             let slotDim = [16, 284];
-            Canvas.registerFont('./Minecrafter.ttf', { family: 'Minecrafter' })
-            Canvas.registerFont('./MinecraftReg.ttf', { family: 'Minecraft Regular' })
+            Canvas.registerFont('./MinecraftReg.ttf', { family: 'Minecraft Regular' });
             for(let i = 0; i < inventory.length; i++) {
                 const slot = inventory[i]['Slot'].value;
                 const id = inventory[i]['id'].value;
                 const count = inventory[i]['Count'].value;
+                let maxDamage;
+                let damage;
+                if(inventory[i]['tag'] !== undefined) {
+                    let invField = '';
+                    if(inventory[i]['tag'].value['Enchantments'] !== undefined) {
+                        invField += `\n**Slot ${slot}: ${id.split('minecraft:').pop()}:**`;
+                        const enchantments = inventory[i]['tag'].value['Enchantments'].value['value'];
+                        for(let b = 0; b < enchantments.length; b++) {
+                            if(enchantments[b]['lvl'].value === 1){
+                                invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()}`;
+                            } else {
+                                invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()} ${enchantments[b]['lvl'].value}`;
+                            }
+                        }
+                        invEmbed.addField('\u200B', invField, true);
+                    }
+                    /*if(inventory[i]['tag'].value['Damage'] !== undefined) {
+                        damage = inventory[i]['tag'].value['Damage'].value;
+                        if(inventory[i]['tag'].value['Enchantments'] !== undefined) {
+                            invField += '\n**Damage:** ' + damage;
+                        } else {
+                            invField += `\n**Slot ${slot}: ${id.split('minecraft:').pop()}**\n**Damage:** ${damage}`;
+                        }
+                        invEmbed.addField('\u200B', invField, true);
+                    }*/
+                }
+                const itemImgName = id.split('minecraft:').pop();
 
                 if(slot <= 8 && slot >= 1) {slotDim[0] += 36}
 
@@ -78,7 +108,6 @@ module.exports = {
                 if(slot === 103) {slotDim[0] = 16; slotDim[1] = 16}
                 if(slot === -106) {slotDim[0] = 154; slotDim[1] = 124}
 
-                const itemImgName = id.split('minecraft:').pop();
                 try {
                     const itemImg = await Canvas.loadImage(`./images/${itemImgName}.png`);
                     ctx.drawImage(itemImg, 0, 0, 80, 80, slotDim[0], slotDim[1], 32, 32);
@@ -93,7 +122,11 @@ module.exports = {
                 //invMsg = invMsg += 'Slot: ' + inventory[i]['Slot'].value + ': ' + inventory[i]['id'].value + ', ' + inventory[i]['Count'].value + '\n'
             }
             const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), 'inventoryImage.png');
-            message.reply("Here's the inventory of **" + taggedName + '**:\n', invImg);
+            message.reply("Here's the inventory of **" + taggedName + '**:\n', invImg).then(() => {
+                if(invEmbed.fields.length >= 1) {
+                    message.reply(invEmbed);
+                }
+            })
         });
 	}
 }

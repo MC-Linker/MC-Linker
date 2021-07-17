@@ -1,0 +1,23 @@
+{
+	"wood":"59",
+	"stone":"131",
+	"gold":"32", 
+	"iron":"250",
+	"diamond":"1561",
+	"netherite":"2031",
+	"fishing_rod":"64",
+	"flint_and_steel":"64",
+	"carrot_on_a_stick":"25",
+	"shears":"238",
+	"shield":"336",
+	"bow":"384",
+	"trident":"250",
+	"elytra":"432",
+	"crossbow":"326",
+	"warped_fungus_on_a_stick":"100",
+	"turtle_shell":"275",
+	"leather_chestplate":"80",
+	"leather_helmet":"55",
+	"leather_leggins":"75",
+	"leather_boots":"65"
+}
