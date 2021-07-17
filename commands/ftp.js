@@ -12,12 +12,18 @@ module.exports = {
         let user = (args[1]);
         let password = (args[2]);
         let port = parseInt(args[3]);
-        let path = (args[4])
-        let version = (args[5])
+        let path = (args[4]);
+        let version = (args[5]);
+        
+        if(!host || !user || !password || !port || !version || !path) {
+            console.log(message.member.user.tag + ' executed ^ftp wrong in ' + message.guild.name);
+            message.reply('Incorrect Usage! Please check ^help ftp for correct usage!');
+            return;
+        }
 
         if (!message.member.hasPermission('ADMINISTRATOR')) {
             message.reply(':warning: ' + "You are not an Admin!")
-            console.log(message.member.user.tag + ' executed ^ftp without admin in ' + message.guild.name)
+            console.log(message.member.user.tag + ' executed ^ftp without admin in ' + message.guild.name);
             return;
         } else if(version === '1.11' || version === '1.10' || version === '1.9' || version === '1.8' || version === '1.7') {
             message.reply(':warning: The advancement command might not work because advancements dont exist in your Minecraft version yet.')
@@ -40,10 +46,11 @@ module.exports = {
 
         fs.writeFile('./ftp/' + message.guild.id + '.json', ftpString, err => {
             if (err) {
-                console.log('Error writing file', err)
+                console.log('Error writing file', err);
+                message.reply('<:Error:849215023264169985> Error trying to connect to server.');
             } else {
-                console.log('Successfully wrote file')
-                message.reply('<:Checkmark:849224496232660992> Succesfully connected with server.')
+                console.log('Successfully wrote file');
+                message.reply('<:Checkmark:849224496232660992> Succesfully connected with server.');
             }
         })
     }
