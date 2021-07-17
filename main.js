@@ -102,14 +102,13 @@ client.on('message', (message) => {
     if (command === undefined) {console.log(message.member.user.tag + ' executed non-existent command ' + commandName + ' in ' + message.guild.name); return;}
     fs.access('./disable/command/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
         if (err) {
-            console.log('Could not find commandDisableFile of command: ' + command.name + ' Command not disabled.');
             try {
                 command.execute(message, args);
             } catch (err) {
                 console.log(message.member.user.tag + ' executed ^' + command.name + '. Couldnt find that command!', err);
             }
         } else {
-            console.log('Command [' + command.name + '] disabled!')
+            console.log(message.member.user.tag + ' executed disabled command [' + command.name + '] in ' + message.guild.name);
             message.reply(':no_entry: Command [**' + command.name + '**] disabled!');
             return;
         }
