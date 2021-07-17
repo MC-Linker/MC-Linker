@@ -16,15 +16,15 @@ module.exports = {
         const second = parseInt(args[2]);
         const user = message.mentions.users.first();
 
-        console.log(message.member.user.tag + ' executed ^pingchain ' + user.tag + ' ' + amount + ' ' + second + ' in ' + message.guild.name);
-
         if (!user) {
             return message.reply('<:Error:849215023264169985> ' + 'You need to tag a user!');
         } else if(isNaN(amount)) {
             return message.reply('<:Error:849215023264169985> ' + 'Thats not a number lol');
         } else if (amount < 2 || amount > 100) {
-            return message.reply('<:Error:849215023264169985> ' + 'Too high/low')
+            return message.reply('<:Error:849215023264169985> ' + 'Too high/low');
         }
+
+        console.log(message.member.user.tag + ' executed ^pingchain ' + user.tag + ' ' + amount + ' ' + second + ' in ' + message.guild.name);
 
         const LoadingEmbed = new Discord.MessageEmbed()
             .setTitle('Pingchain loading...')
