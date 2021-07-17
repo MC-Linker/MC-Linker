@@ -24,7 +24,7 @@ module.exports = {
             message.reply('<:Error:849215023264169985> ' + 'Thats not a number lol. Check ^help pingchain for correct usage.');
             console.log(message.member.user.tag + ' executed ^pingchain without numbers in ' + message.guild.name);
             return;
-        } else if (amount < 2 || amount > 20 || second < 1 || second > 50) {
+        } else if (amount < 2 || amount > 20 || second < 5 || second > 50) {
             message.reply('<:Error:849215023264169985> ' + 'Too high/low numbers');
             console.log(message.member.user.tag + ' executed ^pingchain with too high/low numbers in ' + message.guild.name);
             return;
