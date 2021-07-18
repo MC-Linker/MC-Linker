@@ -1,8 +1,8 @@
 // @ts-nocheck
 console.log('Loading...')
 
-const prefix = '^', token = process.env.token;
-//const { prefix, token } = require('../config.json');
+//const prefix = '^', token = process.env.token;
+const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client()
 const fs = require('fs');
@@ -105,7 +105,7 @@ client.on('message', (message) => {
             try {
                 command.execute(message, args);
             } catch (err) {
-                console.log(message.member.user.tag + ' executed ^' + command.name + '. Couldnt find that command!', err);
+                console.log(message.member.user.tag + ' executed ^' + command.name + '. Couldnt execute that command!', err);
             }
         } else {
             console.log(message.member.user.tag + ' executed disabled command [' + command.name + '] in ' + message.guild.name);

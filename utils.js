@@ -34,5 +34,18 @@ module.exports = {
                 return;
             }
         }
-	}	
+	},
+    getWorldPath: async function (message) {
+        const fs = require('fs');
+        try {
+            const ftpJson = fs.readFileSync('./ftp/' + message.guild.id + '.json');
+            // @ts-ignore
+            const ftpData = JSON.parse(ftpJson);
+            return ftpData.path;
+        } catch (err) {
+            console.log('Error trying to read ftpFile.');
+            message.reply('<:Error:849215023264169985> Could not read ftp Credentials.');
+            return;
+        }
+    }
 }

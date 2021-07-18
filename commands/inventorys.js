@@ -31,7 +31,11 @@ module.exports = {
             return;
         }
 
-        await ftp.get(`/playerdata/${uuidv4}.dat`, `./playernbt/${uuidv4}.dat`, message);
+        const worldPath = await utils.getWorldPath(message);
+        if(worldPath === undefined) {
+            return;
+        }
+        await ftp.get(`${worldPath}/playerdata/${uuidv4}.dat`, `./playernbt/${uuidv4}.dat`, message);
 		
 		const playerNBT = fs.readFileSync(`./playernbt/${uuidv4}.dat`);
         // @ts-ignore

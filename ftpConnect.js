@@ -44,10 +44,10 @@ module.exports = {
 				}
 
 			ftpClient.on('ready', function() {
-				ftpClient.get(worldPath + getPath, function(err, stream) {
+				ftpClient.get(getPath, function(err, stream) {
 					if(err) {
 						console.log('Could not download files. ', err);
-						message.reply('<:Error:849215023264169985> ' + 'Could not download files. The User most likely never joined the server.');
+						message.reply('<:Error:849215023264169985> ' + 'Could not download files. The User never joined the server or the worldpath is incorrect.');
 						reject('error');
 						return;
 					}
@@ -105,7 +105,7 @@ module.exports = {
 			}
 
 			ftpClient.on('ready', function() {
-				ftpClient.put(worldPath + getPath, putPath, function(err) {
+				ftpClient.put(getPath, putPath, function(err) {
 					if(err) {
 						console.log('Could not put files. ', err);
 						message.reply('<:Error:849215023264169985> ' + 'Could not upload files.');
@@ -162,7 +162,7 @@ module.exports = {
 			}
 
 			ftpClient.on('ready', function() {
-				ftpClient.append(worldPath + getPath, putPath, function(err) {
+				ftpClient.append(getPath, putPath, function(err) {
 					if(err) {
 						console.log('Could not append files. ', err);
 						message.reply('<:Error:849215023264169985> ' + 'Could not upload files.');
