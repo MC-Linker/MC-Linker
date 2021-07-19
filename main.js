@@ -16,7 +16,7 @@ client.once('ready', () => {
 })
 
 client.on("guildCreate", guild => {
-    console.log("Joined a new guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' server!');
+    console.log("Joined a new guild: " + guild.name + ': ' + guild.memberCount + ' members.\nBot is now on ' + client.guilds.cache.size + ' server!');
 })
 client.on("guildDelete", guild => {
     console.log("Left a guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' server!');
@@ -62,7 +62,7 @@ client.on('message', (message) => {
             try {
                 command = client.commands.get(command) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(command));
                 if (command === undefined) {console.log(message.member.user.tag + ' executed non-existent help command ' + commandName + ' in ' + message.guild.name); return;}
-                console.log(message.member.user.tag + ' executed ^help ' + command.name);
+                console.log(message.member.user.tag + ' executed ^help ' + command.name + ' in ' + message.guild.name);
 
                 helpEmbed = new Discord.MessageEmbed()
                     .setTitle('Help Menu')
@@ -88,7 +88,6 @@ client.on('message', (message) => {
 
             const disabled = fs.existsSync('./disable/command/' + message.guild.id + '_' + command.name);
             if (disabled === false) {
-                console.log('disableCommandFile doesnt exist. Command not disabled.');
                 message.channel.send({embed: helpEmbed, button: disableButton});
             } else if (disabled === true) {
                 helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
