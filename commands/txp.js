@@ -26,7 +26,7 @@ module.exports = {
 						const attach = (message.attachments).array();
 						URL = attach[0].url;
 					} catch (err) {
-						console.log('Error while trying to get imagesize. ', err);
+						console.log('Error trying to get imagesize. ', err);
 						message.channel.send('<:Error:849215023264169985> Cannot get URL of image. ^help for correct usage.');
 						return;
 					}

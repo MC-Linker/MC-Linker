@@ -25,6 +25,7 @@
     "node-fetch": "^2.6.1",
     "node-gyp": "^8.1.0",
     "probe-image-size": "^7.2.1",
+    "rcon": "^1.0.3",
     "request": "^2.88.2"
   }
 }
