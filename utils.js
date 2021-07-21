@@ -14,25 +14,56 @@ module.exports = {
                 const uuidv4 = minecraftId.split('');
                 for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');
 
-                return uuidv4.join("");
+                return uuidv4.join('');
             } catch (err) {
                 message.reply('<:Error:849215023264169985> Player [**' + taggedName + '**] does not seem to exist.')
                 console.log('Error getting uuid of ' + taggedName, err);
                 return;
             }
         } else {
-            const taggedName = message.mentions.users.first();
+            const taggedUser = message.mentions.users.first();
             try {
-                const connectionJson = fs.readFileSync('./connections/' + taggedName.id + '.json');
+                const connectionJson = fs.readFileSync('./connections/' + taggedUser.id + '.json');
                 // @ts-ignore
                 const connectionData = await JSON.parse(connectionJson);
                 
                 return connectionData.id;
             } catch (err) {
-                message.reply(":warning: User isn't connected! Instead of pinging someone you can type in their **minecraft-name** or tell the user to use `^connect <minecraftname>`");
-                console.log('Error reading connectionFile from disk: ', err);
+                message.reply(":warning: User never used `^connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
+                console.log('Error reading connectionFile of pinged User from disk: ', err);
                 return;
             }
         }
-	}	
+	},
+
+    getWorldPath: async function (message) {
+        const fs = require('fs');
+
+        try {
+            const ftpJson = fs.readFileSync('./ftp/' + message.guild.id + '.json');
+            // @ts-ignore
+            const ftpData = JSON.parse(ftpJson);
+            return ftpData.path;
+        } catch (err) {
+            console.log('Error trying to read ftpFile.');
+            message.reply('<:Error:849215023264169985> Could not read ftp Credentials.');
+            return;
+        }
+    },
+    
+    getUserName: async function (userId, message) {
+        const fs = require('fs');
+
+        try {
+            const connectionJson = fs.readFileSync(`./connections/${userId}.json`);
+            // @ts-ignore
+            const connectionData = await JSON.parse(connectionJson);
+            
+            return connectionData.name;
+        } catch (err) {
+            message.reply(":warning: User never used `^connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
+            console.log('Error reading connectionFile of pinged User from disk: ', err);
+            return;
+        }
+    }
 }

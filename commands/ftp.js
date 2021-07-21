@@ -41,10 +41,8 @@ module.exports = {
             "path": path,
             "version": version
         }
-
-        const ftpString = JSON.stringify(jsonFtp, null, 2);
-
-        fs.writeFile('./ftp/' + message.guild.id + '.json', ftpString, err => {
+        
+        fs.writeFile('./ftp/' + message.guild.id + '.json', JSON.stringify(jsonFtp, null, 2), err => {
             if (err) {
                 console.log('Error writing file', err);
                 message.reply('<:Error:849215023264169985> Error trying to connect to server.');

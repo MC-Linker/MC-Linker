@@ -53,7 +53,11 @@ module.exports = {
             return; 
         }
 
-        await ftp.get(`/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
+        const worldPath = await utils.getWorldPath(message);
+        if(worldPath === undefined) {
+            return;
+        }
+        await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
 
         fs.readFile('./stats/' + uuidv4 + '.json', 'utf8', (err, statJson) => {
             if(err) {

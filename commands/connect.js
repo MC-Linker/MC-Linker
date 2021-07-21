@@ -10,6 +10,8 @@ module.exports = {
         const fs = require('fs')
 
         const ingameName = (args[0]);
+
+        console.log(message.member.user.tag + ' executed ^connect ' + ingameName + ' in ' + message.guild.name);
         
         if(!ingameName) {
             console.log(message.member.user.tag + ' executed ^connect without args in ' + message.guild.name);
@@ -17,7 +19,7 @@ module.exports = {
             return;
         }
 
-        if(ingameName.startsWith('<@')) {
+        if(message.mentions.users.size) {
             console.log(message.member.user.tag + ' executed connect with ping in ' + message.guild.name);
             message.channel.send(`<:Error:849215023264169985> Don't ping someone. Use your minecraft in-game name as argument.`);
             return;
@@ -31,7 +33,7 @@ module.exports = {
                     .then(player => player.id);
             } catch (err) {
                 console.log('Couldnt find Player in mojangAPI [' + playername + ']');
-                message.reply('<:Error:849215023264169985> Player [**' + playername + '**] does not seem to exist. Please use your minecraft in-game name as argument.');
+                message.reply('<:Error:849215023264169985> Player [**' + playername + '**] does not seem to exist. Please use your **minecraft-username** as argument.');
                 return;
             }
         }
@@ -44,10 +46,9 @@ module.exports = {
             for(let i = 8; i <=23; i+=5) id.splice(i,0,'-');                       
             id = id.join("");
 
-            console.log(message.member.user.tag + " connected with uuid: " + id + ' in ' + message.guild.name);
-
             const connectionJson = {
-                "id": id
+                'id': id,
+                'name': ingameName
             }
 
             const connectionString = JSON.stringify(connectionJson, null, 2);
@@ -59,7 +60,7 @@ module.exports = {
                     return;
                 } else {
                     message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft-username: **${ingameName}** and UUID: **${id}**`);
-                    console.log('Successfully wrote connectionfile');
+                    console.log('Successfully wrote connectionfile with id ' + id + ' and name: ' + ingameName);
                 }
             })
         });
