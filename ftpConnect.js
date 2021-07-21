@@ -38,7 +38,7 @@ module.exports = {
 					} 
 					
 				} catch (err) {
-					message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please contact a server-admin.')
+					message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please use `ftp`.')
 					console.log('Error reading ftp file from disk: ', err);
 					return;
 				}
@@ -99,7 +99,7 @@ module.exports = {
 				} 
 				
 			} catch (err) {
-				message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please contact a server-admin.')
+				message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please use `ftp`.')
 				console.log('Error reading ftp file from disk: ', err);
 				return;
 			}
@@ -156,7 +156,7 @@ module.exports = {
 				} 
 				
 			} catch (err) {
-				message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please contact a server-admin.')
+				message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please use `ftp`.')
 				console.log('Error reading ftp file from disk: ', err);
 				return;
 			}

@@ -44,12 +44,22 @@ module.exports = {
 		} else if (mode === 'execute') {
 			if (!message.member.hasPermission("ADMINISTRATOR")) {
 				message.reply(':no-entry: This command can (currently) only be used by admins!');
-				console.log(message.member.user.tag + ' executed ^rcon connect without amdin in ' + message.guild.name);
+				console.log(message.member.user.tag + ' executed ^rcon connect without admin in ' + message.guild.name);
 				return;
 			}
 
 			console.log(message.member.user.tag + ' executed ^rcon execute in ' + message.guild.name);
-			message.reply(':warning: `^rcon execute` is currenty Work in Progress.');
+			message.reply(':warning: `^rcon execute` is currently Work in Progress.');
+			return;
+
+		} else if (mode === 'enable') {
+			if (!message.member.hasPermission("ADMINISTRATOR")) {
+				message.reply(':no-entry: This command can only be used by admins!');
+				console.log(message.member.user.tag + ' executed ^rcon enable without admin in ' + message.guild.name);
+				return;
+			}
+			console.log(message.member.user.tag + ' executed ^rcon enable in ' + message.guild.name);
+			message.reply(':warning: `^rcon enable` is currently Work in Progress.');
 			return;
 
 		} else {
