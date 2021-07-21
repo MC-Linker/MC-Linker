@@ -1,13 +1,20 @@
 module.exports = {
     name: 'rcon',
     aliases: ['RCON'],
-    usage: 'rcon connect <server IP> <password> <port> **//** rcon execute <command> (**WIP**)',
-    example: 'rcon connect 5.83.754.243 T12n53 10085**//** rcon execute /seed (**WIP**)',
-    description: 'Connect this bot with RCON (credentials can be found in the `server.properties` file) **or** execute commands on the server with RCON (as of right now, both can only be used by **admins**). Need help getting the RCON credentials? => Do `^ftp` **or** join the [Support Server](https://discord.gg/rX36kZUGNK).',
-    execute(message, args) {
+    usage: 'rcon connect <server IP> <password> <port> **//** rcon execute <command> (**WIP**) **//** rcon enable',
+    example: 'rcon connect 5.83.754.243 T12n53 25567**//** rcon execute /seed (**WIP**)',
+    description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file)\n**OR** execute commands on the server with RCON (**WIP**).\n**OR** enable RCON in the `server.properties` file. Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',
+    async execute(message, args) {
 		const fs = require('fs');
+		const rcon = require('../rcon');
+		const ftp = require('../ftpConnect');
+		const utils = require('../utils');
 
 		const mode = args[0];
+		if(!mode) {
+			console.log(message.member.user.tag + ' executed ^rcon without args.');
+			message.reply(':warning: Do you want to enable RCON in the server? => `^rcon enable`.\n Do you want to connect the bot with RCON? => `rcon connect`.\n Or do you want to execute a command with RCON? => `rcon execute` (**WIP**).')
+		}
 		if(mode === 'connect') {
 			if (!message.member.hasPermission("ADMINISTRATOR")) {
 				message.reply(':no-entry: This command can only be used by admins!');
@@ -58,9 +65,46 @@ module.exports = {
 				console.log(message.member.user.tag + ' executed ^rcon enable without admin in ' + message.guild.name);
 				return;
 			}
+
 			console.log(message.member.user.tag + ' executed ^rcon enable in ' + message.guild.name);
-			message.reply(':warning: `^rcon enable` is currently Work in Progress.');
-			return;
+
+			let worldPath = await utils.getWorldPath(message);
+			if(worldPath === undefined) return;
+			worldPath = worldPath.split('/');
+			let path = worldPath[0];
+			if(path === '') path = worldPath[1];
+
+			await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
+			
+			fs.readFile(`./properties/${message.guild.id}.properties`, 'utf8', async (err, propString) => {
+				if(err) {
+					console.log('Error reading properties file from disk ', err);
+					message.reply('<:Error:849215023264169985> Could not read properties file.');
+					return;
+				}
+
+				const propArr = propString.split('\n');
+				const rconEnabled = propArr.find(key => key.startsWith('enable-rcon')).split('=').pop();
+
+				if(rconEnabled === 'false') {
+						propString = propString.replace('enable-rcon=false', 'enable-rcon=true');
+
+						fs.writeFile(`./properties/${message.guild.id}.properties`, propString, 'utf8', async (err) => {
+							if(err) {
+								console.log('Error writing properties file.', err);
+								message.reply('<:Error:849215023264169985> Error trying to enable RCON.');
+								return;
+							}
+							console.log('Successfully wrote properties file.');
+							await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
+
+							message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** to complete the activation.');
+						});
+				} else if (rconEnabled === 'true') {
+					console.log('rcon is already enabled.');
+					message.reply(':warning: RCON is already enabled. Please restart the server if you still cannot connect.');
+				}
+			})
 
 		} else {
 			console.log(message.member.user.tag + ' executed ^rcon with incorrect arg: ' + mode + ' in ' + message.guild.name);

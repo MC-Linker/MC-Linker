@@ -43,7 +43,7 @@ module.exports = {
 
 		fs.readFile(`./rcon/${message.guild.id}.json`, 'utf8', async (err, rconData) => {
 			if (err) {
-				console.log('Could not find rconFile on Disk, creating one...', err);
+				console.log('Could not find rconFile on Disk, creating one...');
 				message.reply('<:Error:849215023264169985> Could not read rcon credentials, attempting to create some. (If this errors, do `^rcon connect` or `^ftp connect`)');
 
 				const uuidv4 = await utils.getUUIDv4(taggedUser, message);
@@ -68,7 +68,7 @@ module.exports = {
 					const rconEnabled = propArr.find(key => key.startsWith('enable-rcon')).split('=').pop();
 
 					if(rconEnabled === 'false') {
-						message.reply('RCON is disabled, do you want the bot to enable it?')
+						message.reply('RCON is disabled, do you want the bot to enable it (or use ftp)?')
 						.then((msg) => {
 							msg.react('👍');
 							msg.react('👎');
@@ -91,7 +91,7 @@ module.exports = {
 											console.log('Successfully wrote properties file.');
 											await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
 
-											message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try again.');
+											message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try this command again.');
 											return;
 										});
 									} else if (reaction.emoji.name === '👎') {
@@ -137,13 +137,19 @@ module.exports = {
 										})
 									}
 								}).catch(collected => {
-										message.reply('You didnt react in time!');
+										message.reply(':warning: You didnt react in time!');
 								});
 						});
 					} else if (rconEnabled === 'true') {
 						const password = propArr.find(key => key.startsWith('rcon.password')).split('=').pop();
 						const port = propArr.find(key => key.startsWith('rcon.port')).split('=').pop();
 						const ip = propArr.find(key => key.startsWith('server-ip')).split('=').pop();
+
+						if(ip === '' || port === '' || password === '') {
+                            console.log('RCON credentials are not specified in server.properties.');
+                            message.reply(':warning: Please use `^rcon connect` OR define all RCON credentials in the `server.properties` file.');
+                            return;
+                        }
 
 						const rconString = {
 							"password": password,
@@ -159,6 +165,7 @@ module.exports = {
 								return;
 							}
 							console.log('Successfully wrote rconFile.');
+							message.reply('<:Checkmark:849224496232660992> Created RCON credentials from the `server.properties` file.')
 						});
 
 						await rcon.execute(ip, port, password, `ban ${userName} ${reason}`, message);
@@ -174,7 +181,7 @@ module.exports = {
 
 			fs.access('./ftp/' + message.guild.id + '.json', fs.constants.F_OK, async (err) => {
 				if (err) {
-					await rcon.execute(ip, port, password, `ban ${userName} ${reason}`);
+					await rcon.execute(ip, port, password, `ban ${userName} ${reason}`, message);
 				} else {
 					const uuidv4 = await utils.getUUIDv4(taggedUser, message);
 					if(uuidv4 === undefined) return;
@@ -198,7 +205,7 @@ module.exports = {
 						const rconEnabled = propArr.find(key => key.startsWith('enable-rcon')).split('=').pop();
 
 						if(rconEnabled === 'false') {
-								message.reply('RCON is disabled, do you want the bot to enable it?')
+								message.reply('RCON is disabled, do you want the bot to enable it (or use ftp)?')
 									.then((msg) => {
 										msg.react('👍');
 										msg.react('👎');
@@ -221,7 +228,7 @@ module.exports = {
 														console.log('Successfully wrote properties file.');
 														await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
 
-														message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try again.');
+														message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try this command again.');
 														return;
 													});
 												} else if (reaction.emoji.name === '👎') {
@@ -271,7 +278,7 @@ module.exports = {
 											});
 									})
 						} else if (rconEnabled === 'true') {
-							await rcon.execute(ip, port, password, `ban ${userName} ${reason}`);
+							await rcon.execute(ip, port, password, `ban ${userName} ${reason}`, message);
 						}
 					})
 				}
