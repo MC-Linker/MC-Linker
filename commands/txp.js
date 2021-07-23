@@ -26,11 +26,15 @@ module.exports = {
 						const attach = (message.attachments).array();
 						URL = attach[0].url;
 					} catch (err) {
-						console.log('Error trying to get imagesize. ', err);
-						message.channel.send('<:Error:849215023264169985> Cannot get URL of image. ^help for correct usage.');
+						console.log(message.member.user.tag + ' executed ^txp load. Couldnt get image url in ' + message.guild.name);
+						message.channel.send('<:Error:849215023264169985> Cannot get URL of image. Please attach an image or give an image url as argument.');
 						return;
 					}
 					
+				} else {
+					console.log(message.member.user.tag + ' executed ^txp load without url or attach in ' + message.guild.name);
+					message.reply(':warning: Please attach an image or give an image url as argument.');
+					return;
 				}
 	
 				console.log(message.member.user.tag + ' executed ^txp load with imgURL: ' + URL + ' in ' + message.guild.name);

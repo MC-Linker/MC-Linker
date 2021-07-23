@@ -37,17 +37,13 @@ module.exports = {
 
 
         let categoryDisabled = fs.existsSync('./disable/stats/category/' + message.guild.id + "_" + statType);
-        if(categoryDisabled === false) {
-            console.log('DisableFile [' + './disable/stats/category/' + message.guild.id + "_" + statType + '] doesnt exist. Stat not disabled.')
-        } else if(categoryDisabled === true) {
+        if(categoryDisabled === true) {
             console.log('Category [' + statType + '] disabled.')
             message.reply(':no_entry: ' + 'Category [**' + statType + '**] disabled!')
             return;
         }
         let objectDisabled = fs.existsSync('./disable/stats/object/' + message.guild.id + "_" + statObject);
-        if(objectDisabled === false) {
-            console.log('DisableFile [' + './disable/stats/object/' + message.guild.id + "_" + statObject + '] doesnt exist. Stat not disabled.')
-        } else if(objectDisabled === true) {
+        if(objectDisabled === true) {
             console.log('Object [' + statObject + '] disabled.')
             message.reply(':no_entry:' + 'Object [**' + statObject + '**] disabled!')
             return; 
