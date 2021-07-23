@@ -49,11 +49,9 @@ module.exports = {
 				const uuidv4 = await utils.getUUIDv4(taggedUser, message);
 				if(uuidv4 === undefined) return;
 
-				let worldPath = await utils.getWorldPath(message);
+				const worldPath = await utils.getWorldPath(message);
 				if(worldPath === undefined) return;
-				worldPath = worldPath.split('/');
-				let path = worldPath[0];
-				if(path === '') path = worldPath[1];
+				const path = worldPath.split('/').slice(0, -1).join('/');
 
 				await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
 				
@@ -186,11 +184,9 @@ module.exports = {
 					const uuidv4 = await utils.getUUIDv4(taggedUser, message);
 					if(uuidv4 === undefined) return;
 
-					let worldPath = await utils.getWorldPath(message);
+					const worldPath = await utils.getWorldPath(message);
 					if(worldPath === undefined) return;
-					worldPath = worldPath.split('/');
-					let path = worldPath[0];
-					if(path === '') path = worldPath[1];
+					const path = worldPath.split('/').slice(0, -1).join('/');
 
 					await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
 					

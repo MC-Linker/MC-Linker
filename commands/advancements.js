@@ -35,17 +35,13 @@ module.exports = {
         }
 
         let categoryDisabled = fs.existsSync('./disable/advancements/category/' + message.guild.id + "_" + mode);
-        if(categoryDisabled === false) {
-            console.log('DisableFile [' + './disable/advancements/category/' + message.guild.id + "_" + mode + '] doesnt exist. Advancement not disabled.')
-        } else if(categoryDisabled === true) {
+        if(categoryDisabled === true) {
             console.log('Category [' + mode + '] disabled.')
             message.reply(':no_entry: ' + 'Category [**' + mode + '**] disabled!')
             return;
         }
         let objectDisabled = fs.existsSync('./disable/advancements/object/' + message.guild.id + "_" + object);
-        if(objectDisabled === false) {
-            console.log('DisableFile [' + './disable/advancements/object/' + message.guild.id + "_" + object + '] doesnt exist. Advancement not disabled.')
-        } else if(objectDisabled === true) {
+       if(objectDisabled === true) {
             console.log('Object [' + object + '] disabled.')
             message.reply(':no_entry:' + 'Object [**' + object + '**] disabled!')
             return; 

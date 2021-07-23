@@ -1,8 +1,8 @@
 module.exports = {
     name: 'ftp',
     aliases: ['ftpconnect', 'connectftp', 'server', 'connectserver', 'serverconnect'],
-    usage: 'ftp <host> <username> <password> <port> <path to world folder. Default Path: minecraft/WORLDNAME> <minecraft-version the minecraft-server is on>',
-    example: 'ftp localhost lianecx supersecretpassword 21 minecraftbukkit/supercoolworld 1.17',
+    usage: 'ftp <host> <username> <password> <port> <path to world folder (Format: /path/path)> <minecraft-version the minecraft-server is on>',
+    example: 'ftp localhost lianecx supersecretpassword 21 /minecraftbukkit/supercoolworld 1.17',
     description: "Connect your minecraft Server with the bot. Can only be used by **admins**. \nNeed help getting the ftp credentials? Join the [Support Server](https://discord.gg/rX36kZUGNK).",
     execute(message, args){
 
@@ -25,9 +25,9 @@ module.exports = {
             message.reply(':warning: ' + "You are not an Admin!")
             console.log(message.member.user.tag + ' executed ^ftp without admin in ' + message.guild.name);
             return;
-        } else if(version === '1.11' || version === '1.10' || version === '1.9' || version === '1.8' || version === '1.7') {
+        } else if(version.startsWith('1.11') || version.startsWith('1.10') || version.startsWith('1.9') || version.startsWith('1.8') || version.startsWith('1.7')) {
             message.reply(':warning: The advancement command might not work because advancements dont exist in your Minecraft version yet.')
-        } else if(version !== '1.13' && version !== '1.14' && version !== '1.15' && version !== '1.16' && version !== '1.17') {
+        } else if(!version.startsWith('1.13') && !version.startsWith('1.14') && !version.startsWith('1.15') && !version.startsWith('1.16') && !version.startsWith('1.17')) {
             message.reply(':warning: The stat and advancement commands might not work because your version isnt compatible with it.')
         }
 

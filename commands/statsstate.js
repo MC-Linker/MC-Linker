@@ -1,6 +1,6 @@
 module.exports = {
     name: 'statsstate',
-    aliases: ['statstate', 'ss'],
+    aliases: ['statstates', 'ss'],
     usage: 'statsstate category/object <category/item/entity/block **id**>',
     example: 'statsstate => outputs all disabled stats **//** e.g. STATSDISABLE',
     description: 'Look at all disabled statcategorys/items/entitys/blocks.',
