@@ -1,8 +1,7 @@
 // @ts-nocheck
 console.log('Loading...')
 
-const prefix = '^', token = process.env.token;
-//const { prefix, token } = require('../config.json');
+const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client()
 const fs = require('fs');

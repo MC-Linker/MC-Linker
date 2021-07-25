@@ -65,7 +65,7 @@ module.exports = {
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setTitle(taggedName)
                 .addField(`=======================\n${mode} ${object}`, '**=======================**')
-                .setImage('https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png')
+                .setImage('https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png');
 
             try {
                 const advancementData = JSON.parse(advancementJson);
@@ -86,14 +86,21 @@ module.exports = {
                 } else {
                     try {
                         let searchName;
+                        let key = Object.keys(advancementData['minecraft:' + mode + '/' + object]['criteria']);
+
+                        let counter = 0;
+                        let amString = '';
                         let amEmbed;
-                        let key = Object.keys(advancementData['minecraft:' + mode + '/' + object]['criteria'])
                         for (let i=0; i < key.length; i++) {
                             searchName = advancementData['minecraft:' + mode + '/' + object]['criteria'][key[i]]
                             key[i] = key[i].replace('minecraft:', '')
                             searchName = searchName.replace(' +0000', '');
-                            amEmbed = baseEmbed.addField('Criteria', key[i], true).addField('completed on', searchName, true).addField('\u200b', '\u200b', true)
+
+                            amString += `\n**Criteria**\n${key[i]} \n**Completed on**\n${searchName}\n`;
+                            if(counter === 1) {counter = 0; amEmbed = baseEmbed.addField('\u200b', amString, true); amString = '';}
+                            else counter++;
                         }
+
                         console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedName + ' : ' + searchName)
                         message.channel.send(amEmbed)
                     } catch (err) {
