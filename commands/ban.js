@@ -98,7 +98,7 @@ module.exports = {
 										const banReplace = {
 											"uuid": uuidv4,
 											"name": userName,
-											"created": new Date(),
+											"created": Date.now(),
 											"source": "Smp_Minecraft_Bot",
 											"expires": "forever",
 											"reason": reason
@@ -233,7 +233,7 @@ module.exports = {
 													const banReplace = {
 														"uuid": uuidv4,
 														"name": userName,
-														"created": new Date(),
+														"created": Date.now(),
 														"source": "Smp_Minecraft_Bot",
 														"expires": "forever",
 														"reason": reason

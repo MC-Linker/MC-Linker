@@ -1,64 +1,70 @@
-const ftp = require('ftp');
+const ftp = require('ftps');
 const fs = require('fs');
 module.exports = {
+
 	get: async function (getPath, putPath, message) {
-		return await new Promise((resolve, reject) => {
+		return await new Promise(async (resolve, reject) => {
 
-			const ftpClient = new ftp();
-			ftpClient.on('error', function(err) {
-				console.log('ftpError! ', err);
-				message.reply('<:Error:849215023264169985> Could not connect to server.');
-				reject('error');
-				return;
-			});
+			try {
+				const ftpJson = fs.readFileSync('./ftp/' + message.guild.id + '.json');
+				// @ts-ignore
+				const ftpData = JSON.parse(ftpJson);
+				const host = ftpData.host;
+				const user = ftpData.user;
+				const pass = ftpData.password;
+				const port = ftpData.port;
 
-			let worldPath;
+				
 				try {
-					const ftpJson = fs.readFileSync('./ftp/' + message.guild.id + '.json');
-					// @ts-ignore
-					const ftpData = JSON.parse(ftpJson);
-					const host = ftpData.host;
-					const user = ftpData.user;
-					const pass = ftpData.password;
-					const port = ftpData.port;
-					worldPath = ftpData.path;
-					
-					try {
-						ftpClient.connect({
-							host: host,
-							port: port,
-							user: user,
-							password: pass,
-						});
-					} catch (err) {
-						console.log('Could not connect to server. ', err);
-						message.reply('<:Error:849215023264169985> ' + 'Could not connect to server.');
-						reject('error');
-						return;
-					} 
-					
-				} catch (err) {
-					message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please use `ftp`.')
-					console.log('Error reading ftp file from disk: ', err);
-					return;
-				}
+					const ftpClient = new ftp({
+						host: host,
+						username: user,
+						password: pass,
+						escape: false,
+						port: port,
+						retries: 2,
+						autoConfirm: true,
+						protocol: 'sftp',
+						additionalLftpCommands: 'set xfer:clobber on'
+					});
 
-			ftpClient.on('ready', function() {
-				ftpClient.get(getPath, function(err, stream) {
-					if(err) {
-						console.log('Could not download files. Path: ' + getPath, err);
-						message.reply('<:Error:849215023264169985> ' + 'Could not download files. The User never joined the server or the worldpath is incorrect.');
-						reject('error');
-						return;
-					}
-					stream.once('close', function() {
-						ftpClient.end();
+					ftpClient.get(getPath, putPath).exec((err, res) => {
+						if(err) {
+							console.log('Could not download files. Path: ' + getPath, err);
+							message.reply('<:Error:849215023264169985> Could not download files. The User never joined the server or the worldpath is incorrect.');
+							reject('error');
+							return;
+						}
+						console.log('File [' + getPath + '] succesfully downloaded', res);
 						resolve('noice');
 					});
-					stream.pipe(fs.createWriteStream(putPath));
-					console.log('File [' + getPath + '] succesfully downloaded');
+
+				} catch (err) {
+					console.log('Could not connect to server. ', err);
+					message.reply('<:Error:849215023264169985> ' + 'Could not connect to server.');
+					reject('error');
+					return;
+				}					
+				
+			} catch (err) {
+				message.reply('<:Error:849215023264169985> ' + 'Could not read ftp credentials. Please use `^ftp`.')
+				console.log('Error reading ftp file from disk: ', err);
+				return;
+			}
+			/*ftpClient.get(getPath, function(err, stream) {
+				if(err) {
+					console.log('Could not download files. Path: ' + getPath, err);
+					message.reply('<:Error:849215023264169985> ' + 'Could not download files. The User never joined the server or the worldpath is incorrect.');
+					reject('error');
+					return;
+				}
+				stream.once('close', function() {
+					ftpClient.end();
+					resolve('noice');
 				});
-			}); 
+				stream.pipe(fs.createWriteStream(putPath));
+				console.log('File [' + getPath + '] succesfully downloaded');
+			});*/
 		});
 	},
 
