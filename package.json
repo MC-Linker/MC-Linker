@@ -17,15 +17,16 @@
     "discord.js": "^12.5.3",
     "easy-ftp": "^0.4.2",
     "fetch": "^1.1.0",
+    "ftp": "^0.3.10",
     "ftp-client": "^0.2.2",
-    "ftps": "^1.1.1",
-    "glob": "^7.1.6",
+    "glob": "^7.1.7",
     "lodash": "^4.17.21",
     "nbt": "^0.8.1",
     "node-fetch": "^2.6.1",
     "node-gyp": "^8.1.0",
     "probe-image-size": "^7.2.1",
     "rcon": "^1.0.3",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "ssh2-sftp-client": "^7.0.0"
   }
 }
