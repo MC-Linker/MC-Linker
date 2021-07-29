@@ -8,7 +8,7 @@ module.exports = {
     description: 'Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!',
     async execute(message, args) {
 		const utils = require('../utils');
-		const ftp = require('../ftpConnect');
+		const ftp = require('../ftp');
 		const fs = require('fs');
 		const rcon = require('../rcon');
 
@@ -53,7 +53,8 @@ module.exports = {
 				if(worldPath === undefined) return;
 				const path = worldPath.split('/').slice(0, -1).join('/');
 
-				await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
+				const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
+				if(propFile === false) return;
 				
 				fs.readFile(`./properties/${message.guild.id}.properties`, 'utf8', async (err, propString) => {
 					if(err) {
@@ -87,18 +88,21 @@ module.exports = {
 												return;
 											}
 											console.log('Successfully wrote properties file.');
-											await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
+											
+											const propFile = await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
+											if(propFile === false) return;
 
 											message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try this command again.');
 											return;
 										});
 									} else if (reaction.emoji.name === '👎') {
-										await ftp.get(`${path}/banned-players.json`, `./bans/${message.guild.id}.json`, message);
+										const banFile = await ftp.get(`${path}/banned-players.json`, `./bans/${message.guild.id}.json`, message);
+										if(banFile === false) return;
 
 										const banReplace = {
 											"uuid": uuidv4,
 											"name": userName,
-											"created": new Date(),
+											"created": Date.now(),
 											"source": "Smp_Minecraft_Bot",
 											"expires": "forever",
 											"reason": reason
@@ -127,8 +131,10 @@ module.exports = {
 													message.reply('<:Error:849215023264169985> Error trying to ban player.');
 													return;
 												}
-												await ftp.put(`./bans/${message.guild.id}.json`, `${path}/banned-players.json`, message);
-						
+
+												const banFIle = await ftp.put(`./bans/${message.guild.id}.json`, `${path}/banned-players.json`, message);
+												if(banFIle === false) return;
+
 												console.log('Succesfully wrote and put banFile on server.');
 												message.reply(':warning: Restart the minecraft server to ban the player [**' + taggedName + '**]. **OR do **`^rcon enable`** to instantly ban the player!**');	
 											})
@@ -188,7 +194,8 @@ module.exports = {
 					if(worldPath === undefined) return;
 					const path = worldPath.split('/').slice(0, -1).join('/');
 
-					await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
+					const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
+					if(propFile === false) return;
 					
 					fs.readFile(`./properties/${message.guild.id}.properties`, 'utf8', async (err, propString) => {
 						if(err) {
@@ -222,18 +229,21 @@ module.exports = {
 															return;
 														}
 														console.log('Successfully wrote properties file.');
-														await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
+
+														const propFile = await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
+														if(propFile === false) return;
 
 														message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try this command again.');
 														return;
 													});
 												} else if (reaction.emoji.name === '👎') {
-													await ftp.get(`${path}/banned-players.json`, `./bans/${message.guild.id}.json`, message);
-	
+													const banFIle = await ftp.get(`${path}/banned-players.json`, `./bans/${message.guild.id}.json`, message);
+													if(banFIle === false) return;
+													
 													const banReplace = {
 														"uuid": uuidv4,
 														"name": userName,
-														"created": new Date(),
+														"created": Date.now(),
 														"source": "Smp_Minecraft_Bot",
 														"expires": "forever",
 														"reason": reason

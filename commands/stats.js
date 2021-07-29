@@ -1,5 +1,3 @@
-const { connect } = require('http2');
-
 module.exports = {
     name: 'stats',
     aliases: ['stat'],
@@ -9,7 +7,7 @@ module.exports = {
     async execute(message, args) {
 
         const fs = require('fs');
-        const ftp = require('../ftpConnect');
+        const ftp = require('../ftp');
         const Discord = require('discord.js');
         const utils = require('../utils');
 
@@ -53,19 +51,20 @@ module.exports = {
         if(worldPath === undefined) {
             return;
         }
-        await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
+        const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
+        if(statFile === false) return;
 
         fs.readFile('./stats/' + uuidv4 + '.json', 'utf8', (err, statJson) => {
             if(err) {
-                message.reply('<:Error:849215023264169985> ' + 'Could not find stat file. Member most likely never joined the server.')
+                message.reply('<:Error:849215023264169985> Could not find stat file. Member most likely never joined the server.')
                 console.log('Error reading stat file from disk: ', err);
                 return;
             }
             fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', (err, ftpJson) => {
                 if(err) {
-                message.reply('<:Error:849215023264169985> ' + 'Could not find ftp file. Please contact a server admin.')
-                console.log('Error reading ftp file from disk: ', err);
-                return;
+                    message.reply('<:Error:849215023264169985> ' + 'Could not find ftp file. Please contact a server admin.')
+                    console.log('Error reading ftp file from disk: ', err);
+                    return;
                 }
 
                 try {
