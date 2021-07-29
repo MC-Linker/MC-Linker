@@ -7,7 +7,7 @@ module.exports = {
     async execute(message, args) {
 		const fs = require('fs');
 		const rcon = require('../rcon');
-		const ftp = require('../ftpConnect');
+		const ftp = require('../ftp');
 		const utils = require('../utils');
 
 		const mode = args[0];
@@ -74,7 +74,8 @@ module.exports = {
 			let path = worldPath[0];
 			if(path === '') path = worldPath[1];
 
-			await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
+			const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
+			if(propFile === false) return;
 			
 			fs.readFile(`./properties/${message.guild.id}.properties`, 'utf8', async (err, propString) => {
 				if(err) {

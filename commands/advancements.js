@@ -7,7 +7,7 @@ module.exports = {
     async execute(message, args) {
 
         const fs = require('fs');
-        const ftp = require('../ftpConnect');
+        const ftp = require('../ftp');
         const Discord = require('discord.js');
         const utils = require('../utils');
 
@@ -51,7 +51,8 @@ module.exports = {
         if(worldPath === undefined) {
             return;
         }
-        await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
+        const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
+        if(amFile === false) return;
 
         fs.readFile('./advancements/' + uuidv4 + '.json', 'utf8', (err, advancementJson) => {
             if(err) {
