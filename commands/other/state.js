@@ -1,10 +1,13 @@
 module.exports = {
     name: 'state',
-    aliases: ['states', 'st'],
-    usage: 'statsstate category/object <category/item/entity/block **id**>',
-    example: 'statsstate => outputs all disabled stats **//** e.g. STATSDISABLE',
-    description: 'Look at all disabled statcategorys/items/entitys/blocks.',
+    aliases: ['states'],
+    usage: 'state commands/stats/advancements',
+    example: 'state commands **//** state stats',
+    description: 'Look at all disabled stats/advancements/commands (**WIP**)',
     execute(message, args){
+        console.log(message.member.user.tag + ' executed wip command ^state in ' + message.guild.name)
+        message.reply(':warning: **WIP**');
+        return;
 
         const Discord = require('discord.js');
         const fs = require('fs');
