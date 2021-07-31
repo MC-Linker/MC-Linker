@@ -7,9 +7,9 @@ module.exports = {
     async execute(message, args) {
 
         const fs = require('fs');
-        const ftp = require('../ftp');
+        const ftp = require('../../ftp');
         const Discord = require('discord.js');
-        const utils = require('../utils');
+        const utils = require('../../utils');
 
         const mode = (args[1]);
         const object = (args[2]);

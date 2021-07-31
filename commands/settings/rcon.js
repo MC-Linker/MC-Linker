@@ -1,14 +1,14 @@
 module.exports = {
     name: 'rcon',
     aliases: ['RCON'],
-    usage: 'rcon connect <server IP> <password> <port> **//** rcon execute <command> (**WIP**) **//** rcon enable',
-    example: 'rcon connect 5.83.754.243 T12n53 25567**//** rcon execute /seed (**WIP**)',
+    usage: 'rcon connect <server IP> <password> <port> **//** rcon execute <command> (**WIP**) **//**\nrcon enable',
+    example: 'rcon connect 5.83.754.243 T12n53 25567**//**\nrcon execute /seed (**WIP**)**//**\nrcon enable',
     description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file)\n**OR** execute commands on the server with RCON (**WIP**).\n**OR** enable RCON in the `server.properties` file. Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',
     async execute(message, args) {
 		const fs = require('fs');
-		const rcon = require('../rcon');
-		const ftp = require('../ftp');
-		const utils = require('../utils');
+		const rcon = require('../../rcon');
+		const ftp = require('../../ftp');
+		const utils = require('../../utils');
 
 		const mode = args[0];
 		if(!mode) {

@@ -1,14 +1,14 @@
 module.exports = {
-    name: 'inventorys',
-    aliases: ['inv', 'inventory', 'inventorys'],
+    name: 'inventory',
+    aliases: ['inv', 'inventories', 'inventorys'],
     usage: 'inventory <mention/username>',
     example: 'inventory @Lianecx **//** inventory xXgamerkidXx',
     description: "Get an image of a player's inventory.",
     async execute(message, args) {
-		const utils = require('../utils');
+		const utils = require('../../utils');
 		const nbt = require('nbt');
 		const fs = require('fs');
-        const ftp = require('../ftp');
+        const ftp = require('../../ftp');
         const Canvas = require('canvas');
         const Discord = require('discord.js');
 

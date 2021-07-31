@@ -3,13 +3,13 @@ module.exports = {
     aliases: ['stat'],
     usage: 'stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**> ',
     example: 'stats @Lianecx mined iron_ore **//** stats @Memer custom play_time **//** stats xXgamerboyyXx killed blaze',
-    description: "Look at your and other member's minecraft server stats. \nNOTE: Stats are MUCH faster updated in minecraftversion: 1.17 \n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
+    description: "Look at your and other member's minecraft server stats.\n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
     async execute(message, args) {
 
         const fs = require('fs');
-        const ftp = require('../ftp');
+        const ftp = require('../../ftp');
         const Discord = require('discord.js');
-        const utils = require('../utils');
+        const utils = require('../../utils');
 
         const statType = (args[1]);
         const statObject = (args[2]);

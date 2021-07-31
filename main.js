@@ -22,11 +22,13 @@ client.on("guildDelete", guild => {
 })
 
 client.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
-for(const file of commandFiles){
-    const command = require(`./commands/${file}`);
- 
-    client.commands.set(command.name, command);
+const commandFolders = fs.readdirSync('./commands/');
+for (const folder of commandFolders) {
+	const commandFiles = fs.readdirSync(`./commands/${folder}`);
+	for (const file of commandFiles) {
+		const command = require(`./commands/${folder}/${file}`);
+		client.commands.set(command.name, command);
+	}
 }
 
 client.on('message', (message) => {
@@ -43,75 +45,84 @@ client.on('message', (message) => {
 
         let helpEmbed = new Discord.MessageEmbed()
             .setTitle('Help Menu')
-            .setDescription('You can find helpful information about EVERY command here!\n**More Help** to a specific command with:\n**^help <command>**')
             .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
             .setColor('#000000')
-            .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png');
+            .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+            .addField(':label: Main :label:', 'Main commands such as\n`^stats`, or `^inventory`.')
+            .addField(':shield: Moderation :shield:', 'Moderation commands such as `^ban` or `^unban`.')
+            .addField(':point_right: Other :point_left:', 'Other commands such as `^txp` or `^state`')
+            .addField(':gear: Settings :gear:', 'Setup and settings such as `^prefix` or `^ftp`');
 
-        client.commands.forEach(cmd => {
-            helpEmbed.addField(cmd.name.toUpperCase(), `${cmd.description}`);
-        });
-        helpEmbed.addField('\u200B', '**More Help** to a specific command with:\n**^help <command>**').addField('\u200B', '**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+        helpEmbed.addField('\u200B', '**All commands in a category** can be viewed with: **^help <catgory>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
         message.channel.send(helpEmbed);
 
         } else {
-            let command = (args[0]).toLowerCase();
+            let commandName = (args[0]).toLowerCase();
+            if(commandName === 'mod' || commandName === 'Mod') commandName = 'Moderation'
             
-            let helpEmbed;
-            try {
-                command = client.commands.get(command) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(command));
-                if (command === undefined) {console.log(message.member.user.tag + ' executed non-existent help command ' + commandName + ' in ' + message.guild.name); return;}
-                console.log(message.member.user.tag + ' executed ^help ' + command.name + ' in ' + message.guild.name);
+            let helpEmbed = new Discord.MessageEmbed()
+                .setTitle('Help Menu')
+                .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .setColor('#000000')
+                
+            let command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+            if (!command) {
+                fs.readdir(`./commands/${commandName}`, (err, commands) => {
+                    if(err) {
+                        console.log(message.member.user.tag + ' executed non-existent help command/category ' + commandName + ' in ' + message.guild.id);
+                        message.reply('That command/category [**' + commandName + '**] doesnt exist.');
+                        return;
+                    }
+                    console.log(message.member.user.tag + ' executed ^help ' + commandName + ' in ' + message.guild.name);
 
-                helpEmbed = new Discord.MessageEmbed()
-                    .setTitle('Help Menu')
-                    .setDescription('You can find helpful information here.')
-                    .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .setColor('#000000')
-                    .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}\n\n**ALIASES**: \n${command.aliases.join(', ')}`);
-            } catch (err) {
-                console.log("Command [" + args[0] + "] doesn't exist.");
-                message.reply(":warning: Command [**" + args[0] + "**] doesn't exist.");
+                    commands.forEach(commandFile => {
+                        commandFile = commandFile.split('.').shift();
+                        command = client.commands.get(commandFile) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandFile));
+                        helpEmbed.addField(command.name.toUpperCase(), command.description);
+                    });
+                    message.channel.send(helpEmbed);
+                })
+            } else {
+                console.log(message.member.user.tag + ' executed ^help ' + commandName + ' in ' + message.guild.name);
+
+                helpEmbed.addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}\n\n**ALIASES**: \n${command.aliases.join(', ')}`);
+
+                const disableButton = new disbut.MessageButton()
+                    .setStyle('red')
+                    .setID('disable' + command.name)
+                    .setLabel('Disable this command!');
+                const enableButton = new disbut.MessageButton()
+                    .setStyle('green')
+                    .setID('enable' + command.name)
+                    .setLabel('Enable this command!');
+
+                const disabled = fs.existsSync('./disable/command/' + message.guild.id + '_' + command.name);
+                if (disabled === false) {
+                    message.channel.send({embed: helpEmbed, button: disableButton});
+                } else if (disabled === true) {
+                    helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
+                    message.channel.send({embed: helpEmbed, button: enableButton});
+                }
+            }
+        }
+
+    } else {
+        const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+        if (!command) {console.log(message.member.user.tag + ' executed non-existent command ' + commandName + ' in ' + message.guild.name); return;}
+        fs.access('./disable/command/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
+            if (err) {
+                try {
+                    command.execute(message, args);
+                } catch (err) {
+                    console.log(message.member.user.tag + ' executed ^' + command.name + '. Couldnt execute that command!', err);
+                }
+            } else {
+                console.log(message.member.user.tag + ' executed disabled command [' + command.name + '] in ' + message.guild.name);
+                message.reply(':no_entry: Command [**' + command.name + '**] disabled!');
                 return;
             }
-
-            const disableButton = new disbut.MessageButton()
-                .setStyle('red')
-                .setID('disable' + command.name)
-                .setLabel('Disable this command!');
-            const enableButton = new disbut.MessageButton()
-                .setStyle('green')
-                .setID('enable' + command.name)
-                .setLabel('Enable this command!');
-
-            const disabled = fs.existsSync('./disable/command/' + message.guild.id + '_' + command.name);
-            if (disabled === false) {
-                message.channel.send({embed: helpEmbed, button: disableButton});
-            } else if (disabled === true) {
-                helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
-                message.channel.send({embed: helpEmbed, button: enableButton});
-            }
-        }
-        return;
+        });
     }
-
-    const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-    if (command === undefined) {console.log(message.member.user.tag + ' executed non-existent command ' + commandName + ' in ' + message.guild.name); return;}
-    fs.access('./disable/command/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
-        if (err) {
-            try {
-                command.execute(message, args);
-            } catch (err) {
-                console.log(message.member.user.tag + ' executed ^' + command.name + '. Couldnt execute that command!', err);
-            }
-        } else {
-            console.log(message.member.user.tag + ' executed disabled command [' + command.name + '] in ' + message.guild.name);
-            message.reply(':no_entry: Command [**' + command.name + '**] disabled!');
-            return;
-        }
-    });
-
 })
 
 client.on('clickButton', async (button) => {
@@ -135,10 +146,8 @@ client.on('clickButton', async (button) => {
 
             helpEmbed = new Discord.MessageEmbed()
                 .setTitle('Help Menu')
-                .setDescription('You can find helpful information here.')
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('#000000')
-                .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .addField(client.commands.get(command).name.toUpperCase(), client.commands.get(command).description + `\n\n**USAGE**: ${client.commands.get(command).usage}\n\n**EXAMPLE**: ${client.commands.get(command).example}\n\n**ALIASES**: \n${client.commands.get(command).aliases.join(', ')}`);
 
             const enableButton = new disbut.MessageButton()
@@ -146,7 +155,7 @@ client.on('clickButton', async (button) => {
                 .setID('enable' + command)
                 .setLabel('Enable this command!');
             
-            helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```')
+            helpEmbed.setDescription('```diff\n- [COMMAND DISABLED]```')
                      .setColor('DARK_RED');
             button.message.edit({embed: helpEmbed, button: enableButton});
 
@@ -174,10 +183,8 @@ client.on('clickButton', async (button) => {
             });
             helpEmbed = new Discord.MessageEmbed()
                 .setTitle('Help Menu')
-                .setDescription('You can find helpful information here.')
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('#000000')
-                .setImage('https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .addField(client.commands.get(command).name.toUpperCase(), client.commands.get(command).description + `\n\n**USAGE**: ${client.commands.get(command).usage}\n\n**EXAMPLE**: ${client.commands.get(command).example}\n\n**ALIASES**: \n${client.commands.get(command).aliases.join(', ')}`);
 
             const disableButton = new disbut.MessageButton()
@@ -185,7 +192,7 @@ client.on('clickButton', async (button) => {
                 .setID('disable' + command)
                 .setLabel('Disable this command!');
 
-            helpEmbed.setDescription('You can find helpful information here. \n```diff\n+ [Command enabled]```')
+            helpEmbed.setDescription('```diff\n+ [Command enabled]```')
                      .setColor('GREEN');
             button.message.edit({embed: helpEmbed, button: disableButton})
 
