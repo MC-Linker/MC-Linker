@@ -5,6 +5,9 @@ module.exports = {
     example: 'statsstate => outputs all disabled stats **//** e.g. STATSDISABLE',
     description: 'Look at all disabled statcategorys/items/entitys/blocks.',
     execute(message, args){
+        console.log(message.member.user.tag + ' executed wip command ^state in ' + message.guild.name)
+        message.reply(':warning: **WIP**');
+        return;
 
         const Discord = require('discord.js');
         const fs = require('fs');
