@@ -51,7 +51,7 @@ client.on('message', (message) => {
             .addField(':label: Main :label:', 'Main commands such as\n`^stats`, or `^inventory`.')
             .addField(':shield: Moderation :shield:', 'Moderation commands such as `^ban` or `^unban`.')
             .addField(':point_right: Other :point_left:', 'Other commands such as `^txp` or `^state`')
-            .addField(':gear: Settings :gear:', 'Setup and settings such as `^prefix` or `^ftp`')
+            .addField(':gear: Settings :gear:', 'Setup and settings such as `^disable` or `^ftp`')
             .addField('\u200B', '**All commands in a category** can be viewed with: **^help <catgory>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
 
         message.channel.send(helpEmbed);
