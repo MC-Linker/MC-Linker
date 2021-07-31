@@ -1,6 +1,6 @@
 module.exports = {
     name: 'state',
-    aliases: ['states', 'st'],
+    aliases: ['states'],
     usage: 'state commands/stats/advancements',
     example: 'state commands **//** state stats',
     description: 'Look at all disabled stats/advancements/commands (**WIP**)',
