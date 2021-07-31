@@ -13,7 +13,8 @@ module.exports = {
 		const mode = args[0];
 		if(!mode) {
 			console.log(message.member.user.tag + ' executed ^rcon without args.');
-			message.reply(':warning: Do you want to enable RCON in the server? => `^rcon enable`.\n Do you want to connect the bot with RCON? => `rcon connect`.\n Or do you want to execute a command with RCON? => `rcon execute` (**WIP**).')
+			message.reply(':warning: Do you want to enable RCON in the server? => `^rcon enable`.\n Do you want to connect the bot with RCON? => `rcon connect`.\n Or do you want to execute a command with RCON? => `rcon execute` (**WIP**).');
+			return;
 		}
 		if(mode === 'connect') {
 			if (!message.member.hasPermission("ADMINISTRATOR")) {

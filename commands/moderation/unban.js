@@ -38,7 +38,7 @@ module.exports = {
 		fs.readFile(`./rcon/${message.guild.id}.json`, 'utf8', async (err, rconData) => {
 			if (err) {
 				console.log('Could not find rconFile on Disk, creating one...');
-				message.reply('<:Error:849215023264169985> Could not read rcon credentials, attempting to create some. (If this errors, do `^rcon connect` or `^ftp connect`)');
+				message.reply(':warning: Could not read rcon credentials, attempting to create some. (If this errors, do `^rcon connect` or `^ftp connect`)');
 
 				const uuidv4 = await utils.getUUIDv4(taggedUser, message);
 				if(uuidv4 === undefined) return;
