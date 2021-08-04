@@ -1,6 +1,6 @@
 module.exports = {
     name: 'advancements',
-    aliases: ['am', 'advancement'],
+    aliases: ['am', 'advancement', 'ams'],
     usage: 'advancements <@mention>/<ingamename> <advancementTab> <advancementid>',
     example: '^advancements @Lianecx story iron_tools **//** ^advancements @Memer adventure adventuring_time **//** ^advancements xXgamerboyyXx recipes loom',
     description: 'Look up your unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).',
@@ -34,16 +34,16 @@ module.exports = {
             return;
         }
 
-        let categoryDisabled = fs.existsSync('./disable/advancements/category/' + message.guild.id + "_" + mode);
+        let categoryDisabled = fs.existsSync('./disable/advancements/' + message.guild.id + "_" + mode);
         if(categoryDisabled === true) {
-            console.log('Category [' + mode + '] disabled.')
-            message.reply(':no_entry: ' + 'Category [**' + mode + '**] disabled!')
+            console.log('Category [' + mode + '] disabled.');
+            message.reply(':no_entry: Advancement [**' + mode + '**] disabled!');
             return;
         }
         let objectDisabled = fs.existsSync('./disable/advancements/object/' + message.guild.id + "_" + object);
-       if(objectDisabled === true) {
-            console.log('Object [' + object + '] disabled.')
-            message.reply(':no_entry:' + 'Object [**' + object + '**] disabled!')
+        if(objectDisabled === true) {
+            console.log('Object [' + object + '] disabled.');
+            message.reply(':no_entry: Advancement [**' + object + '**] disabled!');
             return; 
         }
 

@@ -58,7 +58,7 @@ module.exports = {
                 if(err) {
                     message.reply(":warning: User never used `^connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
                     console.log('Error reading connectionFile of pinged User from disk: ', err);
-                    rresolve(undefined);
+                    resolve(undefined);
                 } else {
                     const connectionData = JSON.parse(connectionJson);
                     resolve(connectionData.name);

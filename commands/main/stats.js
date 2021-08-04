@@ -34,16 +34,16 @@ module.exports = {
         }
 
 
-        let categoryDisabled = fs.existsSync('./disable/stats/category/' + message.guild.id + "_" + statType);
+        let categoryDisabled = fs.existsSync('./disable/stats/' + message.guild.id + "_" + statType);
         if(categoryDisabled === true) {
-            console.log('Category [' + statType + '] disabled.')
-            message.reply(':no_entry: ' + 'Category [**' + statType + '**] disabled!')
+            console.log('Category [' + statType + '] disabled.');
+            message.reply(':no_entry: Stat [**' + statType + '**] disabled!');
             return;
         }
-        let objectDisabled = fs.existsSync('./disable/stats/object/' + message.guild.id + "_" + statObject);
+        let objectDisabled = fs.existsSync('./disable/stats/' + message.guild.id + "_" + statObject);
         if(objectDisabled === true) {
-            console.log('Object [' + statObject + '] disabled.')
-            message.reply(':no_entry:' + 'Object [**' + statObject + '**] disabled!')
+            console.log('Object [' + statObject + '] disabled.');
+            message.reply(':no_entry: Stat [**' + statObject + '**] disabled!');
             return; 
         }
 

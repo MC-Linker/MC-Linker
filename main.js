@@ -1,5 +1,5 @@
 // @ts-nocheck
-console.log('Loading...')
+console.log('Loading...');
 
 const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
@@ -9,8 +9,7 @@ const disbut = require('discord-buttons');
 disbut(client);
 
 client.once('ready', () => {
-    const Guilds = client.guilds.cache.map(guild => guild.name)
-    console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server: \n' + Guilds)
+    console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server.')
     client.user.setActivity(prefix + 'help', {type: "LISTENING"})
 })
 
@@ -19,6 +18,13 @@ client.on("guildCreate", guild => {
 })
 client.on("guildDelete", guild => {
     console.log("Left a guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' server!');
+    fs.unlink(`./ftp/${guild.id}.json`, err => {
+        if(err) {
+            console.log('No ftpFile found for guild: ' + guild.name);
+        } else {
+            console.log('Successfully deleted ftpFile.');
+        }
+    })
 })
 
 client.commands = new Discord.Collection();
@@ -41,20 +47,20 @@ client.on('message', (message) => {
 
         if(!args[0]) {
 
-        console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name);
 
-        let helpEmbed = new Discord.MessageEmbed()
-            .setTitle('Help Menu')
-            .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-            .setColor('#000000')
-            .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-            .addField(':label: Main :label:', 'Main commands such as\n`^stats`, or `^inventory`.')
-            .addField(':shield: Moderation :shield:', 'Moderation commands such as `^ban` or `^unban`.')
-            .addField(':point_right: Other :point_left:', 'Other commands such as `^txp` or `^state`')
-            .addField(':gear: Settings :gear:', 'Setup and settings such as `^prefix` or `^ftp`')
-            .addField('\u200B', '**All commands in a category** can be viewed with: **^help <catgory>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+            let helpEmbed = new Discord.MessageEmbed()
+                .setTitle('Help Menu')
+                .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .setColor('#000000')
+                .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                .addField(':label: Main :label:', 'Main commands such as `^stats`, or `^inventory`.')
+                .addField(':shield: Moderation :shield:', 'Moderation commands such as `^ban` or `^unban`.')
+                .addField(':point_right: Other :point_left:', 'Currently only `^txp`')
+                .addField(':gear: Settings :gear:', 'Setup and settings such as `^disable` or `^ftp`')
+                .addField('\u200B', '**All commands in a category** can be viewed with: **^help <category>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
 
-        message.channel.send(helpEmbed);
+            message.channel.send(helpEmbed);
 
         } else {
             let commandName = (args[0]).toLowerCase();
@@ -90,14 +96,14 @@ client.on('message', (message) => {
 
                 const disableButton = new disbut.MessageButton()
                     .setStyle('red')
-                    .setID('disable' + command.name)
+                    .setID('disable_' + command.name)
                     .setLabel('Disable this command!');
                 const enableButton = new disbut.MessageButton()
                     .setStyle('green')
-                    .setID('enable' + command.name)
+                    .setID('enable_' + command.name)
                     .setLabel('Enable this command!');
 
-                const disabled = fs.existsSync('./disable/command/' + message.guild.id + '_' + command.name);
+                const disabled = fs.existsSync('./disable/commands/' + message.guild.id + '_' + command.name);
                 if (disabled === false) {
                     message.channel.send({embed: helpEmbed, button: disableButton});
                 } else if (disabled === true) {
@@ -110,7 +116,7 @@ client.on('message', (message) => {
     } else {
         const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
         if (!command) {console.log(message.member.user.tag + ' executed non-existent command ' + commandName + ' in ' + message.guild.name); return;}
-        fs.access('./disable/command/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
+        fs.access('./disable/commands/' + message.guild.id + '_' + command.name, fs.constants.F_OK, (err) => {
             if (err) {
                 try {
                     command.execute(message, args);
@@ -130,17 +136,16 @@ client.on('clickButton', async (button) => {
     await button.clicker.fetch();
 
     if (button.id.startsWith('disable')) {
-
         if (button.clicker.member.hasPermission('ADMINISTRATOR')) {
-            const command = button.id.split('disable').pop();
+            const command = button.id.split('_').pop();
             console.log(button.clicker.user.tag + ' clicked disableButton: ' + command + ' in ' + button.guild.name);
-            fs.writeFile('./disable/command/' + button.guild.id + "_" + command, '', err => {
+            fs.writeFile('./disable/commands/' + button.guild.id + "_" + command, '', err => {
                 if (err) {
                     console.log('Error writing commandDisableFile ', err);
                     button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
                     return;
                 } else {
-                    console.log('Successfully wrote commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
+                    console.log('Successfully wrote commandDisableFile: ' + './disable/commands/' + button.guild.id + "_" + command);
                     button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`, true);
                 }
             })
@@ -153,7 +158,7 @@ client.on('clickButton', async (button) => {
 
             const enableButton = new disbut.MessageButton()
                 .setStyle('green')
-                .setID('enable' + command)
+                .setID('enable_' + command)
                 .setLabel('Enable this command!');
             
             helpEmbed.setDescription('```diff\n- [COMMAND DISABLED]```')
@@ -168,17 +173,16 @@ client.on('clickButton', async (button) => {
         }
 
     } else if (button.id.startsWith('enable')) {
-
         if (button.clicker.member.hasPermission('ADMINISTRATOR')) {
-            const command = button.id.split('enable').pop();
+            const command = button.id.split('_').pop();
             console.log(button.clicker.user.tag + ' clicked enableButton: ' + command + ' in ' + button.guild.name);
-            fs.unlink('./disable/command/' + button.guild.id + "_" + command, err => {
+            fs.unlink('./disable/commands/' + button.guild.id + "_" + command, err => {
                 if(err) {
                     console.log('Error deleting commandDisableFile ', err);
                     button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
                     return;
                 } else {
-                    console.log('Successfully deleted commandDisableFile: ' + './disable/command/' + button.guild.id + "_" + command);
+                    console.log('Successfully deleted commandDisableFile: ' + './disable/commands/' + button.guild.id + "_" + command);
                     button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`, true);
                 }
             });
@@ -190,7 +194,7 @@ client.on('clickButton', async (button) => {
 
             const disableButton = new disbut.MessageButton()
                 .setStyle('red')
-                .setID('disable' + command)
+                .setID('disable_' + command)
                 .setLabel('Disable this command!');
 
             helpEmbed.setDescription('```diff\n+ [Command enabled]```')

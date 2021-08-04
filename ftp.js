@@ -40,7 +40,7 @@ module.exports = {
 					}
 
 					ftpClient.on('ready', function() {
-						ftpClient.get(getPath, function(err, stream) {
+						ftpClient.get(getPath, (err, stream) => {
 							if(err) {
 								console.log('Could not download files. Path: ' + getPath, err);
 								message.reply('<:Error:849215023264169985> ' + 'Could not download files. The User never joined the server or the worldpath is incorrect.');
@@ -82,6 +82,7 @@ module.exports = {
 						message.reply('<:Error:849215023264169985> Could not connect to server.');
 						resolve(false);
 					});
+
 					try {
 						ftpClient.connect({
 							host: host,
@@ -96,7 +97,7 @@ module.exports = {
 					}
 	
 					ftpClient.on('ready', function() {
-						ftpClient.put(getPath, putPath, function(err) {
+						ftpClient.put(getPath, putPath, (err) => {
 							if(err) {
 								console.log('Could not put files. Path: ' + getPath, err);
 								message.reply('<:Error:849215023264169985> Could not upload files.');
@@ -116,10 +117,10 @@ module.exports = {
 	},
 
 	connect: function(credentials) {
-		return new Promise(async (resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			const ftpClient = new ftp();
 			ftpClient.on('error', function(err) {
-				console.log('Could not connect to server with ftp.', err);
+				console.log('Could not connect to server.', err);
 				resolve(false);
 			});
 			try {
@@ -131,6 +132,7 @@ module.exports = {
 				});
 				ftpClient.on('ready', function() {
 					ftpClient.end();
+					console.log('Connected with ftp.')
 					resolve(true);
 				});
 			} catch (err) {
