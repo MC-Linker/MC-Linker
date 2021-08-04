@@ -27,6 +27,6 @@
     "probe-image-size": "^7.2.1",
     "rcon": "^1.0.3",
     "request": "^2.88.2",
-    "ssh2-sftp-client": "^7.0.0"
+    "ssh2-sftp-client": "^7.0.1"
   }
 }

@@ -1,5 +1,3 @@
-const { MessageReaction } = require('discord.js');
-
 module.exports = {
     name: 'ban',
     aliases: ['banplayer', 'banuser'],

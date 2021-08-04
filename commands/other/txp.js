@@ -11,7 +11,7 @@ module.exports = {
 
 		if(!args[0]) {
 			console.log(message.member.user.tag + ' executed ^txp without args in ' + message.guild.name);
-			message.reply('Do you want to create a loading screen: **^txp load** \n Or do you want a black loading screen: **txp black**');
+			message.reply('Do you want to create a loading screen: **^txp load** \n Or do you want a black loading screen: **^txp black**');
 			return;
 		}
 

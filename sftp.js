@@ -105,6 +105,7 @@ module.exports = {
 					port: credentials.port
 				});
 				sftpClient.end();
+				console.log('Connected with sftp.')
 				resolve(true);
 			} catch (err) {
 				console.log('Could not connect to server with sftp.', err);
