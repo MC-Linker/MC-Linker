@@ -6,7 +6,7 @@ module.exports = {
     aliases: ['texts', 'font', 'fonts'],
     usage: 'font mojang/minecraft/<Any Linux Preinstalled Font> <color> <Your text>',
     example: 'font minecraft red I love this bot!',
-    description: 'Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/de/docs/Web/CSS/color_value#farbschlüsselwörter)\nSpecial fonts: varela_round',
+    description: 'Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/de/docs/Web/CSS/color_value#farbschlüsselwörter)\nSpecial fonts: varela_round, minecraft, mojang',
     execute(message, args) {
         let font = args.shift().split('_').join(' ');
         const color = args.shift().toLowerCase();
