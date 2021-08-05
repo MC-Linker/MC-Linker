@@ -10,20 +10,18 @@ module.exports = {
         const fs = require('fs')
 
         const ingameName = (args[0]);
-
-        console.log(message.member.user.tag + ' executed ^connect ' + ingameName + ' in ' + message.guild.name);
         
         if(!ingameName) {
             console.log(message.member.user.tag + ' executed ^connect without args in ' + message.guild.name);
             message.reply('Please specify your minecraft-name.');
             return;
-        }
-
-        if(message.mentions.users.size) {
+        } else if(message.mentions.users.size) {
             console.log(message.member.user.tag + ' executed connect with ping in ' + message.guild.name);
             message.channel.send(`<:Error:849215023264169985> Don't ping someone. Use your minecraft in-game name as argument.`);
             return;
         }
+
+        console.log(message.member.user.tag + ' executed ^connect ' + ingameName + ' in ' + message.guild.name);
 
         async function getId(playername) {
             try {
@@ -33,7 +31,7 @@ module.exports = {
                     .then(player => player.id);
             } catch (err) {
                 console.log('Couldnt find Player in mojangAPI [' + playername + ']');
-                message.reply('<:Error:849215023264169985> Player [**' + playername + '**] does not seem to exist. Please use your **minecraft-username** as argument.');
+                message.reply('<:Error:849215023264169985> Minecraft-player [**' + playername + '**] does not seem to exist. Please use your **minecraft-username** as argument.');
                 return;
             }
         }

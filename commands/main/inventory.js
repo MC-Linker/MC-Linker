@@ -61,10 +61,11 @@ module.exports = {
                 const background = await Canvas.loadImage('./images/_other/inventoryBlank.png');
                 ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
-                let invEmbed = new Discord.MessageEmbed;
-                invEmbed
+                Canvas.registerFont('../../fonts/Minecraft.ttf', { family: 'Minecraft' });
+
+                let invEmbed = new Discord.MessageEmbed
                     .setAuthor('Inventory Enchantments', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .setColor('ORANGE')
+                    .setColor('ORANGE');
                 let slotDim = [16, 284];
                 for(let i = 0; i < inventory.length; i++) {
                     const slot = inventory[i]['Slot'].value;
@@ -107,18 +108,18 @@ module.exports = {
                     try {
                         const itemImg = await Canvas.loadImage(`./images/${itemImgName}.png`);
                         ctx.drawImage(itemImg, 0, 0, 80, 80, slotDim[0], slotDim[1], 32, 32);
-                        if(count > 1) {ctx.font = '14px MinecraftReg'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
+                        if(count > 1) {ctx.font = '14px Minecraft'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
                     } catch (err) {
                         console.log('Error trying to apply img: ' + id + ' Applying text...');
-                        ctx.font = '6px MinecraftReg';
+                        ctx.font = '6px Minecraft';
                         ctx.fillStyle = '#000000';
                         ctx.fillText(itemImgName, slotDim[0], slotDim[1] + 16);
-                        if(count > 1) {ctx.font = '14px MinecraftReg'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
+                        if(count > 1) {ctx.font = '14px Minecraft'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
                     }
                     //invMsg = invMsg += 'Slot: ' + inventory[i]['Slot'].value + ': ' + inventory[i]['id'].value + ', ' + inventory[i]['Count'].value + '\n'
                 }
                 const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), 'inventoryImage.png');
-                message.reply("Here's the inventory of **" + taggedName + '**:\n', invImg).then(() => {
+                message.reply("<:Checkmark:849224496232660992> Here's the inventory of **" + taggedName + '**:\n', invImg).then(() => {
                     if(invEmbed.fields.length >= 1) {
                         message.reply(invEmbed);
                     }

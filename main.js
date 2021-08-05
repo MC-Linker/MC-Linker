@@ -10,7 +10,7 @@ disbut(client);
 
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server.')
-    client.user.setActivity(prefix + 'help', {type: "LISTENING"})
+    client.user.setActivity(prefix + 'help', {type: "LISTENING"});
 })
 
 client.on("guildCreate", guild => {
@@ -56,7 +56,7 @@ client.on('message', (message) => {
                 .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .addField(':label: Main :label:', 'Main commands such as `^stats`, or `^inventory`.')
                 .addField(':shield: Moderation :shield:', 'Moderation commands such as `^ban` or `^unban`.')
-                .addField(':point_right: Other :point_left:', 'Currently only `^txp`')
+                .addField(':point_right: Other :point_left:', 'Other commands such as `^txp` or `^text`.')
                 .addField(':gear: Settings :gear:', 'Setup and settings such as `^disable` or `^ftp`')
                 .addField('\u200B', '**All commands in a category** can be viewed with: **^help <category>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
 
