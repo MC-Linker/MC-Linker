@@ -7,6 +7,13 @@ const client = new Discord.Client()
 const fs = require('fs');
 const disbut = require('discord-buttons');
 disbut(client);
+const { AutoPoster } = require('topgg-autoposter');
+
+const ap = AutoPoster('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxMjc1OTc0MTUyODQwODA2NCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjI4MjM5MDQ0fQ.09hsMh8jvu87wrxOwvF2OqyfnePIN-4FMqGRdFQm0Fo', client)
+
+ap.on('posted', () => {
+  console.log('Posted stats to Top.gg!')
+})
 
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server.')
