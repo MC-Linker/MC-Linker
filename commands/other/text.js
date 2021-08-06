@@ -13,20 +13,20 @@ module.exports = {
         const text = args.join(' ');
 
         if (!font) {
-            console.log(message.member.user.tag + ' executed ^text without args.');
-            message.reply('Do you want to create a Mojang studios font: `^text mojang`, minecraft font: `^text minecraft` or an image with a different font: `^font <Any Preinstalled Font>');
+            console.log(message.member.user.tag + ' executed ^text without args in ' + message.guild.name);
+            message.reply(':warning: Do you want to create a Mojang studios font: `^text mojang`, minecraft font: `^text minecraft` or an image with a different font: `^font <Any Preinstalled Font>');
             return;
         } else if (!color) {
-            console.log(message.member.user.tag + ' executed ^text without args.');
-            message.reply('Do you want to create a Mojang studios font: `^text mojang`, minecraft font: `^text minecraft` or an image with a different font: `^font <Any Preinstalled Font>');
+            console.log(message.member.user.tag + ' executed ^text without color and text in ' + message.guild.name);
+            message.reply(':warning: Please to specify a color and a text.');
             return;
         } else if (!text) {
-            console.log(message.member.user.tag + ' executed ^text without text.');
-            message.reply('Please specify the text you want to create the image with.');
+            console.log(message.member.user.tag + ' executed ^text without text in ' + message.guild.name);
+            message.reply(':warning: Please specify the text you want to create the image with.');
             return;
         }
 
-        console.log(message.member.user.tag + ' executed ^text ' + font + ' ' + color + ' ' + text);
+        console.log(message.member.user.tag + ' executed ^text ' + font + ' ' + color + ' ' + text + ' in ' + message.guild.name);
 
         if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
