@@ -149,11 +149,11 @@ client.on('clickButton', async (button) => {
             fs.writeFile('./disable/commands/' + button.guild.id + "_" + command, '', err => {
                 if (err) {
                     console.log('Error writing commandDisableFile ', err);
-                    button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
+                    button.reply.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
                     return;
                 } else {
                     console.log('Successfully wrote commandDisableFile: ' + './disable/commands/' + button.guild.id + "_" + command);
-                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`, true);
+                    button.reply.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`, true);
                 }
             })
 
@@ -175,7 +175,7 @@ client.on('clickButton', async (button) => {
             button.reply.defer();
         } else {
             console.log('Clicker of ' + button.id + ' doesnt have admin.');
-            button.reply('You must be an administrator to use that button!');
+            button.reply.send('You must be an administrator to use that button!');
             return;
         }
 
@@ -186,11 +186,11 @@ client.on('clickButton', async (button) => {
             fs.unlink('./disable/commands/' + button.guild.id + "_" + command, err => {
                 if(err) {
                     console.log('Error deleting commandDisableFile ', err);
-                    button.channel.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
+                    button.reply.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
                     return;
                 } else {
                     console.log('Successfully deleted commandDisableFile: ' + './disable/commands/' + button.guild.id + "_" + command);
-                    button.channel.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`, true);
+                    button.reply.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`, true);
                 }
             });
             helpEmbed = new Discord.MessageEmbed()
@@ -211,7 +211,7 @@ client.on('clickButton', async (button) => {
             button.reply.defer();
         } else {
             console.log('Clicker of ' + button.id + ' doesnt have admin.');
-            button.reply('You must be an administrator to use that button!');
+            button.reply.send('You must be an administrator to use that button!');
             return;
         }
     }
