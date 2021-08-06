@@ -11,8 +11,8 @@ const { AutoPoster } = require('topgg-autoposter');
 
 const ap = AutoPoster('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxMjc1OTc0MTUyODQwODA2NCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjI4MjM5MDQ0fQ.09hsMh8jvu87wrxOwvF2OqyfnePIN-4FMqGRdFQm0Fo', client)
 
-ap.on('posted', () => {
-  console.log('Posted stats to Top.gg!')
+ap.on('posted', stats => {
+  console.log('Posted stats to Top.gg!', stats);
 })
 
 client.once('ready', () => {
