@@ -39,7 +39,7 @@ module.exports = {
         if(nbtFile === false) {
             return;
         }
-		
+
 		fs.readFile(`./playernbt/${uuidv4}.dat`, (err, playerNBT) => {
             if(err) {
                 message.reply('<:Error:849215023264169985> Could not read inventory.');
@@ -53,7 +53,7 @@ module.exports = {
                     message.reply('<:Error:849215023264169985> Error trying to read inventory');
                     return;
                 }
-                
+
                 const inventory = playerData.value['Inventory'].value['value']
 
                 const invCanvas = Canvas.createCanvas(352, 332);
@@ -61,11 +61,12 @@ module.exports = {
                 const background = await Canvas.loadImage('./images/_other/inventoryBlank.png');
                 ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
-                Canvas.registerFont('../../fonts/Minecraft.ttf', { family: 'Minecraft' });
+                Canvas.registerFont('./fonts/Minecraft.ttf', { family: 'Minecraft' });
 
-                let invEmbed = new Discord.MessageEmbed
+                let invEmbed = new Discord.MessageEmbed()
                     .setAuthor('Inventory Enchantments', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .setColor('ORANGE');
+
                 let slotDim = [16, 284];
                 for(let i = 0; i < inventory.length; i++) {
                     const slot = inventory[i]['Slot'].value;
@@ -119,11 +120,12 @@ module.exports = {
                     //invMsg = invMsg += 'Slot: ' + inventory[i]['Slot'].value + ': ' + inventory[i]['id'].value + ', ' + inventory[i]['Count'].value + '\n'
                 }
                 const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), 'inventoryImage.png');
-                message.reply("<:Checkmark:849224496232660992> Here's the inventory of **" + taggedName + '**:\n', invImg).then(() => {
-                    if(invEmbed.fields.length >= 1) {
-                        message.reply(invEmbed);
-                    }
-                })
+
+                if(invEmbed.fields.length >= 1) {
+                    message.reply({ content: "<:Checkmark:849224496232660992> Here's the inventory of **" + taggedName + '**:\n', files: [invImg], embeds: [invEmbed] });
+                } else {
+                    message.reply({ content: "<:Checkmark:849224496232660992> Here's the inventory of **" + taggedName + '**:\n', files: [invImg] }) 
+                }
             });
         });
 

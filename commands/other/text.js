@@ -4,9 +4,9 @@ const Discord = require('discord.js');
 module.exports = {
     name: 'text',
     aliases: ['texts', 'font', 'fonts'],
-    usage: 'font mojang/minecraft/<Any Linux Preinstalled Font> <color> <Your text>',
-    example: 'font minecraft red I love this bot!',
-    description: 'Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/de/docs/Web/CSS/color_value#farbschlüsselwörter)\nSpecial fonts: varela_round, minecraft, mojang',
+    usage: 'text mojang/minecraft/<Any Preinstalled Font (`Space` **=** `_`)> <color> <Your text>',
+    example: 'text minecraft red I love this bot!',
+    description: 'Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/de/docs/Web/CSS/color_value#farbschlüsselwörter)\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`',
     execute(message, args) {
         let font = args.shift().split('_').join(' ');
         const color = args.shift().toLowerCase();
@@ -30,11 +30,12 @@ module.exports = {
 
         if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
-        const fontCanvas = Canvas.createCanvas(text.split('').length * 225, 225);
+        const fontCanvas = Canvas.createCanvas(text.split('').length * 100, 225);
         const ctx = fontCanvas.getContext('2d');
         try {
             ctx.font = `200px ${font}`;
             ctx.fillStyle = color;
+            ctx.textAlign = 'left';
             ctx.fillText(text, 0, 200, fontCanvas.width);
         } catch (err) {
             console.log('Error trying to apply text.', err);
@@ -42,7 +43,7 @@ module.exports = {
             return;
         }
 
-        const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'inventoryImage.png');
-        message.reply('<:Checkmark:849224496232660992> Heres your custom text-image.', fontImg);
+        const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'textImage.png');
+        message.reply({ content: '<:Checkmark:849224496232660992> Heres your custom text-image.', files: [fontImg] });
     }
 }

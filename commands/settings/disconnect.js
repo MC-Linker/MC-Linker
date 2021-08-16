@@ -5,7 +5,7 @@ module.exports = {
     aliases: [''],
     usage: 'disconnect',
     example: 'disconnect',
-    description: 'Disconnect your minecraft-account from the bot. To connect again, just use `^connect <minecraft-username>` again.',
+    description: 'Disconnect your minecraft-account from the bot. To connect again, use `^connect <minecraft-username>` again.',
     execute(message, args) {
         console.group(message.member.user.tag + ' executed ^disconnect in ' + message.guild.name);
 

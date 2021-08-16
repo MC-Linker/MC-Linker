@@ -3,17 +3,15 @@ console.log('Loading...');
 
 const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
-const client = new Discord.Client()
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS] })
 const fs = require('fs');
-const disbut = require('discord-buttons');
-disbut(client);
-const { AutoPoster } = require('topgg-autoposter');
+/*const { AutoPoster } = require('topgg-autoposter');
 
 const ap = AutoPoster('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxMjc1OTc0MTUyODQwODA2NCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjI4MjM5MDQ0fQ.09hsMh8jvu87wrxOwvF2OqyfnePIN-4FMqGRdFQm0Fo', client)
 
 ap.on('posted', stats => {
   console.log('Posted stats to Top.gg!', stats);
-})
+})*/
 
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server.')
@@ -29,7 +27,7 @@ client.on("guildDelete", guild => {
         if(err) {
             console.log('No ftpFile found for guild: ' + guild.name);
         } else {
-            console.log('Successfully deleted ftpFile.');
+            console.log('Successfully deleted ftpFile of guild: ' + guild.name);
         }
     })
 })
@@ -44,7 +42,7 @@ for (const folder of commandFolders) {
 	}
 }
 
-client.on('message', (message) => {
+client.on('messageCreate', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -53,7 +51,6 @@ client.on('message', (message) => {
     if(commandName === 'help') {
 
         if(!args[0]) {
-
             console.log(message.member.user.tag + ' executed ^help in ' + message.guild.name);
 
             let helpEmbed = new Discord.MessageEmbed()
@@ -67,23 +64,23 @@ client.on('message', (message) => {
                 .addField(':gear: Settings :gear:', 'Setup and settings such as `^disable` or `^ftp`')
                 .addField('\u200B', '**All commands in a category** can be viewed with: **^help <category>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
 
-            message.channel.send(helpEmbed);
+            message.channel.send({ embeds: [helpEmbed] });
 
         } else {
             let commandName = (args[0]).toLowerCase();
             if(commandName === 'mod' || commandName === 'Mod') commandName = 'Moderation'
-            
+
             let helpEmbed = new Discord.MessageEmbed()
                 .setTitle('Help Menu')
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('#000000')
-                
+
             let command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
             if (!command) {
                 fs.readdir(`./commands/${commandName}`, (err, commands) => {
                     if(err) {
                         console.log(message.member.user.tag + ' executed non-existent help command/category ' + commandName + ' in ' + message.guild.id);
-                        message.reply('That command/category [**' + commandName + '**] doesnt exist.');
+                        message.reply(':warning: That command/category [**' + commandName + '**] doesnt exist.');
                         return;
                     }
                     console.log(message.member.user.tag + ' executed ^help ' + commandName + ' in ' + message.guild.name);
@@ -93,29 +90,37 @@ client.on('message', (message) => {
                         command = client.commands.get(commandFile) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandFile));
                         helpEmbed.addField(command.name.toUpperCase(), command.description);
                     });
-                    helpEmbed.addField('\u200B', '**All commands in a category** can be viewed with: **^help <catgory>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
-                    message.channel.send(helpEmbed);
+                    helpEmbed.addField('\u200B', '**More info to a command** can be viewed with: **^help <command>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+                    message.channel.send({ embeds: [helpEmbed] });
                 })
             } else {
                 console.log(message.member.user.tag + ' executed ^help ' + commandName + ' in ' + message.guild.name);
 
                 helpEmbed.addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}\n\n**ALIASES**: \n${command.aliases.join(', ')}`);
 
-                const disableButton = new disbut.MessageButton()
-                    .setStyle('red')
-                    .setID('disable_' + command.name)
-                    .setLabel('Disable this command!');
-                const enableButton = new disbut.MessageButton()
-                    .setStyle('green')
-                    .setID('enable_' + command.name)
-                    .setLabel('Enable this command!');
+                const disableRow = new Discord.MessageActionRow()
+                    .addComponents(
+                        new Discord.MessageButton()
+                            .setStyle('DANGER')
+                            .setCustomId('disable_' + command.name)
+                            .setLabel('Disable this command!')
+                            .setEmoji('<:Error:849215023264169985>'),
+                    );
+                const enableRow = new Discord.MessageActionRow()
+                    .addComponents(
+                        new Discord.MessageButton()
+                            .setStyle('SUCCESS')
+                            .setCustomId('enable_' + command.name)
+                            .setLabel('Enable this command!')
+                            .setEmoji('<:Checkmark:849224496232660992>'),
+                    );
 
                 const disabled = fs.existsSync('./disable/commands/' + message.guild.id + '_' + command.name);
                 if (disabled === false) {
-                    message.channel.send({embed: helpEmbed, button: disableButton});
+                    message.channel.send({ embeds: [helpEmbed], components: [disableRow] });
                 } else if (disabled === true) {
                     helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
-                    message.channel.send({embed: helpEmbed, button: enableButton});
+                    message.channel.send({ embeds: [helpEmbed], components: [enableRow] });
                 }
             }
         }
@@ -139,81 +144,91 @@ client.on('message', (message) => {
     }
 })
 
-client.on('clickButton', async (button) => {
-    await button.clicker.fetch();
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isButton()) return;
 
-    if (button.id.startsWith('disable')) {
-        if (button.clicker.member.hasPermission('ADMINISTRATOR')) {
-            const command = button.id.split('_').pop();
-            console.log(button.clicker.user.tag + ' clicked disableButton: ' + command + ' in ' + button.guild.name);
-            fs.writeFile('./disable/commands/' + button.guild.id + "_" + command, '', err => {
+    if (interaction.customId.startsWith('disable')) {
+        if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+            const command = interaction.customId.split('_').pop();
+            console.log(interaction.member.user.tag + ' clicked disableButton: ' + command + ' in ' + interaction.guild.name);
+            fs.writeFile('./disable/commands/' + interaction.guild.id + "_" + command, '', err => {
                 if (err) {
                     console.log('Error writing commandDisableFile ', err);
-                    button.reply.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
+                    interaction.message.reply(`<@${interaction.member.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
                     return;
                 } else {
-                    console.log('Successfully wrote commandDisableFile: ' + './disable/commands/' + button.guild.id + "_" + command);
-                    button.reply.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Disabling of command: [**${command}**] succesful.`, true);
+                    console.log('Successfully wrote commandDisableFile: ' + './disable/commands/' + interaction.guild.id + "_" + command);
+                    interaction.message.reply(`<@${interaction.member.user.id}>, <:Checkmark:849224496232660992> Disabling of command [**${command}**] succesful.`);
                 }
             })
 
+            const enableRow = new Discord.MessageActionRow()
+                .addComponents(
+                    new Discord.MessageButton()
+                        .setStyle('SUCCESS')
+                        .setCustomId('enable_' + command)
+                        .setLabel('Enable this command!')
+                        .setEmoji('<:Checkmark:849224496232660992>'),
+                );
+
+            const commandObject = client.commands.get(command);
             helpEmbed = new Discord.MessageEmbed()
                 .setTitle('Help Menu')
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('#000000')
-                .addField(client.commands.get(command).name.toUpperCase(), client.commands.get(command).description + `\n\n**USAGE**: ${client.commands.get(command).usage}\n\n**EXAMPLE**: ${client.commands.get(command).example}\n\n**ALIASES**: \n${client.commands.get(command).aliases.join(', ')}`);
+                .addField(commandObject.name.toUpperCase(), commandObject.description + `\n\n**USAGE**: ${commandObject.usage}\n\n**EXAMPLE**: ${commandObject.example}\n\n**ALIASES**: \n${commandObject.aliases.join(', ')}`)
+                .setDescription('```diff\n- [COMMAND DISABLED]```')
+                .setColor('DARK_RED');
+            interaction.message.edit({ embeds: [helpEmbed], components: [enableRow] });
 
-            const enableButton = new disbut.MessageButton()
-                .setStyle('green')
-                .setID('enable_' + command)
-                .setLabel('Enable this command!');
-            
-            helpEmbed.setDescription('```diff\n- [COMMAND DISABLED]```')
-                     .setColor('DARK_RED');
-            button.message.edit({embed: helpEmbed, button: enableButton});
-
-            button.reply.defer();
+            interaction.deferUpdate();
         } else {
-            console.log('Clicker of ' + button.id + ' doesnt have admin.');
-            button.reply.send('You must be an administrator to use that button!');
+            console.log('Clicker of ' + interaction.customId + ' doesnt have admin.');
+            interaction.message.reply(':no_entry: You must be an administrator to use that button!');
             return;
         }
 
-    } else if (button.id.startsWith('enable')) {
-        if (button.clicker.member.hasPermission('ADMINISTRATOR')) {
-            const command = button.id.split('_').pop();
-            console.log(button.clicker.user.tag + ' clicked enableButton: ' + command + ' in ' + button.guild.name);
-            fs.unlink('./disable/commands/' + button.guild.id + "_" + command, err => {
+    } else if (interaction.customId.startsWith('enable')) {
+        if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+            const command = interaction.customId.split('_').pop();
+            console.log(interaction.member.user.tag + ' clicked enableButton: ' + command + ' in ' + interaction.guild.name);
+            fs.unlink('./disable/commands/' + interaction.guild.id + "_" + command, err => {
                 if(err) {
                     console.log('Error deleting commandDisableFile ', err);
-                    button.reply.send(`<@${button.clicker.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
+                    interaction.message.reply(`<@${interaction.member.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
                     return;
                 } else {
-                    console.log('Successfully deleted commandDisableFile: ' + './disable/commands/' + button.guild.id + "_" + command);
-                    button.reply.send(`<@${button.clicker.user.id}>, <:Checkmark:849224496232660992> Enabling of command: [**${command}**] succesful.`, true);
+                    console.log('Successfully deleted commandDisableFile: ' + './disable/commands/' + interaction.guild.id + "_" + command);
+                    interaction.message.reply(`<@${interaction.member.user.id}>, <:Checkmark:849224496232660992> Enabling of command [**${command}**] succesful.`, true);
                 }
             });
+
+            const disableRow = new Discord.MessageActionRow()
+                    .addComponents(
+                        new Discord.MessageButton()
+                            .setStyle('DANGER')
+                            .setCustomId('disable_' + command)
+                            .setLabel('Disable this command!')
+                            .setEmoji('<:Error:849215023264169985>'),
+                    );
+
+            const commandObject = client.commands.get(command);
             helpEmbed = new Discord.MessageEmbed()
                 .setTitle('Help Menu')
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('#000000')
-                .addField(client.commands.get(command).name.toUpperCase(), client.commands.get(command).description + `\n\n**USAGE**: ${client.commands.get(command).usage}\n\n**EXAMPLE**: ${client.commands.get(command).example}\n\n**ALIASES**: \n${client.commands.get(command).aliases.join(', ')}`);
+                .addField(commandObject.name.toUpperCase(), commandObject.description + `\n\n**USAGE**: ${commandObject.usage}\n\n**EXAMPLE**: ${commandObject.example}\n\n**ALIASES**: \n${commandObject.aliases.join(', ')}`)
+                .setDescription('```diff\n+ [Command enabled]```')
+                .setColor('GREEN');
+            interaction.message.edit({ embeds: [helpEmbed], components: [disableRow] })
 
-            const disableButton = new disbut.MessageButton()
-                .setStyle('red')
-                .setID('disable_' + command)
-                .setLabel('Disable this command!');
-
-            helpEmbed.setDescription('```diff\n+ [Command enabled]```')
-                     .setColor('GREEN');
-            button.message.edit({embed: helpEmbed, button: disableButton})
-
-            button.reply.defer();
+            interaction.deferUpdate();
         } else {
-            console.log('Clicker of ' + button.id + ' doesnt have admin.');
-            button.reply.send('You must be an administrator to use that button!');
+            console.log('Clicker of ' + interaction.customId + ' doesnt have admin.');
+            interaction.message.reply(':no_entry: You must be an administrator to use that button!');
             return;
         }
     }
 });
+
 client.login(token);

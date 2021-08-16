@@ -14,12 +14,11 @@ module.exports = {
         if(!mode || !object) {
             console.log(message.member.user.tag + ' executed ^disable wrong in ' + message.guild.name);
             message.reply(":warning: Wrong Usage! Check `^help disable` for correct usage!");
-
         } else if (mode === 'list') {
             let listMode;
             if (object === 'command' || object === 'cmd' || object === 'commands' || object === 'cmds') listMode = 'commands';
-            else if (object === message.client.commands.get('advancements').name || message.client.commands.get('advancements').aliases.includes(object)) listMode = 'advancements';
-            else if (object === message.client.commands.get('stats').name || message.client.commands.get('stats').aliases.includes(object)) listMode = 'stats';
+            else if (object === 'advancements' || message.client.commands.get('advancements').aliases.includes(object)) listMode = 'advancements';
+            else if (object === 'stats' || message.client.commands.get('stats').aliases.includes(object)) listMode = 'stats';
             else {
                 console.log(message.member.user.tag + ' executed ^disable list wrong. ListObject: ' + object + ' in ' + message.guild.name);
                 message.reply(":warning: Wrong Usage! You can only list `stats`, `commands` and `advancements`.");
@@ -37,7 +36,7 @@ module.exports = {
 
                 const indexGit = list.indexOf('GitInit.json');
                 if (indexGit > -1) list.splice(indexGit, 1);
-                
+
                 if(list.length === 0) {
                     console.log(`No disabled ${listMode}.`);
                     message.reply(`<:Checkmark:849224496232660992> No disabled ${listMode} :)`);
@@ -53,7 +52,7 @@ module.exports = {
                         entry = entry.toUpperCase();
                         listEmbed.addField(entry, '\u200B');
                     });
-                    message.channel.send(listEmbed);
+                    message.channel.send({ embeds: [listEmbed] });
                 }
             });
 
@@ -62,24 +61,31 @@ module.exports = {
 
             let disableMode;
             if (mode === 'command' || mode === 'cmd' || mode === 'commands' || mode === 'cmds') disableMode = 'commands';
-            else if (mode === message.client.commands.get('advancements').name || message.client.commands.get('advancements').aliases.includes(mode)) disableMode = 'advancements';
-            else if (mode === message.client.commands.get('stats').name || message.client.commands.get('stats').aliases.includes(mode)) disableMode = 'stats';
+            else if (mode === 'advancements' || message.client.commands.get('advancements').aliases.includes(mode)) disableMode = 'advancements';
+            else if (mode === 'stats' || message.client.commands.get('stats').aliases.includes(mode)) disableMode = 'stats';
             else {
                 console.log("Wrong Usage of ^disable");
                 message.reply(":warning: Wrong Usage! Check `^help disable` for correct usage!");
                 return;
             }
 
+            let disObject = object;
             try {
-                if(disableMode === 'commands') object = message.client.commands.get(object).name || message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(object).name);
-                fs.writeFile(`./disable/${disableMode}/${message.guild.id}_${object}`, '', err => {
+                if(disableMode === 'commands') disObject = message.client.commands.find(cmd => cmd.name && cmd.name === object) || message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(object));
+                if(typeof disObject === 'object') disObject = disObject.name;
+                else if(disObject === undefined) {
+                    console.log(disableMode + " [" + object + "] doesn't exist.", err);
+                    message.reply(":warning: " + disableMode + " [**" + object + "**] doesn't exist.");
+                    return;
+                }
+                fs.writeFile(`./disable/${disableMode}/${message.guild.id}_${disObject}`, '', err => {
                     if (err) {
-                        console.log(`Error trying to write ${disableMode} DisableFile of ` + object, err);
-                        message.reply(`<:Error:849215023264169985> Could not disable ${disableMode} [${object}}]!`);
+                        console.log(`Error trying to write ${disableMode} DisableFile of ` + disObject, err);
+                        message.reply(`<:Error:849215023264169985> Could not disable ${disableMode} [${disObject}}]!`);
                         return;
                     }
-                    console.log(`Succesfully wrote ${disableMode} DisableFile [` + `./disable/${disableMode}/${message.guild.id}_${object}` + '].');
-                    message.reply(`<:Checkmark:849224496232660992> Succesfully disabled ${disableMode} [**` + object + '**].');
+                    console.log(`Succesfully wrote ${disableMode} DisableFile [` + `./disable/${disableMode}/${message.guild.id}_${disObject}` + '].');
+                    message.reply(`<:Checkmark:849224496232660992> Succesfully disabled ${disableMode} [**` + disObject + '**].');
                 });
             } catch (err) {
                 console.log(disableMode + " [" + object + "] doesn't exist.", err);
