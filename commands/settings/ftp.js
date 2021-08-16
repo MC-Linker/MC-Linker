@@ -3,7 +3,7 @@ module.exports = {
     aliases: ['ftpconnect', 'connectftp', 'server', 'connectserver', 'serverconnect'],
     usage: 'ftp <host> <username> <password> <port> <minecraft-version> <**Optional:** path to world folder (Format: /path/path)> **//** ftp disconnect',
     example: 'ftp localhost lianecx supersecretpassword 21 1.17',
-    description: "Connect or disconnect your minecraft Server with the bot. Can only be used by **admins**. \n**Need help getting the ftp credentials?**\nJoin the [Support Server](https://discord.gg/rX36kZUGNK).",
+    description: "Connect or disconnect your minecraft Server with the bot. Can only be used by **admins**. \n**Need help getting the ftp credentials?**\n=> Join the [Support Server](https://discord.gg/rX36kZUGNK).",
     async execute(message, args) {
         const ftp = require('../../ftp');
         const Client = require('ftp');

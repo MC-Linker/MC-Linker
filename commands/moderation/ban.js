@@ -22,21 +22,24 @@ module.exports = {
             message.reply(':warning: Please specify the player you want to ban.');
             return;
         }
+
+		let taggedUser = args.shift();
 		let taggedName;
 		let userName;
 		if(!message.mentions.users.size) {
-			userName = args.shift();
-            taggedName = args.shift();
+			userName = taggedUser;
+            taggedName = taggedUser;
         } else {
 			userName = await utils.getUserName(message.mentions.users.first().id, message);
 			if(userName === undefined) return;
             taggedName = message.mentions.users.first().tag;
         }
-		args = args.shift();
 
 		console.log(message.member.user.tag + ' executed ^ban with taggedUser: ' + taggedName + ' in ' + message.guild.name);
 
-		let reason = args.join(' ') || 'Banned by an operator.';
+		let reason;
+		if (!args) reason = 'Banned by an operator.';
+		else reason = args.join(' ');
 
 		fs.readFile(`./rcon/${message.guild.id}.json`, 'utf8', async (err, rconData) => {
 			if (err) {
@@ -198,7 +201,7 @@ module.exports = {
 					const respEmbed = new Discord.MessageEmbed().setTitle('Ban player').setColor('ORANGE').setDescription(response);
 					message.channel.send({ embeds: [respEmbed] });
 				} else {
-					const uuidv4 = await utils.getUUIDv4(taggedUser, message);
+					const uuidv4 = await utils.getUUIDv4(userName, message);
 					if(uuidv4 === undefined) return;
 
 					const worldPath = await utils.getWorldPath(message);

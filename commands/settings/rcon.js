@@ -14,7 +14,7 @@ module.exports = {
 		const mode = args[0];
 		if(!mode) {
 			console.log(message.member.user.tag + ' executed ^rcon without args.');
-			message.reply(':warning: Do you want to enable RCON in the server? => `^rcon enable`.\n Do you want to connect the bot with RCON? => `rcon connect`.\n Or do you want to execute a command with RCON? => `rcon execute` (**WIP**).');
+			message.reply(':warning: Do you want to enable RCON in your server? => `^rcon enable`.\nDo you want to connect the bot with RCON? => `^rcon connect`.\nOr do you want to execute a command with RCON? => `^rcon execute` (**WIP**).');
 			return;
 		}
 		if(mode === 'connect') {
@@ -30,7 +30,7 @@ module.exports = {
 			const port = args[3]
 			if(!password || !port || !ip) {
 				console.log(message.member.user.tag + ' executed ^rcon connect without args in ' + message.guild.name);
-				message.reply(':warning: Please specify the RCON credentials. `^help rcon` for more help.');
+				message.reply(':warning: Please specify ALL RCON credentials. `^help rcon` for more help.');
 				return;
 			}
 			

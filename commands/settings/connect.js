@@ -13,11 +13,11 @@ module.exports = {
         
         if(!ingameName) {
             console.log(message.member.user.tag + ' executed ^connect without args in ' + message.guild.name);
-            message.reply('Please specify your minecraft-name.');
+            message.reply(':warning: Please specify your minecraft-name.');
             return;
         } else if(message.mentions.users.size) {
             console.log(message.member.user.tag + ' executed connect with ping in ' + message.guild.name);
-            message.channel.send(`<:Error:849215023264169985> Don't ping someone. Use your minecraft in-game name as argument.`);
+            message.channel.send(`<:Error:849215023264169985> Don't ping someone. Use your **minecraftname** as argument.`);
             return;
         }
 

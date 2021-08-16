@@ -22,6 +22,7 @@ module.exports = {
             message.reply(':warning: Please specify the player you want to unban.');
             return;
         }
+
 		let taggedUser = args.shift();
 		let taggedName;
 		let userName;
@@ -41,7 +42,7 @@ module.exports = {
 				console.log('Could not find rconFile on Disk, creating one...');
 				message.reply(':warning: Could not read rcon credentials, attempting to create some. (If this errors, do `^rcon connect` or `^ftp connect`)');
 
-				const uuidv4 = await utils.getUUIDv4(taggedUser, message);
+				const uuidv4 = await utils.getUUIDv4(userName, message);
 				if(uuidv4 === undefined) return;
 
 				const worldPath = await utils.getWorldPath(message);
@@ -187,7 +188,7 @@ module.exports = {
 					const respEmbed = new Discord.MessageEmbed().setTitle('Unban player').setColor('BLUE').setDescription(response);
 					message.channel.send({ embeds: [respEmbed] });
 				} else {
-					const uuidv4 = await utils.getUUIDv4(taggedUser, message);
+					const uuidv4 = await utils.getUUIDv4(userName, message);
 					if(uuidv4 === undefined) return;
 
 					const worldPath = await utils.getWorldPath(message);

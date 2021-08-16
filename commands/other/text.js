@@ -30,11 +30,12 @@ module.exports = {
 
         if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
-        const fontCanvas = Canvas.createCanvas(text.split('').length * 175, 225);
+        const fontCanvas = Canvas.createCanvas(text.split('').length * 100, 225);
         const ctx = fontCanvas.getContext('2d');
         try {
             ctx.font = `200px ${font}`;
             ctx.fillStyle = color;
+            ctx.textAlign = 'left';
             ctx.fillText(text, 0, 200, fontCanvas.width);
         } catch (err) {
             console.log('Error trying to apply text.', err);

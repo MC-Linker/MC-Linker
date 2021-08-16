@@ -80,7 +80,7 @@ client.on('messageCreate', message => {
                 fs.readdir(`./commands/${commandName}`, (err, commands) => {
                     if(err) {
                         console.log(message.member.user.tag + ' executed non-existent help command/category ' + commandName + ' in ' + message.guild.id);
-                        message.reply('That command/category [**' + commandName + '**] doesnt exist.');
+                        message.reply(':warning: That command/category [**' + commandName + '**] doesnt exist.');
                         return;
                     }
                     console.log(message.member.user.tag + ' executed ^help ' + commandName + ' in ' + message.guild.name);

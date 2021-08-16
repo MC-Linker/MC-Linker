@@ -11,7 +11,7 @@ module.exports = {
 
 		if(!args[0]) {
 			console.log(message.member.user.tag + ' executed ^txp without args in ' + message.guild.name);
-			message.reply('Do you want to create a loading screen: `^txp load` \n Or do you want a black loading screen: `^txp black`');
+			message.reply(':warning: Do you want to create a loading screen => `^txp load`\n:warning: Or do you want a black loading screen => `^txp black`');
 			return;
 		}
 
@@ -22,10 +22,9 @@ module.exports = {
 				URL = (args[1]);
 			} else if (message.attachments) {
 				try {
-					const attach = (message.attachments).array();
-					URL = attach[0].url;
+					URL = message.attachments.first().url;
 				} catch (err) {
-					console.log(message.member.user.tag + ' executed ^txp load. Couldnt get image url in ' + message.guild.name);
+					console.log(message.member.user.tag + ' executed ^txp load. Couldnt get image url in ' + message.guild.name, err);
 					message.channel.send('<:Error:849215023264169985> Cannot get URL of image. Please attach an image or give an image url as argument.');
 					return;
 				}
@@ -51,7 +50,7 @@ module.exports = {
 
 			if(imgSize.type !== 'png' && imgSize.type !== 'jpg') {
 				console.log('Invalid imagetype: ' + imgSize.type);
-				message.channel.send('<:Error:849215023264169985> Invalid image type [' + imgSize.type + ']. Supported types: **jpg, png**');
+				message.channel.send('<:Error:849215023264169985> Invalid image type [**' + imgSize.type + '**]. Supported types: **jpg, png**');
 				return;
 			}
 
@@ -84,6 +83,9 @@ module.exports = {
 
 			const blackFile = new Discord.MessageAttachment('./color.properties');
         	message.channel.send({ content: '<:Checkmark:849224496232660992> Heres your black loading screen file. Make sure to put it in: `<resourcepack>/assets/minecraft/optifine`', files: [blackFile] });
+		} else {
+			console.log(message.member.user.tag + ' executed non-existent ^txp argument ' + args[0] + ' in ' + message.guild.name);
+			message.reply(':warning: This argument [**' + args[0] + '**] does not exist. You can only use `^txp load` and `^txp black`.');
 		}
 	}
 }
