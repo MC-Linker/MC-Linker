@@ -9,6 +9,7 @@ module.exports = {
 		const rcon = require('../../rcon');
 		const ftp = require('../../ftp');
 		const utils = require('../../utils');
+		const Discord = require('discord.js');
 
 		const mode = args[0];
 		if(!mode) {
@@ -17,8 +18,8 @@ module.exports = {
 			return;
 		}
 		if(mode === 'connect') {
-			if (!message.member.hasPermission("ADMINISTRATOR")) {
-				message.reply(':no-entry: This command can only be used by admins!');
+			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+				message.reply(':no_entry: This command can only be used by admins!');
 				console.log(message.member.user.tag + ' executed ^rcon connect without admin in ' + message.guild.name);
 				return;
 			}
@@ -50,8 +51,8 @@ module.exports = {
 			})
 
 		} else if (mode === 'execute') {
-			if (!message.member.hasPermission("ADMINISTRATOR")) {
-				message.reply(':no-entry: This command can (currently) only be used by admins!');
+			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+				message.reply(':no_entry: This command can (currently) only be used by admins!');
 				console.log(message.member.user.tag + ' executed ^rcon connect without admin in ' + message.guild.name);
 				return;
 			}
@@ -61,8 +62,8 @@ module.exports = {
 			return;
 
 		} else if (mode === 'enable') {
-			if (!message.member.hasPermission("ADMINISTRATOR")) {
-				message.reply(':no-entry: This command can only be used by admins!');
+			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+				message.reply(':no_entry: This command can only be used by admins!');
 				console.log(message.member.user.tag + ' executed ^rcon enable without admin in ' + message.guild.name);
 				return;
 			}

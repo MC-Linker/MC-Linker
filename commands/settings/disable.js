@@ -53,7 +53,7 @@ module.exports = {
                         entry = entry.toUpperCase();
                         listEmbed.addField(entry, '\u200B');
                     });
-                    message.channel.send(listEmbed);
+                    message.channel.send({ embeds: [listEmbed] });
                 }
             });
 

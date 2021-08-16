@@ -17,7 +17,7 @@ module.exports = {
 
         if(!mode || !object || !args[0]) {
             console.log(message.member.user.tag + ' executed ^advancements incorrect in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check ^help advancements for correct usage!");
+            message.reply(":warning: Wrong Usage! Check `^help advancements` for correct usage!");
             return;
         }
 
@@ -54,7 +54,7 @@ module.exports = {
         const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
         if(amFile === false) return;
 
-        fs.readFile('./advancements/' + uuidv4 + '.json', 'utf8', (err, advancementJson) => {
+        fs.readFile('./advancements/' + uuidv4 + '.json', 'utf8', async (err, advancementJson) => {
             if(err) {
                 message.reply('<:Error:849215023264169985> ' + 'Could not find advancement file. Member most likely never joined the server.')
                 console.log('Error reading stat file from disk: ', err);
@@ -72,18 +72,17 @@ module.exports = {
                 const advancementData = JSON.parse(advancementJson);
 
                 if(mode === 'recipes') {
-
-                    let allKeys = Object.keys(advancementData)
+                    let allKeys = Object.keys(advancementData);
                     const filteredKeys = allKeys.filter(key => {
                         return key.startsWith('minecraft:' + mode + '/') && key.endsWith('/' + object);
-                    }).join("")
-                    let criteria = Object.keys(advancementData[filteredKeys]['criteria']).join("")
-                    let searchName = advancementData[filteredKeys]['criteria'][criteria]
-                    searchName = searchName.replace(' +0000', '')
+                    }).join("");
+                    let criteria = Object.keys(advancementData[filteredKeys]['criteria']).join("");
+                    let searchName = advancementData[filteredKeys]['criteria'][criteria];
+                    searchName = searchName.replace(' +0000', '');
 
-                    console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedName + ' : ' + searchName)
-                    const amEmbed = baseEmbed.addField('Criteria', criteria).addField('unlocked on', searchName)
-                    message.channel.send(amEmbed)
+                    console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedName + ' : ' + searchName);
+                    const amEmbed = baseEmbed.addField('Criteria', criteria).addField('unlocked on', searchName);
+                    message.channel.send({ embeds: [amEmbed] });
                 } else {
                     try {
                         let searchName;
@@ -92,27 +91,27 @@ module.exports = {
                         let counter = 0;
                         let amString = '';
                         let amEmbed;
-                        for (let i=0; i < key.length; i++) {
-                            searchName = advancementData['minecraft:' + mode + '/' + object]['criteria'][key[i]]
-                            key[i] = key[i].replace('minecraft:', '')
+                        for (let i = 0; i < key.length; i++) {
+                            searchName = advancementData['minecraft:' + mode + '/' + object]['criteria'][key[i]];
+                            key[i] = key[i].replace('minecraft:', '');
                             searchName = searchName.replace(' +0000', '');
 
-                            amString += `\n**Criteria**\n${key[i]} \n**Completed on**\n${searchName}\n`;
-                            if(counter === 1) {counter = 0; amEmbed = baseEmbed.addField('\u200b', amString, true); amString = '';}
+                            amString += `\n**Criteria**\n${key[i]}\n**Completed on**\n${searchName}\n`;
+                            if(counter === 1 || key.length <= 1) {counter = 0; amEmbed = baseEmbed.addField('\u200b', amString, true); amString = '';}
                             else counter++;
                         }
 
-                        console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedName + ' : ' + searchName)
-                        message.channel.send(amEmbed)
+                        console.log('Sent advancement [' + mode + ' ' + object + '] ' + taggedName + ' : ' + searchName);
+                        message.channel.send({ embeds: [amEmbed] });
                     } catch (err) {
-                        console.log('Error sending advancement.', err)
-                        message.reply(':warning: Advancement [**' + mode + ' ' + object + '**] not completed/unlocked or misspelled!')
+                        console.log('Error sending advancement.', err);
+                        message.reply(':warning: Advancement [**' + mode + ' ' + object + '**] not completed/unlocked or misspelled!');
                     }
                 }
 
             } catch (err) {
                 console.log('Error parsing advancementJSON string: ', err);
-                message.reply(':warning: Advancement [**' + mode + ' ' + object + '**] not completed/unlocked or misspelled!')
+                message.reply(':warning: Advancement [**' + mode + ' ' + object + '**] not completed/unlocked or misspelled!');
             }
         })
     }

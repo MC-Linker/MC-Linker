@@ -11,6 +11,7 @@ module.exports = {
         const sftp = require('../../sftp');
         const fs = require('fs');
         const util = require('util');
+        const Discord = require('discord.js');
 
         let host = (args[0]);
         let user = (args[1]);
@@ -20,13 +21,13 @@ module.exports = {
         let path = (args[5]);
 
         if(host === 'disconnect' && !user) {
-            if (!message.member.hasPermission('ADMINISTRATOR')) {
-                message.reply(':warning: You are not an Admin!');
+            if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+                message.reply(':no_entry: You are not an Admin!');
                 console.log(message.member.user.tag + ' executed ^ftp disconnect without admin in ' + message.guild.name);
                 return;
             }
 
-            console.group(message.member.user.tag + ' executed ^ftp disconnect in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed ^ftp disconnect in ' + message.guild.name);
 
             fs.unlink(`./ftp/${message.guild.id}.json`, err => {
                 if(err) {
@@ -36,7 +37,6 @@ module.exports = {
                 }
                 console.log('Successfully disconnected ' + message.guild.name + '.');
                 message.reply('<:Checkmark:849224496232660992> The connection between the server and this bot was successfully disconnected.');
-                console.groupEnd();
             })
             return;
         } else if (!host || !user || !password || !port || !version) {
@@ -47,8 +47,8 @@ module.exports = {
 
         console.log(message.member.user.tag + ` executed ^ftp ${host} ${user} ${password} ${port} ${version} ${path} in ` + message.guild.name);
 
-        if (!message.member.hasPermission('ADMINISTRATOR')) {
-            message.reply(':warning: ' + "You are not an Admin!");
+        if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+            message.reply(':no_entry: ' + "You are not an Admin!");
             console.log(message.member.user.tag + ' executed ^ftp without admin in ' + message.guild.name);
             return;
         } else if (version.startsWith('1.11') || version.startsWith('1.10') || version.startsWith('1.9') || version.startsWith('1.8') || version.startsWith('1.7')) {
@@ -57,13 +57,18 @@ module.exports = {
             message.reply(':warning: The stat and advancement commands might not work because your version isnt compatible with it.');
         }
 
+        message.channel.sendTyping();
+
         const connectSftp = await sftp.connect({
             host: host,
             pass: password,
             user: user,
             port: port
         });
+
         if (connectSftp === false) {
+            message.channel.sendTyping();
+            
             const connectFtp = await ftp.connect({
                 host: host,
                 pass: password,
@@ -122,11 +127,11 @@ module.exports = {
 
                     if (worldPath) {
                         console.log(`Found worldPath: ${worldPath}.`);
-                        message.reply('<:Checkmark:849224496232660992> Found world folder [**' + worldPath + '**]. Finalizing...');
+                        message.reply('<:Checkmark:849224496232660992> Found world folder [**' + worldPath + '**]. If this is not correct, type in the world path manually as last argument.\nFinalizing...');
                         path = worldPath;
                     } else {
                         console.log('Couldnt find worldPath');
-                        message.reply('<:Error:849215023264169985> Couldnt find world folder. Please pass in the world path manually as last argument.');
+                        message.reply('<:Error:849215023264169985> Couldnt find world folder. Please type in the world path manually as last argument.');
                         return;
                     }
 
@@ -206,7 +211,7 @@ module.exports = {
 
                     if (worldPath) {
                         console.log(`Found worldPath: ${worldPath}.`);
-                        message.reply('<:Checkmark:849224496232660992> Found world folder [**' + worldPath + '**]. Finalizing...');
+                        message.reply('<:Checkmark:849224496232660992> Found world folder [**' + worldPath + '**]. If this is not correct, type in the world path manually as last argument.\nFinalizing...');
                         path = worldPath;
                     } else {
                         console.log('Couldnt find worldPath');
