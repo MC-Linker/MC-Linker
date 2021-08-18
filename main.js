@@ -5,13 +5,13 @@ const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS] })
 const fs = require('fs');
-/*const { AutoPoster } = require('topgg-autoposter');
+const { AutoPoster } = require('topgg-autoposter');
 
 const ap = AutoPoster('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxMjc1OTc0MTUyODQwODA2NCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjI4MjM5MDQ0fQ.09hsMh8jvu87wrxOwvF2OqyfnePIN-4FMqGRdFQm0Fo', client)
 
 ap.on('posted', stats => {
   console.log('Posted stats to Top.gg!', stats);
-})*/
+})
 
 client.once('ready', () => {
     console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server.')
