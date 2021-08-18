@@ -30,7 +30,7 @@ module.exports = {
 
         if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
-        const fontCanvas = Canvas.createCanvas(text.split('').length * 100, 225);
+        const fontCanvas = Canvas.createCanvas(text.split('').length * 200, 225);
         const ctx = fontCanvas.getContext('2d');
         try {
             ctx.font = `200px ${font}`;
