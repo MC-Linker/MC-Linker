@@ -1,0 +1,12 @@
+^C^C^C^C^CC:\Users\emili\Documents\GitHub\SMPBot-Private\rcon.js:34
+			fs.readFile(`./rcon/${message.guild.id}.json`, (err, rconJson) => {
+			                              ^
+
+TypeError: Cannot read property 'guild' of undefined
+    at C:\Users\emili\Documents\GitHub\SMPBot-Private\rcon.js:34:34
+    at new Promise (<anonymous>)
+    at Object.executeGetCredentials (C:\Users\emili\Documents\GitHub\SMPBot-Private\rcon.js:31:10)
+    at Object.execute (C:\Users\emili\Documents\GitHub\SMPBot-Private\commands\other\chat.js:44:37)
+    at C:\Users\emili\Documents\GitHub\SMPBot-Private\main.js:134:29
+    at FSReqCallback.oncomplete (node:fs:185:23)
+^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C
