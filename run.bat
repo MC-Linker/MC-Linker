@@ -1,3 +1,3 @@
 :bot
-node main.js %* 2>> log.txt
+node main.js
 goto bot

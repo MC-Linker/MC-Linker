@@ -1,9 +1,9 @@
 module.exports = {
     name: 'rcon',
     aliases: ['RCON'],
-    usage: 'rcon connect <server IP> <password> <port> **//** rcon execute <command> (**WIP**) **//**\nrcon enable',
-    example: 'rcon connect 5.83.754.243 T12n53 25567**//**\nrcon execute /seed (**WIP**)**//**\nrcon enable',
-    description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file)\n**OR** execute commands on the server with RCON (**WIP**).\n**OR** enable RCON in the `server.properties` file. Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',
+    usage: 'rcon connect <server IP> <password> <port> **//** rcon execute <command> **//**\nrcon enable',
+    example: 'rcon connect 5.83.754.243 T12n53 25567**//**\nrcon execute /seed **//**\nrcon enable',
+    description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file)\n**OR** execute minecraft commands on the server (sometimes there will be no response, that doesnt mean it didnt work.) (**WIP**).\n**OR** enable RCON in the `server.properties` file. Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',
     async execute(message, args) {
 		const fs = require('fs');
 		const rcon = require('../../rcon');
@@ -52,14 +52,26 @@ module.exports = {
 
 		} else if (mode === 'execute') {
 			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-				message.reply(':no_entry: This command can (currently) only be used by admins!');
+				message.reply(':no_entry: This command can only be used by admins!');
 				console.log(message.member.user.tag + ' executed ^rcon connect without admin in ' + message.guild.name);
 				return;
 			}
 
-			console.log(message.member.user.tag + ' executed ^rcon execute in ' + message.guild.name);
-			message.reply(':warning: `^rcon execute` is currently Work in Progress.');
-			return;
+			args.shift();
+			if(!args) {
+				console.log(message.member.user.tag + ' executed ^rcon execute without command in ' + message.guild.name);
+				message.reply(':warning: Please specify the command you want to execute.')
+				return;
+			}
+
+			console.log(message.member.user.tag + ' executed ^rcon execute ' + args.join(' ') + ' in ' + message.guild.name);
+
+			let command = args.join(' ');
+			if(command.startsWith('/')) command = command.replace('/', '');
+			const response = await rcon.executeGetCredentials(command, message);
+			if(!response) return;
+
+			message.reply(response);
 
 		} else if (mode === 'enable') {
 			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
@@ -78,7 +90,7 @@ module.exports = {
 
 			const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
 			if(propFile === false) return;
-			
+
 			fs.readFile(`./properties/${message.guild.id}.properties`, 'utf8', async (err, propString) => {
 				if(err) {
 					console.log('Error reading properties file from disk ', err);
