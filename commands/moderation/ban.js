@@ -35,11 +35,11 @@ module.exports = {
             taggedName = message.mentions.users.first().tag;
         }
 
-		console.log(message.member.user.tag + ' executed ^ban with taggedUser: ' + taggedName + ' in ' + message.guild.name);
-
 		let reason;
 		if (!args) reason = 'Banned by an operator.';
 		else reason = args.join(' ');
+
+		console.log(message.member.user.tag + ' executed ^ban with taggedUser: ' + taggedName + ' ' + reason + ' in ' + message.guild.name);
 
 		fs.readFile(`./rcon/${message.guild.id}.json`, 'utf8', async (err, rconData) => {
 			if (err) {
