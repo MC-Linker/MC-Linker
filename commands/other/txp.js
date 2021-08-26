@@ -2,7 +2,7 @@ module.exports = {
 	name: 'txp',
 	aliases: [''],
 	usage: 'txp load/black',
-    example: 'txp black **//** txp load <imageLink/imageAttachment>',
+    example: 'txp black **//** txp load <imageLink/imageAttachment/@mention>',
 	description: 'Tools for minecraft texturepacks. \ntxp load => Outputs a loading screen from the attachment, ping or link. \ntxp black => Outputs a file which makes the loading screen black.',
 	async execute (message, args) {
 		const Canvas = require('canvas');
