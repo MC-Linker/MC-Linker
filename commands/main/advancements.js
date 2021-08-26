@@ -78,15 +78,21 @@ module.exports = {
                     }).join("");
                     let criteria = Object.keys(advancementData[filteredKeys]['criteria']).join("");
                     let searchName = advancementData[filteredKeys]['criteria'][criteria];
+                    let done = advancementData[filteredKeys]['done'];
                     searchName = searchName.replace(' +0000', '');
 
-                    console.log('Sent advancement [' + mode + ' ' + object + ']' + taggedName + ' : ' + searchName);
                     const amEmbed = baseEmbed.addField('Criteria', criteria).addField('unlocked on', searchName);
+
+                    if(done && done === false) amEmbed.setFooter('Advancement not unlocked/completed.', 'https://cdn.discordapp.com/emojis/849215023264169985.png');
+                    else amEmbed.setFooter('Advancement completed/unlocked.', 'https://cdn.discordapp.com/emojis/849224496232660992.png');
+
+                    console.log('Sent advancement [' + mode + ' ' + object + '] ' + taggedName + ' : ' + searchName);
                     message.channel.send({ embeds: [amEmbed] });
                 } else {
                     try {
                         let searchName;
                         let key = Object.keys(advancementData['minecraft:' + mode + '/' + object]['criteria']);
+                        let done = advancementData['minecraft:' + mode + '/' + object]['done'];
 
                         let counter = 0;
                         let amString = '';
@@ -95,14 +101,17 @@ module.exports = {
                             searchName = advancementData['minecraft:' + mode + '/' + object]['criteria'][key[i]];
                             key[i] = key[i].replace('minecraft:', '');
                             searchName = searchName.replace(' +0000', '');
-
                             amString += `\n**Criteria**\n${key[i]}\n**Completed on**\n${searchName}\n`;
-                            if(counter === 1 || key.length <= 1) {counter = 0; amEmbed = baseEmbed.addField('\u200b', amString, true); amString = '';}
+
+                            if(counter === 1 || key.length === 1) {counter = 0; amEmbed = baseEmbed.addField('\u200b', amString, true); amString = '';}
                             else counter++;
                         }
 
-                        console.log('Sent advancement [' + mode + ' ' + object + '] ' + taggedName + ' : ' + searchName);
+                        if(done === false) amEmbed.setFooter('Advancement not unlocked/completed.', 'https://cdn.discordapp.com/emojis/849215023264169985.png');
+                        else amEmbed.setFooter('Advancement completed/unlocked.', 'https://cdn.discordapp.com/emojis/849224496232660992.png');
+
                         message.channel.send({ embeds: [amEmbed] });
+                        console.log('Sent advancement [' + mode + ' ' + object + '] ' + taggedName + ' : ' + searchName);
                     } catch (err) {
                         console.log('Error sending advancement.', err);
                         message.reply(':warning: Advancement [**' + mode + ' ' + object + '**] not completed/unlocked or misspelled!');

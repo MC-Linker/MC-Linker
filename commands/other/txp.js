@@ -3,7 +3,7 @@ module.exports = {
 	aliases: [''],
 	usage: 'txp load/black',
     example: 'txp black **//** txp load <imageLink/imageAttachment>',
-	description: 'Tools for minecraft texturepacks. \ntxp load => Outputs a loading screen from the attachment or the link. \ntxp black => Outputs a file which makes the loading screen black.',
+	description: 'Tools for minecraft texturepacks. \ntxp load => Outputs a loading screen from the attachment, ping or link. \ntxp black => Outputs a file which makes the loading screen black.',
 	async execute (message, args) {
 		const Canvas = require('canvas');
 		const probe = require('probe-image-size');
@@ -18,20 +18,21 @@ module.exports = {
 		if(args[0] === 'load' || args[0] === 'loading' || args[0] === 'loadingscreen' || args[0] === 'txpload') {
 			//get URL of image
 			let URL;
-			if (args[1]) {
-				URL = (args[1]);
-			} else if (message.attachments) {
+			if (message.attachments.size) {
 				try {
 					URL = message.attachments.first().url;
 				} catch (err) {
 					console.log(message.member.user.tag + ' executed ^txp load. Couldnt get image url in ' + message.guild.name, err);
-					message.channel.send('<:Error:849215023264169985> Cannot get URL of image. Please attach an image or give an image url as argument.');
+					message.channel.send('<:Error:849215023264169985> Cannot get URL of image. Please attach an image, ping someone or give an image url as argument.');
 					return;
 				}
-
+			} else if (message.mentions.users.size) {
+				URL = message.mentions.users.first().avatarURL({format: 'png'});
+			} else if (args[1]) {
+				URL = (args[1]);
 			} else {
 				console.log(message.member.user.tag + ' executed ^txp load without url or attach in ' + message.guild.name);
-				message.reply(':warning: Please attach an image or give an image url as argument.');
+				message.reply(':warning: Please attach an image, ping someone or give an image url as argument.');
 				return;
 			}
 
@@ -40,11 +41,10 @@ module.exports = {
 			//get imageSize
 			let imgSize;
 			try {
-				// @ts-ignore
 				imgSize = await probe(URL, { rejectUnauthorized: false });
 			} catch (err) {
 				console.log('Error while trying to get imagesize. ', err);
-				message.channel.send('<:Error:849215023264169985> Cannot get size of image. `^help canvas` for correct usage.');
+				message.channel.send('<:Error:849215023264169985> Cannot get size of image. `^help txp` for correct usage.');
 				return;
 			}
 
@@ -66,7 +66,7 @@ module.exports = {
 			}
 
 			//position half of image top right
-			context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, imgSize.height * 1.5, 0, imgSize.width / 2, imgSize.height);
+			context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, loadCanvas.width - (imgSize.width / 2), 0, imgSize.width / 2, imgSize.height);
 
 			//position 2nd half bottom left
 			context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
