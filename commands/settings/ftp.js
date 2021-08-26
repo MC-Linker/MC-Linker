@@ -1,8 +1,8 @@
 module.exports = {
     name: 'ftp',
     aliases: ['ftpconnect', 'connectftp', 'server', 'connectserver', 'serverconnect'],
-    usage: 'ftp <host> <username> <password> <port> <minecraft-version> <**Optional:** path to world folder (Format: /path/path)> **//** ftp disconnect',
-    example: 'ftp localhost lianecx supersecretpassword 21 1.17',
+    usage: 'ftp <host> <username (`none` if no username)> <password (`none` if no password)> <port> <minecraft-version> <**Optional:** path to world folder (Format: /path/path)> **//** ftp disconnect',
+    example: 'ftp someHost/ip lianecx supersecretpassword 21 1.17 **//** ftp localhost none none 21 1.17 path/to/world',
     description: "Connect or disconnect your minecraft Server with the bot. Can only be used by **admins**. \n**Need help getting the ftp credentials?**\n=> Join the [Support Server](https://discord.gg/rX36kZUGNK).",
     async execute(message, args) {
         const ftp = require('../../ftp');
@@ -58,6 +58,9 @@ module.exports = {
         }
 
         message.channel.sendTyping();
+
+        if(user === 'none') user = '';
+        if(password === 'none') password = '';
 
         const connectSftp = await sftp.connect({
             host: host,

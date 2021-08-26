@@ -46,7 +46,6 @@ module.exports = {
         if(!response) {
             message.reply("<:Checkmark:849224496232660992> Sent Message to Minecraft:**\n" + chatMsg + "**");
         } else {
-            console.log(response);
             message.reply('<:Error:849215023264169985> Error:\n' + response);
         }
 	}
