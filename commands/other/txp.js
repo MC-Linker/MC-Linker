@@ -8,7 +8,7 @@ module.exports = {
 	aliases: [''],
 	usage: 'txp load/black',
     example: 'txp black **//** txp load <imageLink/imageAttachment/@mention>',
-	description: 'Tools for minecraft texturepacks. \ntxp load => Outputs a loading screen from the attachment, ping or image-link. \ntxp black => Outputs a file which makes the loading screen black (monochrome).',
+	description: 'Tools for minecraft texturepacks. \n`txp load` => Outputs a loading screen from the attachment, ping or image-link. \n`txp black` => Outputs a file which makes the loading screen black (monochrome).',
 	data: new SlashCommandBuilder()
 			.setName('txp')
 			.setDescription('Tools for minecraft texturepacks.')

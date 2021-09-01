@@ -220,7 +220,7 @@ module.exports = {
                 .setColor('#730A85')
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setTitle(taggedName)
-                .addField(`=======================\n${mode} ${object}`, '**=======================**')
+                .addField(`==========\n${mode} ${object}`, `**==========**`)
                 .setImage('https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png');
 
             try {
