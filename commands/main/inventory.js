@@ -1,17 +1,26 @@
+const utils = require('../../utils');
+const nbt = require('nbt');
+const fs = require('fs');
+const ftp = require('../../ftp');
+const Canvas = require('canvas');
+const Discord = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'inventory',
     aliases: ['inv', 'inventories', 'inventorys'],
     usage: 'inventory <mention/username>',
     example: 'inventory @Lianecx **//** inventory xXgamerkidXx',
-    description: "Get an image of a player's inventory.",
+    description: "Get an image of the current player's inventory.",
+    data: new SlashCommandBuilder()
+            .setName('inventory')
+            .setDescription('Get an image of the current player\'s inventory.')
+            .addUserOption(option =>
+                option.setName('user')
+                .setDescription('Set the user you want to get the inventory from.')
+                .setRequired(true)
+            ),
     async execute(message, args) {
-		const utils = require('../../utils');
-		const nbt = require('nbt');
-		const fs = require('fs');
-        const ftp = require('../../ftp');
-        const Canvas = require('canvas');
-        const Discord = require('discord.js');
-
         if(!args[0]) {
             console.log(message.member.user.tag + ' executed ^inv without args in ' + message.guild.name);
             message.reply(':warning: Please specify the user you want to get the inventory from.');

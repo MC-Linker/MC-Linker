@@ -1,4 +1,5 @@
 const fs =  require('fs');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'disconnect',
@@ -6,8 +7,11 @@ module.exports = {
     usage: 'disconnect',
     example: 'disconnect',
     description: 'Disconnect your minecraft-account from the bot. To connect again, use `^connect <minecraft-username>` again.',
+    data: new SlashCommandBuilder()
+            .setName('disconnect')
+            .setDescription('Disconnect your minecraft-account from the bot.'),
     execute(message, args) {
-        console.group(message.member.user.tag + ' executed ^disconnect in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed ^disconnect in ' + message.guild.name);
 
         fs.unlink(`./connections/${message.member.user.id}.json`, err => {
             if(err) {
@@ -17,7 +21,6 @@ module.exports = {
             }
             console.log('Successfully disconnected ' + message.member.user.tag + '.');
             message.reply('<:Checkmark:849224496232660992> The connection to this bot was successfully disconnected.');
-            console.groupEnd();
         })
 	}
 }

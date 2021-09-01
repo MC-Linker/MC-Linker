@@ -1,16 +1,128 @@
+const fs = require('fs');
+const ftp = require('../../ftp');
+const Discord = require('discord.js');
+const utils = require('../../utils');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'stats',
     aliases: ['stat'],
     usage: 'stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**> ',
     example: 'stats @Lianecx mined iron_ore **//** stats @Memer custom play_time **//** stats xXgamerboyyXx killed blaze',
-    description: "Look at your and other member's minecraft server stats.\n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!",
+    description: "Look at your and other member's minecraft server stats.\n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
+    data: new SlashCommandBuilder()
+            .setName('stats')
+            .setDescription('Look at your and other member\'s minecraft server stats.')
+            .addSubcommand(subcommand =>
+                subcommand.setName('custom')
+                .setDescription('A multitude of generic statistics related to a player\'s actions.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set a custom stat. All stats of the custom category => ^help stats')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('mined')
+                .setDescription('Statistic related to the number of blocks a player mined.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set a block (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('broken')
+                .setDescription('Statistics related to the number of items a player ran their durability negative.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('crafted')
+                .setDescription('Statistics related to the number of items crafted, smelted, etc.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('used')
+                .setDescription('Statistics related to the number of block or item used.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item or block (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('picked_up')
+                .setDescription('Statistics related to the number of dropped items a player picked up.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('dropped')
+                .setDescription('Statistics related to the number of items that droped.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('killed')
+                .setDescription('Statistics related to the number of entities a player killed.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an entity (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('killed_by')
+                .setDescription('Statistics related to the times of a player being killed by entities.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an entity (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option => 
+                    option.setName('user')
+                    .setDescription('Set the user you want to get the stats from.')
+                    .setRequired(true)
+                )
+            ),
     async execute(message, args) {
-
-        const fs = require('fs');
-        const ftp = require('../../ftp');
-        const Discord = require('discord.js');
-        const utils = require('../../utils');
-
         const statType = (args[1]);
         const statObject = (args[2]);
         let taggedName;
@@ -88,11 +200,11 @@ module.exports = {
 
                             if(imageExists === false) {
                                 console.log('No Image available for ' + statObject);
-                                message.channel.send({ embeds: [statEmbed] });
+                                message.reply({ embeds: [statEmbed] });
                                 console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
                             } else {
                                 statEmbed.setImage('attachment://' + statObject + '.png')
-                                message.channel.send({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
+                                message.reply({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
                                 console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
                             }
                         } else if (statType === 'killed_by') {
@@ -102,11 +214,11 @@ module.exports = {
 
                             if(imageExists === false) {
                                 console.log('No Image available for ' + statObject);
-                                message.channel.send({ embeds: [statEmbed] });
+                                message.reply({ embeds: [statEmbed] });
                                 console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
                             } else {
                                 statEmbed.setImage('attachment://' + statObject + '.png');
-                                message.channel.send({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
+                                message.reply({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
                                 console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
                             }
                         } else {
@@ -117,10 +229,10 @@ module.exports = {
                             if(imageExists === false) {
                                 console.log('No Image available for ' + statObject);
                                 console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
-                                message.channel.send({ embeds: [statEmbed] });
+                                message.reply({ embeds: [statEmbed] });
                             } else {
                                 statEmbed.setImage('attachment://' + statObject + '.png');
-                                message.channel.send({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
+                                message.reply({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
                                 console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
                             }
                         }    

@@ -1,12 +1,25 @@
 const rcon = require('../../rcon.js');
 const utils = require('../../utils.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'message',
     aliases: ['dm', 'msg', 'tell', 'whisper', 'w'],
     example: '^message @Lianecx Hey, its me! **//** ^message someGuy §6Golden message',
     usage: 'message <@mention/ingamename> <message>',
-    description: 'Send chat messages to people on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).',
+    description: 'Send private chat messages to people on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).',
+    data: new SlashCommandBuilder()
+            .setName('message')
+            .setDescription('Send private chat messages to people on the server.')
+            .addUserOption(option =>
+                option.setName('user')
+                .setDescription('Set the user you want to send a (private) message to.')
+                .setRequired(true)
+            ).addStringOption(option =>
+                option.setName('message')
+                .setDescription('Set the (private) message you want to send to the user.')
+                .setRequired(true)
+            ),
     async execute(message, args) {
         let taggedName;
         let userName;
@@ -68,7 +81,6 @@ module.exports = {
         if(!response) {
             message.reply(`<:Checkmark:849224496232660992> Sent Message to ${taggedName}:\n**${chatMsg}**`);
         } else {
-            console.log(response);
             message.reply('<:Error:849215023264169985> Error:\n' + response);
         }
 	}

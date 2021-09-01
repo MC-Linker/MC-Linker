@@ -1,18 +1,67 @@
+const ftp = require('../../ftp');
+const Client = require('ftp');
+const SClient = require('ssh2-sftp-client');
+const sftp = require('../../sftp');
+const fs = require('fs');
+const util = require('util');
+const Discord = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'ftp',
     aliases: ['ftpconnect', 'connectftp', 'server', 'connectserver', 'serverconnect'],
     usage: 'ftp <host> <username (`none` if no username)> <password (`none` if no password)> <port> <minecraft-version> <**Optional:** path to world folder (Format: /path/path)> **//** ftp disconnect',
     example: 'ftp someHost/ip lianecx supersecretpassword 21 1.17 **//** ftp localhost none none 21 1.17 path/to/world',
     description: "Connect or disconnect your minecraft Server with the bot. Can only be used by **admins**. \n**Need help getting the ftp credentials?**\n=> Join the [Support Server](https://discord.gg/rX36kZUGNK).",
+    data: new SlashCommandBuilder()
+            .setName('ftp')
+            .setDescription('Connect or disconnect your minecraft Server with the bot.')
+            .addSubcommand(subcommand =>
+                subcommand.setName('connect')
+                .setDescription('Connect your minecraft Server with the bot.')
+                .addStringOption(option =>
+                    option.setName('host')
+                    .setDescription('Set the ftp-host.')
+                    .setRequired(true)
+                ).addStringOption(option =>
+                    option.setName('username')
+                    .setDescription('Set the ftp-username (`none` if no username).')
+                    .setRequired(true)
+                ).addStringOption(option =>
+                    option.setName('password')
+                    .setDescription('Set the ftp-password (`none` if no password).')
+                    .setRequired(true)
+                ).addStringOption(option =>
+                    option.setName('port')
+                    .setDescription('Set the ftp-port.')
+                    .setRequired(true)
+                ).addStringOption(option =>
+                    option.setName('version')
+                    .setDescription('Set the minecraft-version.')
+                    .setRequired(true)
+                    .addChoice('1.5', '1.5')
+                    .addChoice('1.6', '1.6')
+                    .addChoice('1.7', '1.7')
+                    .addChoice('1.8', '1.8')
+                    .addChoice('1.9', '1.9')
+                    .addChoice('1.10', '1.10')
+                    .addChoice('1.11', '1.11')
+                    .addChoice('1.12', '1.12')
+                    .addChoice('1.13', '1.13')
+                    .addChoice('1.14', '1.14')
+                    .addChoice('1.15', '1.15')
+                    .addChoice('1.16', '1.6')
+                    .addChoice('1.17', '1.17')
+                ).addStringOption(option =>
+                    option.setName('path')
+                    .setDescription('Set the world-path. (Format: /path/to/world)')
+                    .setRequired(false)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('disconnect')
+                .setDescription('Disconnect your minecraft Server with the bot.')
+            ),
     async execute(message, args) {
-        const ftp = require('../../ftp');
-        const Client = require('ftp');
-        const SClient = require('ssh2-sftp-client');
-        const sftp = require('../../sftp');
-        const fs = require('fs');
-        const util = require('util');
-        const Discord = require('discord.js');
-
         let host = (args[0]);
         let user = (args[1]);
         let password = (args[2]);

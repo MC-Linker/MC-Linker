@@ -1,13 +1,30 @@
 const Canvas = require('canvas');
 const Discord = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'text',
     aliases: ['texts', 'font', 'fonts'],
-    usage: 'text mojang/minecraft/<Any Preinstalled Font (`Space` **=** `_`)> <color> <Your text>',
+    usage: 'text <Any Font (`Space` **=** `_`)> <color> <Your text>',
     example: 'text minecraft red I love this bot!',
     description: 'Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/de/docs/Web/CSS/color_value#farbschlüsselwörter)\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`',
-    execute(message, args) {
+    data: new SlashCommandBuilder()
+            .setName('text')
+            .setDescription('Create images with text with different fonts and colors.')
+            .addStringOption(option =>
+                option.setName('font')
+                      .setDescription('Set a font for your text.')
+                      .setRequired(true)
+            ).addStringOption(option => 
+                option.setName('color')
+                      .setDescription('Set the color for your text.')
+                      .setRequired(true)
+            ).addStringOption(option => 
+                option.setName('text')
+                      .setDescription('Enter your text here.')
+                      .setRequired(true)
+            ),
+    async execute(message, args) {
         let font = args.shift().split('_').join(' ');
         const color = args.shift().toLowerCase();
         const text = args.join(' ');
@@ -44,6 +61,6 @@ module.exports = {
         }
 
         const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'textImage.png');
-        message.reply({ content: '<:Checkmark:849224496232660992> Heres your custom text-image.', files: [fontImg] });
+		message.reply({ content: '<:Checkmark:849224496232660992> Heres your custom text-image.', files: [fontImg] });
     }
 }

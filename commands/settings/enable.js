@@ -1,12 +1,41 @@
+const fs = require('fs');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'enable',
     aliases: [''],
     usage: 'enable commands/stats/advancements <command/stat/advancement>',
     example: 'enable commands txp **//** enable stats picked_up **//** enable advancements adventuring_time',
     description: 'Enable a disabled command/stat/advancement (Theyre all enabled by default). Command-enabling is also possible through buttons in ^help <command>.',
+    data: new SlashCommandBuilder()
+            .setName('enable')
+            .setDescription('Enable a disabled command/stat/advancement (Theyre all enabled by default).')
+            .addSubcommand(subcommand =>
+                subcommand.setName('commands')
+                .setDescription('Enable a disabled command.')
+                .addStringOption(option =>
+                    option.setName('command')
+                    .setDescription('Set the command you want to enable.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('stats')
+                .setDescription('Enable a disabled stat.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set the stat you want to enable.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('advancements')
+                .setDescription('Enable a disabled advancement.')
+                .addStringOption(option =>
+                    option.setName('advancement')
+                    .setDescription('Set the advancement you want to enable.')
+                    .setRequired(true)
+                )
+            ),
     execute(message, args) {
-        const fs = require('fs');
-
         const mode = (args[0]);
         let object = (args[1]);
 
