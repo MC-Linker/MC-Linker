@@ -3,11 +3,11 @@ console.log('Loading...');
 
 const { prefix, token } = require('../config.json');
 const Discord = require('discord.js');
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS] })
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS] });
 const fs = require('fs');
 const { AutoPoster } = require('topgg-autoposter');
 
-const ap = AutoPoster('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxMjc1OTc0MTUyODQwODA2NCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjI4MjM5MDQ0fQ.09hsMh8jvu87wrxOwvF2OqyfnePIN-4FMqGRdFQm0Fo', client)
+const ap = AutoPoster('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxMjc1OTc0MTUyODQwODA2NCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjI4MjM5MDQ0fQ.09hsMh8jvu87wrxOwvF2OqyfnePIN-4FMqGRdFQm0Fo', client);
 
 ap.on('posted', stats => {
   console.log('Posted stats to Top.gg!', stats);
@@ -159,7 +159,7 @@ client.on('interactionCreate', async interaction => {
                     } else interaction.mentions = { users: [] }
                     interaction.attachments = [];
 
-                    let args = [];
+                    const args = [];
                     if(interaction.options._subcommand !== 'connect' && interaction.commandName === 'ftp') args.push(interaction.options._subcommand);
                     interaction.options._hoistedOptions.forEach(option => {
                         if (option.value !== interaction.options.getUser('user')?.id) args.push(option.value);
