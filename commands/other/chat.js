@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'chat',
-    aliases: [''],
+    aliases: [],
     usage: 'chat <message>',
     example: '^chat Hey, Minecraft! **//** ^chat §6Golden Message',
     description: 'Send chat messages to the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).',

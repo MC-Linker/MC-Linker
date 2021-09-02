@@ -96,7 +96,8 @@ client.on('messageCreate', message => {
             } else {
                 console.log(message.member.user.tag + ' executed ^help ' + commandName + ' in ' + message.guild.name);
 
-                helpEmbed.addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}\n\n**ALIASES**: \n${command.aliases.join(', ')}`);
+                helpEmbed.addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}`);
+                if(command.aliases[0]) helpEmbed.addField('\n**ALIASES**', command.aliases.join(', '));
 
                 const disableRow = new Discord.MessageActionRow()
                     .addComponents(
@@ -117,7 +118,7 @@ client.on('messageCreate', message => {
 
                 const disabled = fs.existsSync('./disable/commands/' + message.guild.id + '_' + command.name);
                 if (disabled === false) {
-                    message.reply({ embeds: [helpEmbed], components: [disableRow] });
+                    message.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
                 } else if (disabled === true) {
                     helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
                     message.channel.send({ embeds: [helpEmbed], components: [enableRow] });

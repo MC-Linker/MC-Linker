@@ -7,7 +7,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'rcon',
-    aliases: ['RCON'],
+    aliases: [],
     usage: 'rcon connect <server-ip> <password> <port> **//** rcon execute <command> **//**\nrcon enable',
     example: 'rcon connect 5.83.754.243 T12n53 25567**//**\nrcon execute /seed **//**\nrcon enable',
     description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file).\n**OR** Execute minecraft commands on the server (sometimes there will be no response, that doesnt mean it didnt work.) (**WIP**).\n**OR** Enable RCON in the `server.properties` file (Requires ftp). Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',

@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'enable',
-    aliases: [''],
+    aliases: [],
     usage: 'enable commands/stats/advancements <command/stat/advancement>',
     example: 'enable commands txp **//** enable stats picked_up **//** enable advancements adventuring_time',
     description: 'Enable a disabled command/stat/advancement (Theyre all enabled by default). Command-enabling is also possible through buttons in ^help <command>.',

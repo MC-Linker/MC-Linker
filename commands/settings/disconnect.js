@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'disconnect',
-    aliases: [''],
+    aliases: [],
     usage: 'disconnect',
     example: 'disconnect',
     description: 'Disconnect your minecraft-account from the bot. To connect again, use `^connect <minecraft-username>` again.',
