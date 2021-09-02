@@ -5,9 +5,8 @@ module.exports = {
             const fetch = require('node-fetch');
 
             if(!message.mentions.users.size) {
-                const taggedName = user;
                 try {
-                    const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${taggedName}`)
+                    const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`)
                         .then(data => data.json())
                         .then(player => player.id);
                     const uuidv4 = minecraftId.split('');

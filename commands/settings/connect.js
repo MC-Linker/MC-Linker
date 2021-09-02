@@ -1,23 +1,32 @@
+
+const fetch = require('node-fetch');
+const fs = require('fs');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'connect',
     aliases: ['connectuser', 'userconnect'],
-    usage: 'connect <minecraftname>',
+    usage: 'connect <minecraft-username>',
     example: 'connect Lianecx',
     description: "Connect your minecraft account with your discord account.",
+    data: new SlashCommandBuilder()
+            .setName('connect')
+            .setDescription('Connect your minecraft account with your discord account.')
+            .addStringOption(option =>
+                option.setName('username')
+                .setDescription('Set your minecraft-username.')
+                .setRequired(true)
+            ),
     async execute(message, args){
-
-        const fetch = require('node-fetch')
-        const fs = require('fs')
-
         const ingameName = (args[0]);
-        
+
         if(!ingameName) {
             console.log(message.member.user.tag + ' executed ^connect without args in ' + message.guild.name);
             message.reply(':warning: Please specify your minecraft-name.');
             return;
         } else if(message.mentions.users.size) {
             console.log(message.member.user.tag + ' executed connect with ping in ' + message.guild.name);
-            message.channel.send(`<:Error:849215023264169985> Don't ping someone. Use your **minecraftname** as argument.`);
+            message.reply(`<:Error:849215023264169985> Don't ping someone. Use your **minecraftname** as argument.`);
             return;
         }
 

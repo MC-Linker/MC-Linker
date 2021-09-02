@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const fs = require('fs');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'disable',
@@ -7,6 +8,60 @@ module.exports = {
     usage: 'disable commands/stats/advancements <command/stat/advancement> **//**\ndisable list commands/stats/advancements',
     example: 'disable commands txp **//** disable stats picked_up **//** disable advancements adventuring_time **//** disable list commands',
     description: 'Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `^disable list`.\n Command-disabling is also possible through buttons in ^help <command>.',
+    data: new SlashCommandBuilder()
+            .setName('disable')
+            .setDescription('Disable a specific command/stat/advancement.')
+            .addSubcommand(subcommand =>
+                subcommand.setName('commands')
+                .setDescription('Disable a command.')
+                .addStringOption(option =>
+                    option.setName('command')
+                    .setDescription('Set the command you want to disable.')
+                    .setRequired(true)
+                    .addChoice('advancements', 'advancements')
+                    .addChoice('inventory', 'inventory')
+                    .addChoice('stats', 'stats')
+                    .addChoice('ban', 'ban')
+                    .addChoice('unban', 'unban')
+                    .addChoice('chat', 'chat')
+                    .addChoice('message', 'message')
+                    .addChoice('text', 'text')
+                    .addChoice('txp', 'txp')
+                    .addChoice('connect', 'connect')
+                    .addChoice('disable', 'disable')
+                    .addChoice('disconnect', 'disconnect')
+                    .addChoice('enable', 'enable')
+                    .addChoice('ftp', 'ftp')
+                    .addChoice('rcon', 'rcon')
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('advancements')
+                .setDescription('Disable an advancement')
+                .addStringOption(option =>
+                    option.setName('advancement')
+                    .setDescription('Set the advancement you want to disable.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('stats')
+                .setDescription('Disable a stat.')
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set the stat you want to disable.')
+                    .setRequired(true)
+                )
+            ).addSubcommand(subcommand =>
+                subcommand.setName('list')
+                .setDescription('Get a list of all disabled stats/advancements/commands.')
+                .addStringOption(option =>
+                    option.setName('category')
+                    .setDescription('Set the category of which you want a list.')
+                    .setRequired(true)
+                    .addChoice('commands', 'commands')
+                    .addChoice('advancements', 'advancements')
+                    .addChoice('stats', 'stats')
+                )
+            ),
     execute(message, args) {
         const mode = (args[0]);
         let object = (args[1]);
@@ -52,7 +107,7 @@ module.exports = {
                         entry = entry.toUpperCase();
                         listEmbed.addField(entry, '\u200B');
                     });
-                    message.channel.send({ embeds: [listEmbed] });
+                    message.reply({ embeds: [listEmbed] });
                 }
             });
 

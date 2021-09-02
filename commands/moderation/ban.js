@@ -1,16 +1,29 @@
+const utils = require('../../utils');
+const ftp = require('../../ftp');
+const fs = require('fs');
+const rcon = require('../../rcon');
+const Discord = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'ban',
     aliases: ['banplayer', 'banuser'],
     usage: 'ban <mention/username>',
     example: 'ban @Lianecx **//** ban cheaterGuy',
     description: 'Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!',
+	data: new SlashCommandBuilder()
+			.setName('ban')
+			.setDescription('Ban a player from the minecraft server.')
+			.addUserOption(option =>
+				option.setName('user')
+				.setDescription('Set the user you want to ban.')
+				.setRequired(true)
+			).addStringOption(option =>
+				option.setName('reason')
+				.setDescription('Set a reason for the ban.')
+				.setRequired(false)
+			),
     async execute(message, args) {
-		const utils = require('../../utils');
-		const ftp = require('../../ftp');
-		const fs = require('fs');
-		const rcon = require('../../rcon');
-		const Discord = require('discord.js');
-
 		if (!message.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) {
 			message.reply(':no_entry: ' + "This command can only be used with `Ban member` permission!");
             console.log(message.member.user.tag + ' executed ^ban without banperm in ' + message.guild.name);
@@ -182,7 +195,7 @@ module.exports = {
 						if(!response) return;
 
 						const respEmbed = new Discord.MessageEmbed().setTitle('Ban player').setColor('ORANGE').setDescription(response);
-						message.channel.send({ embeds: [respEmbed] });
+						message.reply({ embeds: [respEmbed] });
 					}
 				})
 				return;
@@ -199,7 +212,7 @@ module.exports = {
 					if(!response) return;
 
 					const respEmbed = new Discord.MessageEmbed().setTitle('Ban player').setColor('ORANGE').setDescription(response);
-					message.channel.send({ embeds: [respEmbed] });
+					message.reply({ embeds: [respEmbed] });
 				} else {
 					const uuidv4 = await utils.getUUIDv4(userName, message);
 					if(uuidv4 === undefined) return;
@@ -308,7 +321,7 @@ module.exports = {
 							if(!response) return;
 
 							const respEmbed = new Discord.MessageEmbed().setTitle('Ban player').setColor('ORANGE').setDescription(response);
-							message.channel.send({ embeds: [respEmbed] });
+							message.reply({ embeds: [respEmbed] });
 						}
 					})
 				}

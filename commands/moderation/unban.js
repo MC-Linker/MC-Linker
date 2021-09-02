@@ -1,16 +1,25 @@
+const utils = require('../../utils');
+const ftp = require('../../ftp');
+const fs = require('fs');
+const rcon = require('../../rcon');
+const Discord = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'unban',
     aliases: ['deban', 'pardon'],
     usage: 'unban <mention/username>',
     example: 'unban @Lianecx **//** unban MrNotCheating',
-    description: 'Unban a banned player from the minecraft-server. Can only be used with `Ban member` permissions.',
+    description: 'Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.',
+	data: new SlashCommandBuilder()
+			.setName('unban')
+			.setDescription('Unban a banned player from the minecraft-server.')
+			.addUserOption(option =>
+				option.setName('user')
+				.setDescription('Set the user you want to unban.')
+				.setRequired(true)
+			),
     async execute(message, args) {
-		const utils = require('../../utils');
-		const ftp = require('../../ftp');
-		const fs = require('fs');
-		const rcon = require('../../rcon');
-		const Discord = require('discord.js');
-
 		if (!message.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) {
 			message.reply(':no_entry: ' + "This command can only be used with `Ban member` permission!");
             console.log(message.member.user.tag + ' executed ^unban without banperm in ' + message.guild.name);
@@ -169,7 +178,7 @@ module.exports = {
 						if(!response) return;
 
 						const respEmbed = new Discord.MessageEmbed().setTitle('Unban player').setColor('BLUE').setDescription(response);
-						message.channel.send({ embeds: [respEmbed] });
+						message.reply({ embeds: [respEmbed] });
 					}
 				})
 				return;
@@ -186,7 +195,7 @@ module.exports = {
 					if(!response) return;
 
 					const respEmbed = new Discord.MessageEmbed().setTitle('Unban player').setColor('BLUE').setDescription(response);
-					message.channel.send({ embeds: [respEmbed] });
+					message.reply({ embeds: [respEmbed] });
 				} else {
 					const uuidv4 = await utils.getUUIDv4(userName, message);
 					if(uuidv4 === undefined) return;
@@ -290,7 +299,7 @@ module.exports = {
 							if(!response) return;
 
 							const respEmbed = new Discord.MessageEmbed().setTitle('Unban player').setColor('BLUE').setDescription(response);
-							message.channel.send({ embeds: [respEmbed] });
+							message.reply({ embeds: [respEmbed] });
 						}
 					})
 				}

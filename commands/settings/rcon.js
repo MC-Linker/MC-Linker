@@ -1,16 +1,48 @@
+const fs = require('fs');
+const rcon = require('../../rcon');
+const ftp = require('../../ftp');
+const utils = require('../../utils');
+const Discord = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
     name: 'rcon',
-    aliases: ['RCON'],
-    usage: 'rcon connect <server IP> <password> <port> **//** rcon execute <command> **//**\nrcon enable',
+    aliases: [],
+    usage: 'rcon connect <server-ip> <password> <port> **//** rcon execute <command> **//**\nrcon enable',
     example: 'rcon connect 5.83.754.243 T12n53 25567**//**\nrcon execute /seed **//**\nrcon enable',
-    description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file)\n**OR** execute minecraft commands on the server (sometimes there will be no response, that doesnt mean it didnt work.) (**WIP**).\n**OR** enable RCON in the `server.properties` file. Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',
+    description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file).\n**OR** Execute minecraft commands on the server (sometimes there will be no response, that doesnt mean it didnt work.) (**WIP**).\n**OR** Enable RCON in the `server.properties` file (Requires ftp). Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',
+	data: new SlashCommandBuilder()
+			.setName('rcon')
+			.setDescription('Various RCON commands.')
+			.addSubcommand(subcommand =>
+				subcommand.setName('connect')
+				.setDescription('Connect this bot with RCON (credentials can be found in the `server.properties` file).')
+				.addStringOption(option =>
+					option.setName('ip')
+					.setDescription('Set the server-ip.')
+					.setRequired(true)
+				).addStringOption(option =>
+					option.setName('password')
+					.setDescription('Set the rcon-password.')
+					.setRequired(true)
+				).addStringOption(option =>
+					option.setName('port')
+					.setDescription('Set the rcon-port.')
+					.setRequired(true)
+				)
+			).addSubcommand(subcommand =>
+				subcommand.setName('execute')
+				.setDescription('Execute minecraft commands on the server (sometimes there will be no response)')
+				.addStringOption(option =>
+					option.setName('command')
+					.setDescription('Set the command you want to execute.')
+					.setRequired(true)
+				)
+			).addSubcommand(subcommand =>
+				subcommand.setName('enable')
+				.setDescription(' Enable RCON in the `server.properties` file (Requires ftp).')
+			),
     async execute(message, args) {
-		const fs = require('fs');
-		const rcon = require('../../rcon');
-		const ftp = require('../../ftp');
-		const utils = require('../../utils');
-		const Discord = require('discord.js');
-
 		const mode = args[0];
 		if(!mode) {
 			console.log(message.member.user.tag + ' executed ^rcon without args.');

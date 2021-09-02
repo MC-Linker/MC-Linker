@@ -1,11 +1,20 @@
 const rcon = require('../../rcon.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'chat',
-    aliases: [''],
+    aliases: [],
     usage: 'chat <message>',
     example: '^chat Hey, Minecraft! **//** ^chat §6Golden Message',
     description: 'Send chat messages to the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).',
+    data: new SlashCommandBuilder()
+            .setName('chat')
+            .setDescription('Send chat messages to the server.')
+            .addStringOption(option =>
+                option.setName('message')
+                .setDescription('Set the message you want to send.')
+                .setRequired(true)
+            ),
     async execute(message, args) {
         const chatMsg = args.join(' ').replaceAll(`"`, `'`);
         console.log(message.member.user.tag + ' executed ^chat ' + chatMsg + ' in ' + message.guild.name);
