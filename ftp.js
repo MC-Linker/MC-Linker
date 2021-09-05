@@ -32,6 +32,7 @@ module.exports = {
 							port: port,
 							user: user,
 							password: pass,
+							secure: true,
 						});
 					} catch (err) {
 						console.log('Could not connect to server. ', err);
@@ -89,6 +90,7 @@ module.exports = {
 							port: port,
 							user: user,
 							password: pass,
+							secure: true,
 						});
 					} catch (err) {
 						console.log('Could not connect to server. ', err);
@@ -129,6 +131,7 @@ module.exports = {
 					port: credentials.port,
 					user: credentials.user,
 					password: credentials.pass,
+					secure: true,
 				});
 				ftpClient.on('ready', function() {
 					ftpClient.end();
