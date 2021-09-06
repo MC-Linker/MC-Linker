@@ -163,7 +163,7 @@ client.on('interactionCreate', async interaction => {
                     const args = [];
                     if(interaction.options._group) args.push(interaction.options._group);
                     if(interaction.commandName === 'ftp' && interaction.options._subcommand === 'connect') {}
-                    else args.push(interaction.options._subcommand);
+                    else if(interaction.options._subcommand) args.push(interaction.options._subcommand);
                     interaction.options._hoistedOptions.forEach(option => {
                         if (option.value !== interaction.options.getUser('user')?.id) args.push(option.value);
                         else args.splice(0, 0, option.value);
