@@ -172,7 +172,7 @@ client.on('interactionCreate', async interaction => {
                     })
 
                     interaction.reply = function (content) { 
-                        interaction.editReply(content);
+                        return interaction.editReply(content);
                     }
 
                     await interaction.deferReply();
