@@ -14,8 +14,8 @@ module.exports = {
 
                     resolve(uuidv4.join(''));
                 } catch (err) {
-                    message.reply('<:Error:849215023264169985> Player [**' + taggedName + '**] does not seem to exist.')
-                    console.log('Error getting uuid of ' + taggedName, err);
+                    message.reply('<:Error:849215023264169985> Player [**' + user + '**] does not seem to exist.')
+                    console.log('Error getting uuid of ' + user, err);
                     resolve(undefined);
                 }
             } else {
