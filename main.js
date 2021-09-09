@@ -70,7 +70,7 @@ client.on('messageCreate', message => {
 
         } else {
             let commandName = (args[0]).toLowerCase();
-            if(commandName === 'mod' || commandName === 'Mod') commandName = 'Moderation'
+            if(commandName === 'mod') commandName = 'Moderation';
 
             let helpEmbed = new Discord.MessageEmbed()
                 .setTitle('Help Menu')
@@ -150,45 +150,124 @@ client.on('messageCreate', message => {
 
 client.on('interactionCreate', async interaction => {
     if(interaction.isCommand()) {
-        const command = client.commands.get(interaction.commandName);
-        if (!command) {console.log(interaction.member.user.tag + ' executed non-existent command ' + commandName + ' in ' + interaction.guild.name); return;}
-        fs.access('./disable/commands/' + interaction.guild.id + '_' + command.name, fs.constants.F_OK, async err => {
-            if (err) {
-                try {
-                    if(interaction.options.getUser('user')) {
-                        interaction.mentions = {
-                            users: new Discord.Collection().set(interaction.options.getUser('user').id, interaction.options.getUser('user'))
-                        }
-                    } else interaction.mentions = { users: [] }
-                    interaction.attachments = [];
-
-                    const args = [];
-                    if(interaction.options._group) args.push(interaction.options._group);
-                    if(interaction.commandName === 'ftp' && interaction.options._subcommand === 'connect') {}
-                    else if(interaction.options._subcommand) args.push(interaction.options._subcommand);
-                    interaction.options._hoistedOptions.forEach(option => {
-                        if (option.value !== interaction.options.getUser('user')?.id) args.push(option.value);
-                        else args.splice(0, 0, option.value);
-                    })
-
-                    interaction.reply = function (content) { 
-                        return interaction.editReply(content);
-                    }
-
-                    await interaction.deferReply();
-                    command.execute(interaction, args);
-                } catch (err) {
-                    console.log(interaction.member.user.tag + ' executed slashCommand ' + command.name + '. Couldnt execute that command!', err);
-                    interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
-                }
-            } else {
-                console.log(interaction.member.user.tag + ' executed disabled slashCommand [' + command.name + '] in ' + interaction.guild.name);
-                interaction.reply(':no_entry: Command [**' + command.name + '**] disabled!');
-                return;
+        if(interaction.options.getUser('user')) {
+            interaction.mentions = {
+                users: new Discord.Collection().set(interaction.options.getUser('user').id, interaction.options.getUser('user'))
             }
-        });
-    }
-    else if (interaction.isButton()) {
+        } else interaction.mentions = { users: [] }
+        interaction.attachments = [];
+
+        const args = [];
+        if(interaction.options._group) args.push(interaction.options._group);
+        if(interaction.commandName === 'ftp' && interaction.options._subcommand === 'connect') {}
+        else if(interaction.options._subcommand) args.push(interaction.options._subcommand);
+        interaction.options._hoistedOptions.forEach(option => {
+            if (option.value !== interaction.options.getUser('user')?.id) args.push(option.value);
+            else args.splice(0, 0, option.value);
+        })
+
+        interaction.reply = function (content) { 
+            return interaction.editReply(content);
+        }
+
+        //Help command
+        if (interaction.commandName === 'help') {
+            await interaction.deferReply();
+
+            if(!args[0]) {
+                console.log(interaction.user.tag + ' executed /help in ' + interaction.guild.name);
+
+                let helpEmbed = new Discord.MessageEmbed()
+                    .setTitle('Help Menu')
+                    .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                    .setColor('#000000')
+                    .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                    .addField(':label: Main :label:', 'Main commands such as `^stats`, or `^inventory`.')
+                    .addField(':shield: Moderation :shield:', 'Moderation commands such as `^ban` or `^unban`.')
+                    .addField(':point_right: Other :point_left:', 'Other commands such as `^txp` or `^text`.')
+                    .addField(':gear: Settings :gear:', 'Setup and settings such as `^disable` or `^ftp`')
+                    .addField('\u200B', '**All commands in a category** can be viewed with: **^help <category>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+
+                interaction.reply({ embeds: [helpEmbed], allowedMentions: { repliedUser: false } });
+            } else {
+                let commandName = (args[0]).toLowerCase();
+                if(commandName === 'mod') commandName = 'Moderation';
+
+                let helpEmbed = new Discord.MessageEmbed()
+                    .setTitle('Help Menu')
+                    .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
+                    .setColor('#000000')
+
+                let command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+                if (!command) {
+                    fs.readdir(`./commands/${commandName}`, (err, commands) => {
+                        if(err) {
+                            console.log(interaction.member.user.tag + ' executed non-existent help command/category ' + commandName + ' in ' + interaction.guild.id);
+                            interaction.reply(':warning: That command/category [**' + commandName + '**] doesnt exist.');
+                            return;
+                        }
+                        console.log(interaction.member.user.tag + ' executed ^help ' + commandName + ' in ' + interaction.guild.name);
+
+                        commands.forEach(commandFile => {
+                            commandFile = commandFile.split('.').shift();
+                            command = client.commands.get(commandFile) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandFile));
+                            helpEmbed.addField(command.name.toUpperCase(), command.description);
+                        });
+                        helpEmbed.addField('\u200B', '**More info to a command** can be viewed with: **^help <command>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+                        interaction.reply({ embeds: [helpEmbed] });
+                    })
+                } else {
+                    console.log(interaction.member.user.tag + ' executed ^help ' + commandName + ' in ' + interaction.guild.name);
+
+                    helpEmbed.addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}`);
+                    if(command.aliases[0]) helpEmbed.addField('\n**ALIASES**', command.aliases.join(', '));
+
+                    const disableRow = new Discord.MessageActionRow()
+                        .addComponents(
+                            new Discord.MessageButton()
+                                .setStyle('DANGER')
+                                .setCustomId('disable_' + command.name)
+                                .setLabel('Disable this command!')
+                                .setEmoji('<:Error:849215023264169985>'),
+                        );
+                    const enableRow = new Discord.MessageActionRow()
+                        .addComponents(
+                            new Discord.MessageButton()
+                                .setStyle('SUCCESS')
+                                .setCustomId('enable_' + command.name)
+                                .setLabel('Enable this command!')
+                                .setEmoji('<:Checkmark:849224496232660992>'),
+                        );
+
+                    const disabled = fs.existsSync('./disable/commands/' + interaction.guild.id + '_' + command.name);
+                    if (disabled === false) {
+                        interaction.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
+                    } else if (disabled === true) {
+                        helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
+                        interaction.reply({ embeds: [helpEmbed], components: [enableRow] });
+                    }
+                }
+            }
+        } else {
+            const command = client.commands.get(interaction.commandName);
+            if (!command) {console.log(interaction.member.user.tag + ' executed non-existent command ' + commandName + ' in ' + interaction.guild.name); return;}
+            fs.access('./disable/commands/' + interaction.guild.id + '_' + command.name, fs.constants.F_OK, async err => {
+                if (err) {
+                    try {
+                        await interaction.deferReply();
+                        command.execute(interaction, args);
+                    } catch (err) {
+                        console.log(interaction.member.user.tag + ' executed slashCommand ' + command.name + '. Couldnt execute that command!', err);
+                        interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
+                    }
+                } else {
+                    console.log(interaction.member.user.tag + ' executed disabled slashCommand [' + command.name + '] in ' + interaction.guild.name);
+                    interaction.reply(':no_entry: Command [**' + command.name + '**] disabled!');
+                    return;
+                }
+            });
+        }
+    } else if (interaction.isButton()) {
         if (interaction.customId.startsWith('disable')) {
             if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 const command = interaction.customId.split('_').pop();
