@@ -16,15 +16,15 @@ module.exports = {
                 } catch (err) {
                     message.reply('<:Error:849215023264169985> Player [**' + user + '**] does not seem to exist.')
                     console.log('Error getting uuid of ' + user, err);
-                    resolve(undefined);
+                    resolve();
                 }
             } else {
                 const taggedUser = message.mentions.users.first();
                 fs.readFile('./connections/' + taggedUser.id + '.json', 'utf8', (err, connectionJson) => {
                     if(err) {
                         message.reply(":warning: User never used `^connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
-                        console.log('Error reading connectionFile of pinged User from disk: ', err);
-                        resolve(undefined);
+                        console.log('Error reading connectionFile of pinged User from disk');
+                        resolve();
                     } else {
                         const connectionData = JSON.parse(connectionJson);
                         resolve(connectionData.id);
@@ -41,7 +41,7 @@ module.exports = {
                 if(err) {
                     console.log('Error trying to read ftpFile.');
                     message.reply('<:Error:849215023264169985> Could not read ftp Credentials.');
-                    resolve(undefined);
+                    resolve();
                 } else {
                     const ftpData = JSON.parse(ftpJson);
                     resolve(ftpData.path);
@@ -57,7 +57,7 @@ module.exports = {
                 if(err) {
                     message.reply(":warning: User never used `^connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
                     console.log('Error reading connectionFile of pinged User from disk: ', err);
-                    resolve(undefined);
+                    resolve();
                 } else {
                     const connectionData = JSON.parse(connectionJson);
                     resolve(connectionData.name);

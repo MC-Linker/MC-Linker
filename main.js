@@ -1,7 +1,7 @@
 // @ts-nocheck
 console.log('Loading...');
 
-const { prefix, token, topggToken } = require('../config.json');
+const { prefix, token, topggToken } = require('./config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS] });
 const fs = require('fs');
@@ -20,9 +20,16 @@ client.once('ready', () => {
     client.user.setActivity(prefix + 'help', {type: "LISTENING"});
 })
 
+/*async function editFile(path, valueToChange, expression) {
+    const content = JSON.parse(await fs.readFile(path));
+    content[valueToChange] = expression;
+    console.log(content)
+    await fs.writeFile(path, JSON.stringify(content, null, 2));
+}*/
+
 client.on("guildCreate", guild => {
     console.log("Joined a new guild: " + guild.name + ': ' + guild.memberCount + ' members.\nBot is now on ' + client.guilds.cache.size + ' server!');
-})
+});
 client.on("guildDelete", guild => {
     console.log("Left a guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' server!');
     fs.unlink(`./ftp/${guild.id}.json`, err => {
@@ -32,7 +39,14 @@ client.on("guildDelete", guild => {
             console.log('Successfully deleted ftpFile of guild: ' + guild.name);
         }
     })
-})
+    fs.unlink(`./rcon/${guild.id}.json`, err => {
+        if(err) {
+            console.log('No rconFile found for guild: ' + guild.name);
+        } else {
+            console.log('Successfully deleted rconFile of guild: ' + guild.name);
+        }
+    })
+});
 
 client.commands = new Discord.Collection();
 const commandFolders = fs.readdirSync('./commands/');

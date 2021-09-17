@@ -40,7 +40,10 @@ module.exports = {
 				)
 			).addSubcommand(subcommand =>
 				subcommand.setName('enable')
-				.setDescription(' Enable RCON in the `server.properties` file (Requires ftp).')
+				.setDescription('Enable RCON in the `server.properties` file (Requires ftp).')
+			).addSubcommand(subcommand =>
+				subcommand.setName('disconnect')
+				.setDescription('Disconnect rcon from the bot and delete all stored rcon data.')
 			),
     async execute(message, args) {
 		const mode = args[0];
@@ -115,7 +118,7 @@ module.exports = {
 			console.log(message.member.user.tag + ' executed ^rcon enable in ' + message.guild.name);
 
 			let worldPath = await utils.getWorldPath(message);
-			if(worldPath === undefined) return;
+			if(!worldPath) return;
 			worldPath = worldPath.split('/');
 			let path = worldPath[0];
 			if(path === '') path = worldPath[1];
@@ -153,6 +156,22 @@ module.exports = {
 				}
 			})
 
+		} else if(mode === 'disconnect') {
+			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+				message.reply(':no_entry: This command can only be used by admins!');
+				console.log(message.member.user.tag + ' executed ^rcon disconnect without admin in ' + message.guild.name);
+				return;
+			}
+			console.log(message.member.user.tag + ' executed ^rcon disconnect in ' + message.guild.name);
+			fs.unlink(`./rcon/${message.guild.id}.json`, err => {
+				if(err) {
+					console.log('No rconFile found for guild: ' + message.guild.name);
+					message.reply(':warning: Your guild is not connected with rcon.');
+				} else {
+					console.log('Successfully deleted rconFile of guild: ' + message.guild.name);
+					message.reply('<:Checkmark:849224496232660992> Successfully disconnected this guild from rcon.')
+				}
+			})
 		} else {
 			console.log(message.member.user.tag + ' executed ^rcon with incorrect arg: ' + mode + ' in ' + message.guild.name);
 			message.reply(':warning: This argument [**' + mode + '**] does not exist.');
