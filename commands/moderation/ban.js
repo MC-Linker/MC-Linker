@@ -44,7 +44,7 @@ module.exports = {
             taggedName = taggedUser;
         } else {
 			userName = await utils.getUserName(message.mentions.users.first().id, message);
-			if(userName === undefined) return;
+			if(!userName) return;
             taggedName = message.mentions.users.first().tag;
         }
 
@@ -60,10 +60,10 @@ module.exports = {
 				message.reply(':warning: Could not read rcon credentials, attempting to create some. (If this errors, do `^rcon connect` or `^ftp connect`)');
 
 				const uuidv4 = await utils.getUUIDv4(userName, message);
-				if(uuidv4 === undefined) return;
+				if(!uuidv4) return;
 
 				const worldPath = await utils.getWorldPath(message);
-				if(worldPath === undefined) return;
+				if(!worldPath) return;
 				const path = worldPath.split('/').slice(0, -1).join('/');
 
 				const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
@@ -215,10 +215,10 @@ module.exports = {
 					message.reply({ embeds: [respEmbed] });
 				} else {
 					const uuidv4 = await utils.getUUIDv4(userName, message);
-					if(uuidv4 === undefined) return;
+					if(!uuidv4) return;
 
 					const worldPath = await utils.getWorldPath(message);
-					if(worldPath === undefined) return;
+					if(!worldPath) return;
 					const path = worldPath.split('/').slice(0, -1).join('/');
 
 					const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);

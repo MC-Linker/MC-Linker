@@ -185,9 +185,7 @@ module.exports = {
         console.log(message.member.user.tag + ' executed ^advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
 
         const uuidv4 = await utils.getUUIDv4(args[0], message);
-        if(uuidv4 === undefined) {
-            return;
-        }
+        if(!uuidv4) return;
 
         let categoryDisabled = fs.existsSync('./disable/advancements/' + message.guild.id + "_" + mode);
         if(categoryDisabled === true) {
@@ -203,9 +201,8 @@ module.exports = {
         }
 
         const worldPath = await utils.getWorldPath(message);
-        if(worldPath === undefined) {
-            return;
-        }
+        if(!worldPath) return;
+
         const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
         if(amFile === false) return;
 

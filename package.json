@@ -30,6 +30,7 @@
     "rcon": "^1.0.3",
     "request": "^2.88.2",
     "ssh2-sftp-client": "^7.0.1",
+    "three": "^0.132.2",
     "topgg-autoposter": "^2.0.0"
   }
 }

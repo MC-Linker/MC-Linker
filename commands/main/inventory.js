@@ -5,6 +5,7 @@ const ftp = require('../../ftp');
 const Canvas = require('canvas');
 const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const fetch = require('node-fetch');
 
 module.exports = {
     name: 'inventory',
@@ -36,18 +37,13 @@ module.exports = {
         console.log(message.member.user.tag + ' executed ^inventories with user: ' + taggedName + ' in ' + message.guild.name);
 
 		const uuidv4 = await utils.getUUIDv4(args[0], message);
-        if(uuidv4 === undefined) {
-            return;
-        }
+        if(!uuidv4) return;
 
         const worldPath = await utils.getWorldPath(message);
-        if(worldPath === undefined) {
-            return;
-        }
+        if(!worldPath) return;
+
         const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuidv4}.dat`, `./playernbt/${uuidv4}.dat`, message);
-        if(nbtFile === false) {
-            return;
-        }
+        if(!nbtFile) return;
 
 		fs.readFile(`./playernbt/${uuidv4}.dat`, (err, playerNBT) => {
             if(err) {
@@ -56,6 +52,7 @@ module.exports = {
 				return;
             }
 
+            // @ts-ignore
             nbt.parse(playerNBT, async function(err, playerData) {
                 if (err) {
                     console.log('Error trying to parse player NBT', err);
@@ -63,11 +60,12 @@ module.exports = {
                     return;
                 }
 
-                const inventory = playerData.value['Inventory'].value['value']
+                const inventory = playerData.value['Inventory'].value['value'];
 
                 const invCanvas = Canvas.createCanvas(352, 332);
                 const ctx = invCanvas.getContext('2d');
                 const background = await Canvas.loadImage('./images/_other/inventoryBlank.png');
+                const durabilityImg = await Canvas.loadImage('./images/_other/durability.png');
                 ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
                 Canvas.registerFont('./fonts/Minecraft.ttf', { family: 'Minecraft' });
@@ -77,26 +75,27 @@ module.exports = {
                     .setColor('ORANGE');
 
                 let slotDim = [16, 284];
+
                 for(let i = 0; i < inventory.length; i++) {
                     const slot = inventory[i]['Slot'].value;
                     const id = inventory[i]['id'].value;
-                    const count = inventory[i]['Count'].value;
-                    if(inventory[i]['tag'] !== undefined) {
-                        let invField = '';
-                        if(inventory[i]['tag'].value['Enchantments'] !== undefined) {
-                            invField += `\n**Slot ${slot}: ${id.split('minecraft:').pop()}:**`;
-                            const enchantments = inventory[i]['tag'].value['Enchantments'].value['value'];
-                            for(let b = 0; b < enchantments.length; b++) {
-                                if(enchantments[b]['lvl'].value === 1){
-                                    invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()}`;
-                                } else {
-                                    invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()} ${enchantments[b]['lvl'].value}`;
-                                }
-                            }
-                            invEmbed.addField('\u200B', invField, true);
-                        }
-                    }
                     const itemImgName = id.split('minecraft:').pop();
+                    const count = inventory[i]['Count'].value;
+                    const damage = inventory[i]['tag']?.value['Damage']?.value;
+                    const enchantments = inventory[i]['tag']?.value['Enchantments']?.value['value'];
+
+                    if(enchantments) {
+                        let invField = `\n**Slot ${slot}: ${id.split('minecraft:').pop()}:**`;
+                        for(let b = 0; b < enchantments.length; b++) {
+                            if(enchantments[b]['lvl'].value === 1){
+                                invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()}`;
+                            } else {
+                                invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()} ${enchantments[b]['lvl'].value}`;
+                            }
+                        }
+                        invEmbed.addField('\u200B', invField, true);
+                    }
+
 
                     if(slot <= 8 && slot >= 1) {slotDim[0] += 36}
 
@@ -118,26 +117,44 @@ module.exports = {
                     try {
                         const itemImg = await Canvas.loadImage(`./images/${itemImgName}.png`);
                         ctx.drawImage(itemImg, 0, 0, 80, 80, slotDim[0], slotDim[1], 32, 32);
+
                         if(count > 1) {ctx.font = '14px Minecraft'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
                     } catch (err) {
                         console.log('Error trying to apply img: ' + id + ' Applying text...');
-                        ctx.font = '6px Minecraft';
-                        ctx.fillStyle = '#000000';
+                        ctx.font = '6px Minecraft'; ctx.fillStyle = '#000000';
                         ctx.fillText(itemImgName, slotDim[0], slotDim[1] + 16);
                         if(count > 1) {ctx.font = '14px Minecraft'; ctx.fillStyle = '#ffffff'; ctx.fillText(count, slotDim[0], slotDim[1] + 32, 15)}
                     }
                     //invMsg = invMsg += 'Slot: ' + inventory[i]['Slot'].value + ': ' + inventory[i]['id'].value + ', ' + inventory[i]['Count'].value + '\n'
-                }
-                const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), 'inventoryImage.png');
 
+                    if(damage) {
+                        const durabilityJson = await fs.promises.readFile('./durability.json');
+
+                        // @ts-ignore
+                        const durabilityData = JSON.parse(durabilityJson);
+                        const maxDurability = durabilityData[itemImgName];
+
+                        if(maxDurability) { 
+                            const durabilityPx = (damage / maxDurability) * 100;
+                            ctx.drawImage(durabilityImg, 100-durabilityPx, 5, 100, 15, slotDim[0], slotDim[1] + 28, 33, 5);
+                        }
+                    }
+                }
+
+                // @ts-ignore
+                const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuidv4}/body/10.5/10/json`);
+                const { skin: skinBase64 } = await skinJson.json();
+                const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+                //ctx.drawImage(skinImg, 0, 0, 65, 131, 70, 20, 65, 131);
+                ctx.drawImage(skinImg, 70, 20, 65, 131);
+
+                const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), 'inventoryImage.png');
                 if(invEmbed.fields.length >= 1) {
                     message.reply({ content: "<:Checkmark:849224496232660992> Here's the inventory of **" + taggedName + '**:\n', files: [invImg], embeds: [invEmbed] });
                 } else {
-                    message.reply({ content: "<:Checkmark:849224496232660992> Here's the inventory of **" + taggedName + '**:\n', files: [invImg] }) 
+                    message.reply({ content: "<:Checkmark:849224496232660992> Here's the inventory of **" + taggedName + '**:\n', files: [invImg] });
                 }
             });
         });
-
-
 	}
 }

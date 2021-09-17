@@ -141,9 +141,7 @@ module.exports = {
         console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
 
         const uuidv4 = await utils.getUUIDv4(args[0], message);
-        if(uuidv4 === undefined) {
-            return;
-        }
+        if(!uuidv4) return;
 
 
         let categoryDisabled = fs.existsSync('./disable/stats/' + message.guild.id + "_" + statType);
@@ -160,9 +158,8 @@ module.exports = {
         }
 
         const worldPath = await utils.getWorldPath(message);
-        if(worldPath === undefined) {
-            return;
-        }
+        if(!worldPath) return;
+        
         const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
         if(statFile === false) return;
 
