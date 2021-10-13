@@ -4,20 +4,7 @@ const { token, clientId } = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('fs');
 
-const commands = [];
-
 const guildId = '844156404477853716';
-
-const commandFolders = fs.readdirSync('./commands/');
-for (const folder of commandFolders) {
-	const commandFiles = fs.readdirSync(`./commands/${folder}`);
-	for (const file of commandFiles) {
-		const command = require(`./commands/${folder}/${file}`);
-        if(command.data) {
-            commands.push(command.data.toJSON());
-        }
-	}
-}
 
 const helpData = new SlashCommandBuilder()
 	.setName('help')
@@ -27,19 +14,26 @@ const helpData = new SlashCommandBuilder()
 		.setDescription('Set the command of which you want to get information.')
 		.setRequired(false)
 	);
-
-//Still Help SlashCommandBuilder
+// @ts-ignore
 helpData.options[0].choices = [];
+
+const commands = [];
+
+const commandFolders = fs.readdirSync('./commands/');
 for (const folder of commandFolders) {
-	helpData.options[0].choices.push({ name: folder, value: folder });
 	const commandFiles = fs.readdirSync(`./commands/${folder}`);
+	// @ts-ignore
+	helpData.options[0].choices.push({ name: folder, value: folder });
 	for (const file of commandFiles) {
 		const command = require(`./commands/${folder}/${file}`);
         if(command.data) {
-        	helpData.options[0].choices.push({ name: command.name, value: command.name });
+            commands.push(command.data.toJSON());
+			// @ts-ignore
+			helpData.options[0].choices.push({ name: command.name, value: command.name });
         }
 	}
 }
+
 commands.push(helpData.toJSON());
 
 const rest = new REST({ version: '9' }).setToken(token);
@@ -54,7 +48,7 @@ const rest = new REST({ version: '9' }).setToken(token);
 		);*/
 
 		await rest.put(
-			Routes.applicationGuildCommands(clientId, guildId),
+			Routes.applicationCommands(clientId),
 			{ body: commands },
 		);
 

@@ -6,6 +6,7 @@ module.exports = {
 
             if(!message.mentions.users.size) {
                 try {
+                    // @ts-ignore
                     const minecraftId = await fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`)
                         .then(data => data.json())
                         .then(player => player.id);

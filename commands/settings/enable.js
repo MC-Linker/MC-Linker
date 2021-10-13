@@ -61,12 +61,12 @@ module.exports = {
         try {
             if(enableMode === 'commands') enObject = message.client.commands.find(cmd => cmd.name && cmd.name === object) || message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(object));
             if(typeof enObject === 'object') enObject = enObject.name;
-            else if(enObject === undefined) {
-                console.log(enableMode + " [" + object + "] doesn't exist.", err);
+            else if(!enObject) {
+                console.log(enableMode + " [" + object + "] doesn't exist.");
                 message.reply(":warning: " + enableMode + " [**" + object + "**] doesn't exist.");
                 return;
             }
-            fs.unlink(`./disable/${enableMode}/${message.guild.id}_${enObject}`, err => {
+            fs.rm(`./disable/${enableMode}/${message.guild.id}_${enObject}`, err => {
                 if (err) {
                     console.log(`Error trying to delete ${enableMode} EnableFile of ` + enObject, err);
                     message.reply(`<:Error:849215023264169985> Could not enable ${enableMode} [**${enObject}**]. Is it already enabled?`);

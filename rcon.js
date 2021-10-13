@@ -37,6 +37,7 @@ module.exports = {
 					message.reply('<:Error:849215023264169985> Could not find rcon credentials. Please use `^rcon connect`.');
 					resolve();
 				} else {
+					// @ts-ignore
 					const rconData = JSON.parse(rconJson);
 					const ip = rconData.ip;
 					const port = rconData.port;
@@ -62,9 +63,7 @@ module.exports = {
 						resolve();
 					});
 				}
-				
 			})
-			
 		})
 	}
 }

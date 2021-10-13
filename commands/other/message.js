@@ -35,7 +35,7 @@ module.exports = {
             userName = taggedUser;
             taggedName = taggedUser;
         } else {
-            userName = await utils.getUserName(message.mentions.users.first().id, message);
+            userName = await utils.getUsername(message.mentions.users.first().id, message);
             if(!userName) return;
             taggedName = message.mentions.users.first().tag;
         }

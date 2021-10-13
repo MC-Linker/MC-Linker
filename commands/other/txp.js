@@ -43,7 +43,7 @@ module.exports = {
 					return;
 				}
 			} else if (message.mentions.users.size) {
-				URL = message.mentions.users.first().displayAvatarURL({dynamic: false, format: 'png'});
+				URL = message.mentions.users.first().displayAvatarURL({ dynamic: false, format: 'png' });
 			} else if (args[1]) {
 				URL = (args[1]);
 			} else {
@@ -57,7 +57,7 @@ module.exports = {
 			//get imageSize
 			let imgSize;
 			try {
-				imgSize = await probe(URL, { rejectUnauthorized: false });
+				imgSize = await probe(URL);
 			} catch (err) {
 				console.log('Error while trying to get imagesize. ', err);
 				message.reply('<:Error:849215023264169985> Cannot get size of image. `^help txp` for correct usage.');
@@ -81,10 +81,10 @@ module.exports = {
 				return;
 			}
 
-			//position half of image top right
+			//draw half of image top right
 			context.drawImage(img, 0, 0, imgSize.width / 2, imgSize.height, loadCanvas.width - (imgSize.width / 2), 0, imgSize.width / 2, imgSize.height);
 
-			//position 2nd half bottom left
+			//draw 2nd half bottom left
 			context.drawImage(img, imgSize.width / 2, 0, imgSize.width / 2, imgSize.height, 0, imgSize.height, imgSize.width / 2, imgSize.height);
 
 			const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojangstudios.png');

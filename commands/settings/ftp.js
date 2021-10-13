@@ -78,7 +78,7 @@ module.exports = {
 
             console.log(message.member.user.tag + ' executed ^ftp disconnect in ' + message.guild.name);
 
-            fs.unlink(`./ftp/${message.guild.id}.json`, err => {
+            fs.rm(`./ftp/${message.guild.id}.json`, err => {
                 if(err) {
                     console.log('Error trying to delete connection-file.', err);
                     message.reply(':warning: Couldnt disconnect the server. The server is most likely **not connected**.');
@@ -120,7 +120,7 @@ module.exports = {
 
         if (connectSftp === false) {
             message.channel.sendTyping();
-            
+
             const connectFtp = await ftp.connect({
                 host: host,
                 pass: password,
@@ -136,11 +136,11 @@ module.exports = {
 
             if(!path) {
                 async function findFile(file, path, depth) {
-                    if (path.split('/').length >= depth + 1) return undefined;
-    
+                    if (path.split('/').length >= depth + 1) return;
+
                     const list = await util.promisify(c.list).call(c, path);
                     console.log('List of [' + path + '] successful.');
-    
+
                     for (const item of list) {
                         if (item.type === '-' && item.name === file) return path;
                         else if (typeof item === 'string' && item.startsWith('-') && item.split(' ').pop() === file) return path;
@@ -148,7 +148,7 @@ module.exports = {
                             let res = await findFile(file, `${path}/${item.split(' ').pop()}`, depth);
                             if (res === undefined) continue;
                             else return res;
-                            
+
                         } else if (item.type === 'd') {
                             let res = await findFile(file, `${path}/${item.name}`, depth);
                             if (res === undefined) continue;
@@ -233,10 +233,10 @@ module.exports = {
             if(!path) {
                 async function findFile(file, path, depth) {
                     if (path.split('/').length >= depth + 1) return undefined;
-    
+
                     const list = await c.list(path);
                     console.log('List of [' + path + '] successful.');
-    
+
                     for (const item of list) {
                         if (item.type === '-' && item.name === file) return path;
                         else if (item.type === 'd') {

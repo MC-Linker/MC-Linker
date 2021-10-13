@@ -13,7 +13,7 @@ module.exports = {
     execute(message, args) {
         console.log(message.member.user.tag + ' executed ^disconnect in ' + message.guild.name);
 
-        fs.unlink(`./connections/${message.member.user.id}.json`, err => {
+        fs.rm(`./connections/${message.member.user.id}.json`, err => {
             if(err) {
                 console.log('Error trying to delete connection-file.', err);
                 message.reply(':warning: Couldnt disconnect you. You are most likely **not connected**.');

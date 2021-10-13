@@ -128,8 +128,8 @@ module.exports = {
             try {
                 if(disableMode === 'commands') disObject = message.client.commands.find(cmd => cmd.name && cmd.name === object) || message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(object));
                 if(typeof disObject === 'object') disObject = disObject.name;
-                else if(disObject === undefined) {
-                    console.log(disableMode + " [" + object + "] doesn't exist.", err);
+                else if(!disObject) {
+                    console.log(disableMode + " [" + object + "] doesn't exist.");
                     message.reply(":warning: " + disableMode + " [**" + object + "**] doesn't exist.");
                     return;
                 }

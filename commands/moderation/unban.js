@@ -7,7 +7,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'unban',
-    aliases: ['deban', 'pardon'],
+    aliases: ['pardon'],
     usage: 'unban <mention/username>',
     example: 'unban @Lianecx **//** unban MrNotCheating',
     description: 'Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.',
@@ -39,14 +39,14 @@ module.exports = {
 			userName = taggedUser;
             taggedName = taggedUser;
         } else {
-			userName = await utils.getUserName(message.mentions.users.first().id, message);
+			userName = await utils.getUsername(message.mentions.users.first().id, message);
 			if(!userName) return;
             taggedName = message.mentions.users.first().tag;
         }
 
 		console.log(message.member.user.tag + ' executed ^unban with taggedUser: ' + taggedName + ' in ' + message.guild.name);
 
-		fs.readFile(`./rcon/${message.guild.id}.json`, 'utf8', async (err, rconData) => {
+		fs.readFile(`./rcon/${message.guild.id}.json`, 'utf8', async (err, rconJson) => {
 			if (err) {
 				console.log('Could not find rconFile on Disk, creating one...');
 				message.reply(':warning: Could not read rcon credentials, attempting to create some. (If this errors, do `^rcon connect` or `^ftp connect`)');
@@ -59,7 +59,7 @@ module.exports = {
 				const path = worldPath.split('/').slice(0, -1).join('/');
 
 				const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
-				if(propFile === false) return;
+				if(!propFile) return;
 
 				fs.readFile(`./properties/${message.guild.id}.properties`, 'utf8', async (err, propString) => {
 					if(err) {
@@ -72,79 +72,69 @@ module.exports = {
 					const rconEnabled = propArr.find(key => key.startsWith('enable-rcon')).split('=').pop();
 
 					if(rconEnabled === 'false') {
+						const confirmRow = new Discord.MessageActionRow()
+							.addComponents([
+								new Discord.MessageButton()
+									.setCustomId('rcon_disable')
+									.setStyle('PRIMARY')
+									.setLabel('Keep RCon disabled.')
+									.setEmoji('<:Error:849215023264169985>'),
+								new Discord.MessageButton()
+									.setCustomId('rcon_enable')
+									.setStyle('SUCCESS')
+									.setLabel('Enable Rcon.')
+									.setEmoji('<:Checkmark:849224496232660992>')
+							]);
+						const disabledRow = new Discord.MessageActionRow()
+							.addComponents([
+								new Discord.MessageButton()
+									.setCustomId('rcon_disable')
+									.setStyle('PRIMARY')
+									.setLabel('Keep RCon disabled.')
+									.setEmoji('<:Error:849215023264169985>')
+									.setDisabled(true),
+								new Discord.MessageButton()
+									.setCustomId('rcon_enable')
+									.setStyle('SUCCESS')
+									.setLabel('Enable RCon.')
+									.setEmoji('<:Checkmark:849224496232660992>')
+									.setDisabled(true)
+							]);
+
 						console.log('RCON disabled, asking user for enabling...');
-						message.reply('RCON is disabled, do you want the bot to enable it (or use ftp)?')
-							.then((msg) => {
-								msg.react('👍');
-								msg.react('👎');
-								const filter = (reaction, user) => {
-									return ['👍', '👎'].includes(reaction.emoji.name) && user.id === message.author.id;
-								};
+						const confirmMsg = await message.reply({ content: 'RCON is disabled, do you want the bot to enable it? (You have 20 seconds to react)', components: [confirmRow] });
+						const collector = confirmMsg.createMessageComponentCollector({ componentType: 'BUTTON', time: 20000 });
 
-								msg.awaitReactions({ filter, max: 1, time: 60000, errors: ['time'] })
-									.then(async collected => {
-										const reaction = collected.first();
-										if (reaction.emoji.name === '👍') {
-											console.log('Answer: enable RCOn');
+						collector.on('collect', async button => {
+							if(button.customId === 'rcon_enable' && button.member.user.id === message.member.user.id) {
+								button.deferUpdate();
+								console.log('Answer: enable RCon');
 
-											propString = propString.replace('enable-rcon=false', 'enable-rcon=true');
+								// @ts-ignore
+								propString = propString.replace('enable-rcon=false', 'enable-rcon=true');
 
-											fs.writeFile(`./properties/${message.guild.id}.properties`, propString, 'utf8', async (err) => {
-												if(err) {
-													console.log('Error writing properties file.', err);
-													message.reply('<:Error:849215023264169985> Error trying to enable RCON.');
-													return;
-												}
-												console.log('Successfully wrote properties file.');
+								// @ts-ignore
+								fs.writeFile(`./properties/${message.guild.id}.properties`, propString, 'utf-8', err => {
+									console.log('Error writing properties file.', err);
+									message.reply('<:Error:849215023264169985> Error trying to enable RCON.');
+									return;
+								});
 
-												const propFile = await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
-												if(propFile === false) return;
+								console.log('Successfully wrote properties file.');
 
-												message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try this command again.');
-												return;
-											});
-										} else if (reaction.emoji.name === '👎') {
-											console.log('Answer: keep disabled');
+								const propFile = await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
+								if(!propFile) return;
 
-											const banFile = await ftp.get(`${path}/banned-players.json`, `./bans/${message.guild.id}.json`, message);
-											if(banFile === false) return;
+								message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try this command again.');
+							} else if (button.customId === 'rcon_disable' && button.member.user.id === message.member.user.id) {
+								button.deferUpdate();
+								console.log('Answer: keep RCon disabled');
+								message.reply('We deleted the possibilty to unban and ban someone with ftp since it required a restart of the minecraft-server. You will have to enable RCon (`/rcon enable`).');
+							}
+						});
 
-											fs.readFile(`./bans/${message.guild.id}.json`, 'utf8', (err, banJson) => {
-												if (err) {
-													console.log('Error reading ban file from disk ', err);
-													message.reply('<:Error:849215023264169985> ' + 'Could not read ban file.');
-													return;
-												}
-												const banData = JSON.parse(banJson);
-												for(let i = 0; i<banData.length; i++) {
-													if(banData[i].uuid === uuidv4) {
-														banData.splice(i, 1);
-													} else {
-														console.log('Player [' + userName + '] is not banned.');
-														message.reply(':warning: Player [**' + userName + '**] isnt banned.');
-														return;
-													}
-												}
-
-												const banString = JSON.stringify(banData, null, 2);
-												fs.writeFile(`./bans/${message.guild.id}.json`, banString, async (err) => {
-													if(err) {
-														console.log('Error writing banFile', err);
-														message.reply('<:Error:849215023264169985> Error trying to ban player.');
-														return;
-													}
-													const banFile = await ftp.put(`./bans/${message.guild.id}.json`, `${path}/banned-players.json`, message);
-													if(banFile === false) return;
-
-													console.log('Succesfully wrote and put banFile on server.');
-													message.reply(':warning: Restart the minecraft server to unban the player [**' + taggedName + '**]. **OR do **`^rcon enable`** to instantly unban the player!**');	
-												})
-											})
-										}
-									}).catch(collected => {
-										console.log('User didnt answer in time.')
-										message.reply(':warning: You didnt react in time!');
-									});
+						collector.on('end', collected => {
+							if(!collected.size) message.editReply({ content: 'RCON is disabled, do you want the bot to enable it? (Time ran out.)', components: [disabledRow] });
 						});
 					} else if (rconEnabled === 'true') {
 						const password = propArr.find(key => key.startsWith('rcon.password')).split('=').pop();
@@ -184,126 +174,16 @@ module.exports = {
 				return;
 			}
 
-			const rconJson = JSON.parse(rconData);
-			const password = rconJson.password;
-			const port = rconJson.port;
-			const ip = rconJson.ip;
+			const rconData = JSON.parse(rconJson);
+			const password = rconData.password;
+			const port = rconData.port;
+			const ip = rconData.ip;
 
-			fs.access('./ftp/' + message.guild.id + '.json', fs.constants.F_OK, async (err) => {
-				if (err) {
-					const response = await rcon.execute(ip, port, password, `pardon ${userName}`, message);
-					if(!response) return;
+			const response = await rcon.execute(ip, port, password, `pardon ${userName}`, message);
+			if(!response) return;
 
-					const respEmbed = new Discord.MessageEmbed().setTitle('Unban player').setColor('BLUE').setDescription(response);
-					message.reply({ embeds: [respEmbed] });
-				} else {
-					const uuidv4 = await utils.getUUIDv4(userName, message);
-					if(!uuidv4) return;
-
-					const worldPath = await utils.getWorldPath(message);
-					if(!worldPath) return;
-					const path = worldPath.split('/').slice(0, -1).join('/');
-
-					const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
-					if(propFile === false) return;
-
-					fs.readFile(`./properties/${message.guild.id}.properties`, 'utf8', async (err, propString) => {
-						if(err) {
-							console.log('Error reading properties file from disk ', err);
-							message.reply('<:Error:849215023264169985> Could not read properties file.');
-							return;
-						}
-
-						const propArr = propString.split('\n');
-						const rconEnabled = propArr.find(key => key.startsWith('enable-rcon')).split('=').pop();
-
-						if(rconEnabled === 'false') {
-							console.log('RCON disabled, asking user for enabling...');
-							message.reply('RCON is disabled, do you want the bot to enable it (or use ftp)?')
-								.then((msg) => {
-									msg.react('👍');
-									msg.react('👎');
-									const filter = (reaction, user) => {
-										return ['👍', '👎'].includes(reaction.emoji.name) && user.id === message.author.id;
-									};
-
-									msg.awaitReactions({ filter, max: 1, time: 60000, errors: ['time'] })
-										.then(async collected => {
-											const reaction = collected.first();
-											if (reaction.emoji.name === '👍') {
-												console.log('Answer: enable RCON');
-
-												propString = propString.replace('enable-rcon=false', 'enable-rcon=true');
-
-												fs.writeFile(`./properties/${message.guild.id}.properties`, propString, 'utf8', async (err) => {
-													if(err) {
-														console.log('Error writing properties file.', err);
-														message.reply('<:Error:849215023264169985> Error trying to enable RCON.');
-														return;
-													}
-													console.log('Successfully wrote properties file.');
-
-													const propFile = await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message);
-													if(propFile === false) return;
-
-													message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** and try this command again.');
-													return;
-												});
-											} else if (reaction.emoji.name === '👎') {
-												console.log('Answer: keep disabled');
-
-												const banFile = await ftp.get(`${path}/banned-players.json`, `./bans/${message.guild.id}.json`, message);
-												if(banFile === false) return;
-
-												fs.readFile(`./bans/${message.guild.id}.json`, 'utf8', (err, banJson) => {
-													if (err) {
-														console.log('Error reading ban file from disk ', err);
-														message.reply('<:Error:849215023264169985> ' + 'Could not read ban file.');
-														return;
-													}
-													const banData = JSON.parse(banJson);
-
-													for(let i = 0; i<banData.length; i++) {
-														if(banData[i].uuid === uuidv4) {
-															banData.splice(i, 1);
-														} else {
-															console.log('Player [' + userName + '] is not banned.');
-															message.reply(':warning: Player [**' + userName + '**] isnt banned.');
-															return;
-														}
-													}
-
-													const banString = JSON.stringify(banData, null, 2);
-													fs.writeFile(`./bans/${message.guild.id}.json`, banString, async (err) => {
-														if(err) {
-															console.log('Error writing banFile', err);
-															message.reply('<:Error:849215023264169985> Error trying to unban player.');
-															return;
-														}
-
-														const banFile = await ftp.put(`./bans/${message.guild.id}.json`, `${path}/banned-players.json`, message);
-														if(banFile === false) return;
-
-														console.log('Succesfully wrote and put banFile on server.');
-														message.reply(':warning: Restart the minecraft server to unban the player [**' + taggedName + '**]. **OR do **`^rcon enable`** to instantly unban the player!**');	
-													})
-												})
-											}
-										}).catch(collected => {
-											console.log('User didnt answer in time.')
-											message.reply('You didnt react in time!');
-										});
-								})
-						} else if (rconEnabled === 'true') {
-							const response = await rcon.execute(ip, port, password, `pardon ${userName}`, message);
-							if(!response) return;
-
-							const respEmbed = new Discord.MessageEmbed().setTitle('Unban player').setColor('BLUE').setDescription(response);
-							message.reply({ embeds: [respEmbed] });
-						}
-					})
-				}
-			});
+			const respEmbed = new Discord.MessageEmbed().setTitle('Unban player').setColor('BLUE').setDescription(response);
+			message.reply({ embeds: [respEmbed] });
 		})
 	}
 }

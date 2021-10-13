@@ -68,7 +68,7 @@ module.exports = {
 				message.reply(':warning: Please specify ALL RCON credentials. `^help rcon` for more help.');
 				return;
 			}
-			
+
 			const rconString = {
 				"password": password,
 				"port": port,
@@ -119,12 +119,10 @@ module.exports = {
 
 			let worldPath = await utils.getWorldPath(message);
 			if(!worldPath) return;
-			worldPath = worldPath.split('/');
-			let path = worldPath[0];
-			if(path === '') path = worldPath[1];
+			let serverPath = worldPath.split('/').slice(0, -1).join('/');
 
-			const propFile = await ftp.get(`${path}/server.properties`, `./properties/${message.guild.id}.properties`, message);
-			if(propFile === false) return;
+			const propFile = await ftp.get(`${serverPath}/server.properties`, `./properties/${message.guild.id}.properties`, message);
+			if(!propFile) return;
 
 			fs.readFile(`./properties/${message.guild.id}.properties`, 'utf8', async (err, propString) => {
 				if(err) {
@@ -146,7 +144,7 @@ module.exports = {
 								return;
 							}
 							console.log('Successfully wrote properties file.');
-							await ftp.put(`./properties/${message.guild.id}.properties`, `${path}/server.properties`, message)
+							await ftp.put(`./properties/${message.guild.id}.properties`, `${serverPath}/server.properties`, message);
 
 							message.reply('<:Checkmark:849224496232660992> Enabled RCON. Please **restart the server** to complete the activation.');
 						});
@@ -163,7 +161,7 @@ module.exports = {
 				return;
 			}
 			console.log(message.member.user.tag + ' executed ^rcon disconnect in ' + message.guild.name);
-			fs.unlink(`./rcon/${message.guild.id}.json`, err => {
+			fs.rm(`./rcon/${message.guild.id}.json`, err => {
 				if(err) {
 					console.log('No rconFile found for guild: ' + message.guild.name);
 					message.reply(':warning: Your guild is not connected with rcon.');
