@@ -8,8 +8,9 @@ module.exports = {
 				if(err) {
 					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `^ftp`.');
 					console.log('Error reading ftp file from disk: ', err);
-					resolve(false);
+					resolve();
 				} else {
+					// @ts-ignore
 					const ftpData = JSON.parse(ftpJson);
 					const host = ftpData.host;
 					const user = ftpData.user;
@@ -17,13 +18,13 @@ module.exports = {
 					const port = ftpData.port;
 					const protocol = ftpData.protocol;
 
-					if(protocol === 'sftp') { const sftpGet = await sftp.get(getPath, putPath, message); resolve(sftpGet); }
+					if(protocol === 'sftp') { const sftpGet = await sftp.get(getPath, putPath, message); resolve(sftpGet); return; }
 
 					const ftpClient = new ftp();
 					ftpClient.on('error', function(err) {
 						console.log('ftpError! ', err);
 						message.reply('<:Error:849215023264169985> Could not connect to server.');
-						resolve(false);
+						resolve();
 					});
 
 					try {
@@ -32,12 +33,11 @@ module.exports = {
 							port: port,
 							user: user,
 							password: pass,
-							secure: true,
 						});
 					} catch (err) {
 						console.log('Could not connect to server. ', err);
 						message.reply('<:Error:849215023264169985> Could not connect to server.');
-						resolve(false);
+						resolve();
 					}
 
 					ftpClient.on('ready', function() {
@@ -45,7 +45,7 @@ module.exports = {
 							if(err) {
 								console.log('Could not download files. Path: ' + getPath, err);
 								message.reply('<:Error:849215023264169985> ' + 'Could not download files. The User never joined the server or the worldpath is incorrect.');
-								resolve(false);
+								resolve();
 							} else {
 								stream.pipe(fs.createWriteStream(putPath));
 								stream.once('close', function() {
@@ -67,8 +67,9 @@ module.exports = {
 				if(err) {
 					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `^ftp`.');
 					console.log('Error reading ftp file from disk: ', err);
-					resolve(false);
+					resolve();
 				} else {
+					// @ts-ignore
 					const ftpData = JSON.parse(ftpJson);
 					const host = ftpData.host;
 					const user = ftpData.user;
@@ -76,12 +77,12 @@ module.exports = {
 					const port = ftpData.port;
 					const protocol = ftpData.protocol;
 	
-					if(protocol === 'sftp') { const sftpPut = await sftp.put(getPath, putPath, message); resolve(sftpPut); }
+					if(protocol === 'sftp') { const sftpPut = await sftp.put(getPath, putPath, message); resolve(sftpPut); return; }
 					const ftpClient = new ftp();
 					ftpClient.on('error', function(err) {
 						console.log('ftpError! ', err);
 						message.reply('<:Error:849215023264169985> Could not connect to server.');
-						resolve(false);
+						resolve();
 					});
 
 					try {
@@ -90,12 +91,11 @@ module.exports = {
 							port: port,
 							user: user,
 							password: pass,
-							secure: true,
 						});
 					} catch (err) {
 						console.log('Could not connect to server. ', err);
 						message.reply('<:Error:849215023264169985> Could not connect to server.');
-						resolve(false);
+						resolve();
 					}
 	
 					ftpClient.on('ready', function() {
@@ -103,7 +103,7 @@ module.exports = {
 							if(err) {
 								console.log('Could not put files. Path: ' + getPath, err);
 								message.reply('<:Error:849215023264169985> Could not upload files.');
-								resolve(false);
+								resolve();
 							} else {
 								ftpClient.end();
 								ftpClient.on('close', () => {
@@ -123,7 +123,7 @@ module.exports = {
 			const ftpClient = new ftp();
 			ftpClient.on('error', function(err) {
 				console.log('Could not connect to server.', err);
-				resolve(false);
+				resolve();
 			});
 			try {
 				ftpClient.connect({
@@ -131,7 +131,6 @@ module.exports = {
 					port: credentials.port,
 					user: credentials.user,
 					password: credentials.pass,
-					secure: true,
 				});
 				ftpClient.on('ready', function() {
 					ftpClient.end();
@@ -140,7 +139,7 @@ module.exports = {
 				});
 			} catch (err) {
 				console.log('Could not connect to server with ftp.', err);
-				resolve(false);
+				resolve();
 			}
 		})
 	}

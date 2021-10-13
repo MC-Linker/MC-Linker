@@ -1,5 +1,5 @@
 
-const fetch = require('node-fetch');
+const utils = require('../../utils.js');
 const fs = require('fs');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
@@ -32,44 +32,29 @@ module.exports = {
 
         console.log(message.member.user.tag + ' executed ^connect ' + ingameName + ' in ' + message.guild.name);
 
-        async function getId(playername) {
-            try {
-                // @ts-ignore
-                return await fetch(`https://api.mojang.com/users/profiles/minecraft/${playername}`)
-                    .then(data => data.json())
-                    .then(player => player.id);
-            } catch (err) {
-                console.log('Couldnt find Player in mojangAPI [' + playername + ']');
-                message.reply('<:Error:849215023264169985> Minecraft-player [**' + playername + '**] does not seem to exist. Please use your **minecraft-username** as argument.');
-                return;
-            }
+        let uuidv4 = await utils.getUUIDv4(ingameName, message);
+        if(!uuidv4) return;
+
+        uuidv4 = uuidv4.split('');
+        for(let i = 8; i <=23; i+=5) uuidv4.splice(i,0,'-');                       
+        uuidv4 = uuidv4.join("");
+
+        const connectionJson = {
+            'id': uuidv4,
+            'name': ingameName
         }
 
-        await getId(ingameName).then(id => {
-            if(id === undefined) {
+        const connectionString = JSON.stringify(connectionJson, null, 2);
+
+        fs.writeFile('./connections/' + message.member.user.id + '.json', connectionString, err => {
+            if (err) {
+                message.reply('<:Error:849215023264169985> Error trying to connect.');
+                console.log('Error writing conectionFile', err);
                 return;
+            } else {
+                message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft-username: **${ingameName}** and UUID: **${uuidv4}**`);
+                console.log('Successfully wrote connectionfile with id ' + uuidv4 + ' and name: ' + ingameName);
             }
-            id = id.split('');
-            for(let i = 8; i <=23; i+=5) id.splice(i,0,'-');                       
-            id = id.join("");
-
-            const connectionJson = {
-                'id': id,
-                'name': ingameName
-            }
-
-            const connectionString = JSON.stringify(connectionJson, null, 2);
-
-            fs.writeFile('./connections/' + message.member.user.id + '.json', connectionString, err => {
-                if (err) {
-                    message.reply('<:Error:849215023264169985> Error trying to connect.');
-                    console.log('Error writing conectionFile', err);
-                    return;
-                } else {
-                    message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft-username: **${ingameName}** and UUID: **${id}**`);
-                    console.log('Successfully wrote connectionfile with id ' + id + ' and name: ' + ingameName);
-                }
-            })
-        });
+        })
     }
 }

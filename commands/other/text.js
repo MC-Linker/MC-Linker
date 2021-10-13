@@ -25,8 +25,8 @@ module.exports = {
                       .setRequired(true)
             ),
     async execute(message, args) {
-        let font = args.shift().split('_').join(' ');
-        const color = args.shift().toLowerCase();
+        let font = args?.shift().replaceAll('_', '');
+        const color = args?.shift().toLowerCase();
         const text = args.join(' ');
 
         if (!font) {
@@ -47,7 +47,7 @@ module.exports = {
 
         if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
-        const fontCanvas = Canvas.createCanvas(text.split('').length * 200, 225);
+        const fontCanvas = Canvas.createCanvas(text.split('').length*200, 225);
         const ctx = fontCanvas.getContext('2d');
         try {
             ctx.font = `200px ${font}`;

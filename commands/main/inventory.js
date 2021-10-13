@@ -128,7 +128,7 @@ module.exports = {
                     //invMsg = invMsg += 'Slot: ' + inventory[i]['Slot'].value + ': ' + inventory[i]['id'].value + ', ' + inventory[i]['Count'].value + '\n'
 
                     if(damage) {
-                        const durabilityJson = await fs.promises.readFile('./durability.json');
+                        const durabilityJson = fs.readFileSync('./durability.json');
 
                         // @ts-ignore
                         const durabilityData = JSON.parse(durabilityJson);
@@ -145,7 +145,6 @@ module.exports = {
                 const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuidv4}/body/10.5/10/json`);
                 const { skin: skinBase64 } = await skinJson.json();
                 const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
-                //ctx.drawImage(skinImg, 0, 0, 65, 131, 70, 20, 65, 131);
                 ctx.drawImage(skinImg, 70, 20, 65, 131);
 
                 const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), 'inventoryImage.png');

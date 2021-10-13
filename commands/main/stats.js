@@ -159,9 +159,9 @@ module.exports = {
 
         const worldPath = await utils.getWorldPath(message);
         if(!worldPath) return;
-        
+
         const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
-        if(statFile === false) return;
+        if(!statFile) return;
 
         fs.readFile('./stats/' + uuidv4 + '.json', 'utf8', (err, statJson) => {
             if(err) {
@@ -171,71 +171,43 @@ module.exports = {
             }
             fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', (err, ftpJson) => {
                 if(err) {
-                    message.reply('<:Error:849215023264169985> ' + 'Could not find ftp file. Please contact a server admin.')
+                    message.reply('<:Error:849215023264169985> Could not find ftp file. Please contact a server admin.')
                     console.log('Error reading ftp file from disk: ', err);
                     return;
                 }
-
                 try {
                     const ftpData = JSON.parse(ftpJson);
                     const statData = JSON.parse(statJson);
-                    const version = parseInt(ftpData.version.split('.').splice(1,1));
-
-                    const imageExists = fs.existsSync('./images/' + statObject + '.png')
+                    const version = parseInt(ftpData.version.split('.').splice(1, 1));
 
                     let searchName;
                     if(version >= 13) searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject];
                     else if(version <= 12) searchName = statData["stat." + statType + '.minecraft.' + statObject];
-        
-                    if (searchName) {
-                        if(statType === 'custom') {
-                            const statEmbed = new Discord.MessageEmbed()
-                                .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>');
 
-                            if(statObject === 'play_time' || statObject === 'time_played') statEmbed.addField(taggedName, `has played for **${(((searchName / 20) / 60) / 60).toFixed(3)}** hours`);
-                            else statEmbed.addField(taggedName, '**' + statObject + ' ' + searchName + '** ');
+                    if(searchName) {
+                        let statMessage;
+                        if(statType === 'custom') statMessage = '**' + statObject + ' ' + searchName + '** ';
+                        else if (statType === 'killed_by') statMessage = 'was killed **' + searchName + '** times by a **' + statObject + '**';
+                        else if(statObject === 'play_time' || statObject === 'time_played') statMessage = `has played for **${((searchName / 20) / 3600).toFixed(3)}** hours`;
+                        else statMessage = 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**';
 
-                            if(imageExists === false) {
-                                console.log('No Image available for ' + statObject);
-                                message.reply({ embeds: [statEmbed] });
-                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
-                            } else {
-                                statEmbed.setImage('attachment://' + statObject + '.png')
-                                message.reply({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
-                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
-                            }
-                        } else if (statType === 'killed_by') {
-                            const statEmbed = new Discord.MessageEmbed()
-                                .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                .addField(taggedName, 'was killed **' + searchName + '** times by a **' + statObject + '**');
+                        const statEmbed = new Discord.MessageEmbed()
+                            .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
+                            .setColor('DEFAULT')
+                            .addField(taggedName, statMessage);
 
-                            if(imageExists === false) {
-                                console.log('No Image available for ' + statObject);
-                                message.reply({ embeds: [statEmbed] });
-                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
-                            } else {
-                                statEmbed.setImage('attachment://' + statObject + '.png');
-                                message.reply({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
-                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
-                            }
-                        } else {
-                            const statEmbed = new Discord.MessageEmbed()
-                                .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                                .addField(taggedName, 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**');
+                        console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
+                        fs.access('./images/' + statObject + '.png', err => {
+                            console.log('No Image available for ' + statObject);
+                            message.reply({ embeds: [statEmbed] });
+                            return;
+                        });
 
-                            if(imageExists === false) {
-                                console.log('No Image available for ' + statObject);
-                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
-                                message.reply({ embeds: [statEmbed] });
-                            } else {
-                                statEmbed.setImage('attachment://' + statObject + '.png');
-                                message.reply({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
-                                console.log('Sent stat ' + statType + ' ' + statObject + ': ' + searchName + ' of Player: ' + taggedName);
-                            }
-                        }    
+                        statEmbed.setImage('attachment://' + statObject + '.png');
+                        message.reply({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
                     } else {
                         console.log("No Match found!");
-                        message.reply(':warning: ' + 'No Match found! Stat is either 0 or mispelled!');
+                        message.reply(':warning: No Match found! Stat is either 0 or mispelled!');
                     }
                 } catch (err) {
                     console.log('Error parsing Stat JSON string: ', err);

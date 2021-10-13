@@ -32,14 +32,14 @@ client.on("guildCreate", guild => {
 });
 client.on("guildDelete", guild => {
     console.log("Left a guild: " + guild.name + '\nBot is now on ' + client.guilds.cache.size + ' server!');
-    fs.unlink(`./ftp/${guild.id}.json`, err => {
+    fs.rm(`./ftp/${guild.id}.json`, err => {
         if(err) {
             console.log('No ftpFile found for guild: ' + guild.name);
         } else {
             console.log('Successfully deleted ftpFile of guild: ' + guild.name);
         }
     })
-    fs.unlink(`./rcon/${guild.id}.json`, err => {
+    fs.rm(`./rcon/${guild.id}.json`, err => {
         if(err) {
             console.log('No rconFile found for guild: ' + guild.name);
         } else {
@@ -314,7 +314,7 @@ client.on('interactionCreate', async interaction => {
                     .addField(commandObject.name.toUpperCase(), commandObject.description + `\n\n**USAGE**: ${commandObject.usage}\n\n**EXAMPLE**: ${commandObject.example}\n\n**ALIASES**: \n${commandObject.aliases.join(', ')}`)
                     .setDescription('```diff\n- [COMMAND DISABLED]```')
                     .setColor('DARK_RED');
-                interaction.message.edit({ embeds: [helpEmbed], components: [enableRow] });
+                interaction.editReply({ embeds: [helpEmbed], components: [enableRow] });
 
                 interaction.deferUpdate();
             } else {
@@ -327,7 +327,7 @@ client.on('interactionCreate', async interaction => {
             if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 const command = interaction.customId.split('_').pop();
                 console.log(interaction.member.user.tag + ' clicked enableButton: ' + command + ' in ' + interaction.guild.name);
-                fs.unlink('./disable/commands/' + interaction.guild.id + "_" + command, err => {
+                fs.rm('./disable/commands/' + interaction.guild.id + "_" + command, err => {
                     if(err) {
                         console.log('Error deleting commandDisableFile ', err);
                         interaction.message.reply(`<@${interaction.member.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
@@ -355,7 +355,7 @@ client.on('interactionCreate', async interaction => {
                     .addField(commandObject.name.toUpperCase(), commandObject.description + `\n\n**USAGE**: ${commandObject.usage}\n\n**EXAMPLE**: ${commandObject.example}\n\n**ALIASES**: \n${commandObject.aliases.join(', ')}`)
                     .setDescription('```diff\n+ [Command enabled]```')
                     .setColor('GREEN');
-                interaction.message.edit({ embeds: [helpEmbed], components: [disableRow] })
+                interaction.editReply({ embeds: [helpEmbed], components: [disableRow] })
 
                 interaction.deferUpdate();
             } else {
@@ -364,8 +364,6 @@ client.on('interactionCreate', async interaction => {
                 return;
             }
         }
-    } else {
-        return;
     }
 });
 

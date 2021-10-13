@@ -8,8 +8,9 @@ module.exports = {
 				if(err) {
 					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `^ftp`.')
 					console.log('Error reading ftp file from disk: ', err);
-					resolve(false);
+					resolve();
 				} else {
+					// @ts-ignore
 					const ftpData = JSON.parse(ftpJson);
 					const host = ftpData.host;
 					const user = ftpData.user;
@@ -17,8 +18,7 @@ module.exports = {
 					const port = ftpData.port;
 					const protocol = ftpData.protocol;
 
-					if(protocol === 'ftp') { const ftpGet = await ftp.get(getPath, putPath, message); resolve(ftpGet); }
-					
+					if(protocol === 'ftp') { const ftpGet = await ftp.get(getPath, putPath, message); resolve(ftpGet); return; }
 					try {
 						const sftpClient = new sftp;
 						await sftpClient.connect({
@@ -37,11 +37,11 @@ module.exports = {
 							console.log('Could not download files. Path: ' + getPath, err);
 							message.reply('<:Error:849215023264169985> Could not download files. The User never joined the server or the worldpath is incorrect.');
 							sftpClient.end();
-							resolve(false);
+							resolve();
 						}
 					} catch (err) {
 						console.log('Could not connect to server with sftp.', err);
-						resolve(false);
+						resolve();
 					}
 				}
 			});
@@ -54,8 +54,9 @@ module.exports = {
 				if(err) {
 					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `^ftp`.')
 					console.log('Error reading ftp file from disk: ', err);
-					resolve(false);
+					resolve();
 				} else {
+					// @ts-ignore
 					const ftpData = JSON.parse(ftpJson);
 					const host = ftpData.host;
 					const user = ftpData.user;
@@ -63,7 +64,7 @@ module.exports = {
 					const port = ftpData.port;
 					const protocol = ftpData.protocol;
 
-					if(protocol === 'ftp') { await ftp.put(getPath, putPath, message); resolve(true); }
+					if(protocol === 'ftp') { await ftp.put(getPath, putPath, message); resolve(true); return; }
 
 					try {
 						const sftpClient = new sftp;
@@ -71,23 +72,23 @@ module.exports = {
 							host: host,
 							username: user,
 							password: pass,
-							port: port
+							port: port,
 						});
 
 						try {
 							await sftpClient.fastPut(getPath, putPath);
 							sftpClient.end();
-							resolve(true);
+							resolve();
 						} catch (err) {
 							console.log('Could not upload files. Path: ' + getPath, err);
 							message.reply('<:Error:849215023264169985> Could not upload files.');
 							sftpClient.end();
-							resolve(false);
+							resolve();
 						}
 						return console.log('File [' + getPath + '] succesfully uploaded');
 					} catch (err) {
 						console.log('Could not connect to server with sftp.', err);
-						resolve(false);
+						resolve();
 					}
 				}
 			});
@@ -109,9 +110,8 @@ module.exports = {
 				resolve(true);
 			} catch (err) {
 				console.log('Could not connect to server with sftp.', err);
-				resolve(false);
+				resolve();
 			}
 		})
-			
     }
 }
