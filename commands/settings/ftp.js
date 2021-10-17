@@ -11,7 +11,7 @@ module.exports = {
     name: 'ftp',
     aliases: ['ftpconnect', 'connectftp', 'server', 'connectserver', 'serverconnect'],
     usage: 'ftp <host> <username (`none` if no username)> <password (`none` if no password)> <port> <minecraft-version> <**Optional:** path to world folder (Format: /path/path)> **//** ftp disconnect',
-    example: 'ftp someHost/ip lianecx supersecretpassword 21 1.17 **//** ftp localhost none none 21 1.17 path/to/world',
+    example: '/ftp someHost/ip lianecx supersecretpassword 21 1.17 **//** /ftp localhost none none 21 1.17 path/to/world',
     description: "Connect or disconnect your minecraft Server with the bot. Can only be used by **admins**. \n**Need help getting the ftp credentials?**\n=> Join the [Support Server](https://discord.gg/rX36kZUGNK).",
     data: new SlashCommandBuilder()
             .setName('ftp')
@@ -72,11 +72,11 @@ module.exports = {
         if(host === 'disconnect' && !user) {
             if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 message.reply(':no_entry: You are not an Admin!');
-                console.log(message.member.user.tag + ' executed ^ftp disconnect without admin in ' + message.guild.name);
+                console.log(message.member.user.tag + ' executed /ftp disconnect without admin in ' + message.guild.name);
                 return;
             }
 
-            console.log(message.member.user.tag + ' executed ^ftp disconnect in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /ftp disconnect in ' + message.guild.name);
 
             fs.rm(`./ftp/${message.guild.id}.json`, err => {
                 if(err) {
@@ -89,16 +89,16 @@ module.exports = {
             })
             return;
         } else if (!host || !user || !password || !port || !version) {
-            console.log(message.member.user.tag + ' executed ^ftp wrong in ' + message.guild.name);
-            message.reply(':warning: Incorrect Usage! Please check `^help ftp` for correct usage!');
+            console.log(message.member.user.tag + ' executed /ftp wrong in ' + message.guild.name);
+            message.reply(':warning: Incorrect Usage! Please check `/help ftp` for correct usage!');
             return;
         }
 
-        console.log(message.member.user.tag + ` executed ^ftp ${host} ${user} ${password} ${port} ${version} ${path} in ` + message.guild.name);
+        console.log(message.member.user.tag + ` executed /ftp ${host} ${user} ${password} ${port} ${version} ${path} in ` + message.guild.name);
 
         if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
             message.reply(':no_entry: ' + "You are not an Admin!");
-            console.log(message.member.user.tag + ' executed ^ftp without admin in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /ftp without admin in ' + message.guild.name);
             return;
         } else if (version.startsWith('1.11') || version.startsWith('1.10') || version.startsWith('1.9') || version.startsWith('1.8') || version.startsWith('1.7')) {
             message.reply(':warning: The advancement command might not work because advancements dont exist in your Minecraft version yet.');
@@ -118,7 +118,7 @@ module.exports = {
             port: port
         });
 
-        if (connectSftp === false) {
+        if (connectSftp !== true) {
             message.channel.sendTyping();
 
             const connectFtp = await ftp.connect({
@@ -316,10 +316,6 @@ module.exports = {
                     }
                 })
             }
-        } else {
-            console.log('Couldnt connect to server.');
-            message.reply('<:Error:849215023264169985> Couldnt connect to server.');
-            return;
         }
     }
 }

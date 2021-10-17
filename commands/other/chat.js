@@ -5,7 +5,7 @@ module.exports = {
     name: 'chat',
     aliases: [],
     usage: 'chat <message>',
-    example: '^chat Hey, Minecraft! **//** ^chat §6Golden Message',
+    example: '/chat Hey, Minecraft! **//** /chat §6Golden Message',
     description: 'Send chat messages to the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).',
     data: new SlashCommandBuilder()
             .setName('chat')
@@ -17,10 +17,10 @@ module.exports = {
             ),
     async execute(message, args) {
         const chatMsg = args.join(' ').replaceAll(`"`, `'`);
-        console.log(message.member.user.tag + ' executed ^chat ' + chatMsg + ' in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed /chat ' + chatMsg + ' in ' + message.guild.name);
 
         if(!chatMsg) {
-            console.log(message.member.user.tag + ' executed ^chat without message in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /chat without message in ' + message.guild.name);
             message.reply(':warning: Please specify the message you want to send.');
             return;
         }

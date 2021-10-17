@@ -6,7 +6,7 @@ module.exports = {
 		return new Promise(async (resolve, reject) => {
 			fs.readFile('./ftp/' + message.guild.id + '.json', async (err, ftpJson) => {
 				if(err) {
-					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `^ftp`.')
+					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `/ftp` first.');
 					console.log('Error reading ftp file from disk: ', err);
 					resolve();
 				} else {
@@ -52,7 +52,7 @@ module.exports = {
 		return new Promise(async (resolve, reject) => {
 			fs.readFile('./ftp/' + message.guild.id + '.json', async (err, ftpJson) => {
 				if(err) {
-					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `^ftp`.')
+					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `/ftp` first.');
 					console.log('Error reading ftp file from disk: ', err);
 					resolve();
 				} else {

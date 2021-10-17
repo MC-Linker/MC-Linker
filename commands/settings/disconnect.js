@@ -5,13 +5,13 @@ module.exports = {
     name: 'disconnect',
     aliases: [],
     usage: 'disconnect',
-    example: 'disconnect',
-    description: 'Disconnect your minecraft-account from the bot. To connect again, use `^connect <minecraft-username>` again.',
+    example: '/disconnect',
+    description: 'Disconnect your minecraft-account from the bot. To connect again, use `/connect <minecraft-username>` again.',
     data: new SlashCommandBuilder()
             .setName('disconnect')
             .setDescription('Disconnect your minecraft-account from the bot.'),
     execute(message, args) {
-        console.log(message.member.user.tag + ' executed ^disconnect in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed /disconnect in ' + message.guild.name);
 
         fs.rm(`./connections/${message.member.user.id}.json`, err => {
             if(err) {

@@ -9,7 +9,7 @@ module.exports = {
     name: 'unban',
     aliases: ['pardon'],
     usage: 'unban <mention/username>',
-    example: 'unban @Lianecx **//** unban MrNotCheating',
+    example: '/unban @Lianecx **//** /unban MrNotCheating',
     description: 'Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.',
 	data: new SlashCommandBuilder()
 			.setName('unban')
@@ -22,12 +22,12 @@ module.exports = {
     async execute(message, args) {
 		if (!message.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) {
 			message.reply(':no_entry: ' + "This command can only be used with `Ban member` permission!");
-            console.log(message.member.user.tag + ' executed ^unban without banperm in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /unban without banperm in ' + message.guild.name);
             return;
 		}
 
 		if(!args[0]) {
-            console.log(message.member.user.tag + ' executed ^unban without user in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /unban without user in ' + message.guild.name);
             message.reply(':warning: Please specify the player you want to unban.');
             return;
         }
@@ -44,12 +44,12 @@ module.exports = {
             taggedName = message.mentions.users.first().tag;
         }
 
-		console.log(message.member.user.tag + ' executed ^unban with taggedUser: ' + taggedName + ' in ' + message.guild.name);
+		console.log(message.member.user.tag + ' executed /unban with taggedUser: ' + taggedName + ' in ' + message.guild.name);
 
 		fs.readFile(`./rcon/${message.guild.id}.json`, 'utf8', async (err, rconJson) => {
 			if (err) {
 				console.log('Could not find rconFile on Disk, creating one...');
-				message.reply(':warning: Could not read rcon credentials, attempting to create some. (If this errors, do `^rcon connect` or `^ftp connect`)');
+				message.reply(':warning: Could not read rcon credentials, attempting to create some. (If this errors, do `/rcon connect` or `/ftp connect`)');
 
 				const uuidv4 = await utils.getUUIDv4(userName, message);
 				if(!uuidv4) return;
@@ -143,7 +143,7 @@ module.exports = {
 
                         if(ip === '' || port === '' || password === '') {
                             console.log('RCON credentials are not specified in server.properties.');
-                            message.reply(':warning: Please use `^rcon connect` OR define all RCON credentials in the `server.properties` file.');
+                            message.reply(':warning: Please use `/rcon connect` OR define all RCON credentials in the `server.properties` file.');
                             return;
                         }
 

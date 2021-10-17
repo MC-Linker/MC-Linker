@@ -8,7 +8,7 @@ module.exports = {
     name: 'advancements',
     aliases: ['am', 'advancement', 'ams'],
     usage: 'advancements <@mention>/<ingamename> <advancement-tab> <advancementid>',
-    example: '^advancements @Lianecx story iron_tools **//** ^advancements @Memer adventure adventuring_time **//** ^advancements xXgamerboyyXx recipes loom',
+    example: '/advancements @Lianecx story iron_tools **//** /advancements @Memer adventure adventuring_time **//** /advancements xXgamerboyyXx recipes loom',
     description: 'Look up your and other\'s unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).',
     data: new SlashCommandBuilder()
             .setName('advancements')
@@ -171,8 +171,8 @@ module.exports = {
         let taggedName;
 
         if(!mode || !object || !args[0]) {
-            console.log(message.member.user.tag + ' executed ^advancements incorrect in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check `^help advancements` for correct usage!");
+            console.log(message.member.user.tag + ' executed /advancements incorrect in ' + message.guild.name);
+            message.reply(":warning: Wrong Usage! Check `/help advancements` for correct usage!");
             return;
         }
 
@@ -182,7 +182,7 @@ module.exports = {
             taggedName = message.mentions.users.first().tag;
         }
 
-        console.log(message.member.user.tag + ' executed ^advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed /advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
 
         const uuidv4 = await utils.getUUIDv4(args[0], message);
         if(!uuidv4) return;

@@ -8,7 +8,7 @@ module.exports = {
     name: 'stats',
     aliases: ['stat'],
     usage: 'stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**> ',
-    example: 'stats @Lianecx mined iron_ore **//** stats @Memer custom play_time **//** stats xXgamerboyyXx killed blaze',
+    example: '/stats @Lianecx mined iron_ore **//** /stats @Memer custom play_time **//** /stats xXgamerboyyXx killed blaze',
     description: "Look at your and other member's minecraft server stats.\n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
     data: new SlashCommandBuilder()
             .setName('stats')
@@ -18,7 +18,7 @@ module.exports = {
                 .setDescription('A multitude of generic statistics related to a player\'s actions.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set a custom stat. All stats of the custom category => ^help stats')
+                    .setDescription('Set a custom stat. All stats of the custom category => /help stats')
                     .setRequired(true)
                 ).addUserOption(option => 
                     option.setName('user')
@@ -128,8 +128,8 @@ module.exports = {
         let taggedName;
 
         if(!statType || !statObject || !args[0]) {
-            console.log(message.member.user.tag + ' executed ^stats incorrect in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check `^help stats` for correct usage!");
+            console.log(message.member.user.tag + ' executed /stats incorrect in ' + message.guild.name);
+            message.reply(":warning: Wrong Usage! Check `/help stats` for correct usage!");
             return;
         }
 
@@ -138,7 +138,7 @@ module.exports = {
         } else {
             taggedName = message.mentions.users.first().tag;
         }
-        console.log(message.member.user.tag + ' executed ^stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed /stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
 
         const uuidv4 = await utils.getUUIDv4(args[0], message);
         if(!uuidv4) return;

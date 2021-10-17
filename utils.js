@@ -23,7 +23,7 @@ module.exports = {
                 const taggedUser = message.mentions.users.first();
                 fs.readFile('./connections/' + taggedUser.id + '.json', 'utf8', (err, connectionJson) => {
                     if(err) {
-                        message.reply(":warning: User never used `^connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
+                        message.reply(":warning: User never used `/connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
                         console.log('Error reading connectionFile of pinged User from disk');
                         resolve();
                     } else {
@@ -56,7 +56,7 @@ module.exports = {
             const fs = require('fs');
             fs.readFile(`./connections/${userId}.json`, 'utf8', (err, connectionJson) => {
                 if(err) {
-                    message.reply(":warning: User never used `^connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
+                    message.reply(":warning: User never used `/connect`! Instead of pinging someone you can also type in their **minecraft-username**.");
                     console.log('Error reading connectionFile of pinged User from disk: ', err);
                     resolve();
                 } else {

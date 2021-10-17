@@ -7,7 +7,7 @@ module.exports = {
     name: 'connect',
     aliases: ['connectuser', 'userconnect'],
     usage: 'connect <minecraft-username>',
-    example: 'connect Lianecx',
+    example: '/connect Lianecx',
     description: "Connect your minecraft account with your discord account.",
     data: new SlashCommandBuilder()
             .setName('connect')
@@ -21,7 +21,7 @@ module.exports = {
         const ingameName = (args[0]);
 
         if(!ingameName) {
-            console.log(message.member.user.tag + ' executed ^connect without args in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /connect without args in ' + message.guild.name);
             message.reply(':warning: Please specify your minecraft-name.');
             return;
         } else if(message.mentions.users.size) {
@@ -30,7 +30,7 @@ module.exports = {
             return;
         }
 
-        console.log(message.member.user.tag + ' executed ^connect ' + ingameName + ' in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed /connect ' + ingameName + ' in ' + message.guild.name);
 
         let uuidv4 = await utils.getUUIDv4(ingameName, message);
         if(!uuidv4) return;

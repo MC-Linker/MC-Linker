@@ -11,7 +11,7 @@ module.exports = {
     name: 'inventory',
     aliases: ['inv', 'inventories', 'inventorys'],
     usage: 'inventory <mention/username>',
-    example: 'inventory @Lianecx **//** inventory xXgamerkidXx',
+    example: '/inventory @Lianecx **//** /inventory xXgamerkidXx',
     description: "Get an image of the current player's inventory.",
     data: new SlashCommandBuilder()
             .setName('inventory')
@@ -23,7 +23,7 @@ module.exports = {
             ),
     async execute(message, args) {
         if(!args[0]) {
-            console.log(message.member.user.tag + ' executed ^inv without args in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /inv without args in ' + message.guild.name);
             message.reply(':warning: Please specify the user you want to get the inventory from.');
             return;
         }
@@ -34,7 +34,7 @@ module.exports = {
         } else {
             taggedName = message.mentions.users.first().tag;
         }
-        console.log(message.member.user.tag + ' executed ^inventories with user: ' + taggedName + ' in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed /inv with user: ' + taggedName + ' in ' + message.guild.name);
 
 		const uuidv4 = await utils.getUUIDv4(args[0], message);
         if(!uuidv4) return;

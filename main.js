@@ -74,11 +74,11 @@ client.on('messageCreate', message => {
                 .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                 .setColor('#000000')
                 .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                .addField(':label: Main :label:', 'Main commands such as `^stats`, or `^inventory`.')
-                .addField(':shield: Moderation :shield:', 'Moderation commands such as `^ban` or `^unban`.')
-                .addField(':point_right: Other :point_left:', 'Other commands such as `^txp` or `^text`.')
-                .addField(':gear: Settings :gear:', 'Setup and settings such as `^disable` or `^ftp`')
-                .addField('\u200B', '**All commands in a category** can be viewed with: **^help <category>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+                .addField(':label: Main :label:', 'Main commands such as `/stats`, or `/inventory`.')
+                .addField(':shield: Moderation :shield:', 'Moderation commands such as `/ban` or `/unban`.')
+                .addField(':point_right: Other :point_left:', 'Other commands such as `/txp` or `/text`.')
+                .addField(':gear: Settings :gear:', 'Setup and settings such as `/disable` or `/ftp`')
+                .addField('\u200B', '**All commands in a category** can be viewed with: **/help <category>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
 
             message.channel.send({ embeds: [helpEmbed] });
 
@@ -106,7 +106,7 @@ client.on('messageCreate', message => {
                         command = client.commands.get(commandFile) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandFile));
                         helpEmbed.addField(command.name.toUpperCase(), command.description);
                     });
-                    helpEmbed.addField('\u200B', '**More info to a command** can be viewed with: **^help <command>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+                    helpEmbed.addField('\u200B', '**More info to a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
                     message.channel.send({ embeds: [helpEmbed] });
                 })
             } else {
@@ -196,11 +196,11 @@ client.on('interactionCreate', async interaction => {
                     .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
                     .setColor('#000000')
                     .setFooter('\u200B', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                    .addField(':label: Main :label:', 'Main commands such as `^stats`, or `^inventory`.')
-                    .addField(':shield: Moderation :shield:', 'Moderation commands such as `^ban` or `^unban`.')
-                    .addField(':point_right: Other :point_left:', 'Other commands such as `^txp` or `^text`.')
-                    .addField(':gear: Settings :gear:', 'Setup and settings such as `^disable` or `^ftp`')
-                    .addField('\u200B', '**All commands in a category** can be viewed with: **^help <category>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+                    .addField(':label: Main :label:', 'Main commands such as `/stats`, or `/inventory`.')
+                    .addField(':shield: Moderation :shield:', 'Moderation commands such as `/ban` or `/unban`.')
+                    .addField(':point_right: Other :point_left:', 'Other commands such as `/txp` or `/text`.')
+                    .addField(':gear: Settings :gear:', 'Setup and settings such as `/disable` or `/ftp`')
+                    .addField('\u200B', '**All commands in a category** can be viewed with: **/help <category>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
 
                 interaction.reply({ embeds: [helpEmbed], allowedMentions: { repliedUser: false } });
             } else {
@@ -220,18 +220,18 @@ client.on('interactionCreate', async interaction => {
                             interaction.reply(':warning: That command/category [**' + commandName + '**] doesnt exist.');
                             return;
                         }
-                        console.log(interaction.member.user.tag + ' executed ^help ' + commandName + ' in ' + interaction.guild.name);
+                        console.log(interaction.member.user.tag + ' executed /help ' + commandName + ' in ' + interaction.guild.name);
 
                         commands.forEach(commandFile => {
                             commandFile = commandFile.split('.').shift();
                             command = client.commands.get(commandFile) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandFile));
                             helpEmbed.addField(command.name.toUpperCase(), command.description);
                         });
-                        helpEmbed.addField('\u200B', '**More info to a command** can be viewed with: **^help <command>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
+                        helpEmbed.addField('\u200B', '**More info to a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
                         interaction.reply({ embeds: [helpEmbed] });
                     })
                 } else {
-                    console.log(interaction.member.user.tag + ' executed ^help ' + commandName + ' in ' + interaction.guild.name);
+                    console.log(interaction.member.user.tag + ' executed /help ' + commandName + ' in ' + interaction.guild.name);
 
                     helpEmbed.addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}`);
                     if(command.aliases[0]) helpEmbed.addField('\n**ALIASES**', command.aliases.join(', '));

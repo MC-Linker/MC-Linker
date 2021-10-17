@@ -5,8 +5,8 @@ module.exports = {
     name: 'enable',
     aliases: [],
     usage: 'enable commands/stats/advancements <command/stat/advancement>',
-    example: 'enable commands txp **//** enable stats picked_up **//** enable advancements adventuring_time',
-    description: 'Enable a disabled command/stat/advancement (Theyre all enabled by default). Command-enabling is also possible through buttons in ^help <command>.',
+    example: '/enable commands txp **//** /enable stats picked_up **//** /enable advancements adventuring_time',
+    description: 'Enable a disabled command/stat/advancement (Theyre all enabled by default). Command-enabling is also possible through buttons in /help <command>.',
     data: new SlashCommandBuilder()
             .setName('enable')
             .setDescription('Enable a disabled command/stat/advancement (Theyre all enabled by default).')
@@ -40,20 +40,20 @@ module.exports = {
         let object = (args[1]);
 
         if(!mode || !object) {
-            console.log(message.member.user.tag + ' executed ^enable wrong in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check `^help enable` for correct usage!");
+            console.log(message.member.user.tag + ' executed /enable wrong in ' + message.guild.name);
+            message.reply(":warning: Wrong Usage! Check `/help enable` for correct usage!");
             return;
         }
 
-        console.log(message.member.user.tag + ' executed ^enable ' + mode + ' ' + object + ' in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed /enable ' + mode + ' ' + object + ' in ' + message.guild.name);
 
         let enableMode;
         if (mode === 'command' || mode === 'cmd' || mode === 'commands' || mode === 'cmds') enableMode = 'commands';
         else if (mode === 'advancements' || message.client.commands.get('advancements').aliases.includes(mode)) enableMode = 'advancements';
         else if (mode === 'stats' || message.client.commands.get('stats').aliases.includes(mode)) enableMode = 'stats';
         else {
-            console.log(message.member.user.tag + ' executed ^enable wrong in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check `^help enable` for correct usage!");
+            console.log(message.member.user.tag + ' executed /enable wrong in ' + message.guild.name);
+            message.reply(":warning: Wrong Usage! Check `/help enable` for correct usage!");
             return;
         }
 

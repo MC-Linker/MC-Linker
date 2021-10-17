@@ -34,7 +34,7 @@ module.exports = {
 			fs.readFile(`./rcon/${message.guild.id}.json`, (err, rconJson) => {
 				if(err) {
 					console.log('Error reading rcon File');
-					message.reply('<:Error:849215023264169985> Could not find rcon credentials. Please use `^rcon connect`.');
+					message.reply('<:Error:849215023264169985> Could not find rcon credentials. Please use `/rcon connect`.');
 					resolve();
 				} else {
 					// @ts-ignore
