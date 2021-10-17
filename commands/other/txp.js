@@ -7,7 +7,7 @@ module.exports = {
 	name: 'txp',
 	aliases: [],
 	usage: 'txp load/black',
-    example: 'txp black **//** txp load <imageLink/imageAttachment/@mention>',
+    example: '/txp black **//** /txp load <imageLink/imageAttachment/@mention>',
 	description: 'Tools for minecraft texturepacks. \n`txp load` => Outputs a loading screen from the attachment, ping or image-link. \n`txp black` => Outputs a file which makes the loading screen black (monochrome).',
 	data: new SlashCommandBuilder()
 			.setName('txp')
@@ -26,8 +26,8 @@ module.exports = {
 			),
 	async execute (message, args) {
 		if(!args[0]) {
-			console.log(message.member.user.tag + ' executed ^txp without args in ' + message.guild.name);
-			message.reply(':warning: Do you want to create a loading screen => `^txp load`\n:warning: Or do you want a black loading screen => `^txp black`');
+			console.log(message.member.user.tag + ' executed /txp without args in ' + message.guild.name);
+			message.reply(':warning: Do you want to create a loading screen => `/txp load`\n:warning: Or do you want a black loading screen => `/txp black`');
 			return;
 		}
 
@@ -38,7 +38,7 @@ module.exports = {
 				try {
 					URL = message.attachments.first().url;
 				} catch (err) {
-					console.log(message.member.user.tag + ' executed ^txp load. Couldnt get image url in ' + message.guild.name, err);
+					console.log(message.member.user.tag + ' executed /txp load. Couldnt get image url in ' + message.guild.name, err);
 					message.reply('<:Error:849215023264169985> Cannot get URL of image. Please attach an image, ping someone or give an image url as argument.');
 					return;
 				}
@@ -47,12 +47,12 @@ module.exports = {
 			} else if (args[1]) {
 				URL = (args[1]);
 			} else {
-				console.log(message.member.user.tag + ' executed ^txp load without url or attach in ' + message.guild.name);
+				console.log(message.member.user.tag + ' executed /txp load without url or attach in ' + message.guild.name);
 				message.reply(':warning: Please attach an image, ping someone or give an image url as argument.');
 				return;
 			}
 
-			console.log(message.member.user.tag + ' executed ^txp load with imgURL: ' + URL + ' in ' + message.guild.name);
+			console.log(message.member.user.tag + ' executed /txp load with imgURL: ' + URL + ' in ' + message.guild.name);
 
 			//get imageSize
 			let imgSize;
@@ -60,7 +60,7 @@ module.exports = {
 				imgSize = await probe(URL);
 			} catch (err) {
 				console.log('Error while trying to get imagesize. ', err);
-				message.reply('<:Error:849215023264169985> Cannot get size of image. `^help txp` for correct usage.');
+				message.reply('<:Error:849215023264169985> Cannot get size of image. `/help txp` for correct usage.');
 				return;
 			}
 
@@ -77,7 +77,7 @@ module.exports = {
 				img = await Canvas.loadImage(URL);
 			} catch(err) {
 				console.log('Error while trying to load img. ', err);
-				message.reply('<:Error:849215023264169985> Unsupported image type. `^help canvas` for correct usage.');
+				message.reply('<:Error:849215023264169985> Unsupported image type. `/help canvas` for correct usage.');
 				return;
 			}
 
@@ -95,13 +95,13 @@ module.exports = {
 			message.reply({ embeds: [loadEmbed], files: [attachment] });
 
 		} else if(args[0] === 'black' || args[0] === 'loadblack' || args[0] === 'blackload' || args[0] === 'txpblack') {
-			console.log(message.member.user.tag + ' executed ^txp black in ' + message.guild.name);
+			console.log(message.member.user.tag + ' executed /txp black in ' + message.guild.name);
 
 			const blackFile = new Discord.MessageAttachment('./color.properties');
         	message.reply({ content: '<:Checkmark:849224496232660992> Heres your black loading screen file. Make sure to put it in: `<resourcepack>/assets/minecraft/optifine`', files: [blackFile] });
 		} else {
-			console.log(message.member.user.tag + ' executed non-existent ^txp argument ' + args[0] + ' in ' + message.guild.name);
-			message.reply(':warning: This argument [**' + args[0] + '**] does not exist. You can only use `^txp load` and `^txp black`.');
+			console.log(message.member.user.tag + ' executed non-existent /txp argument ' + args[0] + ' in ' + message.guild.name);
+			message.reply(':warning: This argument [**' + args[0] + '**] does not exist. You can only use `/txp load` and `/txp black`.');
 		}
 	}
 }

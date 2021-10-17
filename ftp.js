@@ -6,7 +6,7 @@ module.exports = {
 		return new Promise(async (resolve, reject) => {
 			fs.readFile('./ftp/' + message.guild.id + '.json', async (err, ftpJson) => {
 				if(err) {
-					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `^ftp`.');
+					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `/ftp` first.');
 					console.log('Error reading ftp file from disk: ', err);
 					resolve();
 				} else {
@@ -33,6 +33,9 @@ module.exports = {
 							port: port,
 							user: user,
 							password: pass,
+							secureOptions: {
+								rejectUnauthorized: false,
+							},
 						});
 					} catch (err) {
 						console.log('Could not connect to server. ', err);
@@ -65,7 +68,7 @@ module.exports = {
 		return new Promise(async (resolve, reject) => {
 			fs.readFile('./ftp/' + message.guild.id + '.json', async (err, ftpJson) => {
 				if(err) {
-					message.reply('<:Error:849215023264169985> Could not read ftp credentials. Please use `^ftp`.');
+					message.reply('<:Error:849215023264169985> No ftp credentials found. Please use `/ftp` first.');
 					console.log('Error reading ftp file from disk: ', err);
 					resolve();
 				} else {
@@ -91,6 +94,9 @@ module.exports = {
 							port: port,
 							user: user,
 							password: pass,
+							secureOptions: {
+								rejectUnauthorized: false,
+							},
 						});
 					} catch (err) {
 						console.log('Could not connect to server. ', err);
@@ -131,6 +137,9 @@ module.exports = {
 					port: credentials.port,
 					user: credentials.user,
 					password: credentials.pass,
+					secureOptions: {
+						rejectUnauthorized: false,
+					},
 				});
 				ftpClient.on('ready', function() {
 					ftpClient.end();

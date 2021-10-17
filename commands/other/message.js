@@ -5,8 +5,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 module.exports = {
     name: 'message',
     aliases: ['dm', 'msg', 'tell', 'whisper', 'w'],
-    example: '^message @Lianecx Hey, its me! **//** ^message someGuy §6Golden message',
-    usage: 'message <@mention/ingamename> <message>',
+    example: '/message @Lianecx Hey, its me! **//** /message someGuy §6Golden message',
+    usage: '/message <@mention/ingamename> <message>',
     description: 'Send private chat messages to people on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).',
     data: new SlashCommandBuilder()
             .setName('message')
@@ -25,7 +25,7 @@ module.exports = {
         let userName;
 
         if(!args[0]) {
-            console.log(message.member.user.tag + ' executed ^message without user in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /message without user in ' + message.guild.name);
             message.reply(':warning: Please specify the user you want to message.');
             return;
         }
@@ -42,12 +42,12 @@ module.exports = {
 
         const chatMsg = args.join(' ').replaceAll(`"`, `'`);
         if(!chatMsg) {
-            console.log(message.member.user.tag + ' executed ^message without message in ' + message.guild.name);
+            console.log(message.member.user.tag + ' executed /message without message in ' + message.guild.name);
             message.reply(':warning: Please specify the message you want to send.');
             return;
         }
 
-        console.log(message.member.user.tag + ' executed ^message ' + taggedName + ' ' + chatMsg + ' in ' + message.guild.name);
+        console.log(message.member.user.tag + ' executed /message ' + taggedName + ' ' + chatMsg + ' in ' + message.guild.name);
 
         /*[
             "",

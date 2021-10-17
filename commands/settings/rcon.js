@@ -8,9 +8,9 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 module.exports = {
     name: 'rcon',
     aliases: [],
-    usage: 'rcon connect <server-ip> <password> <port> **//** rcon execute <command> **//**\nrcon enable',
-    example: 'rcon connect 5.83.754.243 T12n53 25567**//**\nrcon execute /seed **//**\nrcon enable',
-    description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file).\n**OR** Execute minecraft commands on the server (sometimes there will be no response, that doesnt mean it didnt work.) (**WIP**).\n**OR** Enable RCON in the `server.properties` file (Requires ftp). Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',
+    usage: 'rcon connect <server-ip> <password> <port> **//**\nrcon enable',
+    example: '/rcon connect 5.83.754.243 T12n53 25567**//**\n/rcon enable',
+    description: 'Can only be used by **admins**. Connect this bot with RCON (credentials can be found in the `server.properties` file).\n**OR** Enable RCON in the `server.properties` file (Requires ftp). Need help getting the RCON credentials? => Join the [Support Server](https://discord.gg/rX36kZUGNK).',
 	data: new SlashCommandBuilder()
 			.setName('rcon')
 			.setDescription('Various RCON commands.')
@@ -48,24 +48,24 @@ module.exports = {
     async execute(message, args) {
 		const mode = args[0];
 		if(!mode) {
-			console.log(message.member.user.tag + ' executed ^rcon without args.');
-			message.reply(':warning: Do you want to enable RCON in your server? => `^rcon enable`.\nDo you want to connect the bot with RCON? => `^rcon connect`.\nOr do you want to execute a command with RCON? => `^rcon execute` (**WIP**).');
+			console.log(message.member.user.tag + ' executed /rcon without args.');
+			message.reply(':warning: Do you want to enable RCON in your server? => `/rcon enable`.\nDo you want to connect the bot with RCON? => `/rcon connect`.\nOr do you want to execute a command with RCON? => `/rcon execute` (**WIP**).');
 			return;
 		}
 		if(mode === 'connect') {
 			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
 				message.reply(':no_entry: This command can only be used by admins!');
-				console.log(message.member.user.tag + ' executed ^rcon connect without admin in ' + message.guild.name);
+				console.log(message.member.user.tag + ' executed /rcon connect without admin in ' + message.guild.name);
 				return;
 			}
 
-			console.log(message.member.user.tag + ' executed ^rcon ' + args.join(' ') + ' in ' + message.guild.name);
+			console.log(message.member.user.tag + ' executed /rcon ' + args.join(' ') + ' in ' + message.guild.name);
 			const ip = args[1];
 			const password = args[2];
 			const port = args[3]
 			if(!password || !port || !ip) {
-				console.log(message.member.user.tag + ' executed ^rcon connect without args in ' + message.guild.name);
-				message.reply(':warning: Please specify ALL RCON credentials. `^help rcon` for more help.');
+				console.log(message.member.user.tag + ' executed /rcon connect without args in ' + message.guild.name);
+				message.reply(':warning: Please specify ALL RCON credentials. `/help rcon` for more help.');
 				return;
 			}
 
@@ -85,37 +85,14 @@ module.exports = {
 				message.reply('<:Checkmark:849224496232660992> Successfully connected to the RCON.');
 			})
 
-		} else if (mode === 'execute') {
-			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-				message.reply(':no_entry: This command can only be used by admins!');
-				console.log(message.member.user.tag + ' executed ^rcon connect without admin in ' + message.guild.name);
-				return;
-			}
-
-			args.shift();
-			if(!args) {
-				console.log(message.member.user.tag + ' executed ^rcon execute without command in ' + message.guild.name);
-				message.reply(':warning: Please specify the command you want to execute.')
-				return;
-			}
-
-			console.log(message.member.user.tag + ' executed ^rcon execute ' + args.join(' ') + ' in ' + message.guild.name);
-
-			let command = args.join(' ');
-			if(command.startsWith('/')) command = command.replace('/', '');
-			const response = await rcon.executeGetCredentials(command, message);
-			if(!response) return;
-
-			message.reply(response);
-
 		} else if (mode === 'enable') {
 			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
 				message.reply(':no_entry: This command can only be used by admins!');
-				console.log(message.member.user.tag + ' executed ^rcon enable without admin in ' + message.guild.name);
+				console.log(message.member.user.tag + ' executed /rcon enable without admin in ' + message.guild.name);
 				return;
 			}
 
-			console.log(message.member.user.tag + ' executed ^rcon enable in ' + message.guild.name);
+			console.log(message.member.user.tag + ' executed /rcon enable in ' + message.guild.name);
 
 			let worldPath = await utils.getWorldPath(message);
 			if(!worldPath) return;
@@ -157,10 +134,10 @@ module.exports = {
 		} else if(mode === 'disconnect') {
 			if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
 				message.reply(':no_entry: This command can only be used by admins!');
-				console.log(message.member.user.tag + ' executed ^rcon disconnect without admin in ' + message.guild.name);
+				console.log(message.member.user.tag + ' executed /rcon disconnect without admin in ' + message.guild.name);
 				return;
 			}
-			console.log(message.member.user.tag + ' executed ^rcon disconnect in ' + message.guild.name);
+			console.log(message.member.user.tag + ' executed /rcon disconnect in ' + message.guild.name);
 			fs.rm(`./rcon/${message.guild.id}.json`, err => {
 				if(err) {
 					console.log('No rconFile found for guild: ' + message.guild.name);
@@ -171,7 +148,7 @@ module.exports = {
 				}
 			})
 		} else {
-			console.log(message.member.user.tag + ' executed ^rcon with incorrect arg: ' + mode + ' in ' + message.guild.name);
+			console.log(message.member.user.tag + ' executed /rcon with incorrect arg: ' + mode + ' in ' + message.guild.name);
 			message.reply(':warning: This argument [**' + mode + '**] does not exist.');
 			return;
 		}
