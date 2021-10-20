@@ -20,7 +20,7 @@ module.exports = {
 			}).on('error', err => {
 				console.log('Error trying to execute Command: ' + command , err);
 				message.reply('<:Error:849215023264169985> Error trying to execute command. Please check if rcon is enabled in the `server.properties` file.');
-				resolve();
+				resolve(false);
 			});
 		})
 	},
@@ -35,7 +35,7 @@ module.exports = {
 				if(err) {
 					console.log('Error reading rcon File');
 					message.reply('<:Error:849215023264169985> Could not find rcon credentials. Please use `/rcon connect`.');
-					resolve();
+					resolve(false);
 				} else {
 					// @ts-ignore
 					const rconData = JSON.parse(rconJson);
@@ -60,7 +60,7 @@ module.exports = {
 					}).on('error', err => {
 						console.log('Error trying to execute Command: ' + command , err);
 						message.reply('<:Error:849215023264169985> Error trying to execute command. Please check if rcon is enabled in the `server.properties` file.');
-						resolve();
+						resolve(false);
 					});
 				}
 			})
