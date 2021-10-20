@@ -6,14 +6,21 @@ Look at the Minecraft server stats, advancements and inventorys of any member: W
 **NOTE**: You MUST have **FTP credentials** for your server. Many server hosts show the FTP credentials in their server dashboard.
 
 # IMPORTANT COMMANDS
-**^help**: Detailed description and usage of every command!
-**^stats**: Look up minecraft stats of any member.
-**^advancements**: Look up minecraft-advamcements of any member.
-**^connect**: Connect your Discord Account with your Minecraft Account.
-**^ftp**: Connect your Minecraft Server with the bot. You need: ftpUsername, ftpHost, ftpPort, ftpPassword, directory path to world, version the server is on
-**^txp load**: Create a minecraft loading screen.
-**^disable**: Disable specific commands, advancements or stats.
-**^inventory**: Look in the inventory of any member.
+**/help**: Detailed description and usage of every command!
+
+**/stats**: Look up minecraft stats of any member.
+
+**/advancements**: Look up minecraft-advamcements of any member.
+
+**/connect**: Connect your Discord Account with your Minecraft Account.
+
+**/ftp**: Connect your Minecraft Server with the bot. You need: ftpUsername, ftpHost, ftpPort, ftpPassword, directory path to world, version the server is on
+
+**/txp load**: Create a minecraft loading screen.
+
+**/disable**: Disable specific commands, advancements or stats.
+
+**/inventory**: Look in the inventory of any member.
 
 # SECURITY INFORMATION
 The Bot will NOT use the ftp credentials for anything else than downloading files needed to correctly execute the commands. This Bot is **OPEN SOURCE** and you can find the code in this [Github](https://github.com/Lianecx/Smp-Minecraft-Bot).
