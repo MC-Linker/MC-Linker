@@ -1,5 +1,5 @@
 Look at the minecraft stats, advancements and inventorys of every member! ALso includes texture pack tools. New features are added on a regular basis.
-Add the bot here: https://discord.ly/smp-minecraft-bot or here: https://top.gg/bot/712759741528408064
+Add the bot here: https://top.gg/bot/712759741528408064
 
 # DESCRIPTION
 Look at the Minecraft server stats, advancements and inventorys of any member: When you killed the ender dragon, how long your friend has played on the server or even how many raids you have won, this bot can show it all. You can also disable specific stats.
