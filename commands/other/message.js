@@ -1,5 +1,5 @@
-const rcon = require('../../rcon.js');
-const utils = require('../../utils.js');
+const plugin = require('../../api/plugin');
+const utils = require('../../utils');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
@@ -21,6 +21,7 @@ module.exports = {
                 .setRequired(true)
             ),
     async execute(message, args) {
+        await message.deferReply({ ephemeral: true });
         let taggedName;
         let userName;
 
@@ -77,11 +78,8 @@ module.exports = {
             }
         ]*/
 
-        const response = await rcon.executeGetCredentials(`tellraw ${userName} ["",{"text":"Discord","bold":true,"italic":true,"color":"blue","clickEvent":{"action":"open_url","value":"https://top.gg/bot/712759741528408064"},"hoverEvent":{"action":"show_text","contents":["Message sent using ",{"text":"SMP-Bot","color":"gold"}]}},{"text":" | ${message.member.user.tag} whispers to you: ${chatMsg}","italic":true}]`, message);
-        if(!response) {
-            message.reply(`<:Checkmark:849224496232660992> Sent Message to ${taggedName}:\n**${chatMsg}**`);
-        } else {
-            message.reply('<:Error:849215023264169985> Error:\n' + response);
-        }
+        const command = await plugin.execute(`tellraw ${userName} ["",{"text":"Discord","bold":true,"italic":true,"color":"blue","clickEvent":{"action":"open_url","value":"https://top.gg/bot/712759741528408064"},"hoverEvent":{"action":"show_text","contents":["Message sent using ",{"text":"SMP-Bot","color":"gold"}]}},{"text":" | ${message.member.user.tag} whispers to you: ${chatMsg}","italic":true}]`, message);
+        if(!command) return;
+        message.reply({ content: `<:Checkmark:849224496232660992> Sent Message to ${taggedName}:\n**${chatMsg}**`, ephemeral: true });
 	}
 }

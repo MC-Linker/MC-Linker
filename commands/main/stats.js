@@ -1,7 +1,8 @@
 const fs = require('fs');
-const ftp = require('../../ftp');
+const ftp = require('../../api/ftp');
 const Discord = require('discord.js');
 const utils = require('../../utils');
+const canvas = require('canvas');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
@@ -16,119 +17,119 @@ module.exports = {
             .addSubcommand(subcommand =>
                 subcommand.setName('custom')
                 .setDescription('A multitude of generic statistics related to a player\'s actions.')
-                .addUserOption(option => 
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set a custom stat. All stats of the custom category => /help stats')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set a custom stat. All stats of the custom category => /help stats')
-                    .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('mined')
                 .setDescription('Statistic related to the number of blocks a player mined.')
-                .addUserOption(option => 
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set a block (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set a block (english, space = _ )')
-                    .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('broken')
                 .setDescription('Statistics related to the number of items a player ran their durability negative.')
-                .addUserOption(option => 
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set an item (english, space = _ )')
-                    .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('crafted')
                 .setDescription('Statistics related to the number of items crafted, smelted, etc.')
-                .addUserOption(option => 
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set an item (english, space = _ )')
-                    .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('used')
                 .setDescription('Statistics related to the number of block or item used.')
-                .addUserOption(option => 
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item or block (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set an item or block (english, space = _ )')
-                    .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('picked_up')
                 .setDescription('Statistics related to the number of dropped items a player picked up.')
-                .addUserOption(option => 
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set an item (english, space = _ )')
-                    .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('dropped')
                 .setDescription('Statistics related to the number of items that dropped.')
-                .addUserOption(option => 
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an item (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set an item (english, space = _ )')
-                    .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('killed')
                 .setDescription('Statistics related to the number of entities a player killed.')
-                .addUserOption(option => 
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an entity (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set an entity (english, space = _ )')
-                    .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('killed_by')
                 .setDescription('Statistics related to the times of a player being killed by entities.')
-                .addUserOption(option =>
+                .addStringOption(option =>
+                    option.setName('stat')
+                    .setDescription('Set an entity (english, space = _ )')
+                    .setRequired(true)
+                ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
                     .setRequired(true)
-                ).addStringOption(option =>
-                    option.setName('stat')
-                    .setDescription('Set an entity (english, space = _ )')
-                    .setRequired(false)
                 )
             ),
     async execute(message, args) {
+        await message.deferReply();
         const statType = (args[1]);
         const statObject = (args[2]);
         let taggedName;
-        console.log(args)
 
-        if(!statType || !statObject || !args[0]) {
+        if(!statType || !args[0]) {
             console.log(message.member.user.tag + ' executed /stats incorrect in ' + message.guild.name);
             message.reply(":warning: Wrong Usage! Check `/help stats` for correct usage!");
             return;
@@ -158,7 +159,7 @@ module.exports = {
             return;
         }
 
-        const worldPath = await utils.getWorldPath(message);
+        const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
 
         const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
@@ -179,9 +180,9 @@ module.exports = {
                 try {
                     const ftpData = JSON.parse(ftpJson);
                     const statData = JSON.parse(statJson);
-                    const version = parseInt(ftpData.version.split('.').splice(1, 1));
-
+                    const version = parseInt(ftpData.version.split('.').shift());
                     let searchName;
+
                     if(version >= 13) searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject];
                     else if(version <= 12) searchName = statData["stat." + statType + '.minecraft.' + statObject];
 
@@ -191,7 +192,6 @@ module.exports = {
                         else if(statObject === 'play_time' || statObject === 'time_played') statMessage = `has played for **${((searchName / 20) / 3600).toFixed(3)}** hours`;
                         else if(statType === 'custom') statMessage = '**' + statObject + ' ' + searchName + '** ';
                         else statMessage = 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**';
-                        console.log(statObject, statMessage)
 
                         const statEmbed = new Discord.MessageEmbed()
                             .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')

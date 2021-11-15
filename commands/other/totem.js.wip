@@ -1,0 +1,31 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const fetch = require('fetch');
+const Canvas = require('canvas');
+const utils = require('../../utils');
+
+module.exports = {
+    name: 'totem',
+    aliases: [],
+    usage: 'totem <user (optional)>',
+    example: '',
+    description: 'Create a minecraft totem which you can use in your texture pack from a skin.',
+    data: new SlashCommandBuilder()
+        .setName('totem')
+        .setDescription('Create a minecraft totem from a skin.')
+        .addStringOption(option =>
+            option.setName('user')
+            .setDescription('Set the username of the player you want to get the totem.')
+        ),
+    async execute(message, args) {
+        await message.deferReply();
+        let uuidv4 = args[0];
+        if(!uuidv4) uuidv4 = await utils.getUUIDv4(message.member.user, message);
+
+        // @ts-ignore
+        const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuidv4}/body/0.0/0/json`);
+        const { skin: skinBase64 } = await skinJson.json();
+        const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+        const totemCanvas = Canvas.createCanvas(16, 16);
+        const totemCtx = totemCanvas.getContext('2d');
+	}
+}

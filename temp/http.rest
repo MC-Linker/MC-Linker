@@ -1,0 +1,35 @@
+GET http://localhost:21000
+
+###
+
+POST http://localhost:21000/file/put/?hash=hash&path=/path/to/file
+
+###
+
+POST http://localhost:21000/file/get/?hash=hash
+
+fileStream
+
+###
+
+GET http://localhost:21000/file/find/?hash=hash&file=level.dat&path=/path/to/file&depth=4
+
+###
+
+GET http://localhost:21000/command/?hash=hash&cmd=tellraw+Lianecx+"The+BOIIISS+are+here!"
+
+###
+
+GET http://localhost:21000/chat/?hash=hash&msg=bruhhhhh&username=Lianecx
+
+###
+
+POST http://localhost:21000/connect/
+
+{
+    "hash": "test",
+    "chat": false,
+    "guild": "844156404477853716",
+}
+
+###

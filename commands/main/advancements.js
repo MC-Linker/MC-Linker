@@ -1,5 +1,5 @@
 const fs = require('fs');
-const ftp = require('../../ftp');
+const ftp = require('../../api/ftp');
 const Discord = require('discord.js');
 const utils = require('../../utils');
 const { SlashCommandBuilder } = require('@discordjs/builders');
@@ -166,6 +166,7 @@ module.exports = {
                     )
             ),
     async execute(message, args) {
+        await message.deferReply();
         const mode = (args[1]);
         const object = (args[2]);
         let taggedName;
@@ -200,7 +201,7 @@ module.exports = {
             return; 
         }
 
-        const worldPath = await utils.getWorldPath(message);
+        const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
 
         const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
@@ -232,7 +233,7 @@ module.exports = {
                     let criteria = Object.keys(advancementData[filteredKeys]['criteria']).join("");
                     let searchName = advancementData[filteredKeys]['criteria'][criteria];
                     let done = advancementData[filteredKeys]['done'];
-                    searchName = searchName.replace(' +0000', '');
+                    searchName = searchName.replace(' +0100', '');
 
                     const amEmbed = baseEmbed.addField('Criteria', criteria).addField('unlocked on', searchName);
 

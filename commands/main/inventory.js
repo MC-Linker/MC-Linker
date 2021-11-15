@@ -1,7 +1,7 @@
 const utils = require('../../utils');
 const nbt = require('nbt');
 const fs = require('fs');
-const ftp = require('../../ftp');
+const ftp = require('../../api/ftp');
 const Canvas = require('canvas');
 const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
@@ -22,6 +22,7 @@ module.exports = {
                 .setRequired(true)
             ),
     async execute(message, args) {
+        await message.deferReply();
         if(!args[0]) {
             console.log(message.member.user.tag + ' executed /inv without args in ' + message.guild.name);
             message.reply(':warning: Please specify the user you want to get the inventory from.');
@@ -39,7 +40,7 @@ module.exports = {
 		const uuidv4 = await utils.getUUIDv4(args[0], message);
         if(!uuidv4) return;
 
-        const worldPath = await utils.getWorldPath(message);
+        const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
 
         const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuidv4}.dat`, `./playernbt/${uuidv4}.dat`, message);
@@ -82,15 +83,15 @@ module.exports = {
                     const itemImgName = id.split('minecraft:').pop();
                     const count = inventory[i]['Count'].value;
                     const damage = inventory[i]['tag']?.value['Damage']?.value;
-                    const enchantments = inventory[i]['tag']?.value['Enchantments']?.value['value'];
+                    const enchantments = inventory[i]['tag']?.value['Enchantments']?.value.value;
 
                     if(enchantments) {
                         let invField = `\n**Slot ${slot}: ${id.split('minecraft:').pop()}:**`;
-                        for(let b = 0; b < enchantments.length; b++) {
-                            if(enchantments[b]['lvl'].value === 1){
-                                invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()}`;
+                        for(let j = 0; j < enchantments.length; j++) {
+                            if(enchantments[j]['lvl'].value === 1){
+                                invField += `\n-${enchantments[j]['id'].value.split('minecraft:').pop()}`;
                             } else {
-                                invField += `\n-${enchantments[b]['id'].value.split('minecraft:').pop()} ${enchantments[b]['lvl'].value}`;
+                                invField += `\n-${enchantments[j]['id'].value.split('minecraft:').pop()} ${enchantments[j]['lvl'].value}`;
                             }
                         }
                         invEmbed.addField('\u200B', invField, true);

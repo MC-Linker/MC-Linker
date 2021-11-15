@@ -25,6 +25,7 @@ module.exports = {
                       .setRequired(true)
             ),
     async execute(message, args) {
+        await message.deferReply();
         let font = args?.shift().replaceAll('_', '');
         const color = args?.shift().toLowerCase();
         const text = args.join(' ');

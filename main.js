@@ -5,6 +5,7 @@ const { prefix, token, topggToken } = require('./config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS] });
 const fs = require('fs');
+const plugin = require('./api/plugin');
 const { AutoPoster } = require('topgg-autoposter');
 
 if(topggToken) {
@@ -15,10 +16,18 @@ if(topggToken) {
     });
 }
 
-client.once('ready', () => {
+client.once('ready', async () => {
     console.log('Bot logged in as ' + client.user.tag + ' and with prefix: ' + prefix + '\nBot on ' + client.guilds.cache.size + ' server.');
-    client.user.setActivity(prefix + 'help', {type: "LISTENING"});
-})
+    client.user.setActivity('/help', { type: 'LISTENING' });
+    if(process.argv.slice(2).shift() === '--delete') {
+        const cmds = await client.application.commands.fetch({ guildId: '844156404477853716' });
+        cmds.forEach(cmd => {
+            cmd.delete();
+            console.log('Deleted ' + cmd.name.toUpperCase());
+        });
+    }
+    plugin.loadExpress(client);
+});
 
 /*async function editFile(path, valueToChange, expression) {
     const content = JSON.parse(await fs.readFile(path));
@@ -38,14 +47,7 @@ client.on("guildDelete", guild => {
         } else {
             console.log('Successfully deleted ftpFile of guild: ' + guild.name);
         }
-    })
-    fs.rm(`./rcon/${guild.id}.json`, err => {
-        if(err) {
-            console.log('No rconFile found for guild: ' + guild.name);
-        } else {
-            console.log('Successfully deleted rconFile of guild: ' + guild.name);
-        }
-    })
+    });
 });
 
 client.commands = new Discord.Collection();
@@ -59,6 +61,7 @@ for (const folder of commandFolders) {
 }
 
 client.on('messageCreate', message => {
+    plugin.chat(message);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -173,12 +176,12 @@ client.on('interactionCreate', async interaction => {
 
         const args = [];
         if(interaction.options._group) args.push(interaction.options._group);
-        if(interaction.commandName === 'ftp' && interaction.options._subcommand === 'connect') {}
-        else if(interaction.options._subcommand) args.push(interaction.options._subcommand);
+        if(interaction.options._subcommand) args.push(interaction.options._subcommand);
         interaction.options._hoistedOptions.forEach(option => {
-            if (option.value !== interaction.options.getUser('user')?.id) args.push(option.value);
-            else args.splice(0, 0, option.value);
-        })
+            if (option.value === interaction.options.getUser('user')?.id) args.splice(0, 0, option.user);
+            else if(option[option.type.toLowerCase()]) args.push(option[option.type.toLowerCase()]);
+            else args.push(option.value);
+        });
 
         interaction.reply = function (content) { 
             return interaction.editReply(content);
@@ -205,7 +208,6 @@ client.on('interactionCreate', async interaction => {
                 interaction.reply({ embeds: [helpEmbed], allowedMentions: { repliedUser: false } });
             } else {
                 let commandName = (args[0]).toLowerCase();
-                if(commandName === 'mod') commandName = 'Moderation';
 
                 let helpEmbed = new Discord.MessageEmbed()
                     .setTitle('Help Menu')
@@ -229,7 +231,7 @@ client.on('interactionCreate', async interaction => {
                         });
                         helpEmbed.addField('\u200B', '**More info to a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](https://discord.gg/rX36kZUGNK)');
                         interaction.reply({ embeds: [helpEmbed] });
-                    })
+                    });
                 } else {
                     console.log(interaction.member.user.tag + ' executed /help ' + commandName + ' in ' + interaction.guild.name);
 
@@ -268,7 +270,6 @@ client.on('interactionCreate', async interaction => {
             fs.access('./disable/commands/' + interaction.guild.id + '_' + command.name, fs.constants.F_OK, async err => {
                 if (err) {
                     try {
-                        await interaction.deferReply();
                         command.execute(interaction, args);
                     } catch (err) {
                         console.log(interaction.member.user.tag + ' executed slashCommand ' + command.name + '. Couldnt execute that command!', err);
@@ -281,7 +282,10 @@ client.on('interactionCreate', async interaction => {
                 }
             });
         }
+
+
     } else if (interaction.isButton()) {
+        await interaction.deferUpdate();
         if (interaction.customId.startsWith('disable')) {
             if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 const command = interaction.customId.split('_').pop();
@@ -289,11 +293,11 @@ client.on('interactionCreate', async interaction => {
                 fs.writeFile('./disable/commands/' + interaction.guild.id + "_" + command, '', err => {
                     if (err) {
                         console.log('Error writing commandDisableFile ', err);
-                        interaction.message.reply(`<@${interaction.member.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
+                        interaction.editReply(`<@${interaction.member.user.id}>, <:Error:849215023264169985> Couldn't disable Command!`);
                         return;
                     } else {
                         console.log('Successfully wrote commandDisableFile: ' + './disable/commands/' + interaction.guild.id + "_" + command);
-                        interaction.message.reply(`<@${interaction.member.user.id}>, <:Checkmark:849224496232660992> Disabling of command [**${command}**] succesful.`);
+                        interaction.editReply(`<@${interaction.member.user.id}>, <:Checkmark:849224496232660992> Disabling of command [**${command}**] succesful.`);
                     }
                 })
 
@@ -315,11 +319,9 @@ client.on('interactionCreate', async interaction => {
                     .setDescription('```diff\n- [COMMAND DISABLED]```')
                     .setColor('DARK_RED');
                 interaction.editReply({ embeds: [helpEmbed], components: [enableRow] });
-
-                interaction.deferUpdate();
             } else {
                 console.log('Clicker of ' + interaction.customId + ' doesnt have admin.');
-                interaction.message.reply(':no_entry: You must be an administrator to use that button!');
+                interaction.editReply(':no_entry: You must be an administrator to use that button!');
                 return;
             }
 
@@ -330,22 +332,22 @@ client.on('interactionCreate', async interaction => {
                 fs.rm('./disable/commands/' + interaction.guild.id + "_" + command, err => {
                     if(err) {
                         console.log('Error deleting commandDisableFile ', err);
-                        interaction.message.reply(`<@${interaction.member.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
+                        interaction.editReply(`<@${interaction.member.user.id}>, <:Error:849215023264169985> Couldn't enable Command! Is it already enabled?`); 
                         return;
                     } else {
                         console.log('Successfully deleted commandDisableFile: ' + './disable/commands/' + interaction.guild.id + "_" + command);
-                        interaction.message.reply(`<@${interaction.member.user.id}>, <:Checkmark:849224496232660992> Enabling of command [**${command}**] succesful.`, true);
+                        interaction.editReply(`<@${interaction.member.user.id}>, <:Checkmark:849224496232660992> Enabling of command [**${command}**] succesful.`, true);
                     }
                 });
 
                 const disableRow = new Discord.MessageActionRow()
-                        .addComponents(
-                            new Discord.MessageButton()
-                                .setStyle('DANGER')
-                                .setCustomId('disable_' + command)
-                                .setLabel('Disable this command!')
-                                .setEmoji('<:Error:849215023264169985>'),
-                        );
+                    .addComponents(
+                        new Discord.MessageButton()
+                            .setStyle('DANGER')
+                            .setCustomId('disable_' + command)
+                            .setLabel('Disable this command!')
+                            .setEmoji('<:Error:849215023264169985>'),
+                    );
 
                 const commandObject = client.commands.get(command);
                 helpEmbed = new Discord.MessageEmbed()
@@ -356,11 +358,9 @@ client.on('interactionCreate', async interaction => {
                     .setDescription('```diff\n+ [Command enabled]```')
                     .setColor('GREEN');
                 interaction.editReply({ embeds: [helpEmbed], components: [disableRow] })
-
-                interaction.deferUpdate();
             } else {
                 console.log('Clicker of ' + interaction.customId + ' doesnt have admin.');
-                interaction.message.reply(':no_entry: You must be an administrator to use that button!');
+                interaction.editReply(':no_entry: You must be an administrator to use that button!');
                 return;
             }
         }
