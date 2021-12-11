@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
 const fs = require('fs');
-const utils = require('../../utils');
+const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
 
 module.exports = {
@@ -19,21 +19,17 @@ module.exports = {
                 .setRequired(true)
             ),
     async execute(message, args) {
-        let channel = args[0];
-        if(!channel) {
-            console.log(`${message.member.user.tag} executed /chatchannel without args in ${message.guild.name}`);
-            message.reply(':warning: Please mention a channel.');
-            return;
-        } else if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+        let channel = message.mentions.channels?.first() ?? args[0];
+
+        if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
             console.log(`${message.member.user.tag} executed /chatchannel ${channel.name} without admin in ${message.guild.name}`);
             message.reply(':warning: You have to be an admin to execute this command.');
             return;
-        } else if(!fs.existsSync(`./ftp/${message.guild.id}.json`)) {
-            console.log(`${message.member.user.tag} executed /chatchannel ${channel.name} without connection in ${message.guild.name}`);
-            message.reply(':warning: You have to connect your server using `/connect plugin` to use the chat feature.');
+        } else if(!channel) {
+            console.log(`${message.member.user.tag} executed /chatchannel without args in ${message.guild.name}`);
+            message.reply(':warning: Please mention a channel.');
             return;
         }
-        if(message.mentions.channels?.size) channel = message.mentions.channels.first();
 
         console.log(`${message.member.user.tag} executed /chatchannel ${channel.name} in ${message.guild.name}`);
 
@@ -47,17 +43,17 @@ module.exports = {
                     .setPlaceholder('Select up to 8 message types.')
                     .addOptions([
                         {
-                            label: 'Chatmessages',
+                            label: 'Chat messages',
                             description: 'Send a message every time a player chats.',
                             value: '0',
                         },
                         {
-                            label: 'Joinmessages',
+                            label: 'Join messages',
                             description: 'Send a message every time a player joins the server.',
                             value: '1',
                         },
                         {
-                            label: 'Leavemessages',
+                            label: 'Leave messages',
                             description: 'Send a message every time a player leaves the server.',
                             value: '2',
                         },
@@ -67,7 +63,7 @@ module.exports = {
                             value: '3',
                         },
                         {
-                            label: 'Deathmessages',
+                            label: 'Death messages',
                             description: 'Send a message every time a player dies.',
                             value: '4',
                         },
@@ -100,7 +96,7 @@ module.exports = {
                 if(!connectPlugin) return;
 
                 const pluginJson = {
-                    "ip": connectPlugin.ip + ':21000',
+                    "ip": `${connectPlugin.ip}:11111`,
                     "version": connectPlugin.version.split('.')[1],
                     "path": connectPlugin.path,
                     "hash": connectPlugin.hash,
@@ -111,18 +107,16 @@ module.exports = {
                     "protocol": "plugin"
                 }
 
-                fs.writeFile(`./ftp/${message.guild.id}.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
+                fs.writeFile(`./connections/servers/${message.guild.id}.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
                     if(err) {
-                        console.log('Error writing pluginFile')
-                        menu.reply('<:Error:849215023264169985> Couldnt save channel. Please try again.');
+                        console.log('Error writing pluginFile', err)
+                        menu.reply('<:Error:849215023264169985> Couldn\'t save channel. Please try again.');
                         return;
                     }
                     console.log('Successfully connected');
                     menu.reply('<:Checkmark:849224496232660992> Successfully set the chat channel');
                 });
-            } else {
-                menu.reply({ content: ':warning: Only the command sender can select message types.', ephemeral: true });
-            }
+            } else menu.reply({ content: ':warning: Only the command sender can select message types.', ephemeral: true });
         });
         collector.on('end', collected => {
             if(!collected.size) message.reply('Select all message types you want the bot to send. (Time ran out).');

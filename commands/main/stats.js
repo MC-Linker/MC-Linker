@@ -1,8 +1,7 @@
 const fs = require('fs');
 const ftp = require('../../api/ftp');
 const Discord = require('discord.js');
-const utils = require('../../utils');
-const canvas = require('canvas');
+const utils = require('../../api/utils');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
@@ -123,39 +122,60 @@ module.exports = {
                     .setRequired(true)
                 )
             ),
-    async execute(message, args) {
-        await message.deferReply();
-        const statType = (args[1]);
-        const statObject = (args[2]);
-        let taggedName;
+    autocomplete(interaction) {
+        //TODO minecraft-data npm?
+        const subcommand = interaction.options.getSubcommand();
+        const focused = interaction.options.getFocused().toLowerCase();
+        fs.readdir('./images/minecraft', (err, images) => {
+            const matchingItems = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
 
-        if(!statType || !args[0]) {
-            console.log(message.member.user.tag + ' executed /stats incorrect in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check `/help stats` for correct usage!");
+            const respondArray = [];
+            matchingItems.forEach(item => {
+                const formattedItem = item.replaceAll('_', ' ').replaceAll('.png', '').cap();
+
+                respondArray.push({
+                    name: formattedItem,
+                    value: item.replaceAll('.png', ''),
+                });
+            });
+            if(respondArray.length >= 25) respondArray.length = 25;
+            interaction.respond(respondArray);
+        });
+    },
+    async execute(message, args) {
+        const username = message.mentions.users.first()?.tag ?? args[0];
+        const category = args[1];
+        const stat = args[2];
+
+        if(!username) {
+            console.log(`${message.member.user.tag} executed /stats without username in ${message.guild.name}`);
+            message.reply(':warning: Please specify the player.');
+            return;
+        } else if(!category) {
+            console.log(`${message.member.user.tag} executed /stats without statCategory in ${message.guild.name}`);
+            message.reply(':warning: Please specify the stat category.\n(`custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`)');
+            return;
+        } else if(!stat) {
+            console.log(`${message.member.user.tag} executed /stats without stat in ${message.guild.name}`);
+            message.reply(':warning: Please specify the stat.');
             return;
         }
 
-        if(!message.mentions.users.size) {
-            taggedName = (args[0]);
-        } else {
-            taggedName = message.mentions.users.first().tag;
-        }
-        console.log(message.member.user.tag + ' executed /stats ' + statType + ' ' + statObject + ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
+        console.log(`${message.member.user.tag} executed /stats ${username} ${category} ${stat} in ${message.guild.name}`);
 
-        const uuidv4 = await utils.getUUIDv4(args[0], message);
+        const uuidv4 = await utils.getUUIDv4(args[0], message.mentions.users.first()?.id, message);
         if(!uuidv4) return;
 
-
-        let categoryDisabled = fs.existsSync('./disable/stats/' + message.guild.id + "_" + statType);
+        const categoryDisabled = fs.existsSync(`./disable/stats/${message.guild.id}_${category}`);
         if(categoryDisabled === true) {
-            console.log('Category [' + statType + '] disabled.');
-            message.reply(':no_entry: Stat [**' + statType + '**] disabled!');
+            console.log(`Category [${category}] disabled.`);
+            message.reply(`:no_entry: Stat category [**${category}**] disabled!`);
             return;
         }
-        let objectDisabled = fs.existsSync('./disable/stats/' + message.guild.id + "_" + statObject);
-        if(objectDisabled === true) {
-            console.log('Object [' + statObject + '] disabled.');
-            message.reply(':no_entry: Stat [**' + statObject + '**] disabled!');
+        const statDisabled = fs.existsSync(`./disable/stats/${message.guild.id}_${stat}`);
+        if(statDisabled === true) {
+            console.log(`Object [${stat}] disabled.`);
+            message.reply(`:no_entry: Stat [**${stat}**] disabled!`);
             return;
         }
 
@@ -165,58 +185,50 @@ module.exports = {
         const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
         if(!statFile) return;
 
-        fs.readFile('./stats/' + uuidv4 + '.json', 'utf8', (err, statJson) => {
-            if(err) {
+        fs.readFile(`./stats/${uuidv4}.json`, 'utf8', async (err, statJson) => {
+            if (err) {
                 message.reply('<:Error:849215023264169985> Could not find stat file. Member most likely never joined the server.')
                 console.log('Error reading stat file from disk: ', err);
                 return;
             }
-            fs.readFile('./ftp/' + message.guild.id + '.json', 'utf8', (err, ftpJson) => {
-                if(err) {
-                    message.reply('<:Error:849215023264169985> Could not find ftp file. Please contact a server admin.')
-                    console.log('Error reading ftp file from disk: ', err);
-                    return;
+            try {
+                const statData = JSON.parse(statJson);
+                const version = await utils.getVersion(message.guild.id, message);
+
+                let statMatch;
+                if (version >= 13) statMatch = statData.stats[`minecraft:${category}`][`minecraft:${stat}`];
+                else if (version <= 12) statMatch = statData[`stat.${category}.minecraft.${stat}`];
+
+                if (statMatch) {
+                    let statMessage;
+                    if (category === 'killed_by') statMessage = `was killed **${statMatch}** times by a **${stat}**`;
+                    else if (stat === 'play_time' || stat === 'time_played') statMessage = `has played for **${((statMatch / 20) / 3600).toFixed(3)}** hours`;
+                    else if (category === 'custom') statMessage = `**${stat} ${statMatch}**`;
+                    else statMessage = `has **${category} ${statMatch} ${stat}s**`;
+
+                    const statEmbed = new Discord.MessageEmbed()
+                        .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
+                        .setColor('DEFAULT')
+                        .addField(username, statMessage);
+
+                    console.log(`Sent stat ${category} ${stat} of Player: ${username}`);
+                    fs.access(`./images/${stat}}.png`, err => {
+                        if (err) {
+                            console.log(`No Image available for ${stat}`);
+                            message.reply({ embeds: [statEmbed] });
+                            return;
+                        }
+                        statEmbed.setImage(`attachment://${stat}.png`);
+                        message.reply({ embeds: [statEmbed], files: [`./images/${stat}.png`] });
+                    });
+                } else {
+                    console.log("No Match found!");
+                    message.reply(':warning: Stat is either 0 or misspelled!');
                 }
-                try {
-                    const ftpData = JSON.parse(ftpJson);
-                    const statData = JSON.parse(statJson);
-                    const version = parseInt(ftpData.version.split('.').shift());
-                    let searchName;
-
-                    if(version >= 13) searchName = statData.stats["minecraft:" + statType]["minecraft:" + statObject];
-                    else if(version <= 12) searchName = statData["stat." + statType + '.minecraft.' + statObject];
-
-                    if(searchName) {
-                        let statMessage;
-                        if (statType === 'killed_by') statMessage = 'was killed **' + searchName + '** times by a **' + statObject + '**';
-                        else if(statObject === 'play_time' || statObject === 'time_played') statMessage = `has played for **${((searchName / 20) / 3600).toFixed(3)}** hours`;
-                        else if(statType === 'custom') statMessage = '**' + statObject + ' ' + searchName + '** ';
-                        else statMessage = 'has **' + statType + ' ' + searchName + ' ' + statObject + 's**';
-
-                        const statEmbed = new Discord.MessageEmbed()
-                            .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                            .setColor('DEFAULT')
-                            .addField(taggedName, statMessage);
-
-                        console.log('Sent stat ' + statType + ' ' + statObject + ' of Player: ' + taggedName);
-                        fs.access('./images/' + statObject + '.png', err => {
-                            if(err) {
-                                console.log('No Image available for ' + statObject);
-                                message.reply({ embeds: [statEmbed] });
-                                return;
-                            }
-                            statEmbed.setImage('attachment://' + statObject + '.png');
-                            message.reply({ embeds: [statEmbed], files: [`./images/${statObject}.png`] });
-                        });
-                    } else {
-                        console.log("No Match found!");
-                        message.reply(':warning: No Match found! Stat is either 0 or mispelled!');
-                    }
-                } catch (err) {
-                    console.log('Error parsing Stat JSON string: ', err);
-                    message.reply('<:Error:849215023264169985> ' + taggedName + ' has never done anything in this category.');
-                }
-            })
-        })
+            } catch (err) {
+                console.log('Error parsing Stat JSON string: ', err);
+                message.reply(`<:Error:849215023264169985> ${username} has never done anything in this category.`);
+            }
+        });
     }
 }

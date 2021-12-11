@@ -1,11 +1,8 @@
 advancements/f134e0bb-eb3e-4714-8c88-c13a35f694cc.json
-connections/675658958383349770.json
+connections/users/675658958383349770.json
 stats/f134e0bb-eb3e-4714-8c88-c13a35f694cc.json
-ftp/844156404477853716.json
+connections/servers/844156404477853716.json
 node_modules
 playernbt/f134e0bb-eb3e-4714-8c88-c13a35f694cc.dat
-bans/844156404477853716.json
-rcon/844156404477853716.json
-properties/844156404477853716.properties
-log.txt
 config.json
+.idea

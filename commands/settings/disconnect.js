@@ -1,11 +1,13 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs =  require('fs');
+const plugin = require('../../api/plugin');
+const utils = require("../../api/utils");
 
 module.exports = {
     name: 'disconnect',
     aliases: [],
     usage: 'disconnect ftp/rcon/plugin/user',
-    example: '/disconnect ftp **//** /disconnect user',
+    example: '/disconnect ftp **//** /disconnect account',
     description: 'Disconnect your minecraft java edition server or minecraft account from the bot and delete all saved credentials. To connect again, use `/connect` again.',
     data: new SlashCommandBuilder()
             .setName('disconnect')
@@ -15,40 +17,54 @@ module.exports = {
                 .setDescription('Disconnect from ftp.')
             ).addSubcommand(subcommand =>
                 subcommand.setName('plugin')
-                .setDescription('Disconnect the minecraft-plugin.')
+                .setDescription('Disconnect from the minecraft-plugin.')
             ).addSubcommand(subcommand =>
-                subcommand.setName('user')
+                subcommand.setName('account')
                 .setDescription('Disconnect your minecraft-account.')
             ),
-    execute(message, args) {
-        const mode = args[0];
-        if(!mode) {
-            console.log(message.member.user.tag + ' executed /disconnect without args in ' + message.guild.name);
-            message.reply(':warning: Please set the connection method (ftp/rcon/plugin/user) from which you want to get disconnected.');
-        }
-        console.log(`${message.member.user.tag} executed /disconnect ${mode} in ${message.guild.name}`);
+    async execute(message, args) {
+        const method = args[0];
 
+        if(!method) {
+            console.log(`${message.member.user.tag} executed /disconnect without method in ${message.guild.name}`);
+            message.reply(':warning: Please set the connection method (`ftp`, `plugin`, `user`) from which you want to get disconnected.');
+            return;
+        }
         let path;
-        switch(mode) {
-            case 'ftp':
-                path = `./ftp/${message.guild.id}.json`;
-                break;
-            case 'plugin':
-                path = `./ftp/${message.guild.id}.json`;
-                break;
-            case 'user':
-                path = `./connections/${message.member.user.id}.json`;
-                break;
+        if(method === 'ftp' || method === 'plugin') path = `./connections/servers/${message.guild.id}.json`;
+        else if(method === 'account') path = `./connections/users/${message.member.user.id}.json`;
+        else {
+            console.log(`${message.member.user.tag} executed /disconnect with wrong method in ${message.guild.name}`);
+            message.reply(':warning: You can only disconnect from `ftp`, `plugin` or `account`.');
+            return;
+        }
+
+        console.log(`${message.member.user.tag} executed /disconnect ${method} in ${message.guild.name}`);
+
+
+        if(method === 'plugin' || method === 'ftp') {
+            const protocol = await utils.getProtocol(message.guildId, message);
+            if(!protocol) return;
+
+            if(protocol !== method) {
+                console.log(`Wrong protocol ${protocol}`);
+                message.reply(`:warning: Couldn't disconnect from the **${method}** connection because you are **not connected**.`);
+                return;
+            }
+        }
+        if(method === 'plugin') {
+            const disconnect = await plugin.disconnect(message);
+            if(!disconnect) return;
         }
 
         fs.rm(path, err => {
             if(err) {
-                console.log(`Error trying to delete ${mode} connection-file.`, err);
-                message.reply(`:warning: Couldnt disconnect the ${mode.toUpperCase()} connection to this bot. You are most likely **not connected**.`);
+                console.log(`Error trying to delete ${method} connection file.`, err);
+                message.reply(`:warning: Couldn't disconnect from the **${method}** connection because you are **not connected**.`);
                 return;
             }
-            console.log(`The ${mode} connection to this bot was successfully disconnected.`);
-            message.reply(`<:Checkmark:849224496232660992> ${mode.toUpperCase()} connection to this bot was successfully disconnected.`);
+            console.log(`The ${method} connection to this bot was successfully disconnected.`);
+            message.reply(`<:Checkmark:849224496232660992> The **${method}** connection to this bot was successfully disconnected.`);
         });
 	}
 }

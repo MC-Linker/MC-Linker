@@ -35,50 +35,49 @@ module.exports = {
                     .setRequired(true)
                 )
             ),
-    execute(message, args) {
-        const mode = (args[0]);
-        let object = (args[1]);
+    async execute(message, args) {
+        let type = args[0];
+        let toEnable = args[1];
 
-        if(!mode || !object) {
-            console.log(message.member.user.tag + ' executed /enable wrong in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check `/help enable` for correct usage!");
+        if(!type) {
+            console.log(`${message.member.user.tag} executed /enable without type in ${message.guild.name}`);
+            message.reply(':warning: Please specify the type you want to enable (`commands`, `stats`, `advancements`).');
+            return;
+        } else if(!toEnable) {
+            console.log(`${message.member.user.tag} executed /enable without toEnable in ${message.guild.name}`);
+            message.reply(':warning: Please specify the command, stat or advancement you want to enable.');
             return;
         }
 
-        console.log(message.member.user.tag + ' executed /enable ' + mode + ' ' + object + ' in ' + message.guild.name);
+        console.log(`${message.member.user.tag} executed /enable ${type} ${toEnable} in ${message.guild.name}`);
 
-        let enableMode;
-        if (mode === 'command' || mode === 'cmd' || mode === 'commands' || mode === 'cmds') enableMode = 'commands';
-        else if (mode === 'advancements' || message.client.commands.get('advancements').aliases.includes(mode)) enableMode = 'advancements';
-        else if (mode === 'stats' || message.client.commands.get('stats').aliases.includes(mode)) enableMode = 'stats';
+        if (type === 'command' || type === 'cmd' || type === 'commands' || type === 'cmds') type = 'commands';
+        else if (type === 'advancements' || message.client.commands.get('advancements').aliases.includes(type)) type = 'advancements';
+        else if (type === 'stats' || message.client.commands.get('stats').aliases.includes(type)) type = 'stats';
         else {
-            console.log(message.member.user.tag + ' executed /enable wrong in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check `/help enable` for correct usage!");
+            console.log(`${message.member.user.tag} executed /enable with wrong type in ${message.guild.name}`);
+            message.reply(':warning: You can only enable `commands`, `stats` or `advancements`.');
             return;
         }
 
-        let enObject = object;
-        try {
-            if(enableMode === 'commands') enObject = message.client.commands.find(cmd => cmd.name && cmd.name === object) || message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(object));
-            if(typeof enObject === 'object') enObject = enObject.name;
-            else if(!enObject) {
-                console.log(enableMode + " [" + object + "] doesn't exist.");
-                message.reply(":warning: " + enableMode + " [**" + object + "**] doesn't exist.");
+        if(type === 'commands') {
+            toEnable = ( message.client.commands.get(toEnable) ?? message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(toEnable)) )?.name;
+
+            if(!toEnable) {
+                console.log(`Command [${toEnable}] doesn't exist.`);
+                message.reply(`:warning: Command [**${toEnable}**] doesn't exist.`);
                 return;
             }
-            fs.rm(`./disable/${enableMode}/${message.guild.id}_${enObject}`, err => {
-                if (err) {
-                    console.log(`Error trying to delete ${enableMode} EnableFile of ` + enObject, err);
-                    message.reply(`<:Error:849215023264169985> Could not enable ${enableMode} [**${enObject}**]. Is it already enabled?`);
-                    return;
-                }
-                console.log(`Succesfully deleted ${enableMode} EnableFile [` + `./disable/${enableMode}/${message.guild.id}_${enObject}` + '].');
-                message.reply(`<:Checkmark:849224496232660992> Succesfully enabled ${enableMode} [**` + enObject + '**].');
-            });
-        } catch (err) {
-            console.log(enableMode + " [" + object + "] doesn't exist.", err);
-            message.reply(":warning: " + enableMode + " [**" + object + "**] doesn't exist.");
-            return;
         }
+
+        fs.rm(`./disable/${type}/${message.guild.id}_${toEnable}`, err => {
+            if (err) {
+                console.log(`Error trying to delete ${type} EnableFile of ${toEnable}`, err);
+                message.reply(`<:Error:849215023264169985> Could not enable ${type} [**${toEnable}**]. Is it already enabled?`);
+                return;
+            }
+            console.log(`Successfully deleted ${type} EnableFile [` + `./disable/${type}/${message.guild.id}_${toEnable}` + '].');
+            message.reply(`<:Checkmark:849224496232660992> Successfully enabled ${type} [**${toEnable}**].`);
+        });
 	}
 }

@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 const crypto = require('crypto');
-const utils = require('./../utils');
+const utils = require('./utils');
 const Discord = require('discord.js');
 const express = require('express');
 
@@ -11,9 +11,10 @@ module.exports = {
         app.use(express.json());
 
         app.post('/chat', async (req, res) => {
-            res.send('Success'); 
+            res.send('Success');
 
             const player = req.body.player;
+            const authorURL = `https://mc-heads.net/avatar/${player?.toLowerCase()}.png`;
             const message = req.body.message;
             const channel = req.body.channel;
             const guild = req.body.guild;
@@ -22,19 +23,19 @@ module.exports = {
             switch(req.body.type) {
                 case 0:
                     //CHAT
-                    chatEmbed.setAuthor(player, `https://mc-heads.net/avatar/${player.toLowerCase()}.png`)
+                    chatEmbed.setAuthor(player, authorURL)
                     .setDescription(message)
                     .setColor('BLURPLE');
                     break;
                 case 1:
                     //JOIN
-                    chatEmbed.setAuthor(player, `https://mc-heads.net/avatar/${player.toLowerCase()}.png`)
+                    chatEmbed.setAuthor(player, authorURL)
                     .setDescription(`<:join:905924638083784836> **${player}** joined the game`)
                     .setColor('YELLOW');
                     break;
                 case 2:
                     //LEAVE
-                    chatEmbed.setAuthor(player, `https://mc-heads.net/avatar/${player.toLowerCase()}.png`)
+                    chatEmbed.setAuthor(player, authorURL)
                     .setDescription(`<:leave:905924638100557865> **${player}** left the game`)
                     .setColor('YELLOW');
                     break;
@@ -50,19 +51,19 @@ module.exports = {
                         advancementTitle = message;
                     }
  
-                    chatEmbed.setAuthor(player, `https://mc-heads.net/avatar/${player.toLowerCase()}.png`)
+                    chatEmbed.setAuthor(player, authorURL)
                     .setDescription(`**${player}** has made the advancement: [**${advancementTitle}**]`)
-                    .setColor('RANDOM');
+                    .setColor('LUMINOUS_VIVID_PINK');
                     break;
                 case 4:
                     //DEATH
-                    chatEmbed.setAuthor(player, `https://mc-heads.net/avatar/${player.toLowerCase()}.png`)
+                    chatEmbed.setAuthor(player, authorURL)
                     .setDescription('<:death:905924668735770674> ' + message)
                     .setColor('DARK_PURPLE');
                     break;
                 case 5:
                     //COMMAND
-                    chatEmbed.setAuthor(player, `https://mc-heads.net/avatar/${player.toLowerCase()}.png`)
+                    chatEmbed.setAuthor(player, authorURL)
                     .setDescription(`<a:pinging:891202470833946635> **${player}** has executed the command: [**${message}**]`)
                     .setColor('DARK_GOLD');
                     break;
@@ -89,17 +90,14 @@ module.exports = {
 
     chat: async function(message) {
         //TODO optimize
-        fs.readFile(`./ftp/${message.guild.id}.json`, 'utf-8', async(err, pluginJson) => {
+        fs.readFile(`./connections/servers/${message.guild.id}.json`, 'utf-8', async(err, pluginJson) => {
             if(err) return false;
 
-            if(message.attachments.size) message.attachments.forEach(attach => {
-                message.content += `\n${attach.url}`;
-            });
+            if(message.attachments.size) message.attachments.forEach(attach => message.content += `\n${attach.url}`);
 
             const pluginData = JSON.parse(pluginJson);
-            if(pluginData.channelId === message.channelId && !message.author.bot && pluginData.chat) {
+            if(pluginData.channel === message.channelId && !message.author.bot && pluginData.chat) {
                 try {
-                    // @ts-ignore
                     await fetch(`http://${pluginData.ip}/chat/?hash=${pluginData.hash}&msg=${encodeURIComponent(message.content)}&username=${message.author.username}`);
                     return true;
                 } catch(err) {
@@ -110,13 +108,14 @@ module.exports = {
     },
 
     connect: function(ip, guildId, channelId, types, message) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async resolve => {
             let hash = crypto.randomBytes(32).toString('base64');
 
             let connectJson = {
                 "hash": encodeURIComponent(hash),
                 "chat": false,
                 "guild": guildId,
+                "ip": ip
             };
             if(channelId) {
                 connectJson.chat = true;
@@ -132,12 +131,12 @@ module.exports = {
             }
 
             try {
-                // @ts-ignore
                 const resp = await fetch(`http://${ip}/connect/`, {
                     method: 'POST',
                     body: JSON.stringify(connectJson),
                     headers: { 'Content-Type': 'application/json' }
                 });
+
 
                 if(!await checkStatus(resp, message)) { resolve(false); return; }
                 resolve(resp.json());
@@ -145,21 +144,38 @@ module.exports = {
                 message.reply('<:Error:849215023264169985> Plugin doesnt respond. Please check if the server is online and the plugin enabled.');
                 console.log('Plugin doesnt respond');
                 resolve(false);
-                return;
             }
         });
 
     },
 
-    get: function(getPath, putPath, message) {
-        return new Promise(async (resolve, reject) => {
+    disconnect: function(message) {
+        return new Promise(async resolve => {
             const ip = await utils.getIp(message.guildId, message);
             if(!ip) { resolve(false); return; }
             const hash = await utils.getHash(message.guildId, message);
             if(!hash) { resolve(false); return; }
 
             try {
-                // @ts-ignore
+                const resp = await fetch(`http://${ip}/disconnect/?hash=${hash}&filler`);
+                if(!await checkStatus(resp, message)) { resolve(false); return; }
+                resolve(true);
+            } catch(err) {
+                message.reply('<:Error:849215023264169985> Plugin doesnt respond. Please check if the server is online and the plugin enabled.');
+                console.log('Plugin doesnt respond');
+                resolve(false);
+            }
+        });
+    },
+
+    get: function(getPath, putPath, message) {
+        return new Promise(async resolve => {
+            const ip = await utils.getIp(message.guildId, message);
+            if(!ip) { resolve(false); return; }
+            const hash = await utils.getHash(message.guildId, message);
+            if(!hash) { resolve(false); return; }
+
+            try {
                 const resp = await fetch(`http://${ip}/file/get/?hash=${hash}&path=${getPath}`);
                 if(!await checkStatus(resp, message)) { resolve(false); return; }
 
@@ -170,25 +186,23 @@ module.exports = {
                     message.reply('<:Error:849215023264169985> Error while downloading files. Please try again.');
                     console.log('Error downloading files', err);
                     resolve(false);
-                    return;
                 });
                 fileStream.on('finish', () => {
                     fileStream.close();
-                    console.log('File [' + getPath + '] succesfully downloaded');
+                    console.log(`File [${getPath}] successfully downloaded`);
                     resolve(true);
                 });
             } catch(err) {
                 message.reply('<:Error:849215023264169985> Plugin doesnt respond. Please check if the server is online and the plugin enabled.');
                 console.log('Plugin doesnt respond');
                 resolve(false);
-                return;
             }
         });
 
     },
 
     put: function(getPath, putPath, message) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async resolve => {
             const ip = await utils.getIp(message.guildId, message);
             if(!ip) { resolve(false); return; }
             const hash = await utils.getHash(message.guildId, message);
@@ -196,7 +210,6 @@ module.exports = {
 
             try {
                 let readStream = fs.createReadStream(getPath);
-                // @ts-ignore
                 const resp = await fetch(`http://${ip}/file/put/?hash=${hash}&path=${putPath}`, {
                     method: 'POST',
                     headers: {
@@ -206,53 +219,50 @@ module.exports = {
                 });
                 if(!await checkStatus(resp, message)) { resolve(false); return; }
 
-                console.log('File [' + getPath + '] succesfully uploaded');
+                console.log(`File [${getPath}] successfully uploaded`);
                 resolve(true);
             } catch(err) {
                 message.reply('<:Error:849215023264169985> Plugin doesnt respond. Please check if the server is online and the plugin enabled.');
                 console.log('Plugin doesnt respond');
                 resolve(false);
-                return;
             }
         });
 
     },
 
     find: async function(start, maxDepth, file, message) {
-        const ip = await utils.getIp(message.guildId, message);
-        if(!ip) return;
-        const hash = await utils.getHash(message.guildId, message);
-        if(!hash) return;
+        return new Promise(async resolve => {
+            const ip = await utils.getIp(message.guildId, message);
+            if (!ip) return;
+            const hash = await utils.getHash(message.guildId, message);
+            if (!hash) return;
 
-        try {
-            //@ts-ignore
-            const resp = await fetch(`http://${ip}/file/find/?hash${hash}&file=${file}&path=${start}&depth=${maxDepth}`);
-            if(!await checkStatus(resp, message)) return;
-            return resp.text();
-        } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesnt respond. Please check if the server is online and the plugin enabled.');
-            console.log('Plugin doesnt respond');
-            return;
-        }
+            try {
+                const resp = await fetch(`http://${ip}/file/find/?hash${hash}&file=${file}&path=${start}&depth=${maxDepth}`);
+                if (!await checkStatus(resp, message)) return;
+                return resp.text();
+            } catch (err) {
+                message.reply('<:Error:849215023264169985> Plugin doesnt respond. Please check if the server is online and the plugin enabled.');
+                console.log('Plugin doesnt respond');
+            }
+        });
     },
 
     execute: function(command, message) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async resolve => {
             const ip = await utils.getIp(message.guildId, message);
             if(!ip) { resolve(false); return; }
             const hash = await utils.getHash(message.guildId, message);
             if(!hash) { resolve(false); return; }
 
             try {
-                //@ts-ignore
-                const resp = await fetch(`http://${ip}/command/?hash${hash}&cmd=${encodeURIComponent(command)}`);
+                const resp = await fetch(`http://${ip}/command/?hash=${hash}&cmd=${encodeURIComponent(command)}`);
                 if(!await checkStatus(resp, message)) { resolve(false); return; }
                 resolve(true);
             } catch(err) {
                 message.reply('<:Error:849215023264169985> Plugin doesnt respond. Please check if the server is online and the plugin enabled.');
                 console.log('Plugin doesnt respond');
                 resolve(false);
-                return;
             }
         });
     }
@@ -260,12 +270,12 @@ module.exports = {
 
 async function checkStatus(response, message) {
     if(response.status === 400) {
-        console.log('An unknown client error occured: ' + await response.text())
-        message.reply('<:Error:849215023264169985> An unknown client error occured');
+        console.log('A client error occurred: ' + await response.text())
+        message.reply('<:Error:849215023264169985> An unknown client error occurred');
         return false;
     } else if(response.status === 500) {
-        console.log('An unknown server error occured: ' + await response.text())
-        message.reply('<:Error:849215023264169985> The User never joined the server or the worldpath is incorrect.');
+        console.log('A server error occurred: ' + await response.text())
+        message.reply('<:Error:849215023264169985> The User never joined the server or the world path is incorrect.');
         return false;
     } else if(response.ok) return true;
 }

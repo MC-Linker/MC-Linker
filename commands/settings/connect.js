@@ -1,7 +1,7 @@
 
 const fs = require('fs');
 const nslookup = require('nslookup');
-const utils = require('../../utils.js');
+const utils = require('../../api/utils.js');
 const Discord = require('discord.js');
 const sftp = require('../../api/sftp');
 const ftp = require('../../api/ftp');
@@ -11,15 +11,15 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 module.exports = {
     name: 'connect',
     aliases: [],
-    usage: 'connect ftp/rcon/plugin/user <options> <...>',
-    example: '/connect user Lianecx **//**\n/connect plugin serverIp **//**\n/connect ftp host username password port 1.17 **//**\n/connect rcon serverip rcon-password rcon-port',
-    description: 'Connect your minecraft java edition server or minecraft account with your bot. Connection methods are:\n-ftp/sftp\n-rcon\n-plugin\n-user',
+    usage: 'connect ftp/plugin/user <options> <...>',
+    example: '/connect account Lianecx **//**\n/connect plugin serverIp **//**\n/connect ftp host username password port 1.17',
+    description: 'Connect your Minecraft java-edition server or Minecraft java-edition account with your bot. Connection methods are:\n-ftp/sftp\n-plugin\n-account',
     data: new SlashCommandBuilder()
             .setName('connect')
             .setDescription('Connect your minecraft server ')
             .addSubcommand(subcommand =>
                 subcommand.setName('ftp')
-                .setDescription('Connect your Minecraft Server using ftp/sftp.')
+                .setDescription('Connect your Minecraft server using ftp/sftp.')
                 .addStringOption(option =>
                     option.setName('host')
                     .setDescription('Set the ftp-host.')
@@ -38,7 +38,7 @@ module.exports = {
                     .setRequired(true)
                 ).addStringOption(option =>
                     option.setName('version')
-                    .setDescription('Set the minecraft-version.')
+                    .setDescription('Set the Minecraft version.')
                     .setRequired(true)
                     .addChoice('1.5', '5')
                     .addChoice('1.6', '6')
@@ -53,6 +53,7 @@ module.exports = {
                     .addChoice('1.15', '15')
                     .addChoice('1.16', '16')
                     .addChoice('1.17', '17')
+                    .addChoice('1.18', '18')
                 ).addStringOption(option =>
                     option.setName('path')
                     .setDescription('Set the world-path. (Format: /path/to/world)')
@@ -60,7 +61,7 @@ module.exports = {
                 )
             ).addSubcommand(subcommand =>
                 subcommand.setName('plugin')
-                .setDescription('Connect your minecraft server using the official plugin.')
+                .setDescription('Connect your Minecraft server using the official plugin.')
                 .addStringOption(option =>
 					option.setName('ip')
 					.setDescription('Set the server-ip.')
@@ -71,46 +72,54 @@ module.exports = {
                     .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
-                subcommand.setName('user')
-                .setDescription('Connect your minecraft java edition account with the bot.')
+                subcommand.setName('account')
+                .setDescription('Connect your Minecraft java-edition account with the bot.')
                 .addStringOption(option =>
                     option.setName('username')
-                    .setDescription('Set your minecraft java edition username.')
+                    .setDescription('Set your Minecraft java-edition username.')
                     .setRequired(true)
                 )
             ),
     async execute(message, args) {
-        const mode = args[0];
+        const method = args[0];
 
-        if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR && mode !== 'user')) {
+        if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR && method !== 'user')) {
+            console.log(`${message.member.user.tag} executed /connect without admin in ${message.guild.name}`);
             message.reply(':no_entry: This command can only be executed by admins.');
-            console.log(message.member.user.tag + ' executed /connect ftp without admin in ' + message.guild.name);
+            return;
+        } else if(!method) {
+            console.log(`${message.member.user.tag} executed /connect without admin in ${message.guild.name}`);
+            message.reply(':no_entry: This command can only be executed by admins.');
             return;
         }
 
-        if(mode === 'ftp') {
-            const host = (args[1]);
-            let user = (args[2]);
-            let password = (args[3]);
-            const port = (args[4]);
-            const version = (args[5]);
-            let path = (args[6]);
+        if(method === 'ftp') {
+            const host = args[1];
+            let user = args[2];
+            let password = args[3];
+            const port = args[4];
+            const version = args[5];
+            let path = args[6];
 
-            if (!host || !user || !password || !port || !version) {
-                console.log(message.member.user.tag + ' executed /connect ftp wrong in ' + message.guild.name);
-                message.reply(':warning: Incorrect Usage! Please check `/help ftp` for correct usage!');
+            if (!host || !user || !password || !port) {
+                console.log(`${message.member.user.tag} executed /connect ftp without credentials in ${message.guild.name}`);
+                message.reply(':warning: Missing ftp credentials! Please check `/help connect` for correct usage!');
+                return;
+            } else if(!version) {
+                console.log(`${message.member.user.tag} executed /connect ftp without version in ${message.guild.name}`);
+                message.reply(':warning: Please specify the minecraft version.');
                 return;
             }
+
             if(user === 'none') user = '';
             if(password === 'none') password = '';
 
-            console.log(message.member.user.tag + ` executed /connect ftp ${host} ${user} ${password} ${port} ${version} ${path} in ` + message.guild.name);
+            console.log(`${message.member.user.tag} executed /connect ftp ${host} ${user} ${password} ${port} ${version} ${path} in ${message.guild.name}`);
 
-            if (version.split('.').pop() <= 11) {
-                message.reply(':warning: The advancement command might not work because advancements dont exist in your minecraft version yet.');
-            } else if (version.split('.').pop() <= 7) {
-                message.reply(':warning: The stat and advancement commands might not work because they dont exist in your minecraft version yet.');
-            }
+            if (version.split('.').pop() <= 11) message.reply(':warning: The advancement command might not work because advancements dont exist in your minecraft version yet.');
+            else if (version.split('.').pop() <= 7) message.reply(':warning: The stat and advancement commands might not work because they dont exist in your minecraft version yet.');
+
+            message.reply('Connecting... (Can take up to one minute)');
             message.channel.sendTyping();
 
             const connectFtp = await ftp.connect({
@@ -131,14 +140,14 @@ module.exports = {
                 });
 
                 if (connectSftp !== true) {
-                    console.log('Couldnt connect with ftp or sftp.');
-                    message.reply('<:Error:849215023264169985> Couldnt connect to server with ftp or sftp. Please check your credentials and try again.');
+                    console.log('Couldn\'t connect with ftp or sftp.');
+                    message.reply('<:Error:849215023264169985> Couldn\'t connect to server with ftp or sftp. Please check your credentials and try again.');
                     return;
                 }
 
                 if(!path) {
                     console.log('Searching for level.dat...');
-                    message.reply('<:Checkmark:849224496232660992> Succesfully connected with the sftp server. Finding world folder (Can take up to one minute)...');
+                    message.reply('<:Checkmark:849224496232660992> Successfully connected with the sftp server. Finding world folder... (Can take up to one minute)');
                     path = await sftp.find('level.dat', '', 3, {
                         host: host,
                         pass: password,
@@ -147,7 +156,7 @@ module.exports = {
                     });
                     if(!path) {
                         console.log('Could not find sftp worldPath.');
-                        message.reply('<:Error:849215023264169985> Could not find world folder. Please pass in the world path manually as last argument.');
+                        message.reply('<:Error:849215023264169985> Could not find world folder. Please specify the world path manually.');
                         return;
                     }
                 }
@@ -162,10 +171,10 @@ module.exports = {
                     "protocol": 'sftp'
                 }
 
-                fs.writeFile('./ftp/' + message.guild.id + '.json', JSON.stringify(jsonSftp, null, 2), 'utf-8', err => {
+                fs.writeFile(`./connections/servers/${message.guild.id}.json`, JSON.stringify(jsonSftp, null, 2), 'utf-8', err => {
                     if (err) {
                         console.log('Error writing sftpFile', err);
-                        message.reply('<:Error:849215023264169985> Error trying to write credentials. Please try again.');
+                        message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
                         return;
                     }
                     console.log('Successfully wrote sftpFile');
@@ -174,7 +183,7 @@ module.exports = {
             } else {
                 if(!path) {
                     console.log('Searching for level.dat...');
-                    message.reply('<:Checkmark:849224496232660992> Succesfully connected with the ftp server. Finding world folder (Can take up to one minute)...');
+                    message.reply('<:Checkmark:849224496232660992> Successfully connected with the ftp server. Finding world folder (Can take up to one minute)...');
                     path = await ftp.find('level.dat', '', 3, {
                         host: host,
                         pass: password,
@@ -183,7 +192,7 @@ module.exports = {
                     });
                     if(!path) {
                         console.log('Could not find ftp worldPath.');
-                        message.reply('<:Error:849215023264169985> Could not find world folder. Please pass in the world path manually as last argument.');
+                        message.reply('<:Error:849215023264169985> Could not find world folder. Please specify world path manually.');
                         return;
                     }
                 }
@@ -198,10 +207,10 @@ module.exports = {
                     "protocol": 'ftp'
                 }
 
-                fs.writeFile('./ftp/' + message.guild.id + '.json', JSON.stringify(jsonFtp, null, 2), 'utf-8', err => {
+                fs.writeFile(`./connections/servers/${message.guild.id}.json`, JSON.stringify(jsonFtp, null, 2), 'utf-8', err => {
                     if (err) {
                         console.log('Error writing ftpFile', err);
-                        message.reply('<:Error:849215023264169985> Error trying to write credentials. Please try again.');
+                        message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
                         return;
                     }
                     console.log('Successfully wrote ftpFile');
@@ -210,76 +219,80 @@ module.exports = {
             }
 
 
-        } else if(mode === 'plugin') {
-            let ip = args[1];
+        } else if(method === 'plugin') {
+            let ip = args[1]?.split(':').shift();
             if(!ip) {
-                console.log(message.member.user.tag + ' executed /connect plugin without args in ' + message.guild.name);
-				message.reply(':warning: Please specify the server ip. `/help rcon` for more help.');
+                console.log(`${message.member.user.tag} executed /connect plugin without ip in ${message.guild.name}`);
+				message.reply(':warning: Please specify the server ip.');
 				return;
             }
-            console.log(message.member.user.tag + ` executed /connect plugin ${ip} in ` + message.guild.name);
+            console.log(`${message.member.user.tag} executed /connect plugin ${ip} in ${message.guild.name}`);
 
-            const connectPlugin = await plugin.connect(ip + ':21000', message.guildId, undefined, undefined, message);
-            if(!connectPlugin) return;
 
-            const pluginJson = {
-                "ip": connectPlugin.ip + ':21000',
-                "version": connectPlugin.version.split('.')[1],
-                "path": connectPlugin.path,
-                "hash": connectPlugin.hash,
-                "guild": connectPlugin.guild,
-                "chat": false,
-                "protocol": "plugin"
-            }
+            nslookup(ip,async (err, address) => {
+                ip = address.pop() ?? ip;
+                //TODO remove log after testing
+                console.log(ip);
+                const connectPlugin = await plugin.connect(`${ip}:11111`, message.guildId, undefined, undefined, message);
+                if (!connectPlugin) return;
 
-            fs.writeFile(`./ftp/${message.guildId}.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
-                if(err) {
-                    console.log('Error writing pluginFile')
-                    message.reply('<:Error:849215023264169985> Couldnt save IP. Please try again.');
-                    return;
+                const pluginJson = {
+                    "ip": connectPlugin.ip,
+                    "version": connectPlugin.version.split('.')[1],
+                    "path": decodeURIComponent(connectPlugin.path),
+                    "hash": connectPlugin.hash,
+                    "guild": connectPlugin.guild,
+                    "chat": false,
+                    "protocol": "plugin"
                 }
-                console.log('Successfully connected');
-                message.reply('<:Checkmark:849224496232660992> Successfully connected to the plugin.');
+
+                fs.writeFile(`./connections/servers/${message.guildId}.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
+                    if (err) {
+                        console.log('Error writing pluginFile')
+                        message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
+                        return;
+                    }
+                    console.log('Successfully connected');
+                    message.reply('<:Checkmark:849224496232660992> Successfully connected to the plugin.');
+                });
             });
 
-        } else if(mode === 'user') {
-            const ingameName = args[1];
 
-            if(!ingameName) {
-                console.log(message.member.user.tag + ' executed /connect without args in ' + message.guild.name);
-                message.reply(':warning: Please specify your minecraft-name.');
+        } else if(method === 'account') {
+            const mcUsername = args[1];
+
+            if(!mcUsername) {
+                console.log(`${message.member.user.tag} executed /connect account without username in ${message.guild.name}`);
+                message.reply(':warning: Please specify your minecraft java-edition account name.');
                 return;
             } else if(message.mentions.users.size) {
-                console.log(message.member.user.tag + ' executed connect with ping in ' + message.guild.name);
-                message.reply(`<:Error:849215023264169985> Don't ping someone. Use your **minecraftname** as argument.`);
+                console.log(`${message.member.user.tag} executed /connect account with ping in ${message.guild.name}`);
+                message.reply(':warning: Don\'t ping someone. Specify your **minecraft java-edition account name**.');
                 return;
             }
 
-            console.log(message.member.user.tag + ' executed /connect ' + ingameName + ' in ' + message.guild.name);
+            console.log(`${message.member.user.tag} executed /connect account ${mcUsername} in ${message.guild.name}`);
 
-            let uuidv4 = await utils.getUUIDv4(ingameName, message);
+            let uuidv4 = await utils.getUUIDv4(mcUsername, undefined, message);
             if(!uuidv4) return;
 
             const connectionJson = {
                 'id': uuidv4,
-                'name': ingameName
+                'name': mcUsername
             }
 
-            const connectionString = JSON.stringify(connectionJson, null, 2);
-
-            fs.writeFile('./connections/' + message.member.user.id + '.json', connectionString, 'utf-8', err => {
+            fs.writeFile(`./connections/users/${message.member.user.id}.json`, JSON.stringify(connectionJson, null, 2), 'utf-8', err => {
                 if (err) {
-                    message.reply('<:Error:849215023264169985> Error trying to connect.');
-                    console.log('Error writing conectionFile', err);
+                    console.log('Error writing connection file', err);
+                    message.reply('<:Error:849215023264169985> Could not save username. Please try again.');
                     return;
-                } else {
-                    message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft-username: **${ingameName}** and UUID: **${uuidv4}**`);
-                    console.log('Successfully wrote connectionfile with id ' + uuidv4 + ' and name: ' + ingameName);
                 }
+                console.log(`Successfully wrote connection file with id ${uuidv4} and name: ${mcUsername}`);
+                message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft username: **${mcUsername}** and UUID: **${uuidv4}**`);
             });
         } else {
-            console.log(message.member.user.tag + ' executed /rcon with wrong argument: ' + args[0]);
-            message.channel.send(`:warning: This [**${args[0]}**] is not a valid connection method.`);
+            console.log(`${message.member.user.tag} executed /connect with wrong method: ${method}`);
+            message.channel.send(`:warning: [**${args[0]}**] is not a valid connection method.`);
         }
     }
 }
