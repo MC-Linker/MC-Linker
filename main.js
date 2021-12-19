@@ -1,4 +1,6 @@
 // @ts-nocheck
+// noinspection JSUnresolvedFunction,JSUnresolvedVariable
+
 console.log('Loading...');
 
 const fs = require('fs');
@@ -27,6 +29,7 @@ if(topggToken) {
 client.once('ready', async () => {
     console.log(`Bot logged in as ${client.user.tag} and with prefix: ${prefix}\nBot on ${client.guilds.cache.size} server.`);
     client.user.setActivity('/help', { type: 'LISTENING' });
+
     if(process.argv.slice(2).shift() === '--delete') {
         const cmds = await client.application.commands.fetch({ guildId: '844156404477853716' });
         cmds.forEach(cmd => {
@@ -34,6 +37,7 @@ client.once('ready', async () => {
             console.log(`Deleted ${cmd.name.toUpperCase()}`);
         });
     }
+
     plugin.loadExpress(client);
 });
 
@@ -282,7 +286,7 @@ client.on('interactionCreate', async interaction => {
                         try {
                             command.execute(interaction, args);
                         } catch (err) {
-                            console.log(`${interaction.member.user.tag} executed slashCommand ${command.name}. Couldnt execute that command!`, err);
+                            console.log(`${interaction.member.user.tag} executed slashCommand ${command.name}. Couldn't execute that command!`, err);
                             interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
                         }
                     } else {
@@ -306,7 +310,7 @@ client.on('interactionCreate', async interaction => {
                         interaction.editReply(`<:Error:849215023264169985> Couldn't disable Command!`);
                     } else {
                         console.log(`Successfully wrote commandDisableFile: ./disable/commands/${interaction.guild.id}_${command}`);
-                        interaction.editReply(`<:Checkmark:849224496232660992> Disabling of command [**${command}**] succesful.`);
+                        interaction.editReply(`<:Checkmark:849224496232660992> Disabling of command [**${command}**] successful.`);
                     }
                 })
 

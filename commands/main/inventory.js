@@ -169,7 +169,6 @@ module.exports = {
                         if(maxDurability) {
                             const durabilityPercent = 100-(damage / maxDurability * 100);
                             const durabilityPx = Math.floor(durabilityPercent / 100 * 34);
-                            console.log(durabilityPx)
 
                             const r = Math.floor((100 - durabilityPercent)*2.56);
                             const g = Math.floor(durabilityPercent*2.56);

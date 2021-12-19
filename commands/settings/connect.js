@@ -1,12 +1,13 @@
 
 const fs = require('fs');
 const nslookup = require('nslookup');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const utils = require('../../api/utils.js');
 const Discord = require('discord.js');
 const sftp = require('../../api/sftp');
 const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { pluginPort } = require('../../config.json');
 
 module.exports = {
     name: 'connect',
@@ -231,9 +232,7 @@ module.exports = {
 
             nslookup(ip,async (err, address) => {
                 ip = address.pop() ?? ip;
-                //TODO remove log after testing
-                console.log(ip);
-                const connectPlugin = await plugin.connect(`${ip}:11111`, message.guildId, undefined, undefined, message);
+                const connectPlugin = await plugin.connect(`${ip}:${pluginPort}`, message.guildId, undefined, undefined, message);
                 if (!connectPlugin) return;
 
                 const pluginJson = {

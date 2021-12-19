@@ -5,7 +5,7 @@ const plugin = require('./plugin');
 const utils = require('./utils');
 module.exports = {
 	get: function (getPath, putPath, message) {
-		return new Promise(async (resolve, reject) => {
+		return new Promise(async resolve => {
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
 			if(protocol === 'sftp') {
@@ -47,7 +47,7 @@ module.exports = {
 	},
 
 	put: function (getPath, putPath, message) {
-		return new Promise(async (resolve, reject) => {
+		return new Promise(async resolve => {
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
 			if(protocol === 'sftp') {
@@ -89,7 +89,7 @@ module.exports = {
 	},
 
     connect: function (credentials) {
-		return new Promise(async (resolve, reject) => {
+		return new Promise(async resolve => {
 			try {
 				const sftpClient = new sftp;
 				await sftpClient.connect({
@@ -109,7 +109,7 @@ module.exports = {
     },
 
 	find: function(file, start, maxDepth, credentials) {
-		return new Promise(async (resolve, reject) => {
+		return new Promise(async resolve => {
 			try {
 				const sftpClient = new sftp;
 				await sftpClient.connect({

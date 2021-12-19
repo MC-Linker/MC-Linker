@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
+const { pluginPort } = require('../../config.json');
 
 module.exports = {
     name: 'chatchannel',
@@ -28,6 +29,10 @@ module.exports = {
         } else if(!channel) {
             console.log(`${message.member.user.tag} executed /chatchannel without args in ${message.guild.name}`);
             message.reply(':warning: Please mention a channel.');
+            return;
+        } else if(!channel.isText()) {
+            console.log(`${message.member.user.tag} executed /chatchannel without args in ${message.guild.name}`);
+            message.reply(':warning: Please mention a text, thread or news channel.');
             return;
         }
 
@@ -85,18 +90,18 @@ module.exports = {
                     ]),
         );
 
-        const logChooserMsg = await message.reply({ content: 'Select all message types you want the bot to send. (You have 20 seconds to select).', components: [logChooser] });
+        const logChooserMsg = await message.reply({ content: 'Select all message types you want the bot to send. (You have 20 seconds to select)', components: [logChooser] });
         const collector = logChooserMsg.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 20000, max: 1 });
         collector.on('collect', async menu => {
             if(menu.customId === 'log' && menu.member.user.id === message.member.user.id) {
                 const ip = await utils.getIp(message.guild.id, message);
                 if(!ip) return;
 
-                const connectPlugin = await plugin.connect(ip, message.guild.id, channel.id, menu.values, message);
+                const connectPlugin = await plugin.connect(ip, message.guild.id, channel.id, menu.values, menu);
                 if(!connectPlugin) return;
 
                 const pluginJson = {
-                    "ip": `${connectPlugin.ip}:11111`,
+                    "ip": connectPlugin.ip,
                     "version": connectPlugin.version.split('.')[1],
                     "path": connectPlugin.path,
                     "hash": connectPlugin.hash,
@@ -119,7 +124,8 @@ module.exports = {
             } else menu.reply({ content: ':warning: Only the command sender can select message types.', ephemeral: true });
         });
         collector.on('end', collected => {
-            if(!collected.size) message.reply('Select all message types you want the bot to send. (Time ran out).');
+            if(!collected.size) message.reply('Select all message types you want the bot to send. (Time ran out)');
+            else message.reply('Select all message types you want the bot to send. (Already responded)');
         });
 	}
 }
