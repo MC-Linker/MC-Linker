@@ -48,14 +48,31 @@ client.once('ready', async () => {
     await fs.writeFile(path, JSON.stringify(content, null, 2));
 }*/
 
-client.on("guildCreate", guild => {
+client.on('guildCreate', guild => {
     console.log(`Joined a guild: ${guild.name}: ${guild.memberCount} members.\nBot is now on ${client.guilds.cache.size} servers!`);
 });
-client.on("guildDelete", guild => {
+
+client.on('guildDelete', guild => {
     console.log(`Left a guild: ${guild.name}\nBot is now on ${client.guilds.cache.size} servers!`);
+
+    //Delete disable files
+    ['stats', 'advancements', 'commands'].forEach(type => {
+        fs.readdir(`./disable/${type}/`, (err, files) => {
+            if(err) {
+                console.log('Could not list disabled advancements.');
+            } else {
+                files.forEach(file => {
+                    if(file.startsWith(guild.id)) fs.rm(`./disable/${type}/${file}`, err => {
+                        if(err) console.log(`Could not delete disable file: ./disable/${type}/${file}`);
+                    });
+                });
+            }
+        });
+    })
+
     fs.rm(`./connections/servers/${guild.id}.json`, err => {
         if(err) {
-            console.log(`No ftpFile found for guild: +${guild.name}`);
+            console.log(`No ftpFile found for guild: ${guild.name}`);
         } else {
             console.log(`Successfully deleted ftpFile of guild: ${guild.name}`);
         }
@@ -244,7 +261,7 @@ client.on('interactionCreate', async interaction => {
                         interaction.reply({ embeds: [helpEmbed] });
                     });
                 } else {
-                    console.log(interaction.member.user.tag + ' executed /help ' + commandName + ' in ' + interaction.guild.name);
+                    console.log(`${interaction.member.user.tag} executed /help ${commandName} in ${interaction.guild.name}`);
 
                     const helpEmbed = baseEmbed.addField(command.name.toUpperCase(), `${command.description} \n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}`);
                     if(command.aliases[0]) helpEmbed.addField('\n**ALIASES**', command.aliases.join(', '));
