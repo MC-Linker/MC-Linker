@@ -1,6 +1,7 @@
-const rcon = require('../../rcon.js');
-const utils = require('../../utils.js');
+const plugin = require('../../api/plugin');
+const utils = require('../../api/utils');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const fs = require("fs");
 
 module.exports = {
     name: 'message',
@@ -21,33 +22,24 @@ module.exports = {
                 .setRequired(true)
             ),
     async execute(message, args) {
-        let taggedName;
-        let userName;
+        const username = message.mentions.users.first()?.tag ?? args[0];
+        args.shift();
+        const chatMsg = args?.join(' ').replaceAll(`"`, `\\"`);
 
-        if(!args[0]) {
-            console.log(message.member.user.tag + ' executed /message without user in ' + message.guild.name);
+        if(!username) {
+            console.log(`${message.member.user.tag} executed /message without user in ${message.guild.name}`);
             message.reply(':warning: Please specify the user you want to message.');
             return;
-        }
-
-        let taggedUser = args.shift();
-        if(!message.mentions.users.size) {
-            userName = taggedUser;
-            taggedName = taggedUser;
-        } else {
-            userName = await utils.getUsername(message.mentions.users.first().id, message);
-            if(!userName) return;
-            taggedName = message.mentions.users.first().tag;
-        }
-
-        const chatMsg = args.join(' ').replaceAll(`"`, `'`);
-        if(!chatMsg) {
-            console.log(message.member.user.tag + ' executed /message without message in ' + message.guild.name);
+        } else if(!chatMsg) {
+            console.log(`${message.member.user.tag} executed /message without message in ${message.guild.name}`);
             message.reply(':warning: Please specify the message you want to send.');
             return;
         }
 
-        console.log(message.member.user.tag + ' executed /message ' + taggedName + ' ' + chatMsg + ' in ' + message.guild.name);
+        const mcUsername = await utils.getUsername(message.mentions.users.first().id, message);
+        if(!mcUsername) return;
+
+        console.log(`${message.member.user.tag} executed /message ${username} ${chatMsg} in ${message.guild.name}`);
 
         /*[
             "",
@@ -77,11 +69,8 @@ module.exports = {
             }
         ]*/
 
-        const response = await rcon.executeGetCredentials(`tellraw ${userName} ["",{"text":"Discord","bold":true,"italic":true,"color":"blue","clickEvent":{"action":"open_url","value":"https://top.gg/bot/712759741528408064"},"hoverEvent":{"action":"show_text","contents":["Message sent using ",{"text":"SMP-Bot","color":"gold"}]}},{"text":" | ${message.member.user.tag} whispers to you: ${chatMsg}","italic":true}]`, message);
-        if(!response) {
-            message.reply(`<:Checkmark:849224496232660992> Sent Message to ${taggedName}:\n**${chatMsg}**`);
-        } else {
-            message.reply('<:Error:849215023264169985> Error:\n' + response);
-        }
+        const execute = await plugin.execute(`tellraw ${mcUsername} ["",{"text":"Discord","bold":true,"italic":true,"color":"blue","clickEvent":{"action":"open_url","value":"https://top.gg/bot/712759741528408064"},"hoverEvent":{"action":"show_text","contents":["Message sent using ",{"text":"Minecraft SMP-Bot","color":"gold"}]}},{"text":" | ${message.member.user.tag} whispers to you: ${chatMsg}","italic":true}]`, message);
+        if(!execute) return;
+        message.reply(`<:Checkmark:849224496232660992> Sent Message to ${username}:\n**${chatMsg}**`);
 	}
 }

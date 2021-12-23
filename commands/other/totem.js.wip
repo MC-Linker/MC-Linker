@@ -1,0 +1,22 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const fetch = require('fetch');
+const Canvas = require('canvas');
+const utils = require('../../api/utils');
+
+module.exports = {
+    name: 'totem',
+    aliases: [],
+    usage: 'totem <user>',
+    example: 'totem @Lianecx',
+    description: 'Create a minecraft totem which you can use in your texture pack from a skin.',
+    data: new SlashCommandBuilder()
+        .setName('totem')
+        .setDescription('Create a minecraft totem from a skin.')
+        .addUserOption(option =>
+            option.setName('user')
+            .setDescription('Set the user from whom you want to get the totem.')
+            .setRequired(true)
+        ),
+    async execute(message, args) {
+	}
+}

@@ -7,7 +7,7 @@ module.exports = {
     aliases: ['texts', 'font', 'fonts'],
     usage: 'text <Any Font (`Space` **=** `_`)> <color> <Your text>',
     example: '/text minecraft red I love this bot!',
-    description: 'Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/de/docs/Web/CSS/color_value#farbschlüsselwörter)\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`',
+    description: 'Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords)\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`',
     data: new SlashCommandBuilder()
             .setName('text')
             .setDescription('Create images with text with different fonts and colors.')
@@ -30,20 +30,20 @@ module.exports = {
         const text = args.join(' ');
 
         if (!font) {
-            console.log(message.member.user.tag + ' executed /text without args in ' + message.guild.name);
+            console.log(`${message.member.user.tag} executed /text without args in ${message.guild.name}`);
             message.reply(':warning: Do you want to create a Mojang studios font: `/text mojang`, minecraft font: `/text minecraft` or an image with a different font: `/text <Any Preinstalled Font>');
             return;
         } else if (!color) {
-            console.log(message.member.user.tag + ' executed /text without color and text in ' + message.guild.name);
-            message.reply(':warning: Please to specify a color and a text.');
+            console.log(`${message.member.user.tag} executed /text without color and text in ${message.guild.name}`);
+            message.reply(':warning: Please to specify a color.');
             return;
         } else if (!text) {
-            console.log(message.member.user.tag + ' executed /text without text in ' + message.guild.name);
-            message.reply(':warning: Please specify the text you want to create the image with.');
+            console.log(`${message.member.user.tag} executed /text without text in ${message.guild.name}`);
+            message.reply(':warning: Please specify a text.');
             return;
         }
 
-        console.log(message.member.user.tag + ' executed /text ' + font + ' ' + color + ' ' + text + ' in ' + message.guild.name);
+        console.log(`${message.member.user.tag} executed /text ${font} ${color} ${text} in ${message.guild.name}`);
 
         if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
@@ -60,7 +60,11 @@ module.exports = {
             return;
         }
 
-        const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'textImage.png');
-		message.reply({ content: '<:Checkmark:849224496232660992> Heres your custom text-image.', files: [fontImg] });
+        const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'Text_Image.png');
+        const textEmbed = new Discord.MessageEmbed()
+            .setTitle("Custom Text Image")
+            .setDescription('<:Checkmark:849224496232660992> Here\'s your custom text image.')
+            .setImage('attachment://Text_Image.png');
+		message.reply({ embeds: [textEmbed], files: [fontImg] });
     }
 }

@@ -1,18 +1,18 @@
 const fs = require('fs');
-const ftp = require('../../ftp');
+const ftp = require('../../api/ftp');
 const Discord = require('discord.js');
-const utils = require('../../utils');
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const utils = require('../../api/utils');
+const { SlashCommandBuilder, time } = require('@discordjs/builders');
 
 module.exports = {
     name: 'advancements',
     aliases: ['am', 'advancement', 'ams'],
-    usage: 'advancements <@mention>/<ingamename> <advancement-tab> <advancementid>',
-    example: '/advancements @Lianecx story iron_tools **//** /advancements @Memer adventure adventuring_time **//** /advancements xXgamerboyyXx recipes loom',
+    usage: 'advancements <@mention>/<in-game name> <advancement-tab> <advancement name or id>',
+    example: '/advancements @Lianecx story Diamonds! **//** /advancements @Memer adventure Bullseye',
     description: 'Look up your and other\'s unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).',
     data: new SlashCommandBuilder()
             .setName('advancements')
-            .setDescription('Look up your unlocked/completed recipes/advancements.')
+            .setDescription('Look up your unlocked/completed advancements.')
             .addSubcommand(subcommand =>
                 subcommand.setName('story')
                     .setDescription('The heart and story of the game')
@@ -90,7 +90,7 @@ module.exports = {
                               .addChoice('The End... Again...', 'respawn_dragon')
                               .addChoice('You Need a Mint', 'dragon_breath')
                               .addChoice('The City at the End of the Game', 'find_end_city')
-                              .addChoice('Sky\'s the Limi', 'elytra')
+                              .addChoice('Sky\'s the Limit', 'elytra')
                               .addChoice('Great View From Up Here', 'levitate')
                     ).addUserOption(option =>
                         option.setName('user')
@@ -166,108 +166,128 @@ module.exports = {
                     )
             ),
     async execute(message, args) {
-        const mode = (args[1]);
-        const object = (args[2]);
-        let taggedName;
+        const username = message.mentions.users.first()?.tag ?? args[0];
+        args.shift();
+        const category = args?.shift().toLowerCase();
+        let advancement = args?.join(' ').toLowerCase();
 
-        if(!mode || !object || !args[0]) {
-            console.log(message.member.user.tag + ' executed /advancements incorrect in ' + message.guild.name);
-            message.reply(":warning: Wrong Usage! Check `/help advancements` for correct usage!");
+        if(!username) {
+            console.log(`${message.member.user.tag} executed /advancements without username in ${message.guild.name}`);
+            message.reply(':warning: Please specify the player you want to unban.');
+            return;
+        } else if(!category) {
+            console.log(`${message.member.user.tag} executed /advancements without tab in ${message.guild.name}`);
+            message.reply(':warning: Please specify the advancement category.\n(`story`, `nether`, `end`, `adventure`, `husbandry`)');
+            return;
+        } else if(!advancement) {
+            console.log(`${message.member.user.tag} executed /advancements without advancement in ${message.guild.name}`);
+            message.reply(':warning: Please specify the advancement name or id. More help with `/help advancements`');
             return;
         }
 
-        if(!message.mentions.users.size) {
-            taggedName = args[0];
-        } else {
-            taggedName = message.mentions.users.first().tag;
-        }
+        //Get Title from slash command choices
+        const advancementTitles = this.data.toJSON().options.filter(option => option.name.toLowerCase() === category).shift()?.options.shift().choices;
+        const advancementId = advancementTitles?.filter(title => title.name.toLowerCase() === advancement).shift()?.value;
+        advancement = advancementId ?? advancement;
 
-        console.log(message.member.user.tag + ' executed /advancements ' + mode + ' ' + object +  ' with taggedUser: ' + taggedName + ' in ' + message.guild.name);
-
-        const uuidv4 = await utils.getUUIDv4(args[0], message);
+        const uuidv4 = await utils.getUUIDv4(username, message.mentions.users.first()?.id, message);
         if(!uuidv4) return;
 
-        let categoryDisabled = fs.existsSync('./disable/advancements/' + message.guild.id + "_" + mode);
+        console.log(`${message.member.user.tag} executed /advancements ${username} ${category} ${advancement} in ${message.guild.name}`);
+
+        const categoryDisabled = fs.existsSync(`./disable/advancements/${message.guild.id}_${category}`);
         if(categoryDisabled === true) {
-            console.log('Category [' + mode + '] disabled.');
-            message.reply(':no_entry: Advancement [**' + mode + '**] disabled!');
+            console.log(`Advancement category [${category}] disabled.`);
+            message.reply(`:no_entry: Advancement category [**${category}**] disabled!`);
             return;
         }
-        let objectDisabled = fs.existsSync('./disable/advancements/object/' + message.guild.id + "_" + object);
-        if(objectDisabled === true) {
-            console.log('Object [' + object + '] disabled.');
-            message.reply(':no_entry: Advancement [**' + object + '**] disabled!');
-            return; 
+        const advancementDisabled = fs.existsSync(`./disable/advancements/${message.guild.id}_${advancement}`);
+        if(advancementDisabled === true) {
+            console.log(`Advancement [${advancement}] disabled.`);
+            message.reply(`:no_entry: Advancement [**${advancement}**] disabled!`);
+            return;
         }
 
-        const worldPath = await utils.getWorldPath(message);
+        const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
 
         const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
         if(!amFile) return;
 
-        fs.readFile('./advancements/' + uuidv4 + '.json', 'utf8', async (err, advancementJson) => {
+        fs.readFile(`./advancements/${uuidv4}.json`, 'utf8', async (err, advancementJson) => {
             if(err) {
-                message.reply('<:Error:849215023264169985> ' + 'Could not find advancement file. Member most likely never joined the server.')
+                message.reply('<:Error:849215023264169985> Could not read advancement file. Please try again.');
                 console.log('Error reading stat file from disk: ', err);
                 return;
             }
 
             const advancementData = JSON.parse(advancementJson);
 
+            let advancementTitle;
+            let advancementDesc;
+            try {
+                const langData = JSON.parse(await fs.promises.readFile('./lang/english.json', 'utf-8'));
+                advancementTitle = langData[`advancements.${category}.${advancement}.title`];
+                advancementDesc = langData[`advancements.${category}.${advancement}.description`];
+                if(!advancementTitle) {
+                    advancementDesc = 'No description available...'
+                    advancementTitle = `${category} ${advancement}`;
+                }
+            } catch(err) {
+                advancementDesc = 'No description available...'
+                advancementTitle = `${category} ${advancement}`;
+            }
+
+            const letters = advancementTitle.split('');
+            let equals = '';
+            for(const {} of letters) equals += '=';
+
             const baseEmbed = new Discord.MessageEmbed()
-                .setColor('#730A85')
-                .setAuthor('SMP Bot', 'https://cdn.discordapp.com/attachments/844493685244297226/847447724391399474/smp.png')
-                .setTitle(taggedName)
-                .addField(`==========\n${mode} ${object}`, `**==========**`)
+                .setColor('LUMINOUS_VIVID_PINK')
+                .setTitle(username)
+                .addField(`${equals}\n${advancementTitle}`, `**${equals}**`)
+                .setDescription(advancementDesc)
                 .setImage('https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png');
 
             try {
-                if(mode === 'recipes') {
-                    let allKeys = Object.keys(advancementData);
-                    const filteredKeys = allKeys.filter(key => {
-                        return key.startsWith('minecraft:' + mode + '/') && key.endsWith('/' + object);
-                    }).join("");
+                let amEmbed;
+                if(category === 'recipes') {
+                    const allKeys = Object.keys(advancementData);
+                    const filteredKey = allKeys.filter(key => key.startsWith(`minecraft:${category}/`) && key.endsWith(`/${advancement}`)).shift();
 
-                    let criteria = Object.keys(advancementData[filteredKeys]['criteria']).join("");
-                    let searchName = advancementData[filteredKeys]['criteria'][criteria];
-                    let done = advancementData[filteredKeys]['done'];
-                    searchName = searchName.replace(' +0000', '');
+                    const criteria = Object.keys(advancementData[filteredKey]['criteria']).join('');
+                    const date = advancementData[filteredKey]['criteria'][criteria];
+                    const done = advancementData[filteredKey]['done'];
 
-                    const amEmbed = baseEmbed.addField('Criteria', criteria).addField('unlocked on', searchName);
+                    amEmbed = baseEmbed.addField('Criteria', criteria).addField('unlocked on', time(new Date(date)));
 
                     if(done && done === false) amEmbed.setFooter('Advancement not unlocked/completed.', 'https://cdn.discordapp.com/emojis/849215023264169985.png');
                     else amEmbed.setFooter('Advancement completed/unlocked.', 'https://cdn.discordapp.com/emojis/849224496232660992.png');
-
-                    console.log('Sent advancement [' + mode + ' ' + object + '] ' + taggedName + ' : ' + searchName);
-                    message.reply({ embeds: [amEmbed] });
                 } else {
-                    let searchName;
-                    let key = Object.keys(advancementData['minecraft:' + mode + '/' + object]['criteria']);
-                    let done = advancementData['minecraft:' + mode + '/' + object]['done'];
+                    const keys = Object.keys(advancementData[`minecraft:${category}/${advancement}`]['criteria']);
+                    const done = advancementData[`minecraft:${category}/${advancement}`]['done'];
 
                     let counter = 0;
                     let amString = '';
-                    let amEmbed;
-                    for (let i = 0; i < key.length; i++) {
-                        searchName = advancementData['minecraft:' + mode + '/' + object]['criteria'][key[i]];
-                        key[i] = key[i].replace('minecraft:', '');
-                        searchName = searchName.replace(' +0000', '');
-                        amString += `\n**Criteria**\n${key[i]}\n**Completed on**\n${searchName}\n`;
+                    for (const key of keys) {
+                        const date = advancementData[`minecraft:${category}/${advancement}`]['criteria'][key];
+                        amString += `\n**Criteria**\n${key.replace('minecraft:', '')}\n**Completed on**\n${time(new Date(date))}\n`;
 
-                        if(counter === 1 || key.length === 1) {counter = 0; amEmbed = baseEmbed.addField('\u200b', amString, true); amString = '';}
-                        else counter++;
+                        if(counter === 1 || keys.length === 1) {
+                            amEmbed = baseEmbed.addField('\u200b', amString, true);
+                            amString = ''; counter = 0;
+                        } else counter++;
                     }
 
                     if(done === false) amEmbed.setFooter('Advancement not unlocked/completed.', 'https://cdn.discordapp.com/emojis/849215023264169985.png');
                     else amEmbed.setFooter('Advancement completed/unlocked.', 'https://cdn.discordapp.com/emojis/849224496232660992.png');
-
-                    message.reply({ embeds: [amEmbed] });
-                    console.log('Sent advancement [' + mode + ' ' + object + '] ' + taggedName + ' : ' + searchName);
                 }
+
+                console.log(`Sent advancement [${advancementTitle}] of ${username}`);
+                message.reply({ embeds: [amEmbed] });
             } catch (err) {
                 console.log('Error reading advancementJSON: ', err);
-                message.reply(':warning: Advancement [**' + mode + ' ' + object + '**] not completed/unlocked or misspelled!');
+                message.reply(`:warning: Advancement [**${advancementTitle}**] not completed/unlocked or misspelled!`);
             }
         })
     }
