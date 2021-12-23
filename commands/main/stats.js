@@ -126,8 +126,10 @@ module.exports = {
         //TODO minecraft-data npm?
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
+
         fs.readdir('./images/minecraft', (err, images) => {
             const matchingItems = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
+            if(matchingItems.length >= 25) matchingItems.length = 25;
 
             const respondArray = [];
             matchingItems.forEach(item => {
@@ -138,7 +140,7 @@ module.exports = {
                     value: item.replaceAll('.png', ''),
                 });
             });
-            if(respondArray.length >= 25) respondArray.length = 25;
+
             interaction.respond(respondArray);
         });
     },

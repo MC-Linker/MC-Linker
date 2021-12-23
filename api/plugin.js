@@ -75,7 +75,7 @@ module.exports = {
                 case 4:
                     //DEATH
                     chatEmbed.setAuthor(player, authorURL)
-                    .setDescription('<:death:905924668735770674> ' + message)
+                    .setDescription(`<:death:905924668735770674> ${message}`)
                     .setColor('DARK_PURPLE');
                     break;
                 case 5:
@@ -152,6 +152,7 @@ module.exports = {
                 try {
                     const resp = await fetch(`http://${conn.ip}/disconnect/?hash=${conn.hash}&filler`);
                     if(!resp.ok) message.channel.send(`:warning: The old server [**${conn.ip}**] could not be completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMPBotPlugin/connection.conn\` or by **removing** the plugin completely.`);
+                    else message.channel.send(`:warning: Automatically disconnected from the old server [**${conn.ip}**] to ensure no complications happen.`);
                 } catch(err) {
                     message.channel.send(`:warning: The old server [**${conn.ip}**] could not be completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMPBotPlugin/connection.conn\` or by **removing** the plugin completely.`);
                 } finally {
@@ -256,12 +257,12 @@ module.exports = {
 
                 resp.body.on('error', err => {
                     message.reply('<:Error:849215023264169985> Error while downloading files. Please try again.');
-                    console.log('Error downloading files', err);
+                    console.log(`Error saving file [${decodeURIComponent(getPath)}]`, err);
                     resolve(false);
                 });
                 fileStream.on('finish', () => {
                     fileStream.close();
-                    console.log(`File [${getPath}] successfully downloaded`);
+                    console.log(`File [${decodeURIComponent(getPath)}] successfully downloaded`);
                     resolve(true);
                 });
             } catch(err) {
@@ -291,7 +292,7 @@ module.exports = {
                 });
                 if(!await checkStatus(resp, message)) { resolve(false); return; }
 
-                console.log(`File [${getPath}] successfully uploaded`);
+                console.log(`File [${decodeURIComponent(getPath)}] successfully uploaded`);
                 resolve(true);
             } catch(err) {
                 message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');

@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const Discord = require('discord.js');
+const { Constants } = require('discord.js');
 const fs = require('fs');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
@@ -18,6 +19,7 @@ module.exports = {
                 option.setName('channel')
                 .setDescription('Set the channel.')
                 .setRequired(true)
+                .addChannelTypes([Constants.ChannelTypes.GUILD_TEXT, Constants.ChannelTypes.GUILD_NEWS, Constants.ChannelTypes.GUILD_PUBLIC_THREAD, Constants.ChannelTypes.GUILD_PRIVATE_THREAD,  Constants.ChannelTypes.GUILD_NEWS_THREAD])
             ),
     async execute(message, args) {
         let channel = message.mentions.channels?.first() ?? args[0];
