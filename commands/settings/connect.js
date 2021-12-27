@@ -238,58 +238,66 @@ module.exports = {
                 const log = await plugin.log(`${ip}:${pluginPort}`, `Verification code: ${verifyCode}`, message);
                 if(!log) return;
 
-                message.reply('<:redsuccess:885601791465640016> Please check your dms to complete the connection.');
+                message.reply('<:redsuccess:885601791465640016> Please check your DMs to complete the connection.');
 
                 const verifyEmbed = new Discord.MessageEmbed()
                     .setTitle('Code Verification')
                     .setDescription('Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**')
                     .setColor('DARK_GOLD');
 
-                const dmChannel = await message.member.user.createDM();
-                await dmChannel.send({ embeds: [verifyEmbed] });
-
+                let dmChannel = await message.member.user.createDM();
                 /*const collector = await dmChannel.createMessageCollector({ max: 1, time: 15000 });
                 collector.on('collect', m => console.log(`Collected ${m.content}`));
                 collector.on('end', collected => console.log(`Collected ${collected.size} items`));*/
 
+                dmChannel.send({ embeds: [verifyEmbed] })
+                    .then(() => verifyAndConnect(dmChannel))
+                    .catch(async () => {
+                        message.reply(':warning: Couldn\'t send you a DM. Verifying in the current channel...');
+                        await message.channel.send({embeds: [verifyEmbed]});
+                        verifyAndConnect(message.channel);
+                    });
 
-               try {
-                    const filter = response => response.content === verifyCode;
-                    const collector = await dmChannel.awaitMessages({ filter, maxProcessed: 1, time: 180000, errors: ['time'] });
+                async function verifyAndConnect(channel) {
+                    try {
+                        const filter = response => response.content === verifyCode;
+                        const collector = await channel.awaitMessages({ filter, maxProcessed: 1, time: 180000, errors: ['time'] });
 
-                    if(!collector.first()) {
-                        dmChannel.send(':warning: You didn\'t reply with the correct code!');
-                        console.log('Verification unsuccessful');
-                        return;
-                    }
-
-                    dmChannel.send('<:Checkmark:849224496232660992> Successfully verified!');
-
-                    const connectPlugin = await plugin.connect(`${ip}:${pluginPort}`, message.guildId, undefined, undefined, message);
-                    if(!connectPlugin) return;
-
-                    const pluginJson = {
-                        "ip": connectPlugin.ip,
-                        "version": connectPlugin.version.split('.')[1],
-                        "path": decodeURIComponent(connectPlugin.path),
-                        "hash": connectPlugin.hash,
-                        "guild": connectPlugin.guild,
-                        "chat": false,
-                        "protocol": "plugin"
-                    }
-
-                    fs.writeFile(`./connections/servers/${message.guildId}.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
-                        if (err) {
-                            console.log('Error writing pluginFile', err)
-                            message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
+                        if(!collector.first()) {
+                            console.log('Verification unsuccessful');
+                            channel.send(':warning: You didn\'t reply with the correct code!');
                             return;
                         }
-                        console.log('Successfully connected');
-                        message.reply('<:Checkmark:849224496232660992> Successfully connected to the plugin.');
-                    });
-               } catch(collected) {
-                    dmChannel.send(':warning: You didn\'t reply in time!');
-               }
+
+                        channel.send('<:Checkmark:849224496232660992> Successfully verified!');
+
+                        const connectPlugin = await plugin.connect(`${ip}:${pluginPort}`, message.guildId, undefined, undefined, message);
+                        if(!connectPlugin) return;
+
+                        const pluginJson = {
+                            "ip": connectPlugin.ip,
+                            "version": connectPlugin.version.split('.')[1],
+                            "path": decodeURIComponent(connectPlugin.path),
+                            "hash": connectPlugin.hash,
+                            "guild": connectPlugin.guild,
+                            "chat": false,
+                            "protocol": "plugin"
+                        }
+
+                        fs.writeFile(`./connections/servers/${message.guildId}.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
+                            if (err) {
+                                console.log('Error writing pluginFile', err)
+                                message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
+                                return;
+                            }
+                            console.log('Successfully connected');
+                            message.reply('<:Checkmark:849224496232660992> Successfully connected to the plugin.');
+                        });
+                    } catch(collected) {
+                        console.log();
+                        channel.send(':warning: You didn\'t reply in time!');
+                    }
+                }
             });
 
 
