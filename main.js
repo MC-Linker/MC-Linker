@@ -8,7 +8,7 @@ const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const plugin = require('./api/plugin');
 const { prefix, token, discordLink, topggToken } = require('./config.json');
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS] });
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
 /*
  * Converts the first letter of a string to uppercase.

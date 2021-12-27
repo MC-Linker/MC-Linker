@@ -29,7 +29,17 @@ POST http://localhost:11111/connect/
 content-type: application/json
 
 {
-    "hash": "test",
+    "hash": "hash",
     "chat": false,
     "guild": "844156404477853716",
+}
+
+###
+
+POST http://localhost:11111/log/
+
+content-type: application/json
+
+{
+    "message": "Ayoo this is for the console"
 }

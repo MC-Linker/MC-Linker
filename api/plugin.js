@@ -339,17 +339,40 @@ module.exports = {
                 resolve(false);
             }
         });
+    },
+
+    log: function(ip, logMessage, message) {
+        return new Promise(async resolve => {
+            try {
+                const resp = await fetch(`http://${ip}/log/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "message": logMessage
+                    })
+                });
+
+                if(!await checkStatus(resp, message)) { resolve(false); return; }
+                resolve(true);
+            } catch(err) {
+                message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+                console.log('Plugin doesnt respond');
+                resolve(false);
+            }
+        });
     }
 }
 
 async function checkStatus(response, message) {
-    if(response.status === 400) {
-        console.log('A client error occurred: ' + await response.text())
+    if(response.status === 400 || response.status === 404) {
+        console.log(`A client error occurred: ${await response.text()}`);
         message.reply('<:Error:849215023264169985> An unknown client error occurred');
         return false;
     } else if(response.status === 500) {
-        console.log('A server error occurred: ' + await response.text())
+        console.log(`A server error occurred:  ${await response.text()}`);
         message.reply('<:Error:849215023264169985> The User never joined the server or the world path is incorrect.');
         return false;
-    } else if(response.ok) return true;
+    } else return !!response.ok;
 }
