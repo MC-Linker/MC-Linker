@@ -36,10 +36,11 @@ content-type: application/json
 
 ###
 
-POST http://smp.minecraft.to:11111/log/
+POST http://localhost:11111/log/
 
 content-type: application/json
 
 {
-    "message": "Ayoo this is for the console"
+    "message": "Ayoo this is for the console",
+    "hash": testtesttesttesttesttesttsettesttesttse
 }

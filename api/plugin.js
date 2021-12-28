@@ -353,7 +353,7 @@ module.exports = {
                     },
                     body: JSON.stringify({
                         "message": logMessage,
-                        "hash": hash
+                        "hash": encodeURIComponent(hash)
                     })
                 });
 
