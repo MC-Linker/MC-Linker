@@ -344,13 +344,16 @@ module.exports = {
     log: function(ip, logMessage, message) {
         return new Promise(async resolve => {
             try {
+                const hash = crypto.randomBytes(32).toString('base64');
+
                 const resp = await fetch(`http://${ip}/log/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        "message": logMessage
+                        "message": logMessage,
+                        "hash": hash
                     })
                 });
 

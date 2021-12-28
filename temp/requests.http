@@ -36,7 +36,7 @@ content-type: application/json
 
 ###
 
-POST http://localhost:11111/log/
+POST http://smp.minecraft.to:11111/log/
 
 content-type: application/json
 
