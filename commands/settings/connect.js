@@ -15,7 +15,7 @@ module.exports = {
     aliases: [],
     usage: 'connect ftp/plugin/user <options> <...>',
     example: '/connect account Lianecx **//**\n/connect plugin serverIp **//**\n/connect ftp host username password port 1.17',
-    description: 'Connect your Minecraft java-edition server or Minecraft java-edition account with your bot. Connection methods are:\n-ftp/sftp\n-plugin\n-account',
+    description: 'Connect your Minecraft java-edition server or Minecraft java-edition account with your bot. Connection methods are:\n-ftp/sftp\n-plugin\n-account\nYou can downwload the plugin using [this link](LINK)',
     data: new SlashCommandBuilder()
             .setName('connect')
             .setDescription('Connect your minecraft server ')
