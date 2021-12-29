@@ -7,6 +7,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const plugin = require('./api/plugin');
+const helpCommand = require('./help');
 const { prefix, token, discordLink, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
@@ -99,81 +100,8 @@ client.on('messageCreate', message => {
     const commandName = args.shift().toLowerCase();
 
 
-    if(commandName === 'help') {
-        const baseEmbed = new Discord.MessageEmbed()
-            .setTitle('Help Menu')
-            .setAuthor(client.user.username, client.user.displayAvatarURL({ format: 'png' }))
-            .setColor('NOT_QUITE_BLACK');
-
-        if(!args[0]) {
-            console.log(`${message.member.user.tag} executed ^help in ${message.guild.name}`);
-
-            const helpEmbed = baseEmbed.addField(':label: Main :label:', 'Main commands such as `/advancements`, or `/inventory`.')
-                .addField(':shield: Moderation :shield:', 'Moderation commands such as `/ban` or `/unban`.')
-                .addField(':point_right: Other :point_left:', 'Other commands such as `/loadingscreen` or `/text`.')
-                .addField(':gear: Settings :gear:', 'Setup and settings such as `/disable` or `/connect`')
-                .addField('\u200B', `**All commands in a category** can be viewed with: **/help <category>**\n**Still need help?** => [Support Discord Server](${discordLink})`);
-
-            message.channel.send({ embeds: [helpEmbed] });
-
-        } else {
-            let commandName = (args[0]).toLowerCase();
-            if(commandName === 'mod') commandName = 'Moderation';
-
-            let command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-            if (!command) {
-                fs.readdir(`./commands/${commandName}`, (err, commands) => {
-                    if(err) {
-                        console.log(`${message.member.user.tag} executed non-existent help command/category ${commandName} in ${message.guild.id}`);
-                        message.channel.send(`:warning: That command/category [**${commandName}**] doesnt exist.`);
-                        return;
-                    }
-                    console.log(`${message.member.user.tag} executed ^help ${commandName} in ${message.guild.name}`);
-
-                    const helpEmbed = baseEmbed;
-                    commands.filter(cmd => cmd.endsWith('.js')).forEach(commandFile => {
-                        command = client.commands.get(commandFile) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandFile));
-                        helpEmbed.addField(command.name.toUpperCase(), command.description);
-                    });
-                    helpEmbed.addField('\u200B', `**More info to a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](${discordLink})`);
-                    message.channel.send({ embeds: [helpEmbed] });
-                })
-            } else {
-                console.log(`${message.member.user.tag} executed ^help ${commandName} in ${message.guild.name}`);
-
-                const helpEmbed = baseEmbed.addField(command.name.toUpperCase(), command.description + `\n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}`);
-                if(command.aliases[0]) helpEmbed.addField('\n**ALIASES**', command.aliases.join(', '));
-
-                const disableRow = new Discord.MessageActionRow()
-                    .addComponents(
-                        new Discord.MessageButton()
-                            .setStyle('DANGER')
-                            .setCustomId('disable_' + command.name)
-                            .setLabel('Disable this command!')
-                            .setEmoji('<:Error:849215023264169985>'),
-                    );
-                const enableRow = new Discord.MessageActionRow()
-                    .addComponents(
-                        new Discord.MessageButton()
-                            .setStyle('SUCCESS')
-                            .setCustomId('enable_' + command.name)
-                            .setLabel('Enable this command!')
-                            .setEmoji('<:Checkmark:849224496232660992>'),
-                    );
-
-                fs.access('./disable/commands/' + message.guild.id + '_' + command.name, err => {
-                    if (err) {
-                        message.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
-                    } else {
-                        baseEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
-                        message.reply({ embeds: [helpEmbed], components: [enableRow], allowedMentions: { repliedUser: false } });
-                    }
-                });
-
-            }
-        }
-
-    } else {
+    if(commandName === 'help') helpCommand.execute(client, message, args);
+    else {
         const command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
         if (!command) console.log(`${message.member.user.tag} executed non-existent command ${commandName} in ${message.guild.name}`);
         else {
@@ -198,12 +126,9 @@ client.on('messageCreate', message => {
 client.on('interactionCreate', async interaction => {
     if(!interaction.guildId) return interaction.reply(':warning: I can only be used in server channels!');
 
-    const baseEmbed = new Discord.MessageEmbed()
-        .setTitle('Help Menu')
-        .setAuthor(client.user.username, client.user.displayAvatarURL({ format: 'png' }))
-        .setColor('NOT_QUITE_BLACK');
-
     if(interaction.isCommand()) {
+
+        //Making it compatible with normal commands
         if(interaction.options.getUser('user')) {
             interaction.mentions = {
                 users: new Discord.Collection().set(interaction.options.getUser('user').id, interaction.options.getUser('user'))
@@ -224,96 +149,36 @@ client.on('interactionCreate', async interaction => {
             return interaction.editReply(content);
         }
 
-        //Help command
         if (interaction.commandName === 'help') {
             await interaction.deferReply();
-
-            if(!args[0]) {
-                console.log(`${interaction.member.user.tag} executed /help in ${interaction.guild.name}`);
-
-                const helpEmbed = baseEmbed.addField(':label: Main :label:', 'Main commands such as `/inventory`, or `/advancements`.')
-                    .addField(':shield: Moderation :shield:', 'Moderation commands such as `/ban` or `/unban`.')
-                    .addField(':point_right: Other :point_left:', 'Other commands such as `/message` or `/text`.')
-                    .addField(':gear: Settings :gear:', 'Setup and settings such as `/connect` or `/disable`')
-                    .addField('\u200B', `**All commands in a category** can be viewed with: **/help <category>**\n**Still need help?** => [Support Discord Server](${discordLink})`);
-
-                interaction.reply({ embeds: [helpEmbed], allowedMentions: { repliedUser: false } });
-            } else {
-                const commandName = args[0].toLowerCase();
-
-                let command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-                if (!command) {
-                    fs.readdir(`./commands/${commandName}`, (err, commands) => {
-                        if(err) {
-                            console.log(`${interaction.member.user.tag} executed non-existent help command/category ${commandName} in ${interaction.guild.id}`);
-                            interaction.reply(`:warning: That command/category [**${commandName}**] doesnt exist.`);
-                            return;
-                        }
-                        console.log(`${interaction.member.user.tag} executed /help ${commandName} in ${interaction.guild.name}`);
-
-                        const helpEmbed = baseEmbed;
-                        commands.forEach(commandFile => {
-                            commandFile = commandFile.split('.').shift();
-                            command = client.commands.get(commandFile) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandFile));
-                            helpEmbed.addField(command.name.toUpperCase(), command.description);
-                        });
-                        helpEmbed.addField('\u200B', `**More info to a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](${discordLink})`);
-                        interaction.reply({ embeds: [helpEmbed] });
-                    });
-                } else {
-                    console.log(`${interaction.member.user.tag} executed /help ${commandName} in ${interaction.guild.name}`);
-
-                    const helpEmbed = baseEmbed.addField(command.name.toUpperCase(), `${command.description} \n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}`);
-                    if(command.aliases[0]) helpEmbed.addField('\n**ALIASES**', command.aliases.join(', '));
-
-                    const disableRow = new Discord.MessageActionRow()
-                        .addComponents(
-                            new Discord.MessageButton()
-                                .setStyle('DANGER')
-                                .setCustomId('disable_' + command.name)
-                                .setLabel('Disable this command!')
-                                .setEmoji('<:Error:849215023264169985>'),
-                        );
-                    const enableRow = new Discord.MessageActionRow()
-                        .addComponents(
-                            new Discord.MessageButton()
-                                .setStyle('SUCCESS')
-                                .setCustomId('enable_' + command.name)
-                                .setLabel('Enable this command!')
-                                .setEmoji('<:Checkmark:849224496232660992>'),
-                        );
-
-                    const disabled = fs.existsSync('./disable/commands/' + interaction.guild.id + '_' + command.name);
-                    if (disabled === false) {
-                        interaction.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
-                    } else if (disabled === true) {
-                        helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
-                        interaction.reply({ embeds: [helpEmbed], components: [enableRow] });
-                    }
-                }
-            }
+            helpCommand.execute(client, interaction, args);
         } else {
             const command = client.commands.get(interaction.commandName);
+
             if (!command) console.log(`${interaction.member.user.tag} executed non-existent command ${commandName} in ${interaction.guild.name}`);
             else {
-                fs.access(`./disable/commands/${interaction.guild.id}_${command.name}`, fs.constants.F_OK, async err => {
+                fs.access(`./disable/commands/${interaction.guild.id}_${command.name}`, async err => {
                     if(interaction.commandName !== 'message') await interaction.deferReply();
                     else await interaction.deferReply({ ephemeral: true });
                     if (err) {
                         try {
                             command.execute(interaction, args);
                         } catch (err) {
-                            console.log(`${interaction.member.user.tag} executed slashCommand ${command.name}. Couldn't execute that command!`, err);
+                            console.log(`${interaction.member.user.tag} executed SlashCommand ${command.name}. Couldn't execute that command!`, err);
                             interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
                         }
                     } else {
-                        console.log(`${interaction.member.user.tag} executed disabled slashCommand [${command.name}] in ${interaction.guild.name}`);
+                        console.log(`${interaction.member.user.tag} executed disabled SlashCommand [${command.name}] in ${interaction.guild.name}`);
                         interaction.reply(`:no_entry: Command [**${command.name}**] disabled!`);
                     }
                 });
             }
         }
 
+    } else if(interaction.isAutocomplete()) {
+        const command = client.commands.get(interaction.commandName);
+        if(!command) return;
+        command.autocomplete(interaction);
 
     } else if (interaction.isButton()) {
         await interaction.deferReply({ ephemeral: true });
@@ -335,7 +200,7 @@ client.on('interactionCreate', async interaction => {
                     .addComponents(
                         new Discord.MessageButton()
                             .setStyle('SUCCESS')
-                            .setCustomId('enable_' + command)
+                            .setCustomId(`enable_${command}`)
                             .setLabel('Enable this command!')
                             .setEmoji('<:Checkmark:849224496232660992>'),
                     );
@@ -368,7 +233,7 @@ client.on('interactionCreate', async interaction => {
                     .addComponents(
                         new Discord.MessageButton()
                             .setStyle('DANGER')
-                            .setCustomId('disable_' + command)
+                            .setCustomId(`disable_${command}`)
                             .setLabel('Disable this command!')
                             .setEmoji('<:Error:849215023264169985>'),
                     );
@@ -383,10 +248,6 @@ client.on('interactionCreate', async interaction => {
                 interaction.editReply(':no_entry: You must be an administrator to use that button!');
             }
         }
-    } else if(interaction.isAutocomplete()) {
-        const command = client.commands.get(interaction.commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(interaction.commandName));
-        if(!command) return;
-        command.autocomplete(interaction);
     }
 });
 
