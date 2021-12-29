@@ -193,7 +193,7 @@ client.on('messageCreate', message => {
         }
 
     }
-})
+});
 
 client.on('interactionCreate', async interaction => {
     if(!interaction.guildId) return interaction.reply(':warning: I can only be used in server channels!');

@@ -273,7 +273,7 @@ module.exports = {
 
                         channel.send('<:Checkmark:849224496232660992> Successfully verified!');
 
-                        const connectPlugin = await plugin.connect(`${ip}:${pluginPort}`, message.guildId, undefined, undefined, message);
+                        const connectPlugin = await plugin.connect(`${ip}:${port}`, message.guildId, undefined, undefined, message);
                         if(!connectPlugin) return;
 
                         const pluginJson = {
