@@ -230,7 +230,7 @@ module.exports = {
 				message.reply(':warning: Please specify the server ip.');
 				return;
             }
-            console.log(`${message.member.user.tag} executed /connect plugin ${ip} in ${message.guild.name}`);
+            console.log(`${message.member.user.tag} executed /connect plugin ${ip} ${port} in ${message.guild.name}`);
 
 
             nslookup(ip,async (err, address) => {

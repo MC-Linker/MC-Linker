@@ -200,7 +200,7 @@ client.on('interactionCreate', async interaction => {
                     .addComponents(
                         new Discord.MessageButton()
                             .setStyle('SUCCESS')
-                            .setCustomId('enable_' + command)
+                            .setCustomId(`enable_${command}`)
                             .setLabel('Enable this command!')
                             .setEmoji('<:Checkmark:849224496232660992>'),
                     );
@@ -233,7 +233,7 @@ client.on('interactionCreate', async interaction => {
                     .addComponents(
                         new Discord.MessageButton()
                             .setStyle('DANGER')
-                            .setCustomId('disable_' + command)
+                            .setCustomId(`disable_${command}`)
                             .setLabel('Disable this command!')
                             .setEmoji('<:Error:849215023264169985>'),
                     );
