@@ -15,7 +15,7 @@ module.exports = {
     aliases: [],
     usage: 'connect ftp/plugin/user <options> <...>',
     example: '/connect account Lianecx **//**\n/connect plugin serverIp **//**\n/connect ftp host username password port 1.17',
-    description: 'Connect your Minecraft java-edition server or Minecraft java-edition account with your bot. Connection methods are:\n-ftp/sftp\n-plugin\n-account\nYou can downwload the plugin using [this link](LINK)',
+    description: 'Connect your Minecraft java-edition server or Minecraft java-edition account with your bot. Connection methods are:\n-ftp/sftp\n-plugin\n-account\nYou can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/)',
     data: new SlashCommandBuilder()
             .setName('connect')
             .setDescription('Connect your minecraft server ')
@@ -68,9 +68,9 @@ module.exports = {
 					option.setName('ip')
 					.setDescription('Set the server-ip.')
 					.setRequired(true)
-				).addStringOption(option =>
-                    option.setName('path')
-                    .setDescription('Set the world-path. (Format: /path/to/world)')
+				).addIntegerOption(option =>
+                    option.setName('port')
+                    .setDescription('Set the port of the plugin from the config.yml')
                     .setRequired(false)
                 )
             ).addSubcommand(subcommand =>
@@ -223,6 +223,8 @@ module.exports = {
 
         } else if(method === 'plugin') {
             let ip = args[1]?.split(':').shift();
+            const port = args[2] ?? pluginPort;
+
             if(!ip) {
                 console.log(`${message.member.user.tag} executed /connect plugin without ip in ${message.guild.name}`);
 				message.reply(':warning: Please specify the server ip.');
@@ -235,7 +237,7 @@ module.exports = {
                 ip = address?.pop() ?? ip;
 
                 const verifyCode = crypto.randomBytes(6).toString('base64');
-                const log = await plugin.log(`${ip}:${pluginPort}`, `Verification code: ${verifyCode}`, message);
+                const log = await plugin.log(`${ip}:${port}`, `Verification code: ${verifyCode}`, message);
                 if(!log) return;
 
                 message.reply('<:redsuccess:885601791465640016> Please check your DMs to complete the connection.');
