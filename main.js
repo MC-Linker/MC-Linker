@@ -195,9 +195,9 @@ client.on('messageCreate', message => {
     }
 })
 
+client.on('interactionCreate', async interaction => {
     if(!interaction.guildId) return interaction.reply(':warning: I can only be used in server channels!');
 
-    client.on('interactionCreate', async interaction => {
     const baseEmbed = new Discord.MessageEmbed()
         .setTitle('Help Menu')
         .setAuthor(client.user.username, client.user.displayAvatarURL({ format: 'png' }))
