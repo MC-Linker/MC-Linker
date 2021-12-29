@@ -196,7 +196,7 @@ client.on('messageCreate', message => {
 })
 
 client.on('interactionCreate', async interaction => {
-    if(interaction.channel.type === 'DM' || interaction.channel.type === 'GROUP_DM') return message.channel.send(':warning: I can only be used in server channels!');
+    if(!interaction.guildId) return message.channel.send(':warning: I can only be used in server channels!');
 
     const baseEmbed = new Discord.MessageEmbed()
         .setTitle('Help Menu')
