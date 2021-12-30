@@ -26,7 +26,7 @@ module.exports = {
 
         if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
             console.log(`${message.member.user.tag} executed /chatchannel ${channel.name} without admin in ${message.guild.name}`);
-            message.reply(':warning: You have to be an admin to execute this command.');
+            message.reply(':no_entry: You have to be an admin to execute this command.');
             return;
         } else if(!channel) {
             console.log(`${message.member.user.tag} executed /chatchannel without args in ${message.guild.name}`);

@@ -15,7 +15,7 @@ module.exports = {
         app.post('/chat', async (req, res) => {
             res.send('Success');
 
-            const player = req.body.player.replaceAll(' ', '');
+            const player = req.body.player?.replaceAll(' ', '');
             const authorURL = `https://minotar.net/helm/${player}/64.png`;
             const message = req.body.message;
             const channel = req.body.channel;

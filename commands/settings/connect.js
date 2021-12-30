@@ -87,7 +87,7 @@ module.exports = {
 
         if(!method) {
             console.log(`${message.member.user.tag} executed /connect without method in ${message.guild.name}`);
-            message.reply(':no_entry: Please specify a method (`ftp`, `account`, `plugin`).');
+            message.reply(':warning: Please specify a method (`ftp`, `account`, `plugin`).');
             return;
         } else if(method !== 'account' && !message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
             console.log(`${message.member.user.tag} executed /connect without admin in ${message.guild.name}`);
