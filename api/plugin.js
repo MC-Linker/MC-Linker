@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const Discord = require('discord.js');
 const express = require('express');
 const utils = require('./utils');
+const { botPort } = require('../config.json');
 
 let pluginConnections = [];
 module.exports = {
@@ -105,7 +106,7 @@ module.exports = {
 
         app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064>https://top.gg/bot/712759741528408064<a/>'))
 
-        app.listen(3100, function () { console.log(`Listening on port ${this.address().port}`) });
+        app.listen(botPort, function () { console.log(`Listening on port ${this.address().port}`) });
         return app;
     },
 
