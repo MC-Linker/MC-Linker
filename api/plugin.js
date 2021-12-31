@@ -98,7 +98,9 @@ module.exports = {
                     break;
             }
 
-            client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] });
+            try {
+                client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] });
+            } catch(ignored) {}
         });
 
         app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064>https://top.gg/bot/712759741528408064<a/>'))
@@ -203,17 +205,17 @@ module.exports = {
 
     },
 
-    disconnect: function(message) {
+    disconnect: function(guildId, message) {
         return new Promise(async resolve => {
-            const ip = await utils.getIp(message.guildId, message);
+            const ip = await utils.getIp(guildId, message);
             if(!ip) { resolve(false); return; }
-            const hash = await utils.getHash(message.guildId, message);
+            const hash = await utils.getHash(guildId, message);
             if(!hash) { resolve(false); return; }
 
             try {
                 const connections = JSON.parse(await fs.promises.readFile('./connections/connections.json', 'utf-8'));
-                const conn = connections.find(conn => conn.guildId === message.guildId);
-                const connIndex = connections.findIndex(conn => conn.guildId === message.guildId);
+                const conn = connections.find(conn => conn.guildId === guildId);
+                const connIndex = connections.findIndex(conn => conn.guildId === guildId);
 
                 if(!conn) {
                     console.log('Not connected');
