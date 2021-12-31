@@ -53,7 +53,7 @@ module.exports = {
             }
         }
         if(method === 'plugin') {
-            const disconnect = await plugin.disconnect(message);
+            const disconnect = await plugin.disconnect(message.guildId, message);
             if(!disconnect) return;
         }
 

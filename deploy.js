@@ -43,9 +43,7 @@ for (const folder of commandFolders) {
 
 		if(command.name === 'stats') {
 			const commandJson = command.data.toJSON();
-			commandJson.options.forEach(subCommand => {
-				subCommand.options[0].autocomplete = false;
-			});
+			commandJson.options.forEach(subCommand => subCommand.options[0].autocomplete = false);
 			commands.push(commandJson);
 
 		} else if(command.name === 'disable') {
