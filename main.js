@@ -53,17 +53,17 @@ client.on('guildCreate', guild => {
     console.log(`Joined a guild: ${guild.name}: ${guild.memberCount} members.\nBot is now on ${client.guilds.cache.size} servers!`);
 });
 
-client.on('guildDelete', guild => {
+client.on('guildDelete', async guild => {
     console.log(`Left a guild: ${guild.name}\nBot is now on ${client.guilds.cache.size} servers!`);
 
     //Delete disable files
     ['stats', 'advancements', 'commands'].forEach(type => {
         fs.readdir(`./disable/${type}/`, (err, files) => {
-            if(err) console.log('Could not list disabled advancements.');
+            if (err) console.log('Could not list disabled advancements.');
             else {
                 files.forEach(file => {
-                    if(file.startsWith(guild.id)) fs.rm(`./disable/${type}/${file}`, err => {
-                        if(err) console.log(`Could not delete disable file: ./disable/${type}/${file}`);
+                    if (file.startsWith(guild.id)) fs.rm(`./disable/${type}/${file}`, err => {
+                        if (err) console.log(`Could not delete disable file: ./disable/${type}/${file}`);
                     });
                 });
             }
@@ -71,12 +71,13 @@ client.on('guildDelete', guild => {
     });
 
     let message = {};
-    message.reply = () => {};
-    plugin.disconnect(guild.id, message);
+    message.reply = () => {
+    };
+    await plugin.disconnect(guild.id, message);
 
     //Delete connection file
     fs.rm(`./connections/servers/${guild.id}.json`, err => {
-        if(err) console.log(`No connection file found for guild: ${guild.name}`);
+        if (err) console.log(`No connection file found for guild: ${guild.name}`);
         else console.log(`Successfully deleted connection file of guild: ${guild.name}`);
     });
 });
