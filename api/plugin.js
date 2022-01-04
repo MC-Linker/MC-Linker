@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const Discord = require('discord.js');
 const express = require('express');
 const utils = require('./utils');
-const { botPort } = require('../config.json');
+const { botPort, pluginVersion } = require('../config.json');
 
 let pluginConnections = [];
 module.exports = {
@@ -34,19 +34,19 @@ module.exports = {
             switch(req.body.type) {
                 case 0:
                     //CHAT
-                    chatEmbed.setAuthor(player, authorURL)
+                    chatEmbed.setAuthor({ name: player, iconURL: authorURL })
                     .setDescription(message)
                     .setColor('BLURPLE');
                     break;
                 case 1:
                     //JOIN
-                    chatEmbed.setAuthor(player, authorURL)
+                    chatEmbed.setAuthor({ name: player, iconURL: authorURL })
                     .setDescription(`<:join:905924638083784836> **${player}** joined the game`)
                     .setColor('YELLOW');
                     break;
                 case 2:
                     //LEAVE
-                    chatEmbed.setAuthor(player, authorURL)
+                    chatEmbed.setAuthor({ name: player, iconURL: authorURL })
                     .setDescription(`<:leave:905924638100557865> **${player}** left the game`)
                     .setColor('YELLOW');
                     break;
@@ -69,19 +69,19 @@ module.exports = {
                         advancementDescription = '';
                     }
 
-                    chatEmbed.setAuthor(player, authorURL)
+                    chatEmbed.setAuthor({ name: player, iconURL: authorURL })
                     .setDescription(`**${player}** has made the advancement: [**${advancementTitle}**]\n*${advancementDescription}*`)
                     .setColor('LUMINOUS_VIVID_PINK');
                     break;
                 case 4:
                     //DEATH
-                    chatEmbed.setAuthor(player, authorURL)
+                    chatEmbed.setAuthor({ name: player, iconURL: authorURL })
                     .setDescription(`<:death:905924668735770674> ${message}`)
                     .setColor('DARK_PURPLE');
                     break;
                 case 5:
                     //COMMAND
-                    chatEmbed.setAuthor(player, authorURL)
+                    chatEmbed.setAuthor({ name: player, iconURL: authorURL })
                     .setDescription(`<a:pinging:891202470833946635> **${player}** has executed the command: [**${message}**]`)
                     .setColor('DARK_GOLD');
                     break;
@@ -103,6 +103,8 @@ module.exports = {
                 client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] });
             } catch(ignored) {}
         });
+
+        app.get('/version', (req, res) => res.send(pluginVersion));
 
         app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064>https://top.gg/bot/712759741528408064<a/>'))
 

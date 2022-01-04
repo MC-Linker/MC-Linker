@@ -66,7 +66,7 @@ module.exports = {
                 Canvas.registerFont('./fonts/Minecraft.ttf', { family: 'Minecraft' });
 
                 let enchantEmbed = new Discord.MessageEmbed()
-                    .setAuthor('Inventory Enchantments', message.client.user.displayAvatarURL({ format: 'png' }))
+                    .setAuthor({ name: 'Inventory Enchantments', iconURL: message.client.user.displayAvatarURL({ format: 'png' }) })
                     .setColor('ORANGE');
 
                 let slotDims = [16, 284];
@@ -74,7 +74,7 @@ module.exports = {
                 for(let i = 0; i < inventory.length; i++) {
                     const slot = inventory[i]['Slot'].value;
                     const id = inventory[i].id.value;
-                    const itemImgName = id.split('minecraft:').pop();
+                    const itemImgName = id.split(':').pop();
                     const count = inventory[i]['Count'].value;
                     const damage = inventory[i].tag?.value['Damage']?.value;
                     const enchantments = inventory[i].tag?.value['Enchantments']?.value.value;
@@ -141,7 +141,7 @@ module.exports = {
                     slotDims = allSlotDims[slot];
 
                     try {
-                        const itemImg = await Canvas.loadImage(`./images/minecraft/${itemImgName}.png`);
+                        const itemImg = await Canvas.loadImage(`./images/minecraft/items/${itemImgName}.png`);
                         ctx.drawImage(itemImg, 0, 0, 80, 80, slotDims[0], slotDims[1], 32, 32);
 
                         if(count > 1) {
@@ -158,7 +158,6 @@ module.exports = {
                             ctx.fillText(count, slotDims[0], slotDims[1] + 32, 15);
                         }
                     }
-                    //invMsg = invMsg += 'Slot: ' + inventory[i]['Slot'].value + ': ' + inventory[i]['id'].value + ', ' + inventory[i]['Count'].value + '\n'
 
                     if(damage) {
                         const durabilityJson = fs.readFileSync('./durability.json', 'utf-8');

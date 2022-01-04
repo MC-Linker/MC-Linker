@@ -59,20 +59,17 @@ client.on('guildDelete', async guild => {
     //Delete disable files
     ['stats', 'advancements', 'commands'].forEach(type => {
         fs.readdir(`./disable/${type}/`, (err, files) => {
-            if (err) console.log('Could not list disabled advancements.');
-            else {
-                files.forEach(file => {
+            if (err) console.log('Could not list disabled files.');
+            else files.forEach(file => {
                     if (file.startsWith(guild.id)) fs.rm(`./disable/${type}/${file}`, err => {
                         if (err) console.log(`Could not delete disable file: ./disable/${type}/${file}`);
                     });
                 });
-            }
         });
     });
 
     let message = {};
-    message.reply = () => {
-    };
+    message.reply = () => {};
     await plugin.disconnect(guild.id, message);
 
     //Delete connection file

@@ -3,10 +3,10 @@ const fs = require('fs');
 const Discord = require('discord.js');
 
 module.exports = {
-    execute: function(client, message, args) {
+    execute: function(message, args) {
         const baseEmbed = new Discord.MessageEmbed()
             .setTitle('Help Menu')
-            .setAuthor(client.user.username, client.user.displayAvatarURL({ format: 'png' }))
+            .setAuthor({ name: message.client.user.username, iconURL: message.client.user.displayAvatarURL({ format: 'png' }) })
             .setColor('NOT_QUITE_BLACK');
 
         if(!args[0]) {
@@ -22,7 +22,7 @@ module.exports = {
         } else {
             const commandName = args[0].toLowerCase();
 
-            let command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+            let command = message.client.commands.get(commandName) ?? message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
             if (!command) {
                 fs.readdir(`./commands/${commandName}`, (err, commands) => {
                     if(err) {
