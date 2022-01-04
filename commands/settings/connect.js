@@ -15,7 +15,7 @@ module.exports = {
     aliases: [],
     usage: 'connect ftp/plugin/user <options> <...>',
     example: '/connect account Lianecx **//**\n/connect plugin serverIp **//**\n/connect ftp host username password port 1.17',
-    description: 'Connect your Minecraft java-edition server or Minecraft java-edition account with your bot. Connection methods are:\n-ftp/sftp\n-plugin\n-account\nYou can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/)',
+    description: 'Connect your Minecraft java-edition server or Minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**',
     data: new SlashCommandBuilder()
             .setName('connect')
             .setDescription('Connect your minecraft server ')
@@ -119,7 +119,7 @@ module.exports = {
             console.log(`${message.member.user.tag} executed /connect ftp ${host} ${user} ${password} ${port} ${version} ${path} in ${message.guild.name}`);
 
             if (version.split('.').pop() <= 11) message.reply(':warning: The advancement command might not work because advancements dont exist in your minecraft version yet.');
-            else if (version.split('.').pop() <= 7) message.reply(':warning: The stat and advancement commands might not work because they dont exist in your minecraft version yet.');
+            else if (version.split('.').pop() <= 7) message.reply(':warning: The stat and advancement commands might not work because stats and advancements dont exist in your minecraft version yet.');
 
             message.reply('Connecting... (Can take up to one minute)');
             message.channel.sendTyping();

@@ -41,30 +41,17 @@ for (const folder of commandFolders) {
 	for (const file of commandFiles) {
 		const command = require(`./commands/${folder}/${file}`);
 
-		if(command.name === 'stats') {
-			const commandJson = command.data.toJSON();
-			commandJson.options.forEach(subCommand => subCommand.options[0].autocomplete = false);
-			commands.push(commandJson);
-
-		} else if(command.name === 'disable') {
-			disableJson = command.data.toJSON();
-
-		} else if(command.name === 'enable') {
-			enableJson = command.data.toJSON();
-
-		} else commands.push(command.data.toJSON());
+		if(command.name === 'disable') disableJson = command.data.toJSON();
+		else commands.push(command.data.toJSON());
 
 		disableChoices.push({ name: command.name.cap(), value: command.name});
-		enableChoices.push({ name: command.name.cap(), value: command.name});
 
 		helpData.options[0].choices.push({ name: command.name.cap(), value: command.name });
 		console.log(`Loaded command: ${command.name}`);
 	}
 }
 disableJson.options[0].options[0].choices = disableChoices;
-enableJson.options[0].options[0].choices = enableChoices;
 commands.push(disableJson);
-commands.push(enableJson);
 
 commands.push(helpData.toJSON());
 

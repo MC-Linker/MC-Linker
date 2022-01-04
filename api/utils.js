@@ -62,7 +62,7 @@ module.exports = {
                 .then(serverJson => {
                     resolve(JSON.parse(serverJson));
                 }).catch(err => {
-                    console.log('Error reading server file', err);
+                    console.log('Error reading server file');
                     message.reply('<:Error:849215023264169985> Could not read server credentials. Please use `/connect` first.');
                     resolve(false);
                 });
@@ -75,7 +75,7 @@ module.exports = {
                 .then(userJson => {
                     resolve(JSON.parse(userJson));
                 }).catch(err => {
-                    console.log('Error reading user file', err);
+                    console.log('Error reading user file');
                     message.reply(':warning: User never used `/connect account`! Instead of pinging someone you can also type in their **minecraft-username**.');
                     resolve(false);
                 });
