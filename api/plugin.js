@@ -26,8 +26,10 @@ module.exports = {
             const conn = pluginConnections.find(conn => conn.guildId === guild && conn.ip === ip);
 
             if(!conn) {
-                client.channels.cache.get(channel)?.send(`:warning: The server [**${ip}**] is not completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMPBotPlugin/connection.conn\` or by **removing** the plugin completely.`);
-                return;
+                try {
+                    await client.channels.cache.get(channel)?.send(`:warning: The server [**${ip}**] is not completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMP-Plugin/connection.conn\` or by **removing** the plugin completely.`);
+                    return;
+                } catch(ignored) {}
             }
 
             const chatEmbed = new Discord.MessageEmbed();
@@ -100,7 +102,7 @@ module.exports = {
             }
 
             try {
-                client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] });
+                await client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] });
             } catch(ignored) {}
         });
 

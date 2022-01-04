@@ -5,3 +5,4 @@ connections/users/675658958383349770.json
 node_modules
 config.json
 .idea
+./connections/connections.json
