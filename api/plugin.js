@@ -27,7 +27,8 @@ module.exports = {
 
             if(!conn) {
                 try {
-                    await client.channels.cache.get(channel)?.send(`:warning: The server [**${ip}**] is not completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMP-Plugin/connection.conn\` or by **removing** the plugin completely.`);
+                    await client.channels.cache.get(channel)?.send(`:warning: The server [**${ip}**] is not completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMP-Plugin/connection.conn\` or by **removing** the plugin completely.`)
+                        .catch(ignored => {});
                     return;
                 } catch(ignored) {}
             }
@@ -102,7 +103,8 @@ module.exports = {
             }
 
             try {
-                await client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] });
+                await client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] })
+                    .catch(ignored => {});
             } catch(ignored) {}
         });
 
