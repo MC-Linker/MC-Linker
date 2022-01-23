@@ -43,4 +43,3 @@ If you have any questions about this Privacy Policy, you can contact me:
 - By email: [benjecx@gmail.com](mailto:benjecx@gmail.com)
 - Support Discord Server: [SMP Bot Support Server](https://discord.gg/rX36kZUGNK)
 - Discord DM: Lianecx#6444
-
