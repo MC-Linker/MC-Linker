@@ -25,9 +25,9 @@ module.exports = {
                       .setRequired(true)
             ),
     async execute(message, args) {
-        let font = args?.shift().replaceAll('_', '');
-        const color = args?.shift().toLowerCase();
-        const text = args.join(' ');
+        let font = args.shift()?.replaceAll('_', '');
+        const color = args.shift()?.toLowerCase();
+        let text = args.join(' ');
 
         if (!font) {
             console.log(`${message.member.user.tag} executed /text without args in ${message.guild.name}`);
@@ -35,7 +35,7 @@ module.exports = {
             return;
         } else if (!color) {
             console.log(`${message.member.user.tag} executed /text without color and text in ${message.guild.name}`);
-            message.reply(':warning: Please to specify a color.');
+            message.reply(':warning: Please specify a color. All color ids can be found here:\nhttps://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords');
             return;
         } else if (!text) {
             console.log(`${message.member.user.tag} executed /text without text in ${message.guild.name}`);
@@ -47,7 +47,13 @@ module.exports = {
 
         if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
-        const fontCanvas = Canvas.createCanvas(text.split('').length*200, 225);
+        let canvasWidth = (text.split('').length)*200;
+        if((canvasWidth/200)>=64) {
+            canvasWidth = 64*200;
+            text = text.substring(0, 64);
+        }
+
+        const fontCanvas = Canvas.createCanvas(canvasWidth, 225);
         const ctx = fontCanvas.getContext('2d');
         try {
             ctx.font = `200px ${font}`;

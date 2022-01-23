@@ -1,6 +1,4 @@
 const sftp = require('ssh2-sftp-client');
-const fs = require('fs');
-const ftp = require('./ftp');
 const plugin = require('./plugin');
 const utils = require('./utils');
 module.exports = {

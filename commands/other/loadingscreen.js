@@ -8,10 +8,10 @@ module.exports = {
 	aliases: ['load', 'loadscreen'],
 	usage: 'loadingscreen <attachment/imageLink/@mention>',
     example: '/loadingscreen @Lianecx',
-	description: 'Convert an attachment, image-link or @mention to a minecraft loading screen.',
+	description: 'Convert an attachment, image-link or @mention to a minecraft loading-screen.',
 	data: new SlashCommandBuilder()
 			.setName('loadingscreen')
-			.setDescription('Tools for minecraft texture packs.')
+			.setDescription('Convert an image-link to a minecraft loading-screen.')
 			.addStringOption(option =>
 				option.setName('url')
 				.setDescription('Set the URL of the image you want to convert.')

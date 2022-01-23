@@ -4,17 +4,16 @@ const { Constants } = require('discord.js');
 const fs = require('fs');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
-const { pluginPort } = require('../../config.json');
 
 module.exports = {
     name: 'chatchannel',
     aliases: ['setchatchannel', 'logchannel', 'setlogchannel'],
     usage: 'chatchannel <channel>',
     example: 'chatchannel #smp-chat',
-    description: 'Set the channel in which the bot will send the minecraft chat messages and logs.',
+    description: 'Setup a channel in which the bot will send minecraft chat messages and logs.',
     data: new SlashCommandBuilder()
             .setName('chatchannel')
-            .setDescription('Set the channel in which the bot will send the minecraft chat messages and logs.')
+            .setDescription('Setup a channel in which the bot will send minecraft chat messages and logs.')
             .addChannelOption(option =>
                 option.setName('channel')
                 .setDescription('Set the channel.')
@@ -26,7 +25,7 @@ module.exports = {
 
         if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
             console.log(`${message.member.user.tag} executed /chatchannel ${channel.name} without admin in ${message.guild.name}`);
-            message.reply(':warning: You have to be an admin to execute this command.');
+            message.reply(':no_entry: You have to be an admin to execute this command.');
             return;
         } else if(!channel) {
             console.log(`${message.member.user.tag} executed /chatchannel without args in ${message.guild.name}`);
@@ -99,18 +98,18 @@ module.exports = {
                 const ip = await utils.getIp(message.guild.id, message);
                 if(!ip) return;
 
-                const connectPlugin = await plugin.connect(ip, message.guild.id, channel.id, menu.values, menu);
-                if(!connectPlugin) return;
+                const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, menu);
+                if(!regChannel) return;
 
                 const pluginJson = {
-                    "ip": connectPlugin.ip,
-                    "version": connectPlugin.version.split('.')[1],
-                    "path": connectPlugin.path,
-                    "hash": connectPlugin.hash,
-                    "guild": connectPlugin.guild,
+                    "ip": regChannel.ip,
+                    "version": regChannel.version.split('.')[1],
+                    "path": regChannel.path,
+                    "hash": regChannel.hash,
+                    "guild": regChannel.guild,
                     "chat": true,
-                    "types": connectPlugin.types,
-                    "channel": connectPlugin.channel,
+                    "types": regChannel.types,
+                    "channel": regChannel.channel,
                     "protocol": "plugin"
                 }
 

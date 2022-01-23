@@ -32,6 +32,7 @@ module.exports = {
                     option.setName('stat')
                     .setDescription('Set a block (english, space = _ )')
                     .setRequired(true)
+                    .setAutocomplete(true)
                 ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
@@ -44,6 +45,7 @@ module.exports = {
                     option.setName('stat')
                     .setDescription('Set an item (english, space = _ )')
                     .setRequired(true)
+                    .setAutocomplete(true)
                 ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
@@ -56,6 +58,7 @@ module.exports = {
                     option.setName('stat')
                     .setDescription('Set an item (english, space = _ )')
                     .setRequired(true)
+                    .setAutocomplete(true)
                 ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
@@ -68,6 +71,7 @@ module.exports = {
                     option.setName('stat')
                     .setDescription('Set an item or block (english, space = _ )')
                     .setRequired(true)
+                    .setAutocomplete(true)
                 ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
@@ -80,6 +84,7 @@ module.exports = {
                     option.setName('stat')
                     .setDescription('Set an item (english, space = _ )')
                     .setRequired(true)
+                    .setAutocomplete(true)
                 ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
@@ -92,6 +97,7 @@ module.exports = {
                     option.setName('stat')
                     .setDescription('Set an item (english, space = _ )')
                     .setRequired(true)
+                    .setAutocomplete(true)
                 ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
@@ -104,6 +110,7 @@ module.exports = {
                     option.setName('stat')
                     .setDescription('Set an entity (english, space = _ )')
                     .setRequired(true)
+                    .setAutocomplete(true)
                 ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
@@ -116,6 +123,7 @@ module.exports = {
                     option.setName('stat')
                     .setDescription('Set an entity (english, space = _ )')
                     .setRequired(true)
+                    .setAutocomplete(true)
                 ).addUserOption(option =>
                     option.setName('user')
                     .setDescription('Set the user you want to get the stats from.')
@@ -123,21 +131,25 @@ module.exports = {
                 )
             ),
     autocomplete(interaction) {
-        //TODO minecraft-data npm?
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        fs.readdir('./images/minecraft', (err, images) => {
-            const matchingItems = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
-            if(matchingItems.length >= 25) matchingItems.length = 25;
+        let imgType;
+        if(subcommand === 'killed' || subcommand === 'killed_by') imgType = 'entities';
+        else imgType = 'items';
+
+        fs.readdir(`./images/minecraft/${imgType}`, (err, images) => {
+            const matchingImages = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
+            if(matchingImages.length >= 25) matchingImages.length = 25;
 
             const respondArray = [];
-            matchingItems.forEach(item => {
-                const formattedItem = item.replaceAll('_', ' ').replaceAll('.png', '').cap();
+            matchingImages.forEach(image => {
+                let formattedImage = image.replaceAll('.png', '');
+                formattedImage = formattedImage.split('_').map(word => word.cap()).join(' ');
 
                 respondArray.push({
-                    name: formattedItem,
-                    value: item.replaceAll('.png', ''),
+                    name: formattedImage,
+                    value: image.replaceAll('.png', ''),
                 });
             });
 
@@ -146,8 +158,8 @@ module.exports = {
     },
     async execute(message, args) {
         const username = message.mentions.users.first()?.tag ?? args[0];
-        const category = args[1];
-        const stat = args[2];
+        let category = args[1];
+        let stat = args[2];
 
         if(!username) {
             console.log(`${message.member.user.tag} executed /stats without username in ${message.guild.name}`);
@@ -169,13 +181,13 @@ module.exports = {
         if(!uuidv4) return;
 
         const categoryDisabled = fs.existsSync(`./disable/stats/${message.guild.id}_${category}`);
-        if(categoryDisabled === true) {
+        if(categoryDisabled) {
             console.log(`Category [${category}] disabled.`);
             message.reply(`:no_entry: Stat category [**${category}**] disabled!`);
             return;
         }
         const statDisabled = fs.existsSync(`./disable/stats/${message.guild.id}_${stat}`);
-        if(statDisabled === true) {
+        if(statDisabled) {
             console.log(`Object [${stat}] disabled.`);
             message.reply(`:no_entry: Stat [**${stat}**] disabled!`);
             return;
@@ -193,40 +205,63 @@ module.exports = {
                 console.log('Error reading stat file from disk: ', err);
                 return;
             }
+
             try {
                 const statData = JSON.parse(statJson);
                 const version = await utils.getVersion(message.guild.id, message);
 
-                let statMatch;
-                if (version >= 13) statMatch = statData.stats[`minecraft:${category}`][`minecraft:${stat}`];
-                else if (version <= 12) statMatch = statData[`stat.${category}.minecraft.${stat}`];
-
-                if (statMatch) {
-                    let statMessage;
-                    if (category === 'killed_by') statMessage = `was killed **${statMatch}** times by a **${stat}**`;
-                    else if (stat === 'play_time' || stat === 'time_played') statMessage = `has played for **${((statMatch / 20) / 3600).toFixed(3)}** hours`;
-                    else if (category === 'custom') statMessage = `**${stat} ${statMatch}**`;
-                    else statMessage = `has **${category} ${statMatch} ${stat}s**`;
-
-                    const statEmbed = new Discord.MessageEmbed()
-                        .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                        .setColor('DEFAULT')
-                        .addField(username, statMessage);
-
-                    console.log(`Sent stat ${category} ${stat} of Player: ${username}`);
-                    fs.access(`./images/${stat}}.png`, err => {
-                        if (err) {
-                            console.log(`No Image available for ${stat}`);
-                            message.reply({ embeds: [statEmbed] });
-                            return;
-                        }
-                        statEmbed.setImage(`attachment://${stat}.png`);
-                        message.reply({ embeds: [statEmbed], files: [`./images/${stat}.png`] });
-                    });
-                } else {
+                function noMatchFound() {
                     console.log("No Match found!");
                     message.reply(':warning: Stat is either 0 or misspelled!');
                 }
+
+                let statMatch;
+                if (version <= 12) {
+                    if(!stat.includes('.')) stat = `minecraft.${stat}`;
+                    statMatch = statData[`stat.${category}.${stat}`];
+                    stat = stat.split('.').pop();
+                } else {
+                    const filteredCategory = Object.keys(statData.stats).find(key => key.endsWith(category));
+                    if(!filteredCategory) { noMatchFound(); return; }
+                    const filteredStat = Object.keys(statData.stats[filteredCategory]).find(key => key.endsWith(stat));
+                    if(!filteredStat) { noMatchFound(); return; }
+                    statMatch = statData.stats[filteredCategory][filteredStat];
+
+                    stat = stat.split(':').pop();
+                    category = category.split(':').pop();
+                }
+                
+                if (!statMatch) {
+                    noMatchFound();
+                    return;
+                }
+
+                let statMessage;
+                if (category === 'killed_by') statMessage = `was killed **${statMatch}** times by a **${stat}**`;
+                else if (stat === 'play_time' || stat === 'time_played') statMessage = `has played for **${(statMatch / 20 / 3600).toFixed(3)}** hours`;
+                else if (category === 'custom') statMessage = `**${stat} ${statMatch}**`;
+                else statMessage = `has **${category} ${statMatch} ${stat}s**`;
+
+                const statEmbed = new Discord.MessageEmbed()
+                    .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
+                    .setColor('DEFAULT')
+                    .addField(username, statMessage);
+
+                console.log(`Sent stat ${category} ${stat} of Player: ${username}`);
+
+                let imgType;
+                if(category === 'killed' || category === 'killed_by') imgType = 'entities';
+                else if(category !== 'custom') imgType = 'items';
+
+                fs.access(`./images/minecraft/${imgType}/${stat}.png`, err => {
+                    if (err) {
+                        console.log(`No Image available for ${stat}`);
+                        message.reply({ embeds: [statEmbed] });
+                        return;
+                    }
+                    statEmbed.setImage(`attachment://${stat}.png`);
+                    message.reply({ embeds: [statEmbed], files: [`./images/minecraft/${imgType}/${stat}.png`] });
+                });
             } catch (err) {
                 console.log('Error parsing Stat JSON string: ', err);
                 message.reply(`<:Error:849215023264169985> ${username} has never done anything in this category.`);

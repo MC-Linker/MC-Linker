@@ -8,17 +8,16 @@ const sftp = require('../../api/sftp');
 const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const { pluginPort } = require('../../config.json');
-const crypto = require("crypto");
 
 module.exports = {
     name: 'connect',
     aliases: [],
     usage: 'connect ftp/plugin/user <options> <...>',
     example: '/connect account Lianecx **//**\n/connect plugin serverIp **//**\n/connect ftp host username password port 1.17',
-    description: 'Connect your Minecraft java-edition server or Minecraft java-edition account with your bot. Connection methods are:\n-ftp/sftp\n-plugin\n-account\nYou can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/)',
+    description: 'Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**',
     data: new SlashCommandBuilder()
             .setName('connect')
-            .setDescription('Connect your minecraft server ')
+            .setDescription('Connect your minecraft server or account with the bot.')
             .addSubcommand(subcommand =>
                 subcommand.setName('ftp')
                 .setDescription('Connect your Minecraft server using ftp/sftp.')
@@ -87,10 +86,10 @@ module.exports = {
 
         if(!method) {
             console.log(`${message.member.user.tag} executed /connect without method in ${message.guild.name}`);
-            message.reply(':no_entry: Please specify a method (`ftp`, `account`, `plugin`).');
+            message.reply(':warning: Please specify a method (`ftp`, `account`, `plugin`).');
             return;
         } else if(method !== 'account' && !message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-            console.log(`${message.member.user.tag} executed /connect without admin in ${message.guild.name}`);
+            console.log(`${message.member.user.tag} executed /connect ${method} without admin in ${message.guild.name}`);
             message.reply(':no_entry: This command can only be executed by admins.');
             return;
         }
@@ -112,17 +111,16 @@ module.exports = {
                 message.reply(':warning: Please specify the minecraft version.');
                 return;
             }
-
             if(user === 'none') user = '';
             if(password === 'none') password = '';
 
             console.log(`${message.member.user.tag} executed /connect ftp ${host} ${user} ${password} ${port} ${version} ${path} in ${message.guild.name}`);
 
             if (version.split('.').pop() <= 11) message.reply(':warning: The advancement command might not work because advancements dont exist in your minecraft version yet.');
-            else if (version.split('.').pop() <= 7) message.reply(':warning: The stat and advancement commands might not work because they dont exist in your minecraft version yet.');
+            else if (version.split('.').pop() <= 7) message.reply(':warning: The stat and advancement commands might not work because stats and advancements dont exist in your minecraft version yet.');
 
             message.reply('Connecting... (Can take up to one minute)');
-            message.channel.sendTyping();
+            message.channel.sendTyping().catch(() => {});
 
             const connectFtp = await ftp.connect({
                 host: host,
@@ -132,7 +130,7 @@ module.exports = {
             });
 
             if(connectFtp !== true) {
-                message.channel.sendTyping();
+                message.channel.sendTyping().catch(() => {});
 
                 const connectSftp = await sftp.connect({
                     host: host,
@@ -230,15 +228,14 @@ module.exports = {
 				message.reply(':warning: Please specify the server ip.');
 				return;
             }
-            console.log(`${message.member.user.tag} executed /connect plugin ${ip} in ${message.guild.name}`);
 
+            console.log(`${message.member.user.tag} executed /connect plugin ${ip} ${port} in ${message.guild.name}`);
 
             nslookup(ip,async (err, address) => {
                 ip = address?.pop() ?? ip;
 
-                const verifyCode = crypto.randomBytes(6).toString('base64');
-                const log = await plugin.log(`${ip}:${port}`, `Verification code: ${verifyCode}`, message);
-                if(!log) return;
+                const verify = await plugin.verify(`${ip}:${port}`, message);
+                if(!verify) return;
 
                 message.reply('<:redsuccess:885601791465640016> Please check your DMs to complete the connection.');
 
@@ -248,33 +245,29 @@ module.exports = {
                     .setColor('DARK_GOLD');
 
                 let dmChannel = await message.member.user.createDM();
-                /*const collector = await dmChannel.createMessageCollector({ max: 1, time: 15000 });
-                collector.on('collect', m => console.log(`Collected ${m.content}`));
-                collector.on('end', collected => console.log(`Collected ${collected.size} items`));*/
-
                 dmChannel.send({ embeds: [verifyEmbed] })
                     .then(() => verifyAndConnect(dmChannel))
                     .catch(async () => {
                         message.reply(':warning: Couldn\'t send you a DM. Verifying in the current channel...');
-                        await message.channel.send({embeds: [verifyEmbed]});
+                        await message.channel.send({ embeds: [verifyEmbed] });
                         verifyAndConnect(message.channel);
                     });
 
                 async function verifyAndConnect(channel) {
                     try {
-                        const filter = response => response.content === verifyCode;
-                        const collector = await channel.awaitMessages({ filter, maxProcessed: 1, time: 180000, errors: ['time'] });
+                        const collector = await channel.awaitMessages({ maxProcessed: 1, time: 180000, errors: ['time'] });
 
                         if(!collector.first()) {
                             console.log('Verification unsuccessful');
-                            channel.send(':warning: You didn\'t reply with the correct code!');
+                            channel.send(':warning: You didn\'t reply in time!');
                             return;
                         }
 
-                        channel.send('<:Checkmark:849224496232660992> Successfully verified!');
+                        const connectPlugin = await plugin.connect(`${ip}:${port}`, message.guildId, collector.first(), message);
+                        if(!connectPlugin) return channel.send('<:Error:849215023264169985> Could not connect.');
 
-                        const connectPlugin = await plugin.connect(`${ip}:${port}`, message.guildId, undefined, undefined, message);
-                        if(!connectPlugin) return;
+                        else if(connectPlugin === 401) return channel.send(':warning: You didn\'t reply with the correct code!');
+                        else channel.send('<:Checkmark:849224496232660992> Successfully verified!');
 
                         const pluginJson = {
                             "ip": connectPlugin.ip,

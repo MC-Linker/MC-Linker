@@ -1,13 +1,11 @@
 const utils = require('../../api/utils');
-const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
-const fs = require('fs');
 const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'ban',
-    aliases: ['banplayer', 'banuser'],
+    aliases: ['banplayer'],
     usage: 'ban <mention/username>',
     example: '/ban @Lianecx **//** /ban cheaterGuy',
     description: 'Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!',
@@ -38,17 +36,23 @@ module.exports = {
             return;
         }
 
-		const mcUsername = await utils.getUsername(message.mentions.users.first().id, message);
+		console.log(`${message.member.user.tag} executed /ban ${username} ${reason} in ${message.guild.name}`);
+
+		const mcUsername = message.mentions.users.first()?.id ? await utils.getUsername(message.mentions.users.first()?.id, message) : username;
 		if(!mcUsername) return;
 
-		console.log(`${message.member.user.tag} executed /ban ${username} ${reason} in ${message.guild.name}`);
-		const execute = await plugin.execute(`ban ${mcUsername} ${reason}`, message);
-		if(!execute) return;
+		const resp = await plugin.execute(`ban ${mcUsername} ${reason}`, message);
+		if(!resp) return;
 
 		const respEmbed = new Discord.MessageEmbed()
-			.setTitle('Ban player')
-			.setColor('ORANGE')
-			.setDescription(`<:Checkmark:849224496232660992> Successfully banned player [**${username}**]: \`${reason}\``);
+			.setTitle('Ban Player')
+			.setColor('ORANGE');
+
+		console.log(resp)
+
+		if(resp.startsWith('&c')) respEmbed.setDescription(`Warning trying to ban player [**${username}**]: ${resp.replace('&c', '')}`);
+		else if(resp.startsWith('Could not fetch response message!')) respEmbed.setDescription(`:warning: Successfully executed ban player [**${username}**]: \`${reason}\`\n${resp}`);
+		else respEmbed.setDescription(`<:Checkmark:849224496232660992> Successfully banned player [**${username}**]: \`${reason}\``);
 		message.reply({ embeds: [respEmbed] });
 	}
 }

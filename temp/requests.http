@@ -1,46 +1,53 @@
+###
+
 GET http://localhost:11111
 
 ###
 
-GET http://localhost:11111/file/get/?hash=hash&path=/path/to/file
+GET http://localhost:11111/file/get/?path=/path/to/file
+
+Authorization: Basic hash
 
 ###
 
-POST http://localhost:11111/file/put/?hash=hash&path=/path/to/file
+POST http://localhost:11111/file/put/?path=/path/to/file
+
+Authorization: Basic hash
 
 < ./command_template.txt
 
 ###
 
-GET http://localhost:11111/file/find/?hash=hash&file=level.dat&path=/path/to/file&depth=4
+GET http://localhost:11111/file/find/?file=level.dat&path=/path/to/file&depth=4
+
+Authorization: Basic hash
 
 ###
 
-GET http://localhost:11111/command/?hash=hash&cmd=tellraw+Lianecx+"The+BOIIISS+are+here!"
+GET http://localhost:11111/command/?cmd=tellraw+Lianecx+"The+BOIIISS+are+here!"
+
+Authorization: Basic hash
 
 ###
 
-GET http://localhost:11111/chat/?hash=hash&msg=bruhhhhh&username=Lianecx
+GET http://localhost:11111/chat/?msg=bruhhhhh&username=Lianecx
+
+Authorization: Basic hash
 
 ###
 
 POST http://localhost:11111/connect/
 
 content-type: application/json
+Authorization: Basic code, Basic hash
 
 {
-    "hash": "hash",
     "chat": false,
-    "guild": "844156404477853716",
+    "guild": "844156404477853716"
 }
 
 ###
 
-POST http://localhost:11111/log/
+GET http://localhost:11111/verify/
 
-content-type: application/json
-
-{
-    "message": "Ayoo this is for the console",
-    "hash": testtesttesttesttesttesttsettesttesttse
-}
+###

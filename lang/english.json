@@ -30,7 +30,7 @@
   "narration.checkbox": "Checkbox: %s",
   "narration.checkbox.usage.focused": "Press Enter to toggle",
   "narration.checkbox.usage.hovered": "Left click to toggle",
-  "narration.recipe": "Reciple for %s",
+  "narration.recipe": "Recipe for %s",
   "narration.recipe.usage": "Left click to select",
   "narration.recipe.usage.more": "Right click to show more recipes",
   "narration.selection.usage": "Press up and down buttons to move to another entry",

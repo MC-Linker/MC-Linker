@@ -1,13 +1,11 @@
 const utils = require('../../api/utils');
-const ftp = require('../../api/ftp');
-const fs = require('fs');
 const plugin = require('../../api/plugin');
 const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     name: 'unban',
-    aliases: ['pardon'],
+    aliases: ['pardon', 'unbanplayer'],
     usage: 'unban <mention/username>',
     example: '/unban @Lianecx **//** /unban MrNotCheating',
     description: 'Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.',
@@ -32,18 +30,21 @@ module.exports = {
             return;
         }
 
-		const mcUsername = await utils.getUsername(message.mentions.users.first().id, message);
-		if(!mcUsername) return;
-
 		console.log(`${message.member.user.tag} executed /unban ${username} in ${message.guild.name}`);
 
-		const execute = await plugin.execute(`pardon ${mcUsername}`, message);
-		if(!execute) return;
+		const mcUsername = message.mentions.users.first()?.id ? await utils.getUsername(message.mentions.users.first()?.id, message) : username;
+		if(!mcUsername) return;
+
+		const resp = await plugin.execute(`pardon ${mcUsername}`, message);
+		if(!resp) return;
 
 		const respEmbed = new Discord.MessageEmbed()
-			.setTitle('Unban player')
-			.setColor('BLUE')
-			.setDescription(`<:Checkmark:849224496232660992> Successfully unbanned player [**${username}**]`);
+			.setTitle('Unban Player')
+			.setColor('BLUE');
+
+		if(resp.startsWith('&c')) respEmbed.setDescription(`:warning: Warning trying to unban player [**${username}**]: ${resp.replace('&c', '')}`);
+		else if(resp.startsWith('Could not fetch response message!')) respEmbed.setDescription(`:warning: Successfully executed unban player [**${username}**]: \`${reason}\`\n${resp}`);
+		else respEmbed.setDescription(`<:Checkmark:849224496232660992> Successfully unbanned player [**${username}**]`);
 		message.reply({ embeds: [respEmbed] });
 	}
 }

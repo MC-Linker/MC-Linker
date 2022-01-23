@@ -8,10 +8,10 @@ module.exports = {
     aliases: [],
     usage: 'disconnect ftp/rcon/plugin/user',
     example: '/disconnect ftp **//** /disconnect account',
-    description: 'Disconnect your minecraft java edition server or minecraft account from the bot and delete all saved credentials. To connect again, use `/connect` again.',
+    description: 'Disconnect your minecraft java-edition server or minecraft java-edition account from the bot and delete all saved credentials. To connect again, use `/connect` again.',
     data: new SlashCommandBuilder()
             .setName('disconnect')
-            .setDescription('Disconnect your minecraft java edition server or minecraft account from the bot.')
+            .setDescription('Disconnect your minecraft server or minecraft account from the bot.')
             .addSubcommand(subcommand =>
                 subcommand.setName('ftp')
                 .setDescription('Disconnect from ftp.')
@@ -53,7 +53,7 @@ module.exports = {
             }
         }
         if(method === 'plugin') {
-            const disconnect = await plugin.disconnect(message);
+            const disconnect = await plugin.disconnect(message.guildId, message);
             if(!disconnect) return;
         }
 
