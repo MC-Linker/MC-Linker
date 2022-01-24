@@ -201,7 +201,7 @@ function connect(ip, guildId, verifyCode, message) {
                 }).catch(() => {});
             } else resolve(resp);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
             console.log('Plugin doesnt respond');
             resolve(false);
         }
@@ -241,7 +241,7 @@ function disconnect(guildId, message) {
                 resolve(false);
              } else resolve(true);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
             console.log('Plugin doesnt respond');
             resolve(false);
         }
@@ -306,7 +306,7 @@ function registerChannel(ip, guildId, channelId, types, message) {
                 }).catch(() => {});
             } else resolve(resp);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
             console.log('Plugin doesnt respond');
             resolve(false);
         }
@@ -342,7 +342,7 @@ function get(getPath, putPath, message) {
                 resolve(true);
             });
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
             console.log('Plugin doesnt respond');
             resolve(false);
         }
@@ -371,7 +371,7 @@ function put(getPath, putPath, message) {
             console.log(`File [${decodeURIComponent(getPath)}] successfully uploaded`);
             resolve(true);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
             console.log('Plugin doesnt respond');
             resolve(false);
         }
@@ -394,7 +394,7 @@ async function find(start, maxDepth, file, message) {
             if (!await checkStatus(resp, message)) { resolve(false); return; }
             resolve(resp.text());
         } catch (err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
             console.log('Plugin doesnt respond');
             resolve(false);
         }
@@ -417,7 +417,7 @@ function execute(command, message) {
             if(!await checkStatus(resp, message)) { resolve(false); return; }
             resolve(await resp.text());
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
             console.log('Plugin doesnt respond');
             resolve(false);
         }
@@ -431,7 +431,7 @@ function verify(ip, message) {
             if(!await checkStatus(resp, message)) { resolve(false); return; }
             resolve(true);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.');
+            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
             console.log('Plugin doesnt respond');
             resolve(false);
         }

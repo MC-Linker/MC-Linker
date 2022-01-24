@@ -139,7 +139,7 @@ client.on('interactionCreate', async interaction => {
         }
 
         if (interaction.commandName === 'help') {
-            await interaction.deferReply();
+            await interaction.deferReply().catch(console.log);
             helpCommand.execute(interaction, args);
         } else {
             const command = client.commands.get(interaction.commandName);
