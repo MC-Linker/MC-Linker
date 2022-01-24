@@ -32,12 +32,11 @@ To use most of the commands you’ll have to connect your Minecraft **java editi
 + Unfortunately, **Aternos** and **Minehut** servers are not currently supported as they do not have ftp or additional ports for plugins.
 + If you receive the error: `Address already in use` in the server console follow the instructions below.
 + If you receive the error: `Plugin does not respond` although your server is online, follow the next steps:
-    + Register or port forward an additional port (if supported from your server host)
-    + Enter that port in the plugin’s `config.yml`.
-    + Execute `reload confirm` in your server console
-    + Execute `/connect plugin YOUR.SERVER.IP config_port` in Discord and make sure to specify the correct port from the config.yml
+	+ Register or port forward an additional port (if supported from your server host)
+	+ Enter that port in the plugin’s `config.yml`.
+	+ Execute `reload confirm` in your server console
+	+ Execute `/connect plugin YOUR.SERVER.IP config_port` in Discord and make sure to specify the correct port from the config.yml
 + More help => [Support Server](https://discord.gg/rX36kZUGNK)
 
 
-### **[Privacy Policy]()**
-
+### [Privacy Policy](https://github.com/Lianecx/Minecraft-SMP-Bot/blob/main/PRIVACY.md)

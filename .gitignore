@@ -6,4 +6,5 @@ connections/users/
 connections/servers/
 node_modules
 config.json
-.idea
+/.idea/
+/.run/
