@@ -31,8 +31,8 @@ module.exports = {
             return;
         }
         let path;
-        if(method === 'ftp' || method === 'plugin') path = `./connections/servers/${message.guild.id}.json`;
-        else if(method === 'account') path = `./connections/users/${message.member.user.id}.json`;
+        if(method === 'ftp' || method === 'plugin') path = `./serverdata/${message.guild.id}/connection.json`;
+        else if(method === 'account') path = `./userdata/${message.member.user.id}/connection.json`;
         else {
             console.log(`${message.member.user.tag} executed /disconnect with wrong method in ${message.guild.name}`);
             message.reply(':warning: You can only disconnect from `ftp`, `plugin` or `account`.');

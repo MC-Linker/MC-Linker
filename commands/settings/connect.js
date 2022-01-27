@@ -171,14 +171,22 @@ module.exports = {
                     "protocol": 'sftp'
                 }
 
-                fs.writeFile(`./connections/servers/${message.guild.id}.json`, JSON.stringify(jsonSftp, null, 2), 'utf-8', err => {
+                fs.mkdir(`./serverdata/${message.guildId}`, err => {
                     if (err) {
-                        console.log('Error writing sftpFile', err);
+                        console.log('Error writing server folder', err)
                         message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
                         return;
                     }
-                    console.log('Successfully wrote sftpFile');
-                    message.reply('<:Checkmark:849224496232660992> Done! Successfully connected to the sftp server.');
+
+                    fs.writeFile(`./serverdata/${message.guildId}/connection.json`, JSON.stringify(jsonSftp, null, 2), 'utf-8', err => {
+                        if (err) {
+                            console.log('Error writing sftpFile', err);
+                            message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
+                            return;
+                        }
+                        console.log('Successfully wrote sftpFile');
+                        message.reply('<:Checkmark:849224496232660992> Done! Successfully connected to the sftp server.');
+                    });
                 });
             } else {
                 if(!path) {
@@ -207,14 +215,22 @@ module.exports = {
                     "protocol": 'ftp'
                 }
 
-                fs.writeFile(`./connections/servers/${message.guild.id}.json`, JSON.stringify(jsonFtp, null, 2), 'utf-8', err => {
-                    if (err) {
-                        console.log('Error writing ftpFile', err);
-                        message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
+                fs.mkdir(`./serverdata/${message.guildId}`, err => {
+                    if(err) {
+                        console.log('Error writing server folder', err)
+                        message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
                         return;
                     }
-                    console.log('Successfully wrote ftpFile');
-                    message.reply('<:Checkmark:849224496232660992> Done! Successfully connected to the ftp server.');
+
+                    fs.writeFile(`./serverdata/${message.guildId}/connection.json`, JSON.stringify(jsonFtp, null, 2), 'utf-8', err => {
+                        if (err) {
+                            console.log('Error writing ftpFile', err);
+                            message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
+                            return;
+                        }
+                        console.log('Successfully wrote ftpFile');
+                        message.reply('<:Checkmark:849224496232660992> Done! Successfully connected to the ftp server.');
+                    });
                 });
             }
 
@@ -279,14 +295,22 @@ module.exports = {
                             "protocol": "plugin"
                         }
 
-                        fs.writeFile(`./connections/servers/${message.guildId}.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
-                            if (err) {
-                                console.log('Error writing pluginFile', err)
+                        fs.mkdir(`./serverdata/${message.guildId}`, err => {
+                            if(err) {
+                                console.log('Error writing server folder', err)
                                 message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
                                 return;
                             }
-                            console.log('Successfully connected');
-                            message.reply('<:Checkmark:849224496232660992> Successfully connected to the plugin.');
+
+                            fs.writeFile(`./serverdata/${message.guildId}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
+                                if (err) {
+                                    console.log('Error writing pluginFile', err)
+                                    message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
+                                    return;
+                                }
+                                console.log('Successfully connected');
+                                message.reply('<:Checkmark:849224496232660992> Successfully connected to the plugin.');
+                            });
                         });
                     } catch(collected) {
                         console.log();
@@ -319,14 +343,22 @@ module.exports = {
                 'name': mcUsername
             }
 
-            fs.writeFile(`./connections/users/${message.member.user.id}.json`, JSON.stringify(connectionJson, null, 2), 'utf-8', err => {
-                if (err) {
-                    console.log('Error writing connection file', err);
-                    message.reply('<:Error:849215023264169985> Could not save username. Please try again.');
-                    return;
-                }
-                console.log(`Successfully wrote connection file with id ${uuidv4} and name: ${mcUsername}`);
-                message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft username: **${mcUsername}** and UUID: **${uuidv4}**`);
+            fs.mkdir(`./userdata/${message.member.user.id}`, err => {
+               if(err) {
+                   console.log('Error writing user folder', err);
+                   message.reply('<:Error:849215023264169985> Could not save username. Please try again.');
+                   return;
+               }
+
+               fs.writeFile(`./userdata/${message.member.user.id}/connection.json`, JSON.stringify(connectionJson, null, 2), 'utf-8', err => {
+                    if (err) {
+                        console.log('Error writing connection file', err);
+                        message.reply('<:Error:849215023264169985> Could not save username. Please try again.');
+                        return;
+                    }
+                    console.log(`Successfully wrote connection file with id ${uuidv4} and name: ${mcUsername}`);
+                    message.reply(`<:Checkmark:849224496232660992> Connected with Minecraft username: **${mcUsername}** and UUID: **${uuidv4}**`);
+                });
             });
         } else {
             console.log(`${message.member.user.tag} executed /connect with wrong method: ${method}`);

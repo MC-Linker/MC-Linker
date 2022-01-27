@@ -8,7 +8,7 @@ const { botPort, pluginVersion } = require('../config.json');
 
 let pluginConnections = [];
 async function loadExpress(client) {
-    pluginConnections = JSON.parse(await fs.promises.readFile('./connections/connections.json', 'utf-8'));
+    pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections.json', 'utf-8'));
     const app = express();
     app.use(express.json());
 
@@ -149,7 +149,7 @@ function connect(ip, guildId, verifyCode, message) {
             "guild": guildId
         };
 
-        pluginConnections = JSON.parse(await fs.promises.readFile('./connections/connections.json', 'utf-8'));
+        pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections.json', 'utf-8'));
         const conn = pluginConnections.find(conn => conn.guildId === guildId);
         const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
 
@@ -217,7 +217,7 @@ function disconnect(guildId, message) {
         if(!hash) { resolve(false); return; }
 
         try {
-            pluginConnections = JSON.parse(await fs.promises.readFile('./connections/connections.json', 'utf-8'));
+            pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections.json', 'utf-8'));
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
 
             if(connIndex === -1) {
@@ -268,7 +268,7 @@ function registerChannel(ip, guildId, channelId, types, message) {
         });
         connectJson.types = typeArr;
 
-        pluginConnections = JSON.parse(await fs.promises.readFile('./connections/connections.json', 'utf-8'));
+        pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections.json', 'utf-8'));
 
         try {
             let resp = await fetch(`http://${ip}/channel/`, {
@@ -440,7 +440,7 @@ function verify(ip, message) {
 
 async function updateConn() {
     return new Promise(resolve => {
-        fs.promises.writeFile('./connections/connections.json', JSON.stringify(pluginConnections, null, 2), 'utf-8')
+        fs.promises.writeFile('./serverdata/connections.json', JSON.stringify(pluginConnections, null, 2), 'utf-8')
             .catch(err => {
                 console.log('Couldn\'t save connections', err);
                 resolve(false);
