@@ -343,14 +343,14 @@ module.exports = {
                 'name': mcUsername
             }
 
-            fs.mkdir(`./userdata/${message.userId}`, err => {
+            fs.mkdir(`./userdata/${message.member.user.id}`, err => {
                if(err) {
                    console.log('Error writing user folder', err);
                    message.reply('<:Error:849215023264169985> Could not save username. Please try again.');
                    return;
                }
 
-               fs.writeFile(`./userdata/${message.userId}/connections.json`, JSON.stringify(connectionJson, null, 2), 'utf-8', err => {
+               fs.writeFile(`./userdata/${message.member.user.id}/connection.json`, JSON.stringify(connectionJson, null, 2), 'utf-8', err => {
                     if (err) {
                         console.log('Error writing connection file', err);
                         message.reply('<:Error:849215023264169985> Could not save username. Please try again.');
