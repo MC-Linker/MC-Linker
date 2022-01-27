@@ -1,9 +1,5 @@
-advancements/f134e0bb-eb3e-4714-8c88-c13a35f694cc.json
-stats/f134e0bb-eb3e-4714-8c88-c13a35f694cc.json
-playernbt/f134e0bb-eb3e-4714-8c88-c13a35f694cc.dat
-connections/connections.json
-connections/users/
-connections/servers/
+serverdata
+userdata
 node_modules
 config.json
 /.idea/

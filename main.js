@@ -63,7 +63,7 @@ client.on('guildDelete', async guild => {
     await plugin.disconnect(guild.id, message);
 
     //Delete connection file
-    fs.rm(`./connections/servers/${guild.id}.json`, err => {
+    fs.rm(`./serverdata/${guild.id}/connection.json`, err => {
         if (err) console.log(`No connection file found for guild: ${guild.name}`);
         else console.log(`Successfully deleted connection file of guild: ${guild.name}`);
     });
@@ -81,9 +81,9 @@ for (const folder of commandFolders) {
 
 
 client.on('messageCreate', message => {
-    plugin.chat(message);
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.reply(':wave: I use slash commands. Type `/help` if you need more help to a specific command.');
     if (!message.content.startsWith(prefix) || message.author.bot) return;
+    plugin.chat(message);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
