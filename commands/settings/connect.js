@@ -172,7 +172,7 @@ module.exports = {
                 }
 
                 fs.mkdir(`./serverdata/${message.guildId}`, err => {
-                    if (err) {
+                    if (err && err.code !== 'EEXIST') {
                         console.log('Error writing server folder', err)
                         message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
                         return;
@@ -216,7 +216,7 @@ module.exports = {
                 }
 
                 fs.mkdir(`./serverdata/${message.guildId}`, err => {
-                    if(err) {
+                    if(err && err.code !== 'EEXIST') {
                         console.log('Error writing server folder', err)
                         message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
                         return;
@@ -296,7 +296,7 @@ module.exports = {
                         }
 
                         fs.mkdir(`./serverdata/${message.guildId}`, err => {
-                            if(err) {
+                            if(err && err.code !== 'EEXIST') {
                                 console.log('Error writing server folder', err)
                                 message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
                                 return;
@@ -344,7 +344,7 @@ module.exports = {
             }
 
             fs.mkdir(`./userdata/${message.member.user.id}`, err => {
-               if(err) {
+               if(err && err.code !== 'EEXIST') {
                    console.log('Error writing user folder', err);
                    message.reply('<:Error:849215023264169985> Could not save username. Please try again.');
                    return;
