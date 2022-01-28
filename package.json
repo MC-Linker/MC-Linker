@@ -1,31 +1,35 @@
 {
-  "name": "discord.jsbot",
+  "name": "minecraft-smp-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "View minecraft stats, advancements and inventories in Discord! Also includes texturepack and moderation tools and much more.",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lianecx/Minecraft-SMP-Bot.git"
+  },
+  "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lianecx/Minecraft-SMP-Bot/issues"
+  },
+  "homepage": "https://github.com/Lianecx/Minecraft-SMP-Bot#readme",
   "dependencies": {
-    "@discordjs/builders": "^0.11.0",
-    "@discordjs/rest": "^0.1.0-canary.0",
-    "@mapbox/node-pre-gyp": "^1.0.5",
-    "canvas": "^2.8.0",
+    "@discordjs/builders": "^0.12.0",
+    "@discordjs/rest": "^0.3.0",
+    "canvas": "^2.9.0",
     "discord-api-types": "^0.26.1",
-    "discord.js": "^13.3.1",
-    "express": "^4.17.1",
-    "fetch": "^1.1.0",
+    "discord.js": "^13.6.0",
+    "express": "^4.17.2",
     "ftp": "^0.3.10",
-    "glob": "^7.1.7",
-    "lodash": "^4.17.21",
     "nbt": "^0.8.1",
-    "node-fetch": "^2.6.1",
-    "node-gyp": "^8.1.0",
+    "node-fetch": "^3.2.0",
     "nslookup": "^1.1.1",
-    "probe-image-size": "^7.2.1",
+    "probe-image-size": "^7.2.3",
     "ssh2-sftp-client": "^7.2.1",
-    "topgg-autoposter": "^2.0.0"
+    "topgg-autoposter": "^2.0.1"
   }
 }
