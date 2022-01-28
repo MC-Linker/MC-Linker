@@ -11,7 +11,7 @@
     "url": "git+https://github.com/Lianecx/Minecraft-SMP-Bot.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Lianecx",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Lianecx/Minecraft-SMP-Bot/issues"
@@ -26,7 +26,7 @@
     "express": "^4.17.2",
     "ftp": "^0.3.10",
     "nbt": "^0.8.1",
-    "node-fetch": "^3.2.0",
+    "node-fetch": "^2.6.7",
     "nslookup": "^1.1.1",
     "probe-image-size": "^7.2.3",
     "ssh2-sftp-client": "^7.2.1",
