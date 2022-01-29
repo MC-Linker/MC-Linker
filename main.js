@@ -81,9 +81,10 @@ for (const folder of commandFolders) {
 
 
 client.on('messageCreate', message => {
+    if (!message.content.startsWith(prefix)) plugin.chat(message);
+
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.reply(':wave: I use slash commands. Type `/help` if you need more help to a specific command.');
     if (!message.content.startsWith(prefix) || message.author.bot) return;
-    plugin.chat(message);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
