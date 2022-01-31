@@ -110,7 +110,12 @@ module.exports = {
                 console.log(`${message.member.user.tag} executed /connect ftp without version in ${message.guild.name}`);
                 message.reply(':warning: Please specify the minecraft version.');
                 return;
+            } else if(port > 0 && port < 65536) {
+                console.log(`${message.member.user.tag} executed /connect ftp with wrong port in ${message.guild.name}`);
+                message.reply(':warning: Please specify a port that is bigger than 0 and lower than 65536.');
+                return;
             }
+
             if(user === 'none') user = '';
             if(password === 'none') password = '';
 
