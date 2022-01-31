@@ -58,9 +58,9 @@ module.exports = {
             if(!disconnect) return;
         }
 
-        fs.rm(path, err => {
+        fs.rm(path, { recursive: true, force: true }, err => {
             if(err) {
-                console.log(`Error trying to delete ${method} connection file.`, err);
+                console.log(`Error trying to delete ${method} connection folder.`, err);
                 message.reply(`:warning: Couldn't disconnect from the **${method}** connection because you are **not connected**.`);
                 return;
             }
