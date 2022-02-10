@@ -139,10 +139,10 @@ module.exports = {
         const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
 
-        const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./advancements/${uuidv4}.json`, message);
+        const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./userdata/advancements/${uuidv4}.json`, message);
         if(!amFile) return;
 
-        fs.readFile(`./advancements/${uuidv4}.json`, 'utf8', async (err, advancementJson) => {
+        fs.readFile(`./userdata/advancements/${uuidv4}.json`, 'utf8', async (err, advancementJson) => {
             if(err) {
                 message.reply('<:Error:849215023264169985> Could not read advancement file. Please try again.');
                 console.log('Error reading stat file from disk: ', err);
