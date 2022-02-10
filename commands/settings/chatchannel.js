@@ -113,7 +113,7 @@ module.exports = {
                     "protocol": "plugin"
                 }
 
-                fs.writeFile(`./serverdata/${message.guild.id}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
+                fs.writeFile(`./serverdata/connections/${message.guild.id}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
                     if(err) {
                         console.log('Error writing pluginFile', err);
                         menu.reply('<:Error:849215023264169985> Couldn\'t save channel. Please try again.');

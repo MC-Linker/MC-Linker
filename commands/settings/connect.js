@@ -176,14 +176,14 @@ module.exports = {
                     "protocol": 'sftp'
                 }
 
-                fs.mkdir(`./serverdata/${message.guildId}`, err => {
+                fs.mkdir(`./serverdata/connections/${message.guildId}`, err => {
                     if (err && err.code !== 'EEXIST') {
                         console.log('Error writing server folder', err)
                         message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
                         return;
                     }
 
-                    fs.writeFile(`./serverdata/${message.guildId}/connection.json`, JSON.stringify(jsonSftp, null, 2), 'utf-8', err => {
+                    fs.writeFile(`./serverdata/connections/${message.guildId}/connection.json`, JSON.stringify(jsonSftp, null, 2), 'utf-8', err => {
                         if (err) {
                             console.log('Error writing sftpFile', err);
                             message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
@@ -220,14 +220,14 @@ module.exports = {
                     "protocol": 'ftp'
                 }
 
-                fs.mkdir(`./serverdata/${message.guildId}`, err => {
+                fs.mkdir(`./serverdata/connections/${message.guildId}`, err => {
                     if(err && err.code !== 'EEXIST') {
                         console.log('Error writing server folder', err)
                         message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
                         return;
                     }
 
-                    fs.writeFile(`./serverdata/${message.guildId}/connection.json`, JSON.stringify(jsonFtp, null, 2), 'utf-8', err => {
+                    fs.writeFile(`./serverdata/connections/${message.guildId}/connection.json`, JSON.stringify(jsonFtp, null, 2), 'utf-8', err => {
                         if (err) {
                             console.log('Error writing ftpFile', err);
                             message.reply('<:Error:849215023264169985> Could not save credentials. Please try again.');
@@ -300,14 +300,14 @@ module.exports = {
                             "protocol": "plugin"
                         }
 
-                        fs.mkdir(`./serverdata/${message.guildId}`, err => {
+                        fs.mkdir(`./serverdata/connections/${message.guildId}`, err => {
                             if(err && err.code !== 'EEXIST') {
                                 console.log('Error writing server folder', err)
                                 message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
                                 return;
                             }
 
-                            fs.writeFile(`./serverdata/${message.guildId}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
+                            fs.writeFile(`./serverdata/connections/${message.guildId}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
                                 if (err) {
                                     console.log('Error writing pluginFile', err)
                                     message.reply('<:Error:849215023264169985> Couldn\'t save IP. Please try again.');
@@ -348,14 +348,14 @@ module.exports = {
                 'name': mcUsername
             }
 
-            fs.mkdir(`./userdata/${message.member.user.id}`, err => {
+            fs.mkdir(`./userdata/connections/${message.member.user.id}`, err => {
                if(err && err.code !== 'EEXIST') {
                    console.log('Error writing user folder', err);
                    message.reply('<:Error:849215023264169985> Could not save username. Please try again.');
                    return;
                }
 
-               fs.writeFile(`./userdata/${message.member.user.id}/connection.json`, JSON.stringify(connectionJson, null, 2), 'utf-8', err => {
+               fs.writeFile(`./userdata/connections/${message.member.user.id}/connection.json`, JSON.stringify(connectionJson, null, 2), 'utf-8', err => {
                     if (err) {
                         console.log('Error writing connection file', err);
                         message.reply('<:Error:849215023264169985> Could not save username. Please try again.');

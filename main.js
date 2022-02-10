@@ -63,7 +63,7 @@ client.on('guildDelete', async guild => {
     await plugin.disconnect(guild.id, message);
 
     //Delete connection file
-    fs.rm(`./serverdata/${guild.id}/connection.json`, err => {
+    fs.rm(`./serverdata/connections/${guild.id}/connection.json`, err => {
         if (err) console.log(`No connection file found for guild: ${guild.name}`);
         else console.log(`Successfully deleted connection file of guild: ${guild.name}`);
     });
