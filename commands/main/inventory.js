@@ -37,10 +37,10 @@ module.exports = {
         const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
 
-        const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuidv4}.dat`, `./playernbt/${uuidv4}.dat`, message);
+        const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuidv4}.dat`, `./userdata/playernbt/${uuidv4}.dat`, message);
         if(!nbtFile) return;
 
-        fs.readFile(`./playernbt/${uuidv4}.dat`, (err, playerNBT) => {
+        fs.readFile(`./userdata/playernbt/${uuidv4}.dat`, (err, playerNBT) => {
             if(err) {
                 message.reply('<:Error:849215023264169985> Could not read inventory.');
 				console.log('Error reading nbtFile from disk: ', err);

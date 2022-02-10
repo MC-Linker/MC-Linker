@@ -196,10 +196,10 @@ module.exports = {
         const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
 
-        const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./stats/${uuidv4}.json`, message);
+        const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./userdata/stats/${uuidv4}.json`, message);
         if(!statFile) return;
 
-        fs.readFile(`./stats/${uuidv4}.json`, 'utf8', async (err, statJson) => {
+        fs.readFile(`./userdata/stats/${uuidv4}.json`, 'utf8', async (err, statJson) => {
             if (err) {
                 message.reply('<:Error:849215023264169985> Could not find stat file. Member most likely never joined the server.')
                 console.log('Error reading stat file from disk: ', err);
@@ -251,7 +251,7 @@ module.exports = {
 
                 let imgType;
                 if(category === 'killed' || category === 'killed_by') imgType = 'entities';
-                else if(category !== 'custom') imgType = 'items';
+                else imgType = 'items';
 
                 fs.access(`./images/minecraft/${imgType}/${stat}.png`, err => {
                     if (err) {

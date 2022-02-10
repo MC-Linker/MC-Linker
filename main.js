@@ -24,15 +24,13 @@ String.prototype.cap = function() {
 if(topggToken) {
     const ap = AutoPoster(topggToken, client);
 
-    ap.on('posted', stats => {
-        console.log('Posted stats to Top.gg!', stats);
-    });
+    ap.on('posted', () => {});
 }
 
 client.once('ready', async () => {
     console.log(`Bot logged in as ${client.user.tag} and with prefix: ${prefix}\nBot on ${client.guilds.cache.size} server.`);
     client.user.setActivity('/help', { type: 'LISTENING' });
-    plugin.loadExpress(client);
+    await plugin.loadExpress(client);
 });
 
 client.on('guildCreate', guild => {
@@ -63,7 +61,7 @@ client.on('guildDelete', async guild => {
     await plugin.disconnect(guild.id, message);
 
     //Delete connection file
-    fs.rm(`./serverdata/${guild.id}/connection.json`, err => {
+    fs.rm(`./serverdata/connections/${guild.id}/connection.json`, err => {
         if (err) console.log(`No connection file found for guild: ${guild.name}`);
         else console.log(`Successfully deleted connection file of guild: ${guild.name}`);
     });

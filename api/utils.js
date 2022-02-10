@@ -111,7 +111,7 @@ async function getIp(guildId, message) {
 
 function getServerData(guildId, message) {
     return new Promise(resolve => {
-        fs.readFile(`./serverdata/${guildId}/connection.json`, 'utf8')
+        fs.readFile(`./serverdata/connections/${guildId}/connection.json`, 'utf8')
             .then(serverJson => {
                 resolve(JSON.parse(serverJson));
             }).catch(() => {
@@ -124,7 +124,7 @@ function getServerData(guildId, message) {
 
 function getUserData(userId, message) {
     return new Promise(resolve => {
-        fs.readFile(`./userdata/${userId}/connection.json`, 'utf8')
+        fs.readFile(`./userdata/connections/${userId}/connection.json`, 'utf8')
             .then(userJson => {
                 resolve(JSON.parse(userJson));
             }).catch(() => {
