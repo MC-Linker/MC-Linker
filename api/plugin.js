@@ -25,6 +25,7 @@ async function loadExpress(client) {
         //Get connection JSON of guild
         const conn = pluginConnections.find(conn => conn.guildId === guild && conn.ip === ip);
 
+
         //If no connection on that ip
         if(!conn) {
             try {

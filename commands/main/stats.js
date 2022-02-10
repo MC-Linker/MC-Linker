@@ -251,7 +251,7 @@ module.exports = {
 
                 let imgType;
                 if(category === 'killed' || category === 'killed_by') imgType = 'entities';
-                else if(category !== 'custom') imgType = 'items';
+                else imgType = 'items';
 
                 fs.access(`./images/minecraft/${imgType}/${stat}.png`, err => {
                     if (err) {
