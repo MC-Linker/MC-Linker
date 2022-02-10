@@ -24,9 +24,7 @@ String.prototype.cap = function() {
 if(topggToken) {
     const ap = AutoPoster(topggToken, client);
 
-    ap.on('posted', stats => {
-        console.log('Posted stats to Top.gg!', stats);
-    });
+    ap.on('posted', () => {});
 }
 
 client.once('ready', async () => {
