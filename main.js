@@ -30,7 +30,7 @@ if(topggToken) {
 client.once('ready', async () => {
     console.log(`Bot logged in as ${client.user.tag} and with prefix: ${prefix}\nBot on ${client.guilds.cache.size} server.`);
     client.user.setActivity('/help', { type: 'LISTENING' });
-    plugin.loadExpress(client);
+    await plugin.loadExpress(client);
 });
 
 client.on('guildCreate', guild => {
