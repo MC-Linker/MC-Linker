@@ -1,6 +1,6 @@
-const fs = require('fs');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const utils = require("../../api/utils");
+const disable = require("../../api/disable");
 
 module.exports = {
     name: 'enable',
@@ -39,37 +39,34 @@ module.exports = {
                     .setAutocomplete(true)
                 )
             ),
-    autocomplete(interaction) {
+    async autocomplete(interaction) {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        fs.readdir(`./disable/${subcommand}`, async (err, disabled) => {
-            if(err) return;
+        const disabled = await disable.getDisabled(interaction.guildId, subcommand);
+        if(!disabled) return;
 
-            const matchingDisabled = disabled.filter(disable => disable.startsWith(interaction.guild.id) && disable.includes(focused));
-            if(matchingDisabled.length >= 25) matchingDisabled.length = 25;
+        const matchingDisabled = disabled.filter(disable => disable.includes(focused));
+        if (matchingDisabled.length >= 25) matchingDisabled.length = 25;
 
-            const respondArray = [];
-            for (let disable of matchingDisabled) {
-                disable = disable.replaceAll(`${interaction.guildId}_`, '');
-                let formattedDisable;
+        const respondArray = [];
+        for (let disable of matchingDisabled) {
+            disable = disable.replaceAll(`${interaction.guildId}_`, '');
+            let formattedDisable;
+            if (subcommand === 'advancements') {
+                const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
+                formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
 
-                if(subcommand === 'advancements') {
-                    const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
-                    formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
+            } else if (subcommand === 'stats') formattedDisable = disable.split('_').map(word => word.cap()).join(' ');
+            else formattedDisable = disable.cap();
 
-                } else if(subcommand === 'stats') formattedDisable = disable.split('_').map(word => word.cap()).join(' ');
-                else formattedDisable = disable.cap();
+            respondArray.push({
+                name: formattedDisable,
+                value: disable,
+            });
+        }
 
-                respondArray.push({
-                    name: formattedDisable,
-                    value: disable,
-                });
-            }
-
-            interaction.respond(respondArray);
-        });
-
+        interaction.respond(respondArray);
     },
     async execute(message, args) {
         let type = args?.shift();
@@ -113,22 +110,11 @@ module.exports = {
             formattedToEnable = matchingTitle.shift()?.name ?? toEnable.cap();
         } else if(type === 'stats') formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
 
-        fs.access(`./disable/${type}/${message.guild.id}_${toEnable}`, err => {
-            if (err) {
-                console.log(`${type} ${toEnable} is already enabled.`);
-                message.reply(`:warning: ${type.cap()} [**${toEnable}**] is already enabled.`);
-                return;
-            }
-
-            fs.rm(`./disable/${type}/${message.guild.id}_${toEnable}`, err => {
-                if (err) {
-                    console.log(`Error trying to delete ${type} ${toEnable}`, err);
-                    message.reply(`<:Error:849215023264169985> Could not enable ${type} [**${toEnable}**].`);
-                    return;
-                }
-                console.log(`Successfully deleted enableFile [./disable/${type}/${message.guild.id}_${toEnable}].`);
-                message.reply(`<:Checkmark:849224496232660992> Successfully enabled ${type} [**${formattedToEnable}**].`);
-            });
-        });
+        if(!await disable.enable(message.guildId, type, toEnable)) {
+            message.reply(`<:Error:849215023264169985> Could not enable ${type} [**${toEnable}**].`);
+            return;
+        }
+        console.log(`Successfully enabled ${type} ${toEnable}.`);
+        message.reply(`<:Checkmark:849224496232660992> Successfully enabled ${type} [**${formattedToEnable}**].`);
 	}
 }
