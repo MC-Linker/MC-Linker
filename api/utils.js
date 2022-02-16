@@ -57,7 +57,7 @@ function searchAllAdvancements(searchString, shouldSearchValues = true, maxLengt
 
 function isUserConnected(userId) {
     return new Promise(resolve => {
-        fs.access(`./userdata/connections/${userId}/connection.json`)
+        fs.access(`./userdata/connections/${userId}`)
             .then(ignored => resolve(true))
             .catch(ignored => resolve(false));
     });
@@ -65,7 +65,7 @@ function isUserConnected(userId) {
 
 function isGuildConnected(guildId) {
     return new Promise(resolve => {
-        fs.access(`./serverdata/connections/${guildId}/connection.json`)
+        fs.access(`./serverdata/connections/${guildId}`)
             .then(ignored => resolve(true))
             .catch(ignored => resolve(false));
     });
@@ -115,14 +115,12 @@ async function getProtocol(guildId, message) {
 
 async function getHash(guildId, message) {
     const serverData = await getServerData(guildId, message);
-    if (serverData?.protocol === 'plugin') return serverData?.hash;
-    else return false;
+    return serverData?.hash;
 }
 
 async function getIp(guildId, message) {
     const serverData = await getServerData(guildId, message);
-    if (serverData?.protocol === 'plugin') return serverData?.ip;
-    else return false;
+    return serverData?.ip;
 }
 
 function getServerData(guildId, message) {
