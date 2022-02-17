@@ -1,7 +1,9 @@
-const { discordLink } = require('../config.json');
 const fs = require('fs');
 const Discord = require('discord.js');
-const {SlashCommandBuilder} = require("@discordjs/builders");
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { discordLink } = require('../config.json');
+const disable = require('../api/disable');
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,7 +14,7 @@ module.exports = {
                 .setDescription('Set the command or category of which you want to get infos.')
                 .setRequired(false)
         ),
-    execute: function(message, args) {
+    async execute(message, args) {
         const baseEmbed = new Discord.MessageEmbed()
             .setTitle('Help Menu')
             .setAuthor({ name: message.client.user.username, iconURL: message.client.user.displayAvatarURL({ format: 'png' }) })
@@ -74,8 +76,8 @@ module.exports = {
                             .setEmoji('<:Checkmark:849224496232660992>'),
                     );
 
-                const disabled = fs.existsSync(`./disable/commands/${message.guild.id}_${command.name}`);
-                if (!disabled) message.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
+                const disabled = await disable.getDisabled(message.guildId, 'commands');
+                if (!disabled.find(disable => disable === command.name)) message.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
                 else if (disabled) {
                     helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
                     message.reply({ embeds: [helpEmbed], components: [enableRow] });
