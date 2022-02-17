@@ -1,6 +1,7 @@
 const fs = require('fs');
-const ftp = require('../../api/ftp');
 const Discord = require('discord.js');
+const disable = require('../../api/disable');
+const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
 const { SlashCommandBuilder, time } = require('@discordjs/builders');
 
@@ -120,21 +121,35 @@ module.exports = {
 
         console.log(`${message.member.user.tag} executed /advancements ${username} ${category} ${advancement} in ${message.guild.name}`);
 
-        const uuidv4 = await utils.getUUIDv4(username, message.mentions.users.first()?.id, message);
-        if(!uuidv4) return;
+        //Get Advancement Title and Description from lang file
+        let advancementTitle;
+        let advancementDesc;
+        try {
+            const langData = JSON.parse(await fs.promises.readFile('./lang/english.json', 'utf-8'));
+            advancementTitle = langData[`advancements.${category}.${advancement}.title`];
+            advancementDesc = langData[`advancements.${category}.${advancement}.description`];
+            if(!advancementTitle) {
+                advancementDesc = 'No description available...'
+                advancementTitle = `${category} ${advancement}`;
+            }
+        } catch(err) {
+            advancementDesc = 'No description available...'
+            advancementTitle = `${category} ${advancement}`;
+        }
 
-        const categoryDisabled = fs.existsSync(`./disable/advancements/${message.guild.id}_${category}`);
-        if(categoryDisabled) {
+        if(await disable.isDisabled(message.guildId, 'advancements', category)) {
             console.log(`Advancement category [${category}] disabled.`);
             message.reply(`:no_entry: Advancement category [**${category}**] disabled!`);
             return;
         }
-        const advancementDisabled = fs.existsSync(`./disable/advancements/${message.guild.id}_${advancement}`);
-        if(advancementDisabled) {
+        if(await disable.isDisabled(message.guildId, 'advancements', advancement)) {
             console.log(`Advancement [${advancement}] disabled.`);
-            message.reply(`:no_entry: Advancement [**${advancement}**] disabled!`);
+            message.reply(`:no_entry: Advancement [**${advancementTitle}**] disabled!`);
             return;
         }
+
+        const uuidv4 = await utils.getUUIDv4(username, message.mentions.users.first()?.id, message);
+        if(!uuidv4) return;
 
         const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
@@ -150,21 +165,6 @@ module.exports = {
             }
 
             const advancementData = JSON.parse(advancementJson);
-
-            let advancementTitle;
-            let advancementDesc;
-            try {
-                const langData = JSON.parse(await fs.promises.readFile('./lang/english.json', 'utf-8'));
-                advancementTitle = langData[`advancements.${category}.${advancement}.title`];
-                advancementDesc = langData[`advancements.${category}.${advancement}.description`];
-                if(!advancementTitle) {
-                    advancementDesc = 'No description available...'
-                    advancementTitle = `${category} ${advancement}`;
-                }
-            } catch(err) {
-                advancementDesc = 'No description available...'
-                advancementTitle = `${category} ${advancement}`;
-            }
 
             const letters = advancementTitle.split('');
             let equals = '';

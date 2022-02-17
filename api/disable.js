@@ -60,12 +60,10 @@ function enable(guildId, type, value) {
         } catch(err) {
             console.log('Couldn\'t read disable json', err);
             resolve(false);
-            return;
         }
 
         //Remove disable
-        if(!disableData[type]) return resolve(false);
-        const enableIndex = disableData[type]?.findIndex(disable => disable === value);
+        const enableIndex = disableData[type].findIndex(disable => disable === value);
         if(enableIndex === -1) return resolve(false);
         disableData[type].splice(enableIndex, 1);
 
@@ -79,18 +77,29 @@ function enable(guildId, type, value) {
     });
 }
 
+function isDisabled(guildId, type, value) {
+    return new Promise(async resolve => {
+        if(!await utils.isGuildConnected(guildId)) return resolve(false);
+
+        let disableData = await getDisabled(guildId, type);
+        if(!disableData) return resolve(false);
+
+        if(disableData.find(disable => disable === value)) return resolve(true);
+        else return resolve(false);
+    });
+}
+
 function getDisabled(guildId, type) {
     return new Promise(resolve => {
         fs.readFile(`./serverdata/connections/${guildId}/disable.json`, 'utf-8')
             .then(data => {
                 data = JSON.parse(data)[type];
                 resolve(data);
-            }).catch(err => {
-                console.log('Could not read disable json', err);
+            }).catch(ignored => {
                 resolve(false);
             });
     });
 }
 
 
-module.exports = { disable, enable, getDisabled };
+module.exports = { disable, enable, getDisabled, isDisabled };

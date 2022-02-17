@@ -111,10 +111,11 @@ module.exports = {
         } else if(type === 'stats') formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
 
         if(!await disable.enable(message.guildId, type, toEnable)) {
-            message.reply(`<:Error:849215023264169985> Could not enable ${type} [**${toEnable}**].`);
+            console.log(`Could not enable ${type} [${toEnable}].`);
+            message.reply(`:warning: ${type.cap()} [**${toEnable}**] is already enabled.`);
             return;
         }
-        console.log(`Successfully enabled ${type} ${toEnable}.`);
-        message.reply(`<:Checkmark:849224496232660992> Successfully enabled ${type} [**${formattedToEnable}**].`);
+        console.log(`Successfully enabled ${type} [${toEnable}].`);
+        message.reply(`<:Checkmark:849224496232660992> Successfully enabled ${type.cap()} [**${formattedToEnable}**].`);
 	}
 }

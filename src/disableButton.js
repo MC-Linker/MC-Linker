@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
-const fs = require('fs');
+const disable = require('../api/disable');
 
 module.exports = {
-    execute(interaction) {
+    async execute(interaction) {
         const baseEmbed = new Discord.MessageEmbed()
             .setTitle('Help Menu')
             .setAuthor({ name: interaction.client.user.username, iconURL: interaction.client.user.displayAvatarURL({ format: 'png' }) })
@@ -11,15 +11,16 @@ module.exports = {
         if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
             const command = interaction.customId.split('_').pop();
             console.log(`${interaction.member.user.tag} clicked disableButton: ${command} in ${interaction.guild.name}`);
-            fs.writeFile(`./disable/commands/${interaction.guild.id}_${command}`, '', err => {
-                if (err) {
-                    console.log('Error writing commandDisableFile ', err);
-                    interaction.editReply(`<:Error:849215023264169985> Couldn't disable Command!`);
-                } else {
-                    console.log(`Successfully wrote commandDisableFile: ./disable/commands/${interaction.guild.id}_${command}`);
-                    interaction.editReply(`<:Checkmark:849224496232660992> Disabling of command [**${command}**] successful.`);
-                }
-            })
+
+            //Disable command
+            const disabled = await disable.disable(interaction.guildId, 'commands', command);
+            if(disabled) {
+                console.log(`Successfully disabled command ${command}`);
+                interaction.editReply(`<:Checkmark:849224496232660992> Disabling of command [**${command}**] successful.`);
+            } else {
+                console.log(`Could not disable command ${command}`);
+                interaction.editReply(`<:Error:849215023264169985> Couldn't disable command [**${command}**]!`);
+            }
 
             const enableRow = new Discord.MessageActionRow()
                 .addComponents(
