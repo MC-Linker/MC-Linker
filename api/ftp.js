@@ -9,13 +9,9 @@ module.exports = {
 		return new Promise(async resolve => {
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
-			if(protocol === 'sftp') {
-				resolve(await sftp.get(getPath, putPath, message));
-				return;
-			} else if(protocol === 'plugin') {
-				resolve(await plugin.get(getPath, putPath, message));
-				return;
-			}
+			//Redirect to other protocols
+			if(protocol === 'sftp') return resolve(await sftp.get(getPath, putPath, message));
+			else if(protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, message));
 
 			const ftpData = await utils.getServerData(message.guild.id, message);
 			if(!ftpData) return;
@@ -66,13 +62,9 @@ module.exports = {
 		return new Promise(async resolve => {
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
-			if(protocol === 'sftp') {
-				resolve(await sftp.get(getPath, putPath, message));
-				return;
-			} else if(protocol === 'plugin') {
-				resolve(await plugin.get(getPath, putPath, message));
-				return;
-			}
+			//Redirect to other protocols
+			if(protocol === 'sftp') return resolve(await sftp.get(getPath, putPath, message));
+			else if(protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, message));
 
 			const ftpData = await utils.getServerData(message.guild.id, message);
 			if(!ftpData) return;

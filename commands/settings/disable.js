@@ -1,7 +1,8 @@
-const Discord = require('discord.js')
+const Discord = require('discord.js');
 const fs = require('fs');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const utils = require('../../api/utils');
+const disable = require('../../api/disable');
 
 module.exports = {
     name: 'disable',
@@ -84,69 +85,59 @@ module.exports = {
     },
     async execute(message, args) {
         let type = args?.shift();
-        let toDisableList = args?.join(' ').toLowerCase();
 
         if(!type) {
             console.log(`${message.member.user.tag} executed /disable without type in ${message.guild.name}`);
-            message.reply(':warning: Please specify the type you want to disable (`commands`, `stats, `advancements` or `list` if you want to list the disabled commands/stats/advancements.)');
+            message.reply(':warning: Please specify the type you want to disable (`commands`, `stats, `advancements`) or `list` if you want to list the disabled commands/stats/advancements.');
             return;
         }
 
         if (type === 'list') {
-            if(toDisableList === 'command' || toDisableList === 'cmd' || toDisableList === 'commands' || toDisableList === 'cmds') type = 'commands';
-            else if(toDisableList === 'advancements' || message.client.commands.get('advancements').aliases.includes(toDisableList)) type = 'advancements';
-            else if(toDisableList === 'stats' || message.client.commands.get('stats').aliases.includes(toDisableList)) type = 'stats';
+            const toList = args?.join(' ').toLowerCase();
+
+            if(toList === 'command' || toList === 'cmd' || toList === 'commands' || toList === 'cmds') type = 'commands';
+            else if(toList === 'advancements' || message.client.commands.get('advancements').aliases.includes(toList)) type = 'advancements';
+            else if(toList === 'stats' || message.client.commands.get('stats').aliases.includes(toList)) type = 'stats';
             else {
                 console.log(`${message.member.user.tag} executed /disable list with wrong type in ${message.guild.name}`);
                 message.reply(':warning: You can only list `commands`, `stats` or `advancements`.');
                 return;
             }
 
-            console.log(`${message.member.user.tag} executed /disable list ${toDisableList} in ${message.guild.name}`);
+            console.log(`${message.member.user.tag} executed /disable list ${toList} in ${message.guild.name}`);
 
-            fs.readdir(`./disable/${type}`, async (err, disabled) => {
-                if(err) {
-                    console.log(`Error reading disableList ${type} directory.`, err);
-                    message.reply(`<:Error:849215023264169985> Could not list disabled ${type}.`);
-                    return;
-                }
+            const disabled = await disable.getDisabled(message.guildId, type);
+            if(!disabled || disabled.length === 0) {
+                message.reply(`<:Checkmark:849224496232660992> There are no disabled ${type}.`);
+                return;
+            }
 
-                disabled = disabled.filter(disable => disable.startsWith(message.guildId));
+            const listEmbed = new Discord.MessageEmbed()
+                .setTitle('Disable List')
+                .setColor('RED')
+                .addField(`===========\n${type.cap()}`, '**===========**');
 
+            for(let disable of disabled) {
+                if(type === 'advancements') {
+                    const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
+                    disable = matchingTitle.shift()?.name ?? disable;
+                } else if (type === 'stats') disable = disable.split('_').map(word => word.cap()).join(' ');
+                else disable = disable.cap();
 
-                if(disabled.length === 0) {
-                    console.log(`No disabled ${type}.`);
-                    message.reply(`<:Checkmark:849224496232660992> There are no disabled ${type}.`);
-                } else {
-                    const listEmbed = new Discord.MessageEmbed()
-                        .setTitle('Disable List')
-                        .setColor('RED')
-                        .addField(`==============\nDisabled ${type}`, '**==============**')
+                listEmbed.addField(disable, '\u200B');
+            }
 
-                    for(let disable of disabled) {
-                        disable = disable.replace(`${message.guildId}_`, '');
-
-                        if(type === 'advancements') {
-                            const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
-                            disable = matchingTitle.shift()?.name ?? disable;
-                        } else if (type === 'stats') disable = disable.split('_').map(word => word.cap()).join(' ');
-                        else disable = disable.cap();
-
-                        listEmbed.addField(disable, '\u200B');
-                    }
-
-                    message.reply({ embeds: [listEmbed]});
-                }
-            });
-
+            message.reply({ embeds: [listEmbed] });
         } else {
+            let toDisable = args?.join(' ').toLowerCase();
+
             if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
                 console.log(`${message.member.user.tag} executed /disable ${type} without admin in ${message.guild.name}`);
                 message.reply(':no_entry: This command can only be executed by admins.');
                 return;
             }
 
-            console.log(`${message.member.user.tag} executed /disable ${type} ${toDisableList} in ${message.guild.name}`);
+            console.log(`${message.member.user.tag} executed /disable ${type} ${toDisable} in ${message.guild.name}`);
 
             if (type === 'command' || type === 'cmd' || type === 'commands' || type === 'cmds') type = 'commands';
             else if (type === 'advancements' || message.client.commands.get('advancements').aliases.includes(type)) type = 'advancements';
@@ -156,38 +147,38 @@ module.exports = {
                 message.reply(':warning: You can only disable `commands`, `stats` or `advancements`.');
                 return;
             }
-            if(!toDisableList) {
+
+            if(!toDisable) {
                 console.log(`${message.member.user.tag} executed /disable ${type} without toDisable in ${message.guild.name}`);
-                message.reply(':warning: You can only disable `commands`, `stats` or `advancements`.');
+                message.reply(`:warning: Please specify the ${type} you want to disable.`);
                 return;
             }
 
             let formattedToDisable;
             if(type === 'commands') {
-                const command = message.client.commands.get(toDisableList) ?? message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(toDisableList));
+                const command = message.client.commands.get(toDisable) ?? message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(toDisable));
 
                 if(!command) {
-                    console.log(`Command [${toDisableList}] doesn't exist.`);
-                    message.reply(`:warning: Command [**${toDisableList}**] doesn't exist.`);
+                    console.log(`Command [${toDisable}] doesn't exist.`);
+                    message.reply(`:warning: Command [**${toDisable}**] doesn't exist.`);
                     return;
                 }
 
-                toDisableList = command.name;
-                formattedToDisable = toDisableList.cap();
+                toDisable = command.name;
+                formattedToDisable = toDisable.cap();
             } else if(type === 'advancements') {
-                const matchingTitle = await utils.searchAllAdvancements(toDisableList, true, 1);
-                formattedToDisable = matchingTitle.shift()?.name ?? toDisableList.cap();
-            } else if(type === 'stats') formattedToDisable = toDisableList.split('_').map(word => word.cap()).join(' ');
+                const matchingTitle = await utils.searchAllAdvancements(toDisable, true, 1);
+                formattedToDisable = matchingTitle.shift()?.name ?? toDisable.cap();
+            } else if(type === 'stats') {
+                formattedToDisable = toDisable.split('_').map(word => word.cap()).join(' ');
+            }
 
-            fs.writeFile(`./disable/${type}/${message.guild.id}_${toDisableList}`, '', err => {
-                if (err) {
-                    console.log(`Error trying to write ${type} ${toDisableList}`, err);
-                    message.reply(`<:Error:849215023264169985> Could not disable ${type} [**${toDisableList}**].`);
-                    return;
-                }
-                console.log(`Successfully wrote disableFile [./disable/${type}/${message.guild.id}_${toDisableList}].`);
-                message.reply(`<:Checkmark:849224496232660992> Successfully disabled ${type} [**${formattedToDisable}**].`);
-            });
+            if(!await disable.disable(message.guildId, type, toDisable)) {
+                message.reply(`<:Error:849215023264169985> Could not disable ${type} [**${toDisable}**].`);
+                return;
+            }
+            console.log(`Successfully disabled ${type} ${toDisable}.`);
+            message.reply(`<:Checkmark:849224496232660992> Successfully disabled ${type} [**${formattedToDisable}**].`);
         }
 	}
 }

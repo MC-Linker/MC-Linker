@@ -213,9 +213,9 @@ function connect(ip, guildId, verifyCode, message) {
 function disconnect(guildId, message) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(guildId, message);
-        if(!ip) { resolve(false); return; }
+        if(!ip) return resolve(false);
         const hash = await utils.getHash(guildId, message);
-        if(!hash) { resolve(false); return; }
+        if(!hash) return resolve(false);
 
         try {
             pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections/connections.json', 'utf-8'));
@@ -252,7 +252,7 @@ function disconnect(guildId, message) {
 function registerChannel(ip, guildId, channelId, types, message) {
     return new Promise(async resolve => {
         const hash = await utils.getHash(guildId, message);
-        if(!hash) { resolve(false); return; }
+        if(!hash) return resolve(false);
 
         const connectJson = {
             "chat": true,
@@ -281,8 +281,8 @@ function registerChannel(ip, guildId, channelId, types, message) {
                 }
             });
 
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
-            else if(resp.status === 401) { resolve(401); return; }
+            if(!await checkStatus(resp, message)) return resolve(false);
+            else if(resp.status === 401) return resolve(401);
             resp = await resp.json();
 
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
@@ -295,6 +295,7 @@ function registerChannel(ip, guildId, channelId, types, message) {
                 "chat": true,
                 "ip": ip,
             });
+
             const update = await updateConn();
             if(!update) {
                 message.reply('<:Error:849215023264169985> Couldn\'t save connection. Please try again.');
@@ -317,9 +318,9 @@ function registerChannel(ip, guildId, channelId, types, message) {
 function get(getPath, putPath, message) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(message.guildId, message);
-        if(!ip) { resolve(false); return; }
+        if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
-        if(!hash) { resolve(false); return; }
+        if(!hash) return resolve(false);
 
         try {
             const resp = await fetch(`http://${ip}/file/get/?path=${getPath}`, {
@@ -327,7 +328,7 @@ function get(getPath, putPath, message) {
                     Authorization: `Basic ${hash}`
                 }
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
+            if(!await checkStatus(resp, message)) return resolve(false);
 
             const fileStream = fs.createWriteStream(putPath);
             resp.body.pipe(fileStream);
@@ -353,9 +354,9 @@ function get(getPath, putPath, message) {
 function put(getPath, putPath, message) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(message.guildId, message);
-        if(!ip) { resolve(false); return; }
+        if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
-        if(!hash) { resolve(false); return; }
+        if(!hash) return resolve(false);
 
         try {
             let readStream = fs.createReadStream(getPath);
@@ -382,9 +383,9 @@ function put(getPath, putPath, message) {
 async function find(start, maxDepth, file, message) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(message.guildId, message);
-        if (!ip) { resolve(false); return; }
+        if (!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
-        if (!hash) { resolve(false); return; }
+        if (!hash) return resolve(false);
 
         try {
             const resp = await fetch(`http://${ip}/file/find/?file=${file}&path=${start}&depth=${maxDepth}`, {
@@ -405,9 +406,9 @@ async function find(start, maxDepth, file, message) {
 function execute(command, message) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(message.guildId, message);
-        if(!ip) { resolve(false); return; }
+        if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
-        if(!hash) { resolve(false); return; }
+        if(!hash) return resolve(false);
 
         try {
             const resp = await fetch(`http://${ip}/command/?cmd=${encodeURIComponent(command)}`, {
@@ -445,9 +446,7 @@ async function updateConn() {
             .catch(err => {
                 console.log('Couldn\'t save connections', err);
                 resolve(false);
-            }).then(() => {
-                resolve(true);
-            });
+            }).then(() => resolve(true));
     });
 }
 

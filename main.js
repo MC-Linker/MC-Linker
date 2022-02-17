@@ -13,6 +13,11 @@ const enableButton = require('./src/enableButton');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
+//Handle rejected promises
+process.on("unhandledRejection", async error => {
+    console.error("Unknown promise rejection\n", error);
+});
+
 /*
  * Converts the first letter of a string to uppercase.
  * @returns {String} The formatted string.
@@ -93,10 +98,14 @@ client.on('messageCreate', message => {
         const command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
         if (!command) console.log(`${message.member.user.tag} executed non-existent command ${commandName} in ${message.guild.name}`);
         else {
-            fs.access(`./disable/commands/${message.guild.id}_${command.name}`, err => {
+            fs.access(`./disable/commands/${message.guild.id}_${command.name}`, async err => {
                 if (err) {
                     try {
-                        command.execute(message, args);
+                        await command.execute(message, args)
+                            .catch(err => {
+                                console.log(`${message.member.user.tag} executed ^${command.name}. Couldn\'t execute that command!`, err);
+                                message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');
+                            });
                     } catch (err) {
                         console.log(`${message.member.user.tag} executed ^${command.name}. Couldn\'t execute that command!`, err);
                         message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');

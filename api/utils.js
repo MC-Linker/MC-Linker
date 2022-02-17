@@ -55,6 +55,22 @@ function searchAllAdvancements(searchString, shouldSearchValues = true, maxLengt
     });
 }
 
+function isUserConnected(userId) {
+    return new Promise(resolve => {
+        fs.access(`./userdata/connections/${userId}`)
+            .then(ignored => resolve(true))
+            .catch(ignored => resolve(false));
+    });
+}
+
+function isGuildConnected(guildId) {
+    return new Promise(resolve => {
+        fs.access(`./serverdata/connections/${guildId}`)
+            .then(ignored => resolve(true))
+            .catch(ignored => resolve(false));
+    });
+}
+
 function getUUIDv4(username, userId, message) {
     return new Promise(async resolve => {
         if (!userId) {
@@ -65,10 +81,10 @@ function getUUIDv4(username, userId, message) {
                     for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
                     resolve(uuidv4.join(''));
                 }).catch(() => {
-                console.log(`Error getting uuid of ${username}`);
-                message.reply(`<:Error:849215023264169985>  [**${username}**] is not a valid minecraft java edition account name.`);
-                resolve(false);
-            });
+                    console.log(`Error getting uuid of ${username}`);
+                    message.reply(`<:Error:849215023264169985>  [**${username}**] is not a valid minecraft java edition account name.`);
+                    resolve(false);
+                });
         } else {
             const userData = await getUserData(userId, message);
             resolve(userData?.id);
@@ -99,14 +115,12 @@ async function getProtocol(guildId, message) {
 
 async function getHash(guildId, message) {
     const serverData = await getServerData(guildId, message);
-    if (serverData?.protocol === 'plugin') return serverData?.hash;
-    else return false;
+    return serverData?.hash;
 }
 
 async function getIp(guildId, message) {
     const serverData = await getServerData(guildId, message);
-    if (serverData?.protocol === 'plugin') return serverData?.ip;
-    else return false;
+    return serverData?.ip;
 }
 
 function getServerData(guildId, message) {
@@ -135,4 +149,4 @@ function getUserData(userId, message) {
     });
 }
 
-module.exports = { searchAllAdvancements, searchAdvancements, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUIDv4 };
+module.exports = { searchAllAdvancements, searchAdvancements, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUIDv4 };
