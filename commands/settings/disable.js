@@ -174,6 +174,7 @@ module.exports = {
             }
 
             if(!await disable.disable(message.guildId, type, toDisable)) {
+                console.log(`Could not enable ${toDisable}.`);
                 message.reply(`<:Error:849215023264169985> Could not disable ${type} [**${toDisable}**].`);
                 return;
             }
