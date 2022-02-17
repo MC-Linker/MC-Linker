@@ -10,12 +10,13 @@ const plugin = require('./api/plugin');
 const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
+const disable = require('./api/disable');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
 //Handle rejected promises
-process.on("unhandledRejection", async error => {
-    console.error("Unknown promise rejection\n", error);
+process.on('unhandledRejection', async err => {
+    console.error('Unknown promise rejection', err);
 });
 
 /*
@@ -44,29 +45,12 @@ client.on('guildCreate', guild => {
 
 client.on('guildDelete', async guild => {
     console.log(`Left a guild: ${guild.name}\nBot is now on ${client.guilds.cache.size} servers!`);
-
-    //Delete disable files
-    ['stats', 'advancements', 'commands'].forEach(type => {
-        fs.readdir(`./disable/${type}/`, (err, files) => {
-            if (err) console.log('Could not list disabled files.');
-            else {
-                files.forEach(file => {
-                    if (file.startsWith(guild.id)) {
-                        fs.rm(`./disable/${type}/${file}`, err => {
-                            if (err) console.log(`Could not delete disable file: ./disable/${type}/${file}`);
-                        });
-                    }
-                });
-            }
-        });
-    });
-
     const message = {};
     message.reply = () => {};
     await plugin.disconnect(guild.id, message);
 
-    //Delete connection file
-    fs.rm(`./serverdata/connections/${guild.id}/connection.json`, err => {
+    //Delete connection folder
+    fs.rm(`./serverdata/connections/${guild.id}`, { recursive: true, force: true }, err => {
         if (err) console.log(`No connection file found for guild: ${guild.name}`);
         else console.log(`Successfully deleted connection file of guild: ${guild.name}`);
     });
@@ -83,7 +67,7 @@ for (const folder of commandFolders) {
 }
 
 
-client.on('messageCreate', message => {
+client.on('messageCreate', async message => {
     if (!message.content.startsWith(prefix)) plugin.chat(message);
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.reply(':wave: I use slash commands. Type `/help` if you need more help to a specific command.');
@@ -98,23 +82,21 @@ client.on('messageCreate', message => {
         const command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
         if (!command) console.log(`${message.member.user.tag} executed non-existent command ${commandName} in ${message.guild.name}`);
         else {
-            fs.access(`./disable/commands/${message.guild.id}_${command.name}`, async err => {
-                if (err) {
-                    try {
-                        await command.execute(message, args)
-                            .catch(err => {
-                                console.log(`${message.member.user.tag} executed ^${command.name}. Couldn\'t execute that command!`, err);
-                                message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');
-                            });
-                    } catch (err) {
+            if(await disable.isDisabled(message.guildId, 'commands', command.name)) {
+                console.log(`${message.member.user.tag} executed disabled command [${command.name}] in ${message.guild.name}`);
+                message.reply(`:no_entry: Command [**${command.name}**] disabled!`);
+            }
+
+            try {
+                await command.execute(message, args)
+                    .catch(err => {
                         console.log(`${message.member.user.tag} executed ^${command.name}. Couldn\'t execute that command!`, err);
                         message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');
-                    }
-                } else {
-                    console.log(`${message.member.user.tag} executed disabled command [${command.name}] in ${message.guild.name}`);
-                    message.reply(`:no_entry: Command [**${command.name}**] disabled!`);
-                }
-            });
+                    });
+            } catch (err) {
+                console.log(`${message.member.user.tag} executed ^${command.name}. Couldn\'t execute that command!`, err);
+                message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');
+            }
         }
 
     }
@@ -125,7 +107,7 @@ client.on('interactionCreate', async interaction => {
 
     if(interaction.isCommand()) {
 
-        //Making it compatible with normal commands
+        //Making interaction compatible with normal commands
         if(interaction.options.getUser('user')) {
             interaction.mentions = {
                 users: new Discord.Collection().set(interaction.options.getUser('user').id, interaction.options.getUser('user'))
@@ -146,29 +128,30 @@ client.on('interactionCreate', async interaction => {
             return interaction.editReply(content);
         }
 
+        if(interaction.commandName !== 'message') await interaction.deferReply();
+        else await interaction.deferReply({ ephemeral: true });
+
         if (interaction.commandName === 'help') {
-            await interaction.deferReply().catch(console.log);
             helpCommand.execute(interaction, args);
         } else {
             const command = client.commands.get(interaction.commandName);
 
             if (!command) console.log(`${interaction.member.user.tag} executed non-existent command ${commandName} in ${interaction.guild.name}`);
             else {
-                fs.access(`./disable/commands/${interaction.guild.id}_${command.name}`, async err => {
-                    if(interaction.commandName !== 'message') await interaction.deferReply();
-                    else await interaction.deferReply({ ephemeral: true });
-                    if (err) {
-                        try {
-                            command.execute(interaction, args);
-                        } catch (err) {
-                            console.log(`${interaction.member.user.tag} executed SlashCommand ${command.name}. Couldn't execute that command!`, err);
-                            interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
-                        }
-                    } else {
-                        console.log(`${interaction.member.user.tag} executed disabled SlashCommand [${command.name}] in ${interaction.guild.name}`);
-                        interaction.reply(`:no_entry: Command [**${command.name}**] disabled!`);
-                    }
-                });
+
+                //Check if command disabled
+                if(await disable.isDisabled(interaction.guildId, 'commands', command.name)) {
+                    console.log(`${interaction.member.user.tag} executed disabled slash command [${command.name}] in ${interaction.guild.name}`);
+                    interaction.reply(`:no_entry: Command [**${command.name}**] disabled!`);
+                    return;
+                }
+
+                try {
+                    command.execute(interaction, args);
+                } catch (err) {
+                    console.log(`${interaction.member.user.tag} executed SlashCommand ${command.name}. Couldn't execute that command!`, err);
+                    interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
+                }
             }
         }
 
@@ -180,9 +163,9 @@ client.on('interactionCreate', async interaction => {
     } else if (interaction.isButton()) {
         await interaction.deferReply({ ephemeral: true });
         if (interaction.customId.startsWith('disable')) {
-            disableButton.execute(interaction);
+            await disableButton.execute(interaction);
         } else if (interaction.customId.startsWith('enable')) {
-            enableButton.execute(interaction);
+            await enableButton.execute(interaction);
         }
     }
 });
