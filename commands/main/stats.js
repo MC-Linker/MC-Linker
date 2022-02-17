@@ -1,6 +1,7 @@
 const fs = require('fs');
-const ftp = require('../../api/ftp');
 const Discord = require('discord.js');
+const disable = require('../../api/disable');
+const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
@@ -177,21 +178,19 @@ module.exports = {
 
         console.log(`${message.member.user.tag} executed /stats ${username} ${category} ${stat} in ${message.guild.name}`);
 
-        const uuidv4 = await utils.getUUIDv4(args[0], message.mentions.users.first()?.id, message);
-        if(!uuidv4) return;
-
-        const categoryDisabled = fs.existsSync(`./disable/stats/${message.guild.id}_${category}`);
-        if(categoryDisabled) {
+        if(await disable.isDisabled(message.guildId, 'stats', category)) {
             console.log(`Category [${category}] disabled.`);
             message.reply(`:no_entry: Stat category [**${category}**] disabled!`);
             return;
         }
-        const statDisabled = fs.existsSync(`./disable/stats/${message.guild.id}_${stat}`);
-        if(statDisabled) {
+        if(await disable.isDisabled(message.guildId, 'stats', stat)) {
             console.log(`Object [${stat}] disabled.`);
             message.reply(`:no_entry: Stat [**${stat}**] disabled!`);
             return;
         }
+
+        const uuidv4 = await utils.getUUIDv4(args[0], message.mentions.users.first()?.id, message);
+        if(!uuidv4) return;
 
         const worldPath = await utils.getWorldPath(message.guildId, message);
         if(!worldPath) return;
