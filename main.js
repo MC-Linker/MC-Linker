@@ -1,5 +1,4 @@
 // @ts-nocheck
-// noinspection JSUnresolvedFunction,JSUnresolvedVariable
 
 console.log(
     '\x1b[1m'     + // Bold (1)
