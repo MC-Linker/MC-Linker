@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 console.log(
     '\x1b[1m'     + // Bold (1)
     '\x1b[44;37m' + // Blue BG (44); White FG (37)
