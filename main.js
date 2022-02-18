@@ -1,7 +1,10 @@
-// @ts-nocheck
-// noinspection JSUnresolvedFunction,JSUnresolvedVariable
-
-console.log('Loading...');
+console.log(
+    '\x1b[1m'     + // Bold (1)
+    '\x1b[44;37m' + // Blue BG (44); White FG (37)
+    '%s'          + // Insert second argument
+    '\x1b[0m',      // Reset color (0)
+    'Loading...'    // Second argument (%s)
+);
 
 const fs = require('fs');
 const Discord = require('discord.js');
@@ -28,12 +31,14 @@ String.prototype.cap = function() {
 };
 
 if(topggToken) {
-    const ap = AutoPoster(topggToken, client);
+    const poster = AutoPoster(topggToken, client);
 
-    ap.on('posted', () => {});
+    poster.on('posted', () => {});
+    poster.on('error', ignored => console.log('Could not post stats to Top.gg!'));
 }
 
 client.once('ready', async () => {
+    console.log('')
     console.log(`Bot logged in as ${client.user.tag} and with prefix: ${prefix}\nBot on ${client.guilds.cache.size} server.`);
     client.user.setActivity('/help', { type: 'LISTENING' });
     await plugin.loadExpress(client);
@@ -132,26 +137,24 @@ client.on('interactionCreate', async interaction => {
         else await interaction.deferReply({ ephemeral: true });
 
         if (interaction.commandName === 'help') {
-            helpCommand.execute(interaction, args);
+            await helpCommand.execute(interaction, args);
         } else {
             const command = client.commands.get(interaction.commandName);
 
-            if (!command) console.log(`${interaction.member.user.tag} executed non-existent command ${commandName} in ${interaction.guild.name}`);
-            else {
+            if (!command) return console.log(`${interaction.member.user.tag} executed non-existent command ${commandName} in ${interaction.guild.name}`);
 
-                //Check if command disabled
-                if(await disable.isDisabled(interaction.guildId, 'commands', command.name)) {
-                    console.log(`${interaction.member.user.tag} executed disabled slash command [${command.name}] in ${interaction.guild.name}`);
-                    interaction.reply(`:no_entry: Command [**${command.name}**] disabled!`);
-                    return;
-                }
+            //Check if command disabled
+            if(await disable.isDisabled(interaction.guildId, 'commands', command.name)) {
+                console.log(`${interaction.member.user.tag} executed disabled slash command [${command.name}] in ${interaction.guild.name}`);
+                interaction.reply(`:no_entry: Command [**${command.name}**] disabled!`);
+                return;
+            }
 
-                try {
-                    command.execute(interaction, args);
-                } catch (err) {
-                    console.log(`${interaction.member.user.tag} executed SlashCommand ${command.name}. Couldn't execute that command!`, err);
-                    interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
-                }
+            try {
+                command.execute(interaction, args);
+            } catch (err) {
+                console.log(`${interaction.member.user.tag} executed SlashCommand ${command.name}. Couldn't execute that command!`, err);
+                interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
             }
         }
 
