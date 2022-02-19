@@ -77,7 +77,7 @@ module.exports = {
 
                     if(imgType === 'items') {
                         if(respondArray.length >= 25) respondArray.length = 25;
-                        interaction.respond(respondArray);
+                        interaction.respond(respondArray).catch(err => console.log(`Could not respond to autocomplete ${interaction.commandName}`, err));
                     }
                 });
             });

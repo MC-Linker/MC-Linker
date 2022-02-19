@@ -94,7 +94,7 @@ module.exports = {
             })
         });
 
-        interaction.respond(respondArray);
+        interaction.respond(respondArray).catch(err => console.log(`Could not respond to autocomplete ${interaction.commandName}`, err));
     },
     async execute(message, args) {
         const username = message.mentions.users.first()?.tag ?? args[0];
