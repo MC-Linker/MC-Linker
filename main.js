@@ -19,7 +19,7 @@ const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAG
 
 //Handle rejected promises
 process.on('unhandledRejection', async err => {
-    console.error('Unknown promise rejection', err);
+    console.log('Unknown promise rejection', err);
 });
 
 /*
@@ -100,7 +100,7 @@ client.on('messageCreate', async message => {
                     });
             } catch (err) {
                 console.log(`${message.member.user.tag} executed ^${command.name}. Couldn\'t execute that command!`, err);
-                message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');
+                await message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');
             }
         }
 

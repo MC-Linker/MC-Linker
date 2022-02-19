@@ -77,7 +77,7 @@ module.exports = {
 
                     if(imgType === 'items') {
                         if(respondArray.length >= 25) respondArray.length = 25;
-                        interaction.respond(respondArray);
+                        interaction.respond(respondArray).catch(err => console.log(`Could not respond to autocomplete ${interaction.commandName}`, err));
                     }
                 });
             });
@@ -137,8 +137,6 @@ module.exports = {
                 return;
             }
 
-            console.log(`${message.member.user.tag} executed /disable ${type} ${toDisable} in ${message.guild.name}`);
-
             if (type === 'command' || type === 'cmd' || type === 'commands' || type === 'cmds') type = 'commands';
             else if (type === 'advancements' || message.client.commands.get('advancements').aliases.includes(type)) type = 'advancements';
             else if (type === 'stats' || message.client.commands.get('stats').aliases.includes(type)) type = 'stats';
@@ -147,6 +145,15 @@ module.exports = {
                 message.reply(':warning: You can only disable `commands`, `stats` or `advancements`.');
                 return;
             }
+
+            //Check for disabled commands
+            if(type === 'commands' && (toDisable === 'enable' || toDisable === 'disable' || toDisable === 'help')) {
+                console.log(`${message.member.user.tag} executed /disable ${type} with disabled command ${toDisable} in ${message.guild.name}`);
+                message.reply(`:no_entry: You cannot disable this command [**${toDisable}**].`);
+                return;
+            }
+
+            console.log(`${message.member.user.tag} executed /disable ${type} ${toDisable} in ${message.guild.name}`);
 
             if(!toDisable) {
                 console.log(`${message.member.user.tag} executed /disable ${type} without toDisable in ${message.guild.name}`);

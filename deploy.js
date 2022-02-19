@@ -56,7 +56,7 @@ for (const folder of commandFolders) {
 		if(command.name === 'disable') disableJson = command.data.toJSON();
 		else commands.push(command.data.toJSON());
 
-		if(command.name !== 'enable' || command.name !== 'disable') disableChoices.push({ name: command.name.cap(), value: command.name });
+		if(command.name !== 'enable' && command.name !== 'disable') disableChoices.push({ name: command.name.cap(), value: command.name });
 		helpData.options[0].choices.push({ name: command.name.cap(), value: command.name });
 
 		console.log(`Loaded command: ${command.name}`);
