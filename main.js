@@ -38,19 +38,18 @@ if(topggToken) {
 }
 
 client.once('ready', async () => {
-    console.log('')
     console.log(`Bot logged in as ${client.user.tag} and with prefix: ${prefix}\nBot on ${client.guilds.cache.size} server.`);
     client.user.setActivity('/help', { type: 'LISTENING' });
     await plugin.loadExpress(client);
 });
 
 client.on('guildCreate', guild => {
-    if(!guild) return console.log(`Received undefined guild in guildCreate event: ${guild}`);
+    if(guild?.name === undefined) return console.log(`Received undefined guild in guildCreate event: ${guild}`);
     console.log(`Joined a guild: ${guild.name}: ${guild.memberCount} members.\nBot is now on ${client.guilds.cache.size} servers!`);
 });
 
 client.on('guildDelete', async guild => {
-    if(!guild) return console.log(`Received undefined guild in guildDelete event: ${guild}`);
+    if(guild?.name === undefined) return console.log(`Received undefined guild in guildDelete event: ${guild}`);
 
     console.log(`Left a guild: ${guild.name}\nBot is now on ${client.guilds.cache.size} servers!`);
     const message = {};
