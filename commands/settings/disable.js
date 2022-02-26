@@ -107,7 +107,7 @@ module.exports = {
             console.log(`${message.member.user.tag} executed /disable list ${toList} in ${message.guild.name}`);
 
             const disabled = await disable.getDisabled(message.guildId, type);
-            if(!disabled || disabled.length === 0) {
+            if(disabled.length === 0) {
                 message.reply(`<:Checkmark:849224496232660992> There are no disabled ${type}.`);
                 return;
             }
