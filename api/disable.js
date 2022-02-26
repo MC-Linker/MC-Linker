@@ -82,7 +82,6 @@ function isDisabled(guildId, type, value) {
         if(!await utils.isGuildConnected(guildId)) return resolve(false);
 
         let disableData = await getDisabled(guildId, type);
-        if(!disableData) return resolve(false);
 
         if(disableData.find(disable => disable === value)) return resolve(true);
         else return resolve(false);
@@ -96,7 +95,7 @@ function getDisabled(guildId, type) {
                 data = JSON.parse(data)[type];
                 resolve(data);
             }).catch(ignored => {
-                resolve(false);
+                resolve([]);
             });
     });
 }

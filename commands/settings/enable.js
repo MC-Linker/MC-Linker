@@ -44,8 +44,6 @@ module.exports = {
         const focused = interaction.options.getFocused().toLowerCase();
 
         const disabled = await disable.getDisabled(interaction.guildId, subcommand);
-        if(!disabled) return;
-
         const matchingDisabled = disabled.filter(disable => disable.includes(focused));
         if (matchingDisabled.length >= 25) matchingDisabled.length = 25;
 
