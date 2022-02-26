@@ -77,7 +77,7 @@ module.exports = {
                     );
 
                 const disabled = await disable.getDisabled(message.guildId, 'commands');
-                if (!disabled.find(disable => disable === command.name)) message.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
+                if (!disabled?.find(disable => disable === command.name)) message.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
                 else if (disabled) {
                     helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
                     message.reply({ embeds: [helpEmbed], components: [enableRow] });
