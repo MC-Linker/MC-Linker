@@ -14,6 +14,7 @@ const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
 const disable = require('./api/disable');
+const messages = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
@@ -50,8 +51,9 @@ client.on('guildCreate', guild => {
 
 client.on('guildDelete', async guild => {
     if(guild?.name === undefined) return console.log(`Received undefined guild in guildDelete event: ${guild}`);
-
     console.log(`Left a guild: ${guild.name}\nBot is now on ${client.guilds.cache.size} servers!`);
+
+    //Fake message
     const message = {};
     message.reply = () => {};
     await plugin.disconnect(guild.id, message);
@@ -83,6 +85,10 @@ client.on('messageCreate', async message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
+    //Add own response handler
+    message.respond = (key, ...placeholders) => {
+        return messages.reply(message, key, ...placeholders);
+    }
 
     if(commandName === 'help') helpCommand.execute(message, args);
     else {
@@ -131,8 +137,9 @@ client.on('interactionCreate', async interaction => {
             else args.push(option.value);
         });
 
-        interaction.reply = function (content) {
-            return interaction.editReply(content);
+        //Add own response handler
+        interaction.respond = (key, ...placeholders) => {
+            return messages.reply(interaction, key, ...placeholders);
         }
 
         if(interaction.commandName !== 'message') await interaction.deferReply();
