@@ -1,0 +1,40 @@
+{
+  "commands": {
+    "advancements": {
+      "success": {
+        "author": {
+          "icon_url": "https://cdn.discordapp.com/avatars/675658958383349770/f908e18b1b39f1f9aaab93c7520dce07.png?size=1024",
+          "name": "%author_name%",
+          "url": "https://top.gg"
+        },
+        "title": ":checkmark: %advancement_name%",
+        "description": "%advancement_description%",
+        "fields": {
+          "requirement": {
+            "title": "Requirement",
+            "content": "%advancement_requirement%"
+          },
+          "date": {
+            "title": "Completed on",
+            "content": "%advancement_date%"
+          }
+        },
+        "console": "Sent advancement %advancement_name% of %author_name%"
+      },
+      "errors": {
+        "could_not_read_file": {
+          "title": ":error: Could not read file",
+          "description": "Could not read advancement file. Please try again.",
+          "console": "Error reading advancement file"
+        }
+      },
+      "warnings": {
+        "no_category": {
+          "title": ":warning: %advancement_name%",
+          "description": "Please specify the advancement category.\n(`story`, `nether`, `end`, `adventure`, `husbandry`",
+          "console": "%author_tag% did not specify a category"
+        }
+      }
+    }
+  }
+}
