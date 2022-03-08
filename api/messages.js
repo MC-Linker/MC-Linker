@@ -34,6 +34,8 @@ placeholders.fromInteraction = function(interaction) {
     }
 }
 placeholders.fromChannel = function(channel) {
+    if(!channel instanceof Discord.TextChannel) return {};
+
     return {
         "channel_name": channel.name,
         "channel_description": channel.topic,
