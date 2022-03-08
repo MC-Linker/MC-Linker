@@ -63,7 +63,7 @@ async function loadExpress(client) {
                     //Get advancement title and desc from lang file
                     if(message.startsWith('minecraft:recipes')) return;
                     const advancementKey = message.replaceAll('minecraft:', '').replaceAll('/', '.');
-                    const langData = JSON.parse(await fs.promises.readFile('./lang/english.json', 'utf-8'));
+                    const langData = JSON.parse(await fs.promises.readFile('./languages/test.json', 'utf-8'));
                     advancementTitle = langData[`advancements.${advancementKey}.title`];
                     advancementDescription = langData[`advancements.${advancementKey}.description`];
                 } catch(ignored) {

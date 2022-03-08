@@ -125,7 +125,7 @@ module.exports = {
         let advancementTitle;
         let advancementDesc;
         try {
-            const langData = JSON.parse(await fs.promises.readFile('./lang/english.json', 'utf-8'));
+            const langData = JSON.parse(await fs.promises.readFile('./languages/test.json', 'utf-8'));
             advancementTitle = langData[`advancements.${category}.${advancement}.title`];
             advancementDesc = langData[`advancements.${category}.${advancement}.description`];
             if(!advancementTitle) {
@@ -160,7 +160,7 @@ module.exports = {
         fs.readFile(`./userdata/advancements/${uuidv4}.json`, 'utf8', async (err, advancementJson) => {
             if(err) {
                 message.reply('<:Error:849215023264169985> Could not read advancement file. Please try again.');
-                console.log('Error reading stat file from disk: ', err);
+                console.log('Error reading advancement file from disk: ', err);
                 return;
             }
 
