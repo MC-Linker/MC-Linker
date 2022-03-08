@@ -2,6 +2,55 @@ const builders = require('@discordjs/builders');
 const Discord = require('discord.js');
 const keys = require('../languages/expanded/english.json');
 
+const placeholders = {};
+placeholders.fromUser = function(user) {
+    if(!user instanceof Discord.User) return {};
+
+    return {
+        "author_name": user.name,
+        "author_tag": user.tag,
+        "author_id": user.id,
+        "author_timestamp": builders.time(new Date(user.createdTimestamp)),
+    }
+}
+placeholders.fromGuild = function(guild) {
+    if(!guild instanceof Discord.Guild) return {};
+
+    return {
+        "guild_name": guild.name,
+        "guild_id": guild.id,
+        "guild_member_count": guild.memberCount,
+        "guild_timestamp": builders.time(new Date(guild.createdTimestamp)),
+    }
+}
+placeholders.fromInteraction = function(interaction) {
+    if(!interaction instanceof Discord.CommandInteraction) return {};
+
+    return {
+        "command_name": interaction.commandName,
+        "command_id": interaction.commandId,
+        "command_timestamp": builders.time(new Date(interaction.createdTimestamp)),
+        "author_locale": interaction.locale,
+    }
+}
+placeholders.fromChannel = function(channel) {
+    return {
+        "channel_name": channel.name,
+        "channel_description": channel.topic,
+        "channel_id": channel.id,
+    }
+}
+
+placeholders.fromAll = function(user, guild, channel, interaction) {
+    return Object.assign(
+        this.fromUser(user),
+        this.fromGuild(guild),
+        this.fromInteraction(interaction),
+        this.fromChannel(channel)
+    );
+}
+
+
 function reply(message, key, ...placeholders) {
     if(!message || !key || !placeholders) return console.error('Could not reply: No message, key or placeholders specified');
     else if(!key.title || !key.description) return console.error('Could not reply: No title or description specified');
@@ -46,4 +95,4 @@ function reply(message, key, ...placeholders) {
     else return message.editReply({ embeds: [embed] });
 }
 
-module.exports = { keys, reply };
+module.exports = { keys, ph: placeholders, reply };
