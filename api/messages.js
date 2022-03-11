@@ -1,9 +1,10 @@
 const builders = require('@discordjs/builders');
 const Discord = require('discord.js');
 const keys = require('../languages/expanded/english.json');
+const { prefix } = require('../config.json');
 
-const placeholders = {};
-placeholders.fromUser = function(user) {
+const ph = {};
+ph.fromUser = function(user) {
     if(!user instanceof Discord.User) return {};
 
     return {
@@ -13,7 +14,7 @@ placeholders.fromUser = function(user) {
         "author_timestamp": builders.time(new Date(user.createdTimestamp)),
     }
 }
-placeholders.fromGuild = function(guild) {
+ph.fromGuild = function(guild) {
     if(!guild instanceof Discord.Guild) return {};
 
     return {
@@ -23,17 +24,27 @@ placeholders.fromGuild = function(guild) {
         "guild_timestamp": builders.time(new Date(guild.createdTimestamp)),
     }
 }
-placeholders.fromInteraction = function(interaction) {
-    if(!interaction instanceof Discord.CommandInteraction) return {};
+ph.fromMessage = function(message) {
+    if(message instanceof Discord.Message) {
+        const args = message.content.slice(prefix.length).trim().split(/ +/);
+        const commandName = args.shift().toLowerCase();
 
-    return {
-        "command_name": interaction.commandName,
-        "command_id": interaction.commandId,
-        "command_timestamp": builders.time(new Date(interaction.createdTimestamp)),
-        "author_locale": interaction.locale,
+        return {
+            "command_name": commandName,
+            "command_timestamp": builders.time(new Date(message.createdTimestamp)),
+            "args": args.join(' '),
+        }
+    } else if(message instanceof Discord.CommandInteraction) {
+        return {
+            "command_name": message.commandName,
+            "command_timestamp": builders.time(new Date(message.createdTimestamp)),
+            "args": getArgs(message).join(' '),
+        }
     }
+
+    return {};
 }
-placeholders.fromChannel = function(channel) {
+ph.fromChannel = function(channel) {
     if(!channel instanceof Discord.TextChannel) return {};
 
     return {
@@ -43,15 +54,39 @@ placeholders.fromChannel = function(channel) {
     }
 }
 
-placeholders.fromAll = function(user, guild, channel, interaction) {
+ph.fromAll = function(user, guild, channel, interaction) {
     return Object.assign(
         this.fromUser(user),
         this.fromGuild(guild),
-        this.fromInteraction(interaction),
+        this.fromMessage(interaction),
         this.fromChannel(channel)
     );
 }
 
+
+function addPlaceholders(key, placeholders) {
+    if(typeof key === 'string') {
+        return string.replace(/%\w+%/g, match => {
+            return placeholders[match.replaceAll('%', '')] ?? match;
+        });
+    } else if(typeof key !== 'object') return;
+
+    const entries = Object.entries(key);
+    const replacedObject = {};
+
+    for([k, v] of entries) {
+        if(typeof v === 'object') {
+            replacedObject[k] = addPlaceholdersToObject(Object.entries(v), placeholders);
+        }
+        if(typeof v !== 'string') continue;
+
+        replacedObject[k] = v.replace(/%\w+%/g, match => {
+            return placeholders[match.replaceAll('%', '')] ?? match;
+        });
+    }
+
+    return replacedObject;
+}
 
 function reply(message, key, ...placeholders) {
     if(!message || !key || !placeholders) return console.error('Could not reply: No message, key or placeholders specified');
@@ -59,42 +94,51 @@ function reply(message, key, ...placeholders) {
 
     placeholders = Object.assign(...placeholders);
 
-    const keyEntries = Object.entries(key);
-    key = {};
-
     //Add placeholders to all keyEntries recursively and assign them to key
-    addPlaceholders(keyEntries, key);
-
-    function addPlaceholders(entries, target) {
-        for([k, v] of entries) {
-            if(typeof v === 'object') {
-                target[k] = {};
-                addPlaceholders(Object.entries(v), target[k]);
-            }
-            if(typeof v !== 'string') continue;
-
-            target[k] = v.replace(/%\w+%/g, match => {
-                return placeholders[match.replaceAll('%', '')] ?? match;
-            });
-        }
-    }
+    const replacedKey = addPlaceholders(key, placeholders);
 
     //Create embed from key
     const embed = new Discord.MessageEmbed()
-        .setTitle(key.title)
-        .setDescription(key.description);
+        .setTitle(replacedKey.title)
+        .setDescription(replacedKey.description);
 
-    if(key.fields) {
-        key.fields.forEach(field => {
+    if(replacedKey.fields) {
+        replacedKey.fields.forEach(field => {
             if(field.title && field.content) embed.addField(field.title, field.content, field.inline);
         });
     }
-    if(key.author) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
+    if(replacedKey.author) embed.setAuthor({ iconURL: replacedKey.author.icon_url, name: replacedKey.author.name, url: replacedKey.author.url });
 
     //Reply to interaction
-    if(key.console) console.log(key.console);
+    if(replacedKey.console) console.log(replacedKey.console);
     if(message instanceof Discord.Message || !message?.deferred) return message.reply({ embeds: [embed] });
     else return message.editReply({ embeds: [embed] });
 }
 
-module.exports = { keys, ph: placeholders, reply };
+
+function getArgs(interaction) {
+    if(!(interaction instanceof Discord.CommandInteraction)) return [];
+
+    const args = [];
+    let options = interaction.options.data;
+
+    //Push Subcommand group
+    if(options[0].type === 'SUB_COMMAND_GROUP') {
+        args.push(options[0].name);
+        options = options[0].options;
+    }
+    //Push Subcommand
+    if(options[0].type === 'SUB_COMMAND') {
+        args.push(options[0].name);
+        options = options[0].options;
+    }
+
+    options.forEach(option => {
+        if(option.type === 'USER') args.unshift(option.user.tag);
+        else args.push(option.value);
+    });
+
+    return args;
+}
+
+module.exports = { keys, ph, reply, addPlaceholders, getArgs };
