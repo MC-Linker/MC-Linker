@@ -128,14 +128,7 @@ client.on('interactionCreate', async interaction => {
         } else interaction.mentions = { users: new Discord.Collection() }
         interaction.attachments = [];
 
-        const args = [];
-        if(interaction.options._group) args.push(interaction.options._group);
-        if(interaction.options._subcommand) args.push(interaction.options._subcommand);
-        interaction.options._hoistedOptions.forEach(option => {
-            if (option.value === interaction.options.getUser('user')?.id) args.splice(0, 0, option.user);
-            else if(option[option.type.toLowerCase()]) args.push(option[option.type.toLowerCase()]);
-            else args.push(option.value);
-        });
+        const args = messages.getArgs(interaction);
 
         //Add own response handler
         interaction.respond = (key, ...placeholders) => {
