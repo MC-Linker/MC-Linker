@@ -23,10 +23,10 @@ module.exports = {
                         .setRequired(true)
                         .setAutocomplete(true)
                 ).addUserOption(option =>
-                option.setName('user')
-                    .setDescription('Set the user you want to get the advancement from.')
-                    .setRequired(true)
-            )
+                    option.setName('user')
+                        .setDescription('Set the user you want to get the advancement from.')
+                        .setRequired(true)
+                )
         ).addSubcommand(subcommand =>
             subcommand.setName('nether')
                 .setDescription('Bring summer clothes')
