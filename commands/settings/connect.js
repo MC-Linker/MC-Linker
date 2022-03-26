@@ -112,7 +112,7 @@ module.exports = {
                 return;
             } else if(port > 0 && port < 65536) {
                 console.log(`${message.member.user.tag} executed /connect ftp with wrong port in ${message.guild.name}`);
-                message.reply(':warning: Please specify a port that is bigger than 0 and lower than 65536.');
+                message.reply(':warning: Please specify a port that is bigger than 0 and smaller than 65536.');
                 return;
             }
 
@@ -121,7 +121,7 @@ module.exports = {
 
             console.log(`${message.member.user.tag} executed /connect ftp ${host} ${user} ${password} ${port} ${version} ${path} in ${message.guild.name}`);
 
-            if (version.split('.').pop() <= 11) message.reply(':warning: The advancement command might not work because advancements dont exist in your minecraft version yet.');
+            if (version.split('.').pop() <= 11 && version.split('.').pop() > 7) message.reply(':warning: The advancement command might not work because advancements dont exist in your minecraft version yet.');
             else if (version.split('.').pop() <= 7) message.reply(':warning: The stat and advancement commands might not work because stats and advancements dont exist in your minecraft version yet.');
 
             message.reply('Connecting... (Can take up to one minute)');
@@ -252,7 +252,7 @@ module.exports = {
 
             console.log(`${message.member.user.tag} executed /connect plugin ${ip} ${port} in ${message.guild.name}`);
 
-            nslookup(ip,async (err, address) => {
+            nslookup(ip, async (err, address) => {
                 ip = address?.pop() ?? ip;
 
                 const verify = await plugin.verify(`${ip}:${port}`, message);
@@ -271,7 +271,7 @@ module.exports = {
                     .catch(async () => {
                         message.reply(':warning: Couldn\'t send you a DM. Verifying in the current channel...');
                         await message.channel.send({ embeds: [verifyEmbed] });
-                        verifyAndConnect(message.channel);
+                        await verifyAndConnect(message.channel);
                     });
 
                 async function verifyAndConnect(channel) {
@@ -317,8 +317,7 @@ module.exports = {
                                 message.reply('<:Checkmark:849224496232660992> Successfully connected to the plugin.');
                             });
                         });
-                    } catch(collected) {
-                        console.log();
+                    } catch(ignored) {
                         channel.send(':warning: You didn\'t reply in time!');
                     }
                 }

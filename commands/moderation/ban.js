@@ -48,8 +48,6 @@ module.exports = {
 			.setTitle('Ban Player')
 			.setColor('ORANGE');
 
-		console.log(resp)
-
 		if(resp.startsWith('&c')) respEmbed.setDescription(`Warning trying to ban player [**${username}**]: ${resp.replace('&c', '')}`);
 		else if(resp.startsWith('Could not fetch response message!')) respEmbed.setDescription(`:warning: Successfully executed ban player [**${username}**]: \`${reason}\`\n${resp}`);
 		else respEmbed.setDescription(`<:Checkmark:849224496232660992> Successfully banned player [**${username}**]: \`${reason}\``);

@@ -66,7 +66,7 @@ module.exports = {
             return;
         }
 
-        const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'Text_Image.png');
+        const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'text_image.png');
         const textEmbed = new Discord.MessageEmbed()
             .setTitle("Custom Text Image")
             .setDescription('<:Checkmark:849224496232660992> Here\'s your custom text image.')

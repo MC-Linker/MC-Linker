@@ -125,7 +125,7 @@ module.exports = {
         let advancementTitle;
         let advancementDesc;
         try {
-            const langData = JSON.parse(await fs.promises.readFile('./languages/test.json', 'utf-8'));
+            const langData = JSON.parse(await fs.promises.readFile('./resources/languages/test.json', 'utf-8'));
             advancementTitle = langData[`advancements.${category}.${advancement}.title`];
             advancementDesc = langData[`advancements.${category}.${advancement}.description`];
             if(!advancementTitle) {
@@ -187,7 +187,8 @@ module.exports = {
                     const date = advancementData[filteredAdvancement]['criteria'][criteria];
                     const done = advancementData[filteredAdvancement]['done'];
 
-                    amEmbed = baseEmbed.addField('Requirement', criteria).addField('unlocked on', time(new Date(date)));
+                    amEmbed = baseEmbed.addField('Requirement', criteria)
+                        .addField('unlocked on', time(new Date(date)));
 
                     if(!done) amEmbed.setFooter({ text: 'Advancement not unlocked/completed.', iconURL: 'https://cdn.discordapp.com/emojis/849215023264169985.png' });
                     else amEmbed.setFooter({ text: 'Advancement completed/unlocked.', iconURL: 'https://cdn.discordapp.com/emojis/849224496232660992.png' });

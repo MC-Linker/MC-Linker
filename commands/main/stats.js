@@ -139,7 +139,7 @@ module.exports = {
         if(subcommand === 'killed' || subcommand === 'killed_by') imgType = 'entities';
         else imgType = 'items';
 
-        fs.readdir(`./images/minecraft/${imgType}`, (err, images) => {
+        fs.readdir(`./resources/images/minecraft/${imgType}`, (err, images) => {
             const matchingImages = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
             if(matchingImages.length >= 25) matchingImages.length = 25;
 
@@ -184,7 +184,7 @@ module.exports = {
             return;
         }
         if(await disable.isDisabled(message.guildId, 'stats', stat)) {
-            console.log(`Object [${stat}] disabled.`);
+            console.log(`Stat [${stat}] disabled.`);
             message.reply(`:no_entry: Stat [**${stat}**] disabled!`);
             return;
         }
@@ -209,34 +209,28 @@ module.exports = {
                 const statData = JSON.parse(statJson);
                 const version = await utils.getVersion(message.guild.id, message);
 
-                function noMatchFound() {
-                    console.log("No Match found!");
-                    message.reply(':warning: Stat is either 0 or misspelled!');
-                }
-
                 let statMatch;
                 if (version <= 12) {
                     if(!stat.includes('.')) stat = `minecraft.${stat}`;
                     statMatch = statData[`stat.${category}.${stat}`];
                     stat = stat.split('.').pop();
                 } else {
-                    const filteredCategory = Object.keys(statData.stats).find(key => key.endsWith(category));
-                    if(!filteredCategory) { noMatchFound(); return; }
-                    const filteredStat = Object.keys(statData.stats[filteredCategory]).find(key => key.endsWith(stat));
-                    if(!filteredStat) { noMatchFound(); return; }
-                    statMatch = statData.stats[filteredCategory][filteredStat];
+                    const filteredCategory = statData.stats.find(key => key.endsWith(category));
+                    const filteredStat = statData.stats?.[filteredCategory].find(key => key.endsWith(stat));
+                    statMatch = statData.stats?.[filteredCategory]?.[filteredStat];
 
                     stat = stat.split(':').pop();
                     category = category.split(':').pop();
                 }
                 
                 if (!statMatch) {
-                    noMatchFound();
+                    console.log("No Match found!");
+                    message.reply(':warning: Stat is either 0 or misspelled!');
                     return;
                 }
 
                 let statMessage;
-                if (category === 'killed_by') statMessage = `was killed **${statMatch}** times by a **${stat}**`;
+                if (category === 'killed_by') statMessage = `has been killed **${statMatch}** times by a **${stat}**`;
                 else if (stat === 'play_time' || stat === 'time_played') statMessage = `has played for **${(statMatch / 20 / 3600).toFixed(3)}** hours`;
                 else if (category === 'custom') statMessage = `**${stat} ${statMatch}**`;
                 else statMessage = `has **${category} ${statMatch} ${stat}s**`;
@@ -252,14 +246,14 @@ module.exports = {
                 if(category === 'killed' || category === 'killed_by') imgType = 'entities';
                 else imgType = 'items';
 
-                fs.access(`./images/minecraft/${imgType}/${stat}.png`, err => {
+                fs.access(`./resources/images/minecraft/${imgType}/${stat}.png`, err => {
                     if (err) {
                         console.log(`No Image available for ${stat}`);
                         message.reply({ embeds: [statEmbed] });
                         return;
                     }
                     statEmbed.setImage(`attachment://${stat}.png`);
-                    message.reply({ embeds: [statEmbed], files: [`./images/minecraft/${imgType}/${stat}.png`] });
+                    message.reply({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
                 });
             } catch (err) {
                 console.log('Error parsing Stat JSON string: ', err);

@@ -64,7 +64,7 @@ module.exports = {
                             value: '2',
                         },
                         {
-                            label: 'Advancements',
+                            label: 'Advancement messages',
                             description: 'Send a message every time a player completes an advancement.',
                             value: '3',
                         },
@@ -74,17 +74,17 @@ module.exports = {
                             value: '4',
                         },
                         {
-                            label: 'Commands',
+                            label: 'Command messages',
                             description: 'Send a message every time a player executes a command.',
                             value: '5',
                         },
                         {
-                            label: 'Startup message',
+                            label: 'Startup messages',
                             description: 'Send a message every time the server starts up.',
                             value: '6',
                         },
                         {
-                            label: 'Shutdown message',
+                            label: 'Shutdown messages',
                             description: 'Send a message every time the server shuts down.',
                             value: '7',
                         },
@@ -119,7 +119,7 @@ module.exports = {
                         menu.reply('<:Error:849215023264169985> Couldn\'t save channel. Please try again.');
                         return;
                     }
-                    console.log('Successfully connected');
+                    console.log('Successfully set chat channel');
                     menu.reply('<:Checkmark:849224496232660992> Successfully set the chat channel');
                 });
             } else menu.reply({ content: ':warning: Only the command sender can select message types.', ephemeral: true });

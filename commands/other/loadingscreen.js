@@ -25,7 +25,7 @@ module.exports = {
 		else if (args[0]) URL = args[0];
 		else {
 			console.log(`${message.member.user.tag} executed /loadingscreen without url or attach in ${message.guild.name}`);
-			message.reply(':warning: Please attach an image, specify an image url or @mention someone.');
+			message.reply(':warning: Please attach an image, specify an image url or ping someone.');
 			return;
 		}
 

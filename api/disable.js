@@ -94,9 +94,7 @@ function getDisabled(guildId, type) {
             .then(data => {
                 data = JSON.parse(data)[type];
                 resolve(data);
-            }).catch(ignored => {
-                resolve([]);
-            });
+            }).catch(ignored => resolve([]));
     });
 }
 

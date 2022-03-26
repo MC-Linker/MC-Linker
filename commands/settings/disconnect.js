@@ -27,7 +27,7 @@ module.exports = {
 
         if(!method) {
             console.log(`${message.member.user.tag} executed /disconnect without method in ${message.guild.name}`);
-            message.reply(':warning: Please set the connection method (`ftp`, `plugin`, `user`) from which you want to get disconnected.');
+            message.reply(':warning: Please set the connection method (`ftp`, `plugin`, `user`).');
             return;
         }
         let path;

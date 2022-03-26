@@ -61,7 +61,7 @@ module.exports = {
         } else if(subcommand === 'stats') {
             const respondArray = [];
             ['entities', 'items'].forEach(imgType => {
-                fs.readdir(`./images/minecraft/${imgType}`, (err, images) => {
+                fs.readdir(`./resources/images/minecraft/${imgType}`, (err, images) => {
                     const matchingImages = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
                     if (matchingImages.length >= 25) matchingImages.length = 25;
 
@@ -85,6 +85,8 @@ module.exports = {
     },
     async execute(message, args) {
         let type = args?.shift();
+
+        const disabledCommands = ['enable', 'disable', 'help'];
 
         if(!type) {
             console.log(`${message.member.user.tag} executed /disable without type in ${message.guild.name}`);
@@ -147,7 +149,7 @@ module.exports = {
             }
 
             //Check for disabled commands
-            if(type === 'commands' && (toDisable === 'enable' || toDisable === 'disable' || toDisable === 'help')) {
+            if(type === 'commands' && disabledCommands.includes(toDisable)) {
                 console.log(`${message.member.user.tag} executed /disable ${type} with disabled command ${toDisable} in ${message.guild.name}`);
                 message.reply(`:no_entry: You cannot disable this command [**${toDisable}**].`);
                 return;
@@ -181,7 +183,7 @@ module.exports = {
             }
 
             if(!await disable.disable(message.guildId, type, toDisable)) {
-                console.log(`Could not enable ${toDisable}.`);
+                console.log(`Could not disable ${toDisable}.`);
                 message.reply(`<:Error:849215023264169985> Could not disable ${type} [**${toDisable}**].`);
                 return;
             }

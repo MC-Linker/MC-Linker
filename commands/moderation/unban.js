@@ -43,7 +43,7 @@ module.exports = {
 			.setColor('BLUE');
 
 		if(resp.startsWith('&c')) respEmbed.setDescription(`:warning: Warning trying to unban player [**${username}**]: ${resp.replace('&c', '')}`);
-		else if(resp.startsWith('Could not fetch response message!')) respEmbed.setDescription(`:warning: Successfully executed unban player [**${username}**]: \`${reason}\`\n${resp}`);
+		else if(resp.startsWith('Could not fetch response message!')) respEmbed.setDescription(`:warning: Successfully executed unban player [**${username}**]\n${resp}`);
 		else respEmbed.setDescription(`<:Checkmark:849224496232660992> Successfully unbanned player [**${username}**]`);
 		message.reply({ embeds: [respEmbed] });
 	}

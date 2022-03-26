@@ -63,7 +63,7 @@ async function loadExpress(client) {
                     //Get advancement title and desc from lang file
                     if(message.startsWith('minecraft:recipes')) return;
                     const advancementKey = message.replaceAll('minecraft:', '').replaceAll('/', '.');
-                    const langData = JSON.parse(await fs.promises.readFile('./languages/test.json', 'utf-8'));
+                    const langData = JSON.parse(await fs.promises.readFile('./resources/languages/minecraft/english.json', 'utf-8'));
                     advancementTitle = langData[`advancements.${advancementKey}.title`];
                     advancementDescription = langData[`advancements.${advancementKey}.description`];
                 } catch(ignored) {
@@ -155,7 +155,7 @@ function connect(ip, guildId, verifyCode, message) {
         const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
 
         //Disconnect from old server
-        if(conn && conn.ip !== ip) {
+        if(conn?.ip !== ip) {
             try {
                 const resp = await fetch(`http://${conn.ip}/disconnect/`, {
                     headers: {

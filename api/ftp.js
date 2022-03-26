@@ -34,7 +34,7 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				console.log('Could not connect to server. ', err);
+				console.log('Could not connect to server.', err);
 				message.reply('<:Error:849215023264169985> Could not connect to server.');
 				resolve(false);
 			}
@@ -42,7 +42,7 @@ module.exports = {
 			ftpClient.on('ready', () => {
 				ftpClient.get(getPath, (err, stream) => {
 					if(err) {
-						console.log('Could not download files. Path: ' + getPath, err);
+						console.log('Could not download file. Path: ' + getPath, err);
 						message.reply('<:Error:849215023264169985> Could not download files. The User never joined the server or the world path is incorrect.');
 						resolve(false);
 					} else {

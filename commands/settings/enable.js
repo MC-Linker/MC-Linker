@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const utils = require("../../api/utils");
 const disable = require("../../api/disable");
+const Discord = require("discord.js");
 
 module.exports = {
     name: 'enable',
@@ -77,6 +78,10 @@ module.exports = {
         } else if(!toEnable) {
             console.log(`${message.member.user.tag} executed /enable without toEnable in ${message.guild.name}`);
             message.reply(':warning: Please specify the command, stat or advancement you want to enable.');
+            return;
+        } else if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+            console.log(`${message.member.user.tag} executed /enable ${type} without admin in ${message.guild.name}`);
+            message.reply(':no_entry: This command can only be executed by admins.');
             return;
         }
 

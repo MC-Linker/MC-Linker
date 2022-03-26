@@ -47,7 +47,6 @@ module.exports = {
 				return;
             }
 
-            //@ts-ignore
             nbt.parse(playerNBT, async (err, playerData) => {
                 if (err) {
                     console.log('Error trying to parse player NBT', err);
@@ -59,10 +58,10 @@ module.exports = {
 
                 const invCanvas = Canvas.createCanvas(352, 332);
                 const ctx = invCanvas.getContext('2d');
-                const background = await Canvas.loadImage('./images/other/inventoryBlank.png');
+                const background = await Canvas.loadImage('./resources/images/other/inventory_blank.png');
                 ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
-                Canvas.registerFont('./fonts/Minecraft.ttf', { family: 'Minecraft' });
+                Canvas.registerFont('./resources/fonts/Minecraft.ttf', { family: 'Minecraft' });
 
                 let enchantEmbed = new Discord.MessageEmbed()
                     .setAuthor({ name: 'Inventory Enchantments', iconURL: message.client.user.displayAvatarURL({ format: 'png' }) })
@@ -86,7 +85,7 @@ module.exports = {
                             const formattedEnchant = enchantment.id.value.replace('minecraft:', '').replaceAll('_', ' ').cap();
 
                             if(enchantment.lvl.value === 1) {
-                                invField += `\n-${formattedEnchant}`;
+                                invField += `\n-${formattedEnchant}`
                             } else {
                                 invField += `\n-${formattedEnchant} ${enchantment.lvl.value}`;
                             }
@@ -140,7 +139,7 @@ module.exports = {
                     slotDims = allSlotDims[slot];
 
                     try {
-                        const itemImg = await Canvas.loadImage(`./images/minecraft/items/${itemImgName}.png`);
+                        const itemImg = await Canvas.loadImage(`./resources/images/minecraft/items/${itemImgName}.png`);
                         ctx.drawImage(itemImg, 0, 0, 80, 80, slotDims[0], slotDims[1], 32, 32);
 
                         if(count > 1) {
@@ -159,7 +158,7 @@ module.exports = {
                     }
 
                     if(damage) {
-                        const durabilityJson = fs.readFileSync('./src/durability.json', 'utf-8');
+                        const durabilityJson = fs.readFileSync('./resources/data/durability.json', 'utf-8');
 
                         const durabilityData = JSON.parse(durabilityJson);
                         const maxDurability = durabilityData[itemImgName];
