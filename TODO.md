@@ -32,6 +32,7 @@
 + /editadvancements
 + /editstats
 + /editenderchest
++ Web Dashboard
 + Bedrock support
 
 # TODO Plugin
