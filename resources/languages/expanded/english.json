@@ -17,7 +17,9 @@
     "settings": ":gear:"
   },
   "commands": {
-    "executed": "%author_tag% executed /%interaction_name% %args% in %guild_name%",
+    "executed": {
+      "console": "%author_tag% executed /%interaction_name% %args% in %guild_name%"
+    },
     "help": {
       "success": {
         "base": {
@@ -68,7 +70,7 @@
           "fields": {
             "command": {
               "name": "%command_name%",
-              "content": "%command_description% \n\n**USAGE**: \n%command_usage%\n\n**EXAMPLE**: \n%command_example%"
+              "content": "%command_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%"
             },
             "aliases": {
               "name": "\n**ALIASES**",
@@ -86,6 +88,7 @@
                 "emoji": "%emoji_error%"
               },
               "enable": {
+                "style": "SUCCESS",
                 "id": "enable_%command_name%",
                 "label": "Enable this command!",
                 "emoji": "%emoji_success%"
@@ -94,13 +97,13 @@
           }
         },
         "disabled": {
-          "description": "You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```"
+          "description": "You can find helpful information here.\n```diff\n- [COMMAND DISABLED]```"
         }
       },
       "warnings": {
         "command_does_not_exist": {
-          "title": "Command does not Exist",
-          "description": "%emoji_warning% Command [**%command_name%**] does not exist.",
+          "title": "Command Does Not Exist",
+          "description": "%emoji_warning% Command **%command_name%** does not exist.",
           "console": "Command does not exist"
         }
       }
@@ -108,13 +111,13 @@
     "advancements": {
       "warnings": {
         "no_username": {
-          "title": "No Username specified",
+          "title": "No Username Specified",
           "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
           "console": "No username specified"
         },
         "no_category": {
-          "title": "No Category specified",
-          "description": "%emoji_warning% Please specify a advancement category.\n(`story`, `nether`, `end`, `adventure`, `husbandry`)",
+          "title": "No Category Specified",
+          "description": "%emoji_warning% Please specify an advancement category.\n(`story`, `nether`, `end`, `adventure`, `husbandry`)",
           "console": "No category specified"
         },
         "no_advancement": {
@@ -123,18 +126,18 @@
           "console": "No advancement specified"
         },
         "category_disabled": {
-          "title": "Category disabled",
-          "description": "%emoji_no_entry% Advancement category [**%advancement_category%**] disabled!",
+          "title": "Category Disabled",
+          "description": "%emoji_no_entry% Advancement category **%advancement_category%** disabled!",
           "console": "Advancement category %advancement_category% disabled."
         },
         "advancement_disabled": {
-          "title": "Advancement disabled",
-          "description": "%emoji_no_entry% Advancement [**%advancement_name%**] disabled!",
+          "title": "Advancement Disabled",
+          "description": "%emoji_no_entry% Advancement **%advancement_name%** disabled!",
           "console": "Advancement %advancement_name% disabled."
         },
         "not_completed": {
-          "title": "Advancement not completed",
-          "description": "%emoji_warning% Advancement [**%advancement_title%**] not completed/unlocked or misspelled!",
+          "title": "Advancement Not Completed",
+          "description": "%emoji_warning% Advancement **%advancement_title%** not completed/unlocked or misspelled!",
           "console": "Advancement %advancement_name% not completed."
         }
       },
@@ -142,7 +145,7 @@
       "no_title_available": "%advancement_category% %advancement_name%",
       "errors": {
         "could_not_read_file": {
-          "title": "Could not read file",
+          "title": "Could Not Read File",
           "description": "%emoji_error% Could not read advancement file. Please try again.",
           "console": "Error reading advancement file from disk %error%"
         }
@@ -190,19 +193,19 @@
     "inventory": {
       "warnings": {
         "no_username": {
-          "title": "No Username specified",
+          "title": "No Username Specified",
           "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
           "console": "No username specified"
         }
       },
       "errors": {
         "could_not_read_file": {
-          "title": "Could not read file",
+          "title": "Could Not Read File",
           "description": "%emoji_error% Could not read inventory file. Please try again.",
           "console": "Error reading inventory file from disk %error%"
         },
         "could_not_parse": {
-          "title": "Could not read inventory",
+          "title": "Could not Read Inventory",
           "description": "%emoji_error% Could not read inventory.",
           "console": "Error trying to parse player nbt %error%"
         },
@@ -231,7 +234,7 @@
     "stats": {
       "warnings": {
         "no_username": {
-          "title": "No Username specified",
+          "title": "No Username Specified",
           "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
           "console": "No username specified"
         },
@@ -246,32 +249,32 @@
           "console": "No stat specified"
         },
         "category_disabled": {
-          "title": "Category disabled",
-          "description": "%emoji_no_entry% Stat category [**%stat_category%**] disabled!",
+          "title": "Category Disabled",
+          "description": "%emoji_no_entry% Stat category **%stat_category%** disabled!",
           "console": "Stat category %stat_category% disabled."
         },
         "advancement_disabled": {
-          "title": "Stat disabled",
-          "description": "%emoji_no_entry% Stat [**%stat_name%**] disabled!",
+          "title": "Stat Disabled",
+          "description": "%emoji_no_entry% Stat **%stat_name%** disabled!",
           "console": "Stat %stat_name% disabled"
         },
         "no_match": {
-          "title": "Could not find matching stat",
+          "title": "Could Not Find Stat",
           "description": "%emoji_warning% Stat is either 0 or misspelled!",
-          "console": "Could not find matching stat"
+          "console": "Could not find stat"
+        },
+        "no_image": {
+          "console": "No Image available for %stat_name%"
         }
       },
       "errors": {
-        "no_image": {
-          "console": "No Image available for %stat_name%"
-        },
         "could_not_read_file": {
-          "title": "Could not read file",
+          "title": "Could Not Read File",
           "description": "%emoji_error% Could not read stats file. Please try again.",
           "console": "Error reading stats file from disk %error%"
         },
         "could_not_parse": {
-          "title": "Could not find category",
+          "title": "Could Not Find Category",
           "description": "%emoji_error% %username% has never done anything in this category.",
           "console": "Error trying to parse stat json %error%"
         }
@@ -311,24 +314,24 @@
           "console": "No ban permission"
         },
         "no_username": {
-          "title": "No Username specified",
+          "title": "No Username Specified",
           "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
           "console": "No username specified"
         },
         "response_warning": {
           "title": "Ban Player",
-          "description": "Warning trying to ban player [**%username%**]: %response%",
+          "description": "Warning trying to ban player **%username%**: %response%",
           "color": "ORANGE"
         },
         "no_response": {
           "title": "Ban Player",
-          "description": "%emoji_warning% Successfully executed ban player [**%username%**]: `%reason%`\n%response%",
+          "description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`\n%response%",
           "color": "ORANGE"
         }
       },
       "success": {
         "title": "Ban Player",
-        "description": "%emoji_success% Successfully banned player [**%username%**]: `%reason%`",
+        "description": "%emoji_success% Successfully banned player **%username%**: `%reason%`",
         "color": "ORANGE"
       }
     },
@@ -340,24 +343,24 @@
           "console": "No ban permission"
         },
         "no_username": {
-          "title": "No Username specified",
+          "title": "No Username Specified",
           "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
           "console": "No username specified"
         },
         "response_warning": {
-          "title": "Ban Player",
-          "description": "Warning trying to unban player [**%username%**]: %response%",
+          "title": "Unban Player",
+          "description": "Warning trying to unban player **%username%**: %response%",
           "color": "BLUE"
         },
         "no_response": {
           "title": "Unban Player",
-          "description": "%emoji_warning% Successfully executed unban player [**%username%**]\n%response%",
+          "description": "%emoji_warning% Successfully executed unban player **%username%**\n%response%",
           "color": "BLUE"
         }
       },
       "success": {
         "title": "Unban Player",
-        "description": "%emoji_success% Successfully unbanned player [**%username%**]",
+        "description": "%emoji_success% Successfully unbanned player **%username%**",
         "color": "BLUE"
       }
     },
@@ -370,18 +373,18 @@
         },
         "invalid_format": {
           "title": "Invalid Image Format",
-          "description": "%emoji_warning% Invalid image type [**%image_type%**]",
+          "description": "%emoji_warning% Invalid image type **%image_type%**",
           "console": "Invalid image type %image_type%"
         }
       },
       "errors": {
         "could_not_get_size": {
-          "title": "Could not get size",
+          "title": "Could Not Get Size",
           "description": "%emoji_error% Could not get size of image. `/help loadingscreen` for correct usage.",
           "console": "Could not get image size"
         },
         "could_not_load": {
-          "title": "Could not load image",
+          "title": "Could Not Load Image",
           "description": "%emoji_warning% Could not load image. `/help loadingscreen` for correct usage.",
           "console": "Could not load image"
         }
@@ -395,53 +398,53 @@
     "message": {
       "warnings": {
         "no_username": {
-          "title": "No Username specified",
+          "title": "No Username Specified",
           "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
           "console": "No username specified"
         },
         "no_message": {
-          "title": "No Message specified",
+          "title": "No Message Specified",
           "description": "%emoji_warning% Please specify the message you want to send.",
           "console": "No message specified"
         },
         "response_warning": {
           "title": "Send Message",
-          "description": "Warning trying to send message to player [**%username%**]: %response%",
+          "description": "Warning trying to send message to player **%username%**: %response%",
           "color": "BLUE"
         },
         "no_response": {
           "title": "Send Message",
-          "description": "%emoji_warning% Successfully sent message to player [**%username%**]\n%response%",
+          "description": "%emoji_warning% Successfully sent message to player **%username%**\n%response%",
           "color": "BLUE"
         }
       },
       "success": {
         "title": "Send Message",
-        "description": "%emoji_success% Successfully sent message to player [**%username%**]",
+        "description": "%emoji_success% Successfully sent message to player **%username%**",
         "color": "BLUE"
       }
     },
     "text": {
       "warnings": {
         "no_font": {
-          "title": "No Font specified",
+          "title": "No Font Specified",
           "description": "%emoji_warning% Please specify a font. To make a minecraft styled font use `/text minecrafter`. Use `/help text` to view all special fonts.",
           "console": "No font specified"
         },
         "no_color": {
-          "title": "No Color specified",
+          "title": "No Color Specified",
           "description": "%emoji_warning% Please specify a color. All color ids can be found here:\nhttps://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords",
           "console": "No color specified"
         },
         "no_text": {
-          "title": "No Text specified",
+          "title": "No Text Specified",
           "description": "%emoji_warning% Please specify a text.",
           "console": "No text specified"
         }
       },
       "errors": {
         "could_not_apply_text": {
-          "title": "Could not apply Text",
+          "title": "Could Not Apply Text",
           "description": "%emoji_error% Please check if you specified a valid font or color.",
           "console": "Could not apply text"
         }
@@ -460,12 +463,12 @@
           "console": "No admin permission"
         },
         "no_channel": {
-          "title": "No Channel specified",
+          "title": "No Channel Specified",
           "description": "%emoji_warning% Please mention a channel.",
           "console": "No channel specified"
         },
         "no_text_channel": {
-          "title": "No Text Channel specified",
+          "title": "No Text Channel Specified",
           "description": "%emoji_warning% Please mention a text, thread or news channel.",
           "console": "No text channel specified"
         },
@@ -484,7 +487,7 @@
       },
       "errors": {
         "could_not_write_file": {
-          "title": "Could not save channel",
+          "title": "Could Not Save Channel",
           "description": "%emoji_error% Couldn't save channel. Please try again.",
           "console": "Could not write file"
         }
@@ -502,42 +505,42 @@
                 "placeholder": "Select up to 8 message types.",
                 "options": {
                   "chat": {
-                    "label": "Chat messages",
+                    "label": "Chat Messages",
                     "description": "Send a message every time a player chats.",
                     "value": "0"
                   },
                   "join": {
-                    "label": "Join messages",
+                    "label": "Join Messages",
                     "description": "Send a message every time a player joins the server.",
                     "value": "1"
                   },
                   "leave": {
-                    "label": "Leave messages",
+                    "label": "Leave Messages",
                     "description": "Send a message every time a player leaves the server.",
                     "value": "2"
                   },
                   "advancements": {
-                    "label": "Advancement messages",
+                    "label": "Advancement Messages",
                     "description": "Send a message every time a player completes an advancement.",
                     "value": "3"
                   },
                   "death": {
-                    "label": "Death messages",
+                    "label": "Death Messages",
                     "description": "Send a message every time a player dies.",
                     "value": "4"
                   },
                   "commands": {
-                    "label": "Command messages",
+                    "label": "Command Messages",
                     "description": "Send a message every time a player executes a command.",
                     "value": "5"
                   },
                   "start": {
-                    "label": "Startup messages",
+                    "label": "Startup Messages",
                     "description": "Send a message every time the server starts up.",
                     "value": "6"
                   },
                   "close": {
-                    "label": "Shutdown messages",
+                    "label": "Shutdown Messages",
                     "description": "Send a message every time the server shuts down.",
                     "value": "7"
                   }
@@ -556,7 +559,7 @@
     "connect": {
       "warnings": {
         "no_method": {
-          "title": "No Method specified",
+          "title": "No Method Specified",
           "description": "%emoji_warning% Please specify a method (`plugin`, `account`, `ftp`).",
           "console": "No method specified"
         },
@@ -566,46 +569,46 @@
           "console": "%emoji_no_entry% This command can only be used by admins."
         },
         "no_credentials": {
-          "title": "No Credentials specified",
+          "title": "No Credentials Specified",
           "description": "Please specify your ftp credentials! Use `/help connect` for more information!",
           "console": "No credentials specified"
         },
         "no_version": {
-          "title": "No Version specified",
+          "title": "No Version Specified",
           "description": "%emoji_warning% Please specify the minecraft version.",
           "console": "No version specified"
         },
         "invalid_port": {
-          "title": "Invalid Port specified",
+          "title": "Invalid Port Specified",
           "description": "%emoji_warning% Please specify a port that is bigger than 0 and smaller than 65536.",
           "console": "Invalid port specified"
         },
         "no_ip": {
-          "title": "No IP specified",
+          "title": "No IP Specified",
           "description": "%emoji_warning% Please specify the server ip.",
           "console": "No IP specified"
         },
         "no_username": {
-          "title": "No Username specified",
+          "title": "No Username Specified",
           "description": "%emoji_warning% Please specify your minecraft java-edition account name.",
           "console": "No username specified"
         },
         "invalid_method": {
-          "title": "Invalid Method specified",
-          "description": "%emoji_warning% Method [**%method%**] is not a valid connection method.",
+          "title": "Invalid Method Specified",
+          "description": "%emoji_warning% Method **%method%** is not a valid connection method.",
           "console": "Invalid method specified"
         },
         "user_pinged": {
-          "title": "No Username specified",
+          "title": "No Username Specified",
           "description": "%emoji_warning% Don't ping someone. Specify your **minecraft java-edition account name** instead.",
           "console": "No username specified"
         },
         "version_below_11": {
-          "title": "Version below 1.11",
+          "title": "Version Below 1.11",
           "description": "%emoji_warning% The advancement command might not work because advancements don't exist in your minecraft version yet."
         },
         "version_below_7": {
-          "title": "Version below 1.7",
+          "title": "Version Below 1.7",
           "description": "%emoji_warning% The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet."
         },
         "connecting": {
@@ -613,37 +616,37 @@
           "description": "Connecting to ftp... (Can take up to one minute)"
         },
         "searching_level": {
-          "title": "Searching for world",
+          "title": "Searching For World",
           "description": "%emoji_success% Successfully connected with the sftp server. Finding world folder... (Can take up to one minute)",
           "console": "Searching for level.dat..."
         },
         "could_not_dm": {
-          "title": "Could not DM",
+          "title": "Could Not DM",
           "description": "%emoji_warning% Could not DM you. Verifying in the current channel..."
         },
         "no_reply_in_time": {
-          "title": "Verification unsuccessful",
+          "title": "Verification Unsuccessful",
           "description": "%emoji_warning% You didn't reply in time!"
         }
       },
       "errors": {
         "could_not_connect_ftp": {
-          "title": "Could not connect",
+          "title": "Could Not Connect",
           "description": "%emoji_error% Could not connect to server with ftp or sftp. Please check your credentials and try again.",
           "console": "Could not connect with ftp or sftp."
         },
         "could_not_find_level": {
-          "title": "Could not find World",
+          "title": "Could Not Find World",
           "description": "%emoji_error% Could not find world folder. Please specify the world path manually.",
           "console": "Could not find level.dat"
         },
         "could_not_make_folder": {
-          "title": "Could not Save Credentials",
+          "title": "Could Not Save Credentials",
           "description": "%emoji_error% Could not save credentials. Please try again.",
           "console": "Error writing server folder"
         },
         "could_not_write_file": {
-          "title": "Could not Save Credentials",
+          "title": "Could Not Save Credentials",
           "description": "%emoji_error% Could not save credentials. Please try again.",
           "console": "Error writing server file"
         }
@@ -674,12 +677,12 @@
     "disable": {
       "warnings": {
         "no_type": {
-          "title": "No Type specified",
+          "title": "No Type Specified",
           "description": "%emoji_warning% Please specify the type you want to disable (`commands`, `stats, `advancements`) or `list` if you want to list all disabled commands/stats/advancements.",
           "console": "No type specified"
         },
         "invalid_type": {
-          "title": "Invalid Type specified",
+          "title": "Invalid Type Specified",
           "description": "%emoji_warning% You can only specify `commands`, `stats` or `advancements`.",
           "console": "Invalid type specified"
         },
@@ -689,25 +692,25 @@
           "console": "No permission"
         },
         "no_disable": {
-          "title": "No Disable specified",
+          "title": "No Disable Specified",
           "description": "%emoji_warning% Please specify the %type% you want to disable.",
           "console": "No disable specified"
         },
         "command_does_not_exist": {
-          "title": "Command does not Exist",
-          "description": "%emoji_warning% Command [**%disable%**] does not exist.",
+          "title": "Command Does Not Exist",
+          "description": "%emoji_warning% Command **%disable%** does not exist.",
           "console": "Command does not exist"
         },
         "disabled_command": {
-          "title": "Disabled Command specified",
-          "description": "%emoji_no_entry% You cannot disable this command [**%disable%**].",
+          "title": "Disabled Command Specified",
+          "description": "%emoji_no_entry% You cannot disable this command **%disable%**.",
           "console": "Disabled command specified"
         }
       },
       "errors": {
         "could_not_disable": {
-          "title": "Could not disable",
-          "description": "Could not disable %type% [**%disable%**].",
+          "title": "Could Not Disable",
+          "description": "Could not disable %type% **%disable%**.",
           "console": "Could not disable %disable%"
         }
       },
@@ -718,8 +721,8 @@
           "console": "Nothing disabled"
         },
         "disabled": {
-          "title": "Successfully disabled",
-          "description": "%emoji_success% Successfully disabled %type% [**%disable%**].",
+          "title": "Successfully Disabled",
+          "description": "%emoji_success% Successfully disabled %type% **%disable%**.",
           "console": "Successfully enabled %type% %disable%"
         },
         "list": {
@@ -742,30 +745,30 @@
     "disconnect": {
       "warnings": {
         "no_method": {
-          "title": "No Method specified",
+          "title": "No Method Specified",
           "description": "%emoji_warning% Please set the connection method (`ftp`, `plugin`, `user`).",
           "console": "No method specified"
         },
         "invalid_method": {
-          "title": "Invalid Method specified",
+          "title": "Invalid Method Specified",
           "description": "%emoji_warning% You can only disconnect from `ftp`, `plugin` or `account`.",
           "console": "Invalid method specified"
         },
         "invalid_protocol": {
-          "title": "Invalid Protocol specified",
+          "title": "Invalid Protocol Specified",
           "description": "%emoji_warning% Your server is not connected with %method%",
           "console": "Invalid protocol specified"
         }
       },
       "errors": {
         "could_not_remove_folder": {
-          "title": "Could not disconnect",
+          "title": "Could Not Disconnect",
           "description": "%emoji_warning% You are not connected with %method%.",
           "console": "Could not remove server folder"
         }
       },
       "success": {
-        "title": "Disconnected from Server",
+        "title": "Disconnected From Server",
         "description": "%emoji_success% The **%method%** connection was successfully disconnected.",
         "console": "Disconnected from server"
       }
@@ -773,17 +776,17 @@
     "enable": {
       "warnings": {
         "no_type": {
-          "title": "No Type specified",
+          "title": "No Type Specified",
           "description": "%emoji_warning% Please specify the type you want to enable (`commands`, `stats, `advancements`).",
           "console": "No type specified"
         },
         "no_enable": {
-          "title": "No Enable specified",
+          "title": "No Enable Specified",
           "description": "%emoji_warning% Please specify the command, stat or advancement you want to enable.",
           "console": "No enable specified"
         },
         "invalid_type": {
-          "title": "Invalid Type specified",
+          "title": "Invalid Type Specified",
           "description": "%emoji_warning% You can only specify `commands`, `stats` or `advancements`.",
           "console": "Invalid type specified"
         },
@@ -793,20 +796,20 @@
           "console": "No permission"
         },
         "command_does_not_exist": {
-          "title": "Command does not Exist",
-          "description": "%emoji_warning% Command [**%enable%**] does not exist.",
+          "title": "Command Does Not Exist",
+          "description": "%emoji_warning% Command **%enable%** does not exist.",
           "console": "Command does not exist"
         },
         "already_enabled": {
-          "title": "Already enabled",
-          "description": "%emoji_warning% ${type.cap()} [**${toEnable}**] is already enabled.",
+          "title": "Already Enabled",
+          "description": "%emoji_warning% ${type.cap()} **%enable%** is already enabled.",
           "console": "Could not enable %enable%"
         }
       },
       "success": {
         "disabled": {
-          "title": "Successfully enabled",
-          "description": "%emoji_success% Successfully enabled %type% [**%enabled%**].",
+          "title": "Successfully Enabled",
+          "description": "%emoji_success% Successfully enabled %type% **%enable%**.",
           "console": "Successfully enabled %type% %enable%"
         }
       }
@@ -829,22 +832,22 @@
     "ftp": {
       "errors": {
         "unknown_ftp_error": {
-          "title": "Could not Connect",
+          "title": "Could Not Connect",
           "description": "%emoji_error% Could not connect to server.",
           "console": "Unknown ftp error %error%"
         },
         "could_not_connect": {
-          "title": "Could not Connect",
+          "title": "Could Not Connect",
           "description": "%emoji_error% Could not connect to server.",
           "console": "Could not connect to server %error%"
         },
         "could_not_get": {
-          "title": "Could not Download",
+          "title": "Could Not Download",
           "description": "%emoji_error% The User never joined the server.",
           "console": "Could not get file [%path%] %error%"
         },
         "could_not_put": {
-          "title": "Could not Upload",
+          "title": "Could Not Upload",
           "description": "%emoji_error% Could not upload file",
           "console": "Could not put file [%path%] %error%"
         }
@@ -867,12 +870,12 @@
     "plugin": {
       "warnings": {
         "not_completely_disconnected": {
-          "title": "Not completely disconnected",
-          "description": "%emoji_warning% The server [**${ip}**] is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/SMP-Plugin/connection.conn` or by **removing** the plugin completely."
+          "title": "Not Completely Disconnected",
+          "description": "%emoji_warning% The server (**${ip}**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/SMP-Plugin/connection.conn` or by **removing** the plugin completely."
         },
         "automatically_disconnected": {
-          "title": "Automatically disconnected",
-          "description": "%emoji_warning% Automatically disconnected from the old server [**%ip%**] to ensure no complications happen."
+          "title": "Automatically Disconnected",
+          "description": "%emoji_warning% Automatically disconnected from the old server (**%ip%**) to ensure no complications happen."
         },
         "not_connected": {
           "title": "Not Connected",
@@ -882,17 +885,17 @@
       },
       "errors": {
         "no_response": {
-          "title": "Plugin does not respond",
+          "title": "Plugin Does Not Respond",
           "description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
           "console": "Plugin does not respond"
         },
         "could_not_save_file": {
-          "title": "Could not Save",
+          "title": "Could Not Save Connection",
           "description": "%emoji_error% Could not download file. Please try again.",
           "console": "Could not save file [%path%] %error%"
         },
         "could_not_update": {
-          "title": "Could not save",
+          "title": "Could Not Save Connection",
           "description": "%emoji_error% Could not save connection. Please try again.",
           "console": "Could not update connection %error%"
         },
@@ -982,17 +985,17 @@
           "console": "Could not read advancements file %error%"
         },
         "could_not_get_uuid": {
-          "title": "Could not Get UUID",
+          "title": "Could Not Get UUID",
           "description": "%emoji_error% **%username%** is not a valid minecraft java edition account name.",
           "console": "Could not get uuid of %username% %error%"
         },
         "could_not_read_server_file": {
-          "title": "Not Connected",
+          "title": "Server Not Connected",
           "description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
           "console": "Could not read server file %error%"
         },
         "could_not_read_user_file": {
-          "title": "Not Connected",
+          "title": "User Not Connected",
           "description": "%emoji_error% User never used `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
           "console": "Could not read user file %error%"
         }
@@ -1000,7 +1003,9 @@
     }
   },
   "buttons": {
-    "clicked": "%clicker_tag% has clicked button %button_id% in %guild_name%",
+    "clicked": {
+      "console": "%clicker_tag% has clicked button %button_id% in %guild_name%"
+    },
     "disable": {
       "warnings": {
         "no_permission": {
@@ -1011,15 +1016,15 @@
       },
       "errors": {
         "could_not_disable": {
-          "title": "Could not Disable",
-          "description": "%emoji_error% Could not disable command [**%command_name%**]. Please try again.",
+          "title": "Could Not Disable",
+          "description": "%emoji_error% Could not disable command **%command_name%**. Please try again.",
           "console": "Could not disable command %command_name%"
         }
       },
       "success": {
         "response": {
           "title": "Disabled Command",
-          "description": "%emoji_success% Disabling of command [**%command_name%**] successful.",
+          "description": "%emoji_success% Disabling of command **%command_name%** successful.",
           "console": "Disabled command %command_name%"
         },
         "help": {
@@ -1038,15 +1043,15 @@
       },
       "errors": {
         "already_enabled": {
-          "title": "Could not Enable",
-          "description": "%emoji_error% Could not enable command [**%command_name%**].",
+          "title": "Could Not Enable",
+          "description": "%emoji_error% Could not enable command **%command_name%**.",
           "console": "Could not enable command %command_name%"
         }
       },
       "success": {
         "response": {
           "title": "Enabled Command",
-          "description": "%emoji_success% Enabling of command [**%command_name%**] successful.",
+          "description": "%emoji_success% Enabling of command **%command_name%** successful.",
           "console": "Enabled command %command_name%"
         },
         "help": {
