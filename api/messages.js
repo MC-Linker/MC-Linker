@@ -1,4 +1,4 @@
-const builders = require('@discordjs/builders');
+const Builders = require('@discordjs/builders');
 const Discord = require('discord.js');
 const keys = require('../resources/languages/expanded/english.json');
 const { prefix } = require('../config.json');
@@ -12,7 +12,7 @@ ph.fromAuthor = function(author) {
         "author_tag": author.tag,
         "author_id": author.id,
         "author_avatar": author.displayAvatarURL({ format: 'png' }),
-        "author_timestamp": builders.time(new Date(author.createdTimestamp)),
+        "author_timestamp": Builders.time(new Date(author.createdTimestamp)),
     }
 }
 ph.fromGuild = function(guild) {
@@ -22,7 +22,7 @@ ph.fromGuild = function(guild) {
         "guild_name": guild.name,
         "guild_id": guild.id,
         "guild_member_count": guild.memberCount,
-        "guild_timestamp": builders.time(new Date(guild.createdTimestamp)),
+        "guild_timestamp": Builders.time(new Date(guild.createdTimestamp)),
     }
 }
 ph.fromInteraction = function(interaction) {
@@ -32,13 +32,13 @@ ph.fromInteraction = function(interaction) {
 
         return {
             "interaction_name": commandName,
-            "interaction_timestamp": builders.time(new Date(interaction.createdTimestamp)),
+            "interaction_timestamp": Builders.time(new Date(interaction.createdTimestamp)),
             "args": args.join(' '),
         }
     } else if(interaction instanceof Discord.CommandInteraction) {
         return {
             "interaction_name": interaction.commandName,
-            "interaction_timestamp": builders.time(new Date(interaction.createdTimestamp)),
+            "interaction_timestamp": Builders.time(new Date(interaction.createdTimestamp)),
             "args": getArgs(interaction).join(' '),
         }
     }
@@ -52,7 +52,7 @@ ph.fromChannel = function(channel) {
         "channel_name": channel.name,
         "channel_description": channel.topic,
         "channel_id": channel.id,
-        "channel_timestamp": builders.time(new Date(channel.createdTimestamp)),
+        "channel_timestamp": Builders.time(new Date(channel.createdTimestamp)),
     }
 }
 ph.fromClient = function(client) {
@@ -63,7 +63,7 @@ ph.fromClient = function(client) {
         "client_tag": client.user.tag,
         "client_id": client.user.id,
         "client_avatar": client.user.displayAvatarURL({ format: 'png' }),
-        "client_timestamp": builders.time(new Date(client.user.createdTimestamp)),
+        "client_timestamp": Builders.time(new Date(client.user.createdTimestamp)),
     }
 }
 ph.emojis = function() {
@@ -83,7 +83,7 @@ ph.from = function(author = null, guild = null, channel = null, interaction = nu
         this.fromChannel(channel),
         this.fromClient(client),
         this.emojis(),
-        { "timestamp_now": builders.time(Date.now()) }
+        { "timestamp_now": Builders.time(Date.now()) }
     );
 }
 
@@ -186,6 +186,149 @@ function reply(interaction, key, ...placeholders) {
 }
 
 
+function getBuilder(key) {
+    if(!key) return console.error('Could not get builder: No key specified');
+    if(!key.name || !key.short_description) return console.error('Could not reply: No name or short description specified');
+
+    const builder = new Builders.SlashCommandBuilder()
+        .setName(key.name)
+        .setDescription(key.description)
+        .setDefaultPermission(key.default_permission);
+
+    if(!key.options) return builder;
+
+    for (const option of key.options) {
+        addOption(builder, option);
+    }
+}
+
+function addOption(builder, key) {
+    if(!key.type || !key.name || !key.description) return;
+
+    let optionBuilder;
+    switch(key.type.toUpperCase()) {
+        case 'STRING':
+            optionBuilder = new Builders.SlashCommandStringOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required)
+                .setAutocomplete(key.autocomplete);
+
+            if(key.choices) {
+                for(const choice of key.choices) {
+                    if(!choice.name || !choice.id) continue;
+                    optionBuilder.addChoice(choice.name, choice.id);
+                }
+            }
+
+            builder.addStringOption(optionBuilder);
+            break;
+        case 'USER':
+            optionBuilder = new Builders.SlashCommandUserOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required);
+
+            builder.addUserOption(optionBuilder);
+            break;
+        case 'NUMBER':
+            optionBuilder = new Builders.SlashCommandNumberOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required)
+                .setAutocomplete(key.autocomplete)
+                .setMinValue(key.min_value)
+                .setMaxValue(key.max_value);
+
+            if(key.choices) {
+                for(const choice of key.choices) {
+                    if(!choice.name || !choice.id) continue;
+                    optionBuilder.addChoice(choice.name, choice.id);
+                }
+            }
+
+            builder.addNumberOption(optionBuilder);
+            break;
+        case 'BOOLEAN':
+            optionBuilder = new Builders.SlashCommandBooleanOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required);
+
+            builder.addBooleanOption(optionBuilder);
+            break;
+        case 'INTEGER':
+            optionBuilder = new Builders.SlashCommandIntegerOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required)
+                .setAutocomplete(key.autocomplete)
+                .setMinValue(key.min_value)
+                .setMaxValue(key.max_value);
+
+            if(key.choices) {
+                for(const choice of key.choices) {
+                    if(!choice.name || !choice.id) continue;
+                    optionBuilder.addChoice(choice.name, choice.id);
+                }
+            }
+
+            builder.addIntegerOption(optionBuilder);
+            break;
+        case 'CHANNEL':
+            optionBuilder = new Builders.SlashCommandChannelOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required);
+
+            if(key.types) {
+                for(const type of key.types) {
+                    optionBuilder.addChannelType(type);
+                }
+            }
+
+            builder.addChannelOption(optionBuilder);
+            break;
+        case 'ROLE':
+            optionBuilder = new Builders.SlashCommandRoleOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required);
+
+            builder.addRoleOption(optionBuilder);
+            break;
+        case 'MENTIONABLE':
+            optionBuilder = new Builders.SlashCommandMentionableOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required);
+
+            builder.addMentionableOption(optionBuilder);
+            break;
+        case 'SUBCOMMAND':
+            optionBuilder = new Builders.SlashCommandSubcommandBuilder();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description);
+
+            for (const option of key.options) {
+                addOption(builder, option);
+            }
+
+            builder.addSubcommand(optionBuilder);
+            break;
+    }
+}
+
+
 function getArgs(interaction) {
     if(!(interaction instanceof Discord.CommandInteraction)) return [];
 
@@ -211,4 +354,4 @@ function getArgs(interaction) {
     return args;
 }
 
-module.exports = { keys, ph, reply, addPlaceholders, getArgs };
+module.exports = { keys, ph, reply, addPlaceholders, getBuilder, getArgs };
