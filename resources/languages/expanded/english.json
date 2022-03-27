@@ -802,7 +802,7 @@
         },
         "already_enabled": {
           "title": "Already Enabled",
-          "description": "%emoji_warning% ${type.cap()} **%enable%** is already enabled.",
+          "description": "%emoji_warning% %type% **%enable%** is already enabled.",
           "console": "Could not enable %enable%"
         }
       },
@@ -816,7 +816,7 @@
     }
   },
   "api": {
-    "disable": {
+    "settings": {
       "errors": {
         "could_not_write_file_folder": {
           "console": "Could not create disable folder or file %error%"
@@ -871,7 +871,7 @@
       "warnings": {
         "not_completely_disconnected": {
           "title": "Not Completely Disconnected",
-          "description": "%emoji_warning% The server (**${ip}**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/SMP-Plugin/connection.conn` or by **removing** the plugin completely."
+          "description": "%emoji_warning% The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/SMP-Plugin/connection.conn` or by **removing** the plugin completely."
         },
         "automatically_disconnected": {
           "title": "Automatically Disconnected",
@@ -1024,7 +1024,7 @@
       "success": {
         "response": {
           "title": "Disabled Command",
-          "description": "%emoji_success% Disabling of command **%command_name%** successful.",
+          "description": "%emoji_success% Successfully disabled command **%command_name%**.",
           "console": "Disabled command %command_name%"
         },
         "help": {
@@ -1051,12 +1051,739 @@
       "success": {
         "response": {
           "title": "Enabled Command",
-          "description": "%emoji_success% Enabling of command **%command_name%** successful.",
+          "description": "%emoji_success% Successfully enabled command **%command_name%**.",
           "console": "Enabled command %command_name%"
         },
         "help": {
           "description": "```diff\n+ [COMMAND ENABLED]```",
           "color": "GREEN"
+        }
+      }
+    }
+  },
+  "data": {
+    "advancements": {
+      "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
+      "short_description": "Look up your and other member's minecraft advancements.",
+      "usage": "/advancements <@mention>/<in-game name> <advancement-tab> <advancement name or id>",
+      "example": "/advancements @Lianecx story Diamonds! **//** /advancements @Memer adventure Bullseye",
+      "options": {
+        "story": {
+          "type": "SUBCOMMAND",
+          "name": "story",
+          "description": "The heart and story of the game",
+          "options": {
+            "advancement": {
+              "type": "STRING",
+              "name": "advancement",
+              "description": "Set the advancement",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            }
+          }
+        },
+        "nether": {
+          "type": "SUBCOMMAND",
+          "name": "nether",
+          "description": "Bring summer clothes",
+          "options": {
+            "advancement": {
+              "type": "STRING",
+              "name": "advancement",
+              "description": "Set the advancement",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            }
+          }
+        },
+        "end": {
+          "type": "SUBCOMMAND",
+          "name": "end",
+          "description": "Or the beginning?",
+          "options": {
+            "advancement": {
+              "type": "STRING",
+              "name": "advancement",
+              "description": "Set the advancement",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            }
+          }
+        },
+        "adventure": {
+          "type": "SUBCOMMAND",
+          "name": "adventure",
+          "description": "Adventure, exploration, and combat",
+          "options": {
+            "advancement": {
+              "type": "STRING",
+              "name": "advancement",
+              "description": "Set the advancement",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            }
+          }
+        },
+        "husbandry": {
+          "type": "SUBCOMMAND",
+          "name": "husbandry",
+          "description": "The world is full of friends and food",
+          "options": {
+            "advancement": {
+              "type": "STRING",
+              "name": "advancement",
+              "description": "Set the advancement",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            }
+          }
+        }
+      }
+    },
+    "inventory": {
+      "name": "inventory",
+      "long_description": "Get an image of the current player's inventory.",
+      "short_description": "Get an image of the current player's inventory.",
+      "usage": "inventory <mention/username>",
+      "example": "/inventory @Lianecx",
+      "options": {
+        "user": {
+          "type": "USER",
+          "name": "user",
+          "description": "Set the user you want to get the inventory from.",
+          "required": true
+        }
+      }
+    },
+    "stats": {
+      "name": "inventory",
+      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
+      "short_description": "Look at your and other member's minecraft server stats.",
+      "usage": "/stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**>",
+      "example": "/stats @Lianecx mined iron_ore **//** /stats @Memer custom play_time **//** /stats xXgamerboyyXx killed blaze",
+      "options": {
+        "custom": {
+          "type": "SUBCOMMAND",
+          "name": "custom",
+          "description": "A multitude of generic statistics related to a player's actions.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set a custom stat. All stats of the custom category => /help stats",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        },
+        "mined": {
+          "type": "SUBCOMMAND",
+          "name": "mined",
+          "description": "Statistic related to the number of blocks a player mined.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set a block (id)",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        },
+        "broken": {
+          "type": "SUBCOMMAND",
+          "name": "broken",
+          "description": "Statistics related to the number of items a player ran their durability negative.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set an item (id)",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        },
+        "crafted": {
+          "type": "SUBCOMMAND",
+          "name": "crafted",
+          "description": "Statistics related to the number of items crafted, smelted, etc.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set an item (id)",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        },
+        "used": {
+          "type": "SUBCOMMAND",
+          "name": "used",
+          "description": "Statistics related to the number of block or item used.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set an item or block (id)",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        },
+        "picked_up": {
+          "type": "SUBCOMMAND",
+          "name": "picked_up",
+          "description": "Statistics related to the number of dropped items a player picked up.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set an item (id)",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        },
+        "dropped": {
+          "type": "SUBCOMMAND",
+          "name": "dropped",
+          "description": "Statistics related to the number of items that dropped.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set an item (id)",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        },
+        "killed": {
+          "type": "SUBCOMMAND",
+          "name": "killed",
+          "description": "Statistics related to the number of entities a player killed.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set an entity (id)",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        },
+        "killed_by": {
+          "type": "SUBCOMMAND",
+          "name": "killed_by",
+          "description": "Statistics related to the times of a player being killed by entities.",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set an entity (id)",
+              "required": true,
+              "autocomplete": true
+            },
+            "user": {
+              "type": "USER",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            }
+          }
+        }
+      }
+    },
+    "ban": {
+      "name": "ban",
+      "long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
+      "short_description": "Ban a player from the minecraft server.",
+      "usage": "/ban <mention/username>",
+      "example": "/ban @Lianecx **//** /ban cheaterGuy",
+      "options": {
+        "user": {
+          "type": "USER",
+          "name": "user",
+          "description": "Set the user you want to ban.",
+          "required": true
+        },
+        "reason": {
+          "type": "STRING",
+          "name": "reason",
+          "description": "Set a reason for the ban.",
+          "required": false
+        }
+      }
+    },
+    "unban": {
+      "name": "unban",
+      "long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
+      "short_description": "Unban a banned player from the minecraft-server.",
+      "usage": "/unban <mention/username>",
+      "example": "/unban @Lianecx **//** /unban MrNotCheating",
+      "options": {
+        "user": {
+          "type": "USER",
+          "name": "user",
+          "description": "Set the user you want to unban.",
+          "required": true
+        }
+      }
+    },
+    "loadingscreen": {
+      "name": "loadingscreen",
+      "long_description": "Convert an attachment, image-link or @mention to a minecraft loading-screen.",
+      "short_description": "Convert an image-link to a minecraft loading-screen.",
+      "usage": "/loadingscreen <attachment/imageLink/@mention>",
+      "example": "/loadingscreen @Lianecx",
+      "options": {
+        "url": {
+          "type": "STRING",
+          "name": "url",
+          "description": "Set the URL of the image you want to convert.",
+          "required": true
+        }
+      }
+    },
+    "message": {
+      "name": "message",
+      "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).",
+      "short_description": "Send private chat messages to members on the server.",
+      "usage": "/message <@mention/ingamename> <message>",
+      "example": "/message @Lianecx Hey, its me! **//** /message someGuy §6Golden message",
+      "options": {
+        "user": {
+          "type": "USER",
+          "name": "user",
+          "description": "Set the user you want to send a (private) message to.",
+          "required": true
+        },
+        "message": {
+          "type": "STRING",
+          "name": "message",
+          "description": "Set the (private) message you want to send to the user.",
+          "required": true
+        }
+      }
+    },
+    "text": {
+      "name": "text",
+      "long_description": "Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords)\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`",
+      "short_description": "Create images with text with different fonts and colors.",
+      "usage": "/text <Any Font> <color> <Your text>",
+      "example": "/text minecraft red I love this bot!",
+      "options": {
+        "font": {
+          "type": "STRING",
+          "name": "font",
+          "description": "Set a font for your text.",
+          "required": true
+        },
+        "color": {
+          "type": "STRING",
+          "name": "color",
+          "description": "Set the color for your text.",
+          "required": true
+        },
+        "text": {
+          "type": "STRING",
+          "name": "text",
+          "description": "Enter your text here.",
+          "required": true
+        },
+        "channel": {
+          "type": "CHANNEL",
+          "description": "Set the channel.",
+          "required": true,
+          "channel_types": [
+            0,
+            5,
+            10,
+            11,
+            12
+          ]
+        }
+      }
+    },
+    "chatchannel": {
+      "name": "chatchannel",
+      "long_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
+      "short_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
+      "usage": "/chatchannel <channel>",
+      "example": "/chatchannel #smp-chat",
+      "options": {
+        "channel": {
+          "name": "channel"
+        }
+      }
+    },
+    "connect": {
+      "name": "connect",
+      "long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**",
+      "short_description": "Connect your minecraft server or account with the bot.",
+      "usage": "/connect ftp/plugin/user <options> <...>",
+      "example": "/connect account Lianecx **//**\n/connect plugin serverIp **//**\n/connect ftp host username password port 1.17",
+      "options": {
+        "ftp": {
+          "type": "SUBCOMMAND",
+          "name": "ftp",
+          "description": "Connect your Minecraft server using ftp/sftp.",
+          "options": {
+            "host": {
+              "type": "STRING",
+              "name": "host",
+              "description": "Set the ftp-host.",
+              "required": true
+            },
+            "password": {
+              "type": "STRING",
+              "name": "password",
+              "description": "Set the ftp-password (`none` if no password).",
+              "required": true
+            },
+            "port": {
+              "type": "INTEGER",
+              "name": "port",
+              "description": "Set the ftp-port.",
+              "required": true,
+              "min_value": 1,
+              "max_value": 65536
+            },
+            "version": {
+              "type": "STRING",
+              "name": "version",
+              "description": "Set the Minecraft version.",
+              "required": true,
+              "choices": [
+                [
+                  "1.5",
+                  "5"
+                ],
+                [
+                  "1.6",
+                  "6"
+                ],
+                [
+                  "1.7",
+                  "7"
+                ],
+                [
+                  "1.8",
+                  "8"
+                ],
+                [
+                  "1.9",
+                  "9"
+                ],
+                [
+                  "1.10",
+                  "10"
+                ],
+                [
+                  "1.11",
+                  "11"
+                ],
+                [
+                  "1.12",
+                  "12"
+                ],
+                [
+                  "1.13",
+                  "13"
+                ],
+                [
+                  "1.14",
+                  "14"
+                ],
+                [
+                  "1.15",
+                  "15"
+                ],
+                [
+                  "1.16",
+                  "16"
+                ],
+                [
+                  "1.17",
+                  "17"
+                ],
+                [
+                  "1.18",
+                  "18"
+                ]
+              ]
+            },
+            "path": {
+              "type": "STRING",
+              "name": "path",
+              "description": "Set the world-path (Format: /path/to/world).",
+              "required": false
+            }
+          }
+        },
+        "plugin": {
+          "type": "SUBCOMMAND",
+          "name": "plugin",
+          "description": "Connect your Minecraft server using ftp/sftp.",
+          "options": {
+            "ip": {
+              "type": "STRING",
+              "name": "ip",
+              "description": "Set the server-ip.",
+              "required": true
+            },
+            "port": {
+              "type": "STRING",
+              "name": "port",
+              "description": "Set the port of the plugin from the config.yml",
+              "required": false
+            }
+          }
+        },
+        "account": {
+          "type": "SUBCOMMAND",
+          "name": "account",
+          "description": "Connect your Minecraft server using ftp/sftp.",
+          "options": {
+            "username": {
+              "type": "STRING",
+              "name": "username",
+              "description": "Set your Minecraft java-edition username.",
+              "required": true
+            }
+          }
+        }
+      }
+    },
+    "disable": {
+      "name": "connect",
+      "long_description": "disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",
+      "short_description": "Disable a specific command/stat/advancement.",
+      "usage": "/disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",
+      "example": "/disable commands txp **//** /disable stats picked_up **//** /disable advancements adventuring_time **//** /disable list commands",
+      "options": {
+        "commands": {
+          "type": "SUBCOMMAND",
+          "name": "commands",
+          "description": "Disable a command",
+          "options": {
+            "command": {
+              "type": "STRING",
+              "name": "command",
+              "description": "Set the command you want to disable",
+              "required": true
+            }
+          }
+        },
+        "advancements": {
+          "type": "SUBCOMMAND",
+          "name": "advancements",
+          "description": "Disable an advancement",
+          "options": {
+            "advancement": {
+              "type": "STRING",
+              "name": "advancement",
+              "description": "Set the advancement you want to disable",
+              "required": true,
+              "autocomplete": true
+            }
+          }
+        },
+        "stats": {
+          "type": "SUBCOMMAND",
+          "name": "stats",
+          "description": "Disable a stat",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set the stat you want to disable",
+              "required": true,
+              "autocomplete": true
+            }
+          }
+        },
+        "list": {
+          "type": "SUBCOMMAND",
+          "name": "list",
+          "description": "Get a list of all disabled stats/advancements/commands",
+          "options": {
+            "category": {
+              "type": "STRING",
+              "name": "category",
+              "description": "Set the category which you want to list",
+              "required": true,
+              "choices": [
+                [
+                  "commands",
+                  "commands"
+                ],
+                [
+                  "advancements",
+                  "advancements"
+                ],
+                [
+                  "stats",
+                  "stats"
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "disconnect": {
+      "name": "disconnect",
+      "long_description": "Disconnect your minecraft java-edition server or minecraft java-edition account from the bot and delete all saved credentials. To connect again, use `/connect`.",
+      "short_description": "Disconnect your minecraft server or minecraft account from the bot.",
+      "usage": "/disconnect ftp/rcon/plugin/user",
+      "example": "/disconnect ftp **//** /disconnect account",
+      "options": {
+        "ftp": {
+          "type": "SUBCOMMAND",
+          "name": "ftp",
+          "description": "Disconnect from the minecraft-plugin."
+        },
+        "plugin": {
+          "type": "SUBCOMMAND",
+          "name": "plugin",
+          "description": "Disconnect from the minecraft-plugin."
+        },
+        "account": {
+          "type": "SUBCOMMAND",
+          "name": "account",
+          "description": "Disconnect your minecraft-account."
+        }
+      }
+    },
+    "enable": {
+      "name": "enable",
+      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in /help <command>.",
+      "short_description": "Enable a disabled command/stat/advancement (All enabled by default)",
+      "usage": "/enable commands/stats/advancements <command/stat/advancement>",
+      "example": "/enable commands txp **//** /enable stats picked_up **//** /enable advancements adventuring_time",
+      "options": {
+        "commands": {
+          "type": "SUBCOMMAND",
+          "name": "commands",
+          "description": "Enable a disabled command",
+          "options": {
+            "command": {
+              "type": "STRING",
+              "name": "command",
+              "description": "Set the command you want to enable",
+              "required": true,
+              "autocomplete": true
+            }
+          }
+        },
+        "stats": {
+          "type": "SUBCOMMAND",
+          "name": "stats",
+          "description": "Enable a disabled stat",
+          "options": {
+            "stat": {
+              "type": "STRING",
+              "name": "stat",
+              "description": "Set the stat you want to enable",
+              "required": true,
+              "autocomplete": true
+            }
+          }
+        },
+        "advancements": {
+          "type": "SUBCOMMAND",
+          "name": "advancements",
+          "description": "Enable a disabled advancement",
+          "options": {
+            "advancement": {
+              "type": "STRING",
+              "name": "advancement",
+              "description": "Set the advancement you want to enable",
+              "required": true,
+              "autocomplete": true
+            }
+          }
         }
       }
     }

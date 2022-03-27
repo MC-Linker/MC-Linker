@@ -215,12 +215,7 @@ function addOption(builder, key) {
                 .setRequired(key.required)
                 .setAutocomplete(key.autocomplete);
 
-            if(key.choices) {
-                for(const choice of key.choices) {
-                    if(!choice.name || !choice.id) continue;
-                    optionBuilder.addChoice(choice.name, choice.id);
-                }
-            }
+            if(key.choices) optionBuilder.addChoices(key.choices);
 
             builder.addStringOption(optionBuilder);
             break;
@@ -243,12 +238,7 @@ function addOption(builder, key) {
                 .setMinValue(key.min_value)
                 .setMaxValue(key.max_value);
 
-            if(key.choices) {
-                for(const choice of key.choices) {
-                    if(!choice.name || !choice.id) continue;
-                    optionBuilder.addChoice(choice.name, choice.id);
-                }
-            }
+            if(key.choices) optionBuilder.addChoices(key.choices);
 
             builder.addNumberOption(optionBuilder);
             break;
@@ -271,12 +261,7 @@ function addOption(builder, key) {
                 .setMinValue(key.min_value)
                 .setMaxValue(key.max_value);
 
-            if(key.choices) {
-                for(const choice of key.choices) {
-                    if(!choice.name || !choice.id) continue;
-                    optionBuilder.addChoice(choice.name, choice.id);
-                }
-            }
+            if(key.choices) optionBuilder.addChoices(key.choices);
 
             builder.addIntegerOption(optionBuilder);
             break;
@@ -287,11 +272,7 @@ function addOption(builder, key) {
                 .setDescription(key.description)
                 .setRequired(key.required);
 
-            if(key.types) {
-                for(const type of key.types) {
-                    optionBuilder.addChannelType(type);
-                }
-            }
+            if(key.channel_types) optionBuilder.addChannelTypes(key.channel_types);
 
             builder.addChannelOption(optionBuilder);
             break;
