@@ -1,6 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const disable = require('../../api/disable');
+const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
 const { SlashCommandBuilder } = require('@discordjs/builders');
@@ -8,9 +8,9 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 module.exports = {
     name: 'stats',
     aliases: ['stat'],
-    usage: 'stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**> ',
+    usage: 'stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**>',
     example: '/stats @Lianecx mined iron_ore **//** /stats @Memer custom play_time **//** /stats xXgamerboyyXx killed blaze',
-    description: "Look at your and other member's minecraft server stats.\n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
+    description: 'Look at your and other member\'s minecraft server stats.\n All Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).',
     data: new SlashCommandBuilder()
             .setName('stats')
             .setDescription('Look at your and other member\'s minecraft server stats.')
@@ -31,7 +31,7 @@ module.exports = {
                 .setDescription('Statistic related to the number of blocks a player mined.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set a block (english, space = _ )')
+                    .setDescription('Set a block (id)')
                     .setRequired(true)
                     .setAutocomplete(true)
                 ).addUserOption(option =>
@@ -44,7 +44,7 @@ module.exports = {
                 .setDescription('Statistics related to the number of items a player ran their durability negative.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set an item (english, space = _ )')
+                    .setDescription('Set an item (id)')
                     .setRequired(true)
                     .setAutocomplete(true)
                 ).addUserOption(option =>
@@ -57,7 +57,7 @@ module.exports = {
                 .setDescription('Statistics related to the number of items crafted, smelted, etc.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set an item (english, space = _ )')
+                    .setDescription('Set an item (id)')
                     .setRequired(true)
                     .setAutocomplete(true)
                 ).addUserOption(option =>
@@ -70,7 +70,7 @@ module.exports = {
                 .setDescription('Statistics related to the number of block or item used.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set an item or block (english, space = _ )')
+                    .setDescription('Set an item or block (id)')
                     .setRequired(true)
                     .setAutocomplete(true)
                 ).addUserOption(option =>
@@ -83,7 +83,7 @@ module.exports = {
                 .setDescription('Statistics related to the number of dropped items a player picked up.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set an item (english, space = _ )')
+                    .setDescription('Set an item (id)')
                     .setRequired(true)
                     .setAutocomplete(true)
                 ).addUserOption(option =>
@@ -96,7 +96,7 @@ module.exports = {
                 .setDescription('Statistics related to the number of items that dropped.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set an item (english, space = _ )')
+                    .setDescription('Set an item (id)')
                     .setRequired(true)
                     .setAutocomplete(true)
                 ).addUserOption(option =>
@@ -109,7 +109,7 @@ module.exports = {
                 .setDescription('Statistics related to the number of entities a player killed.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set an entity (english, space = _ )')
+                    .setDescription('Set an entity (id)')
                     .setRequired(true)
                     .setAutocomplete(true)
                 ).addUserOption(option =>
@@ -122,7 +122,7 @@ module.exports = {
                 .setDescription('Statistics related to the times of a player being killed by entities.')
                 .addStringOption(option =>
                     option.setName('stat')
-                    .setDescription('Set an entity (english, space = _ )')
+                    .setDescription('Set an entity (id)')
                     .setRequired(true)
                     .setAutocomplete(true)
                 ).addUserOption(option =>
@@ -178,12 +178,12 @@ module.exports = {
 
         console.log(`${message.member.user.tag} executed /stats ${username} ${category} ${stat} in ${message.guild.name}`);
 
-        if(await disable.isDisabled(message.guildId, 'stats', category)) {
+        if(await settings.isDisabled(message.guildId, 'stats', category)) {
             console.log(`Category [${category}] disabled.`);
             message.reply(`:no_entry: Stat category [**${category}**] disabled!`);
             return;
         }
-        if(await disable.isDisabled(message.guildId, 'stats', stat)) {
+        if(await settings.isDisabled(message.guildId, 'stats', stat)) {
             console.log(`Stat [${stat}] disabled.`);
             message.reply(`:no_entry: Stat [**${stat}**] disabled!`);
             return;

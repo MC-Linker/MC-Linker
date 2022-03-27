@@ -2,7 +2,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { discordLink } = require('../config.json');
-const disable = require('../api/disable');
+const settings = require('../api/settings');
 
 
 module.exports = {
@@ -76,7 +76,7 @@ module.exports = {
                             .setEmoji('<:Checkmark:849224496232660992>'),
                     );
 
-                const disabled = await disable.getDisabled(message.guildId, 'commands');
+                const disabled = await settings.getDisabled(message.guildId, 'commands');
                 if (!disabled.find(disable => disable === command.name)) message.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
                 else if (disabled) {
                     helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');

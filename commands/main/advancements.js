@@ -1,6 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const disable = require('../../api/disable');
+const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
 const { SlashCommandBuilder, time } = require('@discordjs/builders');
@@ -137,12 +137,12 @@ module.exports = {
             advancementTitle = `${category} ${advancement}`;
         }
 
-        if(await disable.isDisabled(message.guildId, 'advancements', category)) {
+        if(await settings.isDisabled(message.guildId, 'advancements', category)) {
             console.log(`Advancement category [${category}] disabled.`);
             message.reply(`:no_entry: Advancement category [**${category}**] disabled!`);
             return;
         }
-        if(await disable.isDisabled(message.guildId, 'advancements', advancement)) {
+        if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
             console.log(`Advancement [${advancement}] disabled.`);
             message.reply(`:no_entry: Advancement [**${advancementTitle}**] disabled!`);
             return;

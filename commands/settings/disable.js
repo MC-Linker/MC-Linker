@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const utils = require('../../api/utils');
-const disable = require('../../api/disable');
+const settings = require('../../api/settings');
 
 module.exports = {
     name: 'disable',
@@ -108,7 +108,7 @@ module.exports = {
 
             console.log(`${message.member.user.tag} executed /disable list ${toList} in ${message.guild.name}`);
 
-            const disabled = await disable.getDisabled(message.guildId, type);
+            const disabled = await settings.getDisabled(message.guildId, type);
             if(disabled.length === 0) {
                 message.reply(`<:Checkmark:849224496232660992> There are no disabled ${type}.`);
                 return;
@@ -182,7 +182,7 @@ module.exports = {
                 formattedToDisable = toDisable.split('_').map(word => word.cap()).join(' ');
             }
 
-            if(!await disable.disable(message.guildId, type, toDisable)) {
+            if(!await settings.disable(message.guildId, type, toDisable)) {
                 console.log(`Could not disable ${toDisable}.`);
                 message.reply(`<:Error:849215023264169985> Could not disable ${type} [**${toDisable}**].`);
                 return;

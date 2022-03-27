@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const disable = require('../api/disable');
+const settings = require('../api/settings');
 
 module.exports = {
     async execute(interaction) {
@@ -13,7 +13,7 @@ module.exports = {
             console.log(`${interaction.member.user.tag} clicked disableButton: ${command} in ${interaction.guild.name}`);
 
             //Disable command
-            const disabled = await disable.disable(interaction.guildId, 'commands', command);
+            const disabled = await settings.disable(interaction.guildId, 'commands', command);
             if(disabled) {
                 console.log(`Successfully disabled command ${command}`);
                 interaction.editReply(`<:Checkmark:849224496232660992> Disabling of command [**${command}**] successful.`);

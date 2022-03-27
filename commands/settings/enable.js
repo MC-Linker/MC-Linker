@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const utils = require("../../api/utils");
-const disable = require("../../api/disable");
-const Discord = require("discord.js");
+const utils = require('../../api/utils');
+const settings = require('../../api/settings');
+const Discord = require('discord.js');
 
 module.exports = {
     name: 'enable',
@@ -44,7 +44,7 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        const disabled = await disable.getDisabled(interaction.guildId, subcommand);
+        const disabled = await settings.getDisabled(interaction.guildId, subcommand);
         const matchingDisabled = disabled.filter(disable => disable.includes(focused));
         if (matchingDisabled.length >= 25) matchingDisabled.length = 25;
 
@@ -113,7 +113,7 @@ module.exports = {
             formattedToEnable = matchingTitle.shift()?.name ?? toEnable.cap();
         } else if(type === 'stats') formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
 
-        if(!await disable.enable(message.guildId, type, toEnable)) {
+        if(!await settings.enable(message.guildId, type, toEnable)) {
             console.log(`Could not enable ${type} [${toEnable}].`);
             message.reply(`:warning: ${type.cap()} [**${toEnable}**] is already enabled.`);
             return;

@@ -13,7 +13,7 @@ const plugin = require('./api/plugin');
 const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
-const disable = require('./api/disable');
+const settings = require('./api/settings');
 const messages = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
@@ -95,7 +95,7 @@ client.on('messageCreate', async message => {
         const command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
         if (!command) console.log(`${message.member.user.tag} executed non-existent command ${commandName} in ${message.guild.name}`);
         else {
-            if(await disable.isDisabled(message.guildId, 'commands', command.name)) {
+            if(await settings.isDisabled(message.guildId, 'commands', command.name)) {
                 console.log(`${message.member.user.tag} executed disabled command [${command.name}] in ${message.guild.name}`);
                 message.reply(`:no_entry: Command [**${command.name}**] disabled!`);
             }
@@ -146,7 +146,7 @@ client.on('interactionCreate', async interaction => {
             if (!command) return console.log(`${interaction.member.user.tag} executed non-existent command ${commandName} in ${interaction.guild.name}`);
 
             //Check if command disabled
-            if(await disable.isDisabled(interaction.guildId, 'commands', command.name)) {
+            if(await settings.isDisabled(interaction.guildId, 'commands', command.name)) {
                 console.log(`${interaction.member.user.tag} executed disabled slash command [${command.name}] in ${interaction.guild.name}`);
                 interaction.reply(`:no_entry: Command [**${command.name}**] disabled!`);
                 return;
