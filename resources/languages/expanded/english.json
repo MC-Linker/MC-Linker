@@ -431,7 +431,7 @@
       "warnings": {
         "no_font": {
           "title": "No Font Specified",
-          "description": "%emoji_warning% Please specify a font. To make a minecraft styled font use `/text minecrafter`. Use `/help text` to view all special fonts.",
+          "description": "%emoji_warning% Please specify a font. To make a minecraft-styled text use `minecrafter`. Use `/help text` to view all special fonts.",
           "console": "No font specified"
         },
         "no_color": {

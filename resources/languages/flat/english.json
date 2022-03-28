@@ -300,7 +300,7 @@
 
 
   "commands.text.warnings.no_font.title": "No Font Specified",
-  "commands.text.warnings.no_font.description": "%emoji_warning% Please specify a font. To make a minecraft styled font use `/text minecrafter`. Use `/help text` to view all special fonts.",
+  "commands.text.warnings.no_font.description": "%emoji_warning% Please specify a font. To make a minecraft-styled text use `minecrafter`. Use `/help text` to view all special fonts.",
   "commands.text.warnings.no_font.console": "No font specified",
 
   "commands.text.warnings.no_color.title": "No Color Specified",
