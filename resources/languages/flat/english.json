@@ -286,7 +286,7 @@
   "commands.message.warnings.no_message.console": "No message specified",
 
   "commands.message.warnings.response_warning.title": "Send Message",
-  "commands.message.warnings.response_warning.description": "Warning trying to send message to player **%username%**: %response%",
+  "commands.message.warnings.response_warning.description": "Received warning while trying to send message to player **%username%**: %response%",
   "commands.message.warnings.response_warning.color": "BLUE",
 
   "commands.message.warnings.no_response.title": "Send Message",
