@@ -412,7 +412,7 @@
         },
         "response_warning": {
           "title": "Send Message",
-          "description": "Warning trying to send message to player **%username%**: %response%",
+          "description": "Received warning while trying to send message to player **%username%**: %response%",
           "color": "BLUE"
         },
         "no_response": {
