@@ -333,7 +333,7 @@
   "commands.chatchannel.warnings.no_text_channel.console": "No text channel specified",
 
   "commands.chatchannel.errors.could_not_write_file.title": "Could Not Save Channel",
-  "commands.chatchannel.errors.could_not_write_file.description": "%emoji_error% Couldn't save channel. Please try again.",
+  "commands.chatchannel.errors.could_not_write_file.description": "%emoji_error% Could not save channel. Please try again.",
   "commands.chatchannel.errors.could_not_write_file.console": "Could not write file",
 
   "commands.chatchannel.warnings.not_author.title": "No Permission",

@@ -491,7 +491,7 @@
       "errors": {
         "could_not_write_file": {
           "title": "Could Not Save Channel",
-          "description": "%emoji_error% Couldn't save channel. Please try again.",
+          "description": "%emoji_error% Could not save channel. Please try again.",
           "console": "Could not write file"
         }
       },
