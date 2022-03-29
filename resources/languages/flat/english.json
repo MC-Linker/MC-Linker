@@ -113,6 +113,8 @@
   "commands.advancements.errors.could_not_read_file.description": "%emoji_error% Could not read advancement file. Please try again.",
   "commands.advancements.errors.could_not_read_file.console": "Error reading advancement file from disk %error%",
 
+  "commands.advancements.errors.could_not_autocomplete.console": "Could not respond to advancements autocomplete",
+
   "commands.advancements.success.base.title": "%username%",
   "commands.advancements.success.base.description": "%advancement_description%",
   "commands.advancements.success.base.color": "LUMINOUS_VIVID_PINK",
@@ -191,6 +193,8 @@
   "commands.stats.errors.could_not_parse.title": "Could Not Find Category",
   "commands.stats.errors.could_not_parse.description": "%emoji_error% %username% has never done anything in this category.",
   "commands.stats.errors.could_not_parse.console": "Error trying to parse stat json %error%",
+
+  "commands.stats.errors.could_not_autocomplete.console": "Could not respond to stats autocomplete",
 
   "commands.stats.success.stat_message.custom": "**%stat_name%** **%stat_value%**",
   "commands.stats.success.stat_message.mined": "has mined **%stat_value% %stat_name%**",
@@ -509,6 +513,8 @@
   "commands.disable.errors.could_not_disable.description": "Could not disable %type% **%disable%**.",
   "commands.disable.errors.could_not_disable.console": "Could not disable %disable%",
 
+  "commands.disable.errors.could_not_autocomplete.console": "Could not respond to disable autocomplete",
+
   "commands.disable.success.nothing_disabled.title": "Nothing Disabled",
   "commands.disable.success.nothing_disabled.description": "%emoji_success% There are no disabled %type%.",
   "commands.disable.success.nothing_disabled.console": "Nothing disabled",
@@ -571,6 +577,8 @@
   "commands.enable.warnings.already_enabled.title": "Already Enabled",
   "commands.enable.warnings.already_enabled.description": "%emoji_warning% %type% **%enable%** is already enabled.",
   "commands.enable.warnings.already_enabled.console": "Could not enable %enable%",
+
+  "commands.enable.errors.could_not_autocomplete.console": "Could not respond to enable autocomplete",
 
   "commands.enable.success.disabled.title": "Successfully Enabled",
   "commands.enable.success.disabled.description": "%emoji_success% Successfully enabled %type% **%enable%**.",

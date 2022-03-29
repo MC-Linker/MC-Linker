@@ -151,6 +151,9 @@
           "title": "Could Not Read File",
           "description": "%emoji_error% Could not read advancement file. Please try again.",
           "console": "Error reading advancement file from disk %error%"
+        },
+        "could_not_autocomplete": {
+          "console": "Could not respond to advancements autocomplete"
         }
       },
       "success": {
@@ -280,6 +283,9 @@
           "title": "Could Not Find Category",
           "description": "%emoji_error% %username% has never done anything in this category.",
           "console": "Error trying to parse stat json %error%"
+        },
+        "could_not_autocomplete": {
+          "console": "Could not respond to stats autocomplete"
         }
       },
       "success": {
@@ -715,6 +721,9 @@
           "title": "Could Not Disable",
           "description": "Could not disable %type% **%disable%**.",
           "console": "Could not disable %disable%"
+        },
+        "could_not_autocomplete": {
+          "console": "Could not respond to disable autocomplete"
         }
       },
       "success": {
@@ -807,6 +816,11 @@
           "title": "Already Enabled",
           "description": "%emoji_warning% %type% **%enable%** is already enabled.",
           "console": "Could not enable %enable%"
+        }
+      },
+      "errors": {
+        "could_not_autocomplete": {
+          "console": "Could not respond to enable autocomplete"
         }
       },
       "success": {
