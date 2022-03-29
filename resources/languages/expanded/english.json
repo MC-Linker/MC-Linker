@@ -24,16 +24,21 @@
       "console": "%author_tag% executed /%interaction_name% %args% in %guild_name%"
     },
     "help": {
+      "warnings": {
+        "command_does_not_exist": {
+          "title": "Command/Category Does Not Exist",
+          "description": "%emoji_warning% Command/Category **%command_name%** does not exist.",
+          "console": "Command/Category does not exist"
+        }
+      },
       "success": {
-        "base": {
+        "no_args": {
           "title": "Help Menu",
           "author": {
             "name": "%client_username%",
             "icon_url": "%client_avatar%"
           },
-          "color": "NOT_QUITE_BLACK"
-        },
-        "no_args": {
+          "color": "NOT_QUITE_BLACK",
           "fields": {
             "main": {
               "name": "%emoji_main% Main %emoji_main%",
@@ -58,6 +63,12 @@
           }
         },
         "category": {
+          "title": "Help Menu",
+          "author": {
+            "name": "%client_username%",
+            "icon_url": "%client_avatar%"
+          },
+          "color": "NOT_QUITE_BLACK",
           "fields": {
             "command": {
               "name": "%command_name%",
@@ -70,6 +81,12 @@
           }
         },
         "command": {
+          "title": "Help Menu",
+          "author": {
+            "name": "%client_username%",
+            "icon_url": "%client_avatar%"
+          },
+          "color": "NOT_QUITE_BLACK",
           "fields": {
             "command": {
               "name": "%command_name%",
@@ -97,13 +114,6 @@
         },
         "disabled": {
           "description": "You can find helpful information here.\n```diff\n- [COMMAND DISABLED]```"
-        }
-      },
-      "warnings": {
-        "command_does_not_exist": {
-          "title": "Command Does Not Exist",
-          "description": "%emoji_warning% Command **%command_name%** does not exist.",
-          "console": "Command does not exist"
         }
       }
     },
@@ -842,6 +852,9 @@
         },
         "no_embed_key": {
           "console": "Could not get embed builder: No key specified"
+        },
+        "no_component_key": {
+          "console": "Could not get component builder: No key specified"
         },
         "no_reply_arguments": {
           "console": "Could not reply: No message, key or placeholders specified"

@@ -27,15 +27,14 @@
 
 
 
-  "commands.help.success.base.title": "Help Menu",
-  "commands.help.success.base.author.name": "%client_username%",
-  "commands.help.success.base.author.icon_url": "%client_avatar%",
-  "commands.help.success.base.color": "NOT_QUITE_BLACK",
+  "commands.help.warnings.command_does_not_exist.title": "Command/Category Does Not Exist",
+  "commands.help.warnings.command_does_not_exist.description": "%emoji_warning% Command/Category **%command_name%** does not exist.",
+  "commands.help.warnings.command_does_not_exist.console": "Command/Category does not exist",
 
-  "commands.help.warnings.command_does_not_exist.title": "Command Does Not Exist",
-  "commands.help.warnings.command_does_not_exist.description": "%emoji_warning% Command **%command_name%** does not exist.",
-  "commands.help.warnings.command_does_not_exist.console": "Command does not exist",
-
+  "commands.help.success.no_args.title": "Help Menu",
+  "commands.help.success.no_args.author.name": "%client_username%",
+  "commands.help.success.no_args.author.icon_url": "%client_avatar%",
+  "commands.help.success.no_args.color": "NOT_QUITE_BLACK",
 
   "commands.help.success.no_args.fields.main.name": "%emoji_main% Main %emoji_main%",
   "commands.help.success.no_args.fields.main.content": "Main commands such as `/inventory`, or `/advancements`.",
@@ -53,12 +52,22 @@
   "commands.help.success.no_args.fields.information.content": "**All commands in a category** can be viewed with: **/help <category>**\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
+  "commands.help.success.category.title": "Help Menu",
+  "commands.help.success.category.author.name": "%client_username%",
+  "commands.help.success.category.author.icon_url": "%client_avatar%",
+  "commands.help.success.category.color": "NOT_QUITE_BLACK",
+
   "commands.help.success.category.fields.command.name": "%command_name%",
   "commands.help.success.category.fields.command.content": "%command_short_description%",
 
   "commands.help.success.category.fields.information.name": "\u200B",
   "commands.help.success.category.fields.information.content": "**More info about a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
+
+  "commands.help.success.command.title": "Help Menu",
+  "commands.help.success.command.author.name": "%client_username%",
+  "commands.help.success.command.author.icon_url": "%client_avatar%",
+  "commands.help.success.command.color": "NOT_QUITE_BLACK",
 
   "commands.help.success.command.fields.command.name": "%command_name%",
   "commands.help.success.command.fields.command.content": "%command_long_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%",
@@ -582,10 +591,14 @@
   "commands.enable.success.disabled.console": "Successfully enabled %type% %enable%",
 
 
+
   "api.messages.errors.no_command_arguments.console": "Could not get command builder: No name or short description specified",
   "api.messages.errors.no_command_key.console": "Could not get command builder: No key specified",
+
   "api.messages.errors.no_embed_arguments.console": "Could not get embed builder: No title or description specified",
   "api.messages.errors.no_embed_key.console": "Could not get embed builder: No key specified",
+
+  "api.messages.errors.no_component_key.console": "Could not get component builder: No key specified",
   "api.messages.errors.no_reply_arguments.console": "Could not reply: No message, key or placeholders specified",
 
 
