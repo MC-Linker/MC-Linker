@@ -1,6 +1,7 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { token, clientId } = require('./config.json');
+const { keys, getBuilder } = require('./api/messages');
 const fs = require('fs');
 
 /*
@@ -36,36 +37,42 @@ process.argv.slice(2).forEach(arg => {
 
 const guildId = '844156404477853716';
 
-const helpData = require('./src/help').data.toJSON();
-helpData.options[0].choices = [];
-const commands = [];
+
+const helpChoices = [];
+let helpJson;
 
 const disableChoices = [];
 let disableJson;
 
-const commandFolders = fs.readdirSync('./commands/');
-for (const folder of commandFolders) {
-	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
-	// @ts-ignore
-	helpData.options[0].choices.push({ name: folder.cap(), value: folder });
-	console.log(`Loaded category: ${folder}`);
+const commands = [];
 
-	for (const file of commandFiles) {
-		const command = require(`./commands/${folder}/${file}`);
+//Get Builders and push commands
+for(const command of Object.values(keys.data)) {
+	const builder = getBuilder(command);
 
-		if(command.name === 'disable') disableJson = command.data.toJSON();
-		else commands.push(command.data.toJSON());
+	if(command.name === 'disable') disableJson = builder.toJSON();
+	else if(command.name === 'help') helpJson = builder.toJSON();
+	else commands.push(builder.toJSON()); //Push all commands to `commands`
 
-		if(command.name !== 'enable' && command.name !== 'disable') disableChoices.push({ name: command.name.cap(), value: command.name });
-		helpData.options[0].choices.push({ name: command.name.cap(), value: command.name });
+	if(command.name !== 'enable' && command.name !== 'disable') disableChoices.push({ name: command.name.cap(), value: command.name });
+	helpChoices.push({ name: command.name.cap(), value: command.name });
 
-		console.log(`Loaded command: ${command.name}`);
-	}
+	console.log(`Loaded command: ${command.name}`);
 }
 
-disableJson.options[0].options[0].choices = disableChoices;
+//Push categories
+const commandFolders = fs.readdirSync('./commands/');
+for (const folder of commandFolders) {
+	helpChoices.push({ name: folder.cap(), value: folder });
+	console.log(`Loaded category: ${folder}`);
+}
+
+
+disableJson.options[0].options[0].choices = disableChoices; //Set command choices
+helpJson.options[0].choices = helpChoices; //Set command and category choices
 commands.push(disableJson);
-commands.push(helpData);
+commands.push(helpJson);
+
 
 const rest = new REST({ version: '9' }).setToken(token);
 
@@ -88,25 +95,23 @@ const rest = new REST({ version: '9' }).setToken(token);
 
 		if(deleteGuild) {
 			console.log('Started deleting application guild (/) commands.');
-			const resp = await rest.get(Routes.applicationCommands(clientId));
+			const resp = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
 
 			for (const command of resp) {
-				const deleteUrl = `${Routes.applicationCommands(clientId)}/${command.id}`;
-				await rest.delete(deleteUrl);
+				await rest.delete(`${Routes.applicationGuildCommands(clientId, guildId)}/${command.id}`);
 			}
 		}
 		if(deleteGlobal) {
 			console.log('Started deleting application global (/) commands.');
-			const resp = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
+			const resp = await rest.get(Routes.applicationCommands(clientId));
 
 			for (const command of resp) {
-				const deleteUrl = `${Routes.applicationGuildCommands(clientId, guildId)}/${command.id}`;
-				await rest.delete(deleteUrl);
+				await rest.delete(`${Routes.applicationCommands(clientId)}/${command.id}`);
 			}
 		}
 
-		console.log('Successfully reloaded application (/) commands.');
+		console.log('Successfully refreshed application (/) commands.');
 	} catch (err) {
-		console.log('Error while reloading application (/) commands.', err);
+		console.log('Could not refresh application (/) commands.', err);
 	}
 })();
