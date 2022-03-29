@@ -856,7 +856,7 @@
           "console": "Could not get command builder: No key specified"
         },
         "no_embed_arguments": {
-          "console": "Could not get embed builder: No title or description specified"
+          "console": "Could not get embed builder: No title specified"
         },
         "no_embed_key": {
           "console": "Could not get embed builder: No key specified"

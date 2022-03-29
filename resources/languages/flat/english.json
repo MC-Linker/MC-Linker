@@ -596,7 +596,7 @@
   "api.messages.errors.no_command_arguments.console": "Could not get command builder: No name or short description specified",
   "api.messages.errors.no_command_key.console": "Could not get command builder: No key specified",
 
-  "api.messages.errors.no_embed_arguments.console": "Could not get embed builder: No title or description specified",
+  "api.messages.errors.no_embed_arguments.console": "Could not get embed builder: No title specified",
   "api.messages.errors.no_embed_key.console": "Could not get embed builder: No key specified",
 
   "api.messages.errors.no_component_key.console": "Could not get component builder: No key specified",
