@@ -736,6 +736,16 @@
 
 
 
+  "data.help.name": "help",
+  "data.help.short_description": "Detailed Description of every command.",
+
+  "data.help.options.command.type": "STRING",
+  "data.help.options.command.name": "command",
+  "data.help.options.command.description": "Set the command or category of which you want to get infos.",
+  "data.help.options.command.required": false,
+
+
+
   "data.advancements.name": "advancements",
   "data.advancements.long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
   "data.advancements.short_description": "Look up your and other member's minecraft advancements.",
