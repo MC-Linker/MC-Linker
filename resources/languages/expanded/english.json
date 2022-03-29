@@ -1703,7 +1703,7 @@
     },
     "disable": {
       "name": "disable",
-      "long_description": "disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",
+      "long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in /help <command>.",
       "short_description": "Disable a specific command/stat/advancement.",
       "usage": "/disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",
       "example": "/disable commands txp **//** /disable stats picked_up **//** /disable advancements adventuring_time **//** /disable list commands",
