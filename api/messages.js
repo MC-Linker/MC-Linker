@@ -8,7 +8,7 @@ ph.fromAuthor = function(author) {
     if(!author instanceof Discord.User) return {};
 
     return {
-        "author_name": author.name,
+        "author_username": author.username,
         "author_tag": author.tag,
         "author_id": author.id,
         "author_avatar": author.displayAvatarURL({ format: 'png' }),
@@ -59,7 +59,7 @@ ph.fromClient = function(client) {
     if(!client instanceof Discord.Client) return {};
 
     return {
-        "client_name": client.user.name,
+        "client_username": client.user.username,
         "client_tag": client.user.tag,
         "client_id": client.user.id,
         "client_avatar": client.user.displayAvatarURL({ format: 'png' }),
@@ -75,125 +75,143 @@ ph.emojis = function() {
     return placeholders;
 }
 
-ph.from = function(author = null, guild = null, channel = null, interaction = null, client = null) {
+ph.fromStd = function(interaction) {
     return Object.assign(
-        this.fromAuthor(author),
-        this.fromGuild(guild),
+        this.fromAuthor(interaction.member.user ?? interaction.user),
+        this.fromGuild(interaction.guild),
         this.fromInteraction(interaction),
-        this.fromChannel(channel),
-        this.fromClient(client),
+        this.fromChannel(interaction.channel),
+        this.fromClient(interaction.client),
         this.emojis(),
-        { "timestamp_now": Builders.time(Date.now()) }
+        { "timestamp_now": Builders.time(Date.now()/1000) }
     );
 }
 
 
-function addPlaceholders(key, placeholders) {
+function addPh(key, ...placeholders) {
+    placeholders = Object.assign({}, ...placeholders);
+
     if(typeof key === 'string') {
-        return key.replace(/%\w+%/g, match => {
-            return placeholders[match.replaceAll('%', '')] ?? match;
-        });
+        return key.replace(/%\w+%/g, match =>
+            placeholders[match.replaceAll('%', '')] ?? match
+        );
     } else if(typeof key !== 'object') return;
 
     const entries = Object.entries(key);
     const replacedObject = {};
 
     for([k, v] of entries) {
-        if(typeof v !== 'string') continue;
-        replacedObject[k] = addPlaceholders(Object.entries(v), placeholders);
+        if(typeof v !== 'string' && typeof v !== 'object') continue;
+        replacedObject[k] = addPh(v, placeholders);
     }
 
     return replacedObject;
 }
 
+
 function reply(interaction, key, ...placeholders) {
     if(!interaction || !key || !placeholders) return console.error('Could not reply: No message, key or placeholders specified');
-    else if(!key.title || !key.description) return console.error('Could not reply: No title or description specified');
 
     placeholders = Object.assign(
-        ph.from(
-            interaction.member.user ?? interaction.user,
-            interaction.guild,
-            interaction.channel,
-            interaction,
-            interaction.client,
-        ),
+        ph.fromStd(interaction),
         ...placeholders
     );
 
-    //Add placeholders to all keyEntries recursively and assign them to key
-    const replacedKey = addPlaceholders(key, placeholders);
-
-    //Create embed from key
-    const embed = new Discord.MessageEmbed()
-        .setTitle(replacedKey.title)
-        .setDescription(replacedKey.description);
-
-    if(replacedKey.fields) {
-        for (const field of replacedKey.fields) {
-            if(!field.title || !field.content) continue;
-            embed.addField(field.title, field.content, field.inline);
-        }
-    }
-    if(replacedKey.author) embed.setAuthor({ iconURL: replacedKey.author.icon_url, name: replacedKey.author.name, url: replacedKey.author.url });
-    if(replacedKey.image) embed.setImage(replacedKey.image);
-    if(replacedKey.timestamp) embed.setTimestamp(replacedKey.timestamp);
-    if(replacedKey.footer) embed.setFooter({ text: replacedKey.footer.text, iconURL: replacedKey.footer.icon_url });
-    if(replacedKey.url) embed.setURL(replacedKey.url);
-
+    const embed = getEmbedBuilder(key, placeholders);
     const options = { embeds: [embed] };
 
-    if(replacedKey.components) {
-        const actionRow = new Discord.MessageActionRow();
-
-        //Loop over each select menu
-        for (const selectMenu of replacedKey.components.select_menus) {
-        if(!selectMenu.custom_id || !selectMenu.options) continue;
-
-            const menu = new Discord.MessageSelectMenu()
-                .setCustomId(selectMenu.id)
-                .setMinValues(selectMenu.min_values)
-                .setMaxValues(selectMenu.max_values)
-                .setPlaceholder(selectMenu.placeholder)
-                .setDisabled(selectMenu.disabled)
-                .addOptions(selectMenu.options);
-
-            actionRow.addComponents(menu);
-        }
-
-        //Loop over each button
-        for(const button of replacedKey.components.buttons) {
-            if(!button.label || !button.custom_id) continue;
-
-            const but = new Discord.MessageButton()
-                .setLabel(button.label)
-                .setURL(button.url)
-                .setDisabled(button.disabled)
-                .setEmoji(button.emoji)
-                .setCustomId(button.id)
-                .setStyle(button.style);
-
-            actionRow.addComponents(but);
-        }
-
+    if(key.components) {
+        const actionRow = getComponentBuilder(key, placeholders);
         options.components = [actionRow]; //Add components to message options
     }
 
     //Reply to interaction
-    if(replacedKey.console) console.log(replacedKey.console);
+    if(key.console) console.log(addPh(key.console, placeholders));
+    if(interaction instanceof Discord.Message || !interaction?.deferred) return interaction.reply(options);
+    else return interaction.editReply(options);
+}
+function replyOptions(interaction, options) {
     if(interaction instanceof Discord.Message || !interaction?.deferred) return interaction.reply(options);
     else return interaction.editReply(options);
 }
 
 
-function getBuilder(key) {
-    if(!key) return console.error('Could not get builder: No key specified');
-    if(!key.name || !key.short_description) return console.error('Could not get builder: No name or short description specified');
+function getComponentBuilder(key, ...placeholders) {
+    if(!key) return console.error('Could not get component builder: No key specified');
+    key = addPh(key, ...placeholders);
+
+    const actionRow = new Discord.MessageActionRow();
+
+    //Loop over each select menu
+    for (const selectMenu of Object.values(key.select_menus ?? {})) {
+        if(!selectMenu.custom_id || !selectMenu.options) continue;
+
+        const menu = new Discord.MessageSelectMenu()
+            .setCustomId(selectMenu.id)
+            .setMinValues(selectMenu.min_values)
+            .setMaxValues(selectMenu.max_values)
+            .setPlaceholder(selectMenu.placeholder)
+            .setDisabled(selectMenu.disabled)
+            .addOptions(selectMenu.options);
+
+        actionRow.addComponents(menu);
+    }
+
+    //Loop over each button
+    for(const button of Object.values(key.buttons ?? {})) {
+        if(!button.label || !button.custom_id) continue;
+
+        const but = new Discord.MessageButton()
+            .setLabel(button.label)
+            .setURL(button.url)
+            .setDisabled(button.disabled)
+            .setEmoji(button.emoji)
+            .setCustomId(button.id)
+            .setStyle(button.style);
+
+        actionRow.addComponents(but);
+    }
+
+    return actionRow;
+}
+
+
+function getEmbedBuilder(key, ...placeholders) {
+    if(!key) return console.error('Could not get embed builder: No key specified');
+    else if(!key.title) return console.error('Could not get embed builder: No title specified');
+
+    key = addPh(key, ...placeholders);
+
+    //Create embed from key
+    const embed = new Discord.MessageEmbed()
+        .setTitle(key.title);
+
+    if(key.fields) {
+        for (const field of Object.values(key.fields)) {
+            if(!field.name || !field.content) continue;
+            embed.addField(field.name, field.content, field.inline);
+        }
+    }
+
+    if(key.description) embed.setDescription(key.description);
+    if(key.author) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
+    if(key.image) embed.setImage(key.image);
+    if(key.timestamp) embed.setTimestamp(key.timestamp);
+    if(key.footer) embed.setFooter({ text: key.footer.text, iconURL: key.footer.icon_url });
+    if(key.url) embed.setURL(key.url);
+
+    return embed;
+}
+
+
+function getCommandBuilder(key) {
+    if(!key) return console.error('Could not get command builder: No key specified');
+    if(!key.name || !key.short_description) return console.error('Could not get command builder: No name or short description specified');
 
     const builder = new Builders.SlashCommandBuilder()
         .setName(key.name)
         .setDescription(key.short_description)
-        .setDefaultPermission(key.default_permission ?? false);
+        .setDefaultPermission(key.default_permission ?? true);
 
     if(!key.options) return builder;
 
@@ -318,25 +336,21 @@ function getArgs(interaction) {
     if(!(interaction instanceof Discord.CommandInteraction)) return [];
 
     const args = [];
-    let options = interaction.options.data;
+    let options = interaction.options;
 
     //Push Subcommand group
-    if(options[0].type === 'SUB_COMMAND_GROUP') {
-        args.push(options[0].name);
-        options = options[0].options;
-    }
+    if(options._group) args.push(options._group);
     //Push Subcommand
-    if(options[0].type === 'SUB_COMMAND') {
-        args.push(options[0].name);
-        options = options[0].options;
-    }
+    if(options._subcommand) args.push(options._subcommand);
 
-    options.forEach(option => {
-        if(option.type === 'USER') args.unshift(option.user.tag);
-        else args.push(option.value);
-    });
+    if(options._hoistedOptions[0]) {
+        options._hoistedOptions.forEach(option => {
+            if(option.type === 'USER') args.unshift(option.user.tag);
+            else args.push(option.value);
+        });
+    }
 
     return args;
 }
 
-module.exports = { keys, ph, reply, addPlaceholders, getBuilder, getArgs };
+module.exports = { keys, ph, reply, replyOptions, addPh, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getArgs };
