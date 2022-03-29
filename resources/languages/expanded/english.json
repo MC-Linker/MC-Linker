@@ -436,7 +436,7 @@
         },
         "no_color": {
           "title": "No Color Specified",
-          "description": "%emoji_warning% Please specify a color. All color ids can be found here:\nhttps://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords",
+          "description": "%emoji_warning% Please specify a color. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).",
           "console": "No color specified"
         },
         "no_text": {
@@ -1451,7 +1451,7 @@
     },
     "text": {
       "name": "text",
-      "long_description": "Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords)\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`",
+      "long_description": "Create images with text with different fonts and colors. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`",
       "short_description": "Create images with text with different fonts and colors.",
       "usage": "/text <Any Font> <color> <Your text>",
       "example": "/text minecraft red I love this bot!",

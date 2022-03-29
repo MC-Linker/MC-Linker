@@ -304,7 +304,7 @@
   "commands.text.warnings.no_font.console": "No font specified",
 
   "commands.text.warnings.no_color.title": "No Color Specified",
-  "commands.text.warnings.no_color.description": "%emoji_warning% Please specify a color. All color ids can be found here:\nhttps://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords",
+  "commands.text.warnings.no_color.description": "%emoji_warning% Please specify a color. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).",
   "commands.text.warnings.no_color.console": "No color specified",
 
   "commands.text.warnings.no_text.title": "No Text Specified",
@@ -1051,7 +1051,7 @@
 
 
   "data.text.name": "text",
-  "data.text.long_description": "Create images with text with different fonts and colors. All color ids can be found [here.](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords)\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`",
+  "data.text.long_description": "Create images with text with different fonts and colors. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`",
   "data.text.short_description": "Create images with text with different fonts and colors.",
   "data.text.usage": "/text <Any Font> <color> <Your text>",
   "data.text.example": "/text minecraft red I love this bot!",
