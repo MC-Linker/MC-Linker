@@ -188,18 +188,20 @@ function reply(interaction, key, ...placeholders) {
 
 function getBuilder(key) {
     if(!key) return console.error('Could not get builder: No key specified');
-    if(!key.name || !key.short_description) return console.error('Could not reply: No name or short description specified');
+    if(!key.name || !key.short_description) return console.error('Could not get builder: No name or short description specified');
 
     const builder = new Builders.SlashCommandBuilder()
         .setName(key.name)
-        .setDescription(key.description)
-        .setDefaultPermission(key.default_permission);
+        .setDescription(key.short_description)
+        .setDefaultPermission(key.default_permission ?? false);
 
     if(!key.options) return builder;
 
-    for (const option of key.options) {
+    for (const option of Object.values(key.options)) {
         addOption(builder, option);
     }
+
+    return builder;
 }
 
 function addOption(builder, key) {
@@ -212,8 +214,8 @@ function addOption(builder, key) {
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
-                .setRequired(key.required)
-                .setAutocomplete(key.autocomplete);
+                .setRequired(key.required ?? false)
+                .setAutocomplete(key.autocomplete ?? false);
 
             if(key.choices) optionBuilder.addChoices(key.choices);
 
@@ -224,7 +226,7 @@ function addOption(builder, key) {
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
-                .setRequired(key.required);
+                .setRequired(key.required ?? false);
 
             builder.addUserOption(optionBuilder);
             break;
@@ -233,8 +235,8 @@ function addOption(builder, key) {
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
-                .setRequired(key.required)
-                .setAutocomplete(key.autocomplete)
+                .setRequired(key.required ?? false)
+                .setAutocomplete(key.autocomplete ?? false)
                 .setMinValue(key.min_value)
                 .setMaxValue(key.max_value);
 
@@ -247,7 +249,7 @@ function addOption(builder, key) {
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
-                .setRequired(key.required);
+                .setRequired(key.required ?? false);
 
             builder.addBooleanOption(optionBuilder);
             break;
@@ -256,8 +258,8 @@ function addOption(builder, key) {
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
-                .setRequired(key.required)
-                .setAutocomplete(key.autocomplete)
+                .setRequired(key.required ?? false)
+                .setAutocomplete(key.autocomplete ?? false)
                 .setMinValue(key.min_value)
                 .setMaxValue(key.max_value);
 
@@ -270,7 +272,7 @@ function addOption(builder, key) {
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
-                .setRequired(key.required);
+                .setRequired(key.required ?? false);
 
             if(key.channel_types) optionBuilder.addChannelTypes(key.channel_types);
 
@@ -281,7 +283,7 @@ function addOption(builder, key) {
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
-                .setRequired(key.required);
+                .setRequired(key.required ?? false);
 
             builder.addRoleOption(optionBuilder);
             break;
@@ -290,7 +292,7 @@ function addOption(builder, key) {
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
-                .setRequired(key.required);
+                .setRequired(key.required ?? false);
 
             builder.addMentionableOption(optionBuilder);
             break;
@@ -300,8 +302,10 @@ function addOption(builder, key) {
             optionBuilder.setName(key.name)
                 .setDescription(key.description);
 
-            for (const option of key.options) {
-                addOption(builder, option);
+            if(key.options) {
+                for (const option of Object.values(key.options)) {
+                    addOption(optionBuilder, option);
+                }
             }
 
             builder.addSubcommand(optionBuilder);
