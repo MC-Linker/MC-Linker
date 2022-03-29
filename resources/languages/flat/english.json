@@ -848,7 +848,7 @@
 
 
 
-  "data.stats.name": "inventory",
+  "data.stats.name": "stats",
   "data.stats.long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
   "data.stats.short_description": "Look at your and other member's minecraft server stats.",
   "data.stats.usage": "/stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**>",

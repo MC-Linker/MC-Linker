@@ -1202,7 +1202,7 @@
       }
     },
     "stats": {
-      "name": "inventory",
+      "name": "stats",
       "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
       "short_description": "Look at your and other member's minecraft server stats.",
       "usage": "/stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**>",
