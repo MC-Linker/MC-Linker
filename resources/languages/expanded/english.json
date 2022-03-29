@@ -89,7 +89,7 @@
             }
           }
         },
-        "buttons": {
+        "disable_button": {
           "components": {
             "buttons": {
               "disable": {
@@ -97,7 +97,13 @@
                 "id": "disable_%command_name%",
                 "label": "Disable this command!",
                 "emoji": "%emoji_error%"
-              },
+              }
+            }
+          }
+        },
+        "enable_button": {
+          "components": {
+            "buttons": {
               "enable": {
                 "style": "SUCCESS",
                 "id": "enable_%command_name%",

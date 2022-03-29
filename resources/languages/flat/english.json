@@ -74,15 +74,15 @@
   "commands.help.success.command.fields.command.content": "%command_long_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%",
 
 
-  "commands.help.success.buttons.components.buttons.disable.style": "DANGER",
-  "commands.help.success.buttons.components.buttons.disable.id": "disable_%command_name%",
-  "commands.help.success.buttons.components.buttons.disable.label": "Disable this command!",
-  "commands.help.success.buttons.components.buttons.disable.emoji": "%emoji_error%",
+  "commands.help.success.disable_button.components.buttons.disable.style": "DANGER",
+  "commands.help.success.disable_button.components.buttons.disable.id": "disable_%command_name%",
+  "commands.help.success.disable_button.components.buttons.disable.label": "Disable this command!",
+  "commands.help.success.disable_button.components.buttons.disable.emoji": "%emoji_error%",
 
-  "commands.help.success.buttons.components.buttons.enable.style": "SUCCESS",
-  "commands.help.success.buttons.components.buttons.enable.id": "enable_%command_name%",
-  "commands.help.success.buttons.components.buttons.enable.label": "Enable this command!",
-  "commands.help.success.buttons.components.buttons.enable.emoji": "%emoji_success%",
+  "commands.help.success.enable_button.components.buttons.enable.style": "SUCCESS",
+  "commands.help.success.enable_button.components.buttons.enable.id": "enable_%command_name%",
+  "commands.help.success.enable_button.components.buttons.enable.label": "Enable this command!",
+  "commands.help.success.enable_button.components.buttons.enable.emoji": "%emoji_success%",
 
 
   "commands.help.success.disabled.description": "You can find helpful information here.\n```diff\n- [COMMAND DISABLED]```",
