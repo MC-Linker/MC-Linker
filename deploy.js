@@ -1,7 +1,7 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { token, clientId } = require('./config.json');
-const { keys, getBuilder } = require('./api/messages');
+const { keys, getCommandBuilder} = require('./api/messages');
 const fs = require('fs');
 
 /*
@@ -48,14 +48,14 @@ const commands = [];
 
 //Get Builders and push commands
 for(const command of Object.values(keys.data)) {
-	const builder = getBuilder(command);
+	const builder = getCommandBuilder(command);
 
 	if(command.name === 'disable') disableJson = builder.toJSON();
 	else if(command.name === 'help') helpJson = builder.toJSON();
 	else commands.push(builder.toJSON()); //Push all commands to `commands`
 
-	if(command.name !== 'enable' && command.name !== 'disable') disableChoices.push({ name: command.name.cap(), value: command.name });
-	helpChoices.push({ name: command.name.cap(), value: command.name });
+	if(command.name !== 'enable' && command.name !== 'disable' && command.name !== 'help') disableChoices.push({ name: command.name.cap(), value: command.name });
+	if(command.name !== 'help') helpChoices.push({ name: command.name.cap(), value: command.name });
 
 	console.log(`Loaded command: ${command.name}`);
 }
