@@ -1168,7 +1168,7 @@
 
 
 
-  "data.disable.name": "connect",
+  "data.disable.name": "disable",
   "data.disable.long_description": "disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",
   "data.disable.short_description": "Disable a specific command/stat/advancement.",
   "data.disable.usage": "/disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",

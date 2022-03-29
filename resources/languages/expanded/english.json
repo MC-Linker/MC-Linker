@@ -1652,7 +1652,7 @@
       }
     },
     "disable": {
-      "name": "connect",
+      "name": "disable",
       "long_description": "disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",
       "short_description": "Disable a specific command/stat/advancement.",
       "usage": "/disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",
