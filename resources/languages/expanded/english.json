@@ -534,7 +534,7 @@
                   },
                   "commands": {
                     "label": "Command Messages",
-                    "description": "Send a message every time a player executes a command.",
+                    "description": "Send a message every time a command is executed.",
                     "value": "5"
                   },
                   "start": {

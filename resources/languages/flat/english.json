@@ -375,7 +375,7 @@
   "commands.chatchannel.success.choose.components.select_menus.log.options.death.value": "4",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.commands.label": "Command Messages",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.commands.description": "Send a message every time a player executes a command.",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.commands.description": "Send a message every time a command is executed.",
   "commands.chatchannel.success.choose.components.select_menus.log.options.commands.value": "5",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.start.label": "Startup Messages",
