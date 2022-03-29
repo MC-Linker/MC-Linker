@@ -829,6 +829,25 @@
     }
   },
   "api": {
+    "messages": {
+      "errors": {
+        "no_command_arguments": {
+          "console": "Could not get command builder: No name or short description specified"
+        },
+        "no_command_key": {
+          "console": "Could not get command builder: No key specified"
+        },
+        "no_embed_arguments": {
+          "console": "Could not get embed builder: No title or description specified"
+        },
+        "no_embed_key": {
+          "console": "Could not get embed builder: No key specified"
+        },
+        "no_reply_arguments": {
+          "console": "Could not reply: No message, key or placeholders specified"
+        }
+      }
+    },
     "settings": {
       "errors": {
         "could_not_write_file_folder": {

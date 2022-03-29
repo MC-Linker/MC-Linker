@@ -582,6 +582,13 @@
   "commands.enable.success.disabled.console": "Successfully enabled %type% %enable%",
 
 
+  "api.messages.errors.no_command_arguments.console": "Could not get command builder: No name or short description specified",
+  "api.messages.errors.no_command_key.console": "Could not get command builder: No key specified",
+  "api.messages.errors.no_embed_arguments.console": "Could not get embed builder: No title or description specified",
+  "api.messages.errors.no_embed_key.console": "Could not get embed builder: No key specified",
+  "api.messages.errors.no_reply_arguments.console": "Could not reply: No message, key or placeholders specified",
+
+
 
   "api.settings.errors.could_not_write_file_folder.console": "Could not create disable folder or file %error%",
   "api.settings.errors.could_not_read_file.console": "Could not read disable file %error%",
