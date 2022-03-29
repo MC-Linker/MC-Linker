@@ -61,7 +61,7 @@
           "fields": {
             "command": {
               "name": "%command_name%",
-              "content": "%command_description%"
+              "content": "%command_short_description%"
             },
             "information": {
               "name": "​",
@@ -73,11 +73,7 @@
           "fields": {
             "command": {
               "name": "%command_name%",
-              "content": "%command_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%"
-            },
-            "aliases": {
-              "name": "\n**ALIASES**",
-              "content": "%command_aliases%"
+              "content": "%command_long_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%"
             }
           }
         },

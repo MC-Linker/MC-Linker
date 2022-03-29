@@ -54,17 +54,14 @@
 
 
   "commands.help.success.category.fields.command.name": "%command_name%",
-  "commands.help.success.category.fields.command.content": "%command_description%",
+  "commands.help.success.category.fields.command.content": "%command_short_description%",
 
   "commands.help.success.category.fields.information.name": "\u200B",
   "commands.help.success.category.fields.information.content": "**More info about a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
   "commands.help.success.command.fields.command.name": "%command_name%",
-  "commands.help.success.command.fields.command.content": "%command_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%",
-
-  "commands.help.success.command.fields.aliases.name": "\n**ALIASES**",
-  "commands.help.success.command.fields.aliases.content": "%command_aliases%",
+  "commands.help.success.command.fields.command.content": "%command_long_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%",
 
 
   "commands.help.success.buttons.components.buttons.disable.style": "DANGER",
