@@ -144,30 +144,33 @@ function getComponentBuilder(key, ...placeholders) {
 
     //Loop over each select menu
     for (const selectMenu of Object.values(key.select_menus ?? {})) {
-        if(!selectMenu.custom_id || !selectMenu.options) continue;
+        if(!selectMenu.id || !selectMenu.options) continue;
 
         const menu = new Discord.MessageSelectMenu()
             .setCustomId(selectMenu.id)
-            .setMinValues(selectMenu.min_values)
-            .setMaxValues(selectMenu.max_values)
-            .setPlaceholder(selectMenu.placeholder)
-            .setDisabled(selectMenu.disabled)
             .addOptions(selectMenu.options);
+
+        if(selectMenu.min_values) menu.setMinValues(selectMenu.min_values);
+        if(selectMenu.max_values) menu.setMaxValues(selectMenu.max_values);
+        if(selectMenu.disabled) menu.setDisabled(selectMenu.min_values);
+        if(selectMenu.placeholder) menu.setPlaceholder(selectMenu.placeholder);
+
 
         actionRow.addComponents(menu);
     }
 
     //Loop over each button
     for(const button of Object.values(key.buttons ?? {})) {
-        if(!button.label || !button.custom_id) continue;
+        if(!button.label || !button.id || !button.style) continue;
 
         const but = new Discord.MessageButton()
             .setLabel(button.label)
-            .setURL(button.url)
-            .setDisabled(button.disabled)
-            .setEmoji(button.emoji)
             .setCustomId(button.id)
             .setStyle(button.style);
+
+        if(button.url) but.setURL(button.url);
+        if(button.disabled) but.setDisabled(button.disabled);
+        if(button.emoji) but.setEmoji(button.emoji);
 
         actionRow.addComponents(but);
     }

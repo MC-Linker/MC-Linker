@@ -16,6 +16,7 @@ const enableButton = require('./src/enableButton');
 const settings = require('./api/settings');
 const messages = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
+const { addPh } = require('./api/messages');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
 //Handle rejected promises
@@ -85,10 +86,15 @@ client.on('messageCreate', async message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    //Add own response handler
+    //Add own response handlers
     message.respond = (key, ...placeholders) => {
         return messages.reply(message, key, ...placeholders);
     }
+    message.reply = (options) => {
+        return messages.replyOptions(message, options);
+    }
+
+    console.log(addPh(messages.keys.commands.executed.console, messages.ph.fromStd(message)));
 
     if(commandName === 'help') helpCommand.execute(message, args);
     else {
@@ -130,13 +136,18 @@ client.on('interactionCreate', async interaction => {
 
         const args = messages.getArgs(interaction);
 
-        //Add own response handler
+        //Add own response handlers
         interaction.respond = (key, ...placeholders) => {
             return messages.reply(interaction, key, ...placeholders);
         }
+        interaction.reply = (options) => {
+            return messages.replyOptions(interaction, options);
+        }
 
-        if(interaction.commandName !== 'message') await interaction.deferReply();
-        else await interaction.deferReply({ ephemeral: true });
+        if(interaction.commandName === 'message') await interaction.deferReply({ ephemeral: true });
+        else await interaction.deferReply();
+
+        console.log(addPh(messages.keys.commands.executed.console,  messages.ph.fromStd(interaction)));
 
         if (interaction.commandName === 'help') {
             await helpCommand.execute(interaction, args);
@@ -166,6 +177,8 @@ client.on('interactionCreate', async interaction => {
         command.autocomplete(interaction);
 
     } else if (interaction.isButton()) {
+        console.log(addPh(messages.keys.buttons.clicked.console, { "button_id": interaction.customId }, messages.ph.fromStd(interaction)));
+
         await interaction.deferReply({ ephemeral: true });
         if (interaction.customId.startsWith('disable')) {
             await disableButton.execute(interaction);
