@@ -1,7 +1,7 @@
 const fs = require('fs');
-const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { discordLink } = require('../config.json');
+const { keys, getEmbedBuilder, ph, addPh, getComponentBuilder} = require('../api/messages');
 const settings = require('../api/settings');
 
 
@@ -15,71 +15,56 @@ module.exports = {
                 .setRequired(false)
         ),
     async execute(message, args) {
-        const baseEmbed = new Discord.MessageEmbed()
-            .setTitle('Help Menu')
-            .setAuthor({ name: message.client.user.username, iconURL: message.client.user.displayAvatarURL({ format: 'png' }) })
-            .setColor('NOT_QUITE_BLACK');
-
         if(!args[0]) {
-            console.log(`${message.member.user.tag} executed /help in ${message.guild.name}`);
-
-            const helpEmbed = baseEmbed.addField(':label: Main :label:', 'Main commands such as `/inventory`, or `/advancements`.')
-                .addField(':shield: Moderation :shield:', 'Moderation commands such as `/ban` or `/unban`.')
-                .addField(':point_right: Other :point_left:', 'Other commands such as `/message` or `/text`.')
-                .addField(':gear: Settings :gear:', 'Setup and settings such as `/connect` or `/disable`')
-                .addField('\u200B', `**All commands in a category** can be viewed with: **/help <category>**\n**Still need help?** => [Support Discord Server](${discordLink})`);
-
-            message.reply({ embeds: [helpEmbed], allowedMentions: { repliedUser: false } });
+            message.respond(keys.commands.help.success.no_args, { "invite_link": discordLink });
         } else {
             const commandName = args[0].toLowerCase();
 
-            let command = message.client.commands.get(commandName) ?? message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+            let command = keys.data[commandName];
             if (!command) {
                 fs.readdir(`./commands/${commandName}`, (err, commands) => {
                     if(err) {
-                        console.log(`${message.member.user.tag} executed non-existent help command/category ${commandName} in ${message.guild.id}`);
-                        message.reply(`:warning: That command/category [**${commandName}**] doesnt exist.`);
-                        return;
+                        message.respond(keys.commands.help.warnings.command_does_not_exist, { "command_name": commandName });
                     }
-                    console.log(`${message.member.user.tag} executed /help ${commandName} in ${message.guild.name}`);
 
                     commands = commands.filter(command => command.endsWith('.js'));
-                    const helpEmbed = baseEmbed;
+                    const helpEmbed = getEmbedBuilder(keys.commands.help.success.base, ph.fromStd(message));
                     commands.forEach(commandFile => {
                         commandFile = commandFile.split('.').shift();
-                        command = message.client.commands.get(commandFile) ?? message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandFile));
-                        helpEmbed.addField(command.name.toUpperCase(), command.description);
+                        command = keys.data[commandFile];
+
+                        helpEmbed.addField(
+                            addPh(keys.commands.help.success.category.fields.command.name, { "command_name": command.name }),
+                            addPh(keys.commands.help.success.category.fields.command.content, { "command_short_description": command.short_description })
+                        );
                     });
-                    helpEmbed.addField('\u200B', `**More info to a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](${discordLink})`);
+
+                    helpEmbed.addField(
+                        keys.commands.help.success.category.fields.information.name,
+                        addPh(keys.commands.help.success.category.fields.information.content, { "discord_link": discordLink })
+                    );
                     message.reply({ embeds: [helpEmbed] });
                 });
             } else {
-                console.log(`${message.member.user.tag} executed /help ${commandName} in ${message.guild.name}`);
-
-                const helpEmbed = baseEmbed.addField(command.name.toUpperCase(), `${command.description} \n\n**USAGE**: \n${command.usage}\n\n**EXAMPLE**: \n${command.example}`);
-                if(command.aliases[0]) helpEmbed.addField('\n**ALIASES**', command.aliases.join(', '));
-
-                const disableRow = new Discord.MessageActionRow()
-                    .addComponents(
-                        new Discord.MessageButton()
-                            .setStyle('DANGER')
-                            .setCustomId('disable_' + command.name)
-                            .setLabel('Disable this command!')
-                            .setEmoji('<:Error:849215023264169985>'),
-                    );
-                const enableRow = new Discord.MessageActionRow()
-                    .addComponents(
-                        new Discord.MessageButton()
-                            .setStyle('SUCCESS')
-                            .setCustomId('enable_' + command.name)
-                            .setLabel('Enable this command!')
-                            .setEmoji('<:Checkmark:849224496232660992>'),
-                    );
+                const helpEmbed = getEmbedBuilder(
+                    keys.commands.help.success.command,
+                    ph.fromStd(message),
+                    { "command_name": command.name.cap(), "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example }
+                );
 
                 const disabled = await settings.getDisabled(message.guildId, 'commands');
-                if (!disabled.find(disable => disable === command.name)) message.reply({ embeds: [helpEmbed], components: [disableRow], allowedMentions: { repliedUser: false } });
-                else if (disabled) {
-                    helpEmbed.setDescription('You can find helpful information here. \n ```diff\n- [COMMAND DISABLED]```');
+                if (!disabled.find(disable => disable === command.name)) {
+                    const disableRow = getComponentBuilder(
+                        keys.commands.help.success.disable_button.components,
+                        { "command_name": command.name }, ph.fromStd(message)
+                    );sss
+                    message.reply({ embeds: [helpEmbed], components: [disableRow] });
+                } else if (disabled) {
+                    const enableRow = getComponentBuilder(
+                        keys.commands.help.success.enable_button.components,
+                        { "command_name": command.name }, ph.fromStd(message)
+                    );
+                    helpEmbed.setDescription(keys.commands.help.success.disabled.description);
                     message.reply({ embeds: [helpEmbed], components: [enableRow] });
                 }
             }
