@@ -749,9 +749,9 @@
   "buttons.enable.warnings.no_permission.description": "%emoji_no_entry% This button can only be used by admins.",
   "buttons.enable.warnings.no_permission.console": "No permission",
 
-  "buttons.enable.errors.already_enabled.title": "Could Not Enable",
-  "buttons.enable.errors.already_enabled.description": "%emoji_error% Could not enable command **%command_name%**.",
-  "buttons.enable.errors.already_enabled.console": "Could not enable command %command_name%",
+  "buttons.enable.errors.already_enabled.title": "Already Enabled",
+  "buttons.enable.errors.already_enabled.description": "%emoji_warning% %type% **%enable%** is already enabled.",
+  "buttons.enable.errors.already_enabled.console": "Could not enable %enable%",
 
   "buttons.enable.success.response.title": "Enabled Command",
   "buttons.enable.success.response.description": "%emoji_success% Successfully enabled command **%command_name%**.",
