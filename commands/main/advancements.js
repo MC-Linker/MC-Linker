@@ -4,6 +4,7 @@ const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
 const { time } = require('@discordjs/builders');
+const { keys, ph, addPh, getEmbedBuilder} = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
@@ -19,7 +20,7 @@ async function autocomplete(interaction) {
         })
     });
 
-    interaction.respond(respondArray).catch(err => console.log(`Could not respond to autocomplete ${interaction.commandName}`, err));
+    interaction.respond(respondArray).catch(err => console.log(keys.commands.advancements.errors.could_not_autocomplete, err));
 }
 
 async function execute(message, args) {
@@ -29,23 +30,21 @@ async function execute(message, args) {
     let advancement = args.join(' ')?.toLowerCase();
 
     if(!username) {
-        console.log(`${message.member.user.tag} executed /advancements without username in ${message.guild.name}`);
-        message.reply(':warning: Please ping a user or specify a minecraft-username.');
+        message.respond(keys.commands.advancements.warnings.no_username);
         return;
     } else if(!category) {
-        console.log(`${message.member.user.tag} executed /advancements without tab in ${message.guild.name}`);
-        message.reply(':warning: Please specify the advancement category.\n(`story`, `nether`, `end`, `adventure`, `husbandry`)');
+        message.respond(keys.commands.advancements.warnings.no_category);
         return;
     } else if(!advancement) {
-        console.log(`${message.member.user.tag} executed /advancements without advancement in ${message.guild.name}`);
-        message.reply(':warning: Please specify the advancement name or id.');
+        message.respond(keys.commands.advancements.warnings.no_advancement);
         return;
     }
 
+    //Define argument placeholders
+    let placeholders = { "advancement_category": category, "advancement_name": advancement, "username": username };
+
     const matchingAdvancement = await utils.searchAdvancements(advancement, category, true, 1);
     advancement = matchingAdvancement.shift()?.value ?? advancement;
-
-    console.log(`${message.member.user.tag} executed /advancements ${username} ${category} ${advancement} in ${message.guild.name}`);
 
     //Get Advancement Title and Description from lang file
     let advancementTitle;
@@ -54,23 +53,20 @@ async function execute(message, args) {
         const langData = JSON.parse(await fs.promises.readFile('./resources/languages/test.json', 'utf-8'));
         advancementTitle = langData[`advancements.${category}.${advancement}.title`];
         advancementDesc = langData[`advancements.${category}.${advancement}.description`];
-        if(!advancementTitle) {
-            advancementDesc = 'No description available...'
-            advancementTitle = `${category} ${advancement}`;
-        }
-    } catch(err) {
-        advancementDesc = 'No description available...'
-        advancementTitle = `${category} ${advancement}`;
-    }
+    } catch(ignored) {}
+
+    if(!advancementTitle) advancementTitle = addPh(keys.commands.advancements.no_title_available, placeholders);
+    else if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
+
+    //Add amTitle and desc to placeholders
+    placeholders = Object.assign(placeholders, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
 
     if(await settings.isDisabled(message.guildId, 'advancements', category)) {
-        console.log(`Advancement category [${category}] disabled.`);
-        message.reply(`:no_entry: Advancement category [**${category}**] disabled!`);
+        message.respond(keys.commands.advancements.warnings.advancement_disabled, placeholders);
         return;
     }
     if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
-        console.log(`Advancement [${advancement}] disabled.`);
-        message.reply(`:no_entry: Advancement [**${advancementTitle}**] disabled!`);
+        message.respond(keys.commands.advancements.warnings.category_disabled, placeholders);
         return;
     }
 
@@ -85,8 +81,7 @@ async function execute(message, args) {
 
     fs.readFile(`./userdata/advancements/${uuidv4}.json`, 'utf8', async (err, advancementJson) => {
         if(err) {
-            message.reply('<:Error:849215023264169985> Could not read advancement file. Please try again.');
-            console.log('Error reading advancement file from disk: ', err);
+            message.respond(keys.commands.advancements.errors.could_not_read_file, { "error": err });
             return;
         }
 
@@ -96,12 +91,10 @@ async function execute(message, args) {
         let equals = '';
         for(const {} of letters) equals += '=';
 
-        const baseEmbed = new Discord.MessageEmbed()
-            .setColor('LUMINOUS_VIVID_PINK')
-            .setTitle(username)
-            .addField(`${equals}\n${advancementTitle}`, `**${equals}**`)
-            .setDescription(advancementDesc)
-            .setImage('https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png');
+        const baseEmbed = getEmbedBuilder(
+            keys.commands.advancements.success.base,
+            ph.fromStd(message), placeholders, { equals }
+        );
 
         try {
             let amEmbed;
@@ -113,39 +106,49 @@ async function execute(message, args) {
                 const date = advancementData[filteredAdvancement]['criteria'][criteria];
                 const done = advancementData[filteredAdvancement]['done'];
 
-                amEmbed = baseEmbed.addField('Requirement', criteria)
-                    .addField('unlocked on', time(new Date(date)));
+                amEmbed = baseEmbed.addField(
+                    keys.commands.advancements.success.final.fields.requirement.title,
+                    addPh(keys.commands.advancements.success.final.fields.requirement.content, { "advancement_requirement": criteria.split(':').pop() })
+                ).addField(
+                    keys.commands.advancements.success.final.fields.unlocked.title,
+                    addPh(keys.commands.advancements.success.final.fields.unlocked.content, { "advancement_timestamp": time(new Date(date)) })
+                );
 
-                if(!done) amEmbed.setFooter({ text: 'Advancement not unlocked/completed.', iconURL: 'https://cdn.discordapp.com/emojis/849215023264169985.png' });
-                else amEmbed.setFooter({ text: 'Advancement completed/unlocked.', iconURL: 'https://cdn.discordapp.com/emojis/849224496232660992.png' });
+                if(!done) amEmbed.setFooter({ text: keys.commands.advancements.success.not_done.footer.text, iconURL: keys.commands.advancements.success.not_done.footer.icon_url });
+                else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
             } else {
                 const allAdvancements = Object.keys(advancementData);
                 const filteredAdvancement = allAdvancements.find(key => key.includes(category) && key.endsWith(advancement));
 
-                const keys = Object.keys(advancementData[filteredAdvancement]['criteria']);
+                const criteriaKeys = Object.keys(advancementData[filteredAdvancement]['criteria']);
                 const done = advancementData[filteredAdvancement]['done'];
 
                 let counter = 0;
                 let amString = '';
-                for (const key of keys) {
-                    const date = advancementData[filteredAdvancement]['criteria'][key];
-                    amString += `\n**Requirement**\n${key.split(':').pop()}\n**Completed on**\n${time(new Date(date))}\n`;
+                for (const criteria of criteriaKeys) {
+                    const date = advancementData[filteredAdvancement]['criteria'][criteria];
+                    amString +=
+                        `\n${keys.commands.advancements.success.final.fields.requirement.title}
+                        ${addPh(keys.commands.advancements.success.final.fields.requirement.content, { "advancement_requirement": criteria.split(':').pop() })}
+                        
+                        ${keys.commands.advancements.success.final.fields.unlocked.title}
+                        ${addPh(keys.commands.advancements.success.final.fields.unlocked.title, { "advancement_timestamp": time(new Date(date)) })}`;
 
-                    if(counter === 1 || keys.length === 1) {
+                    //Add one field for every 2 criteria
+                    if(counter === 1 || criteriaKeys.length === 1) {
                         amEmbed = baseEmbed.addField('\u200b', amString, true);
                         amString = ''; counter = 0;
                     } else counter++;
                 }
 
-                if(!done) amEmbed.setFooter({ text: 'Advancement not unlocked/completed.', iconURL: 'https://cdn.discordapp.com/emojis/849215023264169985.png' });
-                else amEmbed.setFooter({ text: 'Advancement completed/unlocked.', iconURL: 'https://cdn.discordapp.com/emojis/849224496232660992.png' });
+                if(!done) amEmbed.setFooter({ text: keys.commands.advancements.success.not_done.footer.text, iconURL: keys.commands.advancements.success.not_done.footer.icon_url });
+                else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
             }
 
-            console.log(`Sent advancement [${advancementTitle}] of ${username}`);
+            console.log(addPh(keys.commands.advancements.success.final.console, placeholders));
             message.reply({ embeds: [amEmbed] });
         } catch (err) {
-            console.log('Advancement not completed');
-            message.reply(`:warning: Advancement [**${advancementTitle}**] not completed/unlocked or misspelled!`);
+            message.respond(keys.commands.advancements.warnings.not_completed, placeholders);
         }
     })
 }
