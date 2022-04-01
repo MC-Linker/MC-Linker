@@ -50,10 +50,7 @@ async function execute(message, args) {
     if (type === 'list') {
         const toList = args?.join(' ').toLowerCase();
 
-        if(toList === 'command' || toList === 'cmd' || toList === 'commands' || toList === 'cmds') type = 'commands';
-        else if(toList === 'advancements' || message.client.commands.get('advancements').aliases.includes(toList)) type = 'advancements';
-        else if(toList === 'stats' || message.client.commands.get('stats').aliases.includes(toList)) type = 'stats';
-        else {
+        if(toList !== 'stats' || toList !== 'advancements' || toList !== 'commands') {
             console.log(`${message.member.user.tag} executed /disable list with wrong type in ${message.guild.name}`);
             message.reply(':warning: You can only list `commands`, `stats` or `advancements`.');
             return;
@@ -92,10 +89,7 @@ async function execute(message, args) {
             return;
         }
 
-        if (type === 'command' || type === 'cmd' || type === 'commands' || type === 'cmds') type = 'commands';
-        else if (type === 'advancements' || message.client.commands.get('advancements').aliases.includes(type)) type = 'advancements';
-        else if (type === 'stats' || message.client.commands.get('stats').aliases.includes(type)) type = 'stats';
-        else {
+        if(toDisable !== 'stats' || toDisable !== 'advancements' || toDisable !== 'commands') {
             console.log(`${message.member.user.tag} executed /disable with wrong type in ${message.guild.name}`);
             message.reply(':warning: You can only disable `commands`, `stats` or `advancements`.');
             return;
@@ -118,7 +112,7 @@ async function execute(message, args) {
 
         let formattedToDisable;
         if(type === 'commands') {
-            const command = message.client.commands.get(toDisable) ?? message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(toDisable));
+            const command = message.client.commands.get(toDisable);
 
             if(!command) {
                 console.log(`Command [${toDisable}] doesn't exist.`);

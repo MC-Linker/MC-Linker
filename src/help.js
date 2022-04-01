@@ -46,7 +46,7 @@ async function execute(message, args) {
                 const disableRow = getComponentBuilder(
                     keys.commands.help.success.disable_button.components,
                     { "command_name": command.name }, ph.fromStd(message)
-                );sss
+                );
                 message.reply({ embeds: [helpEmbed], components: [disableRow] });
             } else if (disabled) {
                 const enableRow = getComponentBuilder(

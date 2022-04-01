@@ -50,10 +50,7 @@ async function execute(message, args) {
 
     console.log(`${message.member.user.tag} executed /enable ${type} ${toEnable} in ${message.guild.name}`);
 
-    if (type === 'command' || type === 'cmd' || type === 'commands' || type === 'cmds') type = 'commands';
-    else if (type === 'advancements' || message.client.commands.get('advancements').aliases.includes(type)) type = 'advancements';
-    else if (type === 'stats' || message.client.commands.get('stats').aliases.includes(type)) type = 'stats';
-    else {
+    if(toList !== 'stats' || toList !== 'advancements' || toList !== 'commands') {
         console.log(`${message.member.user.tag} executed /enable with wrong type in ${message.guild.name}`);
         message.reply(':warning: You can only enable `commands`, `stats` or `advancement`.');
         return;
@@ -61,7 +58,7 @@ async function execute(message, args) {
 
     let formattedToEnable;
     if(type === 'commands') {
-        const command = message.client.commands.get(toEnable) ?? message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(toEnable));
+        const command = message.client.commands.get(toEnable);
 
         if(!command) {
             console.log(`Command [${toEnable}] doesn't exist.`);

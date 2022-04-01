@@ -98,7 +98,7 @@ client.on('messageCreate', async message => {
 
     if(commandName === 'help') helpCommand.execute(message, args);
     else {
-        const command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+        const command = client.commands.get(commandName);
         if (!command) console.log(`${message.member.user.tag} executed non-existent command ${commandName} in ${message.guild.name}`);
         else {
             if(await settings.isDisabled(message.guildId, 'commands', command.name)) {
