@@ -1,43 +1,31 @@
 const Discord = require('discord.js');
 const settings = require('../api/settings');
+const { keys, ph, getEmbedBuilder, getComponentBuilder} = require('../api/messages');
 
 async function execute(interaction) {
-    const baseEmbed = new Discord.MessageEmbed()
-        .setTitle('Help Menu')
-        .setAuthor({ name: interaction.client.user.username, iconURL: interaction.client.user.displayAvatarURL({ format: 'png' }) })
-        .setColor('NOT_QUITE_BLACK');
-
     if (interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-        const command = interaction.customId.split('_').pop();
-        console.log(`${interaction.member.user.tag} clicked disableButton: ${command} in ${interaction.guild.name}`);
+        const commandName = interaction.customId.split('_').pop();
 
         //Disable command
-        const disabled = await settings.disable(interaction.guildId, 'commands', command);
+        const disabled = await settings.disable(interaction.guildId, 'commands', commandName);
         if(disabled) {
-            console.log(`Successfully disabled command ${command}`);
-            interaction.editReply(`<:Checkmark:849224496232660992> Disabling of command [**${command}**] successful.`);
+            interaction.respond(keys.buttons.disable.success.response, { "command_name": commandName });
         } else {
-            console.log(`Could not disable command ${command}`);
-            interaction.editReply(`<:Error:849215023264169985> Couldn't disable command [**${command}**]!`);
+            interaction.respond(keys.buttons.disable.errors.could_not_disable, { "command_name": commandName });
         }
 
-        const enableRow = new Discord.MessageActionRow()
-            .addComponents(
-                new Discord.MessageButton()
-                    .setStyle('SUCCESS')
-                    .setCustomId(`enable_${command}`)
-                    .setLabel('Enable this command!')
-                    .setEmoji('<:Checkmark:849224496232660992>'),
-            );
+        const command = keys.data[commandName];
 
-        const commandObject = interaction.client.commands.get(command);
-        const helpEmbed = baseEmbed.addField(commandObject.name.toUpperCase(), `${commandObject.description}\n\n**USAGE**: ${commandObject.usage}\n\n**EXAMPLE**: ${commandObject.example}\n\n**ALIASES**: \n${commandObject.aliases.join(', ')}`)
-            .setDescription('```diff\n- [COMMAND DISABLED]```')
-            .setColor('DARK_RED');
+        const enableRow = getComponentBuilder(keys.commands.help.success.enable_button);
+        const helpEmbed = getEmbedBuilder(
+            keys.commands.help.success.command,
+            ph.fromStd(interaction),
+            { "command_name": command.name.cap(), "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example }
+        );
+
         interaction.message.edit({ embeds: [helpEmbed], components: [enableRow] });
     } else {
-        console.log(`Clicker of ${interaction.customId} doesnt have admin.`);
-        interaction.editReply(':no_entry: You must be an administrator to use that button!');
+        interaction.respond(keys.buttons.disable.warnings.no_permission);
     }
 }
 
