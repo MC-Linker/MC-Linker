@@ -1,4 +1,4 @@
-const { keys, ph, addPh } = require('../api/messages');
+const { keys, ph } = require('../../api/messages');
 
 function execute(message, args) {
 
