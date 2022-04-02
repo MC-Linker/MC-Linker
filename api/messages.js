@@ -1,6 +1,6 @@
 const Builders = require('@discordjs/builders');
 const Discord = require('discord.js');
-const keys = require('../resources/languages/expanded/english.json');
+const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
 const ph = {};
