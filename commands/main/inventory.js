@@ -5,7 +5,7 @@ const ftp = require('../../api/ftp');
 const Canvas = require('canvas');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
-const { keys, ph, addPh, getEmbedBuilder} = require('../../api/messages');
+const { keys, addPh, getEmbedBuilder } = require('../../api/messages');
 
 async function execute(message, args) {
     const username = message.mentions.users.first()?.tag ?? args[0];

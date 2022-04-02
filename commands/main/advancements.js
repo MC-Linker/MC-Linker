@@ -1,10 +1,9 @@
 const fs = require('fs');
-const Discord = require('discord.js');
 const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
 const { time } = require('@discordjs/builders');
-const { keys, ph, addPh, getEmbedBuilder} = require('../../api/messages');
+const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
@@ -20,7 +19,7 @@ async function autocomplete(interaction) {
         })
     });
 
-    interaction.respond(respondArray).catch(err => console.log(keys.commands.advancements.errors.could_not_autocomplete, err));
+    interaction.respond(respondArray).catch(ignored => console.log(keys.commands.advancements.errors.could_not_autocomplete));
 }
 
 async function execute(message, args) {
@@ -28,6 +27,7 @@ async function execute(message, args) {
     args.shift();
     const category = args.shift()?.toLowerCase();
     let advancement = args.join(' ')?.toLowerCase();
+    const argPlaceholder = { "advancement_category": category, "advancement_name": advancement, username };
 
     if(!username) {
         message.respond(keys.commands.advancements.warnings.no_username);
@@ -39,9 +39,6 @@ async function execute(message, args) {
         message.respond(keys.commands.advancements.warnings.no_advancement);
         return;
     }
-
-    //Define argument placeholders
-    let placeholders = { "advancement_category": category, "advancement_name": advancement, "username": username };
 
     const matchingAdvancement = await utils.searchAdvancements(advancement, category, true, 1);
     advancement = matchingAdvancement.shift()?.value ?? advancement;
@@ -55,18 +52,22 @@ async function execute(message, args) {
         advancementDesc = langData[`advancements.${category}.${advancement}.description`];
     } catch(ignored) {}
 
-    if(!advancementTitle) advancementTitle = addPh(keys.commands.advancements.no_title_available, placeholders);
+    if(!advancementTitle) advancementTitle = addPh(keys.commands.advancements.no_title_available, argPlaceholder);
     else if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
 
-    //Add amTitle and desc to placeholders
-    placeholders = Object.assign(placeholders, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
-
     if(await settings.isDisabled(message.guildId, 'advancements', category)) {
-        message.respond(keys.commands.advancements.warnings.advancement_disabled, placeholders);
+        message.respond(
+            keys.commands.advancements.warnings.category_disabled,
+            argPlaceholder,
+            { "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+        );
         return;
-    }
-    if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
-        message.respond(keys.commands.advancements.warnings.category_disabled, placeholders);
+    } else if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
+        message.respond(
+            keys.commands.advancements.warnings.category_disabled,
+            argPlaceholder,
+            { "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+        );
         return;
     }
 
@@ -93,7 +94,7 @@ async function execute(message, args) {
 
         const baseEmbed = getEmbedBuilder(
             keys.commands.advancements.success.base,
-            ph.fromStd(message), placeholders, { equals }
+            ph.fromStd(message), argPlaceholder, { equals }
         );
 
         try {
@@ -145,10 +146,10 @@ async function execute(message, args) {
                 else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
             }
 
-            console.log(addPh(keys.commands.advancements.success.final.console, placeholders));
+            console.log(addPh(keys.commands.advancements.success.final.console, argPlaceholder));
             message.reply({ embeds: [amEmbed] });
         } catch (err) {
-            message.respond(keys.commands.advancements.warnings.not_completed, placeholders);
+            message.respond(keys.commands.advancements.warnings.not_completed, argPlaceholder);
         }
     })
 }

@@ -1,8 +1,8 @@
 const fs = require('fs');
-const Discord = require('discord.js');
 const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
+const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
 
 function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
@@ -27,7 +27,7 @@ function autocomplete(interaction) {
             });
         });
 
-        interaction.respond(respondArray).catch(err => console.log(`Could not respond to autocomplete ${interaction.commandName}`, err));
+        interaction.respond(respondArray).catch(ignored => console.log(keys.commands.stats.errors.could_not_autocomplete));
     });
 }
 
@@ -35,31 +35,24 @@ async function execute(message, args) {
     const username = message.mentions.users.first()?.tag ?? args[0];
     let category = args[1];
     let stat = args[2];
+    const argPlaceholder = { "stat_category": category, "stat_name": stat, username };
 
     if(!username) {
-        console.log(`${message.member.user.tag} executed /stats without username in ${message.guild.name}`);
-        message.reply(':warning: Please specify the player.');
+        message.respond(keys.commands.stats.warnings.no_username);
         return;
     } else if(!category) {
-        console.log(`${message.member.user.tag} executed /stats without statCategory in ${message.guild.name}`);
-        message.reply(':warning: Please specify the stat category.\n(`custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`)');
+        message.respond(keys.commands.stats.warnings.no_category);
         return;
     } else if(!stat) {
-        console.log(`${message.member.user.tag} executed /stats without stat in ${message.guild.name}`);
-        message.reply(':warning: Please specify the stat.');
+        message.respond(keys.commands.stats.warnings.no_stat);
         return;
     }
-
-    console.log(`${message.member.user.tag} executed /stats ${username} ${category} ${stat} in ${message.guild.name}`);
 
     if(await settings.isDisabled(message.guildId, 'stats', category)) {
-        console.log(`Category [${category}] disabled.`);
-        message.reply(`:no_entry: Stat category [**${category}**] disabled!`);
+        message.respond(keys.commands.stats.warnings.category_disabled, argPlaceholder);
         return;
-    }
-    if(await settings.isDisabled(message.guildId, 'stats', stat)) {
-        console.log(`Stat [${stat}] disabled.`);
-        message.reply(`:no_entry: Stat [**${stat}**] disabled!`);
+    } else if(await settings.isDisabled(message.guildId, 'stats', stat)) {
+        message.respond(keys.commands.stats.warnings.stat_disabled, argPlaceholder);
         return;
     }
 
@@ -74,8 +67,7 @@ async function execute(message, args) {
 
     fs.readFile(`./userdata/stats/${uuidv4}.json`, 'utf8', async (err, statJson) => {
         if (err) {
-            message.reply('<:Error:849215023264169985> Could not find stat file. Member most likely never joined the server.')
-            console.log('Error reading stat file from disk: ', err);
+            message.respond(keys.commands.stats.errors.could_not_read_file, { "error": err });
             return;
         }
 
@@ -98,23 +90,25 @@ async function execute(message, args) {
             }
 
             if (!statMatch) {
-                console.log("No Match found!");
-                message.reply(':warning: Stat is either 0 or misspelled!');
+                message.respond(keys.commands.stats.warnings.no_match, argPlaceholder);
                 return;
             }
 
             let statMessage;
-            if (category === 'killed_by') statMessage = `has been killed **${statMatch}** times by a **${stat}**`;
-            else if (stat === 'play_time' || stat === 'time_played') statMessage = `has played for **${(statMatch / 20 / 3600).toFixed(3)}** hours`;
-            else if (category === 'custom') statMessage = `**${stat} ${statMatch}**`;
-            else statMessage = `has **${category} ${statMatch} ${stat}s**`;
+            statMessage = addPh(keys.commands.stats.success.stat_message[category], argPlaceholder, { "stat_value": statMatch })
+            if (stat === 'play_time' || stat === 'time_played') {
+                statMessage = addPh(
+                    keys.commands.stats.success.stat_message.time_played,
+                    argPlaceholder, { "stat_value": statMatch }
+                );
+            }
 
-            const statEmbed = new Discord.MessageEmbed()
-                .setTitle('<:MinecraftS:849561874033803264><:MinecraftT:849561902979350529><:MinecraftA:849561916632465408><:MinecraftT:849561902979350529><:MinecraftS:849561874033803264>')
-                .setColor('DEFAULT')
-                .addField(username, statMessage);
-
-            console.log(`Sent stat ${category} ${stat} of Player: ${username}`);
+            const statEmbed = getEmbedBuilder(
+                keys.commands.stats.success.base,
+                ph.fromStd(message),
+                argPlaceholder,
+                { "stat_message": statMessage }
+            );
 
             let imgType;
             if(category === 'killed' || category === 'killed_by') imgType = 'entities';
@@ -122,16 +116,13 @@ async function execute(message, args) {
 
             fs.access(`./resources/images/minecraft/${imgType}/${stat}.png`, err => {
                 if (err) {
-                    console.log(`No Image available for ${stat}`);
-                    message.reply({ embeds: [statEmbed] });
+                    message.respond(keys.commands.stats.errors.could_not_read_file, { "error": err });
                     return;
                 }
-                statEmbed.setImage(`attachment://${stat}.png`);
                 message.reply({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
             });
         } catch (err) {
-            console.log('Error parsing Stat JSON string: ', err);
-            message.reply(`<:Error:849215023264169985> ${username} has never done anything in this category.`);
+            message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, { "error": err });
         }
     });
 }
