@@ -240,7 +240,9 @@
           "fields": {
             "enchantment": {
               "title": "​",
-              "content": "**Slot %slot%: %item_name%:**\n-%enchantment_name% %enchantment_level%"
+              "inline": true,
+              "content_slot": "**Slot %slot%: %item_name%:**",
+              "content_enchantment": "-%enchantment_name% %enchantment_level%"
             }
           }
         },

@@ -159,7 +159,9 @@
   "commands.inventory.success.enchantments.title": "Inventory Enchantments",
   "commands.inventory.success.enchantments.color": "ORANGE",
   "commands.inventory.success.enchantments.fields.enchantment.title": "\u200B",
-  "commands.inventory.success.enchantments.fields.enchantment.content": "**Slot %slot%: %item_name%:**\n-%enchantment_name% %enchantment_level%",
+  "commands.inventory.success.enchantments.fields.enchantment.inline": true,
+  "commands.inventory.success.enchantments.fields.enchantment.content_slot": "**Slot %slot%: %item_name%:**",
+  "commands.inventory.success.enchantments.fields.enchantment.content_enchantment": "-%enchantment_name% %enchantment_level%",
 
   "commands.inventory.success.final.title": "Player Inventory",
   "commands.inventory.success.final.description": "%emoji_success% Here's the inventory of **%username%**:\n",
