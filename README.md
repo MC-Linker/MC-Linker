@@ -21,7 +21,7 @@ To use most of the commands you’ll have to connect your Minecraft **java editi
 + `/stats`: Look up minecraft stats of any member.
 + `/advancements`: Look up minecraft advancements of any member.
 + `/connect account`: Connect your Discord Account with your Minecraft Account.
-+ `/connect plugin` OR **/connect ftp**: Connect your Minecraft Server with the bot.
++ `/connect plugin` OR `/connect ftp`: Connect your Minecraft Server with the bot.
 + `/chatchannel`: Set a channel in which the bot will send the minecraft chat (only for plugin).
 + `/loadingscreen`: Create a minecraft loading screen for resourcepacks.
 + `/disable`: Disable specific commands, advancements, or stats.
