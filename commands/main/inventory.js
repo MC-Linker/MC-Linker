@@ -5,16 +5,14 @@ const ftp = require('../../api/ftp');
 const Canvas = require('canvas');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
+const { keys, ph, addPh, getEmbedBuilder} = require('../../api/messages');
 
 async function execute(message, args) {
     const username = message.mentions.users.first()?.tag ?? args[0];
     if(!username) {
-        console.log(`${message.member.user.tag} executed /inv without username in ${message.guild.name}`);
-        message.reply(':warning: Please specify the player.');
+        message.respond(keys.commands.inventory.warnings.no_username);
         return;
     }
-
-    console.log(`${message.member.user.tag} executed /inv ${username} in ${message.guild.name}`);
 
     const uuidv4 = await utils.getUUIDv4(args[0], message.mentions.users.first()?.id, message);
     if(!uuidv4) return;
@@ -27,15 +25,13 @@ async function execute(message, args) {
 
     fs.readFile(`./userdata/playernbt/${uuidv4}.dat`, (err, playerNBT) => {
         if(err) {
-            message.reply('<:Error:849215023264169985> Could not read inventory.');
-            console.log('Error reading nbtFile from disk: ', err);
+            message.respond(keys.commands.inventory.errors.could_not_read_file, { "error": err });
             return;
         }
 
         nbt.parse(playerNBT, async (err, playerData) => {
             if (err) {
-                console.log('Error trying to parse player NBT', err);
-                message.reply('<:Error:849215023264169985> Error trying to read inventory');
+                message.respond(keys.commands.inventory.errors.could_not_parse, { "error": err });
                 return;
             }
 
@@ -49,8 +45,8 @@ async function execute(message, args) {
             Canvas.registerFont('./resources/fonts/Minecraft.ttf', { family: 'Minecraft' });
 
             let enchantEmbed = new Discord.MessageEmbed()
-                .setAuthor({ name: 'Inventory Enchantments', iconURL: message.client.user.displayAvatarURL({ format: 'png' }) })
-                .setColor('ORANGE');
+                .setTitle(keys.commands.inventory.success.enchantments.title)
+                .setColor(keys.commands.inventory.success.enchantments.color);
 
             let slotDims = [16, 284];
 
@@ -63,19 +59,27 @@ async function execute(message, args) {
                 const enchantments = inventory[i].tag?.value['Enchantments']?.value.value;
 
                 if(enchantments) {
-                    const formattedItem = id.toString().replace('minecraft:', '').replaceAll('_', ' ').cap();
+                    const formattedItem = id.replace('minecraft:', '').replaceAll('_', ' ').cap();
 
-                    let invField = `\n**Slot ${slot}: ${formattedItem}:**`;
+                    let invField = `\n${addPh(
+                        keys.commands.inventory.success.enchantments.fields.enchantment.content_slot,
+                        { "item_name": formattedItem, "slot": slot }
+                    )}`;
+
                     for(const enchantment of enchantments) {
                         const formattedEnchant = enchantment.id.value.replace('minecraft:', '').replaceAll('_', ' ').cap();
 
-                        if(enchantment.lvl.value === 1) {
-                            invField += `\n-${formattedEnchant}`
-                        } else {
-                            invField += `\n-${formattedEnchant} ${enchantment.lvl.value}`;
-                        }
+                         invField += `\n${addPh(
+                             keys.commands.inventory.success.enchantments.fields.enchantment.content_enchantment, 
+                             { "enchantment_name": formattedEnchant, "enchantment_level": enchantment.lvl.value }
+                         )}`;
                     }
-                    enchantEmbed.addField('\u200B', invField, true);
+
+                    enchantEmbed.addField(
+                        keys.commands.inventory.success.enchantments.fields.enchantment.title,
+                        invField,
+                        keys.commands.inventory.success.enchantments.fields.enchantment.inline
+                    );
                 }
 
                 const allSlotDims = {
@@ -133,7 +137,7 @@ async function execute(message, args) {
                         ctx.fillText(count, slotDims[0], slotDims[1] + 32, 15);
                     }
                 } catch (err) {
-                    console.log(`Error trying to apply img: ${id}. Applying text...`);
+                    console.log(addPh(keys.commands.inventory.errors.no_image, { "item_name": itemImgName }));
                     ctx.font = '6px Minecraft'; ctx.fillStyle = '#000000';
                     ctx.fillText(itemImgName, slotDims[0], slotDims[1] + 16);
                     if(count > 1) {
@@ -179,10 +183,7 @@ async function execute(message, args) {
             ctx.drawImage(skinImg, 70, 20, 65, 131);
 
             const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), `Inventory_Player.png`);
-            const invEmbed = new Discord.MessageEmbed()
-                .setTitle("Minecraft Player Inventory")
-                .setDescription(`<:Checkmark:849224496232660992> Here's the inventory of **${username}**:\n`)
-                .setImage(`attachment://Inventory_Player.png`);
+            const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, { username });
 
             if(enchantEmbed.fields.length >= 1) message.reply({ files: [invImg], embeds: [invEmbed, enchantEmbed] });
             else message.reply({ files: [invImg], embeds: [invEmbed] });
