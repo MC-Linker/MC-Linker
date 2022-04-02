@@ -275,7 +275,7 @@
           "description": "%emoji_no_entry% Stat category **%stat_category%** disabled!",
           "console": "Stat category %stat_category% disabled."
         },
-        "advancement_disabled": {
+        "stat_disabled": {
           "title": "Stat Disabled",
           "description": "%emoji_no_entry% Stat **%stat_name%** disabled!",
           "console": "Stat %stat_name% disabled"
@@ -317,16 +317,14 @@
           "killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
           "time_played": "has played for **%stat_value%** hours"
         },
-        "base": {
+        "final": {
           "title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
           "fields": {
             "username": {
               "title": "%username%",
               "content": "%stat_message%"
             }
-          }
-        },
-        "final": {
+          },
           "image": "attachment://%stat_name%.png"
         }
       }

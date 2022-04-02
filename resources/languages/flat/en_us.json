@@ -185,9 +185,9 @@
   "commands.stats.warnings.category_disabled.description": "%emoji_no_entry% Stat category **%stat_category%** disabled!",
   "commands.stats.warnings.category_disabled.console": "Stat category %stat_category% disabled.",
 
-  "commands.stats.warnings.advancement_disabled.title": "Stat Disabled",
-  "commands.stats.warnings.advancement_disabled.description": "%emoji_no_entry% Stat **%stat_name%** disabled!",
-  "commands.stats.warnings.advancement_disabled.console": "Stat %stat_name% disabled",
+  "commands.stats.warnings.stat_disabled.title": "Stat Disabled",
+  "commands.stats.warnings.stat_disabled.description": "%emoji_no_entry% Stat **%stat_name%** disabled!",
+  "commands.stats.warnings.stat_disabled.console": "Stat %stat_name% disabled",
 
   "commands.stats.warnings.no_match.title": "Could Not Find Stat",
   "commands.stats.warnings.no_match.description": "%emoji_warning% Stat is either 0 or misspelled!",
@@ -216,10 +216,9 @@
   "commands.stats.success.stat_message.killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
   "commands.stats.success.stat_message.time_played": "has played for **%stat_value%** hours",
 
-  "commands.stats.success.base.title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
-  "commands.stats.success.base.fields.username.title": "%username%",
-  "commands.stats.success.base.fields.username.content": "%stat_message%",
-
+  "commands.stats.success.final.title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
+  "commands.stats.success.final.fields.username.title": "%username%",
+  "commands.stats.success.final.fields.username.content": "%stat_message%",
   "commands.stats.success.final.image": "attachment://%stat_name%.png",
 
 
