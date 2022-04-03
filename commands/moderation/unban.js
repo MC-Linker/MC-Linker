@@ -1,21 +1,19 @@
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
 const Discord = require('discord.js');
+const { keys } = require('../../api/messages');
 
 async function execute(message, args) {
 	const username = message.mentions.users.first()?.tag ?? args[0];
+	const argPlaceholder = { username };
 
 	if (!message.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) {
-		console.log(`${message.member.user.tag} executed /unban without ban perm in ${message.guild.name}`);
-		message.reply(':no_entry: This command can only be used with `Ban member` permission!');
+		message.respond(keys.commands.unban.warnings.no_permission);
 		return;
 	} else if(!username) {
-		console.log(`${message.member.user.tag} executed /unban without user in ${message.guild.name}`);
-		message.reply(':warning: Please specify the player you want to unban.');
+		message.respond(keys.commands.unban.warnings.no_username);
 		return;
 	}
-
-	console.log(`${message.member.user.tag} executed /unban ${username} in ${message.guild.name}`);
 
 	const mcUsername = message.mentions.users.first()?.id ? await utils.getUsername(message.mentions.users.first()?.id, message) : username;
 	if(!mcUsername) return;
@@ -23,14 +21,9 @@ async function execute(message, args) {
 	const resp = await plugin.execute(`pardon ${mcUsername}`, message);
 	if(!resp) return;
 
-	const respEmbed = new Discord.MessageEmbed()
-		.setTitle('Unban Player')
-		.setColor('BLUE');
-
-	if(resp.startsWith('&c')) respEmbed.setDescription(`:warning: Warning trying to unban player [**${username}**]: ${resp.replace('&c', '')}`);
-	else if(resp.startsWith('Could not fetch response message!')) respEmbed.setDescription(`:warning: Successfully executed unban player [**${username}**]\n${resp}`);
-	else respEmbed.setDescription(`<:Checkmark:849224496232660992> Successfully unbanned player [**${username}**]`);
-	message.reply({ embeds: [respEmbed] });
+	if(resp.startsWith('&c')) message.respond(keys.commands.unban.warnings.response_warning, argPlaceholder, { "response": resp });
+	else if(resp.startsWith('Could not fetch response message!')) message.respond(keys.commands.unban.warnings.no_response, argPlaceholder);
+	else message.respond(keys.commands.unban.success, argPlaceholder);
 }
 
-module.exports ={ execute };
+module.exports = { execute };
