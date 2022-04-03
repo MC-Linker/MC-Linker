@@ -272,8 +272,8 @@
   "commands.loadingscreen.warnings.no_image.console": "No image specified",
 
   "commands.loadingscreen.warnings.invalid_format.title": "Invalid Image Format",
-  "commands.loadingscreen.warnings.invalid_format.description": "%emoji_warning% Invalid image format **%image_type%**",
-  "commands.loadingscreen.warnings.invalid_format.console": "Invalid image format %image_type%",
+  "commands.loadingscreen.warnings.invalid_format.description": "%emoji_warning% Invalid image format **%image_format%**",
+  "commands.loadingscreen.warnings.invalid_format.console": "Invalid image format %image_format%",
 
   "commands.loadingscreen.errors.could_not_get_size.title": "Could Not Get Size",
   "commands.loadingscreen.errors.could_not_get_size.description": "%emoji_error% Could not get size of image. `/help loadingscreen` for correct usage.",
