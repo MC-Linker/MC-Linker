@@ -236,7 +236,7 @@
   "commands.ban.warnings.response_warning.color": "ORANGE",
 
   "commands.ban.warnings.no_response.title": "Ban Player",
-  "commands.ban.warnings.no_response.description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`\n%response%",
+  "commands.ban.warnings.no_response.description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`",
   "commands.ban.warnings.no_response.color": "ORANGE",
 
   "commands.ban.success.title": "Ban Player",

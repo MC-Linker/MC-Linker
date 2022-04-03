@@ -348,7 +348,7 @@
         },
         "no_response": {
           "title": "Ban Player",
-          "description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`\n%response%",
+          "description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`",
           "color": "ORANGE"
         }
       },
