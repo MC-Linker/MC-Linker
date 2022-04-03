@@ -224,7 +224,7 @@
 
 
   "commands.ban.warnings.no_permission.title": "No Permission",
-  "commands.ban.warnings.no_permission.description": ":no-entry: This command can only be used with the `Ban Member` permission!",
+  "commands.ban.warnings.no_permission.description": "%emoji_no_entry% This command can only be used with the `Ban Member` permission!",
   "commands.ban.warnings.no_permission.console": "No ban permission",
 
   "commands.ban.warnings.no_username.title": "No Username Specified",
@@ -246,7 +246,7 @@
 
 
   "commands.unban.warnings.no_permission.title": "No Permission",
-  "commands.unban.warnings.no_permission.description": ":no-entry: This command can only be used with the `Ban Member` permission!",
+  "commands.unban.warnings.no_permission.description": "%emoji_no_entry% This command can only be used with the `Ban Member` permission!",
   "commands.unban.warnings.no_permission.console": "No ban permission",
 
   "commands.unban.warnings.no_username.title": "No Username Specified",
