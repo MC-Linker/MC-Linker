@@ -452,7 +452,7 @@
   "commands.connect.warnings.connecting.description": "Connecting to ftp... (Can take up to one minute)",
 
   "commands.connect.warnings.searching_level.title": "Searching For World",
-  "commands.connect.warnings.searching_level.description": "%emoji_success% Successfully connected with the sftp server. Searching world folder... (Can take up to one minute)",
+  "commands.connect.warnings.searching_level.description": "%emoji_success% Successfully connected with the ftp server. Searching world folder... (Can take up to one minute)",
   "commands.connect.warnings.searching_level.console": "Searching for level.dat...",
 
   "commands.connect.warnings.check_dms.title": "Check Your DMs",
@@ -463,22 +463,42 @@
 
   "commands.connect.warnings.no_reply_in_time.title": "Verification Unsuccessful",
   "commands.connect.warnings.no_reply_in_time.description": "%emoji_warning% You didn't reply in time!",
+  "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
+
+  "commands.connect.warnings.verification.title": "Code Verification",
+  "commands.connect.warnings.verification.description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
+  "commands.connect.warnings.verification.color": "DARK_GOLD",
 
   "commands.connect.errors.could_not_connect_ftp.title": "Could Not Connect",
   "commands.connect.errors.could_not_connect_ftp.description": "%emoji_error% Could not connect to server with ftp or sftp. Please check your credentials and try again.",
   "commands.connect.errors.could_not_connect_ftp.console": "Could not connect with ftp or sftp.",
 
+  "commands.connect.errors.could_not_connect_plugin.title": "Could Not Connect",
+  "commands.connect.errors.could_not_connect_plugin.description": "%emoji_error% Could not connect to server with plugin.",
+
   "commands.connect.errors.could_not_find_level.title": "Could Not Find World",
   "commands.connect.errors.could_not_find_level.description": "%emoji_error% Could not find world folder. Please specify the world path manually.",
   "commands.connect.errors.could_not_find_level.console": "Could not find level.dat",
 
-  "commands.connect.errors.could_not_make_folder.title": "Could Not Save Credentials",
-  "commands.connect.errors.could_not_make_folder.description": "%emoji_error% Could not save credentials. Please try again.",
-  "commands.connect.errors.could_not_make_folder.console": "Error writing server folder",
+  "commands.connect.errors.could_not_make_server_folder.title": "Could Not Save Credentials",
+  "commands.connect.errors.could_not_make_server_folder.description": "%emoji_error% Could not save credentials. Please try again.",
+  "commands.connect.errors.could_not_make_server_folder.console": "Error writing server folder",
 
-  "commands.connect.errors.could_not_write_file.title": "Could Not Save Credentials",
-  "commands.connect.errors.could_not_write_file.description": "%emoji_error% Could not save credentials. Please try again.",
-  "commands.connect.errors.could_not_write_file.console": "Error writing server file",
+  "commands.connect.errors.could_not_make_user_folder.title": "Could Not Save Credentials",
+  "commands.connect.errors.could_not_make_user_folder.description": "%emoji_error% Could not save credentials. Please try again.",
+  "commands.connect.errors.could_not_make_user_folder.console": "Error writing user folder",
+
+  "commands.connect.errors.could_not_write_server_file.title": "Could Not Save Credentials",
+  "commands.connect.errors.could_not_write_server_file.description": "%emoji_error% Could not save credentials. Please try again.",
+  "commands.connect.errors.could_not_write_server_file.console": "Error writing server file",
+
+  "commands.connect.errors.could_not_write_user_file.title": "Could Not Save Credentials",
+  "commands.connect.errors.could_not_write_user_file.description": "%emoji_error% Could not save credentials. Please try again.",
+  "commands.connect.errors.could_not_write_user_file.console": "Error writing user file",
+
+  "commands.connect.errors.incorrect_code.title": "Verification Unsuccessful",
+  "commands.connect.errors.incorrect_code.description": "%emoji_error% You didn't reply with the correct code.",
+  "commands.connect.errors.incorrect_code.console": "Incorrect code",
 
   "commands.connect.success.ftp.title": "Connected to Server",
   "commands.connect.success.ftp.description": "%emoji_success% Successfully connected to the ftp server.",
@@ -492,9 +512,10 @@
   "commands.connect.success.account.description": "%emoji_success% Successfully connected with username: **%username%** and UUID: **%uuid%**",
   "commands.connect.success.account.console": "Successfully wrote user file",
 
-  "commands.connect.success.verification.title": "Code Verification",
-  "commands.connect.success.verification.description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
-  "commands.connect.success.verification.color": "DARK_GOLD",
+  "commands.connect.success.verification.title": "Verification Successful",
+  "commands.connect.success.verification.description": "%emoji_success% Successfully verified.",
+  "commands.connect.success.verification.console": "Correct code",
+
 
 
   "commands.disable.warnings.no_type.title": "No Type Specified",

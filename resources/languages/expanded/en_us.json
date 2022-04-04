@@ -641,7 +641,7 @@
         },
         "searching_level": {
           "title": "Searching For World",
-          "description": "%emoji_success% Successfully connected with the sftp server. Searching world folder... (Can take up to one minute)",
+          "description": "%emoji_success% Successfully connected with the ftp server. Searching world folder... (Can take up to one minute)",
           "console": "Searching for level.dat..."
         },
         "check_dms": {
@@ -654,7 +654,13 @@
         },
         "no_reply_in_time": {
           "title": "Verification Unsuccessful",
-          "description": "%emoji_warning% You didn't reply in time!"
+          "description": "%emoji_warning% You didn't reply in time!",
+          "console": "No reply in time"
+        },
+        "verification": {
+          "title": "Code Verification",
+          "description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
+          "color": "DARK_GOLD"
         }
       },
       "errors": {
@@ -663,20 +669,39 @@
           "description": "%emoji_error% Could not connect to server with ftp or sftp. Please check your credentials and try again.",
           "console": "Could not connect with ftp or sftp."
         },
+        "could_not_connect_plugin": {
+          "title": "Could Not Connect",
+          "description": "%emoji_error% Could not connect to server with plugin."
+        },
         "could_not_find_level": {
           "title": "Could Not Find World",
           "description": "%emoji_error% Could not find world folder. Please specify the world path manually.",
           "console": "Could not find level.dat"
         },
-        "could_not_make_folder": {
+        "could_not_make_server_folder": {
           "title": "Could Not Save Credentials",
           "description": "%emoji_error% Could not save credentials. Please try again.",
           "console": "Error writing server folder"
         },
-        "could_not_write_file": {
+        "could_not_make_user_folder": {
+          "title": "Could Not Save Credentials",
+          "description": "%emoji_error% Could not save credentials. Please try again.",
+          "console": "Error writing user folder"
+        },
+        "could_not_write_server_file": {
           "title": "Could Not Save Credentials",
           "description": "%emoji_error% Could not save credentials. Please try again.",
           "console": "Error writing server file"
+        },
+        "could_not_write_user_file": {
+          "title": "Could Not Save Credentials",
+          "description": "%emoji_error% Could not save credentials. Please try again.",
+          "console": "Error writing user file"
+        },
+        "incorrect_code": {
+          "title": "Verification Unsuccessful",
+          "description": "%emoji_error% You didn't reply with the correct code.",
+          "console": "Incorrect code"
         }
       },
       "success": {
@@ -696,9 +721,9 @@
           "console": "Successfully wrote user file"
         },
         "verification": {
-          "title": "Code Verification",
-          "description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
-          "color": "DARK_GOLD"
+          "title": "Verification Successful",
+          "description": "%emoji_success% Successfully verified.",
+          "console": "Correct code"
         }
       }
     },
