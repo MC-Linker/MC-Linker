@@ -258,7 +258,7 @@
   "commands.unban.warnings.response_warning.color": "BLUE",
 
   "commands.unban.warnings.no_response.title": "Unban Player",
-  "commands.unban.warnings.no_response.description": "%emoji_warning% Successfully executed unban player **%username%**\n%response%",
+  "commands.unban.warnings.no_response.description": "%emoji_warning% Successfully executed unban player **%username%**",
   "commands.unban.warnings.no_response.color": "BLUE",
 
   "commands.unban.success.title": "Unban Player",
@@ -302,7 +302,7 @@
   "commands.message.warnings.response_warning.color": "BLUE",
 
   "commands.message.warnings.no_response.title": "Send Message",
-  "commands.message.warnings.no_response.description": "%emoji_warning% Successfully sent message to player **%username%**\n%response%",
+  "commands.message.warnings.no_response.description": "%emoji_warning% Successfully sent message to player **%username%**",
   "commands.message.warnings.no_response.color": "BLUE",
 
   "commands.message.success.title": "Send Message",

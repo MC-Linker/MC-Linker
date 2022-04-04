@@ -377,7 +377,7 @@
         },
         "no_response": {
           "title": "Unban Player",
-          "description": "%emoji_warning% Successfully executed unban player **%username%**\n%response%",
+          "description": "%emoji_warning% Successfully executed unban player **%username%**",
           "color": "BLUE"
         }
       },
@@ -437,7 +437,7 @@
         },
         "no_response": {
           "title": "Send Message",
-          "description": "%emoji_warning% Successfully sent message to player **%username%**\n%response%",
+          "description": "%emoji_warning% Successfully sent message to player **%username%**",
           "color": "BLUE"
         }
       },
