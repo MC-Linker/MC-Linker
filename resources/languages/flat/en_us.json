@@ -410,8 +410,8 @@
   "commands.connect.warnings.no_method.console": "No method specified",
 
   "commands.connect.warnings.no_permission.title": "No Permission",
-  "commands.connect.warnings.no_permission.description": "%emoji_warning% Please specify a method (`plugin`, `account`, `ftp`).",
-  "commands.connect.warnings.no_permission.console": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.connect.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.connect.warnings.no_permission.console": "No permission",
 
   "commands.connect.warnings.no_credentials.title": "No Credentials Specified",
   "commands.connect.warnings.no_credentials.description": "Please specify your ftp credentials! Use `/help connect` for more information!",
