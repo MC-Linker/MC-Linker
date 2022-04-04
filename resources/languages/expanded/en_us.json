@@ -3,6 +3,7 @@
     "warning": ":warning:",
     "error": "<:Error:849215023264169985>",
     "success": "<:Checkmark:849224496232660992>",
+    "red_success": "<:redsuccess:885601791465640016>",
     "no_entry": ":no_entry:",
     "join": "<:join:905924638083784836>",
     "leave": "<:leave:905924638100557865>",
@@ -640,8 +641,12 @@
         },
         "searching_level": {
           "title": "Searching For World",
-          "description": "%emoji_success% Successfully connected with the sftp server. Finding world folder... (Can take up to one minute)",
+          "description": "%emoji_success% Successfully connected with the sftp server. Searching world folder... (Can take up to one minute)",
           "console": "Searching for level.dat..."
+        },
+        "check_dms": {
+          "title": "Check Your DMs",
+          "description": "%emoji_red_success% Please check your DMs to complete the connection."
         },
         "could_not_dm": {
           "title": "Could Not DM",

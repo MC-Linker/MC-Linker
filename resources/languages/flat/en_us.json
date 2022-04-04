@@ -2,6 +2,7 @@
   "emojis.warning": ":warning:",
   "emojis.error": "<:Error:849215023264169985>",
   "emojis.success": "<:Checkmark:849224496232660992>",
+  "emojis.red_success": "<:redsuccess:885601791465640016>",
   "emojis.no_entry": ":no_entry:",
 
   "emojis.join": "<:join:905924638083784836>",
@@ -451,8 +452,11 @@
   "commands.connect.warnings.connecting.description": "Connecting to ftp... (Can take up to one minute)",
 
   "commands.connect.warnings.searching_level.title": "Searching For World",
-  "commands.connect.warnings.searching_level.description": "%emoji_success% Successfully connected with the sftp server. Finding world folder... (Can take up to one minute)",
+  "commands.connect.warnings.searching_level.description": "%emoji_success% Successfully connected with the sftp server. Searching world folder... (Can take up to one minute)",
   "commands.connect.warnings.searching_level.console": "Searching for level.dat...",
+
+  "commands.connect.warnings.check_dms.title": "Check Your DMs",
+  "commands.connect.warnings.check_dms.description": "%emoji_red_success% Please check your DMs to complete the connection.",
 
   "commands.connect.warnings.could_not_dm.title": "Could Not DM",
   "commands.connect.warnings.could_not_dm.description": "%emoji_warning% Could not DM you. Verifying in the current channel...",
