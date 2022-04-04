@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const utils = require('../../api/utils');
 const settings = require('../../api/settings');
-const { keys } = require('../../api/messages');
+const { keys, getEmbedBuilder, addPh} = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
@@ -43,8 +43,7 @@ async function execute(message, args) {
     const disabledCommands = ['enable', 'disable', 'help'];
 
     if(!type) {
-        console.log(`${message.member.user.tag} executed /disable without type in ${message.guild.name}`);
-        message.reply(':warning: Please specify the type you want to disable (`commands`, `stats, `advancements`) or `list` if you want to list the disabled commands/stats/advancements.');
+        message.respond(keys.commands.disable.warnings.no_type);
         return;
     }
 
@@ -52,8 +51,7 @@ async function execute(message, args) {
         const toList = args?.join(' ').toLowerCase();
 
         if(toList !== 'stats' || toList !== 'advancements' || toList !== 'commands') {
-            console.log(`${message.member.user.tag} executed /disable list with wrong type in ${message.guild.name}`);
-            message.reply(':warning: You can only list `commands`, `stats` or `advancements`.');
+            message.respond(keys.commands.disable.warnings.invalid_type);
             return;
         }
 
@@ -61,14 +59,11 @@ async function execute(message, args) {
 
         const disabled = await settings.getDisabled(message.guildId, type);
         if(disabled.length === 0) {
-            message.reply(`<:Checkmark:849224496232660992> There are no disabled ${type}.`);
+            message.respond(keys.commands.disable.success.nothing_disabled);
             return;
         }
 
-        const listEmbed = new Discord.MessageEmbed()
-            .setTitle('Disable List')
-            .setColor('RED')
-            .addField(`===========\n${type.cap()}`, '**===========**');
+        const listEmbed = getEmbedBuilder(keys.commands.disable.success.list.base, { type });
 
         for(let disable of disabled) {
             if(type === 'advancements') {
@@ -77,37 +72,35 @@ async function execute(message, args) {
             } else if (type === 'stats') disable = disable.split('_').map(word => word.cap()).join(' ');
             else disable = disable.cap();
 
-            listEmbed.addField(disable, '\u200B');
+            listEmbed.addField(
+                addPh(keys.commands.disable.success.list.final.fields.disabled.title, { disable }),
+                keys.commands.disable.success.list.final.fields.disabled.content
+            );
         }
 
         message.reply({ embeds: [listEmbed] });
     } else {
         let toDisable = args?.join(' ').toLowerCase();
+        const argPlaceholder = { "disable": toDisable, type };
 
         if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-            console.log(`${message.member.user.tag} executed /disable ${type} without admin in ${message.guild.name}`);
-            message.reply(':no_entry: This command can only be executed by admins.');
+            message.respond(keys.commands.disable.warnings.no_permission);
             return;
         }
 
         if(toDisable !== 'stats' || toDisable !== 'advancements' || toDisable !== 'commands') {
-            console.log(`${message.member.user.tag} executed /disable with wrong type in ${message.guild.name}`);
-            message.reply(':warning: You can only disable `commands`, `stats` or `advancements`.');
+            message.respond(keys.commands.disable.warnings.invalid_type);
             return;
         }
 
         //Check for disabled commands
         if(type === 'commands' && disabledCommands.includes(toDisable)) {
-            console.log(`${message.member.user.tag} executed /disable ${type} with disabled command ${toDisable} in ${message.guild.name}`);
-            message.reply(`:no_entry: You cannot disable this command [**${toDisable}**].`);
+            message.respond(keys.commands.disable.warnings.disabled_command, argPlaceholder);
             return;
         }
 
-        console.log(`${message.member.user.tag} executed /disable ${type} ${toDisable} in ${message.guild.name}`);
-
         if(!toDisable) {
-            console.log(`${message.member.user.tag} executed /disable ${type} without toDisable in ${message.guild.name}`);
-            message.reply(`:warning: Please specify the ${type} you want to disable.`);
+            message.respond(keys.commands.disable.warnings.no_disable, argPlaceholder);
             return;
         }
 
@@ -116,8 +109,7 @@ async function execute(message, args) {
             const command = message.client.commands.get(toDisable);
 
             if(!command) {
-                console.log(`Command [${toDisable}] doesn't exist.`);
-                message.reply(`:warning: Command [**${toDisable}**] doesn't exist.`);
+                message.respond(keys.commands.disable.warnings.command_does_not_exist, argPlaceholder);
                 return;
             }
 
@@ -131,12 +123,11 @@ async function execute(message, args) {
         }
 
         if(!await settings.disable(message.guildId, type, toDisable)) {
-            console.log(`Could not disable ${toDisable}.`);
-            message.reply(`<:Error:849215023264169985> Could not disable ${type} [**${toDisable}**].`);
+            message.respond(keys.commands.disable.errors.could_not_disable, { type, "disable": formattedToDisable });
             return;
         }
-        console.log(`Successfully disabled ${type} ${toDisable}.`);
-        message.reply(`<:Checkmark:849224496232660992> Successfully disabled ${type} [**${formattedToDisable}**].`);
+
+        message.respond(keys.commands.disable.success.disabled, { type, "disable": formattedToDisable });
     }
 }
 
