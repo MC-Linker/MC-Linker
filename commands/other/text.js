@@ -1,5 +1,6 @@
 const Canvas = require('canvas');
 const Discord = require('discord.js');
+const { keys, getEmbedBuilder, ph } = require('../../api/messages');
 
 async function execute(message, args) {
     let font = args.shift()?.replaceAll('_', '');
@@ -7,20 +8,15 @@ async function execute(message, args) {
     let text = args.join(' ');
 
     if (!font) {
-        console.log(`${message.member.user.tag} executed /text without args in ${message.guild.name}`);
-        message.reply(':warning: Do you want to create a Mojang studios font: `/text mojang`, minecraft font: `/text minecraft` or an image with a different font: `/text <Any Preinstalled Font>');
+        message.respond(keys.commands.text.warnings.no_font);
         return;
     } else if (!color) {
-        console.log(`${message.member.user.tag} executed /text without color and text in ${message.guild.name}`);
-        message.reply(':warning: Please specify a color. All color ids can be found here:\nhttps://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords');
+        message.respond(keys.commands.text.warnings.no_color);
         return;
     } else if (!text) {
-        console.log(`${message.member.user.tag} executed /text without text in ${message.guild.name}`);
-        message.reply(':warning: Please specify a text.');
+        message.respond(keys.commands.text.warnings.no_text);
         return;
     }
-
-    console.log(`${message.member.user.tag} executed /text ${font} ${color} ${text} in ${message.guild.name}`);
 
     if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
@@ -38,16 +34,12 @@ async function execute(message, args) {
         ctx.textAlign = 'left';
         ctx.fillText(text, 0, 200, fontCanvas.width);
     } catch (err) {
-        console.log('Error trying to apply text.', err);
-        message.reply('<:Error:849215023264169985> Please check if you entered a valid font or color.');
+        message.respond(keys.commands.text.errors.could_not_apply_text);
         return;
     }
 
     const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'text_image.png');
-    const textEmbed = new Discord.MessageEmbed()
-        .setTitle("Custom Text Image")
-        .setDescription('<:Checkmark:849224496232660992> Here\'s your custom text image.')
-        .setImage('attachment://Text_Image.png');
+    const textEmbed = getEmbedBuilder(keys.commands.text.success, ph.fromStd(message));
     message.reply({ embeds: [textEmbed], files: [fontImg] });
 }
 
