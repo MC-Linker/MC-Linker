@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const utils = require('../../api/utils');
 const settings = require('../../api/settings');
+const { keys } = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
@@ -29,7 +30,7 @@ async function autocomplete(interaction) {
 
                 if(imgType === 'items') {
                     if(respondArray.length >= 25) respondArray.length = 25;
-                    interaction.respond(respondArray).catch(err => console.log(`Could not respond to autocomplete ${interaction.commandName}`, err));
+                    interaction.respond(respondArray).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete));
                 }
             });
         });

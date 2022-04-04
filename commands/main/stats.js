@@ -27,7 +27,7 @@ function autocomplete(interaction) {
             });
         });
 
-        interaction.respond(respondArray).catch(ignored => console.log(keys.commands.stats.errors.could_not_autocomplete));
+        interaction.respond(respondArray).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
     });
 }
 

@@ -36,7 +36,7 @@ if(topggToken) {
     const poster = AutoPoster(topggToken, client);
 
     poster.on('posted', () => {});
-    poster.on('error', ignored => console.log('Could not post stats to Top.gg!'));
+    poster.on('error', () => console.log('Could not post stats to Top.gg!'));
 }
 
 client.once('ready', async () => {

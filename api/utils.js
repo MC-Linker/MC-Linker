@@ -58,16 +58,16 @@ function searchAllAdvancements(searchString, shouldSearchValues = true, maxLengt
 function isUserConnected(userId) {
     return new Promise(resolve => {
         fs.access(`./userdata/connections/${userId}`)
-            .then(ignored => resolve(true))
-            .catch(ignored => resolve(false));
+            .then(() => resolve(true))
+            .catch(() => resolve(false));
     });
 }
 
 function isGuildConnected(guildId) {
     return new Promise(resolve => {
         fs.access(`./serverdata/connections/${guildId}`)
-            .then(ignored => resolve(true))
-            .catch(ignored => resolve(false));
+            .then(() => resolve(true))
+            .catch(() => resolve(false));
     });
 }
 

@@ -19,7 +19,7 @@ async function autocomplete(interaction) {
         })
     });
 
-    interaction.respond(respondArray).catch(ignored => console.log(keys.commands.advancements.errors.could_not_autocomplete));
+    interaction.respond(respondArray).catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete));
 }
 
 async function execute(message, args) {
