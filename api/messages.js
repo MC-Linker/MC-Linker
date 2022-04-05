@@ -110,7 +110,7 @@ function addPh(key, ...placeholders) {
 
 
 function reply(interaction, key, ...placeholders) {
-    if(!interaction || !key || !placeholders) return console.error('Could not reply: No message, key or placeholders specified');
+    if(!interaction || !key || !placeholders) return console.error(keys.api.messages.errors.no_reply_arguments);
 
     placeholders = Object.assign(
         ph.fromStd(interaction),
@@ -137,7 +137,7 @@ function replyOptions(interaction, options) {
 
 
 function getComponentBuilder(key, ...placeholders) {
-    if(!key) return console.error('Could not get component builder: No key specified');
+    if(!key) return console.error(keys.api.messages.errors.no_component_key);
     key = addPh(key, ...placeholders);
 
     const actionRow = new Discord.MessageActionRow();
@@ -180,8 +180,8 @@ function getComponentBuilder(key, ...placeholders) {
 
 
 function getEmbedBuilder(key, ...placeholders) {
-    if(!key) return console.error('Could not get embed builder: No key specified');
-    else if(!key.title) return console.error('Could not get embed builder: No title specified');
+    if(!key) return console.error(keys.api.messages.errors.no_embed_key);
+    else if(!key.title) return console.error(keys.api.messages.errors.no_embed_arguments);
 
     key = addPh(key, ...placeholders);
 
@@ -208,8 +208,8 @@ function getEmbedBuilder(key, ...placeholders) {
 
 
 function getCommandBuilder(key) {
-    if(!key) return console.error('Could not get command builder: No key specified');
-    if(!key.name || !key.short_description) return console.error('Could not get command builder: No name or short description specified');
+    if(!key) return console.error(keys.api.messages.errors.no_command_key);
+    if(!key.name || !key.short_description) return console.error(keys.api.messages.errors.no_command_arguments);
 
     const builder = new Builders.SlashCommandBuilder()
         .setName(key.name)
