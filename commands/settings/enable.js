@@ -1,6 +1,7 @@
 const utils = require('../../api/utils');
 const settings = require('../../api/settings');
 const Discord = require('discord.js');
+const { keys } = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
@@ -14,12 +15,17 @@ async function autocomplete(interaction) {
     for (let disable of matchingDisabled) {
         disable = disable.replaceAll(`${interaction.guildId}_`, '');
         let formattedDisable;
+
         if (subcommand === 'advancements') {
             const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
             formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
 
-        } else if (subcommand === 'stats') formattedDisable = disable.split('_').map(word => word.cap()).join(' ');
-        else formattedDisable = disable.cap();
+        } else if (subcommand === 'stats') {
+            formattedDisable = disable.split('_').map(word => word.cap()).join(' ');
+
+        } else {
+            formattedDisable = disable.cap();
+        }
 
         respondArray.push({
             name: formattedDisable,
@@ -27,32 +33,27 @@ async function autocomplete(interaction) {
         });
     }
 
-    interaction.respond(respondArray).catch(err => console.log(`Could not respond to autocomplete ${interaction.commandName}`, err));
+    interaction.respond(respondArray).catch(() => console.log(keys.commands.enable.errors.could_not_autocomplete));
 }
 
 async function execute(message, args) {
     let type = args?.shift();
     let toEnable = args?.join(' ').toLowerCase();
+    const argPlaceholder = { type, "enable": toEnable };
 
-    if(!type) {
-        console.log(`${message.member.user.tag} executed /enable without type in ${message.guild.name}`);
-        message.reply(':warning: Please specify the type you want to enable (`commands`, `stats`, `advancements`).');
+    if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+        message.respond(keys.commands.enable.warnings.no_permission);
+        return;
+    } else if(!type) {
+        message.respond(keys.commands.enable.warnings.no_type);
         return;
     } else if(!toEnable) {
-        console.log(`${message.member.user.tag} executed /enable without toEnable in ${message.guild.name}`);
-        message.reply(':warning: Please specify the command, stat or advancement you want to enable.');
-        return;
-    } else if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
-        console.log(`${message.member.user.tag} executed /enable ${type} without admin in ${message.guild.name}`);
-        message.reply(':no_entry: This command can only be executed by admins.');
+        message.respond(keys.commands.enable.warnings.no_enable);
         return;
     }
 
-    console.log(`${message.member.user.tag} executed /enable ${type} ${toEnable} in ${message.guild.name}`);
-
-    if(toList !== 'stats' || toList !== 'advancements' || toList !== 'commands') {
-        console.log(`${message.member.user.tag} executed /enable with wrong type in ${message.guild.name}`);
-        message.reply(':warning: You can only enable `commands`, `stats` or `advancement`.');
+    if(toEnable !== 'stats' || toEnable !== 'advancements' || toEnable !== 'commands') {
+        message.respond(keys.commands.enable.warnings.invalid_type);
         return;
     }
 
@@ -61,25 +62,27 @@ async function execute(message, args) {
         const command = message.client.commands.get(toEnable);
 
         if(!command) {
-            console.log(`Command [${toEnable}] doesn't exist.`);
-            message.reply(`:warning: Command [**${toEnable}**] doesn't exist.`);
+            message.respond(keys.commands.enable.warnings.command_does_not_exist, argPlaceholder);
             return;
         }
 
         toEnable = command.name;
         formattedToEnable = toEnable.cap();
+
     } else if(type === 'advancements') {
         const matchingTitle = await utils.searchAllAdvancements(toEnable, true, 1);
         formattedToEnable = matchingTitle.shift()?.name ?? toEnable.cap();
-    } else if(type === 'stats') formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
+
+    } else if(type === 'stats') {
+        formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
+    }
 
     if(!await settings.enable(message.guildId, type, toEnable)) {
-        console.log(`Could not enable ${type} [${toEnable}].`);
-        message.reply(`:warning: ${type.cap()} [**${toEnable}**] is already enabled.`);
+        message.respond(keys.commands.enable.warnings.already_enabled, { type, "enable": formattedToEnable });
         return;
     }
-    console.log(`Successfully enabled ${type} [${toEnable}].`);
-    message.reply(`<:Checkmark:849224496232660992> Successfully enabled ${type.cap()} [**${formattedToEnable}**].`);
+
+    message.respond(keys.commands.enable.success, { type, "enable": formattedToEnable });
 }
 
 module.exports = { execute, autocomplete };
