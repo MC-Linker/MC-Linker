@@ -103,19 +103,19 @@
   "commands.advancements.warnings.no_advancement.console": "No advancement specified",
 
   "commands.advancements.no_description_available": "No description available...",
-  "commands.advancements.no_title_available": "%advancement_category% %advancement_name%",
+  "commands.advancements.no_title_available": "%advancement_category% %advancement_title%",
 
   "commands.advancements.warnings.category_disabled.title": "Category Disabled",
   "commands.advancements.warnings.category_disabled.description": "%emoji_no_entry% Advancement category **%advancement_category%** disabled!",
   "commands.advancements.warnings.category_disabled.console": "Advancement category %advancement_category% disabled.",
 
   "commands.advancements.warnings.advancement_disabled.title": "Advancement Disabled",
-  "commands.advancements.warnings.advancement_disabled.description": "%emoji_no_entry% Advancement **%advancement_name%** disabled!",
-  "commands.advancements.warnings.advancement_disabled.console": "Advancement %advancement_name% disabled.",
+  "commands.advancements.warnings.advancement_disabled.description": "%emoji_no_entry% Advancement **%advancement_title%** disabled!",
+  "commands.advancements.warnings.advancement_disabled.console": "Advancement %advancement_title% disabled.",
 
   "commands.advancements.warnings.not_completed.title": "Advancement Not Completed",
   "commands.advancements.warnings.not_completed.description": "%emoji_warning% Advancement **%advancement_title%** not completed/unlocked or misspelled!",
-  "commands.advancements.warnings.not_completed.console": "Advancement %advancement_name% not completed.",
+  "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
 
   "commands.advancements.errors.could_not_read_file.title": "Could Not Read File",
   "commands.advancements.errors.could_not_read_file.description": "%emoji_error% Could not read advancement file. Please try again.",

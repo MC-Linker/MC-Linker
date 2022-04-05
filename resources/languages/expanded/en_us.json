@@ -150,17 +150,17 @@
         },
         "advancement_disabled": {
           "title": "Advancement Disabled",
-          "description": "%emoji_no_entry% Advancement **%advancement_name%** disabled!",
-          "console": "Advancement %advancement_name% disabled."
+          "description": "%emoji_no_entry% Advancement **%advancement_title%** disabled!",
+          "console": "Advancement %advancement_title% disabled."
         },
         "not_completed": {
           "title": "Advancement Not Completed",
           "description": "%emoji_warning% Advancement **%advancement_title%** not completed/unlocked or misspelled!",
-          "console": "Advancement %advancement_name% not completed."
+          "console": "Advancement %advancement_title% not completed."
         }
       },
       "no_description_available": "No description available...",
-      "no_title_available": "%advancement_category% %advancement_name%",
+      "no_title_available": "%advancement_category% %advancement_title%",
       "errors": {
         "could_not_read_file": {
           "title": "Could Not Read File",
