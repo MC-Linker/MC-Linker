@@ -868,11 +868,9 @@
         }
       },
       "success": {
-        "disabled": {
-          "title": "Successfully Enabled",
-          "description": "%emoji_success% Successfully enabled %type% **%enable%**.",
-          "console": "Successfully enabled %type% %enable%"
-        }
+        "title": "Successfully Enabled",
+        "description": "%emoji_success% Successfully enabled %type% **%enable%**.",
+        "console": "Successfully enabled %type% %enable%"
       }
     }
   },

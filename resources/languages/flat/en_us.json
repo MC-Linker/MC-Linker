@@ -613,9 +613,9 @@
 
   "commands.enable.errors.could_not_autocomplete.console": "Could not respond to enable autocomplete",
 
-  "commands.enable.success.disabled.title": "Successfully Enabled",
-  "commands.enable.success.disabled.description": "%emoji_success% Successfully enabled %type% **%enable%**.",
-  "commands.enable.success.disabled.console": "Successfully enabled %type% %enable%",
+  "commands.enable.success.title": "Successfully Enabled",
+  "commands.enable.success.description": "%emoji_success% Successfully enabled %type% **%enable%**.",
+  "commands.enable.success.console": "Successfully enabled %type% %enable%",
 
 
 
