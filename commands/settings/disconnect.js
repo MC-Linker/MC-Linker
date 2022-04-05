@@ -1,34 +1,30 @@
 const fs =  require('fs');
 const plugin = require('../../api/plugin');
 const utils = require("../../api/utils");
+const { keys } = require('../../api/messages');
 
 async function execute(message, args) {
     const method = args[0];
 
     if(!method) {
-        console.log(`${message.member.user.tag} executed /disconnect without method in ${message.guild.name}`);
-        message.reply(':warning: Please set the connection method (`ftp`, `plugin`, `user`).');
+        message.respond(keys.commands.disconnect.warnings.no_method);
         return;
     }
+
     let path;
     if(method === 'ftp' || method === 'plugin') path = `./serverdata/connections/${message.guild.id}/`;
     else if(method === 'account') path = `./userdata/connections/${message.member.user.id}/`;
     else {
-        console.log(`${message.member.user.tag} executed /disconnect with wrong method in ${message.guild.name}`);
-        message.reply(':warning: You can only disconnect from `ftp`, `plugin` or `account`.');
+        message.respond(keys.commands.disconnect.warnings.invalid_method);
         return;
     }
-
-    console.log(`${message.member.user.tag} executed /disconnect ${method} in ${message.guild.name}`);
-
 
     if(method === 'plugin' || method === 'ftp') {
         const protocol = await utils.getProtocol(message.guildId, message);
         if(!protocol) return;
 
         if(protocol !== method) {
-            console.log(`Wrong protocol ${protocol}`);
-            message.reply(`:warning: Couldn't disconnect from the **${method}** connection because you are **not connected**.`);
+            message.respond(keys.commands.disconnect.warnings.invalid_protocol);
             return;
         }
     }
@@ -40,12 +36,11 @@ async function execute(message, args) {
 
     fs.rm(path, { recursive: true, force: true }, err => {
         if(err) {
-            console.log(`Error trying to delete ${method} connection folder.`, err);
-            message.reply(`:warning: Couldn't disconnect from the **${method}** connection because you are **not connected**.`);
+            message.respond(keys.commands.disconnect.errors.could_not_remove_folder);
             return;
         }
-        console.log(`The ${method} connection to this bot was successfully disconnected.`);
-        message.reply(`<:Checkmark:849224496232660992> The **${method}** connection to this bot was successfully disconnected.`);
+
+        message.respond(keys.commands.disconnect.success);
     });
 }
 
