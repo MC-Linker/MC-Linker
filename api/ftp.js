@@ -4,9 +4,13 @@ const { promisify } = require('util');
 const utils = require('./utils');
 const sftp = require('./sftp');
 const plugin = require('./plugin');
+const { keys, addPh} = require('./messages');
+
 module.exports = {
 	get: function (getPath, putPath, message) {
 		return new Promise(async resolve => {
+			const argPlaceholder = { "path": getPath };
+
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
 			//Redirect to other protocols
@@ -18,8 +22,7 @@ module.exports = {
 
 			const ftpClient = new ftp();
 			ftpClient.on('error', err => {
-				console.log('ftpError! ', err);
-				message.reply('<:Error:849215023264169985> Could not connect to server.');
+				message.respond(keys.api.ftp.errors.unknown_ftp_error, { "error": err });
 				resolve(false);
 			});
 
@@ -34,23 +37,21 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				console.log('Could not connect to server.', err);
-				message.reply('<:Error:849215023264169985> Could not connect to server.');
+				message.respond(keys.api.ftp.errors.could_not_connect, { "error": err });
 				resolve(false);
 			}
 
 			ftpClient.on('ready', () => {
 				ftpClient.get(getPath, (err, stream) => {
 					if(err) {
-						console.log('Could not download file. Path: ' + getPath, err);
-						message.reply('<:Error:849215023264169985> Could not download files. The User never joined the server or the world path is incorrect.');
+						message.respond(keys.api.ftp.errors.could_not_get, argPlaceholder, { "error": err });
 						resolve(false);
 					} else {
 						stream.pipe(fs.createWriteStream(putPath));
 						stream.once('close', () => {
 							ftpClient.end();
 							resolve(true);
-							console.log(`File [${getPath}] successfully downloaded`);
+							message.respond(keys.api.ftp.success.get, argPlaceholder);
 						});
 					}
 				});
@@ -60,6 +61,8 @@ module.exports = {
 
 	put: function (getPath, putPath, message) {
 		return new Promise(async resolve => {
+			const argPlaceholder = { "path": getPath };
+
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
 			//Redirect to other protocols
@@ -71,8 +74,7 @@ module.exports = {
 
 			const ftpClient = new ftp();
 			ftpClient.on('error', err => {
-				console.log('ftpError! ', err);
-				message.reply('<:Error:849215023264169985> Could not connect to server.');
+				message.respond(keys.api.ftp.errors.unknown_ftp_error, { "error": err });
 				resolve(false);
 			});
 
@@ -87,21 +89,19 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				console.log('Could not connect to server. ', err);
-				message.reply('<:Error:849215023264169985> Could not connect to server.');
+				message.respond(keys.api.ftp.errors.could_not_connect, { "error": err });
 				resolve(false);
 			}
 
 			ftpClient.on('ready', () => {
 				ftpClient.put(getPath, putPath, err => {
 					if (err) {
-						console.log(`Could not put files. Path: ${getPath}`, err);
-						message.reply('<:Error:849215023264169985> Could not upload files.');
+						message.respond(keys.api.ftp.errors.could_not_put, argPlaceholder, { "error": err });
 						resolve(false);
 					} else {
 						ftpClient.end();
 						ftpClient.on('close', () => {
-							console.log(`File [${putPath}] successfully uploaded.`);
+							message.respond(keys.api.ftp.success.put, argPlaceholder);
 							resolve(true);
 						});
 					}
@@ -114,7 +114,7 @@ module.exports = {
 		return new Promise(resolve => {
 			const ftpClient = new ftp();
 			ftpClient.on('error', err => {
-				console.log('Could not connect to server.', err);
+				console.log(addPh(keys.api.ftp.errors.unknown_ftp_error.console, { "error": err }));
 				resolve(false);
 			});
 			try {
@@ -128,12 +128,12 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				console.log('Could not connect to server.', err);
+				console.log(addPh(keys.api.ftp.errors.could_not_connect, { "error": err }));
 				resolve(false);
 			}
 			ftpClient.on('ready', () => {
 				ftpClient.end();
-				console.log('Connected with ftp.');
+				console.log(keys.api.ftp.success.connect);
 				resolve(true);
 			});
 		});
@@ -143,7 +143,7 @@ module.exports = {
 		return new Promise(resolve => {
 			const ftpClient = new ftp();
 			ftpClient.on('error', err => {
-				console.log('ftpError! ', err);
+				console.log(addPh(keys.api.ftp.errors.unknown_ftp_error.console, { "error": err }));
 				resolve();
 			});
 			try {
@@ -157,12 +157,12 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				console.log('Could not connect to server.', err);
+				console.log(addPh(keys.api.ftp.errors.could_not_connect, { "error": err }));
 				resolve();
 			}
 			ftpClient.on('ready', async () => {
 				const foundFile = await findFile(ftpClient, file, start, maxDepth);
-				console.log(`Found file: ${foundFile}`);
+				console.log(addPh(keys.api.ftp.success.find, { "path": foundFile }));
 				resolve(foundFile);
 			});
 		});
