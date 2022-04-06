@@ -110,7 +110,7 @@ function addPh(key, ...placeholders) {
 
 
 function reply(interaction, key, ...placeholders) {
-    if(!interaction || !key || !placeholders) return console.error(keys.api.messages.errors.no_reply_arguments);
+    if(!interaction || !key || !placeholders) return console.error(keys.api.messages.errors.no_reply_arguments.console);
 
     placeholders = Object.assign(
         ph.fromStd(interaction),
@@ -137,7 +137,7 @@ function replyOptions(interaction, options) {
 
 
 function getComponentBuilder(key, ...placeholders) {
-    if(!key) return console.error(keys.api.messages.errors.no_component_key);
+    if(!key) return console.error(keys.api.messages.errors.no_component_key.console);
     key = addPh(key, ...placeholders);
 
     const actionRow = new Discord.MessageActionRow();
@@ -180,8 +180,8 @@ function getComponentBuilder(key, ...placeholders) {
 
 
 function getEmbedBuilder(key, ...placeholders) {
-    if(!key) return console.error(keys.api.messages.errors.no_embed_key);
-    else if(!key.title) return console.error(keys.api.messages.errors.no_embed_arguments);
+    if(!key) return console.error(keys.api.messages.errors.no_embed_key.console);
+    else if(!key.title) return console.error(keys.api.messages.errors.no_embed_arguments.console);
 
     key = addPh(key, ...placeholders);
 
@@ -208,8 +208,8 @@ function getEmbedBuilder(key, ...placeholders) {
 
 
 function getCommandBuilder(key) {
-    if(!key) return console.error(keys.api.messages.errors.no_command_key);
-    if(!key.name || !key.short_description) return console.error(keys.api.messages.errors.no_command_arguments);
+    if(!key) return console.error(keys.api.messages.errors.no_command_key.console);
+    if(!key.name || !key.short_description) return console.error(keys.api.messages.errors.no_command_arguments.console);
 
     const builder = new Builders.SlashCommandBuilder()
         .setName(key.name)
