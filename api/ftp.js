@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const utils = require('./utils');
 const sftp = require('./sftp');
 const plugin = require('./plugin');
-const { keys, addPh} = require('./messages');
+const { keys, addPh } = require('./messages');
 
 module.exports = {
 	get: function (getPath, putPath, message) {
@@ -61,7 +61,7 @@ module.exports = {
 
 	put: function (getPath, putPath, message) {
 		return new Promise(async resolve => {
-			const argPlaceholder = { "path": getPath };
+			const argPlaceholder = { "path": putPath };
 
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
