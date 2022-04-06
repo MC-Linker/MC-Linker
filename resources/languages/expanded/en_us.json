@@ -980,6 +980,11 @@
           "description": "%emoji_error% Could not save connection. Please try again.",
           "console": "Could not update connection %error%"
         },
+        "could_not_stream": {
+          "title": "Could Not Download",
+          "description": "%emoji_error% Could not download files. Please try again.",
+          "console": "Could not stream file [%path%] %error%"
+        },
         "status_400_404": {
           "title": "Unknown Bot Error",
           "description": "%emoji_error% An unknown bot error occurred",
@@ -1057,6 +1062,9 @@
         },
         "put": {
           "console": "Put file [%path%]"
+        },
+        "listening": {
+          "console": "Listening on port %port%"
         }
       }
     },

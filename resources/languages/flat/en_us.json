@@ -681,6 +681,10 @@
   "api.plugin.errors.could_not_update.description": "%emoji_error% Could not save connection. Please try again.",
   "api.plugin.errors.could_not_update.console": "Could not update connection %error%",
 
+  "api.plugin.errors.could_not_stream.title": "Could Not Download",
+  "api.plugin.errors.could_not_stream.description": "%emoji_error% Could not download files. Please try again.",
+  "api.plugin.errors.could_not_stream.console": "Could not stream file [%path%] %error%",
+
   "api.plugin.errors.status_400_404.title": "Unknown Bot Error",
   "api.plugin.errors.status_400_404.description": "%emoji_error% An unknown bot error occurred",
   "api.plugin.errors.status_400_404.console": "Unknown client error %error%",
@@ -731,6 +735,7 @@
 
   "api.plugin.success.get.console": "Got file [%path%]",
   "api.plugin.success.put.console": "Put file [%path%]",
+  "api.plugin.success.listening.console": "Listening on port %port%",
 
 
 
