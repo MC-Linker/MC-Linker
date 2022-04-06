@@ -1,5 +1,6 @@
 const fs = require('fs/promises');
 const fetch = require('node-fetch');
+const { keys, addPh } = require('./messages');
 
 function searchAdvancements(searchString, category, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
@@ -19,7 +20,7 @@ function searchAdvancements(searchString, category, shouldSearchValues = true, m
 
                 resolve(matchingTitles);
             }).catch(err => {
-                console.log('Error reading advancements file', err);
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, { "error": err }));
                 resolve(false);
             });
     });
@@ -49,7 +50,7 @@ function searchAllAdvancements(searchString, shouldSearchValues = true, maxLengt
                 if(returnArray.length >= maxLength) returnArray.length = maxLength;
                 resolve(returnArray);
             }).catch(err => {
-                console.log('Error reading advancements file', err);
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, { "error": err }));
                 resolve(false);
             });
     });
@@ -129,8 +130,7 @@ function getServerData(guildId, message) {
             .then(serverJson => {
                 resolve(JSON.parse(serverJson));
             }).catch(() => {
-                console.log('Error reading server file');
-                message.reply('<:Error:849215023264169985> Could not read server credentials. Please use `/connect plugin` or `/connect ftp` first.');
+                message.respond(keys.api.utils.errors.could_not_read_server_file);
                 resolve(false);
             });
     });
@@ -142,8 +142,7 @@ function getUserData(userId, message) {
             .then(userJson => {
                 resolve(JSON.parse(userJson));
             }).catch(() => {
-                console.log('Error reading user file');
-                message.reply(':warning: User never used `/connect account`! Instead of pinging someone you can also type in their **minecraft-username**.');
+                message.respond(keys.api.utils.errors.could_not_read_user_file);
                 resolve(false);
             });
     });
