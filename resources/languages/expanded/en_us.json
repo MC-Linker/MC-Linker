@@ -1081,12 +1081,12 @@
         "could_not_read_server_file": {
           "title": "Server Not Connected",
           "description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
-          "console": "Could not read server file %error%"
+          "console": "Could not read server file"
         },
         "could_not_read_user_file": {
           "title": "User Not Connected",
           "description": "%emoji_error% User never used `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
-          "console": "Could not read user file %error%"
+          "console": "Could not read user file"
         }
       }
     }

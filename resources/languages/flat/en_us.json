@@ -747,11 +747,11 @@
 
   "api.utils.errors.could_not_read_server_file.title": "Server Not Connected",
   "api.utils.errors.could_not_read_server_file.description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
-  "api.utils.errors.could_not_read_server_file.console": "Could not read server file %error%",
+  "api.utils.errors.could_not_read_server_file.console": "Could not read server file",
 
   "api.utils.errors.could_not_read_user_file.title": "User Not Connected",
   "api.utils.errors.could_not_read_user_file.description": "%emoji_error% User never used `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
-  "api.utils.errors.could_not_read_user_file.console": "Could not read user file %error%",
+  "api.utils.errors.could_not_read_user_file.console": "Could not read user file",
 
 
 
