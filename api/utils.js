@@ -4,7 +4,7 @@ const { keys, addPh } = require('./messages');
 
 function searchAdvancements(searchString, category, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
-        fs.readFile('./src/advancements.json', 'utf8')
+        fs.readFile('./resources/data/advancements.json', 'utf8')
             .then(advancementJson => {
                 const advancementData = JSON.parse(advancementJson);
                 const matchingCategory = advancementData.categories[category];
@@ -28,7 +28,7 @@ function searchAdvancements(searchString, category, shouldSearchValues = true, m
 
 function searchAllAdvancements(searchString, shouldSearchValues = true, maxLength= 25) {
     return new Promise(resolve => {
-        fs.readFile('./src/advancements.json', 'utf8')
+        fs.readFile('./resources/data/advancements.json', 'utf8')
             .then(advancementJson => {
                 const advancementData = JSON.parse(advancementJson);
 
