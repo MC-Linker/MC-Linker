@@ -27,7 +27,7 @@ async function execute(message, args) {
     args.shift();
     const category = args.shift()?.toLowerCase();
     let advancement = args.join(' ')?.toLowerCase();
-    const argPlaceholder = { "advancement_category": category, "advancement_name": advancement, username };
+    const argPlaceholder = { "advancement_category": category, "advancement_title": advancement, username };
 
     if(!username) {
         message.respond(keys.commands.advancements.warnings.no_username);
