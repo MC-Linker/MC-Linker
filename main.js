@@ -94,7 +94,7 @@ client.on('messageCreate', async message => {
         return messages.replyOptions(message, options);
     }
 
-    console.log(addPh(messages.keys.commands.executed.console, messages.ph.fromStd(message)));
+    message.respond(messages.keys.commands.executed.console);
 
     if(commandName === 'help') helpCommand.execute(message, args);
     else {
@@ -147,7 +147,7 @@ client.on('interactionCreate', async interaction => {
         if(interaction.commandName === 'message') await interaction.deferReply({ ephemeral: true });
         else await interaction.deferReply();
 
-        console.log(addPh(messages.keys.commands.executed.console,  messages.ph.fromStd(interaction)));
+        interaction.respond(messages.keys.commands.executed);
 
         if (interaction.commandName === 'help') {
             await helpCommand.execute(interaction, args);
