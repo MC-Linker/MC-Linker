@@ -103,7 +103,7 @@ async function loadExpress(client) {
 
     app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>'))
 
-    app.listen(botPort, function () { console.log(addPh(keys.api.plugin.success.listening, { "port": this.address().port })) });
+    app.listen(botPort, function () { console.log(addPh(keys.api.plugin.success.listening.console, { "port": this.address().port })) });
     return app;
 }
 
