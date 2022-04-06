@@ -1,6 +1,8 @@
 const sftp = require('ssh2-sftp-client');
 const plugin = require('./plugin');
 const utils = require('./utils');
+const { keys, addPh} = require('./messages');
+
 module.exports = {
 	get: function (getPath, putPath, message) {
 		return new Promise(async resolve => {
@@ -25,16 +27,15 @@ module.exports = {
 				try {
 					await sftpClient.fastGet(getPath, putPath);
 					sftpClient.end();
-					console.log(`File [${getPath}] successfully downloaded`);
+					message.respond(keys.api.ftp.success.get, { "path": getPath });
 					resolve(true);
 				} catch (err) {
-					console.log(`Could not download files. Path: ${getPath}`, err);
-					message.reply('<:Error:849215023264169985> Could not download files. The User never joined the server or the world path is incorrect.');
+					message.respond(keys.api.ftp.errors.could_not_get, { "path": getPath, "error": err });
 					sftpClient.end();
 					resolve(false);
 				}
 			} catch (err) {
-				console.log('Could not connect to server with sftp.', err);
+				message.respond(keys.api.ftp.errors.could_not_connect, { "error": err });
 				resolve(false);
 			}
 		});
@@ -63,16 +64,15 @@ module.exports = {
 				try {
 					await sftpClient.fastPut(getPath, putPath);
 					sftpClient.end();
-					console.log(`File [${getPath}] successfully uploaded`);
+					message.respond(keys.api.ftp.success.put, { "path": putPath });
 					resolve(true);
 				} catch (err) {
-					console.log(`Could not upload files. Path: ${getPath}`, err);
-					message.reply('<:Error:849215023264169985> Could not upload files.');
+					message.respond(keys.api.ftp.errors.could_not_put, { "path": putPath, "error": err });
 					sftpClient.end();
 					resolve(false);
 				}
 			} catch (err) {
-				console.log('Could not connect to server with sftp.', err);
+				message.respond(keys.api.ftp.errors.could_not_connect, { "error": err });
 				resolve(false);
 			}
 		});
@@ -89,10 +89,10 @@ module.exports = {
 					port: credentials.port
 				});
 				sftpClient.end();
-				console.log('Connected with sftp.');
+				console.log(keys.api.ftp.success.connect.console);
 				resolve(true);
 			} catch (err) {
-				console.log('Could not connect to server with sftp.', err);
+				console.log(addPh(keys.api.ftp.errors.could_not_connect, { "error": err }));
 				resolve(false);
 			}
 		})
@@ -110,10 +110,10 @@ module.exports = {
 				});
 
 				const foundFile = await findFile(sftpClient, file, start, maxDepth);
-				console.log(`Found file: ${foundFile}`);
+				console.log(keys.api.ftp.success.find.console, { "path": foundFile });
 				resolve(foundFile);
 			} catch (err) {
-				console.log('Could not connect to server with sftp.', err);
+				console.log(addPh(keys.api.ftp.errors.could_not_connect, { "error": err }));
 				resolve(false);
 			}
 		});

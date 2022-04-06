@@ -9,8 +9,6 @@ const { keys, addPh } = require('./messages');
 module.exports = {
 	get: function (getPath, putPath, message) {
 		return new Promise(async resolve => {
-			const argPlaceholder = { "path": getPath };
-
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
 			//Redirect to other protocols
@@ -44,14 +42,14 @@ module.exports = {
 			ftpClient.on('ready', () => {
 				ftpClient.get(getPath, (err, stream) => {
 					if(err) {
-						message.respond(keys.api.ftp.errors.could_not_get, argPlaceholder, { "error": err });
+						message.respond(keys.api.ftp.errors.could_not_get, { "path": getPath, "error": err });
 						resolve(false);
 					} else {
 						stream.pipe(fs.createWriteStream(putPath));
 						stream.once('close', () => {
 							ftpClient.end();
 							resolve(true);
-							message.respond(keys.api.ftp.success.get, argPlaceholder);
+							message.respond(keys.api.ftp.success.get, { "path": getPath });
 						});
 					}
 				});
@@ -61,8 +59,6 @@ module.exports = {
 
 	put: function (getPath, putPath, message) {
 		return new Promise(async resolve => {
-			const argPlaceholder = { "path": putPath };
-
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
 			//Redirect to other protocols
@@ -96,12 +92,12 @@ module.exports = {
 			ftpClient.on('ready', () => {
 				ftpClient.put(getPath, putPath, err => {
 					if (err) {
-						message.respond(keys.api.ftp.errors.could_not_put, argPlaceholder, { "error": err });
+						message.respond(keys.api.ftp.errors.could_not_put, { "path": putPath, "error": err });
 						resolve(false);
 					} else {
 						ftpClient.end();
 						ftpClient.on('close', () => {
-							message.respond(keys.api.ftp.success.put, argPlaceholder);
+							message.respond(keys.api.ftp.success.put, { "path": putPath });
 							resolve(true);
 						});
 					}
@@ -133,7 +129,7 @@ module.exports = {
 			}
 			ftpClient.on('ready', () => {
 				ftpClient.end();
-				console.log(keys.api.ftp.success.connect);
+				console.log(keys.api.ftp.success.connect.console);
 				resolve(true);
 			});
 		});
