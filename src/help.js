@@ -47,12 +47,14 @@ async function execute(message, args) {
                     keys.commands.help.success.disable_button.components,
                     { "command_name": command.name }, ph.fromStd(message)
                 );
+
                 message.reply({ embeds: [helpEmbed], components: [disableRow] });
             } else if (disabled) {
                 const enableRow = getComponentBuilder(
                     keys.commands.help.success.enable_button.components,
                     { "command_name": command.name }, ph.fromStd(message)
                 );
+
                 helpEmbed.setDescription(keys.commands.help.success.disabled.description);
                 message.reply({ embeds: [helpEmbed], components: [enableRow] });
             }
