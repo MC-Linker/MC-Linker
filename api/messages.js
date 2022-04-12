@@ -117,19 +117,26 @@ function reply(interaction, key, ...placeholders) {
         ...placeholders
     );
 
-    const embed = getEmbedBuilder(key, placeholders);
-    const options = { embeds: [embed] };
+    const options = {};
+
+    if(key.title) {
+        const embed = getEmbedBuilder(key, placeholders);
+        if(embed) options.embeds = [embed]; //Add embeds to message options
+    }
 
     if(key.components) {
         const actionRow = getComponentBuilder(key, placeholders);
-        options.components = [actionRow]; //Add components to message options
+        if(actionRow) options.components = [actionRow]; //Add components to message options
     }
 
     //Reply to interaction
     if(key.console) console.log(addPh(key.console, placeholders));
+
+    if(!options.embeds) return; //If only console don't reply
     if(interaction instanceof Discord.Message || !interaction?.deferred) return interaction.reply(options);
     else return interaction.editReply(options);
 }
+
 function replyOptions(interaction, options) {
     if(interaction instanceof Discord.Message || !interaction?.deferred) return interaction.reply(options);
     else return interaction.editReply(options);
