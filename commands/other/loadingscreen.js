@@ -46,7 +46,7 @@ async function execute(message, args) {
 
 	const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojangstudios.png');
 	const loadEmbed = getEmbedBuilder(keys.commands.loadingscreen.success);
-	message.reply({ embeds: [loadEmbed], files: [attachment] });
+	message.replyOptions({ embeds: [loadEmbed], files: [attachment] });
 }
 
 module.exports = { execute };

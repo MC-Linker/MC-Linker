@@ -133,8 +133,7 @@ function reply(interaction, key, ...placeholders) {
     if(key.console) console.log(addPh(key.console, placeholders));
 
     if(!options.embeds) return; //If only console don't reply
-    if(interaction instanceof Discord.Message || !interaction?.deferred) return interaction.reply(options);
-    else return interaction.editReply(options);
+    replyOptions(interaction, options);
 }
 
 function replyOptions(interaction, options) {
@@ -204,6 +203,7 @@ function getEmbedBuilder(key, ...placeholders) {
     }
 
     if(key.description) embed.setDescription(key.description);
+    if(key.color) embed.setColor(key.color);
     if(key.author) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
     if(key.timestamp) embed.setTimestamp(key.timestamp);

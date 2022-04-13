@@ -78,7 +78,7 @@ async function execute(message, args) {
             );
         }
 
-        message.reply({ embeds: [listEmbed] });
+        message.replyOptions({ embeds: [listEmbed] });
     } else {
         let toDisable = args?.join(' ').toLowerCase();
         const argPlaceholder = { "disable": toDisable, type };

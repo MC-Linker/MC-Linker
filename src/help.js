@@ -32,7 +32,7 @@ async function execute(message, args) {
                     keys.commands.help.success.category.fields.information.name,
                     addPh(keys.commands.help.success.category.fields.information.content, { "discord_link": discordLink })
                 );
-                message.reply({ embeds: [helpEmbed] });
+                message.replyOptions({ embeds: [helpEmbed] });
             });
         } else {
             const helpEmbed = getEmbedBuilder(
@@ -48,7 +48,7 @@ async function execute(message, args) {
                     { "command_name": command.name }, ph.fromStd(message)
                 );
 
-                message.reply({ embeds: [helpEmbed], components: [disableRow] });
+                message.replyOptions({ embeds: [helpEmbed], components: [disableRow] });
             } else if (disabled) {
                 const enableRow = getComponentBuilder(
                     keys.commands.help.success.enable_button.components,
@@ -56,7 +56,7 @@ async function execute(message, args) {
                 );
 
                 helpEmbed.setDescription(keys.commands.help.success.disabled.description);
-                message.reply({ embeds: [helpEmbed], components: [enableRow] });
+                message.replyOptions({ embeds: [helpEmbed], components: [enableRow] });
             }
         }
     }

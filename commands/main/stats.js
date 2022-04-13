@@ -119,7 +119,7 @@ async function execute(message, args) {
                     message.respond(keys.commands.stats.errors.could_not_read_file, { "error": err });
                     return;
                 }
-                message.reply({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
+                message.replyOptions({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
             });
         } catch (err) {
             message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, { "error": err });

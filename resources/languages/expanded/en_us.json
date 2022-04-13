@@ -20,11 +20,73 @@
     "mc_t": "<:MinecraftT:849561902979350529>",
     "mc_a": "<:MinecraftA:849561916632465408>"
   },
+  "main": {
+    "warnings": {
+      "undefined_guild_create": {
+        "console": "Received undefined guild in guildCreate event: %guild%"
+      },
+      "undefined_guild_delete": {
+        "console": "Received undefined guild in guildDelete event: %guild%"
+      },
+      "disabled": {
+        "title": "Command Disabled",
+        "description": "%emoji_no_entry% Command **%interaction_name%** disabled!",
+        "console": "Command disabled"
+      },
+      "not_in_guild": {
+        "title": "Guild-Only",
+        "description": "%emoji_warning% I can only be used in server channels!",
+        "console": "Not in guild"
+      }
+    },
+    "errors": {
+      "unknown_rejection": {
+        "console": "Unknown promise rejection %error%"
+      },
+      "could_not_post_stats": {
+        "console": "Could not post stats to Top.gg"
+      },
+      "no_connection_file": {
+        "console": "No connection file found for guild: %guild_name%"
+      },
+      "could_not_execute_command": {
+        "title": "Unknown Error",
+        "description": "%emoji_error% An unknown error occurred while executing this command. Please try again.",
+        "console": "Could not execute command %error%"
+      }
+    },
+    "success": {
+      "login": {
+        "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers."
+      },
+      "ping": {
+        "title": "Hey! :wave:",
+        "description": "I use slash commands. Type `/help` if you need more help to a specific command.",
+        "color": "BLUE"
+      },
+      "guild_create": {
+        "console": "Joined a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!"
+      },
+      "guild_delete": {
+        "console": "Left a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!"
+      },
+      "disconnected": {
+        "console": "Successfully deleted connection file of guild: %guild.name%"
+      }
+    }
+  },
   "commands": {
     "executed": {
       "console": "%author_tag% executed /%interaction_name% %args% in %guild_name%"
     },
     "help": {
+      "warnings": {
+        "command_does_not_exist": {
+          "title": "Command/Category Does Not Exist",
+          "description": "%emoji_warning% Command/Category **%command_name%** does not exist.",
+          "console": "Command/Category does not exist"
+        }
+      },
       "success": {
         "base": {
           "title": "Help Menu",
@@ -116,13 +178,6 @@
         },
         "disabled": {
           "description": "You can find helpful information here.\n```diff\n- [COMMAND DISABLED]```"
-        }
-      },
-      "warnings": {
-        "command_does_not_exist": {
-          "title": "Command/Category Does Not Exist",
-          "description": "%emoji_warning% Command/Category **%command_name%** does not exist.",
-          "console": "Command/Category does not exist"
         }
       }
     },

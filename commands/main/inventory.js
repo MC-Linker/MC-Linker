@@ -185,8 +185,8 @@ async function execute(message, args) {
             const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), `Inventory_Player.png`);
             const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, { username });
 
-            if(enchantEmbed.fields.length >= 1) message.reply({ files: [invImg], embeds: [invEmbed, enchantEmbed] });
-            else message.reply({ files: [invImg], embeds: [invEmbed] });
+            if(enchantEmbed.fields.length >= 1) message.replyOptions({ files: [invImg], embeds: [invEmbed, enchantEmbed] });
+            else message.replyOptions({ files: [invImg], embeds: [invEmbed] });
         });
     });
 }

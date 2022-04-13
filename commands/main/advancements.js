@@ -147,7 +147,7 @@ async function execute(message, args) {
             }
 
             console.log(addPh(keys.commands.advancements.success.final.console, argPlaceholder));
-            message.reply({ embeds: [amEmbed] });
+            message.replyOptions({ embeds: [amEmbed] });
         } catch (err) {
             message.respond(keys.commands.advancements.warnings.not_completed, argPlaceholder);
         }

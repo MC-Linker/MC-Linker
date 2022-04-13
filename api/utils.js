@@ -82,8 +82,7 @@ function getUUIDv4(username, userId, message) {
                     for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
                     resolve(uuidv4.join(''));
                 }).catch(() => {
-                    console.log(`Error getting uuid of ${username}`);
-                    message.reply(`<:Error:849215023264169985>  [**${username}**] is not a valid minecraft java edition account name.`);
+                    message.respond(keys.api.utils.errors.could_not_get_uuid, { username });
                     resolve(false);
                 });
         } else {

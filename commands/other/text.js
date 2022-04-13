@@ -40,7 +40,7 @@ async function execute(message, args) {
 
     const fontImg = new Discord.MessageAttachment(fontCanvas.toBuffer(), 'text_image.png');
     const textEmbed = getEmbedBuilder(keys.commands.text.success, ph.fromStd(message));
-    message.reply({ embeds: [textEmbed], files: [fontImg] });
+    message.replyOptions({ embeds: [textEmbed], files: [fontImg] });
 }
 
 module.exports = { execute };
