@@ -23,7 +23,7 @@ async function execute(message, args) {
                     command = keys.data[commandFile];
 
                     helpEmbed.addField(
-                        addPh(keys.commands.help.success.category.fields.command.name, { "command_name": command.name }),
+                        addPh(keys.commands.help.success.category.fields.command.name, { "command_name": command.name.cap() }),
                         addPh(keys.commands.help.success.category.fields.command.content, { "command_short_description": command.short_description })
                     );
                 });
@@ -38,7 +38,7 @@ async function execute(message, args) {
             const helpEmbed = getEmbedBuilder(
                 keys.commands.help.success.command,
                 ph.fromStd(message),
-                { "command_name": command.name.cap(), "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example }
+                { "command_name": command.name.toUpperCase(), "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example }
             );
 
             const disabled = await settings.getDisabled(message.guildId, 'commands');
