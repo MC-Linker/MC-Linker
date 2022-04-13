@@ -86,7 +86,7 @@
           "fields": {
             "command": {
               "name": "%command_name%",
-              "content": "%command_long_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%"
+              "content": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%"
             }
           }
         },
@@ -1289,7 +1289,7 @@
     },
     "stats": {
       "name": "stats",
-      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
+      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
       "short_description": "Look at your and other member's minecraft server stats.",
       "usage": "/stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**>",
       "example": "/stats @Lianecx mined iron_ore **//** /stats @Memer custom play_time **//** /stats xXgamerboyyXx killed blaze",

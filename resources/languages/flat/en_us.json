@@ -72,7 +72,7 @@
   "commands.help.success.command.color": "NOT_QUITE_BLACK",
 
   "commands.help.success.command.fields.command.name": "%command_name%",
-  "commands.help.success.command.fields.command.content": "%command_long_description%\n\n**USAGE**:\n%command_usage%\n\n**EXAMPLE**:\n%command_example%",
+  "commands.help.success.command.fields.command.content": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%",
 
 
   "commands.help.success.disable_button.components.buttons.disable.style": "DANGER",
@@ -906,7 +906,7 @@
 
 
   "data.stats.name": "stats",
-  "data.stats.long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found in this [Website](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
+  "data.stats.long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
   "data.stats.short_description": "Look at your and other member's minecraft server stats.",
   "data.stats.usage": "/stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**>",
   "data.stats.example": "/stats @Lianecx mined iron_ore **//** /stats @Memer custom play_time **//** /stats xXgamerboyyXx killed blaze",
