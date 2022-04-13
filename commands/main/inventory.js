@@ -5,7 +5,7 @@ const ftp = require('../../api/ftp');
 const Canvas = require('canvas');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
-const { keys, addPh, getEmbedBuilder } = require('../../api/messages');
+const { keys, addPh, getEmbedBuilder, ph } = require('../../api/messages');
 
 async function execute(message, args) {
     const username = message.mentions.users.first()?.tag ?? args[0];
@@ -25,13 +25,13 @@ async function execute(message, args) {
 
     fs.readFile(`./userdata/playernbt/${uuidv4}.dat`, (err, playerNBT) => {
         if(err) {
-            message.respond(keys.commands.inventory.errors.could_not_read_file, { "error": err });
+            message.respond(keys.commands.inventory.errors.could_not_read_file, ph.fromError(err));
             return;
         }
 
         nbt.parse(playerNBT, async (err, playerData) => {
             if (err) {
-                message.respond(keys.commands.inventory.errors.could_not_parse, { "error": err });
+                message.respond(keys.commands.inventory.errors.could_not_parse, ph.fromError(err));
                 return;
             }
 

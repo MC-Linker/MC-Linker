@@ -87,7 +87,16 @@ ph.fromStd = function(interaction) {
     );
 }
 
+ph.fromError = function(err) {
+    if(!err instanceof Error) return {};
 
+    return {
+        "error": err.stack
+    }
+}
+
+
+// noinspection JSUnusedAssignment
 function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
@@ -143,13 +152,14 @@ function replyOptions(interaction, options) {
 
 
 function getComponentBuilder(key, ...placeholders) {
+    console.log(key)
     if(!key) return console.error(keys.api.messages.errors.no_component_key.console);
     key = addPh(key, ...placeholders);
 
     const actionRow = new Discord.MessageActionRow();
 
     //Loop over each select menu
-    for (const selectMenu of Object.values(key.select_menus ?? {})) {
+    for (const selectMenu of Object.values(key.components.select_menus ?? {})) {
         if(!selectMenu.id || !selectMenu.options) continue;
 
         const menu = new Discord.MessageSelectMenu()
@@ -158,7 +168,7 @@ function getComponentBuilder(key, ...placeholders) {
 
         if(selectMenu.min_values) menu.setMinValues(selectMenu.min_values);
         if(selectMenu.max_values) menu.setMaxValues(selectMenu.max_values);
-        if(selectMenu.disabled) menu.setDisabled(selectMenu.min_values);
+        if(selectMenu.disabled) menu.setDisabled(selectMenu.disabled);
         if(selectMenu.placeholder) menu.setPlaceholder(selectMenu.placeholder);
 
 
@@ -166,7 +176,7 @@ function getComponentBuilder(key, ...placeholders) {
     }
 
     //Loop over each button
-    for(const button of Object.values(key.buttons ?? {})) {
+    for(const button of Object.values(key.components.buttons ?? {})) {
         if(!button.label || !button.id || !button.style) continue;
 
         const but = new Discord.MessageButton()
@@ -304,6 +314,7 @@ function addOption(builder, key) {
 
             if(key.channel_types) optionBuilder.addChannelTypes(key.channel_types);
 
+            console.log(optionBuilder)
             builder.addChannelOption(optionBuilder);
             break;
         case 'ROLE':
@@ -356,6 +367,7 @@ function getArgs(interaction) {
     if(options._hoistedOptions[0]) {
         options._hoistedOptions.forEach(option => {
             if(option.type === 'USER') args.unshift(option.user.tag);
+            else if(option.type === 'CHANNEL') args.push(option.channel);
             else args.push(option.value);
         });
     }

@@ -19,9 +19,9 @@ const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
 //Handle rejected promises
-process.on('unhandledRejection', async err => {
-    console.log(addPh(keys.main.errors.unknown_rejection, { "error": err }));
-});
+/*process.on('unhandledRejection', async err => {
+    console.log(addPh(keys.main.errors.unknown_rejection.console, ph.fromError(err)));
+});*/
 
 /*
  * Converts the first letter of a string to uppercase.
@@ -35,24 +35,24 @@ if(topggToken) {
     const poster = AutoPoster(topggToken, client);
 
     poster.on('posted', () => {});
-    poster.on('error', () => console.log(keys.main.errors.could_not_post_stats));
+    poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
 }
 
 client.once('ready', async () => {
-    console.log(addPh(keys.main.success.login, ph.fromClient(client), { prefix, "guild_count": client.guilds.cache.size }));
+    console.log(addPh(keys.main.success.login.console, ph.fromClient(client), { prefix, "guild_count": client.guilds.cache.size }));
     client.user.setActivity('/help', { type: 'LISTENING' });
     await plugin.loadExpress(client);
 });
 
 client.on('guildCreate', guild => {
-    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create, { guild }));
-    console.log(addPh(keys.main.success.guild_create, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
+    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create.console, { guild }));
+    console.log(addPh(keys.main.success.guild_create.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
 });
 
 client.on('guildDelete', async guild => {
 
-    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete, { guild }));
-    console.log(addPh(keys.main.success.guild_delete, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
+    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
+    console.log(addPh(keys.main.success.guild_delete.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
 
     //Fake message
     const message = {};
@@ -73,7 +73,7 @@ for (const folder of commandFolders) {
 	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(command => command.endsWith('.js'));
 	for (const file of commandFiles) {
 		const command = require(`./commands/${folder}/${file}`);
-		client.commands.set(command.name, command);
+		client.commands.set(file.replace('.js', ''), command);
 	}
 }
 
@@ -95,22 +95,22 @@ client.on('messageCreate', async message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    message.respond(keys.commands.executed.console);
+    message.respond(keys.commands.executed);
 
     if(commandName === 'help') await helpCommand.execute(message, args);
     else {
         const command = client.commands.get(commandName);
         if(!command) return;
 
-        if(await settings.isDisabled(message.guildId, 'commands', command.name)) {
+        if(await settings.isDisabled(message.guildId, 'commands', commandName)) {
             message.respond(keys.main.warnings.disabled);
         }
 
         try {
-            await command.execute(message, args)
-                .catch(err => message.respond(keys.main.errors.could_not_execute_command, { "error": err }));
+            await command?.execute?.(message, args)
+                .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err)));
         } catch (err) {
-            message.respond(keys.main.errors.could_not_execute_command, { "error": err })
+            message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err))
         }
     }
 });
@@ -151,16 +151,16 @@ client.on('interactionCreate', async interaction => {
             const command = client.commands.get(interaction.commandName);
 
             //Check if command disabled
-            if(await settings.isDisabled(interaction.guildId, 'commands', command.name)) {
+            if(await settings.isDisabled(interaction.guildId, 'commands', interaction.commandName)) {
                 interaction.respond(keys.main.warnings.disabled);
                 return;
             }
 
             try {
                 await command?.execute?.(interaction, args)
-                    .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, { "errors": err }));
+                    .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err)));
             } catch (err) {
-                interaction.respond(keys.main.errors.could_not_execute_command, { "errors": err });
+                interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err));
             }
         }
 

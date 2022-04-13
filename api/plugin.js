@@ -151,7 +151,7 @@ function connect(ip, guildId, verifyCode, message) {
                 else message.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, { "ip": conn.ip }));
             } catch(err) {
                 message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { "ip": conn.ip }));
-            } finally {1
+            } finally {
                 pluginConnections.splice(connIndex, 1);
             }
         } else if(conn) pluginConnections.splice(connIndex, 1);
@@ -414,7 +414,7 @@ async function updateConn(message) {
     return new Promise(resolve => {
         fs.promises.writeFile('./serverdata/connections/connections.json', JSON.stringify(pluginConnections, null, 2), 'utf-8')
             .catch(err => {
-                message.respond(keys.api.plugin.errors.could_not_update, { "error": err });
+                message.respond(keys.api.plugin.errors.could_not_update, ph.fromError(err));
                 resolve(false);
             }).then(() => resolve(true));
     });

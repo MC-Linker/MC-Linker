@@ -1,7 +1,8 @@
 const sftp = require('ssh2-sftp-client');
+const ftp = require('./ftp');
 const plugin = require('./plugin');
 const utils = require('./utils');
-const { keys, addPh} = require('./messages');
+const { keys, addPh, ph } = require('./messages');
 
 module.exports = {
 	get: function (getPath, putPath, message) {
@@ -9,7 +10,7 @@ module.exports = {
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
 			//Redirect to other protocols
-			if(protocol === 'sftp') return resolve(await sftp.get(getPath, putPath, message));
+			if(protocol === 'ftp') return resolve(await ftp.get(getPath, putPath, message));
 			else if(protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, message));
 
 			const ftpData = await utils.getServerData(message.guild.id, message);
@@ -35,7 +36,7 @@ module.exports = {
 					resolve(false);
 				}
 			} catch (err) {
-				message.respond(keys.api.ftp.errors.could_not_connect, { "error": err });
+				message.respond(keys.api.ftp.errors.could_not_connect, ph.fromError(err));
 				resolve(false);
 			}
 		});
@@ -46,7 +47,7 @@ module.exports = {
 			const protocol = await utils.getProtocol(message.guild.id, message);
 
 			//Redirect to other protocols
-			if(protocol === 'sftp') return resolve(await sftp.get(getPath, putPath, message));
+			if(protocol === 'ftp') return resolve(await ftp.get(getPath, putPath, message));
 			else if(protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, message));
 
 			const ftpData = await utils.getServerData(message.guild.id, message);
@@ -72,7 +73,7 @@ module.exports = {
 					resolve(false);
 				}
 			} catch (err) {
-				message.respond(keys.api.ftp.errors.could_not_connect, { "error": err });
+				message.respond(keys.api.ftp.errors.could_not_connect, ph.fromError(err));
 				resolve(false);
 			}
 		});
@@ -92,7 +93,7 @@ module.exports = {
 				console.log(keys.api.ftp.success.connect.console);
 				resolve(true);
 			} catch (err) {
-				console.log(addPh(keys.api.ftp.errors.could_not_connect, { "error": err }));
+				console.log(addPh(keys.api.ftp.errors.could_not_connect, ph.fromError(err)));
 				resolve(false);
 			}
 		})
@@ -113,7 +114,7 @@ module.exports = {
 				console.log(keys.api.ftp.success.find.console, { "path": foundFile });
 				resolve(foundFile);
 			} catch (err) {
-				console.log(addPh(keys.api.ftp.errors.could_not_connect, { "error": err }));
+				console.log(addPh(keys.api.ftp.errors.could_not_connect, ph.fromError(err)));
 				resolve(false);
 			}
 		});

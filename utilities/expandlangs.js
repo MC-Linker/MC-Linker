@@ -18,5 +18,3 @@ function convertKeys() {
         fs.writeFileSync(`../resources/languages/expanded/${lang}`, JSON.stringify(converted, null, 2), 'utf-8');
     });
 }
-
-module.exports = { convertKeys };

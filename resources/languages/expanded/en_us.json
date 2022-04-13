@@ -1627,18 +1627,6 @@
           "name": "text",
           "description": "Enter your text here.",
           "required": true
-        },
-        "channel": {
-          "type": "CHANNEL",
-          "description": "Set the channel.",
-          "required": true,
-          "channel_types": [
-            0,
-            5,
-            10,
-            11,
-            12
-          ]
         }
       }
     },
@@ -1650,7 +1638,17 @@
       "example": "/chatchannel #smp-chat",
       "options": {
         "channel": {
-          "name": "channel"
+          "type": "CHANNEL",
+          "name": "channel",
+          "description": "Set the channel.",
+          "required": true,
+          "channel_types": [
+            0,
+            5,
+            10,
+            11,
+            12
+          ]
         }
       }
     },

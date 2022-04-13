@@ -1179,11 +1179,11 @@
   "data.chatchannel.usage": "/chatchannel <channel>",
   "data.chatchannel.example": "/chatchannel #smp-chat",
 
-  "data.text.options.channel.type": "CHANNEL",
+  "data.chatchannel.options.channel.type": "CHANNEL",
   "data.chatchannel.options.channel.name": "channel",
-  "data.text.options.channel.description": "Set the channel.",
-  "data.text.options.channel.required": true,
-  "data.text.options.channel.channel_types": [0, 5, 10, 11, 12],
+  "data.chatchannel.options.channel.description": "Set the channel.",
+  "data.chatchannel.options.channel.required": true,
+  "data.chatchannel.options.channel.channel_types": [0, 5, 10, 11, 12],
 
 
 

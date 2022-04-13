@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const utils = require('./utils');
 const sftp = require('./sftp');
 const plugin = require('./plugin');
-const { keys, addPh } = require('./messages');
+const { keys, addPh, ph } = require('./messages');
 
 module.exports = {
 	get: function (getPath, putPath, message) {
@@ -20,7 +20,7 @@ module.exports = {
 
 			const ftpClient = new ftp();
 			ftpClient.on('error', err => {
-				message.respond(keys.api.ftp.errors.unknown_ftp_error, { "error": err });
+				message.respond(keys.api.ftp.errors.unknown_ftp_error, ph.fromError(err));
 				resolve(false);
 			});
 
@@ -35,7 +35,7 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				message.respond(keys.api.ftp.errors.could_not_connect, { "error": err });
+				message.respond(keys.api.ftp.errors.could_not_connect, ph.fromError(err));
 				resolve(false);
 			}
 
@@ -70,7 +70,7 @@ module.exports = {
 
 			const ftpClient = new ftp();
 			ftpClient.on('error', err => {
-				message.respond(keys.api.ftp.errors.unknown_ftp_error, { "error": err });
+				message.respond(keys.api.ftp.errors.unknown_ftp_error, ph.fromError(err));
 				resolve(false);
 			});
 
@@ -85,7 +85,7 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				message.respond(keys.api.ftp.errors.could_not_connect, { "error": err });
+				message.respond(keys.api.ftp.errors.could_not_connect, ph.fromError(err));
 				resolve(false);
 			}
 
@@ -110,7 +110,7 @@ module.exports = {
 		return new Promise(resolve => {
 			const ftpClient = new ftp();
 			ftpClient.on('error', err => {
-				console.log(addPh(keys.api.ftp.errors.unknown_ftp_error.console, { "error": err }));
+				console.log(addPh(keys.api.ftp.errors.unknown_ftp_error.console, ph.fromError(err)));
 				resolve(false);
 			});
 			try {
@@ -124,7 +124,7 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				console.log(addPh(keys.api.ftp.errors.could_not_connect, { "error": err }));
+				console.log(addPh(keys.api.ftp.errors.could_not_connect, ph.fromError(err)));
 				resolve(false);
 			}
 			ftpClient.on('ready', () => {
@@ -139,7 +139,7 @@ module.exports = {
 		return new Promise(resolve => {
 			const ftpClient = new ftp();
 			ftpClient.on('error', err => {
-				console.log(addPh(keys.api.ftp.errors.unknown_ftp_error.console, { "error": err }));
+				console.log(addPh(keys.api.ftp.errors.unknown_ftp_error.console, ph.fromError(err)));
 				resolve();
 			});
 			try {
@@ -153,7 +153,7 @@ module.exports = {
 					},
 				});
 			} catch (err) {
-				console.log(addPh(keys.api.ftp.errors.could_not_connect, { "error": err }));
+				console.log(addPh(keys.api.ftp.errors.could_not_connect, ph.fromError(err)));
 				resolve();
 			}
 			ftpClient.on('ready', async () => {

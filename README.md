@@ -12,7 +12,7 @@ To use most of the commands you’ll have to connect your Minecraft **java editi
 	+ Execute `/connect plugin YOUR.SERVER.IP` in Discord
 	+ Follow the instructions sent in DM
 	+ After connecting you can also execute `/chatchannel CHANNEL` in Discord if you want to connect the minecraft chat with Discord
-+ FTP (doesnt support minecraft chat)
++ FTP (doesn't support minecraft chat)
 	+ Get the ftp credentials on your Minecraft server’s dashboard. Not all server hosts support ftp, join the [Support Server](https://discord.gg/rX36kZUGNK) if you need help getting the credentials
 	+ Execute `/connect ftp` in Discord and enter your credentials
 

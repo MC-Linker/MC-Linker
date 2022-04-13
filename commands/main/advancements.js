@@ -82,7 +82,7 @@ async function execute(message, args) {
 
     fs.readFile(`./userdata/advancements/${uuidv4}.json`, 'utf8', async (err, advancementJson) => {
         if(err) {
-            message.respond(keys.commands.advancements.errors.could_not_read_file, { "error": err });
+            message.respond(keys.commands.advancements.errors.could_not_read_file, ph.fromError(err));
             return;
         }
 

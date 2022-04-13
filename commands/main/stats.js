@@ -67,7 +67,7 @@ async function execute(message, args) {
 
     fs.readFile(`./userdata/stats/${uuidv4}.json`, 'utf8', async (err, statJson) => {
         if (err) {
-            message.respond(keys.commands.stats.errors.could_not_read_file, { "error": err });
+            message.respond(keys.commands.stats.errors.could_not_read_file, ph.fromError(err));
             return;
         }
 
@@ -116,13 +116,13 @@ async function execute(message, args) {
 
             fs.access(`./resources/images/minecraft/${imgType}/${stat}.png`, err => {
                 if (err) {
-                    message.respond(keys.commands.stats.errors.could_not_read_file, { "error": err });
+                    message.respond(keys.commands.stats.errors.could_not_read_file, ph.fromError(err));
                     return;
                 }
                 message.replyOptions({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
             });
         } catch (err) {
-            message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, { "error": err });
+            message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.fromError(err));
         }
     });
 }

@@ -1,6 +1,6 @@
 const fs = require('fs/promises');
 const fetch = require('node-fetch');
-const { keys, addPh } = require('./messages');
+const { keys, addPh, ph } = require('./messages');
 
 function searchAdvancements(searchString, category, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
@@ -20,7 +20,7 @@ function searchAdvancements(searchString, category, shouldSearchValues = true, m
 
                 resolve(matchingTitles);
             }).catch(err => {
-                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, { "error": err }));
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, ph.fromError(err)));
                 resolve(false);
             });
     });
@@ -50,7 +50,7 @@ function searchAllAdvancements(searchString, shouldSearchValues = true, maxLengt
                 if(returnArray.length >= maxLength) returnArray.length = maxLength;
                 resolve(returnArray);
             }).catch(err => {
-                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, { "error": err }));
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, ph.fromError(err)));
                 resolve(false);
             });
     });

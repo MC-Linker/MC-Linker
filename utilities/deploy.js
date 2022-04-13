@@ -1,3 +1,5 @@
+// noinspection JSCheckFunctionSignatures
+
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { token, clientId } = require('../config.json');
