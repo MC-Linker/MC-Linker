@@ -39,7 +39,7 @@ async function execute(message, args) {
                 "types": regChannel.types,
                 "channel": regChannel.channel,
                 "protocol": "plugin"
-            }
+            };
 
             fs.writeFile(`./serverdata/connections/${message.guild.id}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
                 if(err) {

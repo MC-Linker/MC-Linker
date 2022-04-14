@@ -14,7 +14,7 @@ ph.fromAuthor = function(author) {
         "author_avatar": author.displayAvatarURL({ format: 'png' }),
         "author_timestamp": Builders.time(new Date(author.createdTimestamp)),
     }
-}
+};
 ph.fromGuild = function(guild) {
     if(!guild instanceof Discord.Guild) return {};
 
@@ -24,7 +24,7 @@ ph.fromGuild = function(guild) {
         "guild_member_count": guild.memberCount,
         "guild_timestamp": Builders.time(new Date(guild.createdTimestamp)),
     }
-}
+};
 ph.fromInteraction = function(interaction) {
     if(interaction instanceof Discord.Message) {
         const args = interaction.content.slice(prefix.length).trim().split(/ +/);
@@ -41,10 +41,15 @@ ph.fromInteraction = function(interaction) {
             "interaction_timestamp": Builders.time(new Date(interaction.createdTimestamp)),
             "args": getArgs(interaction).join(' '),
         }
+    } else if(interaction instanceof Discord.ButtonInteraction) {
+        return {
+            "interaction_id": interaction.customId,
+            "interaction_timestamp": Builders.time(new Date(interaction.createdTimestamp)),
+        }
     }
 
     return {};
-}
+};
 ph.fromChannel = function(channel) {
     if(!channel instanceof Discord.TextChannel) return {};
 
@@ -54,7 +59,7 @@ ph.fromChannel = function(channel) {
         "channel_id": channel.id,
         "channel_timestamp": Builders.time(new Date(channel.createdTimestamp)),
     }
-}
+};
 ph.fromClient = function(client) {
     if(!client instanceof Discord.Client) return {};
 
@@ -65,7 +70,7 @@ ph.fromClient = function(client) {
         "client_avatar": client.user.displayAvatarURL({ format: 'png' }),
         "client_timestamp": Builders.time(new Date(client.user.createdTimestamp)),
     }
-}
+};
 ph.emojis = function() {
     const emojis = Object.entries(keys.emojis);
     const placeholders = {};
@@ -73,7 +78,7 @@ ph.emojis = function() {
     emojis.forEach(([name, emoji]) => placeholders[`emoji_${name}`] = emoji);
 
     return placeholders;
-}
+};
 
 ph.fromStd = function(interaction) {
     return Object.assign(
@@ -85,7 +90,7 @@ ph.fromStd = function(interaction) {
         this.emojis(),
         { "timestamp_now": Builders.time(Date.now()/1000) }
     );
-}
+};
 
 ph.fromError = function(err) {
     if(!err instanceof Error) return {};
@@ -93,10 +98,9 @@ ph.fromError = function(err) {
     return {
         "error": err.stack
     }
-}
+};
 
 
-// noinspection JSUnusedAssignment
 function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
@@ -104,13 +108,11 @@ function addPh(key, ...placeholders) {
         return key.replace(/%\w+%/g, match =>
             placeholders[match.replaceAll('%', '')] ?? match
         );
-    } else if(typeof key !== 'object') return;
+    } else if(typeof key !== 'object') return key;
 
-    const entries = Object.entries(key);
     const replacedObject = {};
 
-    for([k, v] of entries) {
-        if(typeof v !== 'string' && typeof v !== 'object') continue;
+    for([k, v] of Object.entries(key)) {
         replacedObject[k] = addPh(v, placeholders);
     }
 
@@ -142,7 +144,7 @@ function reply(interaction, key, ...placeholders) {
     if(key.console) console.log(addPh(key.console, placeholders));
 
     if(!options.embeds) return; //If only console don't reply
-    replyOptions(interaction, options);
+    return replyOptions(interaction, options);
 }
 
 function replyOptions(interaction, options) {
@@ -152,19 +154,18 @@ function replyOptions(interaction, options) {
 
 
 function getComponentBuilder(key, ...placeholders) {
-    console.log(key)
     if(!key) return console.error(keys.api.messages.errors.no_component_key.console);
     key = addPh(key, ...placeholders);
 
     const actionRow = new Discord.MessageActionRow();
 
     //Loop over each select menu
-    for (const selectMenu of Object.values(key.components.select_menus ?? {})) {
+    for (const selectMenu of Object.values(key.components?.select_menus ?? {})) {
         if(!selectMenu.id || !selectMenu.options) continue;
 
         const menu = new Discord.MessageSelectMenu()
             .setCustomId(selectMenu.id)
-            .addOptions(selectMenu.options);
+            .addOptions(Object.values(selectMenu.options));
 
         if(selectMenu.min_values) menu.setMinValues(selectMenu.min_values);
         if(selectMenu.max_values) menu.setMaxValues(selectMenu.max_values);
@@ -176,7 +177,7 @@ function getComponentBuilder(key, ...placeholders) {
     }
 
     //Loop over each button
-    for(const button of Object.values(key.components.buttons ?? {})) {
+    for(const button of Object.values(key.components?.buttons ?? {})) {
         if(!button.label || !button.id || !button.style) continue;
 
         const but = new Discord.MessageButton()
@@ -314,7 +315,6 @@ function addOption(builder, key) {
 
             if(key.channel_types) optionBuilder.addChannelTypes(key.channel_types);
 
-            console.log(optionBuilder)
             builder.addChannelOption(optionBuilder);
             break;
         case 'ROLE':
