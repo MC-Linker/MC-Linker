@@ -85,17 +85,17 @@
   "commands.help.success.no_args.fields.other.content": "Other commands such as `/message` or `/text`.",
 
   "commands.help.success.no_args.fields.settings.name": "%emoji_settings% Settings %emoji_settings%",
-  "commands.help.success.no_args.fields.settings.content": "Setup and settings such as `/connect` or `/disable`",
+  "commands.help.success.no_args.fields.settings.content": "Setup and settings such as `/connect` or `/disable`.",
 
   "commands.help.success.no_args.fields.information.name": "\u200B",
-  "commands.help.success.no_args.fields.information.content": "**All commands in a category** can be viewed with: **/help <category>**\n**Still need help?** => [Support Discord Server](%invite_link%)",
+  "commands.help.success.no_args.fields.information.content": "**All commands in a category** can be viewed with: **/help <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
   "commands.help.success.category.fields.command.name": "%command_name%",
   "commands.help.success.category.fields.command.content": "%command_short_description%",
 
   "commands.help.success.category.fields.information.name": "\u200B",
-  "commands.help.success.category.fields.information.content": "**More info about a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](%invite_link%)",
+  "commands.help.success.category.fields.information.content": "**More info about a command** can be viewed with: **/help <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
   "commands.help.success.command.title": "Help Menu",

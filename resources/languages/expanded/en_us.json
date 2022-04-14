@@ -118,11 +118,11 @@
             },
             "settings": {
               "name": "%emoji_settings% Settings %emoji_settings%",
-              "content": "Setup and settings such as `/connect` or `/disable`"
+              "content": "Setup and settings such as `/connect` or `/disable`."
             },
             "information": {
               "name": "​",
-              "content": "**All commands in a category** can be viewed with: **/help <category>**\n**Still need help?** => [Support Discord Server](%invite_link%)"
+              "content": "**All commands in a category** can be viewed with: **/help <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
             }
           }
         },
@@ -134,7 +134,7 @@
             },
             "information": {
               "name": "​",
-              "content": "**More info about a command** can be viewed with: **/help <command>**\n**Still need help?** => [Support Discord Server](%invite_link%)"
+              "content": "**More info about a command** can be viewed with: **/help <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
             }
           }
         },
