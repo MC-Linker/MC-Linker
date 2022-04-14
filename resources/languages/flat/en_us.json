@@ -583,6 +583,7 @@
   "commands.disable.success.nothing_disabled.title": "Nothing Disabled",
   "commands.disable.success.nothing_disabled.description": "%emoji_success% There are no disabled %type%.",
   "commands.disable.success.nothing_disabled.console": "Nothing disabled",
+  "commands.disable.success.nothing_disabled.color": "GREEN",
 
   "commands.disable.success.disabled.title": "Successfully Disabled",
   "commands.disable.success.disabled.description": "%emoji_success% Successfully disabled %type% **%disable%**.",
@@ -594,6 +595,7 @@
 
   "commands.disable.success.list.final.fields.disabled.title": "%disable%",
   "commands.disable.success.list.final.fields.disabled.content": "\u200B",
+  "commands.disable.success.list.final.fields.disabled.inline": true,
 
 
 

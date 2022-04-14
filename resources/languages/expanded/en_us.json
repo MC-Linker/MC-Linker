@@ -829,7 +829,8 @@
         "nothing_disabled": {
           "title": "Nothing Disabled",
           "description": "%emoji_success% There are no disabled %type%.",
-          "console": "Nothing disabled"
+          "console": "Nothing disabled",
+          "color": "GREEN"
         },
         "disabled": {
           "title": "Successfully Disabled",
@@ -846,7 +847,8 @@
             "fields": {
               "disabled": {
                 "title": "%disable%",
-                "content": "​"
+                "content": "​",
+                "inline": true
               }
             }
           }
