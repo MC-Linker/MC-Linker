@@ -9,19 +9,17 @@ function searchAdvancements(searchString, category, shouldSearchValues = true, m
                 const advancementData = JSON.parse(advancementJson);
                 const matchingCategory = advancementData.categories[category];
 
-                let matchingTitles = matchingCategory.filter(advancement => advancement.name.toLowerCase().includes(searchString));
+                let matchingTitles = matchingCategory.filter(advancement => {
+                    //Filter for matching name and (if shouldSearchValues === true) for matching value
+                    return advancement.name.toLowerCase().includes(searchString) || (!shouldSearchValues || advancement.value.toLowerCase().includes(searchString));
+                });
 
-                if (matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
-                else if(shouldSearchValues) {
-                    const matchingKeys = matchingCategory.filter(advancement => advancement.value.includes(searchString));
-                    if (matchingKeys.length >= (maxLength - matchingTitles.length)) matchingKeys.length = (maxLength - matchingTitles.length);
-                    matchingKeys.forEach(key => matchingTitles.push({ name: key.name, value: key.value }));
-                }
-
+                matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
+                if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
                 resolve(matchingTitles);
             }).catch(err => {
-                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, ph.fromError(err)));
-                resolve(false);
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements.console, ph.fromError(err)));
+                resolve([]);
             });
     });
 }
@@ -32,26 +30,24 @@ function searchAllAdvancements(searchString, shouldSearchValues = true, maxLengt
             .then(advancementJson => {
                 const advancementData = JSON.parse(advancementJson);
 
-                let returnArray = [];
                 let matchingTitles = [];
+                let matchingKeys = [];
 
                 Object.values(advancementData.categories).forEach(category => {
-                    matchingTitles = category.filter(advancement => advancement.name.toLowerCase().includes(searchString));
+                    matchingKeys = category.filter(advancement => {
+                        //Filter for matching name and (if shouldSearchValues === true) for matching value
+                        return advancement.name.toLowerCase().includes(searchString) || (!shouldSearchValues || advancement.value.toLowerCase().includes(searchString));
+                    });
 
-                    if(shouldSearchValues && matchingTitles.length <= maxLength) {
-                        const matchingKeys = category.filter(advancement => advancement.value.includes(searchString) && !matchingTitles.includes(advancement));
-                        if (matchingKeys.length >= (maxLength - matchingTitles.length)) matchingKeys.length = (maxLength - matchingTitles.length);
-                        matchingKeys.forEach(key => matchingTitles.push({ name: key.name, value: key.value }));
-                    }
-
-                    matchingTitles.forEach(key => returnArray.push( { name: key.name, value: key.value }));
+                    matchingKeys.forEach(key => matchingTitles.push(key));
                 });
 
-                if(returnArray.length >= maxLength) returnArray.length = maxLength;
-                resolve(returnArray);
+                matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
+                if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
+                resolve(matchingTitles);
             }).catch(err => {
                 console.log(addPh(keys.api.utils.errors.could_not_read_advancements, ph.fromError(err)));
-                resolve(false);
+                resolve([]);
             });
     });
 }
