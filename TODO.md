@@ -1,5 +1,6 @@
 # TODO SMP Bot
 
++ Remove advancements subcommands
 + Support for multiple chat channels/connections
 + Mod support (get textures of mod items)
 + /stats @user statTab (more stats with one command)
