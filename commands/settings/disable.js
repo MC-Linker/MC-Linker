@@ -50,32 +50,45 @@ async function execute(message, args) {
     if (type === 'list') {
         const toList = args?.join(' ').toLowerCase();
 
-        if(toList !== 'stats' || toList !== 'advancements' || toList !== 'commands') {
+        if(toList !== 'stats' && toList !== 'advancements' && toList !== 'commands') {
             message.respond(keys.commands.disable.warnings.invalid_type);
             return;
         }
 
-        console.log(`${message.member.user.tag} executed /disable list ${toList} in ${message.guild.name}`);
-
-        const disabled = await settings.getDisabled(message.guildId, type);
+        const disabled = await settings.getDisabled(message.guildId, toList);
         if(disabled.length === 0) {
-            message.respond(keys.commands.disable.success.nothing_disabled);
+            message.respond(keys.commands.disable.success.nothing_disabled, { "type": toList });
             return;
         }
 
-        const listEmbed = getEmbedBuilder(keys.commands.disable.success.list.base, { type });
+        const listEmbed = getEmbedBuilder(keys.commands.disable.success.list.base, { "type": toList.cap() });
 
-        for(let disable of disabled) {
-            if(type === 'advancements') {
+        let counter = 1;
+        let listString = "";
+        for(let i = 0; i<disabled.length; i++) {
+            let disable = disabled[i];
+
+            if(toList === 'advancements') {
                 const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
                 disable = matchingTitle.shift()?.name ?? disable;
-            } else if (type === 'stats') disable = disable.split('_').map(word => word.cap()).join(' ');
-            else disable = disable.cap();
+            } else if (toList === 'stats') disable = disable.split('_').map(word => word.cap()).join(' ');
+            else disable = disable.replace('_', ' ').cap();
 
-            listEmbed.addField(
-                addPh(keys.commands.disable.success.list.final.fields.disabled.title, { disable }),
-                keys.commands.disable.success.list.final.fields.disabled.content
-            );
+
+            listString += addPh(keys.commands.disable.success.list.final.fields.disabled.title, { disable }) + "\n";
+
+            //New field for every 25 items
+            if(counter === 24 || i === (disabled.length-1)) {
+                listEmbed.addField(
+                    listString,
+                    keys.commands.disable.success.list.final.fields.disabled.content,
+                    keys.commands.disable.success.list.final.fields.disabled.inline
+                );
+                listString = "";
+                counter = 0;
+            }
+
+            counter++;
         }
 
         message.replyOptions({ embeds: [listEmbed] });
@@ -88,7 +101,7 @@ async function execute(message, args) {
             return;
         }
 
-        if(toDisable !== 'stats' || toDisable !== 'advancements' || toDisable !== 'commands') {
+        if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
             message.respond(keys.commands.disable.warnings.invalid_type);
             return;
         }

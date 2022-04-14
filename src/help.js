@@ -44,15 +44,15 @@ async function execute(message, args) {
             const disabled = await settings.getDisabled(message.guildId, 'commands');
             if (!disabled.find(disable => disable === command.name)) {
                 const disableRow = getComponentBuilder(
-                    keys.commands.help.success.disable_button.components,
-                    { "command_name": command.name }, ph.fromStd(message)
+                    keys.commands.help.success.disable_button,
+                    { "command_name": command.name }, ph.emojis()
                 );
 
                 message.replyOptions({ embeds: [helpEmbed], components: [disableRow] });
             } else if (disabled) {
                 const enableRow = getComponentBuilder(
-                    keys.commands.help.success.enable_button.components,
-                    { "command_name": command.name }, ph.fromStd(message)
+                    keys.commands.help.success.enable_button,
+                    { "command_name": command.name }, ph.emojis()
                 );
 
                 helpEmbed.setDescription(keys.commands.help.success.disabled.description);

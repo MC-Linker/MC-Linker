@@ -124,26 +124,24 @@ async function execute(message, args) {
                     102: [16, 52],
                     103: [16, 16],
                     "-106": [154, 124],
-                }
+                };
                 slotDims = allSlotDims[slot];
 
                 try {
+                    //Draw image
                     const itemImg = await Canvas.loadImage(`./resources/images/minecraft/items/${itemImgName}.png`);
                     ctx.drawImage(itemImg, 0, 0, 80, 80, slotDims[0], slotDims[1], 32, 32);
-
-                    if(count > 1) {
-                        ctx.font = '14px Minecraft';
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillText(count, slotDims[0], slotDims[1] + 32, 15);
-                    }
                 } catch (err) {
+                    //Draw name
                     console.log(addPh(keys.commands.inventory.errors.no_image, { "item_name": itemImgName }));
                     ctx.font = '6px Minecraft'; ctx.fillStyle = '#000000';
                     ctx.fillText(itemImgName, slotDims[0], slotDims[1] + 16);
-                    if(count > 1) {
-                        ctx.font = '14px Minecraft'; ctx.fillStyle = '#ffffff';
-                        ctx.fillText(count, slotDims[0], slotDims[1] + 32, 15);
-                    }
+                }
+
+                //Draw count
+                if(count > 1) {
+                    ctx.font = '14px Minecraft'; ctx.fillStyle = '#ffffff';
+                    ctx.fillText(count, slotDims[0], slotDims[1] + 32, 15);
                 }
 
                 if(damage) {

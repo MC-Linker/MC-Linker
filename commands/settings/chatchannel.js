@@ -18,7 +18,7 @@ async function execute(message, args) {
         return;
     }
 
-    const logChooserMsg = message.respond(keys.commands.chatchannel.success.choose);
+    const logChooserMsg = await message.respond(keys.commands.chatchannel.success.choose);
 
     const collector = logChooserMsg.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 20000, max: 1 });
     collector.on('collect', async menu => {

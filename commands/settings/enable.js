@@ -18,6 +18,7 @@ async function autocomplete(interaction) {
 
         if (subcommand === 'advancements') {
             const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
+
             formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
 
         } else if (subcommand === 'stats') {
@@ -50,16 +51,14 @@ async function execute(message, args) {
     } else if(!toEnable) {
         message.respond(keys.commands.enable.warnings.no_enable);
         return;
-    }
-
-    if(toEnable !== 'stats' || toEnable !== 'advancements' || toEnable !== 'commands') {
+    } else if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
         message.respond(keys.commands.enable.warnings.invalid_type);
         return;
     }
 
     let formattedToEnable;
     if(type === 'commands') {
-        const command = message.client.commands.get(toEnable);
+        const command = keys.data[toEnable];
 
         if(!command) {
             message.respond(keys.commands.enable.warnings.command_does_not_exist, argPlaceholder);

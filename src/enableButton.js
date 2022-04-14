@@ -18,9 +18,9 @@ async function execute(interaction) {
         return;
     }
 
-    const command = interaction.client.commands.get(commandName);
+    const command = keys.data[commandName];
 
-    const disableRow = getComponentBuilder(keys.commands.help.success.enable_button, { "command_name": commandName });
+    const disableRow = getComponentBuilder(keys.commands.help.success.enable_button, { "command_name": commandName }, ph.emojis());
     const helpEmbed = getEmbedBuilder(
       keys.commands.help.success.command,
         ph.fromStd(interaction),

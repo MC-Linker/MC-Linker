@@ -84,10 +84,10 @@ client.on('messageCreate', async message => {
     //Add own response handlers
     message.respond = (key, ...placeholders) => {
         return reply(message, key, ...placeholders);
-    }
+    };
     message.replyOptions = (options) => {
         return replyOptions(message, options);
-    }
+    };
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.ping);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -120,10 +120,10 @@ client.on('interactionCreate', async interaction => {
     if(!interaction.isAutocomplete()) {
         interaction.respond = (key, ...placeholders) => {
             return reply(interaction, key, ...placeholders);
-        }
+        };
         interaction.replyOptions = (options) => {
             return replyOptions(interaction, options);
-        }
+        };
     }
 
     if(!interaction.guildId) return interaction.respond(keys.main.warnings.not_in_guild);
@@ -135,7 +135,7 @@ client.on('interactionCreate', async interaction => {
             interaction.mentions = {
                 users: new Discord.Collection().set(interaction.options.getUser('user').id, interaction.options.getUser('user'))
             }
-        } else interaction.mentions = { users: new Discord.Collection() }
+        } else interaction.mentions = { users: new Discord.Collection() };
         interaction.attachments = [];
 
         const args = getArgs(interaction);
