@@ -586,7 +586,7 @@
 
   "commands.disable.success.disabled.title": "Successfully Disabled",
   "commands.disable.success.disabled.description": "%emoji_success% Successfully disabled %type% **%disable%**.",
-  "commands.disable.success.disabled.console": "Successfully enabled %type% %disable%",
+  "commands.disable.success.disabled.console": "Successfully disabled %type% %disable%",
 
   "commands.disable.success.list.base.title": "Disable List",
   "commands.disable.success.list.base.description": "%type%",
@@ -787,7 +787,7 @@
 
 
 
-  "buttons.clicked.console": "%clicker_tag% has clicked button %button_id% in %guild_name%",
+  "buttons.clicked.console": "%author_tag% has clicked button %interaction_id% in %guild_name%",
 
 
 
@@ -813,8 +813,8 @@
   "buttons.enable.warnings.no_permission.console": "No permission",
 
   "buttons.enable.errors.already_enabled.title": "Already Enabled",
-  "buttons.enable.errors.already_enabled.description": "%emoji_warning% %type% **%enable%** is already enabled.",
-  "buttons.enable.errors.already_enabled.console": "Could not enable %enable%",
+  "buttons.enable.errors.already_enabled.description": "%emoji_warning% Command **%command_name%** is already enabled.",
+  "buttons.enable.errors.already_enabled.console": "Could not enable %command_name%",
 
   "buttons.enable.success.response.title": "Enabled Command",
   "buttons.enable.success.response.description": "%emoji_success% Successfully enabled command **%command_name%**.",
