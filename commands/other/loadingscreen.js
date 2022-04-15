@@ -1,7 +1,7 @@
 const Canvas = require('canvas');
 const probe = require('probe-image-size');
 const Discord = require('discord.js');
-const { keys, getEmbedBuilder} = require('../../api/messages');
+const { keys, getEmbedBuilder, ph } = require('../../api/messages');
 
 async function execute(message, args) {
 	//get URL of image
@@ -45,7 +45,7 @@ async function execute(message, args) {
 	context.drawImage(img, imgSize.width/2, 0, imgSize.width/2, imgSize.height, 0, imgSize.height, imgSize.width/2, imgSize.height);
 
 	const attachment = new Discord.MessageAttachment(loadCanvas.toBuffer(), 'mojangstudios.png');
-	const loadEmbed = getEmbedBuilder(keys.commands.loadingscreen.success);
+	const loadEmbed = getEmbedBuilder(keys.commands.loadingscreen.success, ph.fromStd(message));
 	message.replyOptions({ embeds: [loadEmbed], files: [attachment] });
 }
 
