@@ -2,7 +2,7 @@
 
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { token, clientId } = require('../config.json');
+const { token, clientId, guildId } = require('../config.json');
 const { keys, getCommandBuilder} = require('../api/messages');
 const fs = require('fs');
 
@@ -36,9 +36,6 @@ process.argv.slice(2).forEach(arg => {
 		});
 	}
 });
-
-const guildId = '844156404477853716';
-
 
 const helpChoices = [];
 let helpJson;
