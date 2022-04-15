@@ -1,6 +1,7 @@
 # TODO SMP Bot
 
 + Remove advancements subcommands
++ Change `user` arguments to type STRING
 + Add `/advancements custom` autocomplete
 + Support for multiple chat channels/connections
 + Add button to show enchantments and shulkerboxes in /inventory
