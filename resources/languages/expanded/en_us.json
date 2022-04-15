@@ -785,12 +785,17 @@
     "disable": {
       "warnings": {
         "no_type": {
-          "title": "No Type Specified",
-          "description": "%emoji_warning% Please specify the type you want to disable (`commands`, `stats, `advancements`) or `list` if you want to list all disabled commands/stats/advancements.",
+          "title": "No Category Specified",
+          "description": "%emoji_warning% Please specify the category you want to disable (`commands`, `stats`, `advancements`) or `list` if you want to list all disabled commands/stats/advancements.",
+          "console": "No type specified"
+        },
+        "no_list_type": {
+          "title": "No Category Specified",
+          "description": "%emoji_warning% Please specify the category you want to list (`commands`, `stats`, `advancements`).",
           "console": "No type specified"
         },
         "invalid_type": {
-          "title": "Invalid Type Specified",
+          "title": "Invalid Category Specified",
           "description": "%emoji_warning% You can only specify `commands`, `stats` or `advancements`.",
           "console": "Invalid type specified"
         },
