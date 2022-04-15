@@ -50,7 +50,10 @@ async function execute(message, args) {
     if (type === 'list') {
         const toList = args?.join(' ').toLowerCase();
 
-        if(toList !== 'stats' && toList !== 'advancements' && toList !== 'commands') {
+        if(!toList) {
+            message.respond(keys.commands.disable.warnings.no_list_type);
+            return;
+        } else if(toList !== 'stats' && toList !== 'advancements' && toList !== 'commands') {
             message.respond(keys.commands.disable.warnings.invalid_type);
             return;
         }
