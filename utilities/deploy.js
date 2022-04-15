@@ -1,5 +1,3 @@
-// noinspection JSCheckFunctionSignatures
-
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { token, clientId, guildId } = require('../config.json');
@@ -73,6 +71,7 @@ commands.push(disableJson);
 commands.push(helpJson);
 
 
+// noinspection JSCheckFunctionSignatures
 const rest = new REST({ version: '9' }).setToken(token);
 
 (async () => {
