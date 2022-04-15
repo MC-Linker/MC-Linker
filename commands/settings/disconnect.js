@@ -24,7 +24,7 @@ async function execute(message, args) {
         if(!protocol) return;
 
         if(protocol !== method) {
-            message.respond(keys.commands.disconnect.warnings.invalid_protocol);
+            message.respond(keys.commands.disconnect.warnings.invalid_protocol, { method });
             return;
         }
     }
@@ -40,7 +40,7 @@ async function execute(message, args) {
             return;
         }
 
-        message.respond(keys.commands.disconnect.success);
+        message.respond(keys.commands.disconnect.success, { method, "method_cap": method.cap() });
     });
 }
 

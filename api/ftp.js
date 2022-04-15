@@ -42,14 +42,14 @@ module.exports = {
 			ftpClient.on('ready', () => {
 				ftpClient.get(getPath, (err, stream) => {
 					if(err) {
-						message.respond(keys.api.ftp.errors.could_not_get, { "path": getPath, "error": err });
+						message.respond(keys.api.ftp.errors.could_not_get, { "path": putPath, "error": err });
 						resolve(false);
 					} else {
 						stream.pipe(fs.createWriteStream(putPath));
 						stream.once('close', () => {
 							ftpClient.end();
 							resolve(true);
-							message.respond(keys.api.ftp.success.get, { "path": getPath });
+							message.respond(keys.api.ftp.success.get, { "path": putPath });
 						});
 					}
 				});
@@ -158,12 +158,12 @@ module.exports = {
 			}
 			ftpClient.on('ready', async () => {
 				const foundFile = await findFile(ftpClient, file, start, maxDepth);
-				console.log(addPh(keys.api.ftp.success.find, { "path": foundFile }));
+				console.log(addPh(keys.api.ftp.success.find.console, { "path": foundFile }));
 				resolve(foundFile);
 			});
 		});
 	}
-}
+};
 
 async function findFile(ftpClient, file, path, maxDepth) {
 	if (path.split('/').length >= maxDepth++) return;

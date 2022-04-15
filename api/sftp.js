@@ -28,10 +28,10 @@ module.exports = {
 				try {
 					await sftpClient.fastGet(getPath, putPath);
 					sftpClient.end();
-					message.respond(keys.api.ftp.success.get, { "path": getPath });
+					message.respond(keys.api.ftp.success.get, { "path": putPath });
 					resolve(true);
 				} catch (err) {
-					message.respond(keys.api.ftp.errors.could_not_get, { "path": getPath, "error": err });
+					message.respond(keys.api.ftp.errors.could_not_get, { "path": putPath, "error": err });
 					sftpClient.end();
 					resolve(false);
 				}

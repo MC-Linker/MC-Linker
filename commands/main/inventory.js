@@ -181,7 +181,7 @@ async function execute(message, args) {
             ctx.drawImage(skinImg, 70, 20, 65, 131);
 
             const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), `Inventory_Player.png`);
-            const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, { username });
+            const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.fromStd(message), { username });
 
             if(enchantEmbed.fields.length >= 1) message.replyOptions({ files: [invImg], embeds: [invEmbed, enchantEmbed] });
             else message.replyOptions({ files: [invImg], embeds: [invEmbed] });
