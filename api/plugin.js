@@ -101,7 +101,7 @@ async function loadExpress(client) {
     //Returns latest version
     app.get('/version', (req, res) => res.send(pluginVersion));
 
-    app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>'))
+    app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>'));
 
     app.listen(botPort, function () { console.log(addPh(keys.api.plugin.success.listening.console, { "port": this.address().port })) });
     return app;
@@ -111,7 +111,7 @@ async function chat(message) {
     const conn = pluginConnections.find(conn => conn.guildId === message.guildId && conn.channelId === message.channelId);
     if(message.attachments.size) message.attachments.forEach(attach => message.content += `\n${attach.url}`);
 
-    if(conn && conn.chat && !message.author.bot) {
+    if(conn?.chat && !message.author.bot) {
         try {
             await fetch(`http://${conn.ip}/chat/?&msg=${encodeURIComponent(message.content)}&username=${message.author.username}`, {
                 headers: {
@@ -140,7 +140,7 @@ function connect(ip, guildId, verifyCode, message) {
         const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
 
         //Disconnect from old server
-        if(conn?.ip !== ip) {
+        if(conn && conn.ip !== ip) {
             try {
                 const resp = await fetch(`http://${conn.ip}/disconnect/`, {
                     headers: {
@@ -229,6 +229,8 @@ function disconnect(guildId, message) {
 
 function registerChannel(ip, guildId, channelId, types, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
@@ -293,6 +295,9 @@ function registerChannel(ip, guildId, channelId, types, message) {
 
 function get(getPath, putPath, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
+
         const ip = await utils.getIp(message.guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -310,12 +315,12 @@ function get(getPath, putPath, message) {
             resp.body.pipe(fileStream);
 
             resp.body.on('error', err => {
-                message.respond(keys.api.plugin.errors.could_not_stream, { "path": putPath, "error": err });
+                message.respond(keys.api.plugin.errors.could_not_stream, { "path": getPath, "error": err });
                 resolve(false);
             });
             fileStream.on('finish', () => {
                 fileStream.close();
-                message.respond(keys.api.plugin.success.get, { "path": putPath });
+                message.respond(keys.api.plugin.success.get, { "path": getPath });
                 resolve(true);
             });
         } catch(err) {
@@ -327,6 +332,9 @@ function get(getPath, putPath, message) {
 
 function put(getPath, putPath, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
+
         const ip = await utils.getIp(message.guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -355,6 +363,9 @@ function put(getPath, putPath, message) {
 
 async function find(start, maxDepth, file, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
+
         const ip = await utils.getIp(message.guildId, message);
         if (!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -377,6 +388,8 @@ async function find(start, maxDepth, file, message) {
 
 function execute(command, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
         const ip = await utils.getIp(message.guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -410,6 +423,14 @@ function verify(ip, message) {
     });
 }
 
+async function checkProtocol(guildId, message) {
+    if(await utils.getProtocol(guildId, message) !== 'plugin') {
+        message.respond(keys.api.plugin.warnings.not_connected);
+        return false;
+    }
+    return true;
+}
+
 async function updateConn(message) {
     return new Promise(resolve => {
         fs.promises.writeFile('./serverdata/connections/connections.json', JSON.stringify(pluginConnections, null, 2), 'utf-8')
@@ -422,13 +443,13 @@ async function updateConn(message) {
 
 async function checkStatus(response, message) {
     if(response.status === 400 || response.status === 404) {
-        message.respond(keys.api.plugin.errors.status_400_404);
+        message.respond(keys.api.plugin.errors.status_400_404, { "error": await response.text() });
         return false;
     } else if(response.status === 500) {
-        message.respond(keys.api.plugin.errors.status_500);
+        message.respond(keys.api.plugin.errors.status_500, { "error": await response.text() });
         return false;
     } else if(response.status === 401) return true;
     else return !!response.ok;
 }
 
-module.exports = { loadExpress, chat, connect, registerChannel, disconnect, get, put, find, execute, verify }
+module.exports = { loadExpress, chat, connect, registerChannel, disconnect, get, put, find, execute, verify };
