@@ -93,7 +93,7 @@ module.exports = {
 				console.log(keys.api.ftp.success.connect.console);
 				resolve(true);
 			} catch (err) {
-				console.log(addPh(keys.api.ftp.errors.could_not_connect, ph.fromError(err)));
+				console.log(addPh(keys.api.ftp.errors.could_not_connect.console, ph.fromError(err)));
 				resolve(false);
 			}
 		})
@@ -114,12 +114,12 @@ module.exports = {
 				console.log(keys.api.ftp.success.find.console, { "path": foundFile });
 				resolve(foundFile);
 			} catch (err) {
-				console.log(addPh(keys.api.ftp.errors.could_not_connect, ph.fromError(err)));
+				console.log(addPh(keys.api.ftp.errors.could_not_connect.console, ph.fromError(err)));
 				resolve(false);
 			}
 		});
 	}
-}
+};
 
 async function findFile(sftpClient, file, path, depth) {
 	if (path.split('/').length >= depth + 1) return;
