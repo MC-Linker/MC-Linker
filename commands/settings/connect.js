@@ -33,7 +33,7 @@ async function execute(message, args) {
         } else if(!version) {
             message.respond(keys.commands.connect.warnings.no_version);
             return;
-        } else if(port > 0 && port < 65536) {
+        } else if(port <= 0 || port > 65536) {
             message.respond(keys.commands.connect.warnings.invalid_port);
             return;
         }
@@ -204,7 +204,7 @@ async function execute(message, args) {
                 "guild": connectPlugin.guild,
                 "chat": false,
                 "protocol": "plugin"
-            }
+            };
 
             fs.mkdir(`./serverdata/connections/${message.guildId}`, err => {
                 if(err && err.code !== 'EEXIST') {
@@ -241,7 +241,7 @@ async function execute(message, args) {
         const connectionJson = {
             'id': uuidv4,
             'name': mcUsername
-        }
+        };
 
         fs.mkdir(`./userdata/connections/${message.member.user.id}`, err => {
            if(err && err.code !== 'EEXIST') {
