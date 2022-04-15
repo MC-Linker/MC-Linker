@@ -81,8 +81,8 @@ async function execute(message, args) {
                 statMatch = statData[`stat.${category}.${stat}`];
                 stat = stat.split('.').pop();
             } else {
-                const filteredCategory = statData.stats.find(key => key.endsWith(category));
-                const filteredStat = statData.stats?.[filteredCategory].find(key => key.endsWith(stat));
+                const filteredCategory = Object.keys(statData.stats)?.find(key => key.endsWith(category));
+                const filteredStat = Object.keys(statData.stats?.[filteredCategory]).find(key => key.endsWith(stat));
                 statMatch = statData.stats?.[filteredCategory]?.[filteredStat];
 
                 stat = stat.split(':').pop();
@@ -95,16 +95,16 @@ async function execute(message, args) {
             }
 
             let statMessage;
-            statMessage = addPh(keys.commands.stats.success.stat_message[category], argPlaceholder, { "stat_value": statMatch })
+            statMessage = addPh(keys.commands.stats.success.stat_message[category], argPlaceholder, { "stat_value": statMatch });
             if (stat === 'play_time' || stat === 'time_played') {
                 statMessage = addPh(
                     keys.commands.stats.success.stat_message.time_played,
-                    argPlaceholder, { "stat_value": statMatch }
+                    argPlaceholder, { "stat_value": (statMatch / 20 / 3600).toFixed(2) } //Convert ticks to hours
                 );
             }
 
             const statEmbed = getEmbedBuilder(
-                keys.commands.stats.success.base,
+                keys.commands.stats.success.final,
                 ph.fromStd(message),
                 argPlaceholder,
                 { "stat_message": statMessage }
@@ -116,7 +116,8 @@ async function execute(message, args) {
 
             fs.access(`./resources/images/minecraft/${imgType}/${stat}.png`, err => {
                 if (err) {
-                    message.respond(keys.commands.stats.errors.could_not_read_file, ph.fromError(err));
+                    message.respond(keys.commands.stats.warnings.no_image, { "stat_name": stat });
+                    message.replyOptions({ embeds: [statEmbed] });
                     return;
                 }
                 message.replyOptions({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
