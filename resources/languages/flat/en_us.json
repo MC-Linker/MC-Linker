@@ -1209,6 +1209,11 @@
   "data.connect.options.ftp.options.host.description": "Set the ftp-host.",
   "data.connect.options.ftp.options.host.required": true,
 
+  "data.connect.options.ftp.options.username.type": "STRING",
+  "data.connect.options.ftp.options.username.name": "username",
+  "data.connect.options.ftp.options.username.description": "Set the ftp-username. (`none` if no username)",
+  "data.connect.options.ftp.options.username.required": true,
+
   "data.connect.options.ftp.options.password.type": "STRING",
   "data.connect.options.ftp.options.password.name": "password",
   "data.connect.options.ftp.options.password.description": "Set the ftp-password (`none` if no password).",

@@ -1677,6 +1677,12 @@
               "description": "Set the ftp-host.",
               "required": true
             },
+            "username": {
+              "type": "STRING",
+              "name": "username",
+              "description": "Set the ftp-username. (`none` if no username)",
+              "required": true
+            },
             "password": {
               "type": "STRING",
               "name": "password",
