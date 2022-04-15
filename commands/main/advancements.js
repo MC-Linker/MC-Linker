@@ -126,11 +126,11 @@ async function execute(message, args) {
                 for (const criteria of criteriaKeys) {
                     const date = advancementData[filteredAdvancement]['criteria'][criteria];
                     amString +=
-                        `\n${keys.commands.advancements.success.final.fields.requirement.title}
+                        `\n**${keys.commands.advancements.success.final.fields.requirement.title}**
                         ${addPh(keys.commands.advancements.success.final.fields.requirement.content, { "advancement_requirement": criteria.split(':').pop() })}
                         
-                        ${keys.commands.advancements.success.final.fields.unlocked.title}
-                        ${addPh(keys.commands.advancements.success.final.fields.unlocked.title, { "advancement_timestamp": time(new Date(date)) })}`;
+                        **${keys.commands.advancements.success.final.fields.unlocked.title}**
+                        ${addPh(keys.commands.advancements.success.final.fields.unlocked.content, { "advancement_timestamp": time(new Date(date)) })}`;
 
                     //Add one field for every 2 criteria
                     if(counter === 1 || criteriaKeys.length === 1) {
