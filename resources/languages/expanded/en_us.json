@@ -105,23 +105,23 @@
           "color": "NOT_QUITE_BLACK",
           "fields": {
             "main": {
-              "name": "%emoji_main% Main %emoji_main%",
+              "title": "%emoji_main% Main %emoji_main%",
               "content": "Main commands such as `/inventory`, or `/advancements`."
             },
             "moderation": {
-              "name": "%emoji_moderation% Moderation %emoji_moderation%",
+              "title": "%emoji_moderation% Moderation %emoji_moderation%",
               "content": "Moderation commands such as `/ban` or `/unban`."
             },
             "other": {
-              "name": "%emoji_other_1% Other %emoji_other_2%",
+              "title": "%emoji_other_1% Other %emoji_other_2%",
               "content": "Other commands such as `/message` or `/text`."
             },
             "settings": {
-              "name": "%emoji_settings% Settings %emoji_settings%",
+              "title": "%emoji_settings% Settings %emoji_settings%",
               "content": "Setup and settings such as `/connect` or `/disable`."
             },
             "information": {
-              "name": "​",
+              "title": "​",
               "content": "**All commands in a category** can be viewed with: **/help <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
             }
           }
@@ -129,11 +129,11 @@
         "category": {
           "fields": {
             "command": {
-              "name": "%command_name%",
+              "title": "%command_name%",
               "content": "%command_short_description%"
             },
             "information": {
-              "name": "​",
+              "title": "​",
               "content": "**More info about a command** can be viewed with: **/help <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
             }
           }
@@ -147,7 +147,7 @@
           "color": "NOT_QUITE_BLACK",
           "fields": {
             "command": {
-              "name": "%command_name%",
+              "title": "%command_name%",
               "content": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%"
             }
           }
@@ -242,7 +242,7 @@
         "done": {
           "footer": {
             "text": "Advancement unlocked/completed",
-            "icon_url": "https://cdn.discordapp.com/emojis/849215023264169985.png"
+            "icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png"
           }
         },
         "not_done": {
@@ -873,7 +873,7 @@
           "console": "Invalid method specified"
         },
         "invalid_protocol": {
-          "title": "Invalid Protocol Specified",
+          "title": "Invalid Method Specified",
           "description": "%emoji_warning% Your server is not connected with %method%",
           "console": "Invalid protocol specified"
         }
@@ -886,9 +886,9 @@
         }
       },
       "success": {
-        "title": "Disconnected From Server",
+        "title": "Disconnected From %method_cap%",
         "description": "%emoji_success% The **%method%** connection was successfully disconnected.",
-        "console": "Disconnected from server"
+        "console": "Disconnected from %method%"
       }
     },
     "enable": {
@@ -1149,6 +1149,11 @@
           "title": "User Not Connected",
           "description": "%emoji_error% User never used `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
           "console": "Could not read user file"
+        },
+        "not_connected_with_plugin": {
+          "title": "Server Not Connected",
+          "description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
+          "console": "Not connected with plugin"
         }
       }
     }
@@ -1365,8 +1370,7 @@
               "type": "STRING",
               "name": "stat",
               "description": "Set a custom stat. All stats of the custom category => /help stats",
-              "required": true,
-              "autocomplete": true
+              "required": true
             },
             "user": {
               "type": "USER",

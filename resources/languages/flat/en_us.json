@@ -75,26 +75,26 @@
   "commands.help.success.no_args.author.icon_url": "%client_avatar%",
   "commands.help.success.no_args.color": "NOT_QUITE_BLACK",
 
-  "commands.help.success.no_args.fields.main.name": "%emoji_main% Main %emoji_main%",
+  "commands.help.success.no_args.fields.main.title": "%emoji_main% Main %emoji_main%",
   "commands.help.success.no_args.fields.main.content": "Main commands such as `/inventory`, or `/advancements`.",
 
-  "commands.help.success.no_args.fields.moderation.name": "%emoji_moderation% Moderation %emoji_moderation%",
+  "commands.help.success.no_args.fields.moderation.title": "%emoji_moderation% Moderation %emoji_moderation%",
   "commands.help.success.no_args.fields.moderation.content": "Moderation commands such as `/ban` or `/unban`.",
 
-  "commands.help.success.no_args.fields.other.name": "%emoji_other_1% Other %emoji_other_2%",
+  "commands.help.success.no_args.fields.other.title": "%emoji_other_1% Other %emoji_other_2%",
   "commands.help.success.no_args.fields.other.content": "Other commands such as `/message` or `/text`.",
 
-  "commands.help.success.no_args.fields.settings.name": "%emoji_settings% Settings %emoji_settings%",
+  "commands.help.success.no_args.fields.settings.title": "%emoji_settings% Settings %emoji_settings%",
   "commands.help.success.no_args.fields.settings.content": "Setup and settings such as `/connect` or `/disable`.",
 
-  "commands.help.success.no_args.fields.information.name": "\u200B",
+  "commands.help.success.no_args.fields.information.title": "\u200B",
   "commands.help.success.no_args.fields.information.content": "**All commands in a category** can be viewed with: **/help <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
-  "commands.help.success.category.fields.command.name": "%command_name%",
+  "commands.help.success.category.fields.command.title": "%command_name%",
   "commands.help.success.category.fields.command.content": "%command_short_description%",
 
-  "commands.help.success.category.fields.information.name": "\u200B",
+  "commands.help.success.category.fields.information.title": "\u200B",
   "commands.help.success.category.fields.information.content": "**More info about a command** can be viewed with: **/help <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
@@ -103,7 +103,7 @@
   "commands.help.success.command.author.icon_url": "%client_avatar%",
   "commands.help.success.command.color": "NOT_QUITE_BLACK",
 
-  "commands.help.success.command.fields.command.name": "%command_name%",
+  "commands.help.success.command.fields.command.title": "%command_name%",
   "commands.help.success.command.fields.command.content": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%",
 
 
@@ -163,7 +163,7 @@
   "commands.advancements.success.base.image": "https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png",
 
   "commands.advancements.success.done.footer.text": "Advancement unlocked/completed",
-  "commands.advancements.success.done.footer.icon_url": "https://cdn.discordapp.com/emojis/849215023264169985.png",
+  "commands.advancements.success.done.footer.icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png",
   "commands.advancements.success.not_done.footer.text": "Advancement not unlocked/completed",
   "commands.advancements.success.not_done.footer.icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png",
 
@@ -611,7 +611,7 @@
   "commands.disconnect.warnings.invalid_method.description": "%emoji_warning% You can only disconnect from `ftp`, `plugin` or `account`.",
   "commands.disconnect.warnings.invalid_method.console": "Invalid method specified",
 
-  "commands.disconnect.warnings.invalid_protocol.title": "Invalid Protocol Specified",
+  "commands.disconnect.warnings.invalid_protocol.title": "Invalid Method Specified",
   "commands.disconnect.warnings.invalid_protocol.description": "%emoji_warning% Your server is not connected with %method%",
   "commands.disconnect.warnings.invalid_protocol.console": "Invalid protocol specified",
 
@@ -619,9 +619,9 @@
   "commands.disconnect.errors.could_not_remove_folder.description": "%emoji_warning% You are not connected with %method%.",
   "commands.disconnect.errors.could_not_remove_folder.console": "Could not remove server folder",
 
-  "commands.disconnect.success.title": "Disconnected From Server",
+  "commands.disconnect.success.title": "Disconnected From %method_cap%",
   "commands.disconnect.success.description": "%emoji_success% The **%method%** connection was successfully disconnected.",
-  "commands.disconnect.success.console": "Disconnected from server",
+  "commands.disconnect.success.console": "Disconnected from %method%",
 
 
 
@@ -791,6 +791,10 @@
   "api.utils.errors.could_not_read_user_file.description": "%emoji_error% User never used `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
   "api.utils.errors.could_not_read_user_file.console": "Could not read user file",
 
+  "api.utils.errors.not_connected_with_plugin.title": "Server Not Connected",
+  "api.utils.errors.not_connected_with_plugin.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
+  "api.utils.errors.not_connected_with_plugin.console": "Not connected with plugin",
+
 
 
   "buttons.clicked.console": "%author_tag% has clicked button %interaction_id% in %guild_name%",
@@ -957,7 +961,6 @@
   "data.stats.options.custom.options.stat.name": "stat",
   "data.stats.options.custom.options.stat.description": "Set a custom stat. All stats of the custom category => /help stats",
   "data.stats.options.custom.options.stat.required": true,
-  "data.stats.options.custom.options.stat.autocomplete": true,
 
   "data.stats.options.custom.options.user.type": "USER",
   "data.stats.options.custom.options.user.name": "user",
