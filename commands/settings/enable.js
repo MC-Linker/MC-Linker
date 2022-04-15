@@ -77,7 +77,7 @@ async function execute(message, args) {
     }
 
     if(!await settings.enable(message.guildId, type, toEnable)) {
-        message.respond(keys.commands.enable.warnings.already_enabled, { type, "enable": formattedToEnable });
+        message.respond(keys.commands.enable.warnings.already_enabled, { "type": type.cap(), "enable": formattedToEnable });
         return;
     }
 
