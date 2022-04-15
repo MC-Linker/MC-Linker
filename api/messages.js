@@ -208,8 +208,8 @@ function getEmbedBuilder(key, ...placeholders) {
 
     if(key.fields) {
         for (const field of Object.values(key.fields)) {
-            if(!field.name || !field.content) continue;
-            embed.addField(field.name, field.content, field.inline);
+            if(!field.title || !field.content) continue;
+            embed.addField(field.title, field.content, field.inline);
         }
     }
 
