@@ -27,7 +27,6 @@ async function execute(message, args) {
     args.shift();
     const category = args.shift()?.toLowerCase();
     let advancement = args.join(' ')?.toLowerCase();
-    const argPlaceholder = { "advancement_category": category, "advancement_title": advancement, username };
 
     if(!username) {
         message.respond(keys.commands.advancements.warnings.no_username);
@@ -47,26 +46,24 @@ async function execute(message, args) {
     let advancementTitle;
     let advancementDesc;
     try {
-        const langData = JSON.parse(await fs.promises.readFile('./resources/languages/test.json', 'utf-8'));
+        const langData = JSON.parse(await fs.promises.readFile('./resources/languages/minecraft/en_us.json', 'utf-8'));
         advancementTitle = langData[`advancements.${category}.${advancement}.title`];
         advancementDesc = langData[`advancements.${category}.${advancement}.description`];
     } catch(ignored) {}
 
-    if(!advancementTitle) advancementTitle = addPh(keys.commands.advancements.no_title_available, argPlaceholder);
+    if(!advancementTitle) advancementTitle = addPh(keys.commands.advancements.no_title_available, { "advancement_category": category, "advancement_title": advancement });
     else if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
 
     if(await settings.isDisabled(message.guildId, 'advancements', category)) {
         message.respond(
             keys.commands.advancements.warnings.category_disabled,
-            argPlaceholder,
-            { "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+            { "advancement_category": category }
         );
         return;
     } else if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
         message.respond(
-            keys.commands.advancements.warnings.category_disabled,
-            argPlaceholder,
-            { "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+            keys.commands.advancements.warnings.advancement_disabled,
+            { "advancement_title": advancementTitle }
         );
         return;
     }
@@ -94,7 +91,7 @@ async function execute(message, args) {
 
         const baseEmbed = getEmbedBuilder(
             keys.commands.advancements.success.base,
-            ph.fromStd(message), argPlaceholder, { equals }
+            ph.fromStd(message), { equals, username, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
         );
 
         try {
@@ -146,10 +143,10 @@ async function execute(message, args) {
                 else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
             }
 
-            console.log(addPh(keys.commands.advancements.success.final.console, argPlaceholder));
+            console.log(addPh(keys.commands.advancements.success.final.console, { "advancement_title": advancementTitle, username }));
             message.replyOptions({ embeds: [amEmbed] });
         } catch (err) {
-            message.respond(keys.commands.advancements.warnings.not_completed, argPlaceholder);
+            message.respond(keys.commands.advancements.warnings.not_completed, { "advancement_title": advancementTitle });
         }
     })
 }
