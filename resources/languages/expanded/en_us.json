@@ -1142,7 +1142,7 @@
         },
         "could_not_read_user_file": {
           "title": "User Not Connected",
-          "description": "%emoji_error% User never used `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
+          "description": "%emoji_error% User did not use `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
           "console": "Could not read user file"
         },
         "not_connected_with_plugin": {
@@ -1229,8 +1229,8 @@
       "name": "advancements",
       "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
       "short_description": "Look up your and other member's minecraft advancements.",
-      "usage": "/advancements <@mention>/<in-game name> <advancement name or id>",
-      "example": "/advancements @Lianecx Diamonds!\n/advancements @Memer Bullseye",
+      "usage": "/advancements <advancement name or id> <@mention>/<username>",
+      "example": "/advancements Diamonds! @Lianecx \n/advancements Bullseye Memer",
       "options": {
         "advancement": {
           "type": "STRING",
@@ -1240,7 +1240,7 @@
           "autocomplete": true
         },
         "user": {
-          "type": "USER",
+          "type": "STRING",
           "name": "user",
           "description": "Set the user you want to get the advancement from.",
           "required": true
@@ -1252,10 +1252,10 @@
       "long_description": "Get an image of the current player's inventory.",
       "short_description": "Get an image of the current player's inventory.",
       "usage": "inventory <mention/username>",
-      "example": "/inventory @Lianecx",
+      "example": "/inventory @Lianecx\n/inventory TheTerrain",
       "options": {
         "user": {
-          "type": "USER",
+          "type": "STRING",
           "name": "user",
           "description": "Set the user you want to get the inventory from.",
           "required": true
@@ -1266,8 +1266,8 @@
       "name": "stats",
       "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
       "short_description": "Look at your and other member's minecraft server stats.",
-      "usage": "/stats <@mention>/<ingamename> <Statcategory **id**> <Statitem/block/entity **id**>",
-      "example": "/stats @Lianecx mined iron_ore\n/stats @Memer custom play_time\n/stats xXgamerboyyXx killed blaze",
+      "usage": "/stats <stat-category **id**> <stat-item/block/entity **id**> <@mention>/<username>",
+      "example": "/stats mined iron_ore @Lianecx\n/stats custom play_time @BastiGHG\n/stats killed blaze ILoveCheese",
       "options": {
         "custom": {
           "type": "SUBCOMMAND",
@@ -1281,7 +1281,7 @@
               "required": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1301,7 +1301,7 @@
               "autocomplete": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1321,7 +1321,7 @@
               "autocomplete": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1341,7 +1341,7 @@
               "autocomplete": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1361,7 +1361,7 @@
               "autocomplete": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1381,7 +1381,7 @@
               "autocomplete": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1401,7 +1401,7 @@
               "autocomplete": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1421,7 +1421,7 @@
               "autocomplete": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1441,7 +1441,7 @@
               "autocomplete": true
             },
             "user": {
-              "type": "USER",
+              "type": "STRING",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -1454,11 +1454,11 @@
       "name": "ban",
       "long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
       "short_description": "Ban a player from the minecraft server.",
-      "usage": "/ban <mention/username>",
+      "usage": "/ban <@mention/username>",
       "example": "/ban @Lianecx\n/ban cheaterGuy",
       "options": {
         "user": {
-          "type": "USER",
+          "type": "STRING",
           "name": "user",
           "description": "Set the user you want to ban.",
           "required": true
@@ -1475,11 +1475,11 @@
       "name": "unban",
       "long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
       "short_description": "Unban a banned player from the minecraft-server.",
-      "usage": "/unban <mention/username>",
+      "usage": "/unban <@mention/username>",
       "example": "/unban @Lianecx\n/unban MrNotCheating",
       "options": {
         "user": {
-          "type": "USER",
+          "type": "STRING",
           "name": "user",
           "description": "Set the user you want to unban.",
           "required": true
@@ -1491,7 +1491,7 @@
       "long_description": "Convert an attachment, image-link or @mention to a minecraft loading-screen.",
       "short_description": "Convert an image-link to a minecraft loading-screen.",
       "usage": "/loadingscreen <attachment/imageLink/@mention>",
-      "example": "/loadingscreen @Lianecx",
+      "example": "/loadingscreen @Lianecx\n/loadingscreen https://picsum.photos/200/200",
       "options": {
         "url": {
           "type": "STRING",
@@ -1505,11 +1505,11 @@
       "name": "message",
       "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).",
       "short_description": "Send private chat messages to members on the server.",
-      "usage": "/message <@mention/ingamename> <message>",
+      "usage": "/message <@mention/username> <message>",
       "example": "/message @Lianecx Hey, its me!\n/message someGuy §6Golden message",
       "options": {
         "user": {
-          "type": "USER",
+          "type": "STRING",
           "name": "user",
           "description": "Set the user you want to send a (private) message to.",
           "required": true
