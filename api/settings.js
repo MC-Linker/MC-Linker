@@ -59,8 +59,9 @@ function enable(guildId, type, value) {
         try {
             disableData = JSON.parse(await fs.readFile(`./serverdata/connections/${guildId}/disable.json`, 'utf-8'));
         } catch(err) {
-            console.log(addPh(keys.api.settings.errors.could_not_read_file, ph.fromError(err)));
+            console.log(addPh(keys.api.settings.errors.could_not_read_file.console, ph.fromError(err)));
             resolve(false);
+            return;
         }
 
         //Remove disable
