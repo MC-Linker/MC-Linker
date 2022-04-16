@@ -14,7 +14,7 @@ const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
 const settings = require('./api/settings');
-const { addPh, getArgs, keys, reply, replyOptions, ph } = require('./api/messages');
+const { getUserFromMention, getArgs, addPh, keys, reply, replyOptions, ph } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
@@ -131,14 +131,19 @@ client.on('interactionCreate', async interaction => {
     if(interaction.isCommand()) {
 
         //Making interaction compatible with normal commands
-        if(interaction.options.getUser('user')) {
+        const user = getUserFromMention(client, interaction.options.getString('user'));
+        if(user) {
             interaction.mentions = {
-                users: new Discord.Collection().set(interaction.options.getUser('user').id, interaction.options.getUser('user'))
+                users: new Discord.Collection().set(user.id, user)
             }
-        } else interaction.mentions = { users: new Discord.Collection() };
+        } else {
+            interaction.mentions = {
+                users: new Discord.Collection()
+            };
+        }
         interaction.attachments = [];
 
-        const args = getArgs(interaction);
+        const args = getArgs(client, interaction);
 
         if(interaction.commandName === 'message') await interaction.deferReply({ ephemeral: true });
         else await interaction.deferReply();
