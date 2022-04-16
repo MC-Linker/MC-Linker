@@ -1,5 +1,6 @@
 const fs = require('fs/promises');
 const fetch = require('node-fetch');
+const Discord = require('discord.js');
 const { keys, addPh, ph } = require('./messages');
 
 function searchAdvancements(searchString, category, shouldSearchValues = true, maxLength = 25) {
@@ -68,22 +69,22 @@ function isGuildConnected(guildId) {
     });
 }
 
-function getUUIDv4(username, userId, message) {
+function getUUIDv4(user, message) {
     return new Promise(async resolve => {
-        if (!userId) {
-            fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
+        if(user instanceof Discord.User) {
+            const userData = await getUserData(user.id, message);
+            resolve(userData?.id);
+        } else {
+            fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`)
                 .then(data => data.json())
                 .then(player => {
                     const uuidv4 = player.id.split('');
                     for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
                     resolve(uuidv4.join(''));
                 }).catch(() => {
-                    message.respond(keys.api.utils.errors.could_not_get_uuid, { username });
+                    message.respond(keys.api.utils.errors.could_not_get_uuid, { user });
                     resolve(false);
                 });
-        } else {
-            const userData = await getUserData(userId, message);
-            resolve(userData?.id);
         }
     });
 
