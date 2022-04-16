@@ -3,7 +3,7 @@
 + Remove advancements subcommands
 + Change `user` arguments to type STRING
 + Add `/advancements custom` autocomplete
-+ Support for multiple chat channels/connections
++ Support for multiple chat channels/connections (also add `/chatchannel set/remove`)
 + Add button to show enchantments and shulkerboxes in /inventory
 + Update stats autocomplete with minecraft-data
 + Combine sftp.js and ftp.js with `ftp-sftp` npm
