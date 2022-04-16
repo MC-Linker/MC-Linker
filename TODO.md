@@ -1,6 +1,5 @@
 # TODO SMP Bot
 
-+ Remove advancements subcommands
 + Change `user` arguments to type STRING
 + Add `/advancements custom` autocomplete
 + Support for multiple chat channels/connections (also add `/chatchannel set/remove`)

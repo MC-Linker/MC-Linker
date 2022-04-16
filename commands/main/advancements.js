@@ -6,10 +6,9 @@ const { time } = require('@discordjs/builders');
 const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
 
 async function autocomplete(interaction) {
-    const subcommand = interaction.options.getSubcommand();
     const focused = interaction.options.getFocused().toLowerCase();
 
-    const matchingTitles = await utils.searchAdvancements(focused, subcommand);
+    const matchingTitles = await utils.searchAllAdvancements(focused);
 
     const respondArray = [];
     matchingTitles.forEach(title => {
@@ -19,48 +18,44 @@ async function autocomplete(interaction) {
         })
     });
 
-    interaction.respond(respondArray).catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete));
+    interaction.respond(respondArray).catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete.console));
 }
 
 async function execute(message, args) {
     const username = message.mentions.users.first()?.tag ?? args[0];
     args.shift();
-    const category = args.shift()?.toLowerCase();
     let advancement = args.join(' ')?.toLowerCase();
 
     if(!username) {
         message.respond(keys.commands.advancements.warnings.no_username);
-        return;
-    } else if(!category) {
-        message.respond(keys.commands.advancements.warnings.no_category);
         return;
     } else if(!advancement) {
         message.respond(keys.commands.advancements.warnings.no_advancement);
         return;
     }
 
-    const matchingAdvancement = await utils.searchAdvancements(advancement, category, true, 1);
+    const matchingAdvancement = await utils.searchAllAdvancements(advancement, true, 1);
     advancement = matchingAdvancement.shift()?.value ?? advancement;
 
     //Get Advancement Title and Description from lang file
+    let category;
     let advancementTitle;
     let advancementDesc;
     try {
         const langData = JSON.parse(await fs.promises.readFile('./resources/languages/minecraft/en_us.json', 'utf-8'));
-        advancementTitle = langData[`advancements.${category}.${advancement}.title`];
-        advancementDesc = langData[`advancements.${category}.${advancement}.description`];
+        const advancementTitleKey = Object.keys(langData).find(key => key.startsWith('advancements.') && key.endsWith(`${advancement}.title`));
+        const advancementDescKey = Object.keys(langData).find(key => key.startsWith('advancements.') && key.endsWith(`${advancement}.description`));
+
+        //Extract category from key
+        category = advancementTitleKey.match(`/advancements\.(\S+)\.${advancement}\.title/`) ?? "";
+        advancementTitle = langData[advancementTitleKey];
+        advancementDesc = langData[advancementDescKey];
     } catch(ignored) {}
 
     if(!advancementTitle) advancementTitle = addPh(keys.commands.advancements.no_title_available, { "advancement_category": category, "advancement_title": advancement });
     else if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
 
-    if(await settings.isDisabled(message.guildId, 'advancements', category)) {
-        message.respond(
-            keys.commands.advancements.warnings.category_disabled,
-            { "advancement_category": category }
-        );
-        return;
-    } else if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
+    if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
         message.respond(
             keys.commands.advancements.warnings.advancement_disabled,
             { "advancement_title": advancementTitle }
