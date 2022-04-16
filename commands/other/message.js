@@ -3,7 +3,7 @@ const utils = require('../../api/utils');
 const { keys } = require('../../api/messages');
 
 async function execute(message, args) {
-    const username = message.mentions.users.first()?.tag ?? args[0];
+    const username = message.mentions.users.first() ?? args[0];
     args.shift(); //Remove username from args
     const chatMsg = args?.join(' ').replaceAll(`"`, `\\"`);
     const argPlaceholder = { username, "message": chatMsg };
@@ -16,7 +16,7 @@ async function execute(message, args) {
         return;
     }
 
-    const mcUsername = await utils.getUsername(message.mentions.users.first().id, message);
+    const mcUsername = username.id ? await utils.getUsername(username.id, message) : username;
     if(!mcUsername) return;
 
     /*[

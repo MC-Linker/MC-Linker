@@ -8,13 +8,13 @@ const fetch = require('node-fetch');
 const { keys, addPh, getEmbedBuilder, ph } = require('../../api/messages');
 
 async function execute(message, args) {
-    const username = message.mentions.users.first()?.tag ?? args[0];
-    if(!username) {
+    const user = message.mentions.users.first() ?? args[0];
+    if(!user) {
         message.respond(keys.commands.inventory.warnings.no_username);
         return;
     }
 
-    const uuidv4 = await utils.getUUIDv4(args[0], message.mentions.users.first()?.id, message);
+    const uuidv4 = await utils.getUUIDv4(user, message);
     if(!uuidv4) return;
 
     const worldPath = await utils.getWorldPath(message.guildId, message);
@@ -181,7 +181,7 @@ async function execute(message, args) {
             ctx.drawImage(skinImg, 70, 20, 65, 131);
 
             const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), `Inventory_Player.png`);
-            const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.fromStd(message), { username });
+            const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.fromStd(message), { username: user });
 
             if(enchantEmbed.fields.length >= 1) message.replyOptions({ files: [invImg], embeds: [invEmbed, enchantEmbed] });
             else message.replyOptions({ files: [invImg], embeds: [invEmbed] });

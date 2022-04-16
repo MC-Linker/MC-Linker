@@ -32,12 +32,12 @@ function autocomplete(interaction) {
 }
 
 async function execute(message, args) {
-    const username = message.mentions.users.first()?.tag ?? args[0];
-    let category = args[1];
-    let stat = args[2];
-    const argPlaceholder = { "stat_category": category, "stat_name": stat, username };
+    let category = args[0];
+    let stat = args[1];
+    const user = message.mentions.users.first() ?? args[2];
+    const argPlaceholder = { "stat_category": category, "stat_name": stat, "username": user.username };
 
-    if(!username) {
+    if(!user) {
         message.respond(keys.commands.stats.warnings.no_username);
         return;
     } else if(!category) {
@@ -56,7 +56,7 @@ async function execute(message, args) {
         return;
     }
 
-    const uuidv4 = await utils.getUUIDv4(args[0], message.mentions.users.first()?.id, message);
+    const uuidv4 = await utils.getUUIDv4(user, message);
     if(!uuidv4) return;
 
     const worldPath = await utils.getWorldPath(message.guildId, message);

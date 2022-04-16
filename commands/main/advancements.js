@@ -22,11 +22,10 @@ async function autocomplete(interaction) {
 }
 
 async function execute(message, args) {
-    const username = message.mentions.users.first()?.tag ?? args[0];
-    args.shift();
-    let advancement = args.join(' ')?.toLowerCase();
+    let advancement = args[0].toLowerCase();
+    const user = message.mentions.users.first() ?? args[1];
 
-    if(!username) {
+    if(!user) {
         message.respond(keys.commands.advancements.warnings.no_username);
         return;
     } else if(!advancement) {
@@ -63,7 +62,7 @@ async function execute(message, args) {
         return;
     }
 
-    const uuidv4 = await utils.getUUIDv4(username, message.mentions.users.first()?.id, message);
+    const uuidv4 = await utils.getUUIDv4(user, message);
     if(!uuidv4) return;
 
     const worldPath = await utils.getWorldPath(message.guildId, message);
@@ -86,7 +85,7 @@ async function execute(message, args) {
 
         const baseEmbed = getEmbedBuilder(
             keys.commands.advancements.success.base,
-            ph.fromStd(message), { equals, username, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+            ph.fromStd(message), { equals, "username": user.username, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
         );
 
         try {
@@ -138,7 +137,7 @@ async function execute(message, args) {
                 else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
             }
 
-            console.log(addPh(keys.commands.advancements.success.final.console, { "advancement_title": advancementTitle, username }));
+            console.log(addPh(keys.commands.advancements.success.final.console, { "advancement_title": advancementTitle, "username": user.username }));
             message.replyOptions({ embeds: [amEmbed] });
         } catch (err) {
             message.respond(keys.commands.advancements.warnings.not_completed, { "advancement_title": advancementTitle });

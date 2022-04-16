@@ -235,7 +235,7 @@ async function execute(message, args) {
             return;
         }
 
-        let uuidv4 = await utils.getUUIDv4(mcUsername, undefined, message);
+        let uuidv4 = await utils.getUUIDv4(mcUsername, message);
         if(!uuidv4) return;
 
         const connectionJson = {

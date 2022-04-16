@@ -5,7 +5,7 @@ const { prefix } = require('../config.json');
 
 const ph = {};
 ph.fromAuthor = function(author) {
-    if(!author instanceof Discord.User) return {};
+    if(!(author instanceof Discord.User)) return {};
 
     return {
         "author_username": author.username,
@@ -16,7 +16,7 @@ ph.fromAuthor = function(author) {
     }
 };
 ph.fromGuild = function(guild) {
-    if(!guild instanceof Discord.Guild) return {};
+    if(!(guild instanceof Discord.Guild)) return {};
 
     return {
         "guild_name": guild.name,
@@ -51,7 +51,7 @@ ph.fromInteraction = function(interaction) {
     return {};
 };
 ph.fromChannel = function(channel) {
-    if(!channel instanceof Discord.TextChannel) return {};
+    if(!(channel instanceof Discord.TextChannel)) return {};
 
     return {
         "channel_name": channel.name,
@@ -61,7 +61,7 @@ ph.fromChannel = function(channel) {
     }
 };
 ph.fromClient = function(client) {
-    if(!client instanceof Discord.Client) return {};
+    if(!(client instanceof Discord.Client)) return {};
 
     return {
         "client_username": client.user.username,
@@ -93,7 +93,7 @@ ph.fromStd = function(interaction) {
 };
 
 ph.fromError = function(err) {
-    if(!err instanceof Error) return {};
+    if(!(err instanceof Error)) return {};
 
     return {
         "error": err.stack
@@ -352,8 +352,19 @@ function addOption(builder, key) {
     }
 }
 
+function getUserFromMention(client, mention) {
+    if(typeof mention !== 'string') return;
 
-function getArgs(interaction) {
+    const matches = mention.matchAll(Discord.MessageMentions.USERS_PATTERN).next().value;
+    if (!matches) return;
+
+    // matches[0] = entire mention
+    // matches[1] = Id
+    const id = matches[1];
+    return client.users.cache.get(id);
+}
+
+function getArgs(client, interaction) {
     if(!(interaction instanceof Discord.CommandInteraction)) return [];
 
     const args = [];
@@ -366,7 +377,7 @@ function getArgs(interaction) {
 
     if(options._hoistedOptions[0]) {
         options._hoistedOptions.forEach(option => {
-            if(option.type === 'USER') args.unshift(option.user.tag);
+            if(option.name === 'user' && option.type === 'STRING') args.push(getUserFromMention(client, option.value) ?? option.value);
             else if(option.type === 'CHANNEL') args.push(option.channel);
             else args.push(option.value);
         });
@@ -375,4 +386,4 @@ function getArgs(interaction) {
     return args;
 }
 
-module.exports = { keys, ph, reply, replyOptions, addPh, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getArgs };
+module.exports = { keys, ph, reply, replyOptions, addPh, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUserFromMention, getArgs };
