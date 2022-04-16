@@ -188,11 +188,6 @@
           "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
           "console": "No username specified"
         },
-        "no_category": {
-          "title": "No Category Specified",
-          "description": "%emoji_warning% Please specify an advancement category.\n(`story`, `nether`, `end`, `adventure`, `husbandry`)",
-          "console": "No category specified"
-        },
         "no_advancement": {
           "title": "No Advancement Specified",
           "description": "%emoji_warning% Please specify the advancement name or id.",
@@ -1234,108 +1229,21 @@
       "name": "advancements",
       "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
       "short_description": "Look up your and other member's minecraft advancements.",
-      "usage": "/advancements <@mention>/<in-game name> <advancement-tab> <advancement name or id>",
-      "example": "/advancements @Lianecx story Diamonds!\n/advancements @Memer adventure Bullseye",
+      "usage": "/advancements <@mention>/<in-game name> <advancement name or id>",
+      "example": "/advancements @Lianecx Diamonds!\n/advancements @Memer Bullseye",
       "options": {
-        "story": {
-          "type": "SUBCOMMAND",
-          "name": "story",
-          "description": "The heart and story of the game",
-          "options": {
-            "advancement": {
-              "type": "STRING",
-              "name": "advancement",
-              "description": "Set the advancement",
-              "required": true,
-              "autocomplete": true
-            },
-            "user": {
-              "type": "USER",
-              "name": "user",
-              "description": "Set the user you want to get the advancement from.",
-              "required": true
-            }
-          }
+        "advancement": {
+          "type": "STRING",
+          "name": "advancement",
+          "description": "Set the advancement",
+          "required": true,
+          "autocomplete": true
         },
-        "nether": {
-          "type": "SUBCOMMAND",
-          "name": "nether",
-          "description": "Bring summer clothes",
-          "options": {
-            "advancement": {
-              "type": "STRING",
-              "name": "advancement",
-              "description": "Set the advancement",
-              "required": true,
-              "autocomplete": true
-            },
-            "user": {
-              "type": "USER",
-              "name": "user",
-              "description": "Set the user you want to get the advancement from.",
-              "required": true
-            }
-          }
-        },
-        "end": {
-          "type": "SUBCOMMAND",
-          "name": "end",
-          "description": "Or the beginning?",
-          "options": {
-            "advancement": {
-              "type": "STRING",
-              "name": "advancement",
-              "description": "Set the advancement",
-              "required": true,
-              "autocomplete": true
-            },
-            "user": {
-              "type": "USER",
-              "name": "user",
-              "description": "Set the user you want to get the advancement from.",
-              "required": true
-            }
-          }
-        },
-        "adventure": {
-          "type": "SUBCOMMAND",
-          "name": "adventure",
-          "description": "Adventure, exploration, and combat",
-          "options": {
-            "advancement": {
-              "type": "STRING",
-              "name": "advancement",
-              "description": "Set the advancement",
-              "required": true,
-              "autocomplete": true
-            },
-            "user": {
-              "type": "USER",
-              "name": "user",
-              "description": "Set the user you want to get the advancement from.",
-              "required": true
-            }
-          }
-        },
-        "husbandry": {
-          "type": "SUBCOMMAND",
-          "name": "husbandry",
-          "description": "The world is full of friends and food",
-          "options": {
-            "advancement": {
-              "type": "STRING",
-              "name": "advancement",
-              "description": "Set the advancement",
-              "required": true,
-              "autocomplete": true
-            },
-            "user": {
-              "type": "USER",
-              "name": "user",
-              "description": "Set the user you want to get the advancement from.",
-              "required": true
-            }
-          }
+        "user": {
+          "type": "USER",
+          "name": "user",
+          "description": "Set the user you want to get the advancement from.",
+          "required": true
         }
       }
     },

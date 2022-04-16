@@ -126,10 +126,6 @@
   "commands.advancements.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
   "commands.advancements.warnings.no_username.console": "No username specified",
 
-  "commands.advancements.warnings.no_category.title": "No Category Specified",
-  "commands.advancements.warnings.no_category.description": "%emoji_warning% Please specify an advancement category.\n(`story`, `nether`, `end`, `adventure`, `husbandry`)",
-  "commands.advancements.warnings.no_category.console": "No category specified",
-
   "commands.advancements.warnings.no_advancement.title": "No Advancement Specified",
   "commands.advancements.warnings.no_advancement.description": "%emoji_warning% Please specify the advancement name or id.",
   "commands.advancements.warnings.no_advancement.console": "No advancement specified",
@@ -848,89 +844,19 @@
   "data.advancements.name": "advancements",
   "data.advancements.long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
   "data.advancements.short_description": "Look up your and other member's minecraft advancements.",
-  "data.advancements.usage": "/advancements <@mention>/<in-game name> <advancement-tab> <advancement name or id>",
-  "data.advancements.example": "/advancements @Lianecx story Diamonds!\n/advancements @Memer adventure Bullseye",
+  "data.advancements.usage": "/advancements <@mention>/<in-game name> <advancement name or id>",
+  "data.advancements.example": "/advancements @Lianecx Diamonds!\n/advancements @Memer Bullseye",
 
-  "data.advancements.options.story.type": "SUBCOMMAND",
-  "data.advancements.options.story.name": "story",
-  "data.advancements.options.story.description": "The heart and story of the game",
+  "data.advancements.options.advancement.type": "STRING",
+  "data.advancements.options.advancement.name": "advancement",
+  "data.advancements.options.advancement.description": "Set the advancement",
+  "data.advancements.options.advancement.required": true,
+  "data.advancements.options.advancement.autocomplete": true,
 
-  "data.advancements.options.story.options.advancement.type": "STRING",
-  "data.advancements.options.story.options.advancement.name": "advancement",
-  "data.advancements.options.story.options.advancement.description": "Set the advancement",
-  "data.advancements.options.story.options.advancement.required": true,
-  "data.advancements.options.story.options.advancement.autocomplete": true,
-
-  "data.advancements.options.story.options.user.type": "USER",
-  "data.advancements.options.story.options.user.name": "user",
-  "data.advancements.options.story.options.user.description": "Set the user you want to get the advancement from.",
-  "data.advancements.options.story.options.user.required": true,
-
-
-  "data.advancements.options.nether.type": "SUBCOMMAND",
-  "data.advancements.options.nether.name": "nether",
-  "data.advancements.options.nether.description": "Bring summer clothes",
-
-  "data.advancements.options.nether.options.advancement.type": "STRING",
-  "data.advancements.options.nether.options.advancement.name": "advancement",
-  "data.advancements.options.nether.options.advancement.description": "Set the advancement",
-  "data.advancements.options.nether.options.advancement.required": true,
-  "data.advancements.options.nether.options.advancement.autocomplete": true,
-
-  "data.advancements.options.nether.options.user.type": "USER",
-  "data.advancements.options.nether.options.user.name": "user",
-  "data.advancements.options.nether.options.user.description": "Set the user you want to get the advancement from.",
-  "data.advancements.options.nether.options.user.required": true,
-
-
-  "data.advancements.options.end.type": "SUBCOMMAND",
-  "data.advancements.options.end.name": "end",
-  "data.advancements.options.end.description": "Or the beginning?",
-
-
-  "data.advancements.options.end.options.advancement.type": "STRING",
-  "data.advancements.options.end.options.advancement.name": "advancement",
-  "data.advancements.options.end.options.advancement.description": "Set the advancement",
-  "data.advancements.options.end.options.advancement.required": true,
-  "data.advancements.options.end.options.advancement.autocomplete": true,
-
-  "data.advancements.options.end.options.user.type": "USER",
-  "data.advancements.options.end.options.user.name": "user",
-  "data.advancements.options.end.options.user.description": "Set the user you want to get the advancement from.",
-  "data.advancements.options.end.options.user.required": true,
-
-
-  "data.advancements.options.adventure.type": "SUBCOMMAND",
-  "data.advancements.options.adventure.name": "adventure",
-  "data.advancements.options.adventure.description": "Adventure, exploration, and combat",
-
-
-  "data.advancements.options.adventure.options.advancement.type": "STRING",
-  "data.advancements.options.adventure.options.advancement.name": "advancement",
-  "data.advancements.options.adventure.options.advancement.description": "Set the advancement",
-  "data.advancements.options.adventure.options.advancement.required": true,
-  "data.advancements.options.adventure.options.advancement.autocomplete": true,
-
-  "data.advancements.options.adventure.options.user.type": "USER",
-  "data.advancements.options.adventure.options.user.name": "user",
-  "data.advancements.options.adventure.options.user.description": "Set the user you want to get the advancement from.",
-  "data.advancements.options.adventure.options.user.required": true,
-
-
-  "data.advancements.options.husbandry.type": "SUBCOMMAND",
-  "data.advancements.options.husbandry.name": "husbandry",
-  "data.advancements.options.husbandry.description": "The world is full of friends and food",
-
-  "data.advancements.options.husbandry.options.advancement.type": "STRING",
-  "data.advancements.options.husbandry.options.advancement.name": "advancement",
-  "data.advancements.options.husbandry.options.advancement.description": "Set the advancement",
-  "data.advancements.options.husbandry.options.advancement.required": true,
-  "data.advancements.options.husbandry.options.advancement.autocomplete": true,
-
-  "data.advancements.options.husbandry.options.user.type": "USER",
-  "data.advancements.options.husbandry.options.user.name": "user",
-  "data.advancements.options.husbandry.options.user.description": "Set the user you want to get the advancement from.",
-  "data.advancements.options.husbandry.options.user.required": true,
+  "data.advancements.options.user.type": "USER",
+  "data.advancements.options.user.name": "user",
+  "data.advancements.options.user.description": "Set the user you want to get the advancement from.",
+  "data.advancements.options.user.required": true,
 
 
 
