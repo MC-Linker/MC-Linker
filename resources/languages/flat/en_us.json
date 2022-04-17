@@ -155,7 +155,7 @@
   "commands.advancements.success.base.description": "%advancement_description%",
   "commands.advancements.success.base.color": "LUMINOUS_VIVID_PINK",
   "commands.advancements.success.base.fields.advancement_title.title": "%equals%\n%advancement_title%",
-  "commands.advancements.success.base.fields.advancement_title.content": "%equals%",
+  "commands.advancements.success.base.fields.advancement_title.content": "**%equals%**",
   "commands.advancements.success.base.image": "https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png",
 
   "commands.advancements.success.done.footer.text": "Advancement unlocked/completed",

@@ -229,7 +229,7 @@
           "fields": {
             "advancement_title": {
               "title": "%equals%\n%advancement_title%",
-              "content": "%equals%"
+              "content": "**%equals%**"
             }
           },
           "image": "https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png"
