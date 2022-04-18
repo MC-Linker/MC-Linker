@@ -15,6 +15,9 @@ function searchAdvancements(searchString, category, shouldSearchValues = true, m
                     return advancement.name.toLowerCase().includes(searchString) || (!shouldSearchValues || advancement.value.toLowerCase().includes(searchString));
                 });
 
+                //Add category field
+                matchingTitles.map(title => title.category = matchingCategory);
+
                 matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
                 if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
                 resolve(matchingTitles);
@@ -39,6 +42,10 @@ function searchAllAdvancements(searchString, shouldSearchValues = true, maxLengt
                         //Filter for matching name and (if shouldSearchValues === true) for matching value
                         return advancement.name.toLowerCase().includes(searchString) || (!shouldSearchValues || advancement.value.toLowerCase().includes(searchString));
                     });
+
+                    //Add category field
+                    const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === category);
+                    matchingKeys.map(key => key.category = categoryKey);
 
                     matchingKeys.forEach(key => matchingTitles.push(key));
                 });
@@ -82,7 +89,7 @@ function getUUIDv4(user, message) {
                     for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
                     resolve(uuidv4.join(''));
                 }).catch(() => {
-                    message.respond(keys.api.utils.errors.could_not_get_uuid, { user });
+                    message.respond(keys.api.utils.errors.could_not_get_uuid, { "username": user });
                     resolve(false);
                 });
         }
