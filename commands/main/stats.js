@@ -35,7 +35,7 @@ async function execute(message, args) {
     let category = args[0];
     let stat = args[1];
     const user = message.mentions.users.first() ?? args[2];
-    const argPlaceholder = { "stat_category": category, "stat_name": stat, "username": user.username };
+    const argPlaceholder = { "stat_category": category, "stat_name": stat, "username": user.username ?? user };
 
     if(!user) {
         message.respond(keys.commands.stats.warnings.no_username);
