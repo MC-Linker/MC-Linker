@@ -122,6 +122,8 @@
 
 
 
+  "commands.advancements.no_description_available": "No description available...",
+
   "commands.advancements.warnings.no_username.title": "No Username Specified",
   "commands.advancements.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
   "commands.advancements.warnings.no_username.console": "No username specified",
@@ -129,9 +131,6 @@
   "commands.advancements.warnings.no_advancement.title": "No Advancement Specified",
   "commands.advancements.warnings.no_advancement.description": "%emoji_warning% Please specify the advancement name or id.",
   "commands.advancements.warnings.no_advancement.console": "No advancement specified",
-
-  "commands.advancements.no_description_available": "No description available...",
-  "commands.advancements.no_title_available": "%advancement_category% %advancement_title%",
 
   "commands.advancements.warnings.category_disabled.title": "Category Disabled",
   "commands.advancements.warnings.category_disabled.description": "%emoji_no_entry% Advancement category **%advancement_category%** disabled!",
@@ -719,9 +718,9 @@
   "api.plugin.errors.could_not_stream.description": "%emoji_error% Could not download files. Please try again.",
   "api.plugin.errors.could_not_stream.console": "Could not stream file [%path%] %error%",
 
-  "api.plugin.errors.status_400_404.title": "Unknown Bot Error",
-  "api.plugin.errors.status_400_404.description": "%emoji_error% An unknown bot error occurred",
-  "api.plugin.errors.status_400_404.console": "Unknown client error %error%",
+  "api.plugin.errors.status_400.title": "Unknown Bot Error",
+  "api.plugin.errors.status_400.description": "%emoji_error% An unknown bot error occurred",
+  "api.plugin.errors.status_400.console": "Unknown client error %error%",
 
   "api.plugin.errors.status_500.title": "Unknown Plugin Error",
   "api.plugin.errors.status_500.description": "%emoji_error% An unknown plugin error occurred.",

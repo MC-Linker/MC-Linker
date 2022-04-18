@@ -182,6 +182,7 @@
       }
     },
     "advancements": {
+      "no_description_available": "No description available...",
       "warnings": {
         "no_username": {
           "title": "No Username Specified",
@@ -209,8 +210,6 @@
           "console": "Advancement %advancement_title% not completed."
         }
       },
-      "no_description_available": "No description available...",
-      "no_title_available": "%advancement_category% %advancement_title%",
       "errors": {
         "could_not_read_file": {
           "title": "Could Not Read File",
@@ -1042,7 +1041,7 @@
           "description": "%emoji_error% Could not download files. Please try again.",
           "console": "Could not stream file [%path%] %error%"
         },
-        "status_400_404": {
+        "status_400": {
           "title": "Unknown Bot Error",
           "description": "%emoji_error% An unknown bot error occurred",
           "console": "Unknown client error %error%"
