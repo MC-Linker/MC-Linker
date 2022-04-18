@@ -165,8 +165,8 @@ function connect(ip, guildId, verifyCode, message) {
                     'Content-Type': 'application/json',
                 }
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
-            else if(resp.status === 401) { resolve(401); return; }
+            if(resp.status === 401) return resolve(401);
+            else if(!await checkStatus(resp, message)) return resolve(false);
             resp = await resp.json();
 
             pluginConnections.push({
@@ -261,8 +261,8 @@ function registerChannel(ip, guildId, channelId, types, message) {
                 }
             });
 
-            if(!await checkStatus(resp, message)) return resolve(false);
-            else if(resp.status === 401) return resolve(401);
+            if(resp.status === 401) return resolve(401);
+            else if(!await checkStatus(resp, message)) return resolve(false);
             resp = await resp.json();
 
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
@@ -442,14 +442,13 @@ async function updateConn(message) {
 }
 
 async function checkStatus(response, message) {
-    if(response.status === 400 || response.status === 404) {
-        message.respond(keys.api.plugin.errors.status_400_404, { "error": await response.text() });
+    if(response.status >= 400 && response.status < 500) {
+        message.respond(keys.api.plugin.errors.status_400, { "error": await response.text() });
         return false;
-    } else if(response.status === 500) {
+    } else if(response.status >= 500 && response.status < 600) {
         message.respond(keys.api.plugin.errors.status_500, { "error": await response.text() });
         return false;
-    } else if(response.status === 401) return true;
-    else return !!response.ok;
+    } else return !!response.ok;
 }
 
 module.exports = { loadExpress, chat, connect, registerChannel, disconnect, get, put, find, execute, verify };
