@@ -33,26 +33,13 @@ async function execute(message, args) {
         return;
     }
 
-    const matchingAdvancement = await utils.searchAllAdvancements(advancement, true, 1);
-    advancement = matchingAdvancement.shift()?.value ?? advancement;
+    let matchingAdvancement = await utils.searchAllAdvancements(advancement, true, 1);
+    matchingAdvancement = matchingAdvancement.shift();
 
-    //Get Advancement Title and Description from lang file
-    let category;
-    let advancementTitle;
-    let advancementDesc;
-    try {
-        const langData = JSON.parse(await fs.promises.readFile('./resources/languages/minecraft/en_us.json', 'utf-8'));
-        const advancementTitleKey = Object.keys(langData).find(key => key.startsWith('advancements.') && key.endsWith(`${advancement}.title`));
-        const advancementDescKey = Object.keys(langData).find(key => key.startsWith('advancements.') && key.endsWith(`${advancement}.description`));
-
-        //Extract category from key
-        category = advancementTitleKey.match(`/advancements\.(\S+)\.${advancement}\.title/`) ?? "";
-        advancementTitle = langData[advancementTitleKey];
-        advancementDesc = langData[advancementDescKey];
-    } catch(ignored) {}
-
-    if(!advancementTitle) advancementTitle = addPh(keys.commands.advancements.no_title_available, { "advancement_category": category, "advancement_title": advancement });
-    else if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
+    advancement = matchingAdvancement?.value ?? advancement;
+    const category = matchingAdvancement?.category;
+    const advancementTitle = matchingAdvancement?.name ?? advancement;
+    const advancementDesc = matchingAdvancement?.description ?? keys.commands.advancements.no_description_available;
 
     if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
         message.respond(
@@ -85,7 +72,7 @@ async function execute(message, args) {
 
         const baseEmbed = getEmbedBuilder(
             keys.commands.advancements.success.base,
-            ph.fromStd(message), { equals, "username": user.username, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+            ph.fromStd(message), { equals, "username": user.username ?? user, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
         );
 
         try {
@@ -110,7 +97,10 @@ async function execute(message, args) {
                 else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
             } else {
                 const allAdvancements = Object.keys(advancementData);
-                const filteredAdvancement = allAdvancements.find(key => key.includes(category) && key.endsWith(advancement));
+                //Filter either by category + id or just id
+                const filteredAdvancement = category ?
+                    allAdvancements.find(key => key.split(':').pop() === `${category}/${advancement}`) :
+                    allAdvancements.find(key => key.endsWith(advancement));
 
                 const criteriaKeys = Object.keys(advancementData[filteredAdvancement]['criteria']);
                 const done = advancementData[filteredAdvancement]['done'];
@@ -137,7 +127,7 @@ async function execute(message, args) {
                 else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
             }
 
-            console.log(addPh(keys.commands.advancements.success.final.console, { "advancement_title": advancementTitle, "username": user.username }));
+            console.log(addPh(keys.commands.advancements.success.final.console, { "advancement_title": advancementTitle, "username": user.username ?? user }));
             message.replyOptions({ embeds: [amEmbed] });
         } catch (err) {
             message.respond(keys.commands.advancements.warnings.not_completed, { "advancement_title": advancementTitle });
