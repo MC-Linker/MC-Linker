@@ -417,7 +417,7 @@
         },
         "response_warning": {
           "title": "Unban Player",
-          "description": "Successfully executed ban player **%username%**\n%response%",
+          "description": "Successfully executed unban player **%username%**\n%response%",
           "color": "BLUE"
         }
       },
@@ -570,42 +570,42 @@
                   "chat": {
                     "label": "Chat Messages",
                     "description": "Send a message every time a player chats.",
-                    "value": "0"
+                    "value": "chat"
                   },
                   "join": {
                     "label": "Join Messages",
                     "description": "Send a message every time a player joins the server.",
-                    "value": "1"
+                    "value": "join"
                   },
                   "leave": {
                     "label": "Leave Messages",
                     "description": "Send a message every time a player leaves the server.",
-                    "value": "2"
+                    "value": "leave"
                   },
                   "advancements": {
                     "label": "Advancement Messages",
                     "description": "Send a message every time a player completes an advancement.",
-                    "value": "3"
+                    "value": "advancement"
                   },
                   "death": {
                     "label": "Death Messages",
                     "description": "Send a message every time a player dies.",
-                    "value": "4"
+                    "value": "death"
                   },
                   "commands": {
                     "label": "Command Messages",
                     "description": "Send a message every time a command is executed.",
-                    "value": "5"
+                    "value": "command"
                   },
                   "start": {
                     "label": "Startup Messages",
                     "description": "Send a message every time the server starts up.",
-                    "value": "6"
+                    "value": "start"
                   },
                   "close": {
                     "label": "Shutdown Messages",
                     "description": "Send a message every time the server shuts down.",
-                    "value": "7"
+                    "value": "close"
                   }
                 }
               }

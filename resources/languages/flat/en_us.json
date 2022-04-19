@@ -388,35 +388,35 @@
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.chat.label": "Chat Messages",
   "commands.chatchannel.success.choose.components.select_menus.log.options.chat.description": "Send a message every time a player chats.",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.chat.value": "0",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.chat.value": "chat",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.join.label": "Join Messages",
   "commands.chatchannel.success.choose.components.select_menus.log.options.join.description": "Send a message every time a player joins the server.",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.join.value": "1",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.join.value": "join",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.leave.label": "Leave Messages",
   "commands.chatchannel.success.choose.components.select_menus.log.options.leave.description": "Send a message every time a player leaves the server.",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.leave.value": "2",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.leave.value": "leave",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.advancements.label": "Advancement Messages",
   "commands.chatchannel.success.choose.components.select_menus.log.options.advancements.description": "Send a message every time a player completes an advancement.",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.advancements.value": "3",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.advancements.value": "advancement",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.death.label": "Death Messages",
   "commands.chatchannel.success.choose.components.select_menus.log.options.death.description": "Send a message every time a player dies.",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.death.value": "4",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.death.value": "death",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.commands.label": "Command Messages",
   "commands.chatchannel.success.choose.components.select_menus.log.options.commands.description": "Send a message every time a command is executed.",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.commands.value": "5",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.commands.value": "command",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.start.label": "Startup Messages",
   "commands.chatchannel.success.choose.components.select_menus.log.options.start.description": "Send a message every time the server starts up.",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.start.value": "6",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.start.value": "start",
 
   "commands.chatchannel.success.choose.components.select_menus.log.options.close.label": "Shutdown Messages",
   "commands.chatchannel.success.choose.components.select_menus.log.options.close.description": "Send a message every time the server shuts down.",
-  "commands.chatchannel.success.choose.components.select_menus.log.options.close.value": "7",
+  "commands.chatchannel.success.choose.components.select_menus.log.options.close.value": "close",
 
 
   "commands.chatchannel.success.final.title": "Set Chat Channel",
