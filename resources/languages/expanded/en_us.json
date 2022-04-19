@@ -393,12 +393,7 @@
         },
         "response_warning": {
           "title": "Ban Player",
-          "description": "Received warning while trying to ban player **%username%**: %response%",
-          "color": "ORANGE"
-        },
-        "no_response": {
-          "title": "Ban Player",
-          "description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`",
+          "description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`\n%response%",
           "color": "ORANGE"
         }
       },
@@ -422,12 +417,7 @@
         },
         "response_warning": {
           "title": "Unban Player",
-          "description": "Received warning while trying to unban player **%username%**: %response%",
-          "color": "BLUE"
-        },
-        "no_response": {
-          "title": "Unban Player",
-          "description": "%emoji_warning% Successfully executed unban player **%username%**",
+          "description": "Successfully executed ban player **%username%**\n%response%",
           "color": "BLUE"
         }
       },

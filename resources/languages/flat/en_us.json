@@ -260,12 +260,8 @@
   "commands.ban.warnings.no_username.console": "No username specified",
 
   "commands.ban.warnings.response_warning.title": "Ban Player",
-  "commands.ban.warnings.response_warning.description": "Received warning while trying to ban player **%username%**: %response%",
+  "commands.ban.warnings.response_warning.description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`\n%response%",
   "commands.ban.warnings.response_warning.color": "ORANGE",
-
-  "commands.ban.warnings.no_response.title": "Ban Player",
-  "commands.ban.warnings.no_response.description": "%emoji_warning% Successfully executed ban player **%username%**: `%reason%`",
-  "commands.ban.warnings.no_response.color": "ORANGE",
 
   "commands.ban.success.title": "Ban Player",
   "commands.ban.success.description": "%emoji_success% Successfully banned player **%username%**: `%reason%`",
@@ -282,12 +278,8 @@
   "commands.unban.warnings.no_username.console": "No username specified",
 
   "commands.unban.warnings.response_warning.title": "Unban Player",
-  "commands.unban.warnings.response_warning.description": "Received warning while trying to unban player **%username%**: %response%",
+  "commands.unban.warnings.response_warning.description": "Successfully executed unban player **%username%**\n%response%",
   "commands.unban.warnings.response_warning.color": "BLUE",
-
-  "commands.unban.warnings.no_response.title": "Unban Player",
-  "commands.unban.warnings.no_response.description": "%emoji_warning% Successfully executed unban player **%username%**",
-  "commands.unban.warnings.no_response.color": "BLUE",
 
   "commands.unban.success.title": "Unban Player",
   "commands.unban.success.description": "%emoji_success% Successfully unbanned player **%username%**",
