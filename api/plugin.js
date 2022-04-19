@@ -12,6 +12,8 @@ async function loadExpress(client) {
     const app = express();
     app.use(express.json());
 
+    const alreadyWarnedServers = []; //Only warn for the same server once each restart
+
     app.post('/chat', async (req, res) => {
         res.send('Success');
 
@@ -28,10 +30,12 @@ async function loadExpress(client) {
 
 
         //If no connection on that ip
-        if(!conn) {
+        if(!conn && alreadyWarnedServers.includes(conn.ip)) {
             try {
                 await client.channels.cache.get(channel)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
                     .catch(() => {});
+
+                alreadyWarnedServers.push(conn.ip);
                 return;
             } catch(ignored) {}
         }
@@ -54,22 +58,17 @@ async function loadExpress(client) {
                 //ADVANCEMENT
                 let advancementTitle;
                 let advancementDesc;
-                try {
-                    //Get advancement title and desc from lang file
-                    if(message.startsWith('minecraft:recipes')) return;
-                    const advancementKey = message.replaceAll('minecraft:', '').replaceAll('/', '.');
-                    const langData = JSON.parse(await fs.promises.readFile('./resources/languages/minecraft/english.json', 'utf-8'));
-                    advancementTitle = langData[`advancements.${advancementKey}.title`];
-                    advancementDesc = langData[`advancements.${advancementKey}.description`];
-                } catch(ignored) {
-                    advancementTitle = message;
-                    advancementDesc = '';
-                }
 
-                if(!advancementDesc || !advancementTitle) {
-                    advancementTitle = message;
-                    advancementDesc = '';
-                }
+                if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
+
+                const advancementKey = message.replaceAll('minecraft:', '').split('/');
+                const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], true, 1);
+
+                advancementTitle = advancement.shift()?.title;
+                advancementDesc = advancement.shift()?.description;
+
+                if(!advancementDesc) advancementDesc = '';
+                else if(!advancementTitle) advancementTitle = message;
 
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
                 break;
@@ -214,7 +213,7 @@ function disconnect(guildId, message) {
                     Authorization: `Basic: ${hash}`
                 }
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
+            if(!await checkStatus(resp, message)) return resolve(false);
 
             pluginConnections.splice(connIndex, 1);
 
@@ -350,7 +349,7 @@ function put(getPath, putPath, message) {
                 },
                 body: readStream
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
+            if(!await checkStatus(resp, message)) return resolve(false);
 
             message.respond(keys.api.plugin.success.put, { "path": putPath });
             resolve(true);
@@ -377,7 +376,7 @@ async function find(start, maxDepth, file, message) {
                     Authorization: `Basic ${hash}`
                 }
             });
-            if (!await checkStatus(resp, message)) { resolve(false); return; }
+            if (!await checkStatus(resp, message)) return resolve(false);
             resolve(resp.text());
         } catch (err) {
             message.respond(keys.api.plugin.errors.no_response);
@@ -401,8 +400,9 @@ function execute(command, message) {
                     Authorization: `Basic ${hash}`
                 }
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
-            resolve(await resp.text());
+
+            if(!await checkStatus(resp, message)) return resolve(false);
+            resolve({ message: await resp.text(), status: resp.status });
         } catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
@@ -414,7 +414,7 @@ function verify(ip, message) {
     return new Promise(async resolve => {
         try {
             const resp = await fetch(`http://${ip}/verify/`);
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
+            if(!await checkStatus(resp, message)) return resolve(false);
             resolve(true);
         } catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
@@ -442,10 +442,10 @@ async function updateConn(message) {
 }
 
 async function checkStatus(response, message) {
-    if(response.status >= 400 && response.status < 500) {
+    if(response.status === 400) {
         message.respond(keys.api.plugin.errors.status_400, { "error": await response.text() });
         return false;
-    } else if(response.status >= 500 && response.status < 600) {
+    } else if(response.status === 500) {
         message.respond(keys.api.plugin.errors.status_500, { "error": await response.text() });
         return false;
     } else return !!response.ok;

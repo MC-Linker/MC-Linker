@@ -20,8 +20,7 @@ async function execute(message, args) {
 	const resp = await plugin.execute(`pardon ${mcUsername}`, message);
 	if(!resp) return;
 
-	if(resp.startsWith('&c')) message.respond(keys.commands.unban.warnings.response_warning, { username: user, "response": resp });
-	else if(resp.startsWith('Could not fetch response message!')) message.respond(keys.commands.unban.warnings.no_response, { username: user });
+	if(resp.status === 206) message.respond(keys.commands.unban.warnings.response_warning, { username: user, "response": resp.message });
 	else message.respond(keys.commands.unban.success, { username: user });
 }
 

@@ -23,8 +23,7 @@ async function execute(message, args) {
 	if(!resp) return;
 
 
-	if(resp.startsWith('&c')) message.respond(keys.commands.ban.warnings.response_warning, { username: user, reason, "response": resp });
-	else if(resp.startsWith('Could not fetch response message!')) message.respond(keys.commands.ban.warnings.no_response, { username: user, reason });
+	if(resp.status === 206) message.respond(keys.commands.ban.warnings.response_warning, { username: user, reason, "response": resp.message });
 	else message.respond(keys.commands.ban.success, { username: user, reason });
 }
 
