@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const express = require('express');
 const utils = require('./utils');
 const { botPort, pluginVersion } = require('../config.json');
-const { keys, addPh, ph, getEmbedBuilder} = require('./messages');
+const { keys, addPh, ph, getEmbedBuilder } = require('./messages');
 
 let pluginConnections = [];
 async function loadExpress(client) {
@@ -62,7 +62,7 @@ async function loadExpress(client) {
                 if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
                 const advancementKey = message.replaceAll('minecraft:', '').split('/');
-                const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], true, 1);
+                const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
 
                 advancementTitle = advancement.shift()?.title;
                 advancementDesc = advancement.shift()?.description;
@@ -108,11 +108,13 @@ async function loadExpress(client) {
 
 async function chat(message) {
     const conn = pluginConnections.find(conn => conn.guildId === message.guildId && conn.channelId === message.channelId);
-    if(message.attachments.size) message.attachments.forEach(attach => message.content += `\n${attach.url}`);
+
+    let content = message.cleanContent;
+    message.attachments?.forEach(attach => content += `\n${attach.url}`);
 
     if(conn?.chat && !message.author.bot) {
         try {
-            await fetch(`http://${conn.ip}/chat/?&msg=${encodeURIComponent(message.content)}&username=${message.author.username}`, {
+            await fetch(`http://${conn.ip}/chat/?&msg=${encodeURIComponent(content.replaceAll('\u200B', ''))}&username=${message.author.username}`, {
                 headers: {
                     Authorization: `Basic ${conn.hash}`
                 }
@@ -447,6 +449,9 @@ async function checkStatus(response, message) {
         return false;
     } else if(response.status === 500) {
         message.respond(keys.api.plugin.errors.status_500, { "error": await response.text() });
+        return false;
+    } else if(response.status === 404) {
+        message.respond(keys.api.plugin.errors.status_500);
         return false;
     } else return !!response.ok;
 }
