@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const Discord = require('discord.js');
 const { keys, addPh, ph } = require('./messages');
 
-function searchAdvancements(searchString, category, shouldSearchValues = true, maxLength = 25) {
+function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
         fs.readFile('./resources/data/advancements.json', 'utf8')
             .then(advancementJson => {
@@ -11,12 +11,17 @@ function searchAdvancements(searchString, category, shouldSearchValues = true, m
                 const matchingCategory = advancementData.categories[category];
 
                 let matchingTitles = matchingCategory.filter(advancement => {
-                    //Filter for matching name and (if shouldSearchValues === true) for matching value
-                    return advancement.name.toLowerCase().includes(searchString) || (!shouldSearchValues || advancement.value.toLowerCase().includes(searchString));
+                    //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
+                    let match;
+                    if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
+                    else if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
+
+                    return match;
                 });
 
                 //Add category field
-                matchingTitles.map(title => title.category = matchingCategory);
+                const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === matchingCategory);
+                matchingTitles.map(title => title.category = categoryKey);
 
                 matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
                 if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
@@ -28,7 +33,7 @@ function searchAdvancements(searchString, category, shouldSearchValues = true, m
     });
 }
 
-function searchAllAdvancements(searchString, shouldSearchValues = true, maxLength= 25) {
+function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength= 25) {
     return new Promise(resolve => {
         fs.readFile('./resources/data/advancements.json', 'utf8')
             .then(advancementJson => {
@@ -39,8 +44,12 @@ function searchAllAdvancements(searchString, shouldSearchValues = true, maxLengt
 
                 Object.values(advancementData.categories).forEach(category => {
                     matchingKeys = category.filter(advancement => {
-                        //Filter for matching name and (if shouldSearchValues === true) for matching value
-                        return advancement.name.toLowerCase().includes(searchString) || (!shouldSearchValues || advancement.value.toLowerCase().includes(searchString));
+                        //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+                        let match;
+                        if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
+                        else if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
+
+                        return match;
                     });
 
                     //Add category field
