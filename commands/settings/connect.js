@@ -1,5 +1,5 @@
 const fs = require('fs');
-const nslookup = require('nslookup');
+const dns = require('dns/promises');
 const utils = require('../../api/utils.js');
 const Discord = require('discord.js');
 const sftp = require('../../api/sftp');
@@ -153,76 +153,77 @@ async function execute(message, args) {
             return;
         }
 
-        nslookup(ip, async (err, address) => {
-            ip = address?.pop() ?? ip;
+        try {
+            //Lookup ip of dns
+            const { address } = await dns.lookup(ip, 4);
+            if(address) ip = address;
+        } catch(ignored) {}
 
-            const verify = await plugin.verify(`${ip}:${port}`, message);
-            if(!verify) return;
+        const verify = await plugin.verify(`${ip}:${port}`, message);
+        if(!verify) return;
 
-            message.respond(keys.commands.connect.warnings.check_dms);
+        message.respond(keys.commands.connect.warnings.check_dms);
 
-            const verifyEmbed = getEmbedBuilder(keys.commands.connect.warnings.verification, ph.fromStd(message));
+        const verifyEmbed = getEmbedBuilder(keys.commands.connect.warnings.verification, ph.fromStd(message));
 
-            let dmChannel = await message.member.user.createDM();
-            try {
-                await dmChannel.send({ embeds: [verifyEmbed] });
-            } catch(err) {
-                message.respond(keys.commands.connect.warnings.could_not_dm);
-                await message.channel.send({ embeds: [verifyEmbed] });
-            }
+        let dmChannel = await message.member.user.createDM();
+        try {
+            await dmChannel.send({ embeds: [verifyEmbed] });
+        } catch(err) {
+            message.respond(keys.commands.connect.warnings.could_not_dm);
+            await message.channel.send({ embeds: [verifyEmbed] });
+        }
 
-            const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180000, errors: ['time'] });
+        const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180000, errors: ['time'] });
 
-            if(!collector.first()) {
-                console.log(keys.commands.connect.warnings.no_reply_in_time.console);
-                const noReplyEmbed = getEmbedBuilder(keys.commands.connect.warnings.no_reply_in_time, ph.fromStd(message));
-                dmChannel.send({ embeds: [noReplyEmbed] });
+        if(!collector.first()) {
+            console.log(keys.commands.connect.warnings.no_reply_in_time.console);
+            const noReplyEmbed = getEmbedBuilder(keys.commands.connect.warnings.no_reply_in_time, ph.fromStd(message));
+            dmChannel.send({ embeds: [noReplyEmbed] });
+            return;
+        }
+
+        const connectPlugin = await plugin.connect(`${ip}:${port}`, message.guildId, collector.first(), message);
+        if(!connectPlugin) {
+            const noConnectionEmbed = getEmbedBuilder(keys.commands.connect.errors.could_not_connect_plugin, ph.fromStd(message));
+            dmChannel.send({ embeds: [noConnectionEmbed] });
+            return;
+        }
+
+        else if(connectPlugin === 401) {
+            const incorrectCodeEmbed = getEmbedBuilder(keys.commands.connect.errors.incorrect_code, ph.fromStd(message));
+            dmChannel.send({ embeds: [incorrectCodeEmbed] });
+            return;
+        } else {
+            const verificationEmbed = getEmbedBuilder(keys.commands.connect.success.verification, ph.fromStd(message));
+            dmChannel.send({ embeds: [verificationEmbed] });
+        }
+
+        const pluginJson = {
+            "ip": connectPlugin.ip,
+            "version": connectPlugin.version.split('.')[1],
+            "path": decodeURIComponent(connectPlugin.path),
+            "hash": connectPlugin.hash,
+            "guild": connectPlugin.guild,
+            "chat": false,
+            "protocol": "plugin"
+        };
+
+        fs.mkdir(`./serverdata/connections/${message.guildId}`, err => {
+            if(err && err.code !== 'EEXIST') {
+                message.respond(keys.commands.connect.errors.could_not_make_server_folder);
                 return;
             }
 
-            const connectPlugin = await plugin.connect(`${ip}:${port}`, message.guildId, collector.first(), message);
-            if(!connectPlugin) {
-                const noConnectionEmbed = getEmbedBuilder(keys.commands.connect.errors.could_not_connect_plugin, ph.fromStd(message));
-                dmChannel.send({ embeds: [noConnectionEmbed] });
-                return;
-            }
-
-            else if(connectPlugin === 401) {
-                const incorrectCodeEmbed = getEmbedBuilder(keys.commands.connect.errors.incorrect_code, ph.fromStd(message));
-                dmChannel.send({ embeds: [incorrectCodeEmbed] });
-                return;
-            } else {
-                const verificationEmbed = getEmbedBuilder(keys.commands.connect.success.verification, ph.fromStd(message));
-                dmChannel.send({ embeds: [verificationEmbed] });
-            }
-
-            const pluginJson = {
-                "ip": connectPlugin.ip,
-                "version": connectPlugin.version.split('.')[1],
-                "path": decodeURIComponent(connectPlugin.path),
-                "hash": connectPlugin.hash,
-                "guild": connectPlugin.guild,
-                "chat": false,
-                "protocol": "plugin"
-            };
-
-            fs.mkdir(`./serverdata/connections/${message.guildId}`, err => {
-                if(err && err.code !== 'EEXIST') {
-                    message.respond(keys.commands.connect.errors.could_not_make_server_folder);
+            fs.writeFile(`./serverdata/connections/${message.guildId}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
+                if (err) {
+                    message.respond(keys.commands.connect.errors.could_not_write_server_file);
                     return;
                 }
 
-                fs.writeFile(`./serverdata/connections/${message.guildId}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
-                    if (err) {
-                        message.respond(keys.commands.connect.errors.could_not_write_server_file);
-                        return;
-                    }
-
-                    message.respond(keys.commands.connect.success.plugin);
-                });
+                message.respond(keys.commands.connect.success.plugin);
             });
         });
-
 
     } else if(method === 'account') {
         const mcUsername = args[1];
