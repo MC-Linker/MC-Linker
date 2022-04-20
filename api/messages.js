@@ -256,7 +256,11 @@ function addOption(builder, key) {
                 .setRequired(key.required ?? false)
                 .setAutocomplete(key.autocomplete ?? false);
 
-            if(key.choices) optionBuilder.addChoices(key.choices);
+            if(key.choices) {
+                for(const choice of key.choices) {
+                    optionBuilder.addChoices({ name: choice[0], value: choice[1] });
+                }
+            }
 
             builder.addStringOption(optionBuilder);
             break;
@@ -313,7 +317,7 @@ function addOption(builder, key) {
                 .setDescription(key.description)
                 .setRequired(key.required ?? false);
 
-            if(key.channel_types) optionBuilder.addChannelTypes(key.channel_types);
+            if(key.channel_types) optionBuilder.addChannelTypes(...key.channel_types);
 
             builder.addChannelOption(optionBuilder);
             break;

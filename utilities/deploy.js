@@ -1,7 +1,7 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { token, clientId, guildId } = require('../config.json');
-const { keys, getCommandBuilder} = require('../api/messages');
+const { keys, getCommandBuilder } = require('../api/messages');
 const fs = require('fs');
 
 /*
