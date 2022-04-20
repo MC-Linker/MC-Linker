@@ -14,7 +14,7 @@ async function autocomplete(interaction) {
     matchingTitles.forEach(title => {
         respondArray.push({
             name: title.name,
-            value: title.value
+            value: `${title.category}.${title.value}`
         })
     });
 
@@ -25,15 +25,20 @@ async function execute(message, args) {
     let advancement = args[0].toLowerCase();
     const user = message.mentions.users.first() ?? args[1];
 
-    if(!user) {
-        message.respond(keys.commands.advancements.warnings.no_username);
-        return;
-    } else if(!advancement) {
+    if(!advancement) {
         message.respond(keys.commands.advancements.warnings.no_advancement);
+        return;
+    } else if(!user) {
+        message.respond(keys.commands.advancements.warnings.no_username);
         return;
     }
 
-    let matchingAdvancement = await utils.searchAllAdvancements(advancement, true, 1);
+    let matchingAdvancement;
+    if(advancement.includes('.')) {
+        //Allows for category.advancement (i.e. nether.root)
+        const splitAdvancement = advancement.split('.');
+        matchingAdvancement = await utils.searchAdvancements(splitAdvancement[1], splitAdvancement[0], false, true, 1);
+    } else matchingAdvancement = await utils.searchAllAdvancements(advancement, true, true, 1);
     matchingAdvancement = matchingAdvancement.shift();
 
     advancement = matchingAdvancement?.value ?? advancement;
