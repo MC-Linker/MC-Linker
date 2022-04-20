@@ -45,7 +45,7 @@
 
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers.",
 
-  "main.success.ping.title": "Hey! :wave:",
+  "main.success.ping.title": "Hey, I'm %client_username%! :wave:",
   "main.success.ping.description": "I use slash commands. Type `/help` if you need more help to a specific command.",
   "main.success.ping.color": "BLUE",
 
@@ -670,7 +670,7 @@
   "api.ftp.errors.could_not_connect.console": "Could not connect to server %error%",
 
   "api.ftp.errors.could_not_get.title": "Could Not Download",
-  "api.ftp.errors.could_not_get.description": "%emoji_error% The User never joined the server.",
+  "api.ftp.errors.could_not_get.description": "%emoji_error% The user never joined the server.",
   "api.ftp.errors.could_not_get.console": "Could not get file [%path%] %error%",
 
   "api.ftp.errors.could_not_put.title": "Could Not Upload",
@@ -713,6 +713,10 @@
   "api.plugin.errors.status_400.title": "Unknown Bot Error",
   "api.plugin.errors.status_400.description": "%emoji_error% An unknown bot error occurred",
   "api.plugin.errors.status_400.console": "Unknown client error %error%",
+
+  "api.plugin.errors.status_404.title": "Could Not Download",
+  "api.plugin.errors.status_404.description": "%emoji_error% The user never joined the server.",
+  "api.plugin.errors.status_404.console": "Invalid Path",
 
   "api.plugin.errors.status_500.title": "Unknown Plugin Error",
   "api.plugin.errors.status_500.description": "%emoji_error% An unknown plugin error occurred.",

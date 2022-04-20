@@ -60,7 +60,7 @@
         "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers."
       },
       "ping": {
-        "title": "Hey! :wave:",
+        "title": "Hey, I'm %client_username%! :wave:",
         "description": "I use slash commands. Type `/help` if you need more help to a specific command.",
         "color": "BLUE"
       },
@@ -970,7 +970,7 @@
         },
         "could_not_get": {
           "title": "Could Not Download",
-          "description": "%emoji_error% The User never joined the server.",
+          "description": "%emoji_error% The user never joined the server.",
           "console": "Could not get file [%path%] %error%"
         },
         "could_not_put": {
@@ -1035,6 +1035,11 @@
           "title": "Unknown Bot Error",
           "description": "%emoji_error% An unknown bot error occurred",
           "console": "Unknown client error %error%"
+        },
+        "status_404": {
+          "title": "Could Not Download",
+          "description": "%emoji_error% The user never joined the server.",
+          "console": "Invalid Path"
         },
         "status_500": {
           "title": "Unknown Plugin Error",
