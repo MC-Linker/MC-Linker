@@ -35,16 +35,16 @@ async function execute(message, args) {
     let category = args[0];
     let stat = args[1];
     const user = message.mentions.users.first() ?? args[2];
-    const argPlaceholder = { "stat_category": category, "stat_name": stat, "username": user.username ?? user };
+    const argPlaceholder = { "stat_category": category, "stat_name": stat, "username": user?.username ?? user };
 
-    if(!user) {
-        message.respond(keys.commands.stats.warnings.no_username);
-        return;
-    } else if(!category) {
+     if(!category) {
         message.respond(keys.commands.stats.warnings.no_category);
         return;
     } else if(!stat) {
         message.respond(keys.commands.stats.warnings.no_stat);
+        return;
+    } else if(!user) {
+        message.respond(keys.commands.stats.warnings.no_username);
         return;
     }
 

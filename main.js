@@ -19,9 +19,9 @@ const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
 //Handle rejected promises
-/*process.on('unhandledRejection', async err => {
+process.on('unhandledRejection', async err => {
     console.log(addPh(keys.main.errors.unknown_rejection.console, ph.fromError(err)));
-});*/
+});
 
 /*
  * Converts the first letter of a string to uppercase.
@@ -89,7 +89,7 @@ client.on('messageCreate', async message => {
         return replyOptions(message, options);
     };
 
-    if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.ping);
+    if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.success.ping);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);

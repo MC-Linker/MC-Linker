@@ -17,7 +17,7 @@ async function autocomplete(interaction) {
         let formattedDisable;
 
         if (subcommand === 'advancements') {
-            const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
+            const matchingTitle = await utils.searchAllAdvancements(disable, true, true, 1);
 
             formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
 
@@ -69,7 +69,7 @@ async function execute(message, args) {
         formattedToEnable = toEnable.cap();
 
     } else if(type === 'advancements') {
-        const matchingTitle = await utils.searchAllAdvancements(toEnable, true, 1);
+        const matchingTitle = await utils.searchAllAdvancements(toEnable, true, true, 1);
         formattedToEnable = matchingTitle.shift()?.name ?? toEnable.cap();
 
     } else if(type === 'stats') {

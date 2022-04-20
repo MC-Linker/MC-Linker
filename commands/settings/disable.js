@@ -72,7 +72,7 @@ async function execute(message, args) {
             let disable = disabled[i];
 
             if(toList === 'advancements') {
-                const matchingTitle = await utils.searchAllAdvancements(disable, true, 1);
+                const matchingTitle = await utils.searchAllAdvancements(disable, true, true, 1);
                 disable = matchingTitle.shift()?.name ?? disable;
             } else if (toList === 'stats') disable = disable.split('_').map(word => word.cap()).join(' ');
             else disable = disable.replace('_', ' ').cap();
@@ -102,27 +102,20 @@ async function execute(message, args) {
         if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
             message.respond(keys.commands.disable.warnings.no_permission);
             return;
-        }
-
-        if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
+        } else if(!toDisable) {
+            message.respond(keys.commands.disable.warnings.no_disable, argPlaceholder);
+            return;
+        } else if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
             message.respond(keys.commands.disable.warnings.invalid_type);
             return;
-        }
-
-        //Check for disabled commands
-        if(type === 'commands' && disabledCommands.includes(toDisable)) {
+        } else if(type === 'commands' && disabledCommands.includes(toDisable)) {
             message.respond(keys.commands.disable.warnings.disabled_command, argPlaceholder);
-            return;
-        }
-
-        if(!toDisable) {
-            message.respond(keys.commands.disable.warnings.no_disable, argPlaceholder);
             return;
         }
 
         let formattedToDisable;
         if(type === 'commands') {
-            const command = message.client.commands.get(toDisable);
+            const command = keys.data[toDisable];
 
             if(!command) {
                 message.respond(keys.commands.disable.warnings.command_does_not_exist, argPlaceholder);
@@ -132,7 +125,7 @@ async function execute(message, args) {
             toDisable = command.name;
             formattedToDisable = toDisable.cap();
         } else if(type === 'advancements') {
-            const matchingTitle = await utils.searchAllAdvancements(toDisable, true, 1);
+            const matchingTitle = await utils.searchAllAdvancements(toDisable, true, true, 1);
             formattedToDisable = matchingTitle.shift()?.name ?? toDisable.cap();
         } else if(type === 'stats') {
             formattedToDisable = toDisable.split('_').map(word => word.cap()).join(' ');
