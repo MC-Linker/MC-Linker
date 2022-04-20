@@ -1,93 +1,106 @@
 const fs = require('fs/promises');
 const fetch = require('node-fetch');
+const Discord = require('discord.js');
+const { keys, addPh, ph } = require('./messages');
 
-function searchAdvancements(searchString, category, shouldSearchValues = true, maxLength = 25) {
+function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
-        fs.readFile('./src/advancements.json', 'utf8')
+        fs.readFile('./resources/data/advancements.json', 'utf8')
             .then(advancementJson => {
                 const advancementData = JSON.parse(advancementJson);
                 const matchingCategory = advancementData.categories[category];
 
-                let matchingTitles = matchingCategory.filter(advancement => advancement.name.toLowerCase().includes(searchString));
+                let matchingTitles = matchingCategory.filter(advancement => {
+                    //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
+                    let match;
+                    if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
+                    else if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
 
-                if (matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
-                else if(shouldSearchValues) {
-                    const matchingKeys = matchingCategory.filter(advancement => advancement.value.includes(searchString));
-                    if (matchingKeys.length >= (maxLength - matchingTitles.length)) matchingKeys.length = (maxLength - matchingTitles.length);
-                    matchingKeys.forEach(key => matchingTitles.push({ name: key.name, value: key.value }));
-                }
+                    return match;
+                });
 
+                //Add category field
+                const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === matchingCategory);
+                matchingTitles.map(title => title.category = categoryKey);
+
+                matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
+                if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
                 resolve(matchingTitles);
             }).catch(err => {
-                console.log('Error reading advancements file', err);
-                resolve(false);
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements.console, ph.fromError(err)));
+                resolve([]);
             });
     });
 }
 
-function searchAllAdvancements(searchString, shouldSearchValues = true, maxLength= 25) {
+function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength= 25) {
     return new Promise(resolve => {
-        fs.readFile('./src/advancements.json', 'utf8')
+        fs.readFile('./resources/data/advancements.json', 'utf8')
             .then(advancementJson => {
                 const advancementData = JSON.parse(advancementJson);
 
-                let returnArray = [];
                 let matchingTitles = [];
+                let matchingKeys = [];
 
                 Object.values(advancementData.categories).forEach(category => {
-                    matchingTitles = category.filter(advancement => advancement.name.toLowerCase().includes(searchString));
+                    matchingKeys = category.filter(advancement => {
+                        //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+                        let match;
+                        if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
+                        else if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
 
-                    if(shouldSearchValues && matchingTitles.length <= maxLength) {
-                        const matchingKeys = category.filter(advancement => advancement.value.includes(searchString) && !matchingTitles.includes(advancement));
-                        if (matchingKeys.length >= (maxLength - matchingTitles.length)) matchingKeys.length = (maxLength - matchingTitles.length);
-                        matchingKeys.forEach(key => matchingTitles.push({ name: key.name, value: key.value }));
-                    }
+                        return match;
+                    });
 
-                    matchingTitles.forEach(key => returnArray.push( { name: key.name, value: key.value }));
+                    //Add category field
+                    const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === category);
+                    matchingKeys.map(key => key.category = categoryKey);
+
+                    matchingKeys.forEach(key => matchingTitles.push(key));
                 });
 
-                if(returnArray.length >= maxLength) returnArray.length = maxLength;
-                resolve(returnArray);
+                matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
+                if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
+                resolve(matchingTitles);
             }).catch(err => {
-                console.log('Error reading advancements file', err);
-                resolve(false);
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, ph.fromError(err)));
+                resolve([]);
             });
     });
 }
 
 function isUserConnected(userId) {
     return new Promise(resolve => {
-        fs.access(`./userdata/connections/${userId}`)
-            .then(ignored => resolve(true))
-            .catch(ignored => resolve(false));
+        fs.access(`./userdata/connections/${userId}/connection.json`)
+            .then(() => resolve(true))
+            .catch(() => resolve(false));
     });
 }
 
 function isGuildConnected(guildId) {
     return new Promise(resolve => {
-        fs.access(`./serverdata/connections/${guildId}`)
-            .then(ignored => resolve(true))
-            .catch(ignored => resolve(false));
+        fs.access(`./serverdata/connections/${guildId}/connection.json`)
+            .then(() => resolve(true))
+            .catch(() => resolve(false));
     });
 }
 
-function getUUIDv4(username, userId, message) {
+function getUUIDv4(user, message) {
     return new Promise(async resolve => {
-        if (!userId) {
-            fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
+        if(user instanceof Discord.User) {
+            const userData = await getUserData(user.id, message);
+            resolve(userData?.id);
+        } else {
+            fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`)
                 .then(data => data.json())
                 .then(player => {
                     const uuidv4 = player.id.split('');
                     for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
                     resolve(uuidv4.join(''));
                 }).catch(() => {
-                    console.log(`Error getting uuid of ${username}`);
-                    message.reply(`<:Error:849215023264169985>  [**${username}**] is not a valid minecraft java edition account name.`);
+                    message.respond(keys.api.utils.errors.could_not_get_uuid, { "username": user });
                     resolve(false);
                 });
-        } else {
-            const userData = await getUserData(userId, message);
-            resolve(userData?.id);
         }
     });
 
@@ -115,11 +128,17 @@ async function getProtocol(guildId, message) {
 
 async function getHash(guildId, message) {
     const serverData = await getServerData(guildId, message);
+    //If connected but not with plugin
+    if(serverData && serverData.protocol !== 'plugin') message.respond(keys.api.utils.errors.not_connected_with_plugin);
+
     return serverData?.hash;
 }
 
 async function getIp(guildId, message) {
     const serverData = await getServerData(guildId, message);
+    //If connected but not with plugin
+    if(serverData && serverData?.protocol !== 'plugin') message.respond(keys.api.utils.errors.not_connected_with_plugin);
+
     return serverData?.ip;
 }
 
@@ -129,8 +148,7 @@ function getServerData(guildId, message) {
             .then(serverJson => {
                 resolve(JSON.parse(serverJson));
             }).catch(() => {
-                console.log('Error reading server file');
-                message.reply('<:Error:849215023264169985> Could not read server credentials. Please use `/connect plugin` or `/connect ftp` first.');
+                message.respond(keys.api.utils.errors.could_not_read_server_file);
                 resolve(false);
             });
     });
@@ -142,8 +160,7 @@ function getUserData(userId, message) {
             .then(userJson => {
                 resolve(JSON.parse(userJson));
             }).catch(() => {
-                console.log('Error reading user file');
-                message.reply(':warning: User never used `/connect account`! Instead of pinging someone you can also type in their **minecraft-username**.');
+                message.respond(keys.api.utils.errors.could_not_read_user_file);
                 resolve(false);
             });
     });

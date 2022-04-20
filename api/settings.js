@@ -1,5 +1,6 @@
 const fs = require('fs/promises');
 const utils = require('./utils');
+const { keys, addPh, ph } = require('./messages');
 
 function disable(guildId, type, value) {
     return new Promise(async resolve => {
@@ -15,7 +16,7 @@ function disable(guildId, type, value) {
                 await fs.mkdir(`./serverdata/connections/${guildId}`);
                 await fs.writeFile(`./serverdata/connections/${guildId}/disable.json`, JSON.stringify(disableBaseData, null, 2), 'utf-8');
             } catch(err) {
-                console.log('Error creating disable folder/file', err);
+                console.log(addPh(keys.api.settings.errors.could_not_write_file_folder, ph.fromError(err)));
                 resolve(false);
                 return;
             }
@@ -27,7 +28,7 @@ function disable(guildId, type, value) {
         } catch(err) {
             if(err.code === 'ENOENT') disableData = disableBaseData;
             else {
-                console.log('Couldn\'t read disable json', err);
+                console.log(addPh(keys.api.settings.errors.could_not_read_file, ph.fromError(err)));
                 resolve(false);
             }
         }
@@ -43,7 +44,7 @@ function disable(guildId, type, value) {
             await fs.writeFile(`./serverdata/connections/${guildId}/disable.json`, JSON.stringify(disableData, null, 2), 'utf-8');
             resolve(true);
         } catch(err) {
-            console.log('Couldn\'t write disable json', err);
+            console.log(addPh(keys.api.settings.errors.could_not_write_file, ph.fromError(err)));
             resolve(false);
         }
     });
@@ -58,8 +59,9 @@ function enable(guildId, type, value) {
         try {
             disableData = JSON.parse(await fs.readFile(`./serverdata/connections/${guildId}/disable.json`, 'utf-8'));
         } catch(err) {
-            console.log('Couldn\'t read disable json', err);
+            console.log(addPh(keys.api.settings.errors.could_not_read_file.console, ph.fromError(err)));
             resolve(false);
+            return;
         }
 
         //Remove disable
@@ -71,7 +73,7 @@ function enable(guildId, type, value) {
             await fs.writeFile(`./serverdata/connections/${guildId}/disable.json`, JSON.stringify(disableData, null, 2), 'utf-8');
             resolve(true);
         } catch(err) {
-            console.log('Couldn\'t write disable json', err);
+            console.log(addPh(keys.api.settings.errors.could_not_write_file, ph.fromError(err)));
             resolve(false);
         }
     });
@@ -94,9 +96,7 @@ function getDisabled(guildId, type) {
             .then(data => {
                 data = JSON.parse(data)[type];
                 resolve(data);
-            }).catch(ignored => {
-                resolve([]);
-            });
+            }).catch(() => resolve([]));
     });
 }
 

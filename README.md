@@ -12,7 +12,7 @@ To use most of the commands you’ll have to connect your Minecraft **java editi
 	+ Execute `/connect plugin YOUR.SERVER.IP` in Discord
 	+ Follow the instructions sent in DM
 	+ After connecting you can also execute `/chatchannel CHANNEL` in Discord if you want to connect the minecraft chat with Discord
-+ FTP (doesnt support minecraft chat)
++ FTP (doesn't support minecraft chat)
 	+ Get the ftp credentials on your Minecraft server’s dashboard. Not all server hosts support ftp, join the [Support Server](https://discord.gg/rX36kZUGNK) if you need help getting the credentials
 	+ Execute `/connect ftp` in Discord and enter your credentials
 
@@ -21,7 +21,7 @@ To use most of the commands you’ll have to connect your Minecraft **java editi
 + `/stats`: Look up minecraft stats of any member.
 + `/advancements`: Look up minecraft advancements of any member.
 + `/connect account`: Connect your Discord Account with your Minecraft Account.
-+ `/connect plugin` OR **/connect ftp**: Connect your Minecraft Server with the bot.
++ `/connect plugin` OR `/connect ftp`: Connect your Minecraft Server with the bot.
 + `/chatchannel`: Set a channel in which the bot will send the minecraft chat (only for plugin).
 + `/loadingscreen`: Create a minecraft loading screen for resourcepacks.
 + `/disable`: Disable specific commands, advancements, or stats.

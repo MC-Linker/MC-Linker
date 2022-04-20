@@ -1,16 +1,18 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 const crypto = require('crypto');
-const Discord = require('discord.js');
 const express = require('express');
 const utils = require('./utils');
 const { botPort, pluginVersion } = require('../config.json');
+const { keys, addPh, ph, getEmbedBuilder } = require('./messages');
 
 let pluginConnections = [];
 async function loadExpress(client) {
     pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections/connections.json', 'utf-8'));
     const app = express();
     app.use(express.json());
+
+    const alreadyWarnedServers = []; //Only warn for the same server once each restart
 
     app.post('/chat', async (req, res) => {
         res.send('Success');
@@ -21,114 +23,98 @@ async function loadExpress(client) {
         const channel = req.body.channel;
         const guild = req.body.guild;
         const ip = req.body.ip;
+        const argPlaceholder = { ip, "username": player, "author_url": authorURL, message };
 
         //Get connection JSON of guild
         const conn = pluginConnections.find(conn => conn.guildId === guild && conn.ip === ip);
 
 
         //If no connection on that ip
-        if(!conn) {
+        if(!conn && alreadyWarnedServers.includes(conn.ip)) {
             try {
-                await client.channels.cache.get(channel)?.send(`:warning: The server [**${ip}**] is not completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMP-Plugin/connection.conn\` or by **removing** the plugin completely.`)
-                    .catch(ignored => {});
+                await client.channels.cache.get(channel)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
+                    .catch(() => {});
+
+                alreadyWarnedServers.push(conn.ip);
                 return;
             } catch(ignored) {}
         }
 
-        const chatEmbed = new Discord.MessageEmbed();
+        let chatEmbed;
         switch(req.body.type) {
             case 0:
                 //CHAT
-                chatEmbed.setAuthor({ name: player, iconURL: authorURL })
-                .setDescription(message)
-                .setColor('BLURPLE');
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder);
                 break;
             case 1:
                 //JOIN
-                chatEmbed.setAuthor({ name: player, iconURL: authorURL })
-                .setDescription(`<:join:905924638083784836> **${player}** joined the game`)
-                .setColor('YELLOW');
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.join, argPlaceholder);
                 break;
             case 2:
                 //LEAVE
-                chatEmbed.setAuthor({ name: player, iconURL: authorURL })
-                .setDescription(`<:leave:905924638100557865> **${player}** left the game`)
-                .setColor('YELLOW');
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.leave, argPlaceholder);
                 break;
             case 3:
                 //ADVANCEMENT
                 let advancementTitle;
-                let advancementDescription;
-                try {
-                    //Get advancement title and desc from lang file
-                    if(message.startsWith('minecraft:recipes')) return;
-                    const advancementKey = message.replaceAll('minecraft:', '').replaceAll('/', '.');
-                    const langData = JSON.parse(await fs.promises.readFile('./lang/english.json', 'utf-8'));
-                    advancementTitle = langData[`advancements.${advancementKey}.title`];
-                    advancementDescription = langData[`advancements.${advancementKey}.description`];
-                } catch(ignored) {
-                    advancementTitle = message;
-                    advancementDescription = '';
-                }
+                let advancementDesc;
 
-                if(!advancementDescription || !advancementTitle) {
-                    advancementTitle = message;
-                    advancementDescription = '';
-                }
+                if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
-                chatEmbed.setAuthor({ name: player, iconURL: authorURL })
-                .setDescription(`**${player}** has made the advancement: [**${advancementTitle}**]\n*${advancementDescription}*`)
-                .setColor('LUMINOUS_VIVID_PINK');
+                const advancementKey = message.replaceAll('minecraft:', '').split('/');
+                const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
+
+                advancementTitle = advancement.shift()?.title;
+                advancementDesc = advancement.shift()?.description;
+
+                if(!advancementDesc) advancementDesc = '';
+                else if(!advancementTitle) advancementTitle = message;
+
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
                 break;
             case 4:
                 //DEATH
-                chatEmbed.setAuthor({ name: player, iconURL: authorURL })
-                .setDescription(`<:death:905924668735770674> ${message}`)
-                .setColor('DARK_PURPLE');
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.death, argPlaceholder);
                 break;
             case 5:
                 //COMMAND
-                chatEmbed.setAuthor({ name: player, iconURL: authorURL })
-                .setDescription(`<a:pinging:891202470833946635> **${player}** has executed the command: [**${message}**]`)
-                .setColor('DARK_GOLD');
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.command, argPlaceholder);
                 break;
             case 6:
                 //STARTUP
-                chatEmbed.setDescription(`:green_circle: **${message}**`)
-                .setTimestamp(Date.now())
-                .setColor('GREEN');
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.startup, argPlaceholder);
                 break;
             case 7:
                 //SHUTDOWN
-                chatEmbed.setDescription(`:red_circle: **${message}**`)
-                .setTimestamp(Date.now())
-                .setColor('RED');
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.shutdown, argPlaceholder);
                 break;
         }
 
-        //why not double catch it
+        //why not triple-catch (try/catch, .catch, optional chaining) it
         try {
             await client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] })
-                .catch(ignored => {});
+                .catch(() => {});
         } catch(ignored) {}
     });
 
     //Returns latest version
     app.get('/version', (req, res) => res.send(pluginVersion));
 
-    app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>'))
+    app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>'));
 
-    app.listen(botPort, function () { console.log(`Listening on port ${this.address().port}`) });
+    app.listen(botPort, function () { console.log(addPh(keys.api.plugin.success.listening.console, { "port": this.address().port })) });
     return app;
 }
 
 async function chat(message) {
     const conn = pluginConnections.find(conn => conn.guildId === message.guildId && conn.channelId === message.channelId);
-    if(message.attachments.size) message.attachments.forEach(attach => message.content += `\n${attach.url}`);
 
-    if(conn && conn.chat && !message.author.bot) {
+    let content = message.cleanContent;
+    message.attachments?.forEach(attach => content += `\n${attach.url}`);
+
+    if(conn?.chat && !message.author.bot) {
         try {
-            await fetch(`http://${conn.ip}/chat/?&msg=${encodeURIComponent(message.content)}&username=${message.author.username}`, {
+            await fetch(`http://${conn.ip}/chat/?&msg=${encodeURIComponent(content.replaceAll('\u200B', ''))}&username=${message.author.username}`, {
                 headers: {
                     Authorization: `Basic ${conn.hash}`
                 }
@@ -162,10 +148,10 @@ function connect(ip, guildId, verifyCode, message) {
                         Authorization: `Basic ${conn.hash}`
                     }
                 });
-                if(!resp.ok) message.channel.send(`:warning: The old server [**${conn.ip}**] could not be completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMPBotPlugin/connection.conn\` or by **removing** the plugin completely.`);
-                else message.channel.send(`:warning: Automatically disconnected from the old server [**${conn.ip}**] to ensure no complications happen.`);
+                if(!resp.ok) message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { "ip": conn.ip }));
+                else message.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, { "ip": conn.ip }));
             } catch(err) {
-                message.channel.send(`:warning: The old server [**${conn.ip}**] could not be completely disconnected. Please disconnect it manually by **deleting** the following file: \`Server Folder/plugins/SMPBotPlugin/connection.conn\` or by **removing** the plugin completely.`);
+                message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { "ip": conn.ip }));
             } finally {
                 pluginConnections.splice(connIndex, 1);
             }
@@ -180,8 +166,8 @@ function connect(ip, guildId, verifyCode, message) {
                     'Content-Type': 'application/json',
                 }
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
-            else if(resp.status === 401) { resolve(401); return; }
+            if(resp.status === 401) return resolve(401);
+            else if(!await checkStatus(resp, message)) return resolve(false);
             resp = await resp.json();
 
             pluginConnections.push({
@@ -190,9 +176,8 @@ function connect(ip, guildId, verifyCode, message) {
                 "chat": false,
                 "ip": ip,
             });
-            const update = await updateConn();
+            const update = await updateConn(message);
             if(!update) {
-                message.reply('<:Error:849215023264169985> Couldn\'t save connection. Please try again.');
                 resolve(false);
                 //Try to disconnect
                 fetch(`http://${ip}/disconnect/`, {
@@ -202,8 +187,7 @@ function connect(ip, guildId, verifyCode, message) {
                 }).catch(() => {});
             } else resolve(resp);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
-            console.log('Plugin doesnt respond');
+            message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -222,8 +206,7 @@ function disconnect(guildId, message) {
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
 
             if(connIndex === -1) {
-                console.log('Not connected');
-                message.reply(':warning: You are not connected with the plugin!');
+                message.respond(keys.api.plugin.warnings.not_connected);
                 return;
             }
 
@@ -232,18 +215,14 @@ function disconnect(guildId, message) {
                     Authorization: `Basic: ${hash}`
                 }
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
+            if(!await checkStatus(resp, message)) return resolve(false);
 
             pluginConnections.splice(connIndex, 1);
 
-            const update = await updateConn();
-            if(!update) {
-                message.reply('<:Error:849215023264169985> Couldn\'t disconnect from the plugin. Please try again.');
-                resolve(false);
-             } else resolve(true);
+            const update = await updateConn(message);
+            resolve(update);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
-            console.log('Plugin doesnt respond');
+            message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -251,6 +230,8 @@ function disconnect(guildId, message) {
 
 function registerChannel(ip, guildId, channelId, types, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
@@ -281,8 +262,8 @@ function registerChannel(ip, guildId, channelId, types, message) {
                 }
             });
 
-            if(!await checkStatus(resp, message)) return resolve(false);
-            else if(resp.status === 401) return resolve(401);
+            if(resp.status === 401) return resolve(401);
+            else if(!await checkStatus(resp, message)) return resolve(false);
             resp = await resp.json();
 
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
@@ -296,9 +277,8 @@ function registerChannel(ip, guildId, channelId, types, message) {
                 "ip": ip,
             });
 
-            const update = await updateConn();
+            const update = await updateConn(message);
             if(!update) {
-                message.reply('<:Error:849215023264169985> Couldn\'t save connection. Please try again.');
                 resolve(false);
                 //Try to disconnect
                 fetch(`http://${ip}/disconnect/`, {
@@ -308,8 +288,7 @@ function registerChannel(ip, guildId, channelId, types, message) {
                 }).catch(() => {});
             } else resolve(resp);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
-            console.log('Plugin doesnt respond');
+            message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -317,6 +296,9 @@ function registerChannel(ip, guildId, channelId, types, message) {
 
 function get(getPath, putPath, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
+
         const ip = await utils.getIp(message.guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -334,18 +316,16 @@ function get(getPath, putPath, message) {
             resp.body.pipe(fileStream);
 
             resp.body.on('error', err => {
-                message.reply('<:Error:849215023264169985> Error while downloading files. Please try again.');
-                console.log(`Error saving file [${decodeURIComponent(getPath)}]`, err);
+                message.respond(keys.api.plugin.errors.could_not_stream, { "path": getPath, "error": err });
                 resolve(false);
             });
             fileStream.on('finish', () => {
                 fileStream.close();
-                console.log(`File [${decodeURIComponent(getPath)}] successfully downloaded`);
+                message.respond(keys.api.plugin.success.get, { "path": getPath });
                 resolve(true);
             });
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
-            console.log('Plugin doesnt respond');
+            message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -353,6 +333,9 @@ function get(getPath, putPath, message) {
 
 function put(getPath, putPath, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
+
         const ip = await utils.getIp(message.guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -368,13 +351,12 @@ function put(getPath, putPath, message) {
                 },
                 body: readStream
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
+            if(!await checkStatus(resp, message)) return resolve(false);
 
-            console.log(`File [${decodeURIComponent(getPath)}] successfully uploaded`);
+            message.respond(keys.api.plugin.success.put, { "path": putPath });
             resolve(true);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
-            console.log('Plugin doesnt respond');
+            message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -382,6 +364,9 @@ function put(getPath, putPath, message) {
 
 async function find(start, maxDepth, file, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
+
         const ip = await utils.getIp(message.guildId, message);
         if (!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -393,11 +378,10 @@ async function find(start, maxDepth, file, message) {
                     Authorization: `Basic ${hash}`
                 }
             });
-            if (!await checkStatus(resp, message)) { resolve(false); return; }
+            if (!await checkStatus(resp, message)) return resolve(false);
             resolve(resp.text());
         } catch (err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
-            console.log('Plugin doesnt respond');
+            message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -405,6 +389,8 @@ async function find(start, maxDepth, file, message) {
 
 function execute(command, message) {
     return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
         const ip = await utils.getIp(message.guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -416,11 +402,11 @@ function execute(command, message) {
                     Authorization: `Basic ${hash}`
                 }
             });
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
-            resolve(await resp.text());
+
+            if(!await checkStatus(resp, message)) return resolve(false);
+            resolve({ message: await resp.text(), status: resp.status });
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
-            console.log('Plugin doesnt respond');
+            message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -430,37 +416,44 @@ function verify(ip, message) {
     return new Promise(async resolve => {
         try {
             const resp = await fetch(`http://${ip}/verify/`);
-            if(!await checkStatus(resp, message)) { resolve(false); return; }
+            if(!await checkStatus(resp, message)) return resolve(false);
             resolve(true);
         } catch(err) {
-            message.reply('<:Error:849215023264169985> Plugin doesn\'t respond. Please check if the server is online and the plugin enabled.').catch(console.log);
-            console.log('Plugin doesnt respond');
+            message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
 }
 
-async function updateConn() {
+async function checkProtocol(guildId, message) {
+    if(await utils.getProtocol(guildId, message) !== 'plugin') {
+        message.respond(keys.api.plugin.warnings.not_connected);
+        return false;
+    }
+    return true;
+}
+
+async function updateConn(message) {
     return new Promise(resolve => {
         fs.promises.writeFile('./serverdata/connections/connections.json', JSON.stringify(pluginConnections, null, 2), 'utf-8')
             .catch(err => {
-                console.log('Couldn\'t save connections', err);
+                message.respond(keys.api.plugin.errors.could_not_update, ph.fromError(err));
                 resolve(false);
             }).then(() => resolve(true));
     });
 }
 
 async function checkStatus(response, message) {
-    if(response.status === 400 || response.status === 404) {
-        console.log(`A client error occurred: ${await response.text()}`);
-        message.reply('<:Error:849215023264169985> An unknown client error occurred');
+    if(response.status === 400) {
+        message.respond(keys.api.plugin.errors.status_400, { "error": await response.text() });
         return false;
     } else if(response.status === 500) {
-        console.log(`A server error occurred:  ${await response.text()}`);
-        message.reply('<:Error:849215023264169985> The User never joined the server or the world path is incorrect.');
+        message.respond(keys.api.plugin.errors.status_500, { "error": await response.text() });
         return false;
-    } else if(response.status === 401) return true;
-    else return !!response.ok;
+    } else if(response.status === 404) {
+        message.respond(keys.api.plugin.errors.status_500);
+        return false;
+    } else return !!response.ok;
 }
 
-module.exports = { loadExpress, chat, connect, registerChannel, disconnect, get, put, find, execute, verify }
+module.exports = { loadExpress, chat, connect, registerChannel, disconnect, get, put, find, execute, verify };

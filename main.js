@@ -13,13 +13,14 @@ const plugin = require('./api/plugin');
 const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
-const disable = require('./api/disable');
+const settings = require('./api/settings');
+const { getUserFromMention, getArgs, addPh, keys, reply, replyOptions, ph } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
 //Handle rejected promises
 process.on('unhandledRejection', async err => {
-    console.log('Unknown promise rejection', err);
+    console.log(addPh(keys.main.errors.unknown_rejection.console, ph.fromError(err)));
 });
 
 /*
@@ -34,32 +35,35 @@ if(topggToken) {
     const poster = AutoPoster(topggToken, client);
 
     poster.on('posted', () => {});
-    poster.on('error', ignored => console.log('Could not post stats to Top.gg!'));
+    poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
 }
 
 client.once('ready', async () => {
-    console.log(`Bot logged in as ${client.user.tag} and with prefix: ${prefix}\nBot on ${client.guilds.cache.size} server.`);
+    console.log(addPh(keys.main.success.login.console, ph.fromClient(client), { prefix, "guild_count": client.guilds.cache.size }));
     client.user.setActivity('/help', { type: 'LISTENING' });
     await plugin.loadExpress(client);
 });
 
 client.on('guildCreate', guild => {
-    if(guild?.name === undefined) return console.log(`Received undefined guild in guildCreate event: ${guild}`);
-    console.log(`Joined a guild: ${guild.name}: ${guild.memberCount} members.\nBot is now on ${client.guilds.cache.size} servers!`);
+    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create.console, { guild }));
+    console.log(addPh(keys.main.success.guild_create.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
 });
 
 client.on('guildDelete', async guild => {
-    if(guild?.name === undefined) return console.log(`Received undefined guild in guildDelete event: ${guild}`);
 
-    console.log(`Left a guild: ${guild.name}\nBot is now on ${client.guilds.cache.size} servers!`);
+    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
+    console.log(addPh(keys.main.success.guild_delete.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
+
+    //Fake message
     const message = {};
-    message.reply = () => {};
+    message.replyOptions = () => {};
+    message.respond = () => {};
     await plugin.disconnect(guild.id, message);
 
     //Delete connection folder
     fs.rm(`./serverdata/connections/${guild.id}`, { recursive: true, force: true }, err => {
-        if (err) console.log(`No connection file found for guild: ${guild.name}`);
-        else console.log(`Successfully deleted connection file of guild: ${guild.name}`);
+        if (err) console.log(addPh(keys.main.errors.no_connection_file, ph.fromGuild(guild)));
+        else console.log(addPh(keys.main.success.disconnected, ph.fromGuild(guild)));
     });
 });
 
@@ -69,7 +73,7 @@ for (const folder of commandFolders) {
 	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(command => command.endsWith('.js'));
 	for (const file of commandFiles) {
 		const command = require(`./commands/${folder}/${file}`);
-		client.commands.set(command.name, command);
+		client.commands.set(file.replace('.js', ''), command);
 	}
 }
 
@@ -77,95 +81,102 @@ for (const folder of commandFolders) {
 client.on('messageCreate', async message => {
     if (!message.content.startsWith(prefix)) plugin.chat(message);
 
-    if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.reply(':wave: I use slash commands. Type `/help` if you need more help to a specific command.');
+    //Add own response handlers
+    message.respond = (key, ...placeholders) => {
+        return reply(message, key, ...placeholders);
+    };
+    message.replyOptions = (options) => {
+        return replyOptions(message, options);
+    };
+
+    if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.success.ping);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
+    message.respond(keys.commands.executed);
 
-    if(commandName === 'help') helpCommand.execute(message, args);
+    if(commandName === 'help') await helpCommand.execute(message, args);
     else {
-        const command = client.commands.get(commandName) ?? client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-        if (!command) console.log(`${message.member.user.tag} executed non-existent command ${commandName} in ${message.guild.name}`);
-        else {
-            if(await disable.isDisabled(message.guildId, 'commands', command.name)) {
-                console.log(`${message.member.user.tag} executed disabled command [${command.name}] in ${message.guild.name}`);
-                message.reply(`:no_entry: Command [**${command.name}**] disabled!`);
-            }
+        const command = client.commands.get(commandName);
+        if(!command) return;
 
-            try {
-                await command.execute(message, args)
-                    .catch(err => {
-                        console.log(`${message.member.user.tag} executed ^${command.name}. Couldn\'t execute that command!`, err);
-                        message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');
-                    });
-            } catch (err) {
-                console.log(`${message.member.user.tag} executed ^${command.name}. Couldn\'t execute that command!`, err);
-                await message.reply('<:Error:849215023264169985> An unknown error occurred while executing this command!');
-            }
+        if(await settings.isDisabled(message.guildId, 'commands', commandName)) {
+            message.respond(keys.main.warnings.disabled);
         }
 
+        try {
+            await command?.execute?.(message, args)
+                .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err)));
+        } catch (err) {
+            message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err))
+        }
     }
 });
 
 client.on('interactionCreate', async interaction => {
-    if(!interaction.guildId) return interaction.reply(':warning: I can only be used in server channels!');
+    //Add own response handlers if not autocomplete
+    if(!interaction.isAutocomplete()) {
+        interaction.respond = (key, ...placeholders) => {
+            return reply(interaction, key, ...placeholders);
+        };
+        interaction.replyOptions = (options) => {
+            return replyOptions(interaction, options);
+        };
+    }
+
+    if(!interaction.guildId) return interaction.respond(keys.main.warnings.not_in_guild);
 
     if(interaction.isCommand()) {
 
         //Making interaction compatible with normal commands
-        if(interaction.options.getUser('user')) {
+        const user = getUserFromMention(client, interaction.options.getString('user'));
+        if(user) {
             interaction.mentions = {
-                users: new Discord.Collection().set(interaction.options.getUser('user').id, interaction.options.getUser('user'))
+                users: new Discord.Collection().set(user.id, user)
             }
-        } else interaction.mentions = { users: new Discord.Collection() }
+        } else {
+            interaction.mentions = {
+                users: new Discord.Collection()
+            };
+        }
         interaction.attachments = [];
 
-        const args = [];
-        if(interaction.options._group) args.push(interaction.options._group);
-        if(interaction.options._subcommand) args.push(interaction.options._subcommand);
-        interaction.options._hoistedOptions.forEach(option => {
-            if (option.value === interaction.options.getUser('user')?.id) args.splice(0, 0, option.user);
-            else if(option[option.type.toLowerCase()]) args.push(option[option.type.toLowerCase()]);
-            else args.push(option.value);
-        });
+        const args = getArgs(client, interaction);
 
-        interaction.reply = function (content) {
-            return interaction.editReply(content);
-        }
+        if(interaction.commandName === 'message') await interaction.deferReply({ ephemeral: true });
+        else await interaction.deferReply();
 
-        if(interaction.commandName !== 'message') await interaction.deferReply();
-        else await interaction.deferReply({ ephemeral: true });
+        interaction.respond(keys.commands.executed);
 
         if (interaction.commandName === 'help') {
             await helpCommand.execute(interaction, args);
         } else {
             const command = client.commands.get(interaction.commandName);
 
-            if (!command) return console.log(`${interaction.member.user.tag} executed non-existent command ${commandName} in ${interaction.guild.name}`);
-
             //Check if command disabled
-            if(await disable.isDisabled(interaction.guildId, 'commands', command.name)) {
-                console.log(`${interaction.member.user.tag} executed disabled slash command [${command.name}] in ${interaction.guild.name}`);
-                interaction.reply(`:no_entry: Command [**${command.name}**] disabled!`);
+            if(await settings.isDisabled(interaction.guildId, 'commands', interaction.commandName)) {
+                interaction.respond(keys.main.warnings.disabled);
                 return;
             }
 
             try {
-                command.execute(interaction, args);
+                await command?.execute?.(interaction, args)
+                    .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err)));
             } catch (err) {
-                console.log(`${interaction.member.user.tag} executed SlashCommand ${command.name}. Couldn't execute that command!`, err);
-                interaction.reply('<:Error:849215023264169985> There was an error while executing this command!');
+                interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err));
             }
         }
 
     } else if(interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
         if(!command) return;
-        command.autocomplete(interaction);
+        command?.autocomplete?.(interaction);
 
     } else if (interaction.isButton()) {
+        console.log(addPh(keys.buttons.clicked.console, { "button_id": interaction.customId }, ph.fromStd(interaction)));
+
         await interaction.deferReply({ ephemeral: true });
         if (interaction.customId.startsWith('disable')) {
             await disableButton.execute(interaction);

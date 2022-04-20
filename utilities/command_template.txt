@@ -1,15 +1,8 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { keys } = require('../../api/messages');
 
-module.exports = {
-    name: '',
-    aliases: [],
-    usage: '',
-    example: '',
-    description: '',
-    data: new SlashCommandBuilder()
-            .setName('')
-            .setDescription(''),
-    execute(message, args) {
+function execute(message, args) {
 
-	}
 }
+
+module.exports = { execute };
+
