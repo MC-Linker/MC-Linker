@@ -24,9 +24,9 @@ Commands are logged to help track error messages and bot abuse. When an error oc
 
 # OPTING OUT
 How to opt out of having this data collected:
-**Server owners/admins:**
+<br>**Server owners/admins:**<br>
 To opt out of having any commands logged from your server, kick the Minecraft SMP Bot from your Discord server.
-**Server members:**
+<br>**Server members:**<br>
 To opt out of having your commands logged from a server using our bot, leave the Discord server.
 
 # REMOVAL OF DATA
