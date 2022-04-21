@@ -95,8 +95,10 @@ client.on('messageCreate', async message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    if(commandName === 'help') await helpCommand.execute(message, args);
-    else {
+    if(commandName === 'help') {
+        message.respond(keys.commands.executed);
+        await helpCommand.execute(message, args);
+    } else {
         const command = client.commands.get(commandName);
         if(!command) return;
 
@@ -151,9 +153,12 @@ client.on('interactionCreate', async interaction => {
         interaction.respond(keys.commands.executed);
 
         if (interaction.commandName === 'help') {
+            interaction.respond(keys.commands.executed);
             await helpCommand.execute(interaction, args);
         } else {
             const command = client.commands.get(interaction.commandName);
+
+            interaction.respond(keys.commands.executed);
 
             //Check if command disabled
             if(await settings.isDisabled(interaction.guildId, 'commands', interaction.commandName)) {
