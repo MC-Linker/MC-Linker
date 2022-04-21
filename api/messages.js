@@ -39,7 +39,7 @@ ph.fromInteraction = function(interaction) {
         return {
             "interaction_name": interaction.commandName,
             "interaction_timestamp": Builders.time(new Date(interaction.createdTimestamp)),
-            "args": getArgs(interaction).join(' '),
+            "args": getArgs(interaction.client, interaction).join(' '),
         }
     } else if(interaction instanceof Discord.ButtonInteraction) {
         return {
