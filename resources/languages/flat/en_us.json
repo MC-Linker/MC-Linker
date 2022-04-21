@@ -52,7 +52,7 @@
   "main.success.guild_create.console": "Joined a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!",
   "main.success.guild_delete.console": "Left a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!",
 
-  "main.success.disconnected.console": "Successfully deleted connection file of guild: %guild.name%",
+  "main.success.disconnected.console": "Successfully deleted connection file of guild: %guild_name%",
 
 
 

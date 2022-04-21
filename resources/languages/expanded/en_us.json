@@ -71,7 +71,7 @@
         "console": "Left a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!"
       },
       "disconnected": {
-        "console": "Successfully deleted connection file of guild: %guild.name%"
+        "console": "Successfully deleted connection file of guild: %guild_name%"
       }
     }
   },
