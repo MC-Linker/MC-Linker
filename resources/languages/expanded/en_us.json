@@ -71,7 +71,7 @@
         "console": "Left a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!"
       },
       "disconnected": {
-        "console": "Successfully deleted connection file of guild: %guild.name%"
+        "console": "Successfully deleted connection file of guild: %guild_name%"
       }
     }
   },
@@ -1127,7 +1127,7 @@
         "could_not_get_uuid": {
           "title": "Could Not Get UUID",
           "description": "%emoji_error% **%username%** is not a valid minecraft java edition account name.",
-          "console": "Could not get uuid of %username% %error%"
+          "console": "Could not get uuid of %username%"
         },
         "could_not_read_server_file": {
           "title": "Server Not Connected",

@@ -1,6 +1,5 @@
 # TODO SMP Bot
 
-+ Change `user` arguments to type STRING
 + Add `/advancements custom` autocomplete
 + Support for multiple chat channels/connections (also add `/chatchannel set/remove`)
 + Add button to show enchantments and shulkerboxes in /inventory

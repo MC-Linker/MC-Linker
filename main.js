@@ -62,8 +62,8 @@ client.on('guildDelete', async guild => {
 
     //Delete connection folder
     fs.rm(`./serverdata/connections/${guild.id}`, { recursive: true, force: true }, err => {
-        if (err) console.log(addPh(keys.main.errors.no_connection_file, ph.fromGuild(guild)));
-        else console.log(addPh(keys.main.success.disconnected, ph.fromGuild(guild)));
+        if (err) console.log(addPh(keys.main.errors.no_connection_file.console, ph.fromGuild(guild)));
+        else console.log(addPh(keys.main.success.disconnected.console, ph.fromGuild(guild)));
     });
 });
 
@@ -95,12 +95,14 @@ client.on('messageCreate', async message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    message.respond(keys.commands.executed);
-
-    if(commandName === 'help') await helpCommand.execute(message, args);
-    else {
+    if(commandName === 'help') {
+        message.respond(keys.commands.executed);
+        await helpCommand.execute(message, args);
+    } else {
         const command = client.commands.get(commandName);
         if(!command) return;
+
+        message.respond(keys.commands.executed);
 
         if(await settings.isDisabled(message.guildId, 'commands', commandName)) {
             message.respond(keys.main.warnings.disabled);
@@ -151,9 +153,12 @@ client.on('interactionCreate', async interaction => {
         interaction.respond(keys.commands.executed);
 
         if (interaction.commandName === 'help') {
+            interaction.respond(keys.commands.executed);
             await helpCommand.execute(interaction, args);
         } else {
             const command = client.commands.get(interaction.commandName);
+
+            interaction.respond(keys.commands.executed);
 
             //Check if command disabled
             if(await settings.isDisabled(interaction.guildId, 'commands', interaction.commandName)) {
