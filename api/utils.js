@@ -103,7 +103,6 @@ function getUUIDv4(user, message) {
                 });
         }
     });
-
 }
 
 async function getUsername(userId, message) {
