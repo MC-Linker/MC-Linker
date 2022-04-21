@@ -772,7 +772,7 @@
 
   "api.utils.errors.could_not_get_uuid.title": "Could Not Get UUID",
   "api.utils.errors.could_not_get_uuid.description": "%emoji_error% **%username%** is not a valid minecraft java edition account name.",
-  "api.utils.errors.could_not_get_uuid.console": "Could not get uuid of %username% %error%",
+  "api.utils.errors.could_not_get_uuid.console": "Could not get uuid of %username%",
 
   "api.utils.errors.could_not_read_server_file.title": "Server Not Connected",
   "api.utils.errors.could_not_read_server_file.description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
