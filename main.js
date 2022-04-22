@@ -150,8 +150,6 @@ client.on('interactionCreate', async interaction => {
         if(interaction.commandName === 'message') await interaction.deferReply({ ephemeral: true });
         else await interaction.deferReply();
 
-        interaction.respond(keys.commands.executed);
-
         if (interaction.commandName === 'help') {
             interaction.respond(keys.commands.executed);
             await helpCommand.execute(interaction, args);
