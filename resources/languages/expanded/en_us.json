@@ -1031,6 +1031,11 @@
           "description": "%emoji_error% An unknown bot error occurred",
           "console": "Unknown client error %error%"
         },
+        "status_401": {
+          "title": "Unknown Plugin Error",
+          "description": "%emoji_error% An unknown plugin error occurred.",
+          "console": "Wrong authorization"
+        },
         "status_404": {
           "title": "Could Not Download",
           "description": "%emoji_error% The user never joined the server.",

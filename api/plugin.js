@@ -261,9 +261,8 @@ function registerChannel(ip, guildId, channelId, types, message) {
                     'Content-Type': 'application/json',
                 }
             });
+            if(!await checkStatus(resp, message)) return resolve(false);
 
-            if(resp.status === 401) return resolve(401);
-            else if(!await checkStatus(resp, message)) return resolve(false);
             resp = await resp.json();
 
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
@@ -451,7 +450,10 @@ async function checkStatus(response, message) {
         message.respond(keys.api.plugin.errors.status_500, { "error": await response.text() });
         return false;
     } else if(response.status === 404) {
-        message.respond(keys.api.plugin.errors.status_500);
+        message.respond(keys.api.plugin.errors.status_404);
+        return false;
+    } else if(response.status === 401) {
+        message.respond(keys.api.plugin.errors.status_401);
         return false;
     } else return !!response.ok;
 }
