@@ -60,11 +60,11 @@ async function loadExpress(client) {
                 const advancementKey = message.replaceAll('minecraft:', '').split('/');
                 const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
 
-                advancementTitle = advancement.shift()?.title;
-                advancementDesc = advancement.shift()?.description;
+                advancementTitle = advancement[0]?.name;
+                advancementDesc = advancement[0]?.description;
 
-                if(!advancementDesc) advancementDesc = '';
-                else if(!advancementTitle) advancementTitle = message;
+                if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
+                if(!advancementTitle) advancementTitle = message;
 
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
                 break;
