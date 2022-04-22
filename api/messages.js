@@ -198,7 +198,6 @@ function getComponentBuilder(key, ...placeholders) {
 
 function getEmbedBuilder(key, ...placeholders) {
     if(!key) return console.error(keys.api.messages.errors.no_embed_key.console);
-    else if(!key.title) return console.error(keys.api.messages.errors.no_embed_arguments.console);
 
     key = addPh(key, ...placeholders);
 
