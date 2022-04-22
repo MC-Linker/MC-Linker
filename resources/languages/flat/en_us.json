@@ -710,6 +710,10 @@
   "api.plugin.errors.status_400.description": "%emoji_error% An unknown bot error occurred",
   "api.plugin.errors.status_400.console": "Unknown client error %error%",
 
+  "api.plugin.errors.status_401.title": "Unknown Plugin Error",
+  "api.plugin.errors.status_401.description": "%emoji_error% An unknown plugin error occurred.",
+  "api.plugin.errors.status_401.console": "Wrong authorization",
+
   "api.plugin.errors.status_404.title": "Could Not Download",
   "api.plugin.errors.status_404.description": "%emoji_error% The user never joined the server.",
   "api.plugin.errors.status_404.console": "Invalid Path",
