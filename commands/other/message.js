@@ -49,8 +49,7 @@ async function execute(message, args) {
     const resp = await plugin.execute(`tellraw ${mcUsername} ["",{"text":"Discord","bold":true,"italic":true,"color":"blue","clickEvent":{"action":"open_url","value":"https://top.gg/bot/712759741528408064"},"hoverEvent":{"action":"show_text","contents":["Message sent using ",{"text":"Minecraft SMP-Bot","color":"gold"}]}},{"text":" | ${message.member.user.tag} whispers to you: ${chatMsg}","italic":true}]`, message);
     if(!resp) return;
 
-    if(resp.startsWith('&c')) message.respond(keys.commands.message.warnings.response_warning, argPlaceholder, { "response": resp });
-    else if(resp.startsWith('Could not fetch response message!')) message.respond(keys.commands.message.warnings.no_response, argPlaceholder);
+    if(resp.status === 206) message.respond(keys.commands.message.warnings.response_warning, argPlaceholder, { "response": resp.message });
     else message.respond(keys.commands.message.success, argPlaceholder);
 }
 
