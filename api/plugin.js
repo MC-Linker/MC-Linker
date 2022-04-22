@@ -42,20 +42,16 @@ async function loadExpress(client) {
 
         let chatEmbed;
         switch(req.body.type) {
-            case 0:
-                //CHAT
+            case "chat":
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder);
                 break;
-            case 1:
-                //JOIN
+            case "join":
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.join, argPlaceholder);
                 break;
-            case 2:
-                //LEAVE
+            case "leave":
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.leave, argPlaceholder);
                 break;
-            case 3:
-                //ADVANCEMENT
+            case "advancement":
                 let advancementTitle;
                 let advancementDesc;
 
@@ -72,21 +68,17 @@ async function loadExpress(client) {
 
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
                 break;
-            case 4:
-                //DEATH
+            case "death":
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.death, argPlaceholder);
                 break;
-            case 5:
-                //COMMAND
+            case "command":
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.command, argPlaceholder);
                 break;
-            case 6:
-                //STARTUP
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.startup, argPlaceholder);
+            case "start":
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder);
                 break;
-            case 7:
-                //SHUTDOWN
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.shutdown, argPlaceholder);
+            case "stop":
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.stop, argPlaceholder);
                 break;
         }
 

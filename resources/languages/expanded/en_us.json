@@ -1097,12 +1097,12 @@
             "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
             "color": "DARK_GOLD"
           },
-          "startup": {
+          "start": {
             "description": "%emoji_startup% **%message%**",
             "color": "GREEN",
             "timestamp": "%timestamp_now%"
           },
-          "shutdown": {
+          "stop": {
             "description": "%emoji_shutdown% **%message%**",
             "color": "RED",
             "timestamp": "%timestamp_now%"
