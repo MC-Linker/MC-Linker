@@ -202,8 +202,7 @@ function getEmbedBuilder(key, ...placeholders) {
     key = addPh(key, ...placeholders);
 
     //Create embed from key
-    const embed = new Discord.MessageEmbed()
-        .setTitle(key.title);
+    const embed = new Discord.MessageEmbed();
 
     if(key.fields) {
         for (const field of Object.values(key.fields)) {
@@ -212,6 +211,7 @@ function getEmbedBuilder(key, ...placeholders) {
         }
     }
 
+    if(key.title) embed.setTitle(key.title);
     if(key.description) embed.setDescription(key.description);
     if(key.color) embed.setColor(key.color);
     if(key.author) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
