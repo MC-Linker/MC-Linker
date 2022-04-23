@@ -25,11 +25,13 @@
     "discord.js": "^13.6.0",
     "express": "^4.17.3",
     "ftp": "^0.3.10",
-    "lodash": "^4.17.21",
     "nbt": "^0.8.1",
     "node-fetch": "^2.6.7",
     "probe-image-size": "^7.2.3",
     "ssh2-sftp-client": "^8.0.0",
     "topgg-autoposter": "^2.0.1"
+  },
+  "devDependencies": {
+    "lodash": "^4.17.21"
   }
 }
