@@ -4,7 +4,11 @@
   "description": "View minecraft stats, advancements and inventories in Discord! Also includes texturepack and moderation tools and much more.",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "jest": "jest",
+    "corde": "corde",
+
+    "test": "jest",
+    "posttest": "corde"
   },
   "repository": {
     "type": "git",
