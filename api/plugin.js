@@ -46,10 +46,10 @@ async function loadExpress(client) {
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder);
                 break;
             case "join":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.join, argPlaceholder);
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.join, argPlaceholder, ph.emojis());
                 break;
             case "leave":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.leave, argPlaceholder);
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.leave, argPlaceholder, ph.emojis());
                 break;
             case "advancement":
                 let advancementTitle;
@@ -69,16 +69,16 @@ async function loadExpress(client) {
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
                 break;
             case "death":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.death, argPlaceholder);
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.death, argPlaceholder, ph.emojis());
                 break;
             case "command":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.command, argPlaceholder);
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.command, argPlaceholder, ph.emojis());
                 break;
             case "start":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder);
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder, ph.emojis());
                 break;
             case "stop":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.stop, argPlaceholder);
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.stop, argPlaceholder, ph.emojis());
                 break;
         }
 
