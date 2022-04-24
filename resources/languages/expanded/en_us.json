@@ -154,25 +154,23 @@
         },
         "disable_button": {
           "components": {
-            "buttons": {
-              "disable": {
-                "style": "DANGER",
-                "id": "disable_%command_name%",
-                "label": "Disable this command!",
-                "emoji": "%emoji_error%"
-              }
+            "disable": {
+              "type": "BUTTON",
+              "style": "DANGER",
+              "id": "disable_%command_name%",
+              "label": "Disable this command!",
+              "emoji": "%emoji_error%"
             }
           }
         },
         "enable_button": {
           "components": {
-            "buttons": {
-              "enable": {
-                "style": "SUCCESS",
-                "id": "enable_%command_name%",
-                "label": "Enable this command!",
-                "emoji": "%emoji_success%"
-              }
+            "enable": {
+              "type": "BUTTON",
+              "style": "SUCCESS",
+              "id": "enable_%command_name%",
+              "label": "Enable this command!",
+              "emoji": "%emoji_success%"
             }
           }
         },
@@ -555,52 +553,59 @@
           "title": "Select Message Types",
           "description": "Select all message types you want the bot to send. (You have 20 seconds to select)",
           "components": {
-            "select_menus": {
+            "log": {
+              "type": "SELECT_MENU",
+              "id": "log",
+              "min_values": 1,
+              "max_values": 8,
+              "placeholder": "Select up to 8 message types.",
+              "options": {
+                "chat": {
+                  "label": "Chat Messages",
+                  "description": "Send a message every time a player chats."
+                },
+                "join": {
+                  "label": "Join Messages",
+                  "description": "Send a message every time a player joins the server.",
+                  "value": "join"
+                },
+                "leave": {
+                  "label": "Leave Messages",
+                  "description": "Send a message every time a player leaves the server.",
+                  "value": "leave"
+                },
+                "advancements": {
+                  "label": "Advancement Messages",
+                  "description": "Send a message every time a player completes an advancement.",
+                  "value": "advancement"
+                },
+                "death": {
+                  "label": "Death Messages",
+                  "description": "Send a message every time a player dies.",
+                  "value": "death"
+                },
+                "commands": {
+                  "label": "Command Messages",
+                  "description": "Send a message every time a command is executed.",
+                  "value": "command"
+                },
+                "start": {
+                  "label": "Startup Messages",
+                  "description": "Send a message every time the server starts up.",
+                  "value": "start"
+                },
+                "close": {
+                  "label": "Shutdown Messages",
+                  "description": "Send a message every time the server shuts down.",
+                  "value": "close"
+                }
+              }
+            },
+            "": {
               "log": {
-                "id": "log",
-                "min_values": 1,
-                "max_values": 8,
-                "placeholder": "Select up to 8 message types.",
                 "options": {
                   "chat": {
-                    "label": "Chat Messages",
-                    "description": "Send a message every time a player chats.",
                     "value": "chat"
-                  },
-                  "join": {
-                    "label": "Join Messages",
-                    "description": "Send a message every time a player joins the server.",
-                    "value": "join"
-                  },
-                  "leave": {
-                    "label": "Leave Messages",
-                    "description": "Send a message every time a player leaves the server.",
-                    "value": "leave"
-                  },
-                  "advancements": {
-                    "label": "Advancement Messages",
-                    "description": "Send a message every time a player completes an advancement.",
-                    "value": "advancement"
-                  },
-                  "death": {
-                    "label": "Death Messages",
-                    "description": "Send a message every time a player dies.",
-                    "value": "death"
-                  },
-                  "commands": {
-                    "label": "Command Messages",
-                    "description": "Send a message every time a command is executed.",
-                    "value": "command"
-                  },
-                  "start": {
-                    "label": "Startup Messages",
-                    "description": "Send a message every time the server starts up.",
-                    "value": "start"
-                  },
-                  "close": {
-                    "label": "Shutdown Messages",
-                    "description": "Send a message every time the server shuts down.",
-                    "value": "close"
                   }
                 }
               }
@@ -1075,7 +1080,7 @@
               "name": "%username%",
               "icon_url": "%author_url%"
             },
-            "description": "**%username%** has made the advancement: [**%advancement_title%**]\n*%advancement_description%*",
+            "description": "**%username%** has made the advancement: [%advancement_title%]\n*%advancement_description%*",
             "color": "LUMINOUS_VIVID_PINK"
           },
           "death": {
