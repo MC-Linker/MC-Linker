@@ -2,9 +2,10 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const crypto = require('crypto');
 const express = require('express');
+const Builders = require('@discordjs/builders');
 const utils = require('./utils');
-const { botPort, pluginVersion } = require('../config.json');
 const { keys, addPh, ph, getEmbedBuilder } = require('./messages');
+const { botPort, pluginVersion } = require('../config.json');
 
 let pluginConnections = [];
 async function loadExpress(client) {
@@ -75,10 +76,10 @@ async function loadExpress(client) {
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.command, argPlaceholder, ph.emojis());
                 break;
             case "start":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder, ph.emojis());
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder, ph.emojis(), { "timestamp_now": Builders.time(Date.now()/1000) });
                 break;
             case "stop":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.stop, argPlaceholder, ph.emojis());
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.stop, argPlaceholder, ph.emojis(), { "timestamp_now": Builders.time(Date.now()/1000) });
                 break;
         }
 
