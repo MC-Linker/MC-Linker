@@ -2,5 +2,6 @@ serverdata
 userdata
 node_modules
 config.json
+corde.config.json
 /.idea/
 /.run/
