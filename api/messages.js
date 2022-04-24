@@ -159,37 +159,8 @@ function getComponentBuilder(key, ...placeholders) {
 
     const actionRow = new Discord.MessageActionRow();
 
-    //Loop over each select menu
-    for (const selectMenu of Object.values(key.components?.select_menus ?? {})) {
-        if(!selectMenu.id || !selectMenu.options) continue;
-
-        const menu = new Discord.MessageSelectMenu()
-            .setCustomId(selectMenu.id)
-            .addOptions(Object.values(selectMenu.options));
-
-        if(selectMenu.min_values) menu.setMinValues(selectMenu.min_values);
-        if(selectMenu.max_values) menu.setMaxValues(selectMenu.max_values);
-        if(selectMenu.disabled) menu.setDisabled(selectMenu.disabled);
-        if(selectMenu.placeholder) menu.setPlaceholder(selectMenu.placeholder);
-
-
-        actionRow.addComponents(menu);
-    }
-
-    //Loop over each button
-    for(const button of Object.values(key.components?.buttons ?? {})) {
-        if(!button.label || !button.id || !button.style) continue;
-
-        const but = new Discord.MessageButton()
-            .setLabel(button.label)
-            .setCustomId(button.id)
-            .setStyle(button.style);
-
-        if(button.url) but.setURL(button.url);
-        if(button.disabled) but.setDisabled(button.disabled);
-        if(button.emoji) but.setEmoji(button.emoji);
-
-        actionRow.addComponents(but);
+    for(const component of Object.values(key.components)) {
+        addComponent(actionRow, component);
     }
 
     return actionRow;
@@ -236,13 +207,13 @@ function getCommandBuilder(key) {
     if(!key.options) return builder;
 
     for (const option of Object.values(key.options)) {
-        addOption(builder, option);
+        addEmbedOption(builder, option);
     }
 
     return builder;
 }
 
-function addOption(builder, key) {
+function addEmbedOption(builder, key) {
     if(!key.type || !key.name || !key.description) return;
 
     let optionBuilder;
@@ -346,13 +317,49 @@ function addOption(builder, key) {
 
             if(key.options) {
                 for (const option of Object.values(key.options)) {
-                    addOption(optionBuilder, option);
+                    addEmbedOption(optionBuilder, option);
                 }
             }
 
             builder.addSubcommand(optionBuilder);
             break;
     }
+}
+
+function addComponent(actionRow, key) {
+    if(!key.type || !key.id) return;
+
+    let componentBuilder;
+    switch(key.type.toUpperCase()) {
+        case 'BUTTON':
+            if(!key.style) return;
+
+            componentBuilder = new Builders.ButtonBuilder()
+                .setCustomId(key.id)
+                .setDisabled(key.disabled ?? false)
+                .setStyle(key.style);
+
+            if(key.emoji) componentBuilder.setEmoji(key.emoji);
+            if(key.url) componentBuilder.setURL(key.url);
+            if(key.label) componentBuilder.setLabel(key.label);
+
+            break;
+        case 'SELECT_MENU':
+            if(!key.options) return;
+
+            componentBuilder = new Builders.SelectMenuBuilder()
+                .setCustomId(key.id)
+                .setDisabled(key.disabled ?? false)
+                .setMinValues(key.min_values)
+                .setMaxValues(key.max_values);
+
+            if(key.placeholder) componentBuilder.setPlaceholder(key.placeholder);
+            if(key.options) componentBuilder.addOptions(...Object.values(key.options));
+
+            break;
+    }
+
+    actionRow.addComponents(componentBuilder);
 }
 
 function getUserFromMention(client, mention) {
