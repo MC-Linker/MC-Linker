@@ -48,7 +48,7 @@ async function loadExpress(client) {
             case "join":
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.join, argPlaceholder, ph.emojis());
                 break;
-            case "leave":
+            case "quit":
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.leave, argPlaceholder, ph.emojis());
                 break;
             case "advancement":
