@@ -148,8 +148,17 @@ function reply(interaction, key, ...placeholders) {
 }
 
 function replyOptions(interaction, options) {
-    if(interaction instanceof Discord.Message || !interaction?.deferred) return interaction.reply(options);
-    else return interaction.editReply(options);
+    function handleError(err) {
+        console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.fromError(err), { "interaction": interaction }));
+        interaction?.channel?.send(options);
+    }
+
+    try {
+        if (interaction instanceof Discord.Message || !interaction?.deferred) return interaction.reply(options).catch(handleError);
+        else return interaction.editReply(options).catch(handleError);
+    } catch(err) {
+        handleError(err);
+    }
 }
 
 
