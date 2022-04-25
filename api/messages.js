@@ -343,7 +343,7 @@ function addComponent(actionRow, key) {
         case 'BUTTON':
             if(!key.style) return;
 
-            componentBuilder = new Builders.ButtonBuilder()
+            componentBuilder = new Discord.MessageButton()
                 .setCustomId(key.id)
                 .setDisabled(key.disabled ?? false)
                 .setStyle(key.style);
@@ -356,7 +356,7 @@ function addComponent(actionRow, key) {
         case 'SELECT_MENU':
             if(!key.options) return;
 
-            componentBuilder = new Builders.SelectMenuBuilder()
+            componentBuilder = new Discord.MessageSelectMenu()
                 .setCustomId(key.id)
                 .setDisabled(key.disabled ?? false)
                 .setMinValues(key.min_values)
@@ -364,7 +364,8 @@ function addComponent(actionRow, key) {
 
             if(key.placeholder) componentBuilder.setPlaceholder(key.placeholder);
             if(key.options) {
-                for (const option of Object.values(key.options)) {
+                componentBuilder.addOptions(...Object.values(key.options));
+/*                for (const option of Object.values(key.options)) {
                     if(!option.label || !option.value) continue;
 
                     const selectOption = new Builders.SelectMenuOptionBuilder()
@@ -376,13 +377,13 @@ function addComponent(actionRow, key) {
                     if(option.description) selectOption.setDescription(option.description);
 
                     componentBuilder.addOptions(selectOption);
-                }
+                }*/
             }
 
             break;
     }
 
-    actionRow.addComponents(componentBuilder.toJSON());
+    actionRow.addComponents(componentBuilder);
 }
 
 function getUserFromMention(client, mention) {
