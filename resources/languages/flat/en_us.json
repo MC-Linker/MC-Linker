@@ -1250,7 +1250,7 @@
   "data.disconnect.name": "disconnect",
   "data.disconnect.long_description": "Disconnect your minecraft java-edition server or minecraft java-edition account from the bot and delete all saved credentials. To connect again, use `/connect`.",
   "data.disconnect.short_description": "Disconnect your minecraft server or minecraft account from the bot.",
-  "data.disconnect.usage": "/disconnect ftp/rcon/plugin/user",
+  "data.disconnect.usage": "/disconnect ftp/plugin/user",
   "data.disconnect.example": "/disconnect ftp\n/disconnect account",
 
   "data.disconnect.options.ftp.type": "SUBCOMMAND",
@@ -1268,7 +1268,7 @@
 
 
   "data.enable.name": "enable",
-  "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in /help <command>.",
+  "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in `/help <command>`.",
   "data.enable.short_description": "Enable a disabled command/stat/advancement (All enabled by default)",
   "data.enable.usage": "/enable commands/stats/advancements <command/stat/advancement>",
   "data.enable.example": "/enable commands txp\n/enable stats picked_up\n/enable advancements adventuring_time",

@@ -363,22 +363,7 @@ function addComponent(actionRow, key) {
                 .setMaxValues(key.max_values);
 
             if(key.placeholder) componentBuilder.setPlaceholder(key.placeholder);
-            if(key.options) {
-                componentBuilder.addOptions(...Object.values(key.options));
-/*                for (const option of Object.values(key.options)) {
-                    if(!option.label || !option.value) continue;
-
-                    const selectOption = new Builders.SelectMenuOptionBuilder()
-                        .setLabel(option.label)
-                        .setValue(option.value)
-                        .setDefault(option.default ?? false);
-
-                    if(option.emoji) selectOption.setEmoji(option.emoji);
-                    if(option.description) selectOption.setDescription(option.description);
-
-                    componentBuilder.addOptions(selectOption);
-                }*/
-            }
+            if(key.options) componentBuilder.addOptions(...Object.values(key.options));
 
             break;
     }

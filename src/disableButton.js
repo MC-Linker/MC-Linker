@@ -15,7 +15,7 @@ async function execute(interaction) {
     if(disabled) {
         interaction.respond(keys.buttons.disable.success.response, { "command_name": commandName });
     } else {
-        interaction.respond(KEYS.buttons.disable.errors.could_not_disable, { "command_name": commandName });
+        interaction.respond(keys.buttons.disable.errors.could_not_disable, { "command_name": commandName });
         return;
     }
 
@@ -26,7 +26,8 @@ async function execute(interaction) {
         keys.commands.help.success.command,
         ph.fromStd(interaction),
         { "command_name": command.name.cap(), "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example }
-    ).setDescription(keys.buttons.disable.success.help.description);
+    ).setDescription(keys.buttons.disable.success.help.description)
+    .setColor(keys.buttons.disable.success.help.color);
 
     interaction.message.edit({ embeds: [helpEmbed], components: [enableRow] });
 }
