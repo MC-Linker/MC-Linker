@@ -929,6 +929,9 @@
         },
         "no_reply_arguments": {
           "console": "Could not reply: No message, key or placeholders specified"
+        },
+        "could_not_reply": {
+          "console": "Could not reply to interaction %error%\n%interaction%"
         }
       }
     },
