@@ -570,10 +570,10 @@
                   "description": "Send a message every time a player joins the server.",
                   "value": "join"
                 },
-                "leave": {
-                  "label": "Leave Messages",
+                "quit": {
+                  "label": "Quit Messages",
                   "description": "Send a message every time a player leaves the server.",
-                  "value": "leave"
+                  "value": "quit"
                 },
                 "advancements": {
                   "label": "Advancement Messages",

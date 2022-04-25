@@ -393,9 +393,9 @@
   "commands.chatchannel.success.choose.components.log.options.join.description": "Send a message every time a player joins the server.",
   "commands.chatchannel.success.choose.components.log.options.join.value": "join",
 
-  "commands.chatchannel.success.choose.components.log.options.leave.label": "Leave Messages",
-  "commands.chatchannel.success.choose.components.log.options.leave.description": "Send a message every time a player leaves the server.",
-  "commands.chatchannel.success.choose.components.log.options.leave.value": "leave",
+  "commands.chatchannel.success.choose.components.log.options.quit.label": "Quit Messages",
+  "commands.chatchannel.success.choose.components.log.options.quit.description": "Send a message every time a player leaves the server.",
+  "commands.chatchannel.success.choose.components.log.options.quit.value": "quit",
 
   "commands.chatchannel.success.choose.components.log.options.advancements.label": "Advancement Messages",
   "commands.chatchannel.success.choose.components.log.options.advancements.description": "Send a message every time a player completes an advancement.",
