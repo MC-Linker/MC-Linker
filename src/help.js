@@ -23,13 +23,13 @@ async function execute(message, args) {
                     command = keys.data[commandFile];
 
                     helpEmbed.addField(
-                        addPh(keys.commands.help.success.category.fields.command.name, { "command_name": command.name.cap() }),
+                        addPh(keys.commands.help.success.category.fields.command.title, { "command_name": command.name.cap() }),
                         addPh(keys.commands.help.success.category.fields.command.content, { "command_short_description": command.short_description })
                     );
                 });
 
                 helpEmbed.addField(
-                    keys.commands.help.success.category.fields.information.name,
+                    keys.commands.help.success.category.fields.information.title,
                     addPh(keys.commands.help.success.category.fields.information.content, { "discord_link": discordLink })
                 );
                 message.replyOptions({ embeds: [helpEmbed] });
