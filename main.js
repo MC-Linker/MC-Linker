@@ -189,4 +189,7 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(token);
+const login = () => client.login(token);
+login();
+
+module.exports = { login, client };
