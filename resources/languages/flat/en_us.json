@@ -742,7 +742,7 @@
 
   "api.plugin.success.messages.advancement.author.name": "%username%",
   "api.plugin.success.messages.advancement.author.icon_url": "%author_url%",
-  "api.plugin.success.messages.advancement.description": "**%username%** has made the advancement: [%advancement_title%]\n*%advancement_description%*",
+  "api.plugin.success.messages.advancement.description": "**%username%** has made the advancement: [**%advancement_title%**]\n*%advancement_description%*",
   "api.plugin.success.messages.advancement.color": "LUMINOUS_VIVID_PINK",
 
   "api.plugin.success.messages.death.author.name": "%username%",
