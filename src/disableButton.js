@@ -15,7 +15,7 @@ async function execute(interaction) {
     if(disabled) {
         interaction.respond(keys.buttons.disable.success.response, { "command_name": commandName });
     } else {
-        interaction.respond(keys.buttons.disable.errors.could_not_disable, { "command_name": commandName });
+        interaction.respond(KEYS.buttons.disable.errors.could_not_disable, { "command_name": commandName });
         return;
     }
 
