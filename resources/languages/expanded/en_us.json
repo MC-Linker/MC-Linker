@@ -1080,7 +1080,7 @@
               "name": "%username%",
               "icon_url": "%author_url%"
             },
-            "description": "**%username%** has made the advancement: [%advancement_title%]\n*%advancement_description%*",
+            "description": "**%username%** has made the advancement: [**%advancement_title%**]\n*%advancement_description%*",
             "color": "LUMINOUS_VIVID_PINK"
           },
           "death": {
