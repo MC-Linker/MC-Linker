@@ -52,9 +52,6 @@ function disable(guildId, type, value) {
 
 function enable(guildId, type, value) {
     return new Promise(async resolve => {
-
-        if(!await utils.isGuildConnected(guildId)) return resolve(false);
-
         let disableData;
         try {
             disableData = JSON.parse(await fs.readFile(`./serverdata/connections/${guildId}/disable.json`, 'utf-8'));

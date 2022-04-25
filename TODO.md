@@ -1,5 +1,6 @@
 # TODO SMP Bot
 
++ **Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...) and fix `/disable`, `/enable`**
 + Add `/advancements custom` autocomplete
 + Support for multiple chat channels/connections (also add `/chatchannel set/remove`)
 + Add button to show enchantments and shulkerboxes in /inventory
