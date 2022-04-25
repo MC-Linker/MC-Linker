@@ -562,7 +562,8 @@
               "options": {
                 "chat": {
                   "label": "Chat Messages",
-                  "description": "Send a message every time a player chats."
+                  "description": "Send a message every time a player chats.",
+                  "value": "chat"
                 },
                 "join": {
                   "label": "Join Messages",
@@ -598,15 +599,6 @@
                   "label": "Shutdown Messages",
                   "description": "Send a message every time the server shuts down.",
                   "value": "close"
-                }
-              }
-            },
-            "": {
-              "log": {
-                "options": {
-                  "chat": {
-                    "value": "chat"
-                  }
                 }
               }
             }
