@@ -10,11 +10,13 @@ function disable(guildId, type, value) {
             commands: [],
         };
 
-        if(!await utils.isGuildConnected(guildId)) {
+        try {
+            await fs.access(`./serverdata/connections/${guildId}`)
+        } catch(err) {
             try {
                 //Create connection folder with disable json
                 await fs.mkdir(`./serverdata/connections/${guildId}`);
-                await fs.writeFile(`./serverdata/connections/${guildId}/disable.json`, JSON.stringify(disableBaseData, null, 2), 'utf-8');
+                await fs.writeFile(`./serverdata/connections/${guildId}/disable.json`, JSON.stringify(disableBaseData, null, 2), 'utf-8')
             } catch(err) {
                 console.log(addPh(keys.api.settings.errors.could_not_write_file_folder, ph.fromError(err)));
                 resolve(false);
