@@ -1099,7 +1099,7 @@
             "color": "GREEN",
             "timestamp": "%timestamp_now%"
           },
-          "stop": {
+          "close": {
             "description": "%emoji_shutdown% **%message%**",
             "color": "RED",
             "timestamp": "%timestamp_now%"
