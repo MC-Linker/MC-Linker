@@ -759,9 +759,9 @@
   "api.plugin.success.messages.start.color": "GREEN",
   "api.plugin.success.messages.start.timestamp": "%timestamp_now%",
 
-  "api.plugin.success.messages.stop.description": "%emoji_shutdown% **%message%**",
-  "api.plugin.success.messages.stop.color": "RED",
-  "api.plugin.success.messages.stop.timestamp": "%timestamp_now%",
+  "api.plugin.success.messages.close.description": "%emoji_shutdown% **%message%**",
+  "api.plugin.success.messages.close.color": "RED",
+  "api.plugin.success.messages.close.timestamp": "%timestamp_now%",
 
 
   "api.plugin.success.get.console": "Got file [%path%]",

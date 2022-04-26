@@ -75,10 +75,10 @@ async function loadExpress(client) {
                 chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.command, argPlaceholder, ph.emojis());
                 break;
             case "start":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder, ph.emojis(), { "timestamp_now": Date.now()/1000 });
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
                 break;
-            case "stop":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.stop, argPlaceholder, ph.emojis(), { "timestamp_now": Date.now()/1000 });
+            case "close":
+                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.close, argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
                 break;
         }
 
