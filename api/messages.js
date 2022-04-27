@@ -196,7 +196,7 @@ function getEmbedBuilder(key, ...placeholders) {
     if(key.color) embed.setColor(key.color);
     if(key.author) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
-    if(key.timestamp) embed.setTimestamp(key.timestamp);
+    if(key.timestamp) embed.setTimestamp(Number(key.timestamp));
     if(key.footer) embed.setFooter({ text: key.footer.text, iconURL: key.footer.icon_url });
     if(key.url) embed.setURL(key.url);
 

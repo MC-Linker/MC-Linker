@@ -89,6 +89,9 @@ client.on('messageCreate', async message => {
         return replyOptions(message, options);
     };
 
+    //check if in guild
+    if(!message.guildId) return message.respond(keys.main.warnings.not_in_guild);
+
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.success.ping);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
@@ -128,6 +131,7 @@ client.on('interactionCreate', async interaction => {
         };
     }
 
+    //check if in guild
     if(!interaction.guildId) return interaction.respond(keys.main.warnings.not_in_guild);
 
     if(interaction.isCommand()) {
