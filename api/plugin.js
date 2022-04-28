@@ -29,13 +29,13 @@ async function loadExpress(client) {
         const conn = pluginConnections.find(conn => conn.guildId === guild && conn.ip === ip);
 
 
-        //If no connection on that ip
-        if(!conn && alreadyWarnedServers.includes(conn.ip)) {
+        //If no connection on that ip and not already warned
+        if(!conn && !alreadyWarnedServers.includes(ip)) {
             try {
                 await client.channels.cache.get(channel)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
                     .catch(() => {});
 
-                alreadyWarnedServers.push(conn.ip);
+                alreadyWarnedServers.push(ip);
                 return;
             } catch(ignored) {}
         }
