@@ -498,14 +498,6 @@
   "commands.connect.errors.could_not_find_level.description": "%emoji_error% Could not find world folder. Please specify the world path manually.",
   "commands.connect.errors.could_not_find_level.console": "Could not find level.dat",
 
-  "commands.connect.errors.could_not_make_server_folder.title": "Could Not Save Credentials",
-  "commands.connect.errors.could_not_make_server_folder.description": "%emoji_error% Could not save credentials. Please try again.",
-  "commands.connect.errors.could_not_make_server_folder.console": "Error writing server folder",
-
-  "commands.connect.errors.could_not_make_user_folder.title": "Could Not Save Credentials",
-  "commands.connect.errors.could_not_make_user_folder.description": "%emoji_error% Could not save credentials. Please try again.",
-  "commands.connect.errors.could_not_make_user_folder.console": "Error writing user folder",
-
   "commands.connect.errors.could_not_write_server_file.title": "Could Not Save Credentials",
   "commands.connect.errors.could_not_write_server_file.description": "%emoji_error% Could not save credentials. Please try again.",
   "commands.connect.errors.could_not_write_server_file.console": "Error writing server file",
@@ -653,7 +645,6 @@
 
 
 
-  "api.settings.errors.could_not_write_file_folder.console": "Could not create disable folder or file %error%",
   "api.settings.errors.could_not_read_file.console": "Could not read disable file %error%",
   "api.settings.errors.could_not_write_file.console": "Could not read disable file %error%",
 

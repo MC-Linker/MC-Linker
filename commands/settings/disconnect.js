@@ -1,4 +1,4 @@
-const fs =  require('fs');
+const fs = require('fs-extra');
 const plugin = require('../../api/plugin');
 const utils = require("../../api/utils");
 const { keys } = require('../../api/messages');
@@ -34,7 +34,7 @@ async function execute(message, args) {
         if(!disconnect) return;
     }
 
-    fs.rm(path, { recursive: true, force: true }, err => {
+    fs.remove(path, err => {
         if(err) {
             message.respond(keys.commands.disconnect.errors.could_not_remove_folder);
             return;

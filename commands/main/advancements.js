@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
@@ -63,13 +63,11 @@ async function execute(message, args) {
     const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./userdata/advancements/${uuidv4}.json`, message);
     if(!amFile) return;
 
-    fs.readFile(`./userdata/advancements/${uuidv4}.json`, 'utf8', async (err, advancementJson) => {
+    fs.readJson(`./userdata/advancements/${uuidv4}.json`, 'utf8', async (err, advancementData) => {
         if(err) {
             message.respond(keys.commands.advancements.errors.could_not_read_file, ph.fromError(err));
             return;
         }
-
-        const advancementData = JSON.parse(advancementJson);
 
         const letters = advancementTitle.split('');
         let equals = '';

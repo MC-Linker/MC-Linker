@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const dns = require('dns/promises');
 const utils = require('../../api/utils.js');
 const Discord = require('discord.js');
@@ -127,20 +127,13 @@ async function execute(message, args) {
 
         //Connected with either ftp or sftp
         //Save connection
-        fs.mkdir(`./serverdata/connections/${message.guildId}`, err => {
-            if (err && err.code !== 'EEXIST') {
-                message.respond(keys.commands.connect.errors.could_not_make_server_folder);
+        fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, ftpData, { spaces: 2 }, err => {
+            if (err) {
+                message.respond(keys.commands.connect.errors.could_not_write_server_file);
                 return;
             }
 
-            fs.writeFile(`./serverdata/connections/${message.guildId}/connection.json`, JSON.stringify(ftpData, null, 2), 'utf-8', err => {
-                if (err) {
-                    message.respond(keys.commands.connect.errors.could_not_write_server_file);
-                    return;
-                }
-
-                message.respond(keys.commands.connect.success.ftp);
-            });
+            message.respond(keys.commands.connect.success.ftp);
         });
 
 
@@ -209,20 +202,13 @@ async function execute(message, args) {
             "protocol": "plugin"
         };
 
-        fs.mkdir(`./serverdata/connections/${message.guildId}`, err => {
-            if(err && err.code !== 'EEXIST') {
-                message.respond(keys.commands.connect.errors.could_not_make_server_folder);
+        fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {
+            if (err) {
+                message.respond(keys.commands.connect.errors.could_not_write_server_file);
                 return;
             }
 
-            fs.writeFile(`./serverdata/connections/${message.guildId}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
-                if (err) {
-                    message.respond(keys.commands.connect.errors.could_not_write_server_file);
-                    return;
-                }
-
-                message.respond(keys.commands.connect.success.plugin);
-            });
+            message.respond(keys.commands.connect.success.plugin);
         });
 
     } else if(method === 'account') {
@@ -244,20 +230,13 @@ async function execute(message, args) {
             'name': mcUsername
         };
 
-        fs.mkdir(`./userdata/connections/${message.member.user.id}`, err => {
-           if(err && err.code !== 'EEXIST') {
-               message.respond(keys.commands.connect.errors.could_not_make_user_folder);
-               return;
-           }
+       fs.outputJson(`./userdata/connections/${message.member.user.id}/connection.json`, connectionJson, 'utf-8', err => {
+            if (err) {
+                message.respond(keys.commands.connect.errors.could_not_write_user_file);
+                return;
+            }
 
-           fs.writeFile(`./userdata/connections/${message.member.user.id}/connection.json`, JSON.stringify(connectionJson, null, 2), 'utf-8', err => {
-                if (err) {
-                    message.respond(keys.commands.connect.errors.could_not_write_user_file);
-                    return;
-                }
-
-               message.respond(keys.commands.connect.success.account, { "username": mcUsername, "uuid": uuidv4 });
-            });
+           message.respond(keys.commands.connect.success.account, { "username": mcUsername, "uuid": uuidv4 });
         });
     } else {
         message.respond(keys.commands.connect.warnings.invalid_method);

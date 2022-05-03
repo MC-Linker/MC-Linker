@@ -1,5 +1,5 @@
 //Restores the connection.json from all connection files.
-const fs = require('fs');
+const fs = require('fs-extra');
 restoreConnections();
 
 function restoreConnections() {
@@ -17,7 +17,7 @@ function restoreConnections() {
 
         let serverConnection;
         try {
-            serverConnection = JSON.parse(fs.readFileSync(`./serverdata/connections/${serverFolder}/connection.json`, 'utf-8'));
+            serverConnection = fs.readJsonSync(`./serverdata/connections/${serverFolder}/connection.json`, 'utf-8');
         } catch(err) {
             console.log('Couldn\'t read connection file...', err);
             continue;
@@ -28,7 +28,7 @@ function restoreConnections() {
             "hash": serverConnection.hash,
             "chat": serverConnection.chat,
             "ip": serverConnection.ip
-        }
+        };
         if(serverConnection.channel) connJson.channelId = serverConnection.channel;
 
         connections.push(connJson);
@@ -37,7 +37,5 @@ function restoreConnections() {
     }
 
     //Write new connections.json
-    fs.writeFileSync('./serverdata/connections/connections.json', JSON.stringify(connections, null, 2), 'utf-8');
+    fs.writeJsonSync('./serverdata/connections/connections.json', connections, { spaces: 2 });
 }
-
-module.exports = { restoreConnections };
