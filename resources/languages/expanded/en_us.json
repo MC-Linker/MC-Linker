@@ -1100,7 +1100,8 @@
         },
         "listening": {
           "console": "Listening on port %port%"
-        }
+        },
+        "root_response": "To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>"
       }
     },
     "utils": {

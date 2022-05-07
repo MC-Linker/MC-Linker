@@ -92,7 +92,7 @@ async function loadExpress(client) {
     //Returns latest version
     app.get('/version', (req, res) => res.send(pluginVersion));
 
-    app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>'));
+    app.get('/', (req, res) => res.send(keys.api.plugin.success.root_response));
 
     app.listen(botPort, function () { console.log(addPh(keys.api.plugin.success.listening.console, { "port": this.address().port })) });
     return app;
