@@ -1,6 +1,7 @@
 # TODO SMP Bot
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ Add option for webhook mode
 + **Add `/advancements custom` autocomplete**
 + **Seperate command blocks, player and console commands in `/chatchannel`**
 + Support for multiple chat channels/connections (also add `/chatchannel set/remove`)
