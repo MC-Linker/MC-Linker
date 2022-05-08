@@ -163,8 +163,9 @@ async function execute(message, args) {
         try {
             await dmChannel.send({ embeds: [verifyEmbed] });
         } catch(err) {
+            dmChannel = message.channel;
             message.respond(keys.commands.connect.warnings.could_not_dm);
-            await message.channel.send({ embeds: [verifyEmbed] });
+            await dmChannel.send({ embeds: [verifyEmbed] });
         }
 
         const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180000, errors: ['time'] });
