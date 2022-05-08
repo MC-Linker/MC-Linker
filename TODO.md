@@ -1,7 +1,8 @@
 # TODO SMP Bot
 
-+ **Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...) and fix `/disable`, `/enable`**
-+ Add `/advancements custom` autocomplete
++ Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ **Add `/advancements custom` autocomplete**
++ **Seperate command blocks, player and console commands in `/chatchannel`**
 + Support for multiple chat channels/connections (also add `/chatchannel set/remove`)
 + Add button to show enchantments and shulkerboxes in /inventory
 + Update stats autocomplete with minecraft-data
@@ -41,3 +42,4 @@
 
 # TODO Plugin
 + `/dm` (dm discord user)
++ Make DISCORD prefix configurable
