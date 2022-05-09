@@ -82,7 +82,7 @@ ph.emojis = function() {
 
 ph.fromStd = function(interaction) {
     return Object.assign(
-        this.fromAuthor(interaction.member.user ?? interaction.user),
+        this.fromAuthor(interaction?.member?.user ?? interaction.user),
         this.fromGuild(interaction.guild),
         this.fromInteraction(interaction),
         this.fromChannel(interaction.channel),

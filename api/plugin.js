@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const fs = require('fs');
+const fs = require('fs-extra');
 const crypto = require('crypto');
 const express = require('express');
 const utils = require('./utils');
@@ -8,7 +8,7 @@ const { botPort, pluginVersion } = require('../config.json');
 
 let pluginConnections = [];
 async function loadExpress(client) {
-    pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections/connections.json', 'utf-8'));
+    pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
     const app = express();
     app.use(express.json());
 
@@ -92,7 +92,7 @@ async function loadExpress(client) {
     //Returns latest version
     app.get('/version', (req, res) => res.send(pluginVersion));
 
-    app.get('/', (req, res) => res.send('To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>'));
+    app.get('/', (req, res) => res.send(keys.api.plugin.success.root_response));
 
     app.listen(botPort, function () { console.log(addPh(keys.api.plugin.success.listening.console, { "port": this.address().port })) });
     return app;
@@ -128,7 +128,7 @@ function connect(ip, guildId, verifyCode, message) {
             "guild": guildId
         };
 
-        pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections/connections.json', 'utf-8'));
+        pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
         const conn = pluginConnections.find(conn => conn.guildId === guildId);
         const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
 
@@ -194,7 +194,7 @@ function disconnect(guildId, message) {
         if(!hash) return resolve(false);
 
         try {
-            pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections/connections.json', 'utf-8'));
+            pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
 
             if(connIndex === -1) {
@@ -242,7 +242,7 @@ function registerChannel(ip, guildId, channelId, types, message) {
         });
         connectJson.types = typeArr;
 
-        pluginConnections = JSON.parse(await fs.promises.readFile('./serverdata/connections/connections.json', 'utf-8'));
+        pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
 
         try {
             let resp = await fetch(`http://${ip}/channel/`, {
@@ -334,11 +334,13 @@ function put(getPath, putPath, message) {
 
         try {
             let readStream = fs.createReadStream(getPath);
+            const fileStats = await fs.stat(getPath);
+
             const resp = await fetch(`http://${ip}/file/put/?path=${putPath}`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Basic ${hash}`,
-                    'Content-length': fs.statSync(getPath).size
+                    'Content-length': fileStats.size
                 },
                 body: readStream
             });
@@ -426,7 +428,7 @@ async function checkProtocol(guildId, message) {
 
 async function updateConn(message) {
     return new Promise(resolve => {
-        fs.promises.writeFile('./serverdata/connections/connections.json', JSON.stringify(pluginConnections, null, 2), 'utf-8')
+        fs.outputJson('./serverdata/connections/connections.json', pluginConnections, { spaces: 2 })
             .catch(err => {
                 message.respond(keys.api.plugin.errors.could_not_update, ph.fromError(err));
                 resolve(false);

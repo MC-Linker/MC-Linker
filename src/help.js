@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const { discordLink } = require('../config.json');
 const { keys, getEmbedBuilder, ph, addPh, getComponentBuilder} = require('../api/messages');
 const settings = require('../api/settings');

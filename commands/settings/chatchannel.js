@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
 const { keys, getEmbedBuilder, ph } = require('../../api/messages');
@@ -41,7 +41,7 @@ async function execute(message, args) {
                 "protocol": "plugin"
             };
 
-            fs.writeFile(`./serverdata/connections/${message.guild.id}/connection.json`, JSON.stringify(pluginJson, null, 2), 'utf-8', err => {
+            fs.outputJson(`./serverdata/connections/${message.guild.id}/connection.json`, pluginJson, { spaces: 2 }, err => {
                 if(err) {
                     message.respond(keys.commands.chatchannel.errors.could_not_write_file);
                     return;

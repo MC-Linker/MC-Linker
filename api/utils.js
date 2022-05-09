@@ -1,20 +1,19 @@
-const fs = require('fs/promises');
+const fs = require('fs-extra');
 const fetch = require('node-fetch');
 const Discord = require('discord.js');
 const { keys, addPh, ph } = require('./messages');
 
 function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
-        fs.readFile('./resources/data/advancements.json', 'utf8')
-            .then(advancementJson => {
-                const advancementData = JSON.parse(advancementJson);
+        fs.readJson('./resources/data/advancements.json', 'utf8')
+            .then(advancementData => {
                 const matchingCategory = advancementData.categories[category];
 
                 let matchingTitles = matchingCategory.filter(advancement => {
                     //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
                     let match;
                     if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
-                    else if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
+                    if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
 
                     return match;
                 });
@@ -35,10 +34,8 @@ function searchAdvancements(searchString, category, shouldSearchNames = true, sh
 
 function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength= 25) {
     return new Promise(resolve => {
-        fs.readFile('./resources/data/advancements.json', 'utf8')
-            .then(advancementJson => {
-                const advancementData = JSON.parse(advancementJson);
-
+        fs.readJson('./resources/data/advancements.json', 'utf8')
+            .then(advancementData => {
                 let matchingTitles = [];
                 let matchingKeys = [];
 
@@ -47,7 +44,7 @@ function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSea
                         //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
                         let match;
                         if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
-                        else if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
+                        if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
 
                         return match;
                     });
@@ -91,16 +88,19 @@ function getUUIDv4(user, message) {
             const userData = await getUserData(user.id, message);
             resolve(userData?.id);
         } else {
-            fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`)
-                .then(data => data.json())
-                .then(player => {
-                    const uuidv4 = player.id.split('');
-                    for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
-                    resolve(uuidv4.join(''));
-                }).catch(() => {
-                    message.respond(keys.api.utils.errors.could_not_get_uuid, { "username": user });
-                    resolve(false);
-                });
+            let data;
+            try {
+                data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`);
+                data = await data.json();
+            } catch(err) {
+                message.respond(keys.api.utils.errors.could_not_get_uuid, { "username": user });
+                resolve(false);
+                return;
+            }
+
+            const uuidv4 = data.id.split('');
+            for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
+            resolve(uuidv4.join(''));
         }
     });
 }
@@ -143,10 +143,9 @@ async function getIp(guildId, message) {
 
 function getServerData(guildId, message) {
     return new Promise(resolve => {
-        fs.readFile(`./serverdata/connections/${guildId}/connection.json`, 'utf8')
-            .then(serverJson => {
-                resolve(JSON.parse(serverJson));
-            }).catch(() => {
+        fs.readJson(`./serverdata/connections/${guildId}/connection.json`, 'utf8')
+            .then(serverJson => resolve(serverJson))
+            .catch(() => {
                 message.respond(keys.api.utils.errors.could_not_read_server_file);
                 resolve(false);
             });
@@ -155,10 +154,9 @@ function getServerData(guildId, message) {
 
 function getUserData(userId, message) {
     return new Promise(resolve => {
-        fs.readFile(`./userdata/connections/${userId}/connection.json`, 'utf8')
-            .then(userJson => {
-                resolve(JSON.parse(userJson));
-            }).catch(() => {
+        fs.readJson(`./userdata/connections/${userId}/connection.json`, 'utf8')
+            .then(userJson => resolve(userJson))
+            .catch(() => {
                 message.respond(keys.api.utils.errors.could_not_read_user_file);
                 resolve(false);
             });

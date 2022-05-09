@@ -2,7 +2,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { token, clientId, guildId } = require('../config.json');
 const { keys, getCommandBuilder } = require('../api/messages');
-const fs = require('fs');
+const fs = require('fs-extra');
 
 /*
  * Converts the first letter of a string to uppercase.
@@ -71,7 +71,7 @@ commands.push(disableJson);
 commands.push(helpJson);
 
 
-// noinspection JSCheckFunctionSignatures
+// noinspection JSCheckFunctionSignatures,JSClosureCompilerSyntax
 const rest = new REST({ version: '9' }).setToken(token);
 
 (async () => {

@@ -1,5 +1,5 @@
 const ftp = require('ftp');
-const fs = require('fs');
+const fs = require('fs-extra');
 const { promisify } = require('util');
 const utils = require('./utils');
 const sftp = require('./sftp');
@@ -174,7 +174,7 @@ async function findFile(ftpClient, file, path, maxDepth) {
 		if (item.type === '-' && item.name === file) return path;
 		else if (typeof item === 'string' && item.startsWith('-') && item.split(' ').pop() === file) return path;
 
-		else if((typeof item === 'string' && item.startsWith('d'))) {
+		else if(typeof item === 'string' && item.startsWith('d')) {
 			let res = await findFile(ftpClient, file, `${path}/${item.split(' ').pop()}`, maxDepth);
 			if (res) return res;
 		} else if(item.type === 'd') {

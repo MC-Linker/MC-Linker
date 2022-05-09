@@ -709,16 +709,6 @@
           "description": "%emoji_error% Could not find world folder. Please specify the world path manually.",
           "console": "Could not find level.dat"
         },
-        "could_not_make_server_folder": {
-          "title": "Could Not Save Credentials",
-          "description": "%emoji_error% Could not save credentials. Please try again.",
-          "console": "Error writing server folder"
-        },
-        "could_not_make_user_folder": {
-          "title": "Could Not Save Credentials",
-          "description": "%emoji_error% Could not save credentials. Please try again.",
-          "console": "Error writing user folder"
-        },
         "could_not_write_server_file": {
           "title": "Could Not Save Credentials",
           "description": "%emoji_error% Could not save credentials. Please try again.",
@@ -937,9 +927,6 @@
     },
     "settings": {
       "errors": {
-        "could_not_write_file_folder": {
-          "console": "Could not create disable folder or file %error%"
-        },
         "could_not_read_file": {
           "console": "Could not read disable file %error%"
         },
@@ -1113,7 +1100,8 @@
         },
         "listening": {
           "console": "Listening on port %port%"
-        }
+        },
+        "root_response": "To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>"
       }
     },
     "utils": {

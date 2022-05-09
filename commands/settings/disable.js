@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const utils = require('../../api/utils');
 const settings = require('../../api/settings');
 const { keys, getEmbedBuilder, addPh} = require('../../api/messages');
@@ -15,6 +15,8 @@ async function autocomplete(interaction) {
         const respondArray = [];
         ['entities', 'items'].forEach(imgType => {
             fs.readdir(`./resources/images/minecraft/${imgType}`, (err, images) => {
+                if(err) return;
+
                 const matchingImages = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
                 if (matchingImages.length >= 25) matchingImages.length = 25;
 
@@ -81,7 +83,7 @@ async function execute(message, args) {
             listString += addPh(keys.commands.disable.success.list.final.fields.disabled.title, { disable }) + "\n";
 
             //New field for every 25 items
-            if(counter === 24 || i === (disabled.length-1)) {
+            if(counter === 24 || i === disabled.length-1) {
                 listEmbed.addField(
                     listString,
                     keys.commands.disable.success.list.final.fields.disabled.content,

@@ -6,7 +6,7 @@ console.log(
     'Loading...'    // Second argument (%s)
 );
 
-const fs = require('fs');
+const fs = require('fs-extra');
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const plugin = require('./api/plugin');
@@ -61,7 +61,7 @@ client.on('guildDelete', async guild => {
     await plugin.disconnect(guild.id, message);
 
     //Delete connection folder
-    fs.rm(`./serverdata/connections/${guild.id}`, { recursive: true, force: true }, err => {
+    fs.remove(`./serverdata/connections/${guild.id}`, err => {
         if (err) console.log(addPh(keys.main.errors.no_connection_file.console, ph.fromGuild(guild)));
         else console.log(addPh(keys.main.success.disconnected.console, ph.fromGuild(guild)));
     });
@@ -85,7 +85,7 @@ client.on('messageCreate', async message => {
     message.respond = (key, ...placeholders) => {
         return reply(message, key, ...placeholders);
     };
-    message.replyOptions = (options) => {
+    message.replyOptions = options => {
         return replyOptions(message, options);
     };
 
@@ -126,7 +126,7 @@ client.on('interactionCreate', async interaction => {
         interaction.respond = (key, ...placeholders) => {
             return reply(interaction, key, ...placeholders);
         };
-        interaction.replyOptions = (options) => {
+        interaction.replyOptions = options => {
             return replyOptions(interaction, options);
         };
     }

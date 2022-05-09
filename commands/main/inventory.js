@@ -1,6 +1,6 @@
 const utils = require('../../api/utils');
 const nbt = require('nbt');
-const fs = require('fs');
+const fs = require('fs-extra');
 const ftp = require('../../api/ftp');
 const Canvas = require('canvas');
 const Discord = require('discord.js');
@@ -145,13 +145,13 @@ async function execute(message, args) {
                 }
 
                 if(damage) {
-                    const durabilityJson = fs.readFileSync('./resources/data/durability.json', 'utf-8');
+                    const durabilityJson = await fs.readFile('./resources/data/durability.json', 'utf-8');
 
                     const durabilityData = JSON.parse(durabilityJson);
                     const maxDurability = durabilityData[itemImgName];
 
                     if(maxDurability) {
-                        const durabilityPercent = 100-(damage / maxDurability * 100);
+                        const durabilityPercent = 100-damage / maxDurability * 100;
                         const durabilityPx = Math.floor(durabilityPercent / 100 * 34);
 
                         const r = Math.floor((100 - durabilityPercent)*2.56);

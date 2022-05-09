@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
@@ -13,6 +13,8 @@ function autocomplete(interaction) {
     else imgType = 'items';
 
     fs.readdir(`./resources/images/minecraft/${imgType}`, (err, images) => {
+        if(err) return;
+
         const matchingImages = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
         if(matchingImages.length >= 25) matchingImages.length = 25;
 
@@ -65,14 +67,13 @@ async function execute(message, args) {
     const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./userdata/stats/${uuidv4}.json`, message);
     if(!statFile) return;
 
-    fs.readFile(`./userdata/stats/${uuidv4}.json`, 'utf8', async (err, statJson) => {
+    fs.readJson(`./userdata/stats/${uuidv4}.json`, 'utf8', async (err, statData) => {
         if (err) {
             message.respond(keys.commands.stats.errors.could_not_read_file, ph.fromError(err));
             return;
         }
 
         try {
-            const statData = JSON.parse(statJson);
             const version = await utils.getVersion(message.guild.id, message);
 
             let statMatch;

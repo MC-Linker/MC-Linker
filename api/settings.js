@@ -1,4 +1,4 @@
-const fs = require('fs/promises');
+const fs = require('fs-extra');
 const utils = require('./utils');
 const { keys, addPh, ph } = require('./messages');
 
@@ -10,28 +10,15 @@ function disable(guildId, type, value) {
             commands: [],
         };
 
-        try {
-            await fs.access(`./serverdata/connections/${guildId}`)
-        } catch(err) {
-            try {
-                //Create connection folder with disable json
-                await fs.mkdir(`./serverdata/connections/${guildId}`);
-                await fs.writeFile(`./serverdata/connections/${guildId}/disable.json`, JSON.stringify(disableBaseData, null, 2), 'utf-8')
-            } catch(err) {
-                console.log(addPh(keys.api.settings.errors.could_not_write_file_folder, ph.fromError(err)));
-                resolve(false);
-                return;
-            }
-        }
-
         let disableData;
         try {
-            disableData = JSON.parse(await fs.readFile(`./serverdata/connections/${guildId}/disable.json`, 'utf-8'));
+            disableData = await fs.readJson(`./serverdata/connections/${guildId}/disable.json`, 'utf-8');
         } catch(err) {
             if(err.code === 'ENOENT') disableData = disableBaseData;
             else {
-                console.log(addPh(keys.api.settings.errors.could_not_read_file, ph.fromError(err)));
+                console.log(addPh(keys.api.settings.errors.could_not_read_file.console, ph.fromError(err)));
                 resolve(false);
+                return;
             }
         }
 
@@ -43,10 +30,10 @@ function disable(guildId, type, value) {
         disableData[type].push(value);
 
         try {
-            await fs.writeFile(`./serverdata/connections/${guildId}/disable.json`, JSON.stringify(disableData, null, 2), 'utf-8');
+            await fs.outputJson(`./serverdata/connections/${guildId}/disable.json`, disableData, { spaces: 2 });
             resolve(true);
         } catch(err) {
-            console.log(addPh(keys.api.settings.errors.could_not_write_file, ph.fromError(err)));
+            console.log(addPh(keys.api.settings.errors.could_not_write_file.console, ph.fromError(err)));
             resolve(false);
         }
     });
@@ -56,7 +43,7 @@ function enable(guildId, type, value) {
     return new Promise(async resolve => {
         let disableData;
         try {
-            disableData = JSON.parse(await fs.readFile(`./serverdata/connections/${guildId}/disable.json`, 'utf-8'));
+            disableData = await fs.readJson(`./serverdata/connections/${guildId}/disable.json`, 'utf-8');
         } catch(err) {
             console.log(addPh(keys.api.settings.errors.could_not_read_file.console, ph.fromError(err)));
             resolve(false);
@@ -69,10 +56,10 @@ function enable(guildId, type, value) {
         disableData[type].splice(enableIndex, 1);
 
         try {
-            await fs.writeFile(`./serverdata/connections/${guildId}/disable.json`, JSON.stringify(disableData, null, 2), 'utf-8');
+            await fs.outputJson(`./serverdata/connections/${guildId}/disable.json`, disableData, { spaces: 2 });
             resolve(true);
         } catch(err) {
-            console.log(addPh(keys.api.settings.errors.could_not_write_file, ph.fromError(err)));
+            console.log(addPh(keys.api.settings.errors.could_not_write_file.console, ph.fromError(err)));
             resolve(false);
         }
     });
@@ -91,11 +78,9 @@ function isDisabled(guildId, type, value) {
 
 function getDisabled(guildId, type) {
     return new Promise(resolve => {
-        fs.readFile(`./serverdata/connections/${guildId}/disable.json`, 'utf-8')
-            .then(data => {
-                data = JSON.parse(data)[type];
-                resolve(data);
-            }).catch(() => resolve([]));
+        fs.readJson(`./serverdata/connections/${guildId}/disable.json`, 'utf-8')
+            .then(data => resolve(data[type]))
+            .catch(() => resolve([]));
     });
 }
 
