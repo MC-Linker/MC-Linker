@@ -1,0 +1,379 @@
+{
+  "stats": [
+    {
+      "name": "Animals Bred",
+      "description": "The number of times the player bred two mobs.",
+      "value": "animals_bred"
+    },
+    {
+      "name": "Armor Pieces Cleaned",
+      "description": "The number of dyed leather armors washed with a cauldron.",
+      "value": "clean_armor"
+    },
+    {
+      "name": "Banners Cleaned",
+      "description": "The number of banner patterns washed with a cauldron.",
+      "value": "clean_banner"
+    },
+    {
+      "name": "Barrels Opened",
+      "description": "The number of times the player has opened a Barrel.",
+      "value": "open_barrel"
+    },
+    {
+      "name": "Bells Rung",
+      "description": "The number of times the player has rung a Bell.",
+      "value": "bell_ring"
+    },
+    {
+      "name": "Cake Slices Eaten",
+      "description": "The number of cake slices eaten.",
+      "value": "eat_cake_slice"
+    },
+    {
+      "name": "Cauldrons Filled",
+      "description": "The number of times the player filled cauldrons with water buckets.",
+      "value": "fill_cauldron"
+    },
+    {
+      "name": "Chests Opened",
+      "description": "The number of times the player opened chests.",
+      "value": "open_chest"
+    },
+    {
+      "name": "Damage Absorbed",
+      "description": "The amount of damage the player has absorbed in tenths of 1.",
+      "value": "damage_absorbed"
+    },
+    {
+      "name": "Damage Blocked By Shield",
+      "description": "The amount of damage the player has blocked with a shield in tenths of 1.",
+      "value": "damage_blocked_by_shield"
+    },
+    {
+      "name": "Damage Dealt",
+      "description": "The amount of damage the player has dealt in tenths of 1. Includes only melee attacks.",
+      "value": "damage_dealt"
+    },
+    {
+      "name": "Damage Dealt (Absorbed)",
+      "description": "The amount of damage the player has dealt that were absorbed, in tenths of 1.",
+      "value": "damage_dealt_absorbed"
+    },
+    {
+      "name": "Damage Dealt (Resisted)",
+      "description": "The amount of damage the player has dealt that were resisted, in tenths of 1.",
+      "value": "damage_dealt_resisted"
+    },
+    {
+      "name": "Damage Resisted",
+      "description": "The amount of damage the player has resisted in tenths of 1.",
+      "value": "damage_resisted"
+    },
+    {
+      "name": "Damage Taken",
+      "description": "The amount of damage the player has taken in tenths of 1.",
+      "value": "damage_taken"
+    },
+    {
+      "name": "Dispensers Searched",
+      "description": "The number of times interacted with dispensers.",
+      "value": "inspect_dispenser"
+    },
+    {
+      "name": "Distance Climbed",
+      "description": "The total distance traveled up ladders or vines.",
+      "value": "climb_one_cm"
+    },
+    {
+      "name": "Distance Crouched",
+      "description": "The total distance walked while sneaking.",
+      "value": "crouch_one_cm"
+    },
+    {
+      "name": "Distance Fallen",
+      "description": "The total distance fallen, excluding jumping. If the player falls more than one block, the entire jump is counted.",
+      "value": "fall_one_cm"
+    },
+    {
+      "name": "Distance Flown",
+      "description": "Distance traveled upwards and forwards at the same time, while more than one block above the ground.",
+      "value": "fly_one_cm"
+    },
+    {
+      "name": "Distance Sprinted",
+      "description": "The total distance sprinted.",
+      "value": "sprint_one_cm"
+    },
+    {
+      "name": "Distance Swum",
+      "description": "The total distance covered with sprint-swimming.",
+      "value": "swim_one_cm"
+    },
+    {
+      "name": "Distance Walked",
+      "description": "The total distance walked.",
+      "value": "walk_one_cm"
+    },
+    {
+      "name": "Distance Walked on Water",
+      "description": "The distance covered while bobbing up and down over water.",
+      "value": "walk_on_water_one_cm"
+    },
+    {
+      "name": "Distance Walked under Water",
+      "description": "The total distance you have walked underwater.",
+      "value": "walk_under_water_one_cm"
+    },
+    {
+      "name": "Distance by Boat",
+      "description": "The total distance traveled by boats.",
+      "value": "boat_one_cm"
+    },
+    {
+      "name": "Distance by Elytra",
+      "description": "The total distance traveled by elytra.",
+      "value": "aviate_one_cm"
+    },
+    {
+      "name": "Distance by Horse",
+      "description": "The total distance traveled by horses.",
+      "value": "horse_one_cm"
+    },
+    {
+      "name": "Distance by Minecart",
+      "description": "The total distance traveled by minecarts.",
+      "value": "minecart_one_cm"
+    },
+    {
+      "name": "Distance by Pig",
+      "description": "The total distance traveled by pigs via saddles.",
+      "value": "pig_one_cm"
+    },
+    {
+      "name": "Distance by Strider",
+      "description": "The total distance traveled by striders via saddles.",
+      "value": "strider_one_cm"
+    },
+    {
+      "name": "Droppers Searched",
+      "description": "The number of times interacted with droppers.",
+      "value": "inspect_dropper"
+    },
+    {
+      "name": "Ender Chests Opened",
+      "description": "The number of times the player opened ender chests.",
+      "value": "open_enderchest"
+    },
+    {
+      "name": "Fish Caught",
+      "description": "The number of fish caught.",
+      "value": "fish_caught"
+    },
+    {
+      "name": "Games Quit",
+      "description": "The number of times \"Save and quit to title\" has been clicked.",
+      "value": "leave_game"
+    },
+    {
+      "name": "Hoppers Searched",
+      "description": "The number of times interacted with hoppers.",
+      "value": "inspect_hopper"
+    },
+    {
+      "name": "Interactions with Anvil",
+      "description": "The number of times interacted with anvils.",
+      "value": "interact_with_anvil"
+    },
+    {
+      "name": "Interactions with Beacon",
+      "description": "The number of times interacted with beacons.",
+      "value": "interact_with_beacon"
+    },
+    {
+      "name": "Interactions with Blast Furnace",
+      "description": "The number of times interacted with Blast Furnaces.",
+      "value": "interact_with_blast_furnace"
+    },
+    {
+      "name": "Interactions with Brewing Stand",
+      "description": "The number of times interacted with brewing stands.",
+      "value": "interact_with_brewingstand"
+    },
+    {
+      "name": "Interactions with Campfire",
+      "description": "The number of times interacted with Campfires.",
+      "value": "interact_with_campfire"
+    },
+    {
+      "name": "Interactions with Cartography Table",
+      "description": "The number of times interacted with Cartography Tables.",
+      "value": "interact_with_cartography_table"
+    },
+    {
+      "name": "Interactions with Crafting Table",
+      "description": "The number of times interacted with crafting tables.",
+      "value": "interact_with_crafting_table"
+    },
+    {
+      "name": "Interactions with Furnace",
+      "description": "The number of times interacted with furnaces.",
+      "value": "interact_with_furnace"
+    },
+    {
+      "name": "Interactions with Grindstone",
+      "description": "The number of times interacted with Grindstones.",
+      "value": "interact_with_grindstone"
+    },
+    {
+      "name": "Interactions with Lectern",
+      "description": "The number of times interacted with Lecterns.",
+      "value": "interact_with_lectern"
+    },
+    {
+      "name": "Interactions with Loom",
+      "description": "The number of times interacted with Looms.",
+      "value": "interact_with_loom"
+    },
+    {
+      "name": "Interactions with Smithing Table",
+      "description": "The number of times interacted with Smithing Tables.",
+      "value": "interact_with_smithing_table"
+    },
+    {
+      "name": "Interactions with Smoker",
+      "description": "The number of times interacted with Smokers.",
+      "value": "interact_with_smoker"
+    },
+    {
+      "name": "Interactions with Stonecutter",
+      "description": "The number of times interacted with Stonecutters.",
+      "value": "interact_with_stonecutter"
+    },
+    {
+      "name": "Items Dropped",
+      "description": "The number of items dropped. This does not include items dropped upon death. If a group of items are dropped together, eg a stack of 64, it only counts as 1.",
+      "value": "drop"
+    },
+    {
+      "name": "Items Enchanted",
+      "description": "The number of items enchanted.",
+      "value": "enchant_item"
+    },
+    {
+      "name": "Jumps",
+      "description": "The total number of jumps performed.",
+      "value": "jump"
+    },
+    {
+      "name": "Mob Kills",
+      "description": "The number of mobs the player killed.",
+      "value": "mob_kills"
+    },
+    {
+      "name": "Music Discs Played",
+      "description": "The number of music discs played on a jukebox.",
+      "value": "play_record"
+    },
+    {
+      "name": "Note Blocks Played",
+      "description": "The number of note blocks hit.",
+      "value": "play_noteblock"
+    },
+    {
+      "name": "Note Blocks Tuned",
+      "description": "The number of times interacted with note blocks.",
+      "value": "tune_noteblock"
+    },
+    {
+      "name": "Number of Deaths",
+      "description": "The number of times the player died.",
+      "value": "deaths"
+    },
+    {
+      "name": "Plants Potted",
+      "description": "The number of plants potted onto flower pots.",
+      "value": "pot_flower"
+    },
+    {
+      "name": "Player Kills",
+      "description": "The number of players the player killed (on PvP servers). Indirect kills do not count.",
+      "value": "player_kills"
+    },
+    {
+      "name": "Raids Triggered",
+      "description": "The number of times the player has triggered a Raid.",
+      "value": "raid_trigger"
+    },
+    {
+      "name": "Raids Won",
+      "description": "The number of times the player has won a Raid.",
+      "value": "raid_win"
+    },
+    {
+      "name": "Shulker Boxes Cleaned",
+      "description": "The number of times the player has washed a Shulker Box with a cauldron.",
+      "value": "clean_shulker_box"
+    },
+    {
+      "name": "Shulker Boxes Opened",
+      "description": "The number of times the player has opened a Shulker Box.",
+      "value": "open_shulker_box"
+    },
+    {
+      "name": "Sneak Time",
+      "description": "The time the player has held down the sneak button (tracked in ticks).",
+      "value": "sneak_time"
+    },
+    {
+      "name": "Talked to Villagers",
+      "description": "The number of times interacted with villagers (opened the trading GUI).",
+      "value": "talked_to_villager"
+    },
+    {
+      "name": "Targets Hit",
+      "description": "The number of times the player has shot a target block.",
+      "value": "target_hit"
+    },
+    {
+      "name": "Time Played",
+      "description": "The total amount of time played (tracked in ticks). This is not necessarily displayed in minutes - it displays in seconds, minutes, hours or days whichever makes the most sense. If the game is paused this number ceases to increase. If \"5.50 h\" is displayed this means that you have played for 5 hours and 30 minutes (not 50 minutes).",
+      "value": "play_time"
+    },
+    {
+      "name": "Time Since Last Death",
+      "description": "The time since the player's last death (tracked in ticks).",
+      "value": "time_since_death"
+    },
+    {
+      "name": "Time Since Last Rest",
+      "description": "The time since the player's last rest (tracked in ticks). If this value is greater than 1.00 h, phantoms can spawn.",
+      "value": "time_since_rest"
+    },
+    {
+      "name": "Time with World Open",
+      "description": "The total amount of time the world was opened (tracked in ticks). Unlike Play Time, if the game is paused this number continues to increase. [1.17]",
+      "value": "total_world_time"
+    },
+    {
+      "name": "Times Slept in a Bed",
+      "description": "The number of times the player has slept in a bed.",
+      "value": "sleep_in_bed"
+    },
+    {
+      "name": "Traded with Villagers",
+      "description": "The number of times traded with villagers.",
+      "value": "traded_with_villager"
+    },
+    {
+      "name": "Trapped Chests Triggered",
+      "description": "The number of times the player opened trapped chests.",
+      "value": "trigger_trapped_chest"
+    },
+    {
+      "name": "Water Taken from Cauldron",
+      "description": "The number of times the player took water from cauldrons with glass bottles.",
+      "value": "use_cauldron"
+    }
+  ]
+}

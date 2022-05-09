@@ -4,33 +4,17 @@ const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
 const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
 
-function autocomplete(interaction) {
+async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
     const focused = interaction.options.getFocused().toLowerCase();
 
     let imgType;
-    if(subcommand === 'killed' || subcommand === 'killed_by') imgType = 'entities';
+    if(subcommand === 'custom') imgType = 'custom';
+    else if(subcommand === 'killed' || subcommand === 'killed_by') imgType = 'entities';
     else imgType = 'items';
 
-    fs.readdir(`./resources/images/minecraft/${imgType}`, (err, images) => {
-        if(err) return;
-
-        const matchingImages = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
-        if(matchingImages.length >= 25) matchingImages.length = 25;
-
-        const respondArray = [];
-        matchingImages.forEach(image => {
-            let formattedImage = image.replaceAll('.png', '');
-            formattedImage = formattedImage.split('_').map(word => word.cap()).join(' ');
-
-            respondArray.push({
-                name: formattedImage,
-                value: image.replaceAll('.png', ''),
-            });
-        });
-
-        interaction.respond(respondArray).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
-    });
+    const stats = await utils.searchStats(focused, imgType);
+    interaction.respond(stats).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
 }
 
 async function execute(message, args) {

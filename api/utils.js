@@ -66,6 +66,52 @@ function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSea
     });
 }
 
+function searchStats(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
+    return new Promise(resolve => {
+        if(category !== 'custom') {
+            fs.readdir(`./resources/images/minecraft/${category}`, (err, images) => {
+                if(err) return resolve(false);
+
+                const matchingImages = images.filter(image => image.includes(searchString.replaceAll(' ', '_')));
+                if(matchingImages.length >= 25) matchingImages.length = 25;
+
+                const respondArray = [];
+                matchingImages.forEach(image => {
+                    let formattedImage = image.replaceAll('.png', '');
+                    formattedImage = formattedImage.split('_').map(word => word.cap()).join(' ');
+
+                    respondArray.push({
+                        name: formattedImage,
+                        value: image.replaceAll('.png', ''),
+                    });
+                });
+
+                resolve(respondArray);
+            });
+        } else {
+            fs.readJson('./resources/data/stats_custom.json', (err, statData) => {
+                if(err) return resolve([]);
+
+                let matchingStats;
+
+                matchingStats = Object.values(statData.stats).filter(stat => {
+                    //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+                    let match;
+                    if(shouldSearchNames) match = stat.name.toLowerCase().includes(searchString);
+                    if(shouldSearchValues || !match) match = stat.value.toLowerCase().includes(searchString);
+
+                    return match;
+                });
+
+                matchingStats = [...new Set(matchingStats)]; //Remove duplicates
+                if(matchingStats.length >= maxLength) matchingStats.length = maxLength;
+
+                resolve(matchingStats);
+            });
+        }
+    });
+}
+
 function isUserConnected(userId) {
     return new Promise(resolve => {
         fs.access(`./userdata/connections/${userId}/connection.json`)
@@ -163,4 +209,4 @@ function getUserData(userId, message) {
     });
 }
 
-module.exports = { searchAllAdvancements, searchAdvancements, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUIDv4 };
+module.exports = { searchAllAdvancements, searchAdvancements, searchStats, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUIDv4 };
