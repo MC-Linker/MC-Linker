@@ -88,16 +88,19 @@ function getUUIDv4(user, message) {
             const userData = await getUserData(user.id, message);
             resolve(userData?.id);
         } else {
-            fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`)
-                .then(data => data.json())
-                .then(player => {
-                    const uuidv4 = player.id.split('');
-                    for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
-                    resolve(uuidv4.join(''));
-                }).catch(() => {
-                    message.respond(keys.api.utils.errors.could_not_get_uuid, { "username": user });
-                    resolve(false);
-                });
+            let data;
+            try {
+                data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`);
+                data = await data.json();
+            } catch(err) {
+                message.respond(keys.api.utils.errors.could_not_get_uuid, { "username": user });
+                resolve(false);
+                return;
+            }
+
+            const uuidv4 = data.id.split('');
+            for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
+            resolve(uuidv4.join(''));
         }
     });
 }
