@@ -13,7 +13,7 @@ function searchAdvancements(searchString, category, shouldSearchNames = true, sh
                     //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
                     let match;
                     if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
-                    else if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
+                    if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
 
                     return match;
                 });
@@ -44,7 +44,7 @@ function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSea
                         //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
                         let match;
                         if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
-                        else if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
+                        if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
 
                         return match;
                     });
