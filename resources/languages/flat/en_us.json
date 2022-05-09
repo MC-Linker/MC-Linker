@@ -876,6 +876,7 @@
   "data.stats.options.custom.options.stat.name": "stat",
   "data.stats.options.custom.options.stat.description": "Set a custom stat. All stats of the custom category => /help stats",
   "data.stats.options.custom.options.stat.required": true,
+  "data.stats.options.custom.options.stat.autocomplete": true,
 
   "data.stats.options.custom.options.user.type": "STRING",
   "data.stats.options.custom.options.user.name": "user",

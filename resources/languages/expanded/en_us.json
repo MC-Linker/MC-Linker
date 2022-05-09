@@ -1257,7 +1257,8 @@
               "type": "STRING",
               "name": "stat",
               "description": "Set a custom stat. All stats of the custom category => /help stats",
-              "required": true
+              "required": true,
+              "autocomplete": true
             },
             "user": {
               "type": "STRING",
