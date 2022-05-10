@@ -104,18 +104,53 @@ async function chat(message) {
     let content = message.cleanContent;
     message.attachments?.forEach(attach => content += `\n${attach.url}`);
 
+    const chatJson = {
+        "msg": content.replaceAll('\u200B', ''),
+        "username": message.author.username,
+        "private": false
+    };
+
     if(conn?.chat && !message.author.bot) {
         try {
-            await fetch(`http://${conn.ip}/chat/?&msg=${encodeURIComponent(content.replaceAll('\u200B', ''))}&username=${message.author.username}`, {
+            await fetch(`http://${conn.ip}/chat/`, {
                 headers: {
                     Authorization: `Basic ${conn.hash}`
-                }
+                },
+                body: JSON.stringify(chatJson)
             });
             return true;
         } catch(err) {
             return false;
         }
     }
+}
+
+async function chatPrivate(msg, username, target, message) {
+    return new Promise(async resolve => {
+        const chatJson = {
+            "msg": msg.replaceAll('\u200B', ''),
+            "username": username,
+            "private": true,
+            "target": target,
+        };
+
+        try {
+            const resp = await fetch(`http://${conn.ip}/chat/`, {
+                headers: {
+                    Authorization: `Basic ${conn.hash}`
+                },
+                body: JSON.stringify(chatJson)
+            });
+
+            if(!await checkStatus(resp, message)) return resolve(false);
+
+            resolve({ message: await resp.text(), status: resp.status });
+        } catch(err) {
+            resolve(false);
+            message.respond(keys.api.plugin.errors.no_response);
+            resolve(false);
+        }
+    });
 }
 
 function connect(ip, guildId, verifyCode, message) {
@@ -452,4 +487,4 @@ async function checkStatus(response, message) {
     } else return !!response.ok;
 }
 
-module.exports = { loadExpress, chat, connect, registerChannel, disconnect, get, put, find, execute, verify };
+module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, disconnect, get, put, find, execute, verify };
