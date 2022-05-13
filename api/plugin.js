@@ -41,45 +41,25 @@ async function loadExpress(client) {
         }
 
         let chatEmbed;
-        switch(req.body.type) {
-            case "chat":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder);
-                break;
-            case "join":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.join, argPlaceholder, ph.emojis());
-                break;
-            case "quit":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.leave, argPlaceholder, ph.emojis());
-                break;
-            case "advancement":
-                let advancementTitle;
-                let advancementDesc;
 
-                if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
+        if(req.body.type !== 'advancements') {
+            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
+        } else {
+            let advancementTitle;
+            let advancementDesc;
 
-                const advancementKey = message.replaceAll('minecraft:', '').split('/');
-                const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
+            if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
-                advancementTitle = advancement[0]?.name;
-                advancementDesc = advancement[0]?.description;
+            const advancementKey = message.replaceAll('minecraft:', '').split('/');
+            const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
 
-                if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
-                if(!advancementTitle) advancementTitle = message;
+            advancementTitle = advancement[0]?.name;
+            advancementDesc = advancement[0]?.description;
 
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
-                break;
-            case "death":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.death, argPlaceholder, ph.emojis());
-                break;
-            case "command":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.command, argPlaceholder, ph.emojis());
-                break;
-            case "start":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
-                break;
-            case "close":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.close, argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
-                break;
+            if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
+            if(!advancementTitle) advancementTitle = message;
+
+            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
         }
 
         //why not triple-catch (try/catch, .catch, optional chaining) it
