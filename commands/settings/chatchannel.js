@@ -36,8 +36,7 @@ async function execute(message, args) {
                 "hash": regChannel.hash,
                 "guild": regChannel.guild,
                 "chat": true,
-                "types": regChannel.types,
-                "channel": regChannel.channel,
+                "channels": regChannel.channels,
                 "protocol": "plugin"
             };
 

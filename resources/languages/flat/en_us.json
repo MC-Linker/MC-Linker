@@ -726,10 +726,10 @@
   "api.plugin.success.messages.join.description": "%emoji_join% **%username%** joined the game",
   "api.plugin.success.messages.join.color": "YELLOW",
 
-  "api.plugin.success.messages.leave.author.name": "%username%",
-  "api.plugin.success.messages.leave.author.icon_url": "%author_url%",
-  "api.plugin.success.messages.leave.description": "%emoji_leave% **%username%** left the game",
-  "api.plugin.success.messages.leave.color": "YELLOW",
+  "api.plugin.success.messages.quit.author.name": "%username%",
+  "api.plugin.success.messages.quit.author.icon_url": "%author_url%",
+  "api.plugin.success.messages.quit.description": "%emoji_leave% **%username%** left the game",
+  "api.plugin.success.messages.quit.color": "YELLOW",
 
   "api.plugin.success.messages.advancement.author.name": "%username%",
   "api.plugin.success.messages.advancement.author.icon_url": "%author_url%",

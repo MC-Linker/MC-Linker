@@ -83,7 +83,13 @@ async function loadExpress(client) {
 }
 
 async function chat(message) {
-    const conn = pluginConnections.find(conn => conn.guildId === message.guildId && conn.channelId === message.channelId);
+    //Find conn with same guild id and channel with same id
+    const conn = pluginConnections.find(conn => {
+        if(conn.guildId === message.guildId) {
+            return conn?.channels?.find(channel => channel.id === message.channel.id);
+        }
+        return false;
+    });
 
     let content = message.cleanContent;
     message.attachments?.forEach(attach => content += `\n${attach.url}`);
@@ -97,6 +103,7 @@ async function chat(message) {
     if(conn?.chat && !message.author.bot) {
         try {
             await fetch(`http://${conn.ip}/chat/`, {
+                method: 'POST',
                 headers: {
                     Authorization: `Basic ${conn.hash}`
                 },
@@ -284,6 +291,10 @@ function unregisterChannel(ip, guildId, channelId, message) {
             }
             //Remove channel
             const channelIndex = conn.channels.findIndex(c => c.id === channelId);
+            if(channelIndex === -1) {
+                resolve(false);
+                return;
+            }
             conn.channels.splice(channelIndex, 1);
 
             //Push new conn
@@ -356,7 +367,10 @@ function registerChannel(ip, guildId, channelId, types, message) {
                 conn.channels = [];
                 conn.chat = true;
             }
-            //Push new channel
+
+            //Remove channel with same id and set new channel
+            const channelIndex = conn.channels.findIndex(c => c.id === connectJson.channel.id);
+            if(channelIndex !== -1) conn.channels.splice(channelIndex, 1);
             conn.channels.push(connectJson.channel);
 
             //Push new conn
