@@ -20,7 +20,7 @@ async function loadExpress(client) {
         const player = req.body.player?.replaceAll(' ', '');
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
         const message = req.body.message;
-        const channel = req.body.channel;
+        const channels = req.body.channels;
         const guild = req.body.guild;
         const ip = req.body.ip;
         const argPlaceholder = { ip, "username": player, "author_url": authorURL, message };
@@ -30,12 +30,14 @@ async function loadExpress(client) {
 
 
         //If no connection on that ip and not already warned
-        if(!conn && !alreadyWarnedServers.includes(ip)) {
+        if(!conn && !alreadyWarnedServers.includes(guild)) {
             try {
-                await client.channels.cache.get(channel)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
-                    .catch(() => {});
+                for (const channel of channels) {
+                    await client.channels.cache.get(channel.id)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
+                        .catch(() => {});
+                }
 
-                alreadyWarnedServers.push(ip);
+                alreadyWarnedServers.push(guild);
                 return;
             } catch(ignored) {}
         }
@@ -62,10 +64,12 @@ async function loadExpress(client) {
             chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
         }
 
-        //why not triple-catch (try/catch, .catch, optional chaining) it
+        //why not triple-catch (try/catch, .catch, optional chaining)
         try {
-            await client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] })
-                .catch(() => {});
+            for (const channel of channels) {
+                await client.channels.cache.get(channel.id)?.send({ embeds: [chatEmbed] })
+                    .catch(() => {});
+            }
         } catch(ignored) {}
     });
 
@@ -200,7 +204,6 @@ function connect(ip, guildId, verifyCode, message) {
     });
 }
 
-
 function disconnect(guildId, message) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(guildId, message);
@@ -235,7 +238,7 @@ function disconnect(guildId, message) {
     });
 }
 
-function registerChannel(ip, guildId, channelId, types, message) {
+function unregisterChannel(ip, guildId, channelId, message) {
     return new Promise(async resolve => {
         if(!await checkProtocol(message.guildId, message)) return resolve(false);
 
@@ -243,24 +246,15 @@ function registerChannel(ip, guildId, channelId, types, message) {
         if(!hash) return resolve(false);
 
         const connectJson = {
-            "chat": true,
             "guild": guildId,
-            "channel": channelId,
             "ip": ip,
+            "channel": channelId,
         };
-        const typeArr = [];
-        types.forEach(type => {
-            typeArr.push({
-                "type": type,
-                "enabled": true
-            });
-        });
-        connectJson.types = typeArr;
 
         pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
 
         try {
-            let resp = await fetch(`http://${ip}/channel/`, {
+            let resp = await fetch(`http://${ip}/channel/remove`, {
                 method: 'POST',
                 body: JSON.stringify(connectJson),
                 headers: {
@@ -272,16 +266,101 @@ function registerChannel(ip, guildId, channelId, types, message) {
 
             resp = await resp.json();
 
+            //Find connection
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
-            if(connIndex !== -1) pluginConnections.splice(connIndex, 1);
+            if(connIndex === -1) {
+                message.respond(keys.api.plugin.warnings.not_connected);
+                resolve(false);
+                return;
+            }
 
-            pluginConnections.push({
-                "guildId": guildId,
-                "channelId": channelId,
-                "hash": resp.hash,
-                "chat": true,
-                "ip": ip,
+            //Get conn and then delete it
+            const conn = pluginConnections[connIndex];
+            pluginConnections.splice(connIndex, 1);
+
+            if(!conn?.channels) {
+                conn.channels = [];
+                conn.chat = false;
+            }
+            //Remove channel
+            const channelIndex = conn.channels.findIndex(c => c.id === channelId);
+            conn.channels.splice(channelIndex, 1);
+
+            //Push new conn
+            pluginConnections.push(conn);
+
+            const update = await updateConn(message);
+            if(!update) {
+                resolve(false);
+                //Try to disconnect
+                fetch(`http://${ip}/disconnect/`, {
+                    headers: {
+                        Authorization: `Basic ${hash}`
+                    }
+                }).catch(() => {});
+            } else resolve(resp);
+        } catch(err) {
+            message.respond(keys.api.plugin.errors.no_response);
+            resolve(false);
+        }
+    });
+}
+
+function registerChannel(ip, guildId, channelId, types, message) {
+    return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
+        const hash = await utils.getHash(guildId, message);
+        if(!hash) return resolve(false);
+
+        const connectJson = {
+            "guild": guildId,
+            "ip": ip,
+            "channel": {
+                "id": channelId,
+                "types": []
+            },
+        };
+
+        //Push types to channel option
+        types.forEach(type => connectJson.channel.types.push(type));
+
+        pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
+
+        try {
+            let resp = await fetch(`http://${ip}/channel/add`, {
+                method: 'POST',
+                body: JSON.stringify(connectJson),
+                headers: {
+                    Authorization: `Basic ${hash}`,
+                    'Content-Type': 'application/json',
+                }
             });
+            if(!await checkStatus(resp, message)) return resolve(false);
+
+            resp = await resp.json();
+
+            //Find connection
+            const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
+            if(connIndex === -1) {
+                message.respond(keys.api.plugin.warnings.not_connected);
+                resolve(false);
+                return;
+            }
+
+             //Get conn and then delete it
+            const conn = pluginConnections[connIndex];
+            pluginConnections.splice(connIndex, 1);
+
+            if(!conn?.channels) {
+                conn.channels = [];
+                conn.chat = true;
+            }
+            //Push new channel
+            conn.channels.push(connectJson.channel);
+
+            //Push new conn
+            pluginConnections.push(conn);
 
             const update = await updateConn(message);
             if(!update) {
@@ -467,4 +546,4 @@ async function checkStatus(response, message) {
     } else return !!response.ok;
 }
 
-module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, disconnect, get, put, find, execute, verify };
+module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, unregisterChannel, disconnect, get, put, find, execute, verify };
