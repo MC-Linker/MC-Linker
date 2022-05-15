@@ -1,6 +1,7 @@
 # TODO SMP Bot
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + Add webhook option for chatchannels
 + **Seperate command blocks, player and console commands in `/chatchannel`**
 + **Support for multiple connections (also add `/chatchannel set/remove`)**
