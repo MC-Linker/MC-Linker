@@ -575,7 +575,7 @@
                   "description": "Send a message every time a player leaves the server.",
                   "value": "quit"
                 },
-                "advancements": {
+                "advancement": {
                   "label": "Advancement Messages",
                   "description": "Send a message every time a player completes an advancement.",
                   "value": "advancement"
@@ -585,10 +585,20 @@
                   "description": "Send a message every time a player dies.",
                   "value": "death"
                 },
-                "commands": {
-                  "label": "Command Messages",
-                  "description": "Send a message every time a command is executed.",
-                  "value": "command"
+                "player_command": {
+                  "label": "Player Command Messages",
+                  "description": "Send a message every time a command sent by a player is executed.",
+                  "value": "player_command"
+                },
+                "console_command": {
+                  "label": "Console Command Messages",
+                  "description": "Send a message every time a command sent by the console is executed.",
+                  "value": "console_command"
+                },
+                "block_command": {
+                  "label": "Block Command Messages",
+                  "description": "Send a message every time a command sent by a command block is executed.",
+                  "value": "block_command"
                 },
                 "start": {
                   "label": "Startup Messages",
@@ -1049,7 +1059,7 @@
             "description": "%emoji_join% **%username%** joined the game",
             "color": "YELLOW"
           },
-          "leave": {
+          "quit": {
             "author": {
               "name": "%username%",
               "icon_url": "%author_url%"
@@ -1073,7 +1083,23 @@
             "description": "%emoji_death% %message%",
             "color": "DARK_PURPLE"
           },
-          "command": {
+          "player_command": {
+            "author": {
+              "name": "%username%",
+              "icon_url": "%author_url%"
+            },
+            "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+            "color": "DARK_GOLD"
+          },
+          "console_command": {
+            "author": {
+              "name": "%username%",
+              "icon_url": "%author_url%"
+            },
+            "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+            "color": "DARK_GOLD"
+          },
+          "block_command": {
             "author": {
               "name": "%username%",
               "icon_url": "%author_url%"
