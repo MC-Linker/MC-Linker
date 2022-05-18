@@ -562,52 +562,52 @@
               "options": {
                 "chat": {
                   "label": "Chat Messages",
-                  "description": "Send a message every time a player chats.",
+                  "description": "Send a message whenever a player chats.",
                   "value": "chat"
                 },
                 "join": {
                   "label": "Join Messages",
-                  "description": "Send a message every time a player joins the server.",
+                  "description": "Send a message whenever a player joins the server.",
                   "value": "join"
                 },
                 "quit": {
                   "label": "Quit Messages",
-                  "description": "Send a message every time a player leaves the server.",
+                  "description": "Send a message whenever a player leaves the server.",
                   "value": "quit"
                 },
                 "advancement": {
                   "label": "Advancement Messages",
-                  "description": "Send a message every time a player completes an advancement.",
+                  "description": "Send a message whenever a player completes an advancement.",
                   "value": "advancement"
                 },
                 "death": {
                   "label": "Death Messages",
-                  "description": "Send a message every time a player dies.",
+                  "description": "Send a message whenever a player dies.",
                   "value": "death"
                 },
                 "player_command": {
                   "label": "Player Command Messages",
-                  "description": "Send a message every time a command sent by a player is executed.",
+                  "description": "Send a message whenever a command is sent by a player.",
                   "value": "player_command"
                 },
                 "console_command": {
                   "label": "Console Command Messages",
-                  "description": "Send a message every time a command sent by the console is executed.",
+                  "description": "Send a message whenever a command is sent by the console.",
                   "value": "console_command"
                 },
                 "block_command": {
                   "label": "Block Command Messages",
-                  "description": "Send a message every time a command sent by a command block is executed.",
+                  "description": "Send a message whenever a command block is executed.",
                   "value": "block_command"
                 },
                 "start": {
                   "label": "Startup Messages",
-                  "description": "Send a message every time the server starts up.",
+                  "description": "Send a message whenever the server starts up.",
                   "value": "start"
                 },
                 "close": {
                   "label": "Shutdown Messages",
-                  "description": "Send a message every time the server shuts down.",
+                  "description": "Send a message whenever the server shuts down.",
                   "value": "close"
                 }
               }
