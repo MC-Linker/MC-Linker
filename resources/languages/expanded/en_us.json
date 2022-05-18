@@ -9,6 +9,7 @@
     "leave": "<:leave:905924638100557865>",
     "death": "<:death:905924668735770674>",
     "command": "<a:pinging:891202470833946635>",
+    "command_block": "<:command_block:976452589166166037>",
     "startup": ":green_circle:",
     "shutdown": ":red_circle:",
     "main": ":label:",
@@ -1104,7 +1105,7 @@
               "name": "%username%",
               "icon_url": "%author_url%"
             },
-            "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+            "description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
             "color": "DARK_GOLD"
           },
           "start": {

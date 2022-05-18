@@ -9,6 +9,7 @@
   "emojis.leave": "<:leave:905924638100557865>",
   "emojis.death": "<:death:905924668735770674>",
   "emojis.command": "<a:pinging:891202470833946635>",
+  "emojis.command_block": "<:command_block:976452589166166037>",
   "emojis.startup": ":green_circle:",
   "emojis.shutdown": ":red_circle:",
 
@@ -761,7 +762,7 @@
 
   "api.plugin.success.messages.block_command.author.name": "%username%",
   "api.plugin.success.messages.block_command.author.icon_url": "%author_url%",
-  "api.plugin.success.messages.block_command.description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+  "api.plugin.success.messages.block_command.description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
   "api.plugin.success.messages.block_command.color": "DARK_GOLD",
 
   "api.plugin.success.messages.start.description": "%emoji_startup% **%message%**",
