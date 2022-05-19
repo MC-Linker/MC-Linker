@@ -372,7 +372,7 @@
   "commands.chatchannel.warnings.no_text_channel.console": "No text channel specified",
 
   "commands.chatchannel.warnings.channel_not_added.title": "Channel Not Added",
-  "commands.chatchannel.warnings.channel_not_added.description": "%emoji_warning% The specified channel is not added.",
+  "commands.chatchannel.warnings.channel_not_added.description": "%emoji_warning% The specified channel was never added.",
   "commands.chatchannel.warnings.channel_not_added.console": "Channel not added",
 
   "commands.chatchannel.errors.could_not_write_file.title": "Could Not Save Channels",
@@ -1134,10 +1134,10 @@
 
 
   "data.chatchannel.name": "chatchannel",
-  "data.chatchannel.long_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
-  "data.chatchannel.short_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
-  "data.chatchannel.usage": "/chatchannel <channel>",
-  "data.chatchannel.example": "/chatchannel #smp-chat",
+  "data.chatchannel.long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+  "data.chatchannel.short_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+  "data.chatchannel.usage": "/chatchannel add/remove <channel>\n/chatchannel",
+  "data.chatchannel.example": "/chatchannel add #smp-chat",
 
 
   "data.chatchannel.options.add.type": "SUBCOMMAND",
@@ -1149,11 +1149,6 @@
   "data.chatchannel.options.add.options.channel.description": "Set the channel.",
   "data.chatchannel.options.add.options.channel.required": true,
   "data.chatchannel.options.add.options.channel.channel_types": [0, 5, 10, 11, 12],
-
-  "data.chatchannel.options.add.options.webhooks.type": "BOOLEAN",
-  "data.chatchannel.options.add.options.webhooks.name": "webhooks",
-  "data.chatchannel.options.add.options.webhooks.description": "Enable webhook mode for chat messages.",
-  "data.chatchannel.options.add.options.webhooks.required": false,
 
 
   "data.chatchannel.options.remove.type": "SUBCOMMAND",

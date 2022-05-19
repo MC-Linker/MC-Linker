@@ -541,7 +541,7 @@
         },
         "channel_not_added": {
           "title": "Channel Not Added",
-          "description": "%emoji_warning% The specified channel is not added.",
+          "description": "%emoji_warning% The specified channel was never added.",
           "console": "Channel not added"
         },
         "not_author": {
@@ -1578,10 +1578,10 @@
     },
     "chatchannel": {
       "name": "chatchannel",
-      "long_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
-      "short_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
-      "usage": "/chatchannel <channel>",
-      "example": "/chatchannel #smp-chat",
+      "long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+      "short_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+      "usage": "/chatchannel add/remove <channel>\n/chatchannel",
+      "example": "/chatchannel add #smp-chat",
       "options": {
         "add": {
           "type": "SUBCOMMAND",
@@ -1600,12 +1600,6 @@
                 11,
                 12
               ]
-            },
-            "webhooks": {
-              "type": "BOOLEAN",
-              "name": "webhooks",
-              "description": "Enable webhook mode for chat messages.",
-              "required": false
             }
           }
         },
