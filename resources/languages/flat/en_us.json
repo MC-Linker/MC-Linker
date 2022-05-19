@@ -355,6 +355,14 @@
   "commands.chatchannel.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
   "commands.chatchannel.warnings.no_permission.console": "No admin permission",
 
+  "commands.chatchannel.warnings.no_method.title": "No Method Specified",
+  "commands.chatchannel.warnings.no_method.description": "%emoji_warning% Please specify a method (`add` or `remove`).",
+  "commands.chatchannel.warnings.no_method.console": "No method specified",
+
+  "commands.chatchannel.warnings.invalid_method.title": "Invalid Method Specified",
+  "commands.chatchannel.warnings.invalid_method.description": "%emoji_warning% You can only specify `add` or `remove`.",
+  "commands.chatchannel.warnings.invalid_method.console": "Invalid method specified",
+
   "commands.chatchannel.warnings.no_channel.title": "No Channel Specified",
   "commands.chatchannel.warnings.no_channel.description": "%emoji_warning% Please mention a channel.",
   "commands.chatchannel.warnings.no_channel.console": "No channel specified",
@@ -363,8 +371,12 @@
   "commands.chatchannel.warnings.no_text_channel.description": "%emoji_warning% Please mention a text, thread or news channel.",
   "commands.chatchannel.warnings.no_text_channel.console": "No text channel specified",
 
-  "commands.chatchannel.errors.could_not_write_file.title": "Could Not Save Channel",
-  "commands.chatchannel.errors.could_not_write_file.description": "%emoji_error% Could not save channel. Please try again.",
+  "commands.chatchannel.warnings.channel_not_added.title": "Channel Not Added",
+  "commands.chatchannel.warnings.channel_not_added.description": "%emoji_warning% The specified channel is not added.",
+  "commands.chatchannel.warnings.channel_not_added.console": "Channel not added",
+
+  "commands.chatchannel.errors.could_not_write_file.title": "Could Not Save Channels",
+  "commands.chatchannel.errors.could_not_write_file.description": "%emoji_error% Could not save channels. Please try again.",
   "commands.chatchannel.errors.could_not_write_file.console": "Could not write file",
 
   "commands.chatchannel.warnings.not_author.title": "No Permission",
@@ -427,9 +439,13 @@
   "commands.chatchannel.success.choose.components.log.options.close.value": "close",
 
 
-  "commands.chatchannel.success.final.title": "Set Chat Channel",
-  "commands.chatchannel.success.final.description": "%emoji_success% Successfully set the chat channel",
-  "commands.chatchannel.success.final.console": "Successfully set chat channel",
+  "commands.chatchannel.success.add.title": "Added Chat Channel",
+  "commands.chatchannel.success.add.description": "%emoji_success% Successfully added the chat channel",
+  "commands.chatchannel.success.add.console": "Successfully added chat channel",
+
+  "commands.chatchannel.success.remove.title": "Remove Chat Channel",
+  "commands.chatchannel.success.remove.description": "%emoji_success% Successfully removed the chat channel",
+  "commands.chatchannel.success.remove.console": "Successfully removed chat channel",
 
 
 
@@ -1123,11 +1139,32 @@
   "data.chatchannel.usage": "/chatchannel <channel>",
   "data.chatchannel.example": "/chatchannel #smp-chat",
 
-  "data.chatchannel.options.channel.type": "CHANNEL",
-  "data.chatchannel.options.channel.name": "channel",
-  "data.chatchannel.options.channel.description": "Set the channel.",
-  "data.chatchannel.options.channel.required": true,
-  "data.chatchannel.options.channel.channel_types": [0, 5, 10, 11, 12],
+
+  "data.chatchannel.options.add.type": "SUBCOMMAND",
+  "data.chatchannel.options.add.name": "add",
+  "data.chatchannel.options.add.description": "Set a chatchannel.",
+
+  "data.chatchannel.options.add.options.channel.type": "CHANNEL",
+  "data.chatchannel.options.add.options.channel.name": "channel",
+  "data.chatchannel.options.add.options.channel.description": "Set the channel.",
+  "data.chatchannel.options.add.options.channel.required": true,
+  "data.chatchannel.options.add.options.channel.channel_types": [0, 5, 10, 11, 12],
+
+  "data.chatchannel.options.add.options.webhooks.type": "BOOLEAN",
+  "data.chatchannel.options.add.options.webhooks.name": "webhooks",
+  "data.chatchannel.options.add.options.webhooks.description": "Enable webhook mode for chat messages.",
+  "data.chatchannel.options.add.options.webhooks.required": false,
+
+
+  "data.chatchannel.options.remove.type": "SUBCOMMAND",
+  "data.chatchannel.options.remove.name": "remove",
+  "data.chatchannel.options.remove.description": "Remove an existing chatchannel.",
+
+  "data.chatchannel.options.remove.options.channel.type": "CHANNEL",
+  "data.chatchannel.options.remove.options.channel.name": "channel",
+  "data.chatchannel.options.remove.options.channel.description": "Set the channel.",
+  "data.chatchannel.options.remove.options.channel.required": true,
+  "data.chatchannel.options.remove.options.channel.channel_types": [0, 5, 10, 11, 12],
 
 
 

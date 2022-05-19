@@ -519,6 +519,16 @@
           "description": "%emoji_no_entry% This command can only be used by admins.",
           "console": "No admin permission"
         },
+        "no_method": {
+          "title": "No Method Specified",
+          "description": "%emoji_warning% Please specify a method (`add` or `remove`).",
+          "console": "No method specified"
+        },
+        "invalid_method": {
+          "title": "Invalid Method Specified",
+          "description": "%emoji_warning% You can only specify `add` or `remove`.",
+          "console": "Invalid method specified"
+        },
         "no_channel": {
           "title": "No Channel Specified",
           "description": "%emoji_warning% Please mention a channel.",
@@ -528,6 +538,11 @@
           "title": "No Text Channel Specified",
           "description": "%emoji_warning% Please mention a text, thread or news channel.",
           "console": "No text channel specified"
+        },
+        "channel_not_added": {
+          "title": "Channel Not Added",
+          "description": "%emoji_warning% The specified channel is not added.",
+          "console": "Channel not added"
         },
         "not_author": {
           "title": "No Permission",
@@ -544,8 +559,8 @@
       },
       "errors": {
         "could_not_write_file": {
-          "title": "Could Not Save Channel",
-          "description": "%emoji_error% Could not save channel. Please try again.",
+          "title": "Could Not Save Channels",
+          "description": "%emoji_error% Could not save channels. Please try again.",
           "console": "Could not write file"
         }
       },
@@ -615,10 +630,15 @@
             }
           }
         },
-        "final": {
-          "title": "Set Chat Channel",
-          "description": "%emoji_success% Successfully set the chat channel",
-          "console": "Successfully set chat channel"
+        "add": {
+          "title": "Added Chat Channel",
+          "description": "%emoji_success% Successfully added the chat channel",
+          "console": "Successfully added chat channel"
+        },
+        "remove": {
+          "title": "Remove Chat Channel",
+          "description": "%emoji_success% Successfully removed the chat channel",
+          "console": "Successfully removed chat channel"
         }
       }
     },
@@ -1563,18 +1583,51 @@
       "usage": "/chatchannel <channel>",
       "example": "/chatchannel #smp-chat",
       "options": {
-        "channel": {
-          "type": "CHANNEL",
-          "name": "channel",
-          "description": "Set the channel.",
-          "required": true,
-          "channel_types": [
-            0,
-            5,
-            10,
-            11,
-            12
-          ]
+        "add": {
+          "type": "SUBCOMMAND",
+          "name": "add",
+          "description": "Set a chatchannel.",
+          "options": {
+            "channel": {
+              "type": "CHANNEL",
+              "name": "channel",
+              "description": "Set the channel.",
+              "required": true,
+              "channel_types": [
+                0,
+                5,
+                10,
+                11,
+                12
+              ]
+            },
+            "webhooks": {
+              "type": "BOOLEAN",
+              "name": "webhooks",
+              "description": "Enable webhook mode for chat messages.",
+              "required": false
+            }
+          }
+        },
+        "remove": {
+          "type": "SUBCOMMAND",
+          "name": "remove",
+          "description": "Remove an existing chatchannel.",
+          "options": {
+            "channel": {
+              "type": "CHANNEL",
+              "name": "channel",
+              "description": "Set the channel.",
+              "required": true,
+              "channel_types": [
+                0,
+                5,
+                10,
+                11,
+                12
+              ]
+            }
+          }
         }
       }
     },
