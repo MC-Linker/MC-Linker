@@ -1018,6 +1018,11 @@
           "title": "Not Connected",
           "description": "%emoji_warning% Your server is not connected with the plugin.",
           "console": "Not connected"
+        },
+        "channel_not_added": {
+          "title": "Channel Not Added",
+          "description": "%emoji_warning% The specified channel was never added.",
+          "console": "Channel not added"
         }
       },
       "errors": {
@@ -1580,7 +1585,7 @@
       "name": "chatchannel",
       "long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
       "short_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
-      "usage": "/chatchannel add/remove <channel>\n/chatchannel",
+      "usage": "/chatchannel add/remove <channel> <useWebhooks>\n/chatchannel",
       "example": "/chatchannel add #smp-chat",
       "options": {
         "add": {
@@ -1600,6 +1605,12 @@
                 11,
                 12
               ]
+            },
+            "webhooks": {
+              "type": "BOOLEAN",
+              "name": "webhooks",
+              "description": "Enable webhook mode for chat messages.",
+              "required": false
             }
           }
         },

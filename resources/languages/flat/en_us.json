@@ -708,6 +708,10 @@
   "api.plugin.warnings.not_connected.description": "%emoji_warning% Your server is not connected with the plugin.",
   "api.plugin.warnings.not_connected.console": "Not connected",
 
+  "api.plugin.warnings.channel_not_added.title": "Channel Not Added",
+  "api.plugin.warnings.channel_not_added.description": "%emoji_warning% The specified channel was never added.",
+  "api.plugin.warnings.channel_not_added.console": "Channel not added",
+
   "api.plugin.errors.no_response.title": "Plugin Does Not Respond",
   "api.plugin.errors.no_response.description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
@@ -1136,7 +1140,7 @@
   "data.chatchannel.name": "chatchannel",
   "data.chatchannel.long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
   "data.chatchannel.short_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
-  "data.chatchannel.usage": "/chatchannel add/remove <channel>\n/chatchannel",
+  "data.chatchannel.usage": "/chatchannel add/remove <channel> <useWebhooks>\n/chatchannel",
   "data.chatchannel.example": "/chatchannel add #smp-chat",
 
 
@@ -1149,6 +1153,11 @@
   "data.chatchannel.options.add.options.channel.description": "Set the channel.",
   "data.chatchannel.options.add.options.channel.required": true,
   "data.chatchannel.options.add.options.channel.channel_types": [0, 5, 10, 11, 12],
+
+  "data.chatchannel.options.add.options.webhooks.type": "BOOLEAN",
+  "data.chatchannel.options.add.options.webhooks.name": "webhooks",
+  "data.chatchannel.options.add.options.webhooks.description": "Enable webhook mode for chat messages.",
+  "data.chatchannel.options.add.options.webhooks.required": false,
 
 
   "data.chatchannel.options.remove.type": "SUBCOMMAND",

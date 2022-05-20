@@ -7,6 +7,7 @@ const { keys, getEmbedBuilder, ph } = require('../../api/messages');
 async function execute(message, args) {
     const method = args[0];
     let channel = message.mentions.channels?.first() ?? args[1];
+    const useWebhooks = typeof args[2] === 'boolean' ? args[2] : args[2]?.toLowerCase() === 'true';
 
     if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
         message.respond(keys.commands.chatchannel.warnings.no_permission);
@@ -32,8 +33,18 @@ async function execute(message, args) {
                 const ip = await utils.getIp(message.guild.id, message);
                 if(!ip) return;
 
+                //Create webhook for channel
+                let webhook;
+                if(useWebhooks && menu.values.includes('chat')) {
+                    if(channel.isThread()) webhook = await channel.parent.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
+                    else webhook = await channel.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
+                }
+
                 const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, menu);
-                if(!regChannel) return;
+                if(!regChannel) {
+                    webhook.delete();
+                    return;
+                }
 
                 const pluginJson = {
                     "ip": regChannel.ip,
@@ -71,9 +82,9 @@ async function execute(message, args) {
         const ip = await utils.getIp(message.guild.id, message);
         if(!ip) return;
 
-        const connection = await fs.readJson(`./serverdata/connections/${message.guild.id}/connection.json`);
-
-        const channelIndex = connection?.channels.findIndex(c => c.id === channel.id);
+        const connection = await utils.getServerData(message.guild.id, message);
+        if(!connection) return;
+        const channelIndex = connection.channels.findIndex(c => c.id === channel.id);
 
         if(channelIndex === -1) {
             message.respond(keys.commands.chatchannel.warnings.channel_not_added);

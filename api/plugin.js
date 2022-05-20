@@ -21,32 +21,30 @@ async function loadExpress(client) {
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
         const message = req.body.message;
         const channels = req.body.channels;
-        const guild = req.body.guild;
+        const guildId = req.body.guild;
         const ip = req.body.ip;
         const argPlaceholder = { ip, "username": player, "author_url": authorURL, message };
 
         //Get connection JSON of guild
-        const conn = pluginConnections.find(conn => conn.guildId === guild && conn.ip === ip);
+        const conn = pluginConnections.find(conn => conn.guildId === guildId && conn.ip === ip);
 
 
         //If no connection on that ip and not already warned
-        if(!conn && !alreadyWarnedServers.includes(guild)) {
+        if(!conn && !alreadyWarnedServers.includes(guildId)) {
             try {
                 for (const channel of channels) {
                     await client.channels.cache.get(channel.id)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
                         .catch(() => {});
                 }
 
-                alreadyWarnedServers.push(guild);
+                alreadyWarnedServers.push(guildId);
                 return;
             } catch(ignored) {}
         }
 
         let chatEmbed;
 
-        if(req.body.type !== 'advancements') {
-            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
-        } else {
+        if(req.body.type === 'advancements') {
             let advancementTitle;
             let advancementDesc;
 
@@ -62,6 +60,36 @@ async function loadExpress(client) {
             if(!advancementTitle) advancementTitle = message;
 
             chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
+        } else if(req.body.type === 'chat') {
+            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
+
+            //Fetch all webhooks in guild
+            let allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
+
+            for (const channel of channels) {
+                const discordChannel = client.channels.cache.get(channel.id);
+
+                if (!channel.webhook) {
+                    discordChannel?.send({ embeds: [chatEmbed] })
+                        .catch(() => {});
+                    continue;
+                }
+
+                //Rename webhook if necessary
+                const webhook = allWebhooks.get(channel.webhook);
+                if (webhook.name !== player) {
+                    await webhook.edit({
+                        name: player,
+                        avatar: authorURL,
+                    });
+                }
+
+                if (discordChannel.isThread()) webhook.send({ threadId: discordChannel.id, content: message });
+                else webhook.send(message);
+            }
+            return;
+        } else {
+            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
         }
 
         //why not triple-catch (try/catch, .catch, optional chaining)
@@ -234,6 +262,17 @@ function disconnect(guildId, message) {
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
+            const conn = pluginConnections[connIndex];
+            for(const channel of conn.channels) {
+                //Delete webhook
+                if(channel.webhook) {
+                    const guild = await message.client.guilds.cache.get(guildId);
+                    let allWebhooks = await guild.fetchWebhooks();
+                    allWebhooks.get(channel.webhook).delete();
+                }
+            }
+
+            //Remove connection
             pluginConnections.splice(connIndex, 1);
 
             const update = await updateConn(message);
@@ -260,6 +299,22 @@ function unregisterChannel(ip, guildId, channelId, message) {
 
         pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
 
+        //Find connection
+        const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
+        if(connIndex === -1) {
+            message.respond(keys.api.plugin.warnings.not_connected);
+            resolve(false);
+            return;
+        }
+
+        const conn = pluginConnections[connIndex];
+        const channel = conn.channels.find(c => c.id === channelId);
+        if(!channel) {
+            message.respond(keys.api.plugin.warnings.channel_not_added);
+            resolve(false);
+            return;
+        }
+
         try {
             let resp = await fetch(`http://${ip}/channel/remove`, {
                 method: 'POST',
@@ -273,16 +328,14 @@ function unregisterChannel(ip, guildId, channelId, message) {
 
             resp = await resp.json();
 
-            //Find connection
-            const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
-            if(connIndex === -1) {
-                message.respond(keys.api.plugin.warnings.not_connected);
-                resolve(false);
-                return;
+            //Delete webhook
+            if(channel.webhook) {
+                const guild = await message.client.guilds.cache.get(guildId);
+                let allWebhooks = await guild.fetchWebhooks();
+                allWebhooks.get(channel.webhook).delete();
             }
 
-            //Get conn and then delete it
-            const conn = pluginConnections[connIndex];
+            //Remove connection
             pluginConnections.splice(connIndex, 1);
 
             if(!conn?.channels) {
@@ -290,11 +343,7 @@ function unregisterChannel(ip, guildId, channelId, message) {
                 conn.chat = false;
             }
             //Remove channel
-            const channelIndex = conn.channels.findIndex(c => c.id === channelId);
-            if(channelIndex === -1) {
-                resolve(false);
-                return;
-            }
+            const channelIndex = conn.channels.findIndex(c => c === channel);
             conn.channels.splice(channelIndex, 1);
 
             //Push new conn
@@ -317,7 +366,7 @@ function unregisterChannel(ip, guildId, channelId, message) {
     });
 }
 
-function registerChannel(ip, guildId, channelId, types, message) {
+function registerChannel(ip, guildId, channelId, types, webhookId, message) {
     return new Promise(async resolve => {
         if(!await checkProtocol(message.guildId, message)) return resolve(false);
 
@@ -329,9 +378,12 @@ function registerChannel(ip, guildId, channelId, types, message) {
             "ip": ip,
             "channel": {
                 "id": channelId,
-                "types": []
+                "types": [],
             },
         };
+
+        //Create webhook and add it to connectJson
+        if(webhookId) connectJson.channel.webhook = webhookId;
 
         //Push types to channel option
         types.forEach(type => connectJson.channel.types.push(type));
@@ -370,7 +422,18 @@ function registerChannel(ip, guildId, channelId, types, message) {
 
             //Remove channel with same id and set new channel
             const channelIndex = conn.channels.findIndex(c => c.id === connectJson.channel.id);
-            if(channelIndex !== -1) conn.channels.splice(channelIndex, 1);
+            if(channelIndex !== -1) {
+                const channel = conn.channels[channelIndex];
+                if(channel.webhook) {
+                    const guild = await message.client.guilds.cache.get(guildId);
+                    let allWebhooks = await guild.fetchWebhooks();
+                    allWebhooks.get(channel.webhook).delete();
+                }
+
+                conn.channels.splice(channelIndex, 1);
+            }
+
+            //Push new channel
             conn.channels.push(connectJson.channel);
 
             //Push new conn
