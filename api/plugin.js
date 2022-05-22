@@ -20,72 +20,84 @@ async function loadExpress(client) {
         const player = req.body.player?.replaceAll(' ', '');
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
         const message = req.body.message;
-        const channel = req.body.channel;
-        const guild = req.body.guild;
+        const channels = req.body.channels;
+        const guildId = req.body.guild;
         const ip = req.body.ip;
         const argPlaceholder = { ip, "username": player, "author_url": authorURL, message };
 
         //Get connection JSON of guild
-        const conn = pluginConnections.find(conn => conn.guildId === guild && conn.ip === ip);
+        const conn = pluginConnections.find(conn => conn.guildId === guildId && conn.ip === ip);
 
 
         //If no connection on that ip and not already warned
-        if(!conn && !alreadyWarnedServers.includes(ip)) {
+        if(!conn && !alreadyWarnedServers.includes(guildId)) {
             try {
-                await client.channels.cache.get(channel)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
-                    .catch(() => {});
+                for (const channel of channels) {
+                    await client.channels.cache.get(channel.id)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
+                        .catch(() => {});
+                }
 
-                alreadyWarnedServers.push(ip);
+                alreadyWarnedServers.push(guildId);
                 return;
             } catch(ignored) {}
         }
 
         let chatEmbed;
-        switch(req.body.type) {
-            case "chat":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder);
-                break;
-            case "join":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.join, argPlaceholder, ph.emojis());
-                break;
-            case "quit":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.leave, argPlaceholder, ph.emojis());
-                break;
-            case "advancement":
-                let advancementTitle;
-                let advancementDesc;
 
-                if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
+        if(req.body.type === 'advancements') {
+            let advancementTitle;
+            let advancementDesc;
 
-                const advancementKey = message.replaceAll('minecraft:', '').split('/');
-                const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
+            if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
-                advancementTitle = advancement[0]?.name;
-                advancementDesc = advancement[0]?.description;
+            const advancementKey = message.replaceAll('minecraft:', '').split('/');
+            const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
 
-                if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
-                if(!advancementTitle) advancementTitle = message;
+            advancementTitle = advancement[0]?.name;
+            advancementDesc = advancement[0]?.description;
 
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
-                break;
-            case "death":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.death, argPlaceholder, ph.emojis());
-                break;
-            case "command":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.command, argPlaceholder, ph.emojis());
-                break;
-            case "start":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.start, argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
-                break;
-            case "close":
-                chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.close, argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
-                break;
+            if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
+            if(!advancementTitle) advancementTitle = message;
+
+            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
+        } else if(req.body.type === 'chat') {
+            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
+
+            //Fetch all webhooks in guild
+            let allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
+
+            for (const channel of channels) {
+                const discordChannel = client.channels.cache.get(channel.id);
+
+                if (!channel.webhook) {
+                    discordChannel?.send({ embeds: [chatEmbed] })
+                        .catch(() => {});
+                    continue;
+                }
+
+                //Rename webhook if necessary
+                const webhook = allWebhooks.get(channel.webhook);
+                if (webhook.name !== player) {
+                    await webhook.edit({
+                        name: player,
+                        avatar: authorURL,
+                    });
+                }
+
+                if (discordChannel.isThread()) webhook.send({ threadId: discordChannel.id, content: message });
+                else webhook.send(message);
+            }
+            return;
+        } else {
+            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
         }
 
-        //why not triple-catch (try/catch, .catch, optional chaining) it
+        //why not triple-catch (try/catch, .catch, optional chaining)
         try {
-            await client.channels.cache.get(channel)?.send({ embeds: [chatEmbed] })
-                .catch(() => {});
+            for (const channel of channels) {
+                await client.channels.cache.get(channel.id)?.send({ embeds: [chatEmbed] })
+                    .catch(() => {});
+            }
         } catch(ignored) {}
     });
 
@@ -99,23 +111,65 @@ async function loadExpress(client) {
 }
 
 async function chat(message) {
-    const conn = pluginConnections.find(conn => conn.guildId === message.guildId && conn.channelId === message.channelId);
+    //Find conn with same guild id and channel with same id
+    const conn = pluginConnections.find(conn => {
+        if(conn.guildId === message.guildId) {
+            return conn?.channels?.find(channel => channel.id === message.channel.id);
+        }
+        return false;
+    });
 
     let content = message.cleanContent;
     message.attachments?.forEach(attach => content += `\n${attach.url}`);
 
+    const chatJson = {
+        "msg": content.replaceAll('\u200B', ''),
+        "username": message.author.username,
+        "private": false
+    };
+
     if(conn?.chat && !message.author.bot) {
         try {
-            await fetch(`http://${conn.ip}/chat/?&msg=${encodeURIComponent(content.replaceAll('\u200B', ''))}&username=${message.author.username}`, {
+            await fetch(`http://${conn.ip}/chat/`, {
+                method: 'POST',
                 headers: {
                     Authorization: `Basic ${conn.hash}`
-                }
+                },
+                body: JSON.stringify(chatJson)
             });
             return true;
         } catch(err) {
             return false;
         }
     }
+}
+
+async function chatPrivate(msg, username, target, message) {
+    return new Promise(async resolve => {
+        const chatJson = {
+            "msg": msg.replaceAll('\u200B', ''),
+            "username": username,
+            "private": true,
+            "target": target,
+        };
+
+        try {
+            const resp = await fetch(`http://${conn.ip}/chat/`, {
+                headers: {
+                    Authorization: `Basic ${conn.hash}`
+                },
+                body: JSON.stringify(chatJson)
+            });
+
+            if(!await checkStatus(resp, message)) return resolve(false);
+
+            resolve({ message: await resp.text(), status: resp.status });
+        } catch(err) {
+            resolve(false);
+            message.respond(keys.api.plugin.errors.no_response);
+            resolve(false);
+        }
+    });
 }
 
 function connect(ip, guildId, verifyCode, message) {
@@ -185,7 +239,6 @@ function connect(ip, guildId, verifyCode, message) {
     });
 }
 
-
 function disconnect(guildId, message) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(guildId, message);
@@ -209,6 +262,17 @@ function disconnect(guildId, message) {
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
+            const conn = pluginConnections[connIndex];
+            for(const channel of conn.channels) {
+                //Delete webhook
+                if(channel.webhook) {
+                    const guild = await message.client.guilds.cache.get(guildId);
+                    let allWebhooks = await guild.fetchWebhooks();
+                    allWebhooks.get(channel.webhook).delete();
+                }
+            }
+
+            //Remove connection
             pluginConnections.splice(connIndex, 1);
 
             const update = await updateConn(message);
@@ -220,7 +284,7 @@ function disconnect(guildId, message) {
     });
 }
 
-function registerChannel(ip, guildId, channelId, types, message) {
+function unregisterChannel(ip, guildId, channelId, message) {
     return new Promise(async resolve => {
         if(!await checkProtocol(message.guildId, message)) return resolve(false);
 
@@ -228,24 +292,31 @@ function registerChannel(ip, guildId, channelId, types, message) {
         if(!hash) return resolve(false);
 
         const connectJson = {
-            "chat": true,
             "guild": guildId,
-            "channel": channelId,
             "ip": ip,
+            "channel": channelId,
         };
-        const typeArr = [];
-        types.forEach(type => {
-            typeArr.push({
-                "type": type,
-                "enabled": true
-            });
-        });
-        connectJson.types = typeArr;
 
         pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
 
+        //Find connection
+        const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
+        if(connIndex === -1) {
+            message.respond(keys.api.plugin.warnings.not_connected);
+            resolve(false);
+            return;
+        }
+
+        const conn = pluginConnections[connIndex];
+        const channel = conn.channels.find(c => c.id === channelId);
+        if(!channel) {
+            message.respond(keys.api.plugin.warnings.channel_not_added);
+            resolve(false);
+            return;
+        }
+
         try {
-            let resp = await fetch(`http://${ip}/channel/`, {
+            let resp = await fetch(`http://${ip}/channel/remove`, {
                 method: 'POST',
                 body: JSON.stringify(connectJson),
                 headers: {
@@ -257,16 +328,116 @@ function registerChannel(ip, guildId, channelId, types, message) {
 
             resp = await resp.json();
 
-            const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
-            if(connIndex !== -1) pluginConnections.splice(connIndex, 1);
+            //Delete webhook
+            if(channel.webhook) {
+                const guild = await message.client.guilds.cache.get(guildId);
+                let allWebhooks = await guild.fetchWebhooks();
+                allWebhooks.get(channel.webhook).delete();
+            }
 
-            pluginConnections.push({
-                "guildId": guildId,
-                "channelId": channelId,
-                "hash": resp.hash,
-                "chat": true,
-                "ip": ip,
+            //Remove connection
+            pluginConnections.splice(connIndex, 1);
+
+            if(!conn?.channels) {
+                conn.channels = [];
+                conn.chat = false;
+            }
+            //Remove channel
+            const channelIndex = conn.channels.findIndex(c => c === channel);
+            conn.channels.splice(channelIndex, 1);
+
+            //Push new conn
+            pluginConnections.push(conn);
+
+            const update = await updateConn(message);
+            if(!update) {
+                resolve(false);
+                //Try to disconnect
+                fetch(`http://${ip}/disconnect/`, {
+                    headers: {
+                        Authorization: `Basic ${hash}`
+                    }
+                }).catch(() => {});
+            } else resolve(resp);
+        } catch(err) {
+            message.respond(keys.api.plugin.errors.no_response);
+            resolve(false);
+        }
+    });
+}
+
+function registerChannel(ip, guildId, channelId, types, webhookId, message) {
+    return new Promise(async resolve => {
+        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+
+        const hash = await utils.getHash(guildId, message);
+        if(!hash) return resolve(false);
+
+        const connectJson = {
+            "guild": guildId,
+            "ip": ip,
+            "channel": {
+                "id": channelId,
+                "types": [],
+            },
+        };
+
+        //Create webhook and add it to connectJson
+        if(webhookId) connectJson.channel.webhook = webhookId;
+
+        //Push types to channel option
+        types.forEach(type => connectJson.channel.types.push(type));
+
+        pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
+
+        try {
+            let resp = await fetch(`http://${ip}/channel/add`, {
+                method: 'POST',
+                body: JSON.stringify(connectJson),
+                headers: {
+                    Authorization: `Basic ${hash}`,
+                    'Content-Type': 'application/json',
+                }
             });
+            if(!await checkStatus(resp, message)) return resolve(false);
+
+            resp = await resp.json();
+
+            //Find connection
+            const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
+            if(connIndex === -1) {
+                message.respond(keys.api.plugin.warnings.not_connected);
+                resolve(false);
+                return;
+            }
+
+             //Get conn and then delete it
+            const conn = pluginConnections[connIndex];
+            pluginConnections.splice(connIndex, 1);
+
+            if(!conn?.channels) {
+                conn.channels = [];
+                conn.chat = true;
+            }
+
+            //Remove channel with same id and set new channel
+            const channelIndex = conn.channels.findIndex(c => c.id === connectJson.channel.id);
+            if(channelIndex !== -1) {
+                const channel = conn.channels[channelIndex];
+                if(channel.webhook) {
+                    const guild = await message.client.guilds.cache.get(guildId);
+                    let allWebhooks = await guild.fetchWebhooks();
+                    allWebhooks.get(channel.webhook).delete();
+                }
+
+                conn.channels.splice(channelIndex, 1);
+            }
+
+            //Push new channel
+            conn.channels.push(connectJson.channel);
+
+            //Push new conn
+            pluginConnections.push(conn);
 
             const update = await updateConn(message);
             if(!update) {
@@ -452,4 +623,4 @@ async function checkStatus(response, message) {
     } else return !!response.ok;
 }
 
-module.exports = { loadExpress, chat, connect, registerChannel, disconnect, get, put, find, execute, verify };
+module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, unregisterChannel, disconnect, get, put, find, execute, verify };

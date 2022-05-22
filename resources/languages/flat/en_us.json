@@ -9,6 +9,7 @@
   "emojis.leave": "<:leave:905924638100557865>",
   "emojis.death": "<:death:905924668735770674>",
   "emojis.command": "<a:pinging:891202470833946635>",
+  "emojis.command_block": "<:command_block:976452589166166037>",
   "emojis.startup": ":green_circle:",
   "emojis.shutdown": ":red_circle:",
 
@@ -354,6 +355,14 @@
   "commands.chatchannel.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
   "commands.chatchannel.warnings.no_permission.console": "No admin permission",
 
+  "commands.chatchannel.warnings.no_method.title": "No Method Specified",
+  "commands.chatchannel.warnings.no_method.description": "%emoji_warning% Please specify a method (`add` or `remove`).",
+  "commands.chatchannel.warnings.no_method.console": "No method specified",
+
+  "commands.chatchannel.warnings.invalid_method.title": "Invalid Method Specified",
+  "commands.chatchannel.warnings.invalid_method.description": "%emoji_warning% You can only specify `add` or `remove`.",
+  "commands.chatchannel.warnings.invalid_method.console": "Invalid method specified",
+
   "commands.chatchannel.warnings.no_channel.title": "No Channel Specified",
   "commands.chatchannel.warnings.no_channel.description": "%emoji_warning% Please mention a channel.",
   "commands.chatchannel.warnings.no_channel.console": "No channel specified",
@@ -362,8 +371,12 @@
   "commands.chatchannel.warnings.no_text_channel.description": "%emoji_warning% Please mention a text, thread or news channel.",
   "commands.chatchannel.warnings.no_text_channel.console": "No text channel specified",
 
-  "commands.chatchannel.errors.could_not_write_file.title": "Could Not Save Channel",
-  "commands.chatchannel.errors.could_not_write_file.description": "%emoji_error% Could not save channel. Please try again.",
+  "commands.chatchannel.warnings.channel_not_added.title": "Channel Not Added",
+  "commands.chatchannel.warnings.channel_not_added.description": "%emoji_warning% The specified channel was never added.",
+  "commands.chatchannel.warnings.channel_not_added.console": "Channel not added",
+
+  "commands.chatchannel.errors.could_not_write_file.title": "Could Not Save Channels",
+  "commands.chatchannel.errors.could_not_write_file.description": "%emoji_error% Could not save channels. Please try again.",
   "commands.chatchannel.errors.could_not_write_file.console": "Could not write file",
 
   "commands.chatchannel.warnings.not_author.title": "No Permission",
@@ -386,41 +399,53 @@
   "commands.chatchannel.success.choose.components.log.placeholder": "Select up to 8 message types.",
 
   "commands.chatchannel.success.choose.components.log.options.chat.label": "Chat Messages",
-  "commands.chatchannel.success.choose.components.log.options.chat.description": "Send a message every time a player chats.",
+  "commands.chatchannel.success.choose.components.log.options.chat.description": "Send a message whenever a player chats.",
   "commands.chatchannel.success.choose.components.log.options.chat.value": "chat",
 
   "commands.chatchannel.success.choose.components.log.options.join.label": "Join Messages",
-  "commands.chatchannel.success.choose.components.log.options.join.description": "Send a message every time a player joins the server.",
+  "commands.chatchannel.success.choose.components.log.options.join.description": "Send a message whenever a player joins the server.",
   "commands.chatchannel.success.choose.components.log.options.join.value": "join",
 
   "commands.chatchannel.success.choose.components.log.options.quit.label": "Quit Messages",
-  "commands.chatchannel.success.choose.components.log.options.quit.description": "Send a message every time a player leaves the server.",
+  "commands.chatchannel.success.choose.components.log.options.quit.description": "Send a message whenever a player leaves the server.",
   "commands.chatchannel.success.choose.components.log.options.quit.value": "quit",
 
-  "commands.chatchannel.success.choose.components.log.options.advancements.label": "Advancement Messages",
-  "commands.chatchannel.success.choose.components.log.options.advancements.description": "Send a message every time a player completes an advancement.",
-  "commands.chatchannel.success.choose.components.log.options.advancements.value": "advancement",
+  "commands.chatchannel.success.choose.components.log.options.advancement.label": "Advancement Messages",
+  "commands.chatchannel.success.choose.components.log.options.advancement.description": "Send a message whenever a player completes an advancement.",
+  "commands.chatchannel.success.choose.components.log.options.advancement.value": "advancement",
 
   "commands.chatchannel.success.choose.components.log.options.death.label": "Death Messages",
-  "commands.chatchannel.success.choose.components.log.options.death.description": "Send a message every time a player dies.",
+  "commands.chatchannel.success.choose.components.log.options.death.description": "Send a message whenever a player dies.",
   "commands.chatchannel.success.choose.components.log.options.death.value": "death",
 
-  "commands.chatchannel.success.choose.components.log.options.commands.label": "Command Messages",
-  "commands.chatchannel.success.choose.components.log.options.commands.description": "Send a message every time a command is executed.",
-  "commands.chatchannel.success.choose.components.log.options.commands.value": "command",
+  "commands.chatchannel.success.choose.components.log.options.player_command.label": "Player Command Messages",
+  "commands.chatchannel.success.choose.components.log.options.player_command.description": "Send a message whenever a command is sent by a player.",
+  "commands.chatchannel.success.choose.components.log.options.player_command.value": "player_command",
+
+  "commands.chatchannel.success.choose.components.log.options.console_command.label": "Console Command Messages",
+  "commands.chatchannel.success.choose.components.log.options.console_command.description": "Send a message whenever a command is sent by the console.",
+  "commands.chatchannel.success.choose.components.log.options.console_command.value": "console_command",
+
+  "commands.chatchannel.success.choose.components.log.options.block_command.label": "Block Command Messages",
+  "commands.chatchannel.success.choose.components.log.options.block_command.description": "Send a message whenever a command block is executed.",
+  "commands.chatchannel.success.choose.components.log.options.block_command.value": "block_command",
 
   "commands.chatchannel.success.choose.components.log.options.start.label": "Startup Messages",
-  "commands.chatchannel.success.choose.components.log.options.start.description": "Send a message every time the server starts up.",
+  "commands.chatchannel.success.choose.components.log.options.start.description": "Send a message whenever the server starts up.",
   "commands.chatchannel.success.choose.components.log.options.start.value": "start",
 
   "commands.chatchannel.success.choose.components.log.options.close.label": "Shutdown Messages",
-  "commands.chatchannel.success.choose.components.log.options.close.description": "Send a message every time the server shuts down.",
+  "commands.chatchannel.success.choose.components.log.options.close.description": "Send a message whenever the server shuts down.",
   "commands.chatchannel.success.choose.components.log.options.close.value": "close",
 
 
-  "commands.chatchannel.success.final.title": "Set Chat Channel",
-  "commands.chatchannel.success.final.description": "%emoji_success% Successfully set the chat channel",
-  "commands.chatchannel.success.final.console": "Successfully set chat channel",
+  "commands.chatchannel.success.add.title": "Added Chat Channel",
+  "commands.chatchannel.success.add.description": "%emoji_success% Successfully added the chat channel",
+  "commands.chatchannel.success.add.console": "Successfully added chat channel",
+
+  "commands.chatchannel.success.remove.title": "Remove Chat Channel",
+  "commands.chatchannel.success.remove.description": "%emoji_success% Successfully removed the chat channel",
+  "commands.chatchannel.success.remove.console": "Successfully removed chat channel",
 
 
 
@@ -683,6 +708,10 @@
   "api.plugin.warnings.not_connected.description": "%emoji_warning% Your server is not connected with the plugin.",
   "api.plugin.warnings.not_connected.console": "Not connected",
 
+  "api.plugin.warnings.channel_not_added.title": "Channel Not Added",
+  "api.plugin.warnings.channel_not_added.description": "%emoji_warning% The specified channel was never added.",
+  "api.plugin.warnings.channel_not_added.console": "Channel not added",
+
   "api.plugin.errors.no_response.title": "Plugin Does Not Respond",
   "api.plugin.errors.no_response.description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
@@ -726,10 +755,10 @@
   "api.plugin.success.messages.join.description": "%emoji_join% **%username%** joined the game",
   "api.plugin.success.messages.join.color": "YELLOW",
 
-  "api.plugin.success.messages.leave.author.name": "%username%",
-  "api.plugin.success.messages.leave.author.icon_url": "%author_url%",
-  "api.plugin.success.messages.leave.description": "%emoji_leave% **%username%** left the game",
-  "api.plugin.success.messages.leave.color": "YELLOW",
+  "api.plugin.success.messages.quit.author.name": "%username%",
+  "api.plugin.success.messages.quit.author.icon_url": "%author_url%",
+  "api.plugin.success.messages.quit.description": "%emoji_leave% **%username%** left the game",
+  "api.plugin.success.messages.quit.color": "YELLOW",
 
   "api.plugin.success.messages.advancement.author.name": "%username%",
   "api.plugin.success.messages.advancement.author.icon_url": "%author_url%",
@@ -741,10 +770,20 @@
   "api.plugin.success.messages.death.description": "%emoji_death% %message%",
   "api.plugin.success.messages.death.color": "DARK_PURPLE",
 
-  "api.plugin.success.messages.command.author.name": "%username%",
-  "api.plugin.success.messages.command.author.icon_url": "%author_url%",
-  "api.plugin.success.messages.command.description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
-  "api.plugin.success.messages.command.color": "DARK_GOLD",
+  "api.plugin.success.messages.player_command.author.name": "%username%",
+  "api.plugin.success.messages.player_command.author.icon_url": "%author_url%",
+  "api.plugin.success.messages.player_command.description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+  "api.plugin.success.messages.player_command.color": "DARK_GOLD",
+
+  "api.plugin.success.messages.console_command.author.name": "%username%",
+  "api.plugin.success.messages.console_command.author.icon_url": "%author_url%",
+  "api.plugin.success.messages.console_command.description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+  "api.plugin.success.messages.console_command.color": "DARK_GOLD",
+
+  "api.plugin.success.messages.block_command.author.name": "%username%",
+  "api.plugin.success.messages.block_command.author.icon_url": "%author_url%",
+  "api.plugin.success.messages.block_command.description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
+  "api.plugin.success.messages.block_command.color": "DARK_GOLD",
 
   "api.plugin.success.messages.start.description": "%emoji_startup% **%message%**",
   "api.plugin.success.messages.start.color": "GREEN",
@@ -1099,16 +1138,37 @@
 
 
   "data.chatchannel.name": "chatchannel",
-  "data.chatchannel.long_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
-  "data.chatchannel.short_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
-  "data.chatchannel.usage": "/chatchannel <channel>",
-  "data.chatchannel.example": "/chatchannel #smp-chat",
+  "data.chatchannel.long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+  "data.chatchannel.short_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+  "data.chatchannel.usage": "/chatchannel add/remove <channel> <useWebhooks>\n/chatchannel",
+  "data.chatchannel.example": "/chatchannel add #smp-chat",
 
-  "data.chatchannel.options.channel.type": "CHANNEL",
-  "data.chatchannel.options.channel.name": "channel",
-  "data.chatchannel.options.channel.description": "Set the channel.",
-  "data.chatchannel.options.channel.required": true,
-  "data.chatchannel.options.channel.channel_types": [0, 5, 10, 11, 12],
+
+  "data.chatchannel.options.add.type": "SUBCOMMAND",
+  "data.chatchannel.options.add.name": "add",
+  "data.chatchannel.options.add.description": "Set a chatchannel.",
+
+  "data.chatchannel.options.add.options.channel.type": "CHANNEL",
+  "data.chatchannel.options.add.options.channel.name": "channel",
+  "data.chatchannel.options.add.options.channel.description": "Set the channel.",
+  "data.chatchannel.options.add.options.channel.required": true,
+  "data.chatchannel.options.add.options.channel.channel_types": [0, 5, 10, 11, 12],
+
+  "data.chatchannel.options.add.options.webhooks.type": "BOOLEAN",
+  "data.chatchannel.options.add.options.webhooks.name": "webhooks",
+  "data.chatchannel.options.add.options.webhooks.description": "Enable webhook mode for chat messages.",
+  "data.chatchannel.options.add.options.webhooks.required": false,
+
+
+  "data.chatchannel.options.remove.type": "SUBCOMMAND",
+  "data.chatchannel.options.remove.name": "remove",
+  "data.chatchannel.options.remove.description": "Remove an existing chatchannel.",
+
+  "data.chatchannel.options.remove.options.channel.type": "CHANNEL",
+  "data.chatchannel.options.remove.options.channel.name": "channel",
+  "data.chatchannel.options.remove.options.channel.description": "Set the channel.",
+  "data.chatchannel.options.remove.options.channel.required": true,
+  "data.chatchannel.options.remove.options.channel.channel_types": [0, 5, 10, 11, 12],
 
 
 

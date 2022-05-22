@@ -9,6 +9,7 @@
     "leave": "<:leave:905924638100557865>",
     "death": "<:death:905924668735770674>",
     "command": "<a:pinging:891202470833946635>",
+    "command_block": "<:command_block:976452589166166037>",
     "startup": ":green_circle:",
     "shutdown": ":red_circle:",
     "main": ":label:",
@@ -518,6 +519,16 @@
           "description": "%emoji_no_entry% This command can only be used by admins.",
           "console": "No admin permission"
         },
+        "no_method": {
+          "title": "No Method Specified",
+          "description": "%emoji_warning% Please specify a method (`add` or `remove`).",
+          "console": "No method specified"
+        },
+        "invalid_method": {
+          "title": "Invalid Method Specified",
+          "description": "%emoji_warning% You can only specify `add` or `remove`.",
+          "console": "Invalid method specified"
+        },
         "no_channel": {
           "title": "No Channel Specified",
           "description": "%emoji_warning% Please mention a channel.",
@@ -527,6 +538,11 @@
           "title": "No Text Channel Specified",
           "description": "%emoji_warning% Please mention a text, thread or news channel.",
           "console": "No text channel specified"
+        },
+        "channel_not_added": {
+          "title": "Channel Not Added",
+          "description": "%emoji_warning% The specified channel was never added.",
+          "console": "Channel not added"
         },
         "not_author": {
           "title": "No Permission",
@@ -543,8 +559,8 @@
       },
       "errors": {
         "could_not_write_file": {
-          "title": "Could Not Save Channel",
-          "description": "%emoji_error% Could not save channel. Please try again.",
+          "title": "Could Not Save Channels",
+          "description": "%emoji_error% Could not save channels. Please try again.",
           "console": "Could not write file"
         }
       },
@@ -562,52 +578,67 @@
               "options": {
                 "chat": {
                   "label": "Chat Messages",
-                  "description": "Send a message every time a player chats.",
+                  "description": "Send a message whenever a player chats.",
                   "value": "chat"
                 },
                 "join": {
                   "label": "Join Messages",
-                  "description": "Send a message every time a player joins the server.",
+                  "description": "Send a message whenever a player joins the server.",
                   "value": "join"
                 },
                 "quit": {
                   "label": "Quit Messages",
-                  "description": "Send a message every time a player leaves the server.",
+                  "description": "Send a message whenever a player leaves the server.",
                   "value": "quit"
                 },
-                "advancements": {
+                "advancement": {
                   "label": "Advancement Messages",
-                  "description": "Send a message every time a player completes an advancement.",
+                  "description": "Send a message whenever a player completes an advancement.",
                   "value": "advancement"
                 },
                 "death": {
                   "label": "Death Messages",
-                  "description": "Send a message every time a player dies.",
+                  "description": "Send a message whenever a player dies.",
                   "value": "death"
                 },
-                "commands": {
-                  "label": "Command Messages",
-                  "description": "Send a message every time a command is executed.",
-                  "value": "command"
+                "player_command": {
+                  "label": "Player Command Messages",
+                  "description": "Send a message whenever a command is sent by a player.",
+                  "value": "player_command"
+                },
+                "console_command": {
+                  "label": "Console Command Messages",
+                  "description": "Send a message whenever a command is sent by the console.",
+                  "value": "console_command"
+                },
+                "block_command": {
+                  "label": "Block Command Messages",
+                  "description": "Send a message whenever a command block is executed.",
+                  "value": "block_command"
                 },
                 "start": {
                   "label": "Startup Messages",
-                  "description": "Send a message every time the server starts up.",
+                  "description": "Send a message whenever the server starts up.",
                   "value": "start"
                 },
                 "close": {
                   "label": "Shutdown Messages",
-                  "description": "Send a message every time the server shuts down.",
+                  "description": "Send a message whenever the server shuts down.",
                   "value": "close"
                 }
               }
             }
           }
         },
-        "final": {
-          "title": "Set Chat Channel",
-          "description": "%emoji_success% Successfully set the chat channel",
-          "console": "Successfully set chat channel"
+        "add": {
+          "title": "Added Chat Channel",
+          "description": "%emoji_success% Successfully added the chat channel",
+          "console": "Successfully added chat channel"
+        },
+        "remove": {
+          "title": "Remove Chat Channel",
+          "description": "%emoji_success% Successfully removed the chat channel",
+          "console": "Successfully removed chat channel"
         }
       }
     },
@@ -987,6 +1018,11 @@
           "title": "Not Connected",
           "description": "%emoji_warning% Your server is not connected with the plugin.",
           "console": "Not connected"
+        },
+        "channel_not_added": {
+          "title": "Channel Not Added",
+          "description": "%emoji_warning% The specified channel was never added.",
+          "console": "Channel not added"
         }
       },
       "errors": {
@@ -1049,7 +1085,7 @@
             "description": "%emoji_join% **%username%** joined the game",
             "color": "YELLOW"
           },
-          "leave": {
+          "quit": {
             "author": {
               "name": "%username%",
               "icon_url": "%author_url%"
@@ -1073,12 +1109,28 @@
             "description": "%emoji_death% %message%",
             "color": "DARK_PURPLE"
           },
-          "command": {
+          "player_command": {
             "author": {
               "name": "%username%",
               "icon_url": "%author_url%"
             },
             "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+            "color": "DARK_GOLD"
+          },
+          "console_command": {
+            "author": {
+              "name": "%username%",
+              "icon_url": "%author_url%"
+            },
+            "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+            "color": "DARK_GOLD"
+          },
+          "block_command": {
+            "author": {
+              "name": "%username%",
+              "icon_url": "%author_url%"
+            },
+            "description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
             "color": "DARK_GOLD"
           },
           "start": {
@@ -1531,23 +1583,56 @@
     },
     "chatchannel": {
       "name": "chatchannel",
-      "long_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
-      "short_description": "Setup a channel in which the bot will send minecraft chat messages and logs.",
-      "usage": "/chatchannel <channel>",
-      "example": "/chatchannel #smp-chat",
+      "long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+      "short_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+      "usage": "/chatchannel add/remove <channel> <useWebhooks>\n/chatchannel",
+      "example": "/chatchannel add #smp-chat",
       "options": {
-        "channel": {
-          "type": "CHANNEL",
-          "name": "channel",
-          "description": "Set the channel.",
-          "required": true,
-          "channel_types": [
-            0,
-            5,
-            10,
-            11,
-            12
-          ]
+        "add": {
+          "type": "SUBCOMMAND",
+          "name": "add",
+          "description": "Set a chatchannel.",
+          "options": {
+            "channel": {
+              "type": "CHANNEL",
+              "name": "channel",
+              "description": "Set the channel.",
+              "required": true,
+              "channel_types": [
+                0,
+                5,
+                10,
+                11,
+                12
+              ]
+            },
+            "webhooks": {
+              "type": "BOOLEAN",
+              "name": "webhooks",
+              "description": "Enable webhook mode for chat messages.",
+              "required": false
+            }
+          }
+        },
+        "remove": {
+          "type": "SUBCOMMAND",
+          "name": "remove",
+          "description": "Remove an existing chatchannel.",
+          "options": {
+            "channel": {
+              "type": "CHANNEL",
+              "name": "channel",
+              "description": "Set the channel.",
+              "required": true,
+              "channel_types": [
+                0,
+                5,
+                10,
+                11,
+                12
+              ]
+            }
+          }
         }
       }
     },
