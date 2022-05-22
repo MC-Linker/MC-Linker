@@ -89,11 +89,11 @@ client.on('messageCreate', async message => {
         return replyOptions(message, options);
     };
 
-    //check if in guild
-    if(!message.guildId) return message.respond(keys.main.warnings.not_in_guild);
-
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.success.ping);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+    //check if in guild
+    if(!message.guildId) return message.respond(keys.main.warnings.not_in_guild);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();

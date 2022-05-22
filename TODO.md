@@ -1,10 +1,10 @@
 # TODO SMP Bot
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
-+ Add option for webhook mode
-+ **Add `/advancements custom` autocomplete**
++ Add universal fetch method for plugin requests: `fetch(path, json, hash)`
++ Add webhook option for chatchannels
 + **Seperate command blocks, player and console commands in `/chatchannel`**
-+ Support for multiple chat channels/connections (also add `/chatchannel set/remove`)
++ **Support for multiple connections (also add `/chatchannel set/remove`)**
 + Add button to show enchantments and shulkerboxes in /inventory
 + Update stats autocomplete with minecraft-data
 + Combine sftp.js and ftp.js with `ftp-sftp` npm
