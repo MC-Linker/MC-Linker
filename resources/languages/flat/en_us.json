@@ -716,6 +716,10 @@
   "api.plugin.errors.no_response.description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
 
+  "api.plugin.errors.could_not_add_webhook.title": "Could Not Add Webhook",
+  "api.plugin.errors.could_not_add_webhook.description": "%emoji_error% The chatchannel webhook got deleted for an unknown reason and could not be re-added.",
+  "api.plugin.errors.could_not_add_webhook.console": "Could not re-add webhook",
+
   "api.plugin.errors.could_not_save_file.title": "Could Not Save Connection",
   "api.plugin.errors.could_not_save_file.description": "%emoji_error% Could not download file. Please try again.",
   "api.plugin.errors.could_not_save_file.console": "Could not save file [%path%] %error%",
