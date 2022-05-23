@@ -76,7 +76,42 @@ async function loadExpress(client) {
                 }
 
                 //Rename webhook if necessary
-                const webhook = allWebhooks.get(channel.webhook);
+                let webhook = allWebhooks.get(channel.webhook);
+
+                //Create new webhook if old one doesn't exist
+                if(!webhook) {
+                    if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(player, { reason: "ChatChannel to Minecraft", avatar: authorURL });
+                    else webhook = await discordChannel.createWebhook(player, { reason: "ChatChannel to Minecraft", avatar: authorURL });
+
+                    //Fake interaction
+                    discordChannel.respond = () => discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
+
+                    const regChannel = await registerChannel(ip, guildId, channel.id, channel.types, webhook.id, discordChannel);
+                    if(!regChannel) {
+                        webhook.delete();
+                        return;
+                    }
+
+                    const pluginJson = {
+                        "ip": regChannel.ip,
+                        "version": regChannel.version.split('.')[1],
+                        "path": regChannel.path,
+                        "hash": regChannel.hash,
+                        "guild": regChannel.guild,
+                        "chat": true,
+                        "channels": regChannel.channels,
+                        "protocol": "plugin"
+                    };
+
+                    fs.outputJson(`./serverdata/connections/${guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {
+                        if(err) {
+                            webhook.delete();
+                            discordChannel.respond(keys.commands.chatchannel.errors.could_not_write_file);
+                        }
+                    });
+                }
+
+                //Edit webhook if name doesnt match
                 if (webhook.name !== player) {
                     await webhook.edit({
                         name: player,
@@ -427,7 +462,7 @@ function registerChannel(ip, guildId, channelId, types, webhookId, message) {
                 if(channel.webhook) {
                     const guild = await message.client.guilds.cache.get(guildId);
                     let allWebhooks = await guild.fetchWebhooks();
-                    allWebhooks.get(channel.webhook).delete();
+                    allWebhooks.get(channel.webhook)?.delete();
                 }
 
                 conn.channels.splice(channelIndex, 1);

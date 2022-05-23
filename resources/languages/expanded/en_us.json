@@ -1031,6 +1031,11 @@
           "description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
           "console": "Plugin does not respond"
         },
+        "could_not_add_webhook": {
+          "title": "Could Not Add Webhook",
+          "description": "%emoji_error% The chatchannel webhook got deleted for an unknown reason and could not be re-added.",
+          "console": "Could not re-add webhook"
+        },
         "could_not_save_file": {
           "title": "Could Not Save Connection",
           "description": "%emoji_error% Could not download file. Please try again.",
