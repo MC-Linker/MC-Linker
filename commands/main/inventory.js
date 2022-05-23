@@ -133,7 +133,7 @@ async function execute(message, args) {
                     ctx.drawImage(itemImg, 0, 0, 80, 80, slotDims[0], slotDims[1], 32, 32);
                 } catch (err) {
                     //Draw name
-                    console.log(addPh(keys.commands.inventory.errors.no_image, { "item_name": itemImgName }));
+                    console.log(addPh(keys.commands.inventory.errors.no_image.console, { "item_name": itemImgName }));
                     ctx.font = '6px Minecraft'; ctx.fillStyle = '#000000';
                     ctx.fillText(itemImgName, slotDims[0], slotDims[1] + 16);
                 }
