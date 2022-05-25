@@ -111,7 +111,7 @@
             },
             "moderation": {
               "title": "%emoji_moderation% Moderation %emoji_moderation%",
-              "content": "Moderation commands such as `/ban` or `/unban`."
+              "content": "Moderation commands such as `/ban` or `/op`."
             },
             "other": {
               "title": "%emoji_other_1% Other %emoji_other_2%",
@@ -402,6 +402,30 @@
         "color": "ORANGE"
       }
     },
+    "deop": {
+      "warnings": {
+        "no_permission": {
+          "title": "No Permission",
+          "description": "%emoji_no_entry% This command can only be used by admins.",
+          "console": "No deop permission"
+        },
+        "no_username": {
+          "title": "No Username Specified",
+          "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+          "console": "No username specified"
+        },
+        "response_warning": {
+          "title": "DeOP Player",
+          "description": "DeOPed player **%username%**\n%response%",
+          "color": "BLUE"
+        }
+      },
+      "success": {
+        "title": "DeOP Player",
+        "description": "%emoji_success% Successfully DeOPed player **%username%**",
+        "color": "BLUE"
+      }
+    },
     "kick": {
       "warnings": {
         "no_permission": {
@@ -426,6 +450,30 @@
         "color": "ORANGE"
       }
     },
+    "op": {
+      "warnings": {
+        "no_permission": {
+          "title": "No Permission",
+          "description": "%emoji_no_entry% This command can only be used by admins.",
+          "console": "No op permission"
+        },
+        "no_username": {
+          "title": "No Username Specified",
+          "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+          "console": "No username specified"
+        },
+        "response_warning": {
+          "title": "OP Player",
+          "description": "OPed player **%username%**\n%response%",
+          "color": "BLUE"
+        }
+      },
+      "success": {
+        "title": "OP Player",
+        "description": "%emoji_success% Successfully OPed player **%username%**",
+        "color": "BLUE"
+      }
+    },
     "unban": {
       "warnings": {
         "no_permission": {
@@ -448,6 +496,62 @@
         "title": "Unban Player",
         "description": "%emoji_success% Successfully unbanned player **%username%**",
         "color": "BLUE"
+      }
+    },
+    "whitelist": {
+      "warnings": {
+        "no_permission": {
+          "title": "No Permission",
+          "description": "%emoji_no_entry% This command can only be used by admins!",
+          "console": "No whitelist permission"
+        },
+        "no_username": {
+          "title": "No Username Specified",
+          "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+          "console": "No username specified"
+        },
+        "add_warning": {
+          "title": "Add player",
+          "description": "Added player **%username%** to the whitelist.\n%response%",
+          "color": "BLUE"
+        },
+        "remove_warning": {
+          "title": "Remove player",
+          "description": "Removed player **%username%** from the whitelist.\n%response%",
+          "color": "ORANGE"
+        },
+        "enable_warning": {
+          "title": "Enable Whitelist",
+          "description": "Enabled the whitelist.\n%response%",
+          "color": "BLUE"
+        },
+        "disable_warning": {
+          "title": "Disable Whitelist",
+          "description": "Disabled the whitelist.\n%response%",
+          "color": "ORANGE"
+        }
+      },
+      "success": {
+        "add": {
+          "title": "Add player",
+          "description": "%emoji_success% Successfully added player **%username%** to the whitelist.",
+          "color": "BLUE"
+        },
+        "remove": {
+          "title": "Remove Player",
+          "description": "%emoji_success% Successfully removed player **%username%** from the whitelist",
+          "color": "ORANGE"
+        },
+        "enable": {
+          "title": "Enable Whitelist",
+          "description": "%emoji_success% Successfully enabled the whitelist.",
+          "color": "BLUE"
+        },
+        "disable": {
+          "title": "Disable Whitelist",
+          "description": "%emoji_success% Successfully disabled the whitelist.",
+          "color": "ORANGE"
+        }
       }
     },
     "loadingscreen": {
@@ -1532,6 +1636,21 @@
         }
       }
     },
+    "deop": {
+      "name": "deop",
+      "long_description": "DeOP players on the **minecraft-server**. Can only be used by admins.",
+      "short_description": "DeOP players on the minecraft-server.",
+      "usage": "/deop <@mention/username>",
+      "example": "/deop @Lianecx\n/deop CoolGuy",
+      "options": {
+        "user": {
+          "type": "STRING",
+          "name": "user",
+          "description": "Set the user you want to DeOP.",
+          "required": true
+        }
+      }
+    },
     "kick": {
       "name": "kick",
       "long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
@@ -1553,6 +1672,21 @@
         }
       }
     },
+    "op": {
+      "name": "op",
+      "long_description": "OP players on the **minecraft-server**. Can only be used by admins.",
+      "short_description": "OP players on the minecraft-server.",
+      "usage": "/op <@mention/username>",
+      "example": "/op @Lianecx\n/op CoolGuy",
+      "options": {
+        "user": {
+          "type": "STRING",
+          "name": "user",
+          "description": "Set the user you want to OP.",
+          "required": true
+        }
+      }
+    },
     "unban": {
       "name": "unban",
       "long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
@@ -1565,6 +1699,51 @@
           "name": "user",
           "description": "Set the user you want to unban.",
           "required": true
+        }
+      }
+    },
+    "whitelist": {
+      "name": "whitelist",
+      "long_description": "Manage the whitelist of the **minecraft-server**. Can only be used by administrators.",
+      "short_description": "Manage the whitelist of the minecraft-server.",
+      "usage": "/whitelist add/remove <@mention/username>\n/whitelist enable/disable",
+      "example": "/whitelist add @Lianecx\n/whitelist enable",
+      "options": {
+        "add": {
+          "type": "SUBCOMMAND",
+          "name": "add",
+          "description": "Add a player to the whitelist.",
+          "options": {
+            "user": {
+              "type": "STRING",
+              "name": "user",
+              "description": "Set the user you want to add to the whitelist.",
+              "required": true
+            }
+          }
+        },
+        "remove": {
+          "type": "SUBCOMMAND",
+          "name": "remove",
+          "description": "Remove a player from the whitelist.",
+          "options": {
+            "user": {
+              "type": "STRING",
+              "name": "user",
+              "description": "Set the user you want to remove from the whitelist.",
+              "required": true
+            }
+          }
+        },
+        "enable": {
+          "type": "SUBCOMMAND",
+          "name": "enable",
+          "description": "Enable the whitelist on the minecraft-server."
+        },
+        "disable": {
+          "type": "SUBCOMMAND",
+          "name": "disable",
+          "description": "Disable the whitelist on the minecraft-server."
         }
       }
     },
