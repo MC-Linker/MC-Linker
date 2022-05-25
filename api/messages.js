@@ -371,16 +371,20 @@ function addComponent(actionRow, key) {
     actionRow.addComponents(componentBuilder);
 }
 
-function getUserFromMention(client, mention) {
-    if(typeof mention !== 'string') return;
+function getUsersFromMention(client, mention) {
+    if(typeof mention !== 'string') return [];
 
-    const matches = mention.matchAll(Discord.MessageMentions.USERS_PATTERN).next().value;
-    if (!matches) return;
+    const matches = mention.matchAll(Discord.MessageMentions.USERS_PATTERN);
+    if (!matches) return [];
 
-    // matches[0] = entire mention
-    // matches[1] = Id
-    const id = matches[1];
-    return client.users.cache.get(id);
+    const userArray = [];
+    for (let match of matches) {
+        // match[0] = entire mention
+        // match[1] = Id
+        userArray.push(client.users.cache.get(match[1]));
+    }
+
+    return userArray;
 }
 
 function getArgs(client, interaction) {
@@ -396,7 +400,7 @@ function getArgs(client, interaction) {
 
     if(options._hoistedOptions[0]) {
         options._hoistedOptions.forEach(option => {
-            if(option.name === 'user' && option.type === 'STRING') args.push(getUserFromMention(client, option.value) ?? option.value);
+            if(option.name === 'user' && option.type === 'STRING') args.push(getUsersFromMention(client, option.value)?.[0] ?? option.value);
             else if(option.type === 'CHANNEL') args.push(option.channel);
             else args.push(option.value);
         });
@@ -405,4 +409,4 @@ function getArgs(client, interaction) {
     return args;
 }
 
-module.exports = { keys, ph, reply, replyOptions, addPh, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUserFromMention, getArgs };
+module.exports = { keys, ph, reply, replyOptions, addPh, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUsersFromMention, getArgs };
