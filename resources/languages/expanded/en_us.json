@@ -669,7 +669,7 @@
         },
         "channel_not_added": {
           "title": "Channel Not Added",
-          "description": "%emoji_warning% The specified channel was never added.",
+          "description": "%emoji_warning% The specified channel is not added.",
           "console": "Channel not added"
         },
         "not_author": {
@@ -1149,7 +1149,7 @@
         },
         "channel_not_added": {
           "title": "Channel Not Added",
-          "description": "%emoji_warning% The specified channel was never added.",
+          "description": "%emoji_warning% The specified channel is not added.",
           "console": "Channel not added"
         }
       },
@@ -1648,6 +1648,29 @@
           "name": "user",
           "description": "Set the user you want to deop.",
           "required": true
+        }
+      }
+    },
+    "command": {
+      "name": "command",
+      "long_description": "Execute any command on the **minecraft-server**.",
+      "short_description": "Execute any command on the **minecraft-server**.",
+      "usage": "/command <command-name> <arguments>",
+      "example": "/command gamemode creative Lianecx\n/command ",
+      "options": {
+        "command": {
+          "type": "STRING",
+          "name": "command",
+          "description": "Set the command name.",
+          "required": true,
+          "autocomplete": true
+        },
+        "args": {
+          "type": "STRING",
+          "name": "arguments",
+          "description": "Set the command arguments.",
+          "required": false,
+          "autocomplete": true
         }
       }
     },

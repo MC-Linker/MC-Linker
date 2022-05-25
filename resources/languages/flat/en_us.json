@@ -468,7 +468,7 @@
   "commands.chatchannel.warnings.no_text_channel.console": "No text channel specified",
 
   "commands.chatchannel.warnings.channel_not_added.title": "Channel Not Added",
-  "commands.chatchannel.warnings.channel_not_added.description": "%emoji_warning% The specified channel was never added.",
+  "commands.chatchannel.warnings.channel_not_added.description": "%emoji_warning% The specified channel is not added.",
   "commands.chatchannel.warnings.channel_not_added.console": "Channel not added",
 
   "commands.chatchannel.errors.could_not_write_file.title": "Could Not Save Channels",
@@ -805,7 +805,7 @@
   "api.plugin.warnings.not_connected.console": "Not connected",
 
   "api.plugin.warnings.channel_not_added.title": "Channel Not Added",
-  "api.plugin.warnings.channel_not_added.description": "%emoji_warning% The specified channel was never added.",
+  "api.plugin.warnings.channel_not_added.description": "%emoji_warning% The specified channel is not added.",
   "api.plugin.warnings.channel_not_added.console": "Channel not added",
 
   "api.plugin.errors.no_response.title": "Plugin Does Not Respond",
@@ -1180,6 +1180,26 @@
   "data.deop.options.user.name": "user",
   "data.deop.options.user.description": "Set the user you want to deop.",
   "data.deop.options.user.required": true,
+
+
+
+  "data.command.name": "command",
+  "data.command.long_description": "Execute any command on the **minecraft-server**.",
+  "data.command.short_description": "Execute any command on the **minecraft-server**.",
+  "data.command.usage": "/command <command-name> <arguments>",
+  "data.command.example": "/command gamemode creative Lianecx\n/command ",
+
+  "data.command.options.command.type": "STRING",
+  "data.command.options.command.name": "command",
+  "data.command.options.command.description": "Set the command name.",
+  "data.command.options.command.required": true,
+  "data.command.options.command.autocomplete": true,
+
+  "data.command.options.args.type": "STRING",
+  "data.command.options.args.name": "arguments",
+  "data.command.options.args.description": "Set the command arguments.",
+  "data.command.options.args.required": false,
+  "data.command.options.args.autocomplete": true,
 
 
 

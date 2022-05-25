@@ -14,7 +14,7 @@ const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
 const settings = require('./api/settings');
-const { getUserFromMention, getArgs, addPh, keys, reply, replyOptions, ph } = require('./api/messages');
+const { getUsersFromMention, getArgs, addPh, keys, reply, replyOptions, ph } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
@@ -137,17 +137,13 @@ client.on('interactionCreate', async interaction => {
     if(interaction.isCommand()) {
 
         //Making interaction compatible with normal commands
-        const user = getUserFromMention(client, interaction.options.getString('user'));
-        if(user) {
-            interaction.mentions = {
-                users: new Discord.Collection().set(user.id, user)
-            }
-        } else {
-            interaction.mentions = {
-                users: new Discord.Collection()
-            };
-        }
-        interaction.attachments = [];
+        interaction.mentions = {
+            users: new Discord.Collection(),
+            attachments: new Discord.Collection(),
+        };
+
+        const users = getUsersFromMention(client, interaction.options.getString('user'));
+        users.forEach(user => interaction.mentions.users.set(user.id, user));
 
         const args = getArgs(client, interaction);
 
