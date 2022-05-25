@@ -2,9 +2,7 @@
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
-+ Add webhook option for chatchannels
-+ **Seperate command blocks, player and console commands in `/chatchannel`**
-+ **Support for multiple connections (also add `/chatchannel set/remove`)**
++ **Support for multiple connections**
 + Add button to show enchantments and shulkerboxes in /inventory
 + Update stats autocomplete with minecraft-data
 + Combine sftp.js and ftp.js with `ftp-sftp` npm
@@ -23,13 +21,10 @@
 + `/datapacks`
 + `/plugins`
 + `/usercache`
-+ `/op (list)`
-+ `/whitelist (list)`
-+ `/ban list`
++ `/op & /ban & /whitelist ^ /connect list`
 + `/shownbt EnderItems/...`
 + `/gamerule`
 + `/seed`
-+ `/connect list` (lists all connections in the server)
 + `/restart` &` /stop` & `/start`
 + `/private on/off`
 + `/server-info`
@@ -43,4 +38,3 @@
 
 # TODO Plugin
 + `/dm` (dm discord user)
-+ Make DISCORD prefix configurable
