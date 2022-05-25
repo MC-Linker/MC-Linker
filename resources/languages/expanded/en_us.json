@@ -402,6 +402,30 @@
         "color": "ORANGE"
       }
     },
+    "kick": {
+      "warnings": {
+        "no_permission": {
+          "title": "No Permission",
+          "description": "%emoji_no_entry% This command can only be used with the `Kick Member` permission!",
+          "console": "No kick permission"
+        },
+        "no_username": {
+          "title": "No Username Specified",
+          "description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+          "console": "No username specified"
+        },
+        "response_warning": {
+          "title": "Kick Player",
+          "description": "%emoji_warning% Kicked player **%username%**: `%reason%`\n%response%",
+          "color": "ORANGE"
+        }
+      },
+      "success": {
+        "title": "Kick Player",
+        "description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`",
+        "color": "ORANGE"
+      }
+    },
     "unban": {
       "warnings": {
         "no_permission": {
@@ -1491,7 +1515,7 @@
       "name": "ban",
       "long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
       "short_description": "Ban a player from the minecraft server.",
-      "usage": "/ban <@mention/username>",
+      "usage": "/ban <@mention/username> <reason>",
       "example": "/ban @Lianecx\n/ban cheaterGuy",
       "options": {
         "user": {
@@ -1504,6 +1528,27 @@
           "type": "STRING",
           "name": "reason",
           "description": "Set a reason for the ban.",
+          "required": false
+        }
+      }
+    },
+    "kick": {
+      "name": "kick",
+      "long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
+      "short_description": "Kick a player from the minecraft server.",
+      "usage": "/kick <@mention/username> <reason>",
+      "example": "/kick @Lianecx\n/kick player",
+      "options": {
+        "user": {
+          "type": "STRING",
+          "name": "user",
+          "description": "Set the user you want to kick.",
+          "required": true
+        },
+        "reason": {
+          "type": "STRING",
+          "name": "reason",
+          "description": "Set a reason for the kick.",
           "required": false
         }
       }

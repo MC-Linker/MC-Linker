@@ -272,6 +272,24 @@
 
 
 
+  "commands.kick.warnings.no_permission.title": "No Permission",
+  "commands.kick.warnings.no_permission.description": "%emoji_no_entry% This command can only be used with the `Kick Member` permission!",
+  "commands.kick.warnings.no_permission.console": "No kick permission",
+
+  "commands.kick.warnings.no_username.title": "No Username Specified",
+  "commands.kick.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "commands.kick.warnings.no_username.console": "No username specified",
+
+  "commands.kick.warnings.response_warning.title": "Kick Player",
+  "commands.kick.warnings.response_warning.description": "%emoji_warning% Kicked player **%username%**: `%reason%`\n%response%",
+  "commands.kick.warnings.response_warning.color": "ORANGE",
+
+  "commands.kick.success.title": "Kick Player",
+  "commands.kick.success.description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`",
+  "commands.kick.success.color": "ORANGE",
+
+
+
   "commands.unban.warnings.no_permission.title": "No Permission",
   "commands.unban.warnings.no_permission.description": "%emoji_no_entry% This command can only be used with the `Ban Member` permission!",
   "commands.unban.warnings.no_permission.console": "No ban permission",
@@ -1059,7 +1077,7 @@
   "data.ban.name": "ban",
   "data.ban.long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
   "data.ban.short_description": "Ban a player from the minecraft server.",
-  "data.ban.usage": "/ban <@mention/username>",
+  "data.ban.usage": "/ban <@mention/username> <reason>",
   "data.ban.example": "/ban @Lianecx\n/ban cheaterGuy",
 
   "data.ban.options.user.type": "STRING",
@@ -1071,6 +1089,24 @@
   "data.ban.options.reason.name": "reason",
   "data.ban.options.reason.description": "Set a reason for the ban.",
   "data.ban.options.reason.required": false,
+
+
+
+  "data.kick.name": "kick",
+  "data.kick.long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
+  "data.kick.short_description": "Kick a player from the minecraft server.",
+  "data.kick.usage": "/kick <@mention/username> <reason>",
+  "data.kick.example": "/kick @Lianecx\n/kick player",
+
+  "data.kick.options.user.type": "STRING",
+  "data.kick.options.user.name": "user",
+  "data.kick.options.user.description": "Set the user you want to kick.",
+  "data.kick.options.user.required": true,
+
+  "data.kick.options.reason.type": "STRING",
+  "data.kick.options.reason.name": "reason",
+  "data.kick.options.reason.description": "Set a reason for the kick.",
+  "data.kick.options.reason.required": false,
 
 
 

@@ -5,7 +5,7 @@ const { keys } = require('../../api/messages');
 
 async function execute(message, args) {
 	const user = message.mentions.users.first() ?? args[0];
-	args.shift();
+	args.shift(); // Shift user
 	let reason = args[0] ? args.join(' ') : 'Banned by an operator.';
 
 	if (!message.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) {
