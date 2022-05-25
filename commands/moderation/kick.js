@@ -22,7 +22,6 @@ async function execute(message, args) {
     const resp = await plugin.execute(`kick ${mcUsername} ${reason}`, message);
     if(!resp) return;
 
-
     if(resp.status === 206) message.respond(keys.commands.kick.warnings.response_warning, { username: user, reason, "response": resp.message });
     else message.respond(keys.commands.kick.success, { username: user, reason });
 }
