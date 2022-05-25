@@ -415,14 +415,14 @@
           "console": "No username specified"
         },
         "response_warning": {
-          "title": "DeOP Player",
-          "description": "DeOPed player **%username%**\n%response%",
+          "title": "Deop Player",
+          "description": "Deoped player **%username%**\n%response%",
           "color": "BLUE"
         }
       },
       "success": {
-        "title": "DeOP Player",
-        "description": "%emoji_success% Successfully DeOPed player **%username%**",
+        "title": "Deop Player",
+        "description": "%emoji_success% Successfully Deoped player **%username%**",
         "color": "BLUE"
       }
     },
@@ -464,13 +464,13 @@
         },
         "response_warning": {
           "title": "OP Player",
-          "description": "OPed player **%username%**\n%response%",
+          "description": "Oped player **%username%**\n%response%",
           "color": "BLUE"
         }
       },
       "success": {
         "title": "OP Player",
-        "description": "%emoji_success% Successfully OPed player **%username%**",
+        "description": "%emoji_success% Successfully oped player **%username%**",
         "color": "BLUE"
       }
     },
@@ -1638,15 +1638,15 @@
     },
     "deop": {
       "name": "deop",
-      "long_description": "DeOP players on the **minecraft-server**. Can only be used by admins.",
-      "short_description": "DeOP players on the minecraft-server.",
+      "long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
+      "short_description": "Deop players on the minecraft-server.",
       "usage": "/deop <@mention/username>",
       "example": "/deop @Lianecx\n/deop CoolGuy",
       "options": {
         "user": {
           "type": "STRING",
           "name": "user",
-          "description": "Set the user you want to DeOP.",
+          "description": "Set the user you want to deop.",
           "required": true
         }
       }
