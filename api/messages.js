@@ -216,13 +216,13 @@ function getCommandBuilder(key) {
     if(!key.options) return builder;
 
     for (const option of Object.values(key.options)) {
-        addEmbedOption(builder, option);
+        addSlashCommandOption(builder, option);
     }
 
     return builder;
 }
 
-function addEmbedOption(builder, key) {
+function addSlashCommandOption(builder, key) {
     if(!key.type || !key.name || !key.description) return;
 
     let optionBuilder;
@@ -326,11 +326,20 @@ function addEmbedOption(builder, key) {
 
             if(key.options) {
                 for (const option of Object.values(key.options)) {
-                    addEmbedOption(optionBuilder, option);
+                    addSlashCommandOption(optionBuilder, option);
                 }
             }
 
             builder.addSubcommand(optionBuilder);
+            break;
+        case 'ATTACHMENT':
+            optionBuilder = new Builders.SlashCommandAttachmentOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false);
+
+            builder.addAttachmentOption(optionBuilder);
             break;
     }
 }
@@ -391,20 +400,19 @@ function getArgs(client, interaction) {
     if(!(interaction instanceof Discord.CommandInteraction)) return [];
 
     const args = [];
-    let options = interaction.options;
 
-    //Push Subcommand group
-    if(options._group) args.push(options._group);
-    //Push Subcommand
-    if(options._subcommand) args.push(options._subcommand);
-
-    if(options._hoistedOptions[0]) {
-        options._hoistedOptions.forEach(option => {
-            if(option.name === 'user' && option.type === 'STRING') args.push(getUsersFromMention(client, option.value)?.[0] ?? option.value);
-            else if(option.type === 'CHANNEL') args.push(option.channel);
-            else args.push(option.value);
-        });
+    function addArgs(option) {
+        if(option.type === 'SUB_COMMAND_GROUP' || option.type === 'SUB_COMMAND') {
+            args.push(option.name);
+            option.options.forEach(opt => addArgs(opt));
+        } else if(option.type === 'STRING' && option.name === 'user') args.push(getUsersFromMention(client, option.value)?.[0] ?? option.value);
+        else if(option.type === 'CHANNEL') args.push(option.channel);
+        else if(option.type === 'ROLE') args.push(option.role);
+        else if(option.type === 'ATTACHMENT') args.push(option.attachment);
+        else args.push(option.value);
     }
+
+    interaction.options.data.forEach(option => addArgs(option));
 
     return args;
 }

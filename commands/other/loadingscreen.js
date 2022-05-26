@@ -5,10 +5,10 @@ const { keys, getEmbedBuilder, ph } = require('../../api/messages');
 
 async function execute(message, args) {
 	//get URL of image
-	let URL;
-	if (message.attachments.size) URL = message.attachments.first().url;
-	else if (message.mentions.users.size) URL = message.mentions.users.first().displayAvatarURL({ format: 'png' });
-	else if (args[0]) URL = args[0];
+	let url;
+	if (message.attachments.size) url = message.attachments.first().url;
+	else if (message.mentions.users.size) url = message.mentions.users.first().displayAvatarURL({ format: 'png' });
+	else if (args[0]) url = args[0];
 	else {
 		message.respond(keys.commands.loadingscreen.warnings.no_image);
 		return;
@@ -17,7 +17,7 @@ async function execute(message, args) {
 	//get imageSize
 	let imgSize;
 	try {
-		imgSize = await probe(URL);
+		imgSize = await probe(url);
 	} catch (err) {
 		message.respond(keys.commands.loadingscreen.errors.could_not_get_size);
 		return;
@@ -32,14 +32,14 @@ async function execute(message, args) {
 	const context = loadCanvas.getContext('2d');
 	let img;
 	try {
-		img = await Canvas.loadImage(URL);
+		img = await Canvas.loadImage(url);
 	} catch(err) {
 		message.respond(keys.commands.loadingscreen.errors.could_not_load);
 		return;
 	}
 
 	//draw half of image top right
-	context.drawImage(img, 0, 0, imgSize.width/2, imgSize.height, loadCanvas.width-(imgSize.width/2), 0, imgSize.width/2, imgSize.height);
+	context.drawImage(img, 0, 0, imgSize.width/2, imgSize.height, loadCanvas.width-imgSize.width/2, 0, imgSize.width/2, imgSize.height);
 
 	//draw 2nd half bottom left
 	context.drawImage(img, imgSize.width/2, 0, imgSize.width/2, imgSize.height, 0, imgSize.height, imgSize.width/2, imgSize.height);

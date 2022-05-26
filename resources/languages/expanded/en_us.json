@@ -1654,7 +1654,7 @@
     "command": {
       "name": "command",
       "long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
-      "short_description": "Execute any command on the **minecraft-server**.",
+      "short_description": "Execute any command on the minecraft-server.",
       "usage": "/command <command-name> [arguments]",
       "example": "/command gamemode creative Lianecx\n/command give Lianecx golden_apple",
       "options": {
@@ -1665,10 +1665,66 @@
           "required": true,
           "autocomplete": true
         },
-        "args": {
+        "arg1": {
           "type": "STRING",
           "name": "argument1",
           "description": "Set the first command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        "arg2": {
+          "type": "STRING",
+          "name": "argument2",
+          "description": "Set the second command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        "arg3": {
+          "type": "STRING",
+          "name": "argument3",
+          "description": "Set the third command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        "arg4": {
+          "type": "STRING",
+          "name": "argument4",
+          "description": "Set the fourth command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        "arg5": {
+          "type": "STRING",
+          "name": "argument5",
+          "description": "Set the fifth command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        "arg6": {
+          "type": "STRING",
+          "name": "argument6",
+          "description": "Set the sixth command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        "arg7": {
+          "type": "STRING",
+          "name": "argument7",
+          "description": "Set the seventh command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        "arg8": {
+          "type": "STRING",
+          "name": "argument8",
+          "description": "Set the eighth command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        "arg9": {
+          "type": "STRING",
+          "name": "argument9",
+          "description": "Set the ninth command argument.",
           "required": false,
           "autocomplete": true
         }
@@ -1773,14 +1829,14 @@
     "loadingscreen": {
       "name": "loadingscreen",
       "long_description": "Convert an attachment, image-link or @mention to a minecraft loading-screen.",
-      "short_description": "Convert an image-link to a minecraft loading-screen.",
-      "usage": "/loadingscreen <attachment/imageLink/@mention>",
-      "example": "/loadingscreen @Lianecx\n/loadingscreen https://picsum.photos/200/200",
+      "short_description": "Convert an image attachment to a minecraft loading-screen.",
+      "usage": "/loadingscreen <attachment|image-link|@mention>",
+      "example": "/loadingscreen @Lianecx\n/loadingscreen attachment.png",
       "options": {
-        "url": {
-          "type": "STRING",
-          "name": "url",
-          "description": "Set the URL of the image you want to convert.",
+        "attachment": {
+          "type": "ATTACHMENT",
+          "name": "attachment",
+          "description": "Set the image attachment you want to convert.",
           "required": true
         }
       }

@@ -1185,7 +1185,7 @@
 
   "data.command.name": "command",
   "data.command.long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
-  "data.command.short_description": "Execute any command on the **minecraft-server**.",
+  "data.command.short_description": "Execute any command on the minecraft-server.",
   "data.command.usage": "/command <command-name> [arguments]",
   "data.command.example": "/command gamemode creative Lianecx\n/command give Lianecx golden_apple",
 
@@ -1195,11 +1195,15 @@
   "data.command.options.command.required": true,
   "data.command.options.command.autocomplete": true,
 
-  "data.command.options.args.type": "STRING",
-  "data.command.options.args.name": "argument1",
-  "data.command.options.args.description": "Set the first command argument.",
-  "data.command.options.args.required": false,
-  "data.command.options.args.autocomplete": true,
+  "data.command.options.arg1.type": "STRING", "data.command.options.arg1.name": "argument1", "data.command.options.arg1.description": "Set the first command argument.", "data.command.options.arg1.required": false, "data.command.options.arg1.autocomplete": true,
+  "data.command.options.arg2.type": "STRING", "data.command.options.arg2.name": "argument2", "data.command.options.arg2.description": "Set the second command argument.", "data.command.options.arg2.required": false, "data.command.options.arg2.autocomplete": true,
+  "data.command.options.arg3.type": "STRING", "data.command.options.arg3.name": "argument3", "data.command.options.arg3.description": "Set the third command argument.", "data.command.options.arg3.required": false, "data.command.options.arg3.autocomplete": true,
+  "data.command.options.arg4.type": "STRING", "data.command.options.arg4.name": "argument4", "data.command.options.arg4.description": "Set the fourth command argument.", "data.command.options.arg4.required": false, "data.command.options.arg4.autocomplete": true,
+  "data.command.options.arg5.type": "STRING", "data.command.options.arg5.name": "argument5", "data.command.options.arg5.description": "Set the fifth command argument.", "data.command.options.arg5.required": false, "data.command.options.arg5.autocomplete": true,
+  "data.command.options.arg6.type": "STRING", "data.command.options.arg6.name": "argument6", "data.command.options.arg6.description": "Set the sixth command argument.", "data.command.options.arg6.required": false, "data.command.options.arg6.autocomplete": true,
+  "data.command.options.arg7.type": "STRING", "data.command.options.arg7.name": "argument7", "data.command.options.arg7.description": "Set the seventh command argument.", "data.command.options.arg7.required": false, "data.command.options.arg7.autocomplete": true,
+  "data.command.options.arg8.type": "STRING", "data.command.options.arg8.name": "argument8", "data.command.options.arg8.description": "Set the eighth command argument.", "data.command.options.arg8.required": false, "data.command.options.arg8.autocomplete": true,
+  "data.command.options.arg9.type": "STRING", "data.command.options.arg9.name": "argument9", "data.command.options.arg9.description": "Set the ninth command argument.", "data.command.options.arg9.required": false, "data.command.options.arg9.autocomplete": true,
 
 
 
@@ -1286,14 +1290,14 @@
 
   "data.loadingscreen.name": "loadingscreen",
   "data.loadingscreen.long_description": "Convert an attachment, image-link or @mention to a minecraft loading-screen.",
-  "data.loadingscreen.short_description": "Convert an image-link to a minecraft loading-screen.",
-  "data.loadingscreen.usage": "/loadingscreen <attachment/imageLink/@mention>",
-  "data.loadingscreen.example": "/loadingscreen @Lianecx\n/loadingscreen https://picsum.photos/200/200",
+  "data.loadingscreen.short_description": "Convert an image attachment to a minecraft loading-screen.",
+  "data.loadingscreen.usage": "/loadingscreen <attachment|image-link|@mention>",
+  "data.loadingscreen.example": "/loadingscreen @Lianecx\n/loadingscreen attachment.png",
 
-  "data.loadingscreen.options.url.type": "STRING",
-  "data.loadingscreen.options.url.name": "url",
-  "data.loadingscreen.options.url.description": "Set the URL of the image you want to convert.",
-  "data.loadingscreen.options.url.required": true,
+  "data.loadingscreen.options.attachment.type": "ATTACHMENT",
+  "data.loadingscreen.options.attachment.name": "attachment",
+  "data.loadingscreen.options.attachment.description": "Set the image attachment you want to convert.",
+  "data.loadingscreen.options.attachment.required": true,
 
 
 
