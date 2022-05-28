@@ -108,15 +108,34 @@ function addPh(key, ...placeholders) {
         return key.replace(/%\w+%/g, match =>
             placeholders[match.replaceAll('%', '')] ?? match
         );
-    } else if(typeof key !== 'object') return key;
+    } else if(typeof key === 'object') {
+        const replacedObject = {};
 
-    const replacedObject = {};
+        for([k, v] of Object.entries(key)) {
+            replacedObject[k] = addPh(v, placeholders);
+        }
 
-    for([k, v] of Object.entries(key)) {
-        replacedObject[k] = addPh(v, placeholders);
-    }
+        return replacedObject;
+    } else if(key instanceof Array) {
+        const replacedArray = [];
 
-    return replacedObject;
+        for(let i = 0; i < key.length; i++) {
+            replacedArray[i] = key[i].replace(/%\w+%/g, match => {
+                const placeholder = placeholders[match.replaceAll('%', '')];
+
+                if(placeholder instanceof Array) {
+                    key.splice(i, 1); //Remove placeholder entry
+                    key.push(...placeholder); // Push placeholder entries
+
+                    return match; //Replace nothing
+                }
+
+                return placeholder ?? match;
+            });
+        }
+
+        return replacedArray;
+    } else return key;
 }
 
 
