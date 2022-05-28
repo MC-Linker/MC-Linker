@@ -33,7 +33,7 @@ To opt out of having your commands logged from a server using our bot, leave the
 **Connections:**<br>
 User and Server connections can be removed by using the implemented commands `/disconnect account`, `/disconnect ftp` or `/disconnect plugin` for the respective connections.
 <br><br>**Commands:**<br>
-Command logs are deleted on bot restart which is generally every day. If you still want to urgently remove command logs, please contact me through the contacts listed at the bottom of this policy, with the Command name and User Tag of the logs you would like removed.
+Command logs are generally deleted every week. If you still want to urgently remove command logs, please contact me through the contacts listed at the bottom of this policy, with the Command name and User Tag of the logs you would like removed.
 
 # THIRD-PARTY WEBSITES
 The Minecraft SMP Bot may link to third-party websites. These websites are separate from our bot and will have their own privacy policies. Any data collected through these third-party websites is separate and unrelated to the bot.
