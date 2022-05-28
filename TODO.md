@@ -38,3 +38,4 @@
 
 # TODO Plugin
 + `/dm` (dm discord user)
++ Show replies to chat messages
