@@ -137,14 +137,13 @@ client.on('interactionCreate', async interaction => {
     if(interaction.isCommand()) {
 
         //Making interaction compatible with normal commands
-        interaction = {
-            mentions: {
-                users: new Discord.Collection(),
-                roles: new Discord.Collection(),
-                channels: new Discord.Collection(),
-            },
-            attachments: new Discord.Collection(),
+        interaction.mentions = {
+            users: new Discord.Collection(),
+            roles: new Discord.Collection(),
+            channels: new Discord.Collection(),
         };
+        interaction.attachments = new Discord.Collection();
+
 
         const args = getArgs(client, interaction);
         //Add mentions and attachments from args
@@ -155,7 +154,7 @@ client.on('interactionCreate', async interaction => {
             else if(arg instanceof Discord.MessageAttachment) interaction.attachments.set(arg.id, arg);
         });
 
-        if(interaction.commandName === 'message') await interaction.deferReply({ ephemeral: true });
+        if(interaction.commandName === 'message') await interaction?.deferReply({ ephemeral: true });
         else await interaction?.deferReply();
 
         if (interaction.commandName === 'help') {
