@@ -104,10 +104,35 @@ ph.fromError = function(err) {
 function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
+
     if(typeof key === 'string') {
         return key.replace(/%\w+%/g, match =>
             placeholders[match.replaceAll('%', '')] ?? match
         );
+    } else if(Array.isArray(key)) {
+        let replaced = {};
+
+        for (const string of key) {
+            const match = string.match(/%\w+%/g)?.shift();
+            if(match) {
+                const placeholder = placeholders[match.replaceAll('%', '')];
+
+                if(Array.isArray(placeholder)) {
+                    for(const v of placeholder) replaced[v] = v;
+                } else if(typeof placeholder === 'object') {
+                    for([k, v] of Object.entries(placeholder)) replaced[k] = v;
+                } else {
+                    const v = placeholder ?? match;
+                    replaced[v] = v;
+                }
+
+                continue;
+            }
+
+            replaced[string] = string;
+        }
+
+        return replaced;
     } else if(typeof key === 'object') {
         const replacedObject = {};
 
@@ -116,25 +141,6 @@ function addPh(key, ...placeholders) {
         }
 
         return replacedObject;
-    } else if(key instanceof Array) {
-        const replacedArray = [];
-
-        for(let i = 0; i < key.length; i++) {
-            replacedArray[i] = key[i].replace(/%\w+%/g, match => {
-                const placeholder = placeholders[match.replaceAll('%', '')];
-
-                if(placeholder instanceof Array) {
-                    key.splice(i, 1); //Remove placeholder entry
-                    key.push(...placeholder); // Push placeholder entries
-
-                    return match; //Replace nothing
-                }
-
-                return placeholder ?? match;
-            });
-        }
-
-        return replacedArray;
     } else return key;
 }
 
