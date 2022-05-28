@@ -11,7 +11,7 @@
       "any": ["%advancements%"]
     },
     {
-      "-2=only": ["%arg2_criteria%"]
+      "arg2=only": ["%arg2_criteria%"]
     }
   ],
   "gamemode": [
@@ -19,7 +19,7 @@
       "any": ["creative", "spectator", "survival", "adventure"]
     },
     {
-      "any": ["@a", "@e", "@p", "@r", "@s", "%username%"]
+      "any": ["@a", "@e", "@p", "@r", "@s", "%username%", "%online_players%"]
     }
   ],
   "tp": [
