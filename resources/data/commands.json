@@ -1,0 +1,33 @@
+{
+  "advancement": [
+    {
+      "any": ["grant", "revoke"]
+    },
+    {
+      "any": ["everything", "from", "until", "through", "only"]
+    },
+    {
+      "everything": [],
+      "any": ["%advancements%"]
+    },
+    {
+      "-2=only": ["%arg2_criteria%"]
+    }
+  ],
+  "gamemode": [
+    {
+      "any": ["creative", "spectator", "survival", "adventure"]
+    },
+    {
+      "any": ["@a", "@e", "@p", "@r", "@s", "%username%"]
+    }
+  ],
+  "tp": [
+    {
+      "any": ["@a", "@e", "@p", "@r", "@s", "%username%", "%online_players%"]
+    },
+    {
+      "any": ["@a", "@e", "@p", "@r", "@s", "%username%", "%online_players%", "~ ~ ~"]
+    }
+  ]
+}
