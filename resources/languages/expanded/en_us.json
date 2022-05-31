@@ -402,6 +402,28 @@
         "color": "ORANGE"
       }
     },
+    "command": {
+      "warnings": {
+        "could_not_find_placeholders": {
+          "console": "Could not find placeholder value for %placeholder%"
+        },
+        "no_permission": {
+          "title": "No Permission",
+          "description": "%emoji_no_entry% This command can only be used by admins.",
+          "console": "No command permission"
+        },
+        "no_command": {
+          "title": "No Command Specified",
+          "description": "%emoji_warning% Please specify a minecraft command-name.",
+          "console": "No command specified"
+        }
+      },
+      "success": {
+        "title": "Command Executed",
+        "description": "Command Response:\n%response%",
+        "color": "BLUE"
+      }
+    },
     "deop": {
       "warnings": {
         "no_permission": {

@@ -272,6 +272,21 @@
 
 
 
+  "commands.command.warnings.could_not_find_placeholders.console": "Could not find placeholder value for %placeholder%",
+
+  "commands.command.warnings.no_permission.title": "No Permission",
+  "commands.command.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.command.warnings.no_permission.console": "No command permission",
+
+  "commands.command.warnings.no_command.title": "No Command Specified",
+  "commands.command.warnings.no_command.description": "%emoji_warning% Please specify a minecraft command-name.",
+  "commands.command.warnings.no_command.console": "No command specified",
+
+  "commands.command.success.title": "Command Executed",
+  "commands.command.success.description": "Command Response:\n%response%",
+  "commands.command.success.color": "BLUE",
+
+
   "commands.deop.warnings.no_permission.title": "No Permission",
   "commands.deop.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
   "commands.deop.warnings.no_permission.console": "No deop permission",
