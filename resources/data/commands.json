@@ -11,7 +11,7 @@
       "any": ["%advancements%"]
     },
     {
-      "arg2=only": ["%arg2_criteria%"]
+      "arg1=only": ["%arg2_criteria%"]
     }
   ],
   "gamemode": [
@@ -19,15 +19,24 @@
       "any": ["creative", "spectator", "survival", "adventure"]
     },
     {
-      "any": ["@a", "@e", "@p", "@r", "@s", "%username%", "%online_players%"]
+      "any": ["%target_selectors%", "%username%", "%online_players%"]
     }
   ],
   "tp": [
     {
-      "any": ["@a", "@e", "@p", "@r", "@s", "%username%", "%online_players%"]
+      "any": ["%target_selectors%", "%username%", "%online_players%"]
     },
     {
-      "any": ["@a", "@e", "@p", "@r", "@s", "%username%", "%online_players%", "~ ~ ~"]
+      "any": ["%target_selectors%", "%username%", "%online_players%", "%player_coordinates%"]
+    }
+  ],
+  "time": [
+    {
+      "any": ["add", "query", "set"]
+    },
+    {
+      "query": ["daytime", "gametime", "day"],
+      "set": ["day", "night", "noon", "midnight"]
     }
   ]
 }
