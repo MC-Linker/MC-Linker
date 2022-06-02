@@ -126,6 +126,7 @@ async function execute(message, args) {
                     "-106": [154, 124],
                 };
                 slotDims = allSlotDims[slot];
+                if(!slotDims) continue; //Continue for modded slots
 
                 try {
                     //Draw image
