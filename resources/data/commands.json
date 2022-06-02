@@ -14,20 +14,43 @@
       "arg1=only": ["%arg2_criteria%"]
     }
   ],
+  "attribute": [
+    {
+      "any": ["%target_selectors%"]
+    },
+    {
+      "any": ["%attributes%"]
+    },
+    {
+      "any": ["base", "get", "modifier"]
+    },
+    {
+      "base": ["get", "set"],
+      "modifier": ["add", "remove", "value"]
+    },
+    {
+      "value": ["get"]
+    },
+    {},
+    {},
+    {
+      "arg3=add": ["add", "multiply", "multiply_base"]
+    }
+  ],
   "gamemode": [
     {
       "any": ["creative", "spectator", "survival", "adventure"]
     },
     {
-      "any": ["%target_selectors%", "%username%", "%online_players%"]
+      "any": ["%target_selectors%"]
     }
   ],
   "tp": [
     {
-      "any": ["%target_selectors%", "%username%", "%online_players%"]
+      "any": ["%target_selectors%"]
     },
     {
-      "any": ["%target_selectors%", "%username%", "%online_players%", "%player_coordinates%"]
+      "any": ["%target_selectors%"]
     }
   ],
   "time": [
@@ -37,6 +60,14 @@
     {
       "query": ["daytime", "gametime", "day"],
       "set": ["day", "night", "noon", "midnight"]
+    }
+  ],
+  "title": [
+    {
+      "any": ["%target_selectors%"]
+    },
+    {
+      "any": ["clear", "reset", "title", "subtitle", "actionbar", "times"]
     }
   ]
 }
