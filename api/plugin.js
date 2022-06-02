@@ -179,8 +179,13 @@ async function chat(message) {
     }
 }
 
-async function chatPrivate(msg, username, target, message) {
+async function chatPrivate(msg, guildId, username, target, message) {
     return new Promise(async resolve => {
+        const ip = await utils.getIp(guildId, message);
+        if(!ip) return resolve(false);
+        const hash = await utils.getHash(guildId, message);
+        if(!hash) return resolve(false);
+
         const chatJson = {
             "msg": msg.replaceAll('\u200B', ''),
             "username": username,
@@ -189,9 +194,10 @@ async function chatPrivate(msg, username, target, message) {
         };
 
         try {
-            const resp = await fetch(`http://${conn.ip}/chat/`, {
+            const resp = await fetch(`http://${ip}/chat/`, {
+                method: 'POST',
                 headers: {
-                    Authorization: `Basic ${conn.hash}`
+                    Authorization: `Basic ${hash}`
                 },
                 body: JSON.stringify(chatJson)
             });
@@ -200,7 +206,6 @@ async function chatPrivate(msg, username, target, message) {
 
             resolve({ message: await resp.text(), status: resp.status });
         } catch(err) {
-            resolve(false);
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -603,7 +608,8 @@ function execute(command, message) {
             });
 
             if(!await checkStatus(resp, message)) return resolve(false);
-            resolve({ message: await resp.text(), status: resp.status });
+
+            resolve({ json: await resp.json(), status: resp.status });
         } catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);

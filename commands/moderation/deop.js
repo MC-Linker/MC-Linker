@@ -20,7 +20,7 @@ async function execute(message, args) {
     const resp = await plugin.execute(`deop ${mcUsername}`, message);
     if(!resp) return;
 
-    if(resp.status === 206) message.respond(keys.commands.deop.warnings.response_warning, { username: user, "response": resp.message });
+    if(resp.status === 206) message.respond(keys.commands.deop.warnings.response_warning, { username: user });
     else message.respond(keys.commands.deop.success, { username: user });
 }
 

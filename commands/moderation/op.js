@@ -20,7 +20,7 @@ async function execute(message, args) {
     const resp = await plugin.execute(`op ${mcUsername}`, message);
     if(!resp) return;
 
-    if(resp.status === 206) message.respond(keys.commands.op.warnings.response_warning, { username: user, "response": resp.message });
+    if(resp.status === 206) message.respond(keys.commands.op.warnings.response_warning, { username: user });
     else message.respond(keys.commands.op.success, { username: user });
 }
 

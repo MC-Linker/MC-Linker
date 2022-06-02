@@ -26,10 +26,10 @@ async function execute(message, args) {
         if(!resp) return;
 
         if(method === 'add') {
-            if(resp.status === 206) message.respond(keys.commands.whitelist.warnings.add_warning, { username: user, "response": resp.message });
+            if(resp.status === 206) message.respond(keys.commands.whitelist.warnings.add_warning, { username: user });
             else message.respond(keys.commands.whitelist.success.add, { username: user });
         } else {
-            if(resp.status === 206) message.respond(keys.commands.whitelist.warnings.remove_warning, { username: user, "response": resp.message });
+            if(resp.status === 206) message.respond(keys.commands.whitelist.warnings.remove_warning, { username: user });
             else message.respond(keys.commands.whitelist.success.remove, { username: user });
         }
 
@@ -40,10 +40,10 @@ async function execute(message, args) {
         if(!resp) return;
 
         if(method === 'enable') {
-            if(resp.status === 206) message.respond(keys.commands.whitelist.warnings.enable_warning, { "response": resp.message });
+            if(resp.status === 206) message.respond(keys.commands.whitelist.warnings.enable_warning);
             else message.respond(keys.commands.whitelist.success.enable);
         } else {
-            if(resp.status === 206) message.respond(keys.commands.whitelist.warnings.disable_warning, { "response": resp.message });
+            if(resp.status === 206) message.respond(keys.commands.whitelist.warnings.disable_warning);
             else message.respond(keys.commands.whitelist.success.disable);
         }
     }
