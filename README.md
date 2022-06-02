@@ -1,4 +1,4 @@
-View minecraft stats, advancements and inventories in Discord! Also includes texturepack and moderation tools and much more.
+View minecraft stats, advancements and inventories in Discord! Also includes texturepack- and moderation tools and much more.
 
 # DESCRIPTION
 Look at the Minecraft server stats, advancements and inventories of any member: When you killed the ender dragon, how many raids you have won or even how long your friend played on the server, this bot can show it all. Also supports two-way chat with Minecraft. Additionally, you can disable specific stats, advancements or commands.
