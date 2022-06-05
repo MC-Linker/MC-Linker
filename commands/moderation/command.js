@@ -32,18 +32,29 @@ async function autocomplete(interaction) {
 
         const previousArgument = allOptions?.[focusedIndex-1]?.value;
 
-        //Suggestion key: arg2=string => 2nd option === string
-        //Suggestion key: string => previous option === string
-        //Suggestion key: any => any previous option
-        let filteredKey = Object.keys(suggestions).find(sug => {
-            const splitSug = sug.split("=");
-            const index = parseInt(splitSug[0].replace('arg', ''));
+        //Suggestion key:
+        //"arg2=string" => 2nd option === string
+        //"string" => previous option === string
+        //"arg2=string & arg1=string2" => 2nd option === string && 1st option === string2
+        //"" => any previous option
+        let filteredKey = Object.keys(suggestions).find(suggestion => {
+            suggestion = suggestion.replaceAll(' ', ''); //Remove all whitespaces
 
-            return sug === previousArgument || !isNaN(index) ? splitSug[1] === allOptions?.[index]?.value : false;
+            let returnBool = true;
+
+            suggestion.split('&').forEach(condition => {
+                if(!returnBool) return;
+
+                let [index, ...string] = condition.split("=");
+                index = parseInt(index.replace('arg', ''));
+
+                returnBool = condition === previousArgument || (!isNaN(index) ? string.join('=') === allOptions?.[index]?.value : false);
+            });
+
+            return returnBool;
         });
 
-
-        const filteredSuggestions = suggestions?.[filteredKey] ?? suggestions?.['any'];
+        const filteredSuggestions = suggestions?.[filteredKey] ?? suggestions?.[''];
         if(filteredSuggestions) {
             const formattedSuggestions = [];
             for (const sug of filteredSuggestions) {
@@ -56,9 +67,9 @@ async function autocomplete(interaction) {
 
                 //Run logic for each placeholder and add properties to object
                 if(sug.match(/%\w+%/g)) {
-                    const placeholder = await getPlaceholder(replaced.replaceAll('%', ''));
+                    const placeholder = await getPlaceholder(replaced.replaceAll('%', ''), { user: interaction.user.id, guild: interaction.guildId, focused: focused.value });
                     if(!placeholder) {
-                        console.log(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: replaced });
+                        console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: replaced }));
                         continue;
                     }
 
@@ -70,7 +81,7 @@ async function autocomplete(interaction) {
 
             const suggestionsObject = addPh(formattedSuggestions, placeholders);
             for([k, v] of Object.entries(suggestionsObject)) {
-                if(k.includes(focused.value) || v.includes(focused.value)) respondArray.push({ name: k, value: v });
+                if(k?.includes(focused.value) || v?.includes(focused.value)) respondArray.push({ name: k, value: v });
             }
         } else return;
 
@@ -109,7 +120,17 @@ async function execute(message, args) {
     const resp = await plugin.execute(`${command} ${args.join(' ')}`, message);
     if(!resp) return;
 
-    message.respond(keys.commands.command.success, { "response": resp.message });
+    let respMessage = resp.status === 200 ? resp.json.message : keys.api.plugin.warnings.no_response_message;
+
+    //Either '+' or '-' depending on color code
+    let colorChar = '';
+    if(resp.json.color === 'c' || resp.status !== 200) colorChar = '- ';
+    else if(resp.json.color === 'a') colorChar = '+ ';
+
+    //Wrap in discord code block for color
+    respMessage = `\`\`\`diff\n${colorChar}${respMessage}\`\`\``;
+
+    message.respond(keys.commands.command.success, { "response": respMessage });
 }
 
 
@@ -119,16 +140,8 @@ async function getPlaceholder(key, arguments) {
     //TODO add placeholders
     let placeholder;
     switch (key) {
-        case 'username':
-            placeholder = await utils.getUsername(arguments.username, fakeMessage);
-            break;
-
-        case 'online_players':
-            placeholder = ["TheAnnoying", "ReeceTD", "CommandGeek"];
-            break;
-
         case 'advancements':
-            const advancements = await utils.searchAllAdvancements(arguments.searchString ?? '', true, true);
+            const advancements = await utils.searchAllAdvancements(arguments.focused ?? '', true, true);
             //Combine to one object and map to name and category.value
             placeholder = Object.assign(...advancements.map(advancement => {
                 return { [advancement.name]: `${advancement.category}.${advancement.value}` };
@@ -137,11 +150,62 @@ async function getPlaceholder(key, arguments) {
 
         case 'target_selectors':
             //TODO Replace @s with username for the value
-            placeholder = ["@a", "@p", "@s", "@r", "@e"];
+            const onlinePlayers = ["TheAnnoying", "ReeceTD", "CommandGeek"];
+            const username = await utils.getUsername(arguments.user, fakeMessage);
+
+            placeholder = {
+                "@a": "@a",
+                "@p": "@p",
+                "@r": "@r",
+                "@e": "@e",
+            };
+
+            if(onlinePlayers) onlinePlayers.forEach(player => placeholder[player] = player);
+            if(username) {
+                placeholder["@s"] = username;
+                placeholder[username] = username;
+            }
             break;
 
+        case 'attributes':
+            placeholder = [
+                "generic.max_health",
+                "generic.follow_range",
+                "generic.knockback_resistance",
+                "generic.movement_speed",
+                "generic.attack_damage",
+                "generic.armor",
+                "generic.armor_toughness",
+                "generic.attack_knockback",
+                "generic.attack_speed",
+                "generic.luck",
+                "horse.jump_strength",
+                "generic.flying_speed",
+                "zombie.spawn_reinforcements",
+            ];
+            break;
+
+        case 'datapacks':
+             break;
+        case 'functions':
+            break;
         case 'player_coordinates':
-            placeholder = { "~ ~ ~": "0 0 0" };
+            break;
+        case 'items':
+            break;
+        case 'tags':
+            break;
+        case 'effects':
+            break;
+        case 'enchantments':
+            break;
+        case 'scoreboards':
+            break;
+        case 'bossbars':
+            break;
+        case key.endsWith('_criteria'):
+            break;
+        case key.endsWith('_levels'):
             break;
     }
 
