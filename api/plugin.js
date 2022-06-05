@@ -44,7 +44,7 @@ async function loadExpress(client) {
 
         let chatEmbed;
 
-        if(req.body.type === 'advancements') {
+        if(req.body.type === 'advancement') {
             let advancementTitle;
             let advancementDesc;
 
