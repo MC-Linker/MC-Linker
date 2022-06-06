@@ -392,7 +392,7 @@
         },
         "response_warning": {
           "title": "Ban Player",
-          "description": "%emoji_warning% Banned player **%username%**: `%reason%`\n%response%",
+          "description": "%emoji_warning% Banned player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "ORANGE"
         }
       },
@@ -420,7 +420,7 @@
       },
       "success": {
         "title": "Command Executed",
-        "description": "Command Response:\n%response%",
+        "description": "**Command Response:**\n\n%response%",
         "color": "BLUE"
       }
     },
@@ -438,7 +438,7 @@
         },
         "response_warning": {
           "title": "Deop Player",
-          "description": "Deoped player **%username%**\n%response%",
+          "description": "Deoped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "BLUE"
         }
       },
@@ -462,7 +462,7 @@
         },
         "response_warning": {
           "title": "Kick Player",
-          "description": "%emoji_warning% Kicked player **%username%**: `%reason%`\n%response%",
+          "description": "%emoji_warning% Kicked player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "ORANGE"
         }
       },
@@ -486,7 +486,7 @@
         },
         "response_warning": {
           "title": "OP Player",
-          "description": "Oped player **%username%**\n%response%",
+          "description": "Oped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "BLUE"
         }
       },
@@ -510,7 +510,7 @@
         },
         "response_warning": {
           "title": "Unban Player",
-          "description": "Unbanned player **%username%**\n%response%",
+          "description": "Unbanned player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "BLUE"
         }
       },
@@ -534,22 +534,22 @@
         },
         "add_warning": {
           "title": "Add player",
-          "description": "Added player **%username%** to the whitelist.\n%response%",
+          "description": "Added player **%username%** to the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "BLUE"
         },
         "remove_warning": {
           "title": "Remove player",
-          "description": "Removed player **%username%** from the whitelist.\n%response%",
+          "description": "Removed player **%username%** from the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "ORANGE"
         },
         "enable_warning": {
           "title": "Enable Whitelist",
-          "description": "Enabled the whitelist.\n%response%",
+          "description": "Enabled the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "BLUE"
         },
         "disable_warning": {
           "title": "Disable Whitelist",
-          "description": "Disabled the whitelist.\n%response%",
+          "description": "Disabled the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "ORANGE"
         }
       },
@@ -621,7 +621,7 @@
         },
         "response_warning": {
           "title": "Send Message",
-          "description": "Sent message to player **%username%**\n%response%",
+          "description": "Sent message to player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
           "color": "BLUE"
         }
       },
@@ -723,8 +723,8 @@
               "type": "SELECT_MENU",
               "id": "log",
               "min_values": 1,
-              "max_values": 8,
-              "placeholder": "Select up to 8 message types.",
+              "max_values": 10,
+              "placeholder": "Select up to 10 message types.",
               "options": {
                 "chat": {
                   "label": "Chat Messages",
@@ -1173,7 +1173,8 @@
           "title": "Channel Not Added",
           "description": "%emoji_warning% The specified channel is not added.",
           "console": "Channel not added"
-        }
+        },
+        "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`."
       },
       "errors": {
         "no_response": {

@@ -263,7 +263,7 @@
   "commands.ban.warnings.no_username.console": "No username specified",
 
   "commands.ban.warnings.response_warning.title": "Ban Player",
-  "commands.ban.warnings.response_warning.description": "%emoji_warning% Banned player **%username%**: `%reason%`\n%response%",
+  "commands.ban.warnings.response_warning.description": "%emoji_warning% Banned player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.ban.warnings.response_warning.color": "ORANGE",
 
   "commands.ban.success.title": "Ban Player",
@@ -283,7 +283,7 @@
   "commands.command.warnings.no_command.console": "No command specified",
 
   "commands.command.success.title": "Command Executed",
-  "commands.command.success.description": "Command Response:\n%response%",
+  "commands.command.success.description": "**Command Response:**\n\n%response%",
   "commands.command.success.color": "BLUE",
 
 
@@ -296,7 +296,7 @@
   "commands.deop.warnings.no_username.console": "No username specified",
 
   "commands.deop.warnings.response_warning.title": "Deop Player",
-  "commands.deop.warnings.response_warning.description": "Deoped player **%username%**\n%response%",
+  "commands.deop.warnings.response_warning.description": "Deoped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.deop.warnings.response_warning.color": "BLUE",
 
   "commands.deop.success.title": "Deop Player",
@@ -314,7 +314,7 @@
   "commands.kick.warnings.no_username.console": "No username specified",
 
   "commands.kick.warnings.response_warning.title": "Kick Player",
-  "commands.kick.warnings.response_warning.description": "%emoji_warning% Kicked player **%username%**: `%reason%`\n%response%",
+  "commands.kick.warnings.response_warning.description": "%emoji_warning% Kicked player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.kick.warnings.response_warning.color": "ORANGE",
 
   "commands.kick.success.title": "Kick Player",
@@ -332,7 +332,7 @@
   "commands.op.warnings.no_username.console": "No username specified",
 
   "commands.op.warnings.response_warning.title": "OP Player",
-  "commands.op.warnings.response_warning.description": "Oped player **%username%**\n%response%",
+  "commands.op.warnings.response_warning.description": "Oped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.op.warnings.response_warning.color": "BLUE",
 
   "commands.op.success.title": "OP Player",
@@ -350,7 +350,7 @@
   "commands.unban.warnings.no_username.console": "No username specified",
 
   "commands.unban.warnings.response_warning.title": "Unban Player",
-  "commands.unban.warnings.response_warning.description": "Unbanned player **%username%**\n%response%",
+  "commands.unban.warnings.response_warning.description": "Unbanned player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.unban.warnings.response_warning.color": "BLUE",
 
   "commands.unban.success.title": "Unban Player",
@@ -368,19 +368,19 @@
   "commands.whitelist.warnings.no_username.console": "No username specified",
 
   "commands.whitelist.warnings.add_warning.title": "Add player",
-  "commands.whitelist.warnings.add_warning.description": "Added player **%username%** to the whitelist.\n%response%",
+  "commands.whitelist.warnings.add_warning.description": "Added player **%username%** to the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.whitelist.warnings.add_warning.color": "BLUE",
 
   "commands.whitelist.warnings.remove_warning.title": "Remove player",
-  "commands.whitelist.warnings.remove_warning.description": "Removed player **%username%** from the whitelist.\n%response%",
+  "commands.whitelist.warnings.remove_warning.description": "Removed player **%username%** from the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.whitelist.warnings.remove_warning.color": "ORANGE",
 
   "commands.whitelist.warnings.enable_warning.title": "Enable Whitelist",
-  "commands.whitelist.warnings.enable_warning.description": "Enabled the whitelist.\n%response%",
+  "commands.whitelist.warnings.enable_warning.description": "Enabled the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.whitelist.warnings.enable_warning.color": "BLUE",
 
   "commands.whitelist.warnings.disable_warning.title": "Disable Whitelist",
-  "commands.whitelist.warnings.disable_warning.description": "Disabled the whitelist.\n%response%",
+  "commands.whitelist.warnings.disable_warning.description": "Disabled the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.whitelist.warnings.disable_warning.color": "ORANGE",
 
   "commands.whitelist.success.add.title": "Add player",
@@ -432,7 +432,7 @@
   "commands.message.warnings.no_message.console": "No message specified",
 
   "commands.message.warnings.response_warning.title": "Send Message",
-  "commands.message.warnings.response_warning.description": "Sent message to player **%username%**\n%response%",
+  "commands.message.warnings.response_warning.description": "Sent message to player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.message.warnings.response_warning.color": "BLUE",
 
   "commands.message.success.title": "Send Message",
@@ -506,8 +506,8 @@
   "commands.chatchannel.success.choose.components.log.type": "SELECT_MENU",
   "commands.chatchannel.success.choose.components.log.id": "log",
   "commands.chatchannel.success.choose.components.log.min_values": 1,
-  "commands.chatchannel.success.choose.components.log.max_values": 8,
-  "commands.chatchannel.success.choose.components.log.placeholder": "Select up to 8 message types.",
+  "commands.chatchannel.success.choose.components.log.max_values": 10,
+  "commands.chatchannel.success.choose.components.log.placeholder": "Select up to 10 message types.",
 
   "commands.chatchannel.success.choose.components.log.options.chat.label": "Chat Messages",
   "commands.chatchannel.success.choose.components.log.options.chat.description": "Send a message whenever a player chats.",
@@ -822,6 +822,8 @@
   "api.plugin.warnings.channel_not_added.title": "Channel Not Added",
   "api.plugin.warnings.channel_not_added.description": "%emoji_warning% The specified channel is not added.",
   "api.plugin.warnings.channel_not_added.console": "Channel not added",
+
+  "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
 
   "api.plugin.errors.no_response.title": "Plugin Does Not Respond",
   "api.plugin.errors.no_response.description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
