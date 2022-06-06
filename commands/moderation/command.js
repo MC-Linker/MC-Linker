@@ -104,11 +104,13 @@ async function execute(message, args) {
         return;
     }
 
-    //Replace pings with corresponding username
+    //Replace pings and @s with corresponding username
     for (let i = 0; i < args.length; i++) {
         const arg = args[i];
 
-        const user = getUsersFromMention(message.client, arg)?.[0];
+        let user;
+        if(arg === "@s") user = message.member.user;
+        else user = getUsersFromMention(message.client, arg)?.[0];
         if(!user) continue;
 
         const username = await utils.getUsername(user.id, message);
