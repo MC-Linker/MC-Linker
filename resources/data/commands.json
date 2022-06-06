@@ -1,14 +1,14 @@
 {
   "advancement": [
     {
-      "any": ["grant", "revoke"]
+      "": ["grant", "revoke"]
     },
     {
-      "any": ["everything", "from", "until", "through", "only"]
+      "": ["everything", "from", "until", "through", "only"]
     },
     {
       "everything": [],
-      "any": ["%advancements%"]
+      "": ["%advancements%"]
     },
     {
       "arg1=only": ["%arg2_criteria%"]
@@ -16,13 +16,13 @@
   ],
   "attribute": [
     {
-      "any": ["%target_selectors%"]
+      "": ["%target_selectors%"]
     },
     {
-      "any": ["%attributes%"]
+      "": ["%attributes%"]
     },
     {
-      "any": ["base", "get", "modifier"]
+      "": ["base", "get", "modifier"]
     },
     {
       "base": ["get", "set"],
@@ -37,6 +37,262 @@
       "arg3=add": ["add", "multiply", "multiply_base"]
     }
   ],
+  "ban": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "ban-ip": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "banlist": [
+    {
+      "": ["ips", "players"]
+    }
+  ],
+  "bossbar": [
+    {
+      "": ["add", "get", "list", "remove", "set"]
+    },
+    {},
+    {
+      "arg0=get": ["max", "players", "value", "visible"],
+      "arg0=set": ["color", "max", "name", "players", "style", "value", "visible"]
+    },
+    {
+      "color": ["blue", "green", "pink", "purple", "red", "white", "yellow"],
+      "players": ["%target_selectors%"],
+      "style": ["notched_6", "notched_10", "notched_12", "notched_20", "progress"],
+      "visible": ["true", "false"]
+    }
+  ],
+  "clear": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%items%", "%item_tags%"]
+    }
+  ],
+  "clone": [
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["replace", "masked", "filtered"]
+    },
+    {
+      "filtered": ["%block_tags%", "%blocks%"],
+      "replace": ["force", "move", "normal"],
+      "masked": ["force", "move", "normal"]
+    },
+    {
+      "arg3=filtered": ["force", "move", "normal"]
+    }
+  ],
+  "data": [
+    {
+      "": ["get", "merge", "modify", "remove"]
+    },
+    {
+      "": ["block", "entity", "storage"]
+    },
+    {
+      "entity": ["%target_selectors%"]
+    },
+    {
+      "arg0=modify": ["append", "insert", "merge", "prepend", "set"]
+    },
+    {
+      "append": ["from", "value"],
+      "prepend": ["from", "value"],
+      "merge": ["from", "value"],
+      "set": ["from", "value"]
+    },
+    {
+      "arg3=insert": ["from", "value"],
+      "from": ["block", "entity", "storage"]
+    },
+    {
+      "from": ["block", "entity", "storage"]
+    }
+  ],
+  "datapack": [
+    {
+      "": ["enable", "disable", "list"]
+    },
+    {
+      "disable": ["%datapacks%"],
+      "enable": ["%datapacks%"],
+      "list": ["available", "enabled"]
+    },
+    {
+      "enable": ["first", "last", "before", "after"]
+    },
+    {
+      "before": ["%datapacks%"],
+      "after": ["%datapacks%"]
+    }
+  ],
+  "debug": [
+    {
+      "": ["start", "stop", "function"]
+    },
+    {
+      "function": ["%functions%"]
+    }
+  ],
+  "defaultgamemode": [
+    {
+      "": ["survival", "creative", "adventure", "spectator"]
+    }
+  ],
+  "deop": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "difficulty": [
+    {
+      "": ["easy", "hard", "normal", "peaceful"]
+    }
+  ],
+  "effect": [
+    {
+      "": ["clear", "give"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%effects%"]
+    },
+    {},
+    {},
+    {
+      "arg0=give": ["true", "false"]
+    }
+  ],
+  "enchant": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%enchantments%"]
+    },
+    {
+      "": ["%arg1_levels%"]
+    }
+  ],
+  "execute": [
+    {
+      "": ["align", "anchored", "as", "at", "facing", "in", "positioned", "rotated", "store", "if", "unless", "run"]
+    },
+    {
+      "align": ["x", "y", "z", "xy", "xz", "yx", "yz", "zx", "zy", "xyz", "xzy", "yxz", "yzx", "zxy", "zyx"],
+      "anchored": ["eyes", "feet"],
+      "as": ["%target_selectors%"],
+      "at": ["%target_selectors%"],
+      "facing": ["entity", "%player_coordinates%"],
+      "in": ["overworld", "the_end", "the_nether"],
+      "positioned": ["as", "%player_coordinates%"],
+      "rotated": ["as"],
+      "if": ["block", "blocks", "data", "entity", "predicate", "score"],
+      "unless": ["block", "blocks", "data", "entity", "predicate", "score"],
+      "store": ["result", "success"]
+    },
+    {
+      "entity": ["%target_selectors%"],
+      "as": ["%target_selectors%"],
+      "block": ["%player_coordinates%"],
+      "blocks": ["%player_coordinates%"],
+      "data": ["block", "entity", "storage"],
+      "score": ["%target_selectors%"],
+      "arg0=store": ["block", "bossbar", "entity", "score", "storage"]
+    },
+    {
+      "entity": ["%target_selectors%"],
+      "block": ["%player_coordinates%"],
+      "bossbar": ["%bossbars%"],
+      "arg1=score": ["%scoreboards%"],
+      "arg0=facing & arg1=entity": ["eyes", "feet"]
+    },
+    {
+      "arg2=bossbar": ["max", "value"],
+      "arg1=score": ["<", "<=", "=", ">=", ">", "matches"]
+    },
+    {
+      "<": ["%target_selectors%"],
+      "<=": ["%target_selectors%"],
+      "=": ["%target_selectors%"],
+      ">=": ["%target_selectors%"],
+      ">": ["%target_selectors%"],
+      "arg0=store & arg2=block": ["byte", "short", "int", "long", "float", "double"],
+      "arg0=store & arg2=entity": ["byte", "short", "int", "long", "float", "double"],
+      "arg0=store & arg2=storage": ["byte", "short", "int", "long", "float", "double"]
+    },
+    {
+      "arg1=<": ["%scoreboards%"],
+      "arg4=<=": ["%scoreboards%"],
+      "arg4=": ["%scoreboards%"],
+      "arg4=>=": ["%scoreboards%"],
+      "arg4=>": ["%scoreboards%"]
+    }
+  ],
+  "experience": [
+    {
+      "": ["add", "set", "query"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "query": ["levels", "points"]
+    },
+    {
+      "arg0=add": ["levels", "points"],
+      "arg0=set": ["levels", "points"]
+    }
+  ],
+  "fill": [
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%blocks%"]
+    },
+    {
+      "": ["destroy", "hollow", "keep", "outline", "replace"]
+    },
+    {
+      "replace": ["%block_tags%", "%blocks%"]
+    }
+  ],
+  "forceload": [
+    {
+      "": ["add", "remove", "query"]
+    },
+    {
+      "remove": ["all", "%player_coordinates_xz%"],
+      "": ["%player_coordinates_xz%"]
+    }
+  ],
+  "function": [
+    {
+      "": ["%functions%"]
+    }
+  ],
   "gamemode": [
     {
       "any": ["creative", "spectator", "survival", "adventure"]
@@ -45,17 +301,378 @@
       "any": ["%target_selectors%"]
     }
   ],
-  "tp": [
+  "gamerule": [
     {
-      "any": ["%target_selectors%"]
+      "": ["%gamerules%"]
     },
     {
-      "any": ["%target_selectors%"]
+      "": ["true", "false"]
+    }
+  ],
+  "give": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%items%"]
+    }
+  ],
+  "help": [
+    {
+      "": ["%commands%"]
+    }
+  ],
+  "item": [
+    {
+      "": ["modify", "replace"]
+    },
+    {
+      "": ["block", "entity"]
+    },
+    {
+      "block": ["%player_coordinates%"],
+      "entity": ["%target_selectors%"]
+    },
+    {
+      "": ["%slots%"]
+    },
+    {
+      "arg0=replace": ["from", "with"]
+    },
+    {
+      "from": ["block", "entity"],
+      "with": ["%items%"]
+    },
+    {
+      "block": ["%player_coordinates%"],
+      "entity": ["%target_selectors%"]
+    },
+    {
+    }
+  ],
+  "jfr": [
+    {
+      "": ["start", "stop"]
+    }
+  ],
+  "kick": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "kill": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "list": [
+    {
+      "": ["uuids"]
+    }
+  ],
+  "locate": [
+    {
+      "": ["%structures%", "%structure_tags%"]
+    }
+  ],
+  "locatebiome": [
+    {
+      "": ["%biome_tags%", "%biomes%"]
+    }
+  ],
+  "loot": [
+    {
+      "": ["give", "insert", "replace", "spawn"]
+    },
+    {
+      "give": ["%target_selectors%"],
+      "insert": ["%player_coordinates%"],
+      "spawn": ["%player_coordinates%"],
+      "replace": ["block", "entity"]
+    },
+    {
+      "block": ["%player_coordinates%"],
+      "entity": ["%target_selectors%"],
+      "arg0=give": ["fish", "kill", "loot", "mine"],
+      "arg0=insert": ["fish", "kill", "loot", "mine"],
+      "arg0=spawn": ["fish", "kill", "loot", "mine"]
+    },
+    {
+      "arg0=replace": ["%slots%"],
+      "fish": ["%loot%"],
+      "loot": ["%loot%"],
+      "mine": ["%player_coordinates%"]
+    },
+    {
+      "arg2=fish": ["%player_coordinates%"],
+      "arg2=mine": ["mainhand", "offhand", "%items%"]
+    },
+    {
+      "arg2=fish": ["mainhand", "offhand", "%items%"]
+    }
+  ],
+  "me": [],
+  "msg": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "op": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "pardon": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "pardon-ip": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "particle": [
+    {
+      "": ["%effects%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {},
+    {},
+    {
+      "": ["force", "normal"]
+    },
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "perf": [
+    {
+      "": ["start", "stop"]
+    }
+  ],
+  "playsound": [
+    {
+      "": ["%sounds%"]
+    },
+    {
+      "": ["master", "music", "record", "weather", "block", "hostile", "neutral", "player", "ambient", "voice"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    }
+  ],
+  "recipe": [
+    {
+      "": ["give", "take"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["*", "%recipes%"]
+    }
+  ],
+  "reload": [
+    {
+      "": ["confirm", "permissions", "commands"]
+    }
+  ],
+  "save-all": [
+    {
+      "": ["flush"]
+    }
+  ],
+  "save-off": [],
+  "save-on": [],
+  "say": [],
+  "schedule": [
+    {
+      "": ["clear", "function"]
+    },
+    {
+      "function": ["%functions%"]
+    },
+    {},
+    {
+      "arg0=function": ["append", "replace"]
+    }
+  ],
+  "scoreboard": [
+    {
+      "": ["objectives", "players"]
+    },
+    {
+      "objectives": ["list", "add", "remove", "setdisplay", "modify"],
+      "players": ["list", "get", "set", "add", "remove", "reset", "test", "enable", "operation"]
+    },
+    {
+      "modify": ["%scoreboards%"],
+      "arg0=objectives & remove ": ["%scoreboards%"],
+      "arg0=players": ["%target_selectors%"],
+      "setdisplay": ["%scoreboard_displays%"]
+    },
+    {
+      "arg0=objectives & arg1=add": ["%scoreboard_criteria%"],
+      "arg1=modify": ["displayname", "rendertype"],
+      "arg1=setdisplay": ["%scoreboards%"],
+      "arg0=players & arg1=add": ["%scoreboards%"],
+      "arg0=players & arg1=remove": ["%scoreboards%"],
+      "arg1=reset": ["%scoreboards%"],
+      "arg1=enable": ["%scoreboards%"],
+      "arg1=get": ["%scoreboards%"],
+      "arg1=set": ["%scoreboards%"],
+      "arg1=operation": ["%scoreboards%"]
+    },
+    {
+      "rendertype": ["integer", "hearts"],
+      "arg2=list": ["ascending", "descending"],
+      "arg2=sidebar": ["ascending", "descending"],
+      "arg1=operation": ["+=", "-=", "*=", "/=", "%=", "=", "<", ">", "><"]
+    },
+    {
+      "arg1=operation": ["%target_selectors%"]
+    },
+    {
+      "arg1=operation": ["%scoreboards%"]
+    }
+  ],
+  "seed": [],
+  "setblock": [
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%blocks%"]
+    },
+    {
+      "": ["destroy", "keep", "replace"]
+    }
+  ],
+  "setidletimeout": [],
+  "setworldspawn": [
+    {
+      "": ["%player_coordinates%"]
+    }
+  ],
+  "spawnpoint": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    }
+  ],
+  "spectate": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "spreadplayers": [
+    {
+      "": ["%player_coordinates_xz%"]
+    },
+    {},
+    {},
+    {
+      "": ["false", "true", "under"]
+    },
+    {
+      "false": ["%target_selectors%"],
+      "true": ["%target_selectors%"]
+    },
+    {
+      "arg3=under": ["false", "true"]
+    },
+    {
+      "arg3=under": ["%target_selectors%"]
+    }
+  ],
+  "stop": [],
+  "stopsound": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["*", "master", "music", "record", "weather", "block", "hostile", "neutral", "player", "ambient", "voice"]
+    },
+    {
+      "": ["%sounds%"]
+    }
+  ],
+  "summon": [
+    {
+      "": ["%entities%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    }
+  ],
+  "tag": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["add", "list", "remove"]
+    }
+  ],
+  "team": [
+    {
+      "": ["list", "add", "remove", "remove", "empty", "join", "leave", "modify"]
+    },
+    {
+      "empty": ["%teams%"],
+      "remove": ["%teams%"],
+      "join": ["%teams%"],
+      "leave": ["%target_selectors%"],
+      "modify": ["%teams%"]
+    },
+    {
+      "arg1=join": ["%target_selectors%"],
+      "arg1=modify": ["displayName", "color", "friendlyFire", "seeFriendlyInvisibles", "nametagVisibility", "deathMessageVisibility", "collisionRule", "prefix", "suffix"]
+    },
+    {
+      "color": ["%colors%"],
+      "collisionRule": ["always", "never", "pushOtherTeams", "pushOwnTeam"],
+      "nametagVisilibty": ["never", "hideForOtherTeams", "hideForOwnTeam", "always"],
+      "deathMessageVisibility": ["never", "hideForOtherTeams", "hideForOwnTeam", "always"],
+      "friendlyFire": ["true", "false"],
+      "seeFriendlyInvisibles": ["true", "false"]
+    }
+  ],
+  "teammsg": [],
+  "teleport": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "tell": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "tellraw": [
+    {
+      "": ["%target_selectors%"]
     }
   ],
   "time": [
     {
-      "any": ["add", "query", "set"]
+      "": ["add", "query", "set"]
     },
     {
       "query": ["daytime", "gametime", "day"],
@@ -64,10 +681,71 @@
   ],
   "title": [
     {
-      "any": ["%target_selectors%"]
+      "": ["%target_selectors%"]
     },
     {
-      "any": ["clear", "reset", "title", "subtitle", "actionbar", "times"]
+      "": ["clear", "reset", "title", "subtitle", "actionbar", "times"]
+    }
+  ],
+  "tm": [],
+  "tp": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "trigger": [
+    {
+      "": ["%scoreboards%"]
+    },
+    {
+      "": ["add", "set"]
+    }
+  ],
+  "w": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "weather": [
+    {
+      "": ["clear", "rain", "thunder"]
+    }
+  ],
+  "whitelist": [
+    {
+      "": ["on", "off", "add", "remove", "list", "reload"]
+    },
+    {
+      "add": ["%target_selectors%"],
+      "remove": ["%target_selectors%"]
+    }
+  ],
+  "worldborder": [
+    {
+      "": ["add", "center", "damage", "get", "set", "warning"]
+    },
+    {
+      "center": ["%player_coordinates_xz%"],
+      "damage": ["amount", "buffer"],
+      "warning": ["distance", "time"]
+    }
+  ],
+  "xp": [
+    {
+      "": ["add", "set", "query"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "query": ["levels", "points"]
+    },
+    {
+      "arg0=add": ["levels", "points"],
+      "arg0=set": ["levels", "points"]
     }
   ]
 }
