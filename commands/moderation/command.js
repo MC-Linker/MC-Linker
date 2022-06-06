@@ -22,7 +22,7 @@ async function autocomplete(interaction) {
 
         const placeholders = {};
 
-        const cmdKey = Object.keys(commands).find(cmd => cmd.includes(commandName));
+        const cmdKey = Object.keys(commands).find(cmd => cmd === commandName);
         const focusedIndex = allOptions.findIndex(opt => opt.name === focused.name);
 
         const allSuggestions = commands[cmdKey];
@@ -147,7 +147,6 @@ async function getPlaceholder(key, arguments) {
                 return { [advancement.name]: `${advancement.category}.${advancement.value}` };
             }));
             break;
-
         case 'target_selectors':
             //TODO Replace @s with username for the value
             const onlinePlayers = ["TheAnnoying", "ReeceTD", "CommandGeek"];
@@ -166,7 +165,6 @@ async function getPlaceholder(key, arguments) {
                 placeholder[username] = username;
             }
             break;
-
         case 'attributes':
             placeholder = [
                 "generic.max_health",
@@ -184,16 +182,27 @@ async function getPlaceholder(key, arguments) {
                 "zombie.spawn_reinforcements",
             ];
             break;
-
         case 'datapacks':
              break;
         case 'functions':
             break;
         case 'player_coordinates':
             break;
+        case 'player_coordinates_xz':
+            break;
         case 'items':
             break;
-        case 'tags':
+        case 'blocks':
+            break;
+        case 'block_tags':
+            break;
+        case 'structure_tags':
+            break;
+        case 'item_tags':
+            break;
+        case 'biome_tags':
+            break;
+        case 'structures':
             break;
         case 'effects':
             break;
@@ -202,6 +211,45 @@ async function getPlaceholder(key, arguments) {
         case 'scoreboards':
             break;
         case 'bossbars':
+            break;
+        case 'commands':
+            break;
+        case 'slots':
+            break;
+        case 'loot':
+            break;
+        case 'sounds':
+            break;
+        case 'recipes':
+            break;
+        case 'scoreboard_displays':
+            break;
+        case 'scoreboard_criteria':
+            break;
+        case 'entities':
+            break;
+        case 'teams':
+            break;
+        case 'colors':
+            placeholder = [
+                "reset",
+                "black",
+                "dark_blue",
+                "dark_green",
+                "dark_aqua",
+                "dark_red",
+                "dark_purple",
+                "gold",
+                "gray",
+                "dark_gray",
+                "blue",
+                "green",
+                "aqua",
+                "red",
+                "light_purple",
+                "yellow",
+                "white",
+            ];
             break;
         case key.endsWith('_criteria'):
             break;
