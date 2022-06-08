@@ -370,14 +370,14 @@
       "": ["uuids"]
     }
   ],
-  "locate": [
+  "locate":[
     {
-      "": ["%structures%", "%structure_tags%"]
-    }
-  ],
-  "locatebiome": [
+      "": ["structure", "biome", "poit"]
+    },
     {
-      "": ["%biome_tags%", "%biomes%"]
+      "structure": ["%structures%", "%structure_tags%"],
+      "biome": ["%biomes%", "%biome_tags%"],
+      "poi": ["%pois%", "%poi_tags%"]
     }
   ],
   "loot": [
@@ -454,6 +454,35 @@
   "perf": [
     {
       "": ["start", "stop"]
+    }
+  ],
+  "place": [
+    {
+      "": ["feature", "jigsaw", "structure", "template"]
+    },
+    {
+      "feature": ["%player_coordinates%"],
+      "structure": ["%structures%"],
+      "jigsaw": ["%pools%"],
+      "template": ["%templates%"]
+    },
+    {
+      "arg0=feature": ["%features%"],
+      "arg0=structure": ["%player_coordinates%"],
+      "arg0=jigsaw": ["%jigsaws%"],
+      "arg0=template": ["%templates%"]
+    },
+    {
+      "arg0=feature": ["%player_coordinates%"],
+      "arg0=structure": ["%player_coordinates%"],
+      "arg0=template": ["%player_coordinates%"]
+    },
+    {
+      "arg0=template": ["180", "clockwise_90", "counterclockwise_90", "none"]
+    },
+    {
+      "arg0=template": ["front_back", "left_right", "none"],
+      "arg0=jigsaw": ["%player_coordinates%"]
     }
   ],
   "playsound": [
