@@ -293,11 +293,6 @@
         "description": "Protect a villager from an undesired shock without starting a fire"
       },
       {
-        "name": "It Spreads",
-        "value": "kill_mob_near_sculk_catalyst",
-        "description": "Kill a mob near a Sculk Catalyst"
-      },
-      {
         "name": "Caves & Cliffs",
         "value": "sleep_in_bed",
         "description": "Free fall from the top of the world (build limit) to the bottom of the world and survive"
@@ -326,6 +321,11 @@
         "name": "A Throwaway Joke",
         "value": "throw_trident",
         "description": "Throw a trident at something.\nNote: Throwing away your only weapon is not a good idea."
+      },
+      {
+        "name": "It Spreads",
+        "value": "kill_mob_near_sculk_catalyst",
+        "description": "Kill a mob near a Sculk Catalyst"
       },
       {
         "name": "Take Aim",
@@ -471,7 +471,7 @@
       },
       {
         "name": "Birthday Song",
-        "value": "bred_all_animals",
+        "value": "allay_deliver_cake_to_note_block",
         "description": "Have an Allay drop a Cake at a Note Block!"
       },
       {
@@ -511,7 +511,7 @@
       },
       {
         "name": "With Our Powers Combined!",
-        "value": "axolotl_in_a_bucket",
+        "value": "froglights",
         "description": "Have all Froglights in your inventory"
       },
       {
