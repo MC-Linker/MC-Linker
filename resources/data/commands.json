@@ -461,16 +461,10 @@
       "": ["feature", "jigsaw", "structure", "template"]
     },
     {
-      "feature": ["%player_coordinates%"],
+      "feature": ["%features%"],
       "structure": ["%structures%"],
-      "jigsaw": ["%pools%"],
+      "jigsaw": ["%jigsaws%"],
       "template": ["%templates%"]
-    },
-    {
-      "arg0=feature": ["%features%"],
-      "arg0=structure": ["%player_coordinates%"],
-      "arg0=jigsaw": ["%jigsaws%"],
-      "arg0=template": ["%templates%"]
     },
     {
       "arg0=feature": ["%player_coordinates%"],
