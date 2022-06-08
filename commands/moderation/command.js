@@ -84,7 +84,6 @@ async function autocomplete(interaction) {
                 if(k?.includes(focused.value) || v?.includes(focused.value)) respondArray.push({ name: k, value: v });
             }
         } else return;
-
     }
 
     if(respondArray.length >= 25) respondArray.length = 25;
@@ -231,6 +230,16 @@ async function getPlaceholder(key, arguments) {
         case 'entities':
             break;
         case 'teams':
+            break;
+        case 'pois':
+            break;
+        case 'poi_tags':
+            break;
+        case 'jigsaws':
+            break;
+        case 'templates':
+            break;
+        case 'features':
             break;
         case 'colors':
             placeholder = [
