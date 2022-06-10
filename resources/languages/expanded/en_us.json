@@ -1182,6 +1182,11 @@
           "description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
           "console": "Plugin does not respond"
         },
+        "no_webhook_permission": {
+          "title": "No Webhook Permission",
+          "description": "%emoji_error% The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission.",
+          "console": "No webhook permission"
+        },
         "could_not_add_webhook": {
           "title": "Could Not Add Webhook",
           "description": "%emoji_error% The chatchannel webhook got deleted for an unknown reason and could not be re-added.",

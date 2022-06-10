@@ -829,6 +829,10 @@
   "api.plugin.errors.no_response.description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
 
+  "api.plugin.errors.no_webhook_permission.title": "No Webhook Permission",
+  "api.plugin.errors.no_webhook_permission.description": "%emoji_error% The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission.",
+  "api.plugin.errors.no_webhook_permission.console": "No webhook permission",
+
   "api.plugin.errors.could_not_add_webhook.title": "Could Not Add Webhook",
   "api.plugin.errors.could_not_add_webhook.description": "%emoji_error% The chatchannel webhook got deleted for an unknown reason and could not be re-added.",
   "api.plugin.errors.could_not_add_webhook.console": "Could not re-add webhook",
