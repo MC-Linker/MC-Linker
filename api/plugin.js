@@ -63,19 +63,26 @@ async function loadExpress(client) {
         } else if(req.body.type === 'chat') {
             chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
 
+            let allWebhooks;
             //Fetch all webhooks in guild
-            let allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
+            try {
+                allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
+            } catch(err) {}
 
             for (const channel of channels) {
                 const discordChannel = client.channels.cache.get(channel.id);
 
+                if(!allWebhooks) {
+                    discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    return;
+                }
+
                 if (!channel.webhook) {
-                    discordChannel?.send({ embeds: [chatEmbed] })
+                    discordChannel.send({ embeds: [chatEmbed] })
                         .catch(() => {});
                     continue;
                 }
 
-                //Rename webhook if necessary
                 let webhook = allWebhooks.get(channel.webhook);
 
                 //Create new webhook if old one doesn't exist
