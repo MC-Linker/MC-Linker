@@ -6,7 +6,7 @@ const commands = require('../../resources/data/commands.json');
 
 
 async function autocomplete(interaction) {
-    //TODO Add some super fancy autocomplete for command name + options
+    //TODO Add some super fancy autocomplete for target selectors
     const respondArray = [];
     const focused = interaction.options.getFocused(true);
 
@@ -32,51 +32,63 @@ async function autocomplete(interaction) {
 
         const previousArgument = allOptions?.[focusedIndex-1]?.value;
 
+
         //Suggestion key:
         //"arg2=string" => 2nd option === string
         //"string" => previous option === string
         //"arg2=string & arg1=string2" => 2nd option === string && 1st option === string2
         //"" => any previous option
-        let filteredKey = Object.keys(suggestions).find(suggestion => {
-            suggestion = suggestion.replaceAll(' ', ''); //Remove all whitespaces
-
-            let returnBool = true;
-
-            suggestion.split('&').forEach(condition => {
-                if(!returnBool) return;
-
-                let [index, ...string] = condition.split("=");
-                index = parseInt(index.replace('arg', ''));
-
-                returnBool = condition === previousArgument || (!isNaN(index) ? string.join('=') === allOptions?.[index]?.value : false);
-            });
-
-            return returnBool;
-        });
+        let filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
 
         const filteredSuggestions = suggestions?.[filteredKey] ?? suggestions?.[''];
         if(filteredSuggestions) {
             const formattedSuggestions = [];
             for (const sug of filteredSuggestions) {
                 //Replace arg[0-9] with corresponding value for placeholders
-                //arg2 => value of 2 options earlier
-                const replaced = sug.replace(/%arg(\d)_[a-zA-Z]+%/g, (match, group) =>
-                    match.replace(`arg${group}`, allOptions?.[group]?.value ?? `arg${group}`)
-                );
+                //arg2 => value of 2nd option
+                const replaced = sug.replace(/%arg(\d)_[a-zA-Z]+%/g, (match, group) => {
+                    if(group < 0) group = allOptions.length + group-1; //Allow relative (negative) indexes
 
+                    match.replace(`arg${group}`, allOptions?.[group]?.value ?? `arg${group}`);
+                });
 
-                //Run logic for each placeholder and add properties to object
-                if(sug.match(/%\w+%/g)) {
-                    const placeholder = await getPlaceholder(replaced.replaceAll('%', ''), { user: interaction.user.id, guild: interaction.guildId, focused: focused.value });
-                    if(!placeholder) {
-                        console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: replaced }));
-                        continue;
+                //Run logic for each placeholder and add properties to ph object
+                await addPlaceholders(replaced);
+            }
+
+            async function addPlaceholders(suggestion) {
+                if(suggestion.match(/%\w+%/g)) {
+                    if(suggestion.includes('_argument_')) {
+                        const [command, index] = suggestion.split(/%([a-zA-Z]+)_argument_(\d)%/).filter(n => n);
+                        const commandSuggestions = commands[command]?.[parseInt(index)];
+
+                        if(commandSuggestions) {
+                            const filteredCommandKey = findSuggestionKey(commandSuggestions, previousArgument, allOptions);
+
+                            const filteredArguments = commandSuggestions[filteredCommandKey] ?? commandSuggestions[''];
+                            if(filteredArguments) {
+                                for(const argument of filteredArguments) await addPlaceholders(argument);
+
+                                //Add Placeholder
+                                placeholders[suggestion.replaceAll('%', '')] = filteredArguments;
+                            }
+                        }
+                    } else {
+                        const placeholder = await getPlaceholder(
+                            suggestion.replaceAll('%', ''),
+                            { user: interaction.user.id, guild: interaction.guildId, focused: focused.value, commands: Object.keys(commands) }
+                        );
+                        if(!placeholder) {
+                            console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
+                            return;
+                        }
+
+                        //Add Placeholder
+                        placeholders[suggestion.replaceAll('%', '')] = placeholder;
                     }
-
-                    placeholders[replaced.replaceAll('%', '')] = placeholder; //Add Placeholder
                 }
 
-                formattedSuggestions.push(replaced);
+                formattedSuggestions.push(suggestion);
             }
 
             const suggestionsObject = addPh(formattedSuggestions, placeholders);
@@ -88,6 +100,29 @@ async function autocomplete(interaction) {
 
     if(respondArray.length >= 25) respondArray.length = 25;
     interaction.respond(respondArray);
+}
+
+
+function findSuggestionKey(suggestions, previousArgument, allOptions) {
+    return Object.keys(suggestions).find(suggestion => {
+        suggestion = suggestion.replaceAll(' ', ''); //Remove all whitespaces
+
+        let returnBool = true;
+        console.log(suggestion)
+        suggestion.split('&').forEach(condition => {
+            if (!returnBool) return;
+
+            let [index, string] = condition.split("=", 2);
+            index = parseInt(index.replace('arg', ''));
+            if (index < 0) index = allOptions?.length + index-1; //Allow relative (negative) indexes
+
+            if(!isNaN(index)) console.log(allOptions?.[index]?.value)
+            returnBool = condition === previousArgument || (!isNaN(index) ? string === allOptions?.[index]?.value : false);
+        });
+
+        if(returnBool) console.log(suggestion)
+        return returnBool;
+    });
 }
 
 
@@ -133,7 +168,6 @@ async function execute(message, args) {
 
     message.respond(keys.commands.command.success, { "response": respMessage });
 }
-
 
 async function getPlaceholder(key, arguments) {
     const fakeMessage = { respond: () => {} };
@@ -188,8 +222,10 @@ async function getPlaceholder(key, arguments) {
         case 'functions':
             break;
         case 'player_coordinates':
+            placeholder = ['~ ~ ~'];
             break;
         case 'player_coordinates_xz':
+            placeholder = ['~ ~'];
             break;
         case 'items':
             break;
@@ -214,6 +250,7 @@ async function getPlaceholder(key, arguments) {
         case 'bossbars':
             break;
         case 'commands':
+            placeholder = arguments.commands;
             break;
         case 'slots':
             break;

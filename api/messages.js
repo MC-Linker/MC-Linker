@@ -104,7 +104,6 @@ ph.fromError = function(err) {
 function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
-
     if(typeof key === 'string') {
         return key.replace(/%\w+%/g, match =>
             placeholders[match.replaceAll('%', '')] ?? match
@@ -112,13 +111,15 @@ function addPh(key, ...placeholders) {
     } else if(Array.isArray(key)) {
         let replaced = {};
 
-        for (const string of key) {
+        for(const string of key) {
             const match = string.match(/%\w+%/g)?.shift();
             if(match) {
                 const placeholder = placeholders[match.replaceAll('%', '')];
 
                 if(Array.isArray(placeholder)) {
-                    for(const v of placeholder) replaced[v] = v;
+                    for(const v of placeholder) {
+                        if(!v.match(/%\w+%/g)) replaced[v] = v;
+                    }
                 } else if(typeof placeholder === 'object') {
                     for([k, v] of Object.entries(placeholder)) replaced[k] = v;
                 } else {
