@@ -20,9 +20,9 @@ async function execute(message, args) {
 
     if (font === 'mojang' || font === 'mojangstudios' || font === 'mojang-studios') font = 'mojangstudiosfont by bapakuy';
 
-    let canvasWidth = (text.split('').length)*200;
-    if((canvasWidth/200)>=64) {
-        canvasWidth = 64*200;
+    let canvasWidth = text.split('').length * 200;
+    if(canvasWidth/200 >= 64) {
+        canvasWidth = 64 * 200;
         text = text.substring(0, 64);
     }
 
