@@ -1121,7 +1121,7 @@
         "unknown_ftp_error": {
           "title": "Could Not Connect",
           "description": "%emoji_error% Could not connect to server.",
-          "console": "Unknown ftp error %error%"
+          "console": "Unknown ftp error %error_message%"
         },
         "could_not_connect": {
           "title": "Could Not Connect",
