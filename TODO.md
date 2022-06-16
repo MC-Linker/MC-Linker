@@ -4,6 +4,7 @@
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + Support for multiple connections
 + **Support for offline uuids (download server.properties to check for offline mode)**
++ **Add font/color autocomplete for /text**
 + Add button to show enchantments and shulkerboxes in /inventory
 + Update stats autocomplete with minecraft-data
 + Combine sftp.js and ftp.js with `ftp-sftp` npm
