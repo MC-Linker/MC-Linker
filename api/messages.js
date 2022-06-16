@@ -96,7 +96,8 @@ ph.fromError = function(err) {
     if(!(err instanceof Error)) return {};
 
     return {
-        "error": err.stack
+        "error": err.stack,
+        "error_message": err.message,
     }
 };
 
@@ -105,20 +106,20 @@ function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
     if(typeof key === 'string') {
-        return key.replace(/%\w+%/g, match =>
+        return key.replace(/%.+%/g, match =>
             placeholders[match.replaceAll('%', '')] ?? match
         );
     } else if(Array.isArray(key)) {
         let replaced = {};
 
         for(const string of key) {
-            const match = string.match(/%\w+%/g)?.shift();
+            const match = string.match(/%.+%/g)?.shift();
             if(match) {
                 const placeholder = placeholders[match.replaceAll('%', '')];
 
                 if(Array.isArray(placeholder)) {
                     for(const v of placeholder) {
-                        if(!v.match(/%\w+%/g)) replaced[v] = v;
+                        if(!v.match(/%.+%/g)) replaced[v] = v;
                     }
                 } else if(typeof placeholder === 'object') {
                     for([k, v] of Object.entries(placeholder)) replaced[k] = v;
@@ -222,6 +223,7 @@ function getEmbedBuilder(key, ...placeholders) {
     if(key.color) embed.setColor(key.color);
     if(key.author) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
+    if(key.thumbnail) embed.setThumbnail(key.thumbnail);
     if(key.timestamp) embed.setTimestamp(Number(key.timestamp));
     if(key.footer) embed.setFooter({ text: key.footer.text, iconURL: key.footer.icon_url });
     if(key.url) embed.setURL(key.url);
