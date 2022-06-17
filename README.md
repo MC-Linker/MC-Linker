@@ -1,3 +1,4 @@
+[![Crowdin](https://badges.crowdin.net/minecraft-smp-bot/localized.svg)](https://crowdin.com)
 View minecraft stats, advancements and inventories in Discord! Also includes texturepack and moderation tools and much more.
 
 # DESCRIPTION
