@@ -1,4 +1,4 @@
-[![Crowdin](https://badges.crowdin.net/minecraft-smp-bot/localized.svg)](https://crowdin.com)[![](https://img.shields.io/github/commit-activity/m/Lianecx/Minecraft-SMP-Bot)]<br>
+[![Crowdin](https://badges.crowdin.net/minecraft-smp-bot/localized.svg)](https://crowdin.com)[!(https://img.shields.io/github/commit-activity/m/Lianecx/Minecraft-SMP-Bot)]<br>
 View minecraft stats, advancements and inventories in Discord! Also includes texturepack and moderation tools and much more.
 
 # DESCRIPTION
