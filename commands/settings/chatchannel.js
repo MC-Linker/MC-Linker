@@ -42,7 +42,7 @@ async function execute(message, args) {
 
                 const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, menu);
                 if(!regChannel) {
-                    webhook.delete();
+                    webhook?.delete();
                     return;
                 }
 
