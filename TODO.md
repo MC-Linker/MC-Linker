@@ -3,8 +3,9 @@
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + **Make plugin link more accessible (in error messages etc)**
-+ **Support for offline uuids (download server.properties to check for offline mode)**
-+ **Add font/color autocomplete for /text**
++ Support for offline uuids (download server.properties to check for offline mode)
++ **Add font/color autocomplete for `/text`**
++ **Use minecraft data for durability (`/inventory`) and items/entities (`/stats`)**
 + Add button to show enchantments and shulkerboxes in /inventory
 + Support for multiple connections
 + Update stats autocomplete with minecraft-data
