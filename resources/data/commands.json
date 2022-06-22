@@ -73,7 +73,7 @@
       "": ["%target_selectors%"]
     },
     {
-      "": ["%items%", "%item_tags%"]
+      "": ["%items%", "%item_tags%", "%blocks%", "%block_tags%"]
     }
   ],
   "clone": [
@@ -452,7 +452,7 @@
       "": ["%target_selectors%"]
     },
     {
-      "": ["%items%"]
+      "": ["%items%", "%blocks%"]
     }
   ],
   "help": [
@@ -479,7 +479,7 @@
     },
     {
       "from": ["block", "entity"],
-      "with": ["%items%"]
+      "with": ["%items%", "%blocks%"]
     },
     {
       "block": ["%player_coordinates%"],
@@ -543,10 +543,10 @@
     },
     {
       "arg2=fish": ["%player_coordinates%"],
-      "arg2=mine": ["mainhand", "offhand", "%items%"]
+      "arg2=mine": ["mainhand", "offhand", "%items%", "%blocks%"]
     },
     {
-      "arg2=fish": ["mainhand", "offhand", "%items%"]
+      "arg2=fish": ["mainhand", "offhand", "%items%", "%blocks%"]
     }
   ],
   "me": [],
