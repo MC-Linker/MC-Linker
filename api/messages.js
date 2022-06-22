@@ -106,7 +106,7 @@ function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
     if(typeof key === 'string') {
-        return key.replace(/%.+%/g, match =>
+        return key.replace(/%\w+%/g, match =>
             placeholders[match.replaceAll('%', '')] ?? match
         );
     } else if(Array.isArray(key)) {
