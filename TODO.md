@@ -3,14 +3,14 @@
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + **Make plugin link more accessible (in error messages etc)**
-+ **Support for offline uuids (download server.properties to check for offline mode)**
-+ **Add font/color autocomplete for /text**
++ Support for offline uuids (download server.properties to check for offline mode)
++ **Add font/color autocomplete for `/text`**
++ **Use minecraft data for durability (`/inventory`) and items/entities (`/stats`)**
 + Add button to show enchantments and shulkerboxes in /inventory
 + Support for multiple connections
 + Update stats autocomplete with minecraft-data
 + Combine sftp.js and ftp.js with `ftp-sftp` npm
 + Mod support (get textures and names of mod items)
-+ `/command <command> <args>` including autocomplete for args
 + `/stats @user statTab` (more stats with one command)
 + `/schematics`
 + Use already downloaded files to execute commands (downloaded files could be replaced by someone else who connected to the same uuid)
