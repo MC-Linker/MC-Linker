@@ -30,6 +30,7 @@
     "fs-extra": "^10.1.0",
     "ftp": "^0.3.10",
     "jest": "^28.1.0",
+    "minecraft-data": "^3.5.0",
     "nbt": "^0.8.1",
     "node-fetch": "^2.6.7",
     "probe-image-size": "^7.2.3",
