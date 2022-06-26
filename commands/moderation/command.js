@@ -1,7 +1,8 @@
-const { keys, getUsersFromMention, addPh} = require('../../api/messages');
+const { keys, getUsersFromMention, addPh } = require('../../api/messages');
 const Discord = require('discord.js');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
+const mcData = require('minecraft-data')('1.19');
 const commands = require('../../resources/data/commands.json');
 
 
@@ -85,7 +86,7 @@ async function autocomplete(interaction) {
 
             const suggestionsObject = addPh(formattedSuggestions, placeholders);
             for([k, v] of Object.entries(suggestionsObject)) {
-                if(k?.includes(focused.value) || v?.includes(focused.value)) respondArray.push({ name: k, value: v });
+                if(k?.includes(focused.value.toLowerCase()) || v?.includes(focused.value.toLowerCase())) respondArray.push({ name: k, value: v });
             }
         } else return;
     }
@@ -174,11 +175,13 @@ async function getPlaceholder(key, arguments) {
             const advancements = await utils.searchAllAdvancements(arguments.focused ?? '', true, true);
             //Combine to one object and map to name and category.value
             placeholder = Object.assign(...advancements.map(advancement => {
-                return { [advancement.name]: `${advancement.category}.${advancement.value}` };
+                return { [advancement.name]: `minecraft:${advancement.category}/${advancement.value}` };
             }));
             break;
         case 'target_selectors':
+            //TODO get online players
             const onlinePlayers = ["TheAnnoying", "ReeceTD", "CommandGeek"];
+
             const username = await utils.getUsername(arguments.user, fakeMessage);
 
             placeholder = {
@@ -195,35 +198,36 @@ async function getPlaceholder(key, arguments) {
             }
             break;
         case 'attributes':
-            placeholder = [
-                "generic.max_health",
-                "generic.follow_range",
-                "generic.knockback_resistance",
-                "generic.movement_speed",
-                "generic.attack_damage",
-                "generic.armor",
-                "generic.armor_toughness",
-                "generic.attack_knockback",
-                "generic.attack_speed",
-                "generic.luck",
-                "horse.jump_strength",
-                "generic.flying_speed",
-                "zombie.spawn_reinforcements",
-            ];
+            const attributes = mcData.attributesArray;
+
+            placeholder = Object.assign(...attributes.map(attribute => {
+                return { [attribute.name]: attribute.resource };
+            }));
             break;
         case 'datapacks':
              break;
         case 'functions':
             break;
         case 'player_coordinates':
+            //TODO get coordinates
             placeholder = ['~ ~ ~'];
             break;
         case 'player_coordinates_xz':
             placeholder = ['~ ~'];
             break;
         case 'items':
+            const items = mcData.itemsArray;
+
+            placeholder = Object.assign(...items.map(item => {
+                return { [item.displayName]: item.name };
+            }));
             break;
         case 'blocks':
+            const blocks = mcData.blocksArray;
+
+            placeholder = Object.assign(...blocks.map(block => {
+                return { [block.displayName]: block.name };
+            }));
             break;
         case 'block_tags':
             break;
@@ -247,8 +251,117 @@ async function getPlaceholder(key, arguments) {
             placeholder = arguments.commands;
             break;
         case 'slots':
+            const slots = [
+                'armor.chest',
+                'armor.feet',
+                'armor.head',
+                'armor.legs',
+                'weapon',
+                'weapon.mainhand',
+                'weapon.offhand',
+                'horse.saddle',
+                'horse.chest',
+                'horse.armor',
+            ];
+
+            //Push extra slots
+            for (let i = 0; i < 54; i++) {
+                if(i >= 0 && i <= 7) slots.push(`villager.${i}`);
+                if(i >= 0 && i <= 8) slots.push(`hotbar.${i}`);
+                if(i >= 0 && i <= 14) slots.push(`horse.${i}`);
+                if(i >= 0 && i <= 26) slots.push(`inventory.${i}`);
+                if(i >= 0 && i <= 26) slots.push(`enderchest.${i}`);
+                if(i >= 0 && i <= 53) slots.push(`container.${i}`);
+            }
+
+            placeholder = slots;
             break;
         case 'loot':
+            const blockLoot = mcData.blockLoot;
+            const entityLoot = mcData.entityLoot;
+
+            placeholder = Object.assign(
+                ...Object.values(blockLoot).map(loot => {
+                    return { [mcData.blocksByName[loot.block].displayName]: `blocks/${loot.block}` };
+                }),
+                ...Object.values(entityLoot).map(loot => {
+                    return { [mcData.entitiesByName[loot.entity].displayName]: `entities/${loot.entity}` };
+                }),
+                ...[
+                    'abandoned_mineshaft',
+                    'bastion_bridge',
+                    'bastion_hoglin_stable',
+                    'bastion_other',
+                    'bastion_treasure',
+                    'buried_treasure',
+                    'desert_pyramid',
+                    'end_city_treasure',
+                    'igloo_chest',
+                    'jungle_temple',
+                    'jungle_temple_dispenser',
+                    'nether_bridge',
+                    'pillager_outpost',
+                    'ruined_portal',
+                    'shipwreck_map',
+                    'shipwreck_supply',
+                    'shipwreck_treasure',
+                    'simple_dungeon',
+                    'spawn_bonus_chest',
+                    'stronghold_corridor',
+                    'stronghold_crossing',
+                    'stronghold_library',
+                    'underwater_ruin_big',
+                    'underwater_ruin_small',
+                    'woodland_mansion',
+                    'village/village_armorer',
+                    'village/village_butcher',
+                    'village/village_cartographer',
+                    'village/village_mason',
+                    'village/village_shepherd',
+                    'village/village_tannery',
+                    'village/village_weaponsmith',
+                    'village/village_desert_house',
+                    'village/village_plains_house',
+                    'village/village_savanna_house',
+                    'village/village_snowy_house',
+                    'village/village_taiga_house',
+                    'village/village_fisher',
+                    'village/village_fletcher',
+                    'village/village_temple',
+                    'village/village_toolsmith',
+                ].map(loot => {
+                    const formattedLoot = loot.split('/').pop().split('_').map(word => word.cap()).join(' ');
+                    return {
+                        [formattedLoot]: `chests/${loot}`
+                    };
+                }),
+                ...[
+                    'cat_morning_gift',
+                    'fishing/fish',
+                    'fishing/junk',
+                    'fishing/treasure',
+                    'fishing',
+                    'hero_of_the_village/armorer_gift',
+                    'hero_of_the_village/butcher_gift',
+                    'hero_of_the_village/cartographer_gift',
+                    'hero_of_the_village/cleric_gift',
+                    'hero_of_the_village/farmer_gift',
+                    'hero_of_the_village/fisherman_gift',
+                    'hero_of_the_village/fletcher_gift',
+                    'hero_of_the_village/leatherworker_gift',
+                    'hero_of_the_village/librarian_gift',
+                    'hero_of_the_village/mason_gift',
+                    'hero_of_the_village/shepherd_gift',
+                    'hero_of_the_village/toolsmith_gift',
+                    'hero_of_the_village/weaponsmith_gift',
+                    'piglin_bartering',
+                ].map(loot => {
+                    const formattedLoot = loot.split('/').pop().split('_').map(word => word.cap()).join(' ');
+                    return {
+                        [formattedLoot]: `gameplay/${loot}`
+                    }
+                })
+            );
             break;
         case 'sounds':
             break;
@@ -263,8 +376,35 @@ async function getPlaceholder(key, arguments) {
         case 'teams':
             break;
         case 'pois':
+            placeholder = [
+                'armorer',
+                'bee_nest',
+                'beehive',
+                'butcher',
+                'cartographer',
+                'cleric',
+                'farmer',
+                'fisherman',
+                'fletcher',
+                'home',
+                'leatherworker',
+                'librarian',
+                'lightning_rod',
+                'lodestone',
+                'mason',
+                'meeting',
+                'nether_portal',
+                'shepherd',
+                'toolsmith',
+                'weaponsmith'
+            ];
             break;
         case 'poi_tags':
+            placeholder = [
+                '#acquirable_job_site',
+                '#bee_home',
+                '#village'
+            ];
             break;
         case 'jigsaws':
             break;
