@@ -1,0 +1,3 @@
+files:
+  - source: /resources/languages/flat/en_us.json
+    translation: /resources/languages/flat/%locale_with_underscore%.json
