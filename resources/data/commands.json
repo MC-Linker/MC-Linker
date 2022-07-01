@@ -639,7 +639,7 @@
       "": ["%target_selectors%"]
     },
     {
-      "": ["*", "%recipes%"]
+      "": ["%recipes%"]
     }
   ],
   "reload": [
