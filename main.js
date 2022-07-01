@@ -28,7 +28,7 @@ process.on('unhandledRejection', async err => {
  * @returns {String} The formatted string.
  */
 String.prototype.cap = function() {
-    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase()
+    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 
 if(topggToken) {

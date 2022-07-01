@@ -11,6 +11,7 @@
 + Update stats autocomplete with minecraft-data
 + Combine sftp.js and ftp.js with `ftp-sftp` npm
 + Mod support (get textures and names of mod items)
++ `/online`
 + `/stats @user statTab` (more stats with one command)
 + `/schematics`
 + Use already downloaded files to execute commands (downloaded files could be replaced by someone else who connected to the same uuid)
