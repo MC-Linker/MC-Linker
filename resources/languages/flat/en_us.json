@@ -250,7 +250,7 @@
   "commands.stats.success.final.title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
   "commands.stats.success.final.fields.username.title": "%username%",
   "commands.stats.success.final.fields.username.content": "%stat_message%",
-  "commands.stats.success.final.image": "attachment://%stat_name%.png",
+  "commands.stats.success.final.thumbnail": "attachment://%stat_name%.png",
 
 
 

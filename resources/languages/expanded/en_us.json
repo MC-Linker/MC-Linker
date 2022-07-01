@@ -374,7 +374,7 @@
               "content": "%stat_message%"
             }
           },
-          "image": "attachment://%stat_name%.png"
+          "thumbnail": "attachment://%stat_name%.png"
         }
       }
     },
