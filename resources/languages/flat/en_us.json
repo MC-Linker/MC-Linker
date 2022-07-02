@@ -83,7 +83,7 @@
   "commands.help.success.no_args.fields.moderation.content": "Moderation commands such as `/ban` or `/op`.",
 
   "commands.help.success.no_args.fields.other.title": "%emoji_other_1% Other %emoji_other_2%",
-  "commands.help.success.no_args.fields.other.content": "Other commands such as `/message` or `/text`.",
+  "commands.help.success.no_args.fields.other.content": "Other commands such as `/message`.",
 
   "commands.help.success.no_args.fields.settings.title": "%emoji_settings% Settings %emoji_settings%",
   "commands.help.success.no_args.fields.settings.content": "Setup and settings such as `/connect` or `/disable`.",
@@ -401,28 +401,6 @@
 
 
 
-  "commands.loadingscreen.warnings.no_image.title": "No Image specified",
-  "commands.loadingscreen.warnings.no_image.description": "%emoji_warning% Please attach an image, specify an image url or ping someone.",
-  "commands.loadingscreen.warnings.no_image.console": "No image specified",
-
-  "commands.loadingscreen.warnings.invalid_format.title": "Invalid Image Format",
-  "commands.loadingscreen.warnings.invalid_format.description": "%emoji_warning% Invalid image format **%image_format%**",
-  "commands.loadingscreen.warnings.invalid_format.console": "Invalid image format %image_format%",
-
-  "commands.loadingscreen.errors.could_not_get_size.title": "Could Not Get Size",
-  "commands.loadingscreen.errors.could_not_get_size.description": "%emoji_error% Could not get size of image. `/help loadingscreen` for correct usage.",
-  "commands.loadingscreen.errors.could_not_get_size.console": "Could not get image size",
-
-  "commands.loadingscreen.errors.could_not_load.title": "Could Not Load Image",
-  "commands.loadingscreen.errors.could_not_load.description": "%emoji_warning% Could not load image. `/help loadingscreen` for correct usage.",
-  "commands.loadingscreen.errors.could_not_load.console": "Could not load image",
-
-  "commands.loadingscreen.success.title": "Minecraft Loading Screen",
-  "commands.loadingscreen.success.description": "%emoji_success% Here's your Minecraft loading screen! Make sure to put it in: `<resourcepack>/assets/minecraft/textures/gui/title/`",
-  "commands.loadingscreen.success.image": "attachment://mojangstudios.png",
-
-
-
   "commands.message.warnings.no_username.title": "No Username Specified",
   "commands.message.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
   "commands.message.warnings.no_username.console": "No username specified",
@@ -439,27 +417,6 @@
   "commands.message.success.description": "%emoji_success% Successfully sent message to player **%username%**",
   "commands.message.success.color": "BLUE",
 
-
-
-  "commands.text.warnings.no_font.title": "No Font Specified",
-  "commands.text.warnings.no_font.description": "%emoji_warning% Please specify a font. To make a minecraft-styled text use `minecrafter`. Use `/help text` to view all special fonts.",
-  "commands.text.warnings.no_font.console": "No font specified",
-
-  "commands.text.warnings.no_color.title": "No Color Specified",
-  "commands.text.warnings.no_color.description": "%emoji_warning% Please specify a color. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).",
-  "commands.text.warnings.no_color.console": "No color specified",
-
-  "commands.text.warnings.no_text.title": "No Text Specified",
-  "commands.text.warnings.no_text.description": "%emoji_warning% Please specify a text.",
-  "commands.text.warnings.no_text.console": "No text specified",
-
-  "commands.text.errors.could_not_apply_text.title": "Could Not Apply Text",
-  "commands.text.errors.could_not_apply_text.description": "%emoji_error% Please check if you specified a valid font or color.",
-  "commands.text.errors.could_not_apply_text.console": "Could not apply text",
-
-  "commands.text.success.title": "Custom Text Image",
-  "commands.text.success.description": "%emoji_success% Here's your custom text image.",
-  "commands.text.success.image": "attachment://text_image.png",
 
 
   "commands.chatchannel.warnings.no_permission.title": "No Permission",
@@ -1309,19 +1266,6 @@
 
 
 
-  "data.loadingscreen.name": "loadingscreen",
-  "data.loadingscreen.long_description": "Convert an attachment, image-link or @mention to a minecraft loading-screen.",
-  "data.loadingscreen.short_description": "Convert an image attachment to a minecraft loading-screen.",
-  "data.loadingscreen.usage": "/loadingscreen <attachment|image-link|@mention>",
-  "data.loadingscreen.example": "/loadingscreen @Lianecx\n/loadingscreen attachment.png",
-
-  "data.loadingscreen.options.attachment.type": "ATTACHMENT",
-  "data.loadingscreen.options.attachment.name": "attachment",
-  "data.loadingscreen.options.attachment.description": "Set the image attachment you want to convert.",
-  "data.loadingscreen.options.attachment.required": true,
-
-
-
   "data.message.name": "message",
   "data.message.long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).",
   "data.message.short_description": "Send private chat messages to members on the server.",
@@ -1337,29 +1281,6 @@
   "data.message.options.message.name": "message",
   "data.message.options.message.description": "Set the (private) message you want to send to the user.",
   "data.message.options.message.required": true,
-
-
-
-  "data.text.name": "text",
-  "data.text.long_description": "Create images with text with different fonts and colors. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`",
-  "data.text.short_description": "Create images with text with different fonts and colors.",
-  "data.text.usage": "/text <Any Font> <color> <Your text>",
-  "data.text.example": "/text minecraft red I love this bot!",
-
-  "data.text.options.font.type": "STRING",
-  "data.text.options.font.name": "font",
-  "data.text.options.font.description": "Set a font for your text.",
-  "data.text.options.font.required": true,
-
-  "data.text.options.color.type": "STRING",
-  "data.text.options.color.name": "color",
-  "data.text.options.color.description": "Set the color for your text.",
-  "data.text.options.color.required": true,
-
-  "data.text.options.text.type": "STRING",
-  "data.text.options.text.name": "text",
-  "data.text.options.text.description": "Enter your text here.",
-  "data.text.options.text.required": true,
 
 
 

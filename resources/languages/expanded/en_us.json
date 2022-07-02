@@ -115,7 +115,7 @@
             },
             "other": {
               "title": "%emoji_other_1% Other %emoji_other_2%",
-              "content": "Other commands such as `/message` or `/text`."
+              "content": "Other commands such as `/message`."
             },
             "settings": {
               "title": "%emoji_settings% Settings %emoji_settings%",
@@ -576,37 +576,6 @@
         }
       }
     },
-    "loadingscreen": {
-      "warnings": {
-        "no_image": {
-          "title": "No Image specified",
-          "description": "%emoji_warning% Please attach an image, specify an image url or ping someone.",
-          "console": "No image specified"
-        },
-        "invalid_format": {
-          "title": "Invalid Image Format",
-          "description": "%emoji_warning% Invalid image format **%image_format%**",
-          "console": "Invalid image format %image_format%"
-        }
-      },
-      "errors": {
-        "could_not_get_size": {
-          "title": "Could Not Get Size",
-          "description": "%emoji_error% Could not get size of image. `/help loadingscreen` for correct usage.",
-          "console": "Could not get image size"
-        },
-        "could_not_load": {
-          "title": "Could Not Load Image",
-          "description": "%emoji_warning% Could not load image. `/help loadingscreen` for correct usage.",
-          "console": "Could not load image"
-        }
-      },
-      "success": {
-        "title": "Minecraft Loading Screen",
-        "description": "%emoji_success% Here's your Minecraft loading screen! Make sure to put it in: `<resourcepack>/assets/minecraft/textures/gui/title/`",
-        "image": "attachment://mojangstudios.png"
-      }
-    },
     "message": {
       "warnings": {
         "no_username": {
@@ -629,37 +598,6 @@
         "title": "Send Message",
         "description": "%emoji_success% Successfully sent message to player **%username%**",
         "color": "BLUE"
-      }
-    },
-    "text": {
-      "warnings": {
-        "no_font": {
-          "title": "No Font Specified",
-          "description": "%emoji_warning% Please specify a font. To make a minecraft-styled text use `minecrafter`. Use `/help text` to view all special fonts.",
-          "console": "No font specified"
-        },
-        "no_color": {
-          "title": "No Color Specified",
-          "description": "%emoji_warning% Please specify a color. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).",
-          "console": "No color specified"
-        },
-        "no_text": {
-          "title": "No Text Specified",
-          "description": "%emoji_warning% Please specify a text.",
-          "console": "No text specified"
-        }
-      },
-      "errors": {
-        "could_not_apply_text": {
-          "title": "Could Not Apply Text",
-          "description": "%emoji_error% Please check if you specified a valid font or color.",
-          "console": "Could not apply text"
-        }
-      },
-      "success": {
-        "title": "Custom Text Image",
-        "description": "%emoji_success% Here's your custom text image.",
-        "image": "attachment://text_image.png"
       }
     },
     "chatchannel": {
@@ -1854,21 +1792,6 @@
         }
       }
     },
-    "loadingscreen": {
-      "name": "loadingscreen",
-      "long_description": "Convert an attachment, image-link or @mention to a minecraft loading-screen.",
-      "short_description": "Convert an image attachment to a minecraft loading-screen.",
-      "usage": "/loadingscreen <attachment|image-link|@mention>",
-      "example": "/loadingscreen @Lianecx\n/loadingscreen attachment.png",
-      "options": {
-        "attachment": {
-          "type": "ATTACHMENT",
-          "name": "attachment",
-          "description": "Set the image attachment you want to convert.",
-          "required": true
-        }
-      }
-    },
     "message": {
       "name": "message",
       "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).",
@@ -1886,33 +1809,6 @@
           "type": "STRING",
           "name": "message",
           "description": "Set the (private) message you want to send to the user.",
-          "required": true
-        }
-      }
-    },
-    "text": {
-      "name": "text",
-      "long_description": "Create images with text with different fonts and colors. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`",
-      "short_description": "Create images with text with different fonts and colors.",
-      "usage": "/text <Any Font> <color> <Your text>",
-      "example": "/text minecraft red I love this bot!",
-      "options": {
-        "font": {
-          "type": "STRING",
-          "name": "font",
-          "description": "Set a font for your text.",
-          "required": true
-        },
-        "color": {
-          "type": "STRING",
-          "name": "color",
-          "description": "Set the color for your text.",
-          "required": true
-        },
-        "text": {
-          "type": "STRING",
-          "name": "text",
-          "description": "Enter your text here.",
           "required": true
         }
       }
