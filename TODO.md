@@ -1,13 +1,13 @@
 # TODO SMP Bot
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ **Rewrite DESCRIPTION part of REDME**
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + **Make plugin link more accessible (in error messages etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
-+ **Add font/color autocomplete for `/text`**
-+ **Use minecraft data for durability (`/inventory`) and items/entities (`/stats`)**
++ **Use minecraft data for durability (`/inventory`)**
 + Add button to show enchantments and shulkerboxes in /inventory
-+ Support for multiple connections
++ Support for multiple connections (or bungee support)
 + Update stats autocomplete with minecraft-data
 + Combine sftp.js and ftp.js with `ftp-sftp` npm
 + Mod support (get textures and names of mod items)
@@ -41,6 +41,6 @@
 + Bedrock support
 
 # TODO Plugin
-+ **Release plugins for lower versions of minecraft on github**
++ Release plugins for lower versions, bungee and sponge on GitHub
 + `/dm` (dm discord user)
 + Show replies to chat messages
