@@ -111,7 +111,7 @@
             },
             "moderation": {
               "title": "%emoji_moderation% Moderation %emoji_moderation%",
-              "content": "Moderation commands such as `/ban` or `/op`."
+              "content": "Moderation commands such as `/ban` or `/command`."
             },
             "other": {
               "title": "%emoji_other_1% Other %emoji_other_2%",
@@ -816,8 +816,8 @@
       "errors": {
         "could_not_connect_ftp": {
           "title": "Could Not Connect",
-          "description": "%emoji_error% Could not connect to server with ftp or sftp. Please check your credentials and try again.",
-          "console": "Could not connect with ftp or sftp."
+          "description": "%emoji_error% Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again.",
+          "console": "Could not connect with ftp, sftp or ftps."
         },
         "could_not_connect_plugin": {
           "title": "Could Not Connect",
@@ -1056,15 +1056,10 @@
     },
     "ftp": {
       "errors": {
-        "unknown_ftp_error": {
-          "title": "Could Not Connect",
-          "description": "%emoji_error% Could not connect to server.",
-          "console": "Unknown ftp error %error_message%"
-        },
         "could_not_connect": {
           "title": "Could Not Connect",
           "description": "%emoji_error% Could not connect to server.",
-          "console": "Could not connect to server %error%"
+          "console": "Could not connect to server with %protocol% %error%"
         },
         "could_not_get": {
           "title": "Could Not Download",
@@ -1085,7 +1080,7 @@
           "console": "Put file [%path%]"
         },
         "connect": {
-          "console": "Connected with ftp"
+          "console": "Connected with %protocol%"
         },
         "find": {
           "console": "Found file %path%"
@@ -1870,7 +1865,7 @@
     },
     "connect": {
       "name": "connect",
-      "long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**",
+      "long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**",
       "short_description": "Connect your minecraft server or account with the bot.",
       "usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> <port> <version>",
       "example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password port 1.17",
@@ -1878,7 +1873,7 @@
         "ftp": {
           "type": "SUBCOMMAND",
           "name": "ftp",
-          "description": "Connect your Minecraft server using ftp/sftp.",
+          "description": "Connect your Minecraft server using ftp/sftp/ftps.",
           "options": {
             "host": {
               "type": "STRING",
@@ -1902,7 +1897,7 @@
               "type": "INTEGER",
               "name": "port",
               "description": "Set the ftp-port.",
-              "required": true,
+              "required": false,
               "min_value": 1,
               "max_value": 65536
             },
@@ -1910,7 +1905,7 @@
               "type": "STRING",
               "name": "version",
               "description": "Set the Minecraft version.",
-              "required": true,
+              "required": false,
               "choices": [
                 [
                   "1.5",
@@ -1985,7 +1980,7 @@
         "plugin": {
           "type": "SUBCOMMAND",
           "name": "plugin",
-          "description": "Connect your Minecraft server using ftp/sftp.",
+          "description": "Connect your Minecraft server using ftp/sftp/ftps.",
           "options": {
             "ip": {
               "type": "STRING",
@@ -2004,7 +1999,7 @@
         "account": {
           "type": "SUBCOMMAND",
           "name": "account",
-          "description": "Connect your Minecraft server using ftp/sftp.",
+          "description": "Connect your Minecraft server using ftp/sftp/ftps.",
           "options": {
             "username": {
               "type": "STRING",
