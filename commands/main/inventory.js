@@ -5,6 +5,7 @@ const ftp = require('../../api/ftp');
 const Canvas = require('canvas');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
+const mcData = require('minecraft-data')('1.19');
 const { keys, addPh, getEmbedBuilder, ph } = require('../../api/messages');
 
 async function execute(message, args) {
@@ -53,7 +54,7 @@ async function execute(message, args) {
             for(let i = 0; i < inventory.length; i++) {
                 const slot = inventory[i]['Slot'].value;
                 const id = inventory[i].id.value;
-                const itemImgName = id.split(':').pop();
+                const itemId = id.split(':').pop();
                 const count = inventory[i]['Count'].value;
                 const damage = inventory[i].tag?.value['Damage']?.value;
                 const enchantments = inventory[i].tag?.value['Enchantments']?.value.value;
@@ -130,13 +131,13 @@ async function execute(message, args) {
 
                 try {
                     //Draw image
-                    const itemImg = await Canvas.loadImage(`./resources/images/minecraft/items/${itemImgName}.png`);
+                    const itemImg = await Canvas.loadImage(`./resources/images/minecraft/items/${itemId}.png`);
                     ctx.drawImage(itemImg, 0, 0, 80, 80, slotDims[0], slotDims[1], 32, 32);
                 } catch (err) {
                     //Draw name
-                    console.log(addPh(keys.commands.inventory.errors.no_image.console, { "item_name": itemImgName }));
+                    console.log(addPh(keys.commands.inventory.errors.no_image.console, { "item_name": itemId }));
                     ctx.font = '6px Minecraft'; ctx.fillStyle = '#000000';
-                    ctx.fillText(itemImgName, slotDims[0], slotDims[1] + 16);
+                    ctx.fillText(itemId, slotDims[0], slotDims[1] + 16);
                 }
 
                 //Draw count
@@ -146,10 +147,7 @@ async function execute(message, args) {
                 }
 
                 if(damage) {
-                    const durabilityJson = await fs.readFile('./resources/data/durability.json', 'utf-8');
-
-                    const durabilityData = JSON.parse(durabilityJson);
-                    const maxDurability = durabilityData[itemImgName];
+                    const maxDurability = mcData.itemsByName[itemId].maxDurability;
 
                     if(maxDurability) {
                         const durabilityPercent = 100-damage / maxDurability * 100;
