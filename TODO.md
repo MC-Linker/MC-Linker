@@ -3,6 +3,7 @@
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
 + Add JSDoc
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
++ **Add missing placeholders of `/command` and maybe extract the data to another file.**
 + **Make plugin link more accessible (in error messages etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
 + Add button to show enchantments and shulkerboxes in /inventory
