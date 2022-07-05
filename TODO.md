@@ -1,7 +1,8 @@
 # TODO SMP Bot
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
-+ **Rewrite DESCRIPTION part of REDME**
++ Add JSDoc
++ **Rewrite DESCRIPTION part of README**
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + **Make plugin link more accessible (in error messages etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
