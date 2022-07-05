@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const dns = require('dns/promises');
 const utils = require('../../api/utils.js');
 const Discord = require('discord.js');
-const sftp = require('../../api/sftp');
 const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const { pluginPort } = require('../../config.json');
@@ -23,8 +22,8 @@ async function execute(message, args) {
         const host = args[1];
         let user = args[2];
         let password = args[3];
-        const port = args[4];
-        const version = args[5];
+        const port = args[4] ?? 21;
+        const version = args[5] ?? '19';
         let path = args[6];
 
         if (!host || !user || !password || !port) {
@@ -49,25 +48,15 @@ async function execute(message, args) {
         let ftpData = {};
 
         //Try ftp
-        const connectFtp = await ftp.connect({
-            host: host,
-            pass: password,
-            user: user,
-            port: port
-        });
+        const connectFtp = await ftp.connect({ host, password, user, port, protocol: 'ftp' });
 
         //Could not connect with ftp
-        if(connectFtp !== true) {
+        if(!connectFtp) {
             //Try sftp
-            const connectSftp = await sftp.connect({
-                host: host,
-                pass: password,
-                user: user,
-                port: port,
-            });
+            const connectSftp = await ftp.connect({ host, password, user, port, protocol: 'sftp' });
 
             //Could not connect with sftp
-            if (connectSftp !== true) {
+            if (!connectSftp) {
                 message.respond(keys.commands.connect.errors.could_not_connect_ftp);
                 return;
             }
@@ -76,12 +65,7 @@ async function execute(message, args) {
 
             if(!path) {
                 message.respond(keys.commands.connect.warnings.searching_level);
-                path = await sftp.find('level.dat', '', 3, {
-                    host: host,
-                    pass: password,
-                    user: user,
-                    port: port,
-                });
+                path = await ftp.find('level.dat', '', 3, { host, password, user, port, protocol: 'sftp' });
                 if(!path) {
                     message.respond(keys.commands.connect.errors.could_not_find_level);
                     return;
@@ -102,12 +86,7 @@ async function execute(message, args) {
 
             if(!path) {
                 message.respond(keys.commands.connect.warnings.searching_level);
-                path = await ftp.find('level.dat', '', 3, {
-                    host: host,
-                    pass: password,
-                    user: user,
-                    port: port,
-                });
+                path = await ftp.find('level.dat', '', 3, { host, password, user, port, protocol: 'ftp' });
                 if(!path) {
                     message.respond(keys.commands.connect.errors.could_not_find_level);
                     return;
