@@ -14,7 +14,7 @@ POST http://localhost:11111/file/put/?path=/path/to/file
 
 Authorization: Basic hash
 
-< ./command_template.txt
+< ./command_template.js
 
 ###
 
