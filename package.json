@@ -30,14 +30,14 @@
     "fs-extra": "^10.1.0",
     "ftp-sftp": "^1.0.2",
     "minecraft-data": "^3.5.0",
-    "nbt": "^0.8.1",
     "node-fetch": "^2.6.7",
+    "prismarine-nbt": "^2.2.1",
     "probe-image-size": "^7.2.3",
     "topgg-autoposter": "^2.0.1"
   },
   "devDependencies": {
-    "jest": "^28.1.0",
     "corde": "^4.4.6",
+    "jest": "^28.1.0",
     "lodash": "^4.17.21"
   }
 }
