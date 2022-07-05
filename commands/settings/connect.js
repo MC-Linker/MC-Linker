@@ -23,13 +23,15 @@ async function execute(message, args) {
         let user = args[2];
         let password = args[3];
         const port = args[4] ?? 21;
-        const version = args[5] ?? '19';
+        let version = args[5] ?? '19';
         let path = args[6];
+
+        version = parseInt(version.split('.').pop());
 
         if (!host || !user || !password || !port) {
             message.respond(keys.commands.connect.warnings.no_credentials);
             return;
-        } else if(!version) {
+        } else if(isNaN(version)) {
             message.respond(keys.commands.connect.warnings.no_version);
             return;
         } else if(port <= 0 || port > 65536) {
@@ -40,69 +42,37 @@ async function execute(message, args) {
         if(user === 'none') user = '';
         if(password === 'none') password = '';
 
-        if (version.split('.').pop() <= 11 && version.split('.').pop() > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.fromStd(message)));
-        else if (version.split('.').pop() <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.fromStd(message)));
+        //Send version warnings
+        if (version <= 11 && version > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.fromStd(message)));
+        else if (version <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.fromStd(message)));
 
         message.respond(keys.commands.connect.warnings.connecting);
 
-        let ftpData = {};
+        const protocol = await ftp.connect({ host, password, user, port });
+        if(!protocol) {
+            message.respond(keys.commands.connect.errors.could_not_connect_ftp);
+            return;
+        }
 
-        //Try ftp
-        const connectFtp = await ftp.connect({ host, password, user, port, protocol: 'ftp' });
-
-        //Could not connect with ftp
-        if(!connectFtp) {
-            //Try sftp
-            const connectSftp = await ftp.connect({ host, password, user, port, protocol: 'sftp' });
-
-            //Could not connect with sftp
-            if (!connectSftp) {
-                message.respond(keys.commands.connect.errors.could_not_connect_ftp);
+        //Search for world path if not given
+        if(!path) {
+            message.respond(keys.commands.connect.warnings.searching_level);
+            path = await ftp.find('level.dat', '', 3, { host, password, user, port, protocol });
+            if(!path) {
+                message.respond(keys.commands.connect.errors.could_not_find_level);
                 return;
             }
-
-            //Connected with sftp
-
-            if(!path) {
-                message.respond(keys.commands.connect.warnings.searching_level);
-                path = await ftp.find('level.dat', '', 3, { host, password, user, port, protocol: 'sftp' });
-                if(!path) {
-                    message.respond(keys.commands.connect.errors.could_not_find_level);
-                    return;
-                }
-            }
-
-            ftpData = {
-                "host": host,
-                "user": user,
-                "password": password,
-                "port": port,
-                "path": path,
-                "version": version,
-                "protocol": 'sftp'
-            }
-        } else {
-            //Connected with ftp
-
-            if(!path) {
-                message.respond(keys.commands.connect.warnings.searching_level);
-                path = await ftp.find('level.dat', '', 3, { host, password, user, port, protocol: 'ftp' });
-                if(!path) {
-                    message.respond(keys.commands.connect.errors.could_not_find_level);
-                    return;
-                }
-            }
-
-            ftpData = {
-                "host": host,
-                "user": user,
-                "password": password,
-                "port": port,
-                "path": path,
-                "version": version,
-                "protocol": 'ftp'
-            }
         }
+
+        const ftpData = {
+            "host": host,
+            "user": user,
+            "password": password,
+            "port": port,
+            "path": path,
+            "version": version,
+            "protocol": protocol,
+        };
 
         //Connected with either ftp or sftp
         //Save connection

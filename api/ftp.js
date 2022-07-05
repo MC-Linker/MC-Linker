@@ -57,12 +57,26 @@ function put(getPath, putPath, message) {
 
 function connect(credentials) {
 	return new Promise(async resolve => {
-		const ftpClient = await getFtpClient(credentials);
-		if (!ftpClient) return resolve(false);
-		ftpClient.client.end();
+		//Try connecting with ftp
+		credentials.protocol = 'ftp';
+		const ftpConnect = await tryConnect();
+		if(ftpConnect) return resolve(credentials.protocol);
 
-		console.log(addPh(keys.api.ftp.success.connect.console, { "protocol": credentials.protocol }));
-		resolve(true);
+		//Try connecting with sftp
+		credentials.protocol = 'sftp';
+		const sftpConnect = await tryConnect();
+		if(sftpConnect) resolve(credentials.protocol);
+		else resolve(false);
+
+
+		async function tryConnect() {
+			const ftpClient = await getFtpClient(credentials);
+			if (!ftpClient) return false;
+			ftpClient.client.end();
+
+			console.log(addPh(keys.api.ftp.success.connect.console, { "protocol": credentials.protocol }));
+			return true;
+		}
 	});
 }
 
