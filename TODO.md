@@ -2,13 +2,12 @@
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
 + Add JSDoc
-+ **Rewrite DESCRIPTION part of README**
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + **Make plugin link more accessible (in error messages etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
 + Add button to show enchantments and shulkerboxes in /inventory
 + Support for multiple connections (or bungee support)
-+ Mod support (get textures and names of mod items)
++ Mod support (get textures and names of mod items**)**
 + `/online`
 + `/stats @user statTab` (more stats with one command)
 + `/schematics`

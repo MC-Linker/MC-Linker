@@ -1617,7 +1617,7 @@
       "long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
       "short_description": "Execute any command on the minecraft-server.",
       "usage": "/command <command-name> [arguments]",
-      "example": "/command gamemode creative Lianecx\n/command give Lianecx golden_apple",
+      "example": "/command gamemode creative Lianecx\n/command give Lianecx Golden Apple\n/command tp @a 0 0 0",
       "options": {
         "command": {
           "type": "STRING",
