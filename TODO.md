@@ -6,11 +6,8 @@
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + **Make plugin link more accessible (in error messages etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
-+ **Use minecraft data for durability (`/inventory`)**
 + Add button to show enchantments and shulkerboxes in /inventory
 + Support for multiple connections (or bungee support)
-+ Update stats autocomplete with minecraft-data
-+ Combine sftp.js and ftp.js with `ftp-sftp` npm
 + Mod support (get textures and names of mod items)
 + `/online`
 + `/stats @user statTab` (more stats with one command)
@@ -19,7 +16,7 @@
 + `/settings <lang>`
 + `/totem`
 + `/scoreboard` (image of scoreboard)
-+ Context Menus (inventory, ban, unban)
++ Context Menus (inventory, ban, unban, op, deop, kick, add to whitelist, remove from whitelist)
 + Crafter Bot Commands (with `minecraft-data` npm)
 + `/setup`
 + `/add mods/plugins/datapacks/texturepack`
