@@ -28,16 +28,15 @@
     "discord.js": "^13.6.0",
     "express": "^4.17.3",
     "fs-extra": "^10.1.0",
-    "ftp": "^0.3.10",
-    "jest": "^28.1.0",
+    "ftp-sftp": "^1.0.2",
     "minecraft-data": "^3.5.0",
     "nbt": "^0.8.1",
     "node-fetch": "^2.6.7",
     "probe-image-size": "^7.2.3",
-    "ssh2-sftp-client": "^8.0.0",
     "topgg-autoposter": "^2.0.1"
   },
   "devDependencies": {
+    "jest": "^28.1.0",
     "corde": "^4.4.6",
     "lodash": "^4.17.21"
   }
