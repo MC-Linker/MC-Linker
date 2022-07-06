@@ -8,12 +8,7 @@ async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
     const focused = interaction.options.getFocused().toLowerCase();
 
-    let imgType;
-    if(subcommand === 'custom') imgType = 'custom';
-    else if(subcommand === 'killed' || subcommand === 'killed_by') imgType = 'entities';
-    else imgType = 'items';
-
-    const stats = await utils.searchStats(focused, imgType);
+    const stats = await utils.searchStats(focused, subcommand);
     interaction.respond(stats).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
 }
 
@@ -21,7 +16,7 @@ async function execute(message, args) {
     let category = args[0];
     let stat = args[1];
     const user = message.mentions.users.first() ?? args[2];
-    const argPlaceholder = { "stat_category": category, "stat_name": stat, "username": user?.username ?? user };
+    const argPlaceholder = { "stat_category": category, "username": user?.username ?? user };
 
      if(!category) {
         message.respond(keys.commands.stats.warnings.no_category);
@@ -50,67 +45,61 @@ async function execute(message, args) {
 
     const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./userdata/stats/${uuidv4}.json`, message);
     if(!statFile) return;
+    const statData = JSON.parse(statFile);
 
-    fs.readJson(`./userdata/stats/${uuidv4}.json`, 'utf8', async (err, statData) => {
-        if (err) {
-            message.respond(keys.commands.stats.errors.could_not_read_file, ph.fromError(err));
+    try {
+        const version = await utils.getVersion(message.guild.id, message) ?? 19;
+
+        let statMatch;
+        if (version <= 12) {
+            if(!stat.includes('.')) stat = `minecraft.${stat}`;
+            statMatch = statData[`stat.${category}.${stat}`];
+            stat = stat.split('.').pop();
+        } else {
+            const filteredCategory = Object.keys(statData.stats)?.find(key => key.endsWith(category));
+            const filteredStat = Object.keys(statData.stats?.[filteredCategory]).find(key => key.endsWith(stat));
+            statMatch = statData.stats?.[filteredCategory]?.[filteredStat];
+
+            stat = stat.split(':').pop();
+            category = category.split(':').pop();
+        }
+
+        if (!statMatch) {
+            message.respond(keys.commands.stats.warnings.no_match, argPlaceholder);
             return;
         }
 
-        try {
-            const version = await utils.getVersion(message.guild.id, message);
+        let statMessage;
+        statMessage = addPh(keys.commands.stats.success.stat_message[category], argPlaceholder, { "stat_value": statMatch });
+        if (stat === 'play_time' || stat === 'time_played') {
+            statMessage = addPh(
+                keys.commands.stats.success.stat_message.time_played,
+                argPlaceholder, { "stat_value": (statMatch / 20 / 3600).toFixed(2) } //Convert ticks to hours
+            );
+        }
 
-            let statMatch;
-            if (version <= 12) {
-                if(!stat.includes('.')) stat = `minecraft.${stat}`;
-                statMatch = statData[`stat.${category}.${stat}`];
-                stat = stat.split('.').pop();
-            } else {
-                const filteredCategory = Object.keys(statData.stats)?.find(key => key.endsWith(category));
-                const filteredStat = Object.keys(statData.stats?.[filteredCategory]).find(key => key.endsWith(stat));
-                statMatch = statData.stats?.[filteredCategory]?.[filteredStat];
+        const statEmbed = getEmbedBuilder(
+            keys.commands.stats.success.final,
+            ph.fromStd(message),
+            argPlaceholder,
+            { "stat_message": statMessage }
+        );
 
-                stat = stat.split(':').pop();
-                category = category.split(':').pop();
-            }
+        let imgType;
+        if(category === 'killed' || category === 'killed_by') imgType = 'entities';
+        else imgType = 'items';
 
-            if (!statMatch) {
-                message.respond(keys.commands.stats.warnings.no_match, argPlaceholder);
+        fs.access(`./resources/images/minecraft/${imgType}/${stat}.png`, err => {
+            if (err) {
+                message.respond(keys.commands.stats.warnings.no_image, { "stat_name": stat });
+                message.replyOptions({ embeds: [statEmbed] });
                 return;
             }
-
-            let statMessage;
-            statMessage = addPh(keys.commands.stats.success.stat_message[category], argPlaceholder, { "stat_value": statMatch });
-            if (stat === 'play_time' || stat === 'time_played') {
-                statMessage = addPh(
-                    keys.commands.stats.success.stat_message.time_played,
-                    argPlaceholder, { "stat_value": (statMatch / 20 / 3600).toFixed(2) } //Convert ticks to hours
-                );
-            }
-
-            const statEmbed = getEmbedBuilder(
-                keys.commands.stats.success.final,
-                ph.fromStd(message),
-                argPlaceholder,
-                { "stat_message": statMessage }
-            );
-
-            let imgType;
-            if(category === 'killed' || category === 'killed_by') imgType = 'entities';
-            else imgType = 'items';
-
-            fs.access(`./resources/images/minecraft/${imgType}/${stat}.png`, err => {
-                if (err) {
-                    message.respond(keys.commands.stats.warnings.no_image, { "stat_name": stat });
-                    message.replyOptions({ embeds: [statEmbed] });
-                    return;
-                }
-                message.replyOptions({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
-            });
-        } catch (err) {
-            message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.fromError(err));
-        }
-    });
+            message.replyOptions({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
+        });
+    } catch (err) {
+        message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.fromError(err));
+    }
 }
 
 module.exports = { execute, autocomplete };
