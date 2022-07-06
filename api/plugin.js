@@ -507,7 +507,6 @@ function get(getPath, putPath, message) {
     return new Promise(async resolve => {
         if(!await checkProtocol(message.guildId, message)) return resolve(false);
 
-
         const ip = await utils.getIp(message.guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(message.guildId, message);
@@ -528,10 +527,11 @@ function get(getPath, putPath, message) {
                 message.respond(keys.api.plugin.errors.could_not_stream, { "path": getPath, "error": err });
                 resolve(false);
             });
-            fileStream.on('finish', () => {
+            fileStream.on('finish', async () => {
                 fileStream.close();
                 message.respond(keys.api.plugin.success.get, { "path": getPath });
-                resolve(true);
+
+                resolve(await fs.readFile(putPath));
             });
         } catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
@@ -543,7 +543,6 @@ function get(getPath, putPath, message) {
 function put(getPath, putPath, message) {
     return new Promise(async resolve => {
         if(!await checkProtocol(message.guildId, message)) return resolve(false);
-
 
         const ip = await utils.getIp(message.guildId, message);
         if(!ip) return resolve(false);
@@ -576,7 +575,6 @@ function put(getPath, putPath, message) {
 async function find(start, maxDepth, file, message) {
     return new Promise(async resolve => {
         if(!await checkProtocol(message.guildId, message)) return resolve(false);
-
 
         const ip = await utils.getIp(message.guildId, message);
         if (!ip) return resolve(false);

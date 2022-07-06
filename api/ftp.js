@@ -17,12 +17,19 @@ function get(getPath, putPath, message) {
 
 		try {
 			const file = await ftpClient.get(getPath);
-			file.pipe(fs.createWriteStream(putPath));
-			file.on('end', () => {
-				message.respond(keys.api.ftp.success.get, { "path": putPath });
-				resolve(true);
+			const writeStream = fs.createWriteStream(putPath);
 
+			file.pipe(writeStream);
+			file.on('finish', async () => {
+				writeStream.close();
+				message.respond(keys.api.ftp.success.get, { "path": putPath });
 				ftpClient.client.end();
+
+				resolve(await fs.readFile(putPath));
+			});
+			file.on('error', err => {
+				message.respond(keys.api.ftp.errors.could_not_stream, { "path": getPath, "error": err });
+				resolve(false);
 			});
 		} catch(err) {
 			message.respond(keys.api.ftp.errors.could_not_get, { "path": putPath }, ph.fromError(err));
