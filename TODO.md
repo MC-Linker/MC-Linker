@@ -1,6 +1,10 @@
 # TODO SMP Bot
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ **Make methods not require `message` parameter**
++ **Make `get` methods return file content**
++ Get online player's inventories from the plugin instead of file
++ Create block, item and entity images with code
 + Add JSDoc
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + **Add missing placeholders of `/command` and maybe extract the data to another file.**

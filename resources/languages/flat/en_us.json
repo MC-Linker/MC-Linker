@@ -147,10 +147,6 @@
   "commands.advancements.warnings.not_completed.description": "%emoji_warning% Advancement **%advancement_title%** not completed/unlocked or misspelled!",
   "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
 
-  "commands.advancements.errors.could_not_read_file.title": "Could Not Read File",
-  "commands.advancements.errors.could_not_read_file.description": "%emoji_error% Could not read advancement file. Please try again.",
-  "commands.advancements.errors.could_not_read_file.console": "Error reading advancement file from disk %error%",
-
   "commands.advancements.errors.could_not_autocomplete.console": "Could not respond to advancements autocomplete",
 
   "commands.advancements.success.base.title": "%username%",
@@ -176,10 +172,6 @@
   "commands.inventory.warnings.no_username.title": "No Username Specified",
   "commands.inventory.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
   "commands.inventory.warnings.no_username.console": "No username specified",
-
-  "commands.inventory.errors.could_not_read_file.title": "Could Not Read File",
-  "commands.inventory.errors.could_not_read_file.description": "%emoji_error% Could not read inventory file. Please try again.",
-  "commands.inventory.errors.could_not_read_file.console": "Error reading inventory file from disk %error%",
 
   "commands.inventory.errors.could_not_parse.title": "Could not Read Inventory",
   "commands.inventory.errors.could_not_parse.description": "%emoji_error% Could not read inventory.",
@@ -226,10 +218,6 @@
 
   "commands.stats.warnings.no_image.console": "No Image available for %stat_name%",
 
-  "commands.stats.errors.could_not_read_file.title": "Could Not Read File",
-  "commands.stats.errors.could_not_read_file.description": "%emoji_error% Could not read stats file. Please try again.",
-  "commands.stats.errors.could_not_read_file.console": "Error reading stats file from disk %error%",
-
   "commands.stats.errors.could_not_parse.title": "Could Not Find Category",
   "commands.stats.errors.could_not_parse.description": "%emoji_error% %username% has never done anything in this category.",
   "commands.stats.errors.could_not_parse.console": "Error trying to parse stat json %error%",
@@ -245,12 +233,13 @@
   "commands.stats.success.stat_message.dropped": "has dropped **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.killed": "has killed **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
-  "commands.stats.success.stat_message.time_played": "has played for **%stat_value%** hours",
+  "commands.stats.success.stat_message.time": "**%stat_name%**: **%stat_value%** hours",
+  "commands.stats.success.stat_message.distance": "**%stat_name%**: **%stat_value%** meters",
 
   "commands.stats.success.final.title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
   "commands.stats.success.final.fields.username.title": "%username%",
   "commands.stats.success.final.fields.username.content": "%stat_message%",
-  "commands.stats.success.final.thumbnail": "attachment://%stat_name%.png",
+  "commands.stats.success.final.thumbnail": "attachment://%stat_value%.png",
 
 
 
@@ -754,6 +743,10 @@
   "api.ftp.errors.could_not_put.title": "Could Not Upload",
   "api.ftp.errors.could_not_put.description": "%emoji_error% Could not upload file",
   "api.ftp.errors.could_not_put.console": "Could not put file [%path%] %error%",
+
+  "api.ftp.errors.could_not_stream.title": "Could Not Download",
+  "api.ftp.errors.could_not_stream.description": "%emoji_error% Could not download files. Please try again.",
+  "api.ftp.errors.could_not_stream.console": "Could not stream file [%path%] %error%",
 
   "api.ftp.success.get.console": "Got file [%path%]",
   "api.ftp.success.put.console": "Put file [%path%]",

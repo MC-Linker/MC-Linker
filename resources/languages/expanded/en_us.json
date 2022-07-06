@@ -210,11 +210,6 @@
         }
       },
       "errors": {
-        "could_not_read_file": {
-          "title": "Could Not Read File",
-          "description": "%emoji_error% Could not read advancement file. Please try again.",
-          "console": "Error reading advancement file from disk %error%"
-        },
         "could_not_autocomplete": {
           "console": "Could not respond to advancements autocomplete"
         }
@@ -268,11 +263,6 @@
         }
       },
       "errors": {
-        "could_not_read_file": {
-          "title": "Could Not Read File",
-          "description": "%emoji_error% Could not read inventory file. Please try again.",
-          "console": "Error reading inventory file from disk %error%"
-        },
         "could_not_parse": {
           "title": "Could not Read Inventory",
           "description": "%emoji_error% Could not read inventory.",
@@ -339,11 +329,6 @@
         }
       },
       "errors": {
-        "could_not_read_file": {
-          "title": "Could Not Read File",
-          "description": "%emoji_error% Could not read stats file. Please try again.",
-          "console": "Error reading stats file from disk %error%"
-        },
         "could_not_parse": {
           "title": "Could Not Find Category",
           "description": "%emoji_error% %username% has never done anything in this category.",
@@ -364,7 +349,8 @@
           "dropped": "has dropped **%stat_value% %stat_name%**",
           "killed": "has killed **%stat_value% %stat_name%**",
           "killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
-          "time_played": "has played for **%stat_value%** hours"
+          "time": "**%stat_name%**: **%stat_value%** hours",
+          "distance": "**%stat_name%**: **%stat_value%** meters"
         },
         "final": {
           "title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
@@ -374,7 +360,7 @@
               "content": "%stat_message%"
             }
           },
-          "thumbnail": "attachment://%stat_name%.png"
+          "thumbnail": "attachment://%stat_value%.png"
         }
       }
     },
@@ -1070,6 +1056,11 @@
           "title": "Could Not Upload",
           "description": "%emoji_error% Could not upload file",
           "console": "Could not put file [%path%] %error%"
+        },
+        "could_not_stream": {
+          "title": "Could Not Download",
+          "description": "%emoji_error% Could not download files. Please try again.",
+          "console": "Could not stream file [%path%] %error%"
         }
       },
       "success": {
