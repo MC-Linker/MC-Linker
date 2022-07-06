@@ -186,7 +186,6 @@ async function getPlaceholder(key, arguments) {
         "white",
     ];
 
-    //TODO add all placeholders
     let placeholder = {};
     switch (key) {
         case 'advancements':
@@ -220,14 +219,17 @@ async function getPlaceholder(key, arguments) {
             );
             break;
         case 'datapacks':
+            //TODO get datapacks
              break;
         case 'functions':
+            //TODO get functions
             break;
         case 'player_coordinates':
-            //TODO get coordinates
+            //TODO get player coordinates
             placeholder = ['~ ~ ~'];
             break;
         case 'player_coordinates_xz':
+            //TODO get player coordinates xz
             placeholder = ['~ ~'];
             break;
         case 'items':
@@ -601,8 +603,10 @@ async function getPlaceholder(key, arguments) {
             );
             break;
         case 'scoreboards':
+            //TODO get scoreboards
             break;
         case 'bossbars':
+            //TODO get bossbars
             break;
         case 'commands':
             placeholder = arguments.commands;
@@ -3059,6 +3063,7 @@ async function getPlaceholder(key, arguments) {
             );
             break;
         case 'teams':
+            //TODO get teams
             break;
         case 'pois':
             placeholder = [
@@ -4336,6 +4341,7 @@ async function getPlaceholder(key, arguments) {
             placeholder = arguments.commandSuggestions;
             break;
         case key.endsWith('_criteria') ? key : null:
+            //TODO get advancement criteria
             break;
         case key.endsWith('_levels') ? key : null:
             const focusedEnchantment = key.split('_').shift();

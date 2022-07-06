@@ -160,7 +160,7 @@ async function getWorldPath(guildId, message) {
 
 async function getVersion(guildId, message) {
     const serverData = await getServerData(guildId, message);
-    return serverData?.version.split('.').pop();
+    return serverData?.version;
 }
 
 async function getProtocol(guildId, message) {

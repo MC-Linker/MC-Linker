@@ -23,7 +23,7 @@ async function execute(message, args) {
         let user = args[2];
         let password = args[3];
         const port = args[4] ?? 21;
-        let version = args[5] ?? '19';
+        let version = args[5] ?? 19;
         let path = args[6];
 
         version = parseInt(version.split('.').pop());
