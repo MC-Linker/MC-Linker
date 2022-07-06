@@ -29,6 +29,9 @@ async function execute(message, args) {
         return;
     }
 
+    const statName = await utils.searchStats(stat, category, true, true, 1);
+    argPlaceholder.stat_name = statName[0]?.name ?? stat;
+
     if(await settings.isDisabled(message.guildId, 'stats', category)) {
         message.respond(keys.commands.stats.warnings.category_disabled, argPlaceholder);
         return;
@@ -71,18 +74,23 @@ async function execute(message, args) {
 
         let statMessage;
         statMessage = addPh(keys.commands.stats.success.stat_message[category], argPlaceholder, { "stat_value": statMatch });
-        if (stat === 'play_time' || stat === 'time_played') {
+        if (stat.includes('time')) {
             statMessage = addPh(
-                keys.commands.stats.success.stat_message.time_played,
+                keys.commands.stats.success.stat_message.time,
                 argPlaceholder, { "stat_value": (statMatch / 20 / 3600).toFixed(2) } //Convert ticks to hours
             );
+        } else if(stat.includes('_one_cm')) {
+            statMessage = addPh(
+                keys.commands.stats.success.stat_message.distance,
+                argPlaceholder, { "stat_value": (statMatch / 100).toFixed(2) }
+            )
         }
 
         const statEmbed = getEmbedBuilder(
             keys.commands.stats.success.final,
             ph.fromStd(message),
             argPlaceholder,
-            { "stat_message": statMessage }
+            { "stat_message": statMessage, "stat_value": stat }
         );
 
         let imgType;

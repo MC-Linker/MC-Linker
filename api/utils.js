@@ -84,7 +84,12 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
                 if(!match && shouldSearchValues) match = data.name.includes(searchString.toLowerCase());
 
                 return match;
-            });
+            }).map(data => {
+                return {
+                    name: data.displayName,
+                    value: data.name,
+                };
+            }); //Only include displayName and name
 
             matchingStats = [...new Set(matchingStats)]; //Remove duplicates
             if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
