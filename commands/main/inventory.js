@@ -20,7 +20,7 @@ async function execute(message, args) {
     const worldPath = await utils.getWorldPath(message.guildId, message);
     if(!worldPath) return;
 
-    const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuidv4}.dat`, `./userdata/playernbt/${uuidv4}.dat`, message);
+    const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuidv4}.dat`, `./userdata/playernbt/${uuidv4}.dat`, message.guildId, message);
     if(!nbtFile) return;
 
     let playerData;

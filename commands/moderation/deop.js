@@ -17,7 +17,7 @@ async function execute(message, args) {
     const mcUsername = user.id ? await utils.getUsername(user.id, message) : user;
     if(!mcUsername) return;
 
-    const resp = await plugin.execute(`deop ${mcUsername}`, message);
+    const resp = await plugin.execute(`deop ${mcUsername}`, message.guildId, message);
     if(!resp) return;
 
     if(resp.status === 206) message.respond(keys.commands.deop.warnings.response_warning, { username: user });

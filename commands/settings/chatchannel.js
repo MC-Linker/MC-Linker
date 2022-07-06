@@ -40,7 +40,7 @@ async function execute(message, args) {
                     else webhook = await channel.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
                 }
 
-                const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, menu);
+                const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, message.client, message.client, menu);
                 if(!regChannel) {
                     webhook?.delete();
                     return;

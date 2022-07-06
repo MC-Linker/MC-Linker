@@ -59,7 +59,7 @@ async function execute(message, args) {
     const worldPath = await utils.getWorldPath(message.guildId, message);
     if(!worldPath) return;
 
-    const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./userdata/advancements/${uuidv4}.json`, message);
+    const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./userdata/advancements/${uuidv4}.json`, message.guildId, message);
     if(!amFile) return;
     const advancementData = JSON.parse(amFile);
 

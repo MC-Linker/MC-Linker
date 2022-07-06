@@ -22,7 +22,7 @@ async function execute(message, args) {
         const mcUsername = user.id ? await utils.getUsername(user.id, message) : user;
         if(!mcUsername) return;
 
-        const resp = await plugin.execute(`whitelist ${method} ${mcUsername}`, message);
+        const resp = await plugin.execute(`whitelist ${method} ${mcUsername}`, message.guildId, message);
         if(!resp) return;
 
         if(method === 'add') {
@@ -36,7 +36,7 @@ async function execute(message, args) {
     } else if(method === 'enable' || method === 'disable') {
         const minecraftSubcommand = method === 'enable' ? 'on' : 'off';
 
-        const resp = await plugin.execute(`whitelist ${minecraftSubcommand}`, message);
+        const resp = await plugin.execute(`whitelist ${minecraftSubcommand}`, message.guildId, message);
         if(!resp) return;
 
         if(method === 'enable') {

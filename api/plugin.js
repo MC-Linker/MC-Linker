@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const crypto = require('crypto');
 const express = require('express');
 const utils = require('./utils');
-const { keys, addPh, ph, getEmbedBuilder } = require('./messages');
+const { keys, addPh, ph, getEmbedBuilder, defaultMessage } = require('./messages');
 const { botPort, pluginVersion } = require('../config.json');
 
 let pluginConnections = [];
@@ -93,7 +93,7 @@ async function loadExpress(client) {
                     //Fake interaction
                     discordChannel.respond = () => discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
 
-                    const regChannel = await registerChannel(ip, guildId, channel.id, channel.types, webhook.id, discordChannel);
+                    const regChannel = await registerChannel(ip, guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
                     if(!regChannel) {
                         webhook.delete();
                         return;
@@ -186,7 +186,7 @@ async function chat(message) {
     }
 }
 
-async function chatPrivate(msg, guildId, username, target, message) {
+async function chatPrivate(msg, guildId, username, target, message = defaultMessage) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
@@ -219,7 +219,7 @@ async function chatPrivate(msg, guildId, username, target, message) {
     });
 }
 
-function connect(ip, guildId, verifyCode, message) {
+function connect(ip, guildId, verifyCode, message = defaultMessage) {
     return new Promise(async resolve => {
         const hash = crypto.randomBytes(32).toString('base64');
 
@@ -286,7 +286,7 @@ function connect(ip, guildId, verifyCode, message) {
     });
 }
 
-function disconnect(guildId, message) {
+function disconnect(guildId, client, message = defaultMessage) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
@@ -313,7 +313,7 @@ function disconnect(guildId, message) {
             for(const channel of conn.channels) {
                 //Delete webhook
                 if(channel.webhook) {
-                    const guild = await message.client.guilds.cache.get(guildId);
+                    const guild = await client.guilds.cache.get(guildId);
                     let allWebhooks = await guild.fetchWebhooks();
                     allWebhooks.get(channel.webhook).delete();
                 }
@@ -331,9 +331,9 @@ function disconnect(guildId, message) {
     });
 }
 
-function unregisterChannel(ip, guildId, channelId, message) {
+function unregisterChannel(ip, guildId, channelId, client, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+        if(!await checkProtocol(guildId, message)) return resolve(false);
 
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
@@ -377,7 +377,7 @@ function unregisterChannel(ip, guildId, channelId, message) {
 
             //Delete webhook
             if(channel.webhook) {
-                const guild = await message.client.guilds.cache.get(guildId);
+                const guild = await client.guilds.cache.get(guildId);
                 let allWebhooks = await guild.fetchWebhooks();
                 allWebhooks.get(channel.webhook).delete();
             }
@@ -413,9 +413,9 @@ function unregisterChannel(ip, guildId, channelId, message) {
     });
 }
 
-function registerChannel(ip, guildId, channelId, types, webhookId, message) {
+function registerChannel(ip, guildId, channelId, types, webhookId, client, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+        if(!await checkProtocol(guildId, message)) return resolve(false);
 
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
@@ -472,7 +472,7 @@ function registerChannel(ip, guildId, channelId, types, webhookId, message) {
             if(channelIndex !== -1) {
                 const channel = conn.channels[channelIndex];
                 if(channel.webhook) {
-                    const guild = await message.client.guilds.cache.get(guildId);
+                    const guild = await client.guilds.cache.get(guildId);
                     let allWebhooks = await guild.fetchWebhooks();
                     allWebhooks.get(channel.webhook)?.delete();
                 }
@@ -503,13 +503,13 @@ function registerChannel(ip, guildId, channelId, types, webhookId, message) {
     });
 }
 
-function get(getPath, putPath, message) {
+function get(getPath, putPath, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+        if(!await checkProtocol(guildId, message)) return resolve(false);
 
-        const ip = await utils.getIp(message.guildId, message);
+        const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
-        const hash = await utils.getHash(message.guildId, message);
+        const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
         try {
@@ -540,13 +540,13 @@ function get(getPath, putPath, message) {
     });
 }
 
-function put(getPath, putPath, message) {
+function put(getPath, putPath, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+        if(!await checkProtocol(guildId, message)) return resolve(false);
 
-        const ip = await utils.getIp(message.guildId, message);
+        const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
-        const hash = await utils.getHash(message.guildId, message);
+        const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
         try {
@@ -572,13 +572,13 @@ function put(getPath, putPath, message) {
     });
 }
 
-async function find(start, maxDepth, file, message) {
+async function find(start, maxDepth, file, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+        if(!await checkProtocol(guildId, message)) return resolve(false);
 
-        const ip = await utils.getIp(message.guildId, message);
+        const ip = await utils.getIp(guildId, message);
         if (!ip) return resolve(false);
-        const hash = await utils.getHash(message.guildId, message);
+        const hash = await utils.getHash(guildId, message);
         if (!hash) return resolve(false);
 
         try {
@@ -596,13 +596,13 @@ async function find(start, maxDepth, file, message) {
     });
 }
 
-function execute(command, message) {
+function execute(command, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
+        if(!await checkProtocol(guildId, message)) return resolve(false);
 
-        const ip = await utils.getIp(message.guildId, message);
+        const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
-        const hash = await utils.getHash(message.guildId, message);
+        const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
         try {
@@ -622,7 +622,7 @@ function execute(command, message) {
     });
 }
 
-function verify(ip, message) {
+function verify(ip, message = defaultMessage) {
     return new Promise(async resolve => {
         try {
             const resp = await fetch(`http://${ip}/verify/`);
@@ -635,7 +635,7 @@ function verify(ip, message) {
     });
 }
 
-async function checkProtocol(guildId, message) {
+async function checkProtocol(guildId, message = defaultMessage) {
     if(await utils.getProtocol(guildId, message) !== 'plugin') {
         message.respond(keys.api.plugin.warnings.not_connected);
         return false;
@@ -643,7 +643,7 @@ async function checkProtocol(guildId, message) {
     return true;
 }
 
-async function updateConn(message) {
+async function updateConn(message = defaultMessage) {
     return new Promise(resolve => {
         fs.outputJson('./serverdata/connections/connections.json', pluginConnections, { spaces: 2 })
             .catch(err => {
@@ -653,7 +653,7 @@ async function updateConn(message) {
     });
 }
 
-async function checkStatus(response, message) {
+async function checkStatus(response, message = defaultMessage) {
     if(response.status === 400) {
         message.respond(keys.api.plugin.errors.status_400, { "error": await response.text() });
         return false;

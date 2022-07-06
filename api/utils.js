@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const fetch = require('node-fetch');
 const Discord = require('discord.js');
 const mcData = require('minecraft-data')('1.19');
-const { keys, addPh, ph } = require('./messages');
+const { keys, addPh, ph, defaultMessage } = require('./messages');
 
 function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
@@ -132,7 +132,7 @@ function isGuildConnected(guildId) {
     });
 }
 
-function getUUIDv4(user, message) {
+function getUUIDv4(user, message = defaultMessage) {
     return new Promise(async resolve => {
         if(user instanceof Discord.User) {
             const userData = await getUserData(user.id, message);
@@ -153,27 +153,27 @@ function getUUIDv4(user, message) {
     });
 }
 
-async function getUsername(userId, message) {
+async function getUsername(userId, message = defaultMessage) {
     const userData = await getUserData(userId, message);
     return userData?.name;
 }
 
-async function getWorldPath(guildId, message) {
+async function getWorldPath(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     return serverData?.path;
 }
 
-async function getVersion(guildId, message) {
+async function getVersion(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     return serverData?.version;
 }
 
-async function getProtocol(guildId, message) {
+async function getProtocol(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     return serverData?.protocol;
 }
 
-async function getHash(guildId, message) {
+async function getHash(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     //If connected but not with plugin
     if(serverData && serverData.protocol !== 'plugin') message.respond(keys.api.utils.errors.not_connected_with_plugin);
@@ -181,7 +181,7 @@ async function getHash(guildId, message) {
     return serverData?.hash;
 }
 
-async function getIp(guildId, message) {
+async function getIp(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     //If connected but not with plugin
     if(serverData && serverData?.protocol !== 'plugin') message.respond(keys.api.utils.errors.not_connected_with_plugin);
@@ -189,7 +189,7 @@ async function getIp(guildId, message) {
     return serverData?.ip;
 }
 
-function getServerData(guildId, message) {
+function getServerData(guildId, message = defaultMessage) {
     return new Promise(resolve => {
         fs.readJson(`./serverdata/connections/${guildId}/connection.json`, 'utf8')
             .then(serverJson => resolve(serverJson))
@@ -200,7 +200,7 @@ function getServerData(guildId, message) {
     });
 }
 
-function getUserData(userId, message) {
+function getUserData(userId, message = defaultMessage) {
     return new Promise(resolve => {
         fs.readJson(`./userdata/connections/${userId}/connection.json`, 'utf8')
             .then(userJson => resolve(userJson))

@@ -19,7 +19,7 @@ async function execute(message, args) {
 	const mcUsername = user.id ? await utils.getUsername(user.id, message) : user;
 	if(!mcUsername) return;
 
-	const resp = await plugin.execute(`ban ${mcUsername} ${reason}`, message);
+	const resp = await plugin.execute(`ban ${mcUsername} ${reason}`, message.guildId, message);
 	if(!resp) return;
 
 	if(resp.status === 206) message.respond(keys.commands.ban.warnings.response_warning, { username: user, reason });

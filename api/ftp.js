@@ -2,15 +2,15 @@ const { FtpFileSystem: ftp, SftpFileSystem: sftp } = require('ftp-sftp');
 const fs = require('fs-extra');
 const utils = require('./utils');
 const plugin = require('./plugin');
-const { keys, addPh, ph } = require('./messages');
+const { keys, addPh, ph, defaultMessage } = require('./messages');
 
-function get(getPath, putPath, message) {
+function get(getPath, putPath, guildId, message = defaultMessage) {
 	return new Promise(async resolve => {
-		const ftpData = await utils.getServerData(message.guild.id, message);
+		const ftpData = await utils.getServerData(guildId, message);
 		if (!ftpData) return resolve(false);
 
 		//Redirect to plugin
-		if (ftpData.protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, message));
+		if (ftpData.protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, guildId, message));
 
 		const ftpClient = await getFtpClient(ftpData, message);
 		if (!ftpClient) return resolve(false);
@@ -38,13 +38,13 @@ function get(getPath, putPath, message) {
 	});
 }
 
-function put(getPath, putPath, message) {
+function put(getPath, putPath, guildId, message = defaultMessage) {
 	return new Promise(async resolve => {
-		const ftpData = await utils.getServerData(message.guild.id, message);
+		const ftpData = await utils.getServerData(guildId, message);
 		if (!ftpData) return resolve(false);
 
 		//Redirect to plugin
-		if (ftpData.protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, message));
+		if (ftpData.protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, guildId, message));
 
 		const ftpClient = await getFtpClient(ftpData, message);
 		if (!ftpClient) return resolve(false);
@@ -114,13 +114,12 @@ async function findFile(ftpClient, file, path, maxDepth) {
 	}
 }
 
-async function getFtpClient(credentials, message) {
+async function getFtpClient(credentials, message = defaultMessage) {
 	try {
 		if(credentials.protocol === 'ftp') return await ftp.create(credentials.host, credentials.port, credentials.user, credentials.password);
 		if(credentials.protocol === 'sftp') return await sftp.create(credentials.host, credentials.port, credentials.user, credentials.password);
 	} catch(err) {
-		if(message) message.respond(keys.api.ftp.errors.could_not_connect, ph.fromError(err), { "protocol": credentials.protocol });
-		else console.log(addPh(keys.api.ftp.errors.could_not_connect.console, ph.fromError(err), { "protocol": credentials.protocol }));
+		message.respond(keys.api.ftp.errors.could_not_connect, ph.fromError(err), { "protocol": credentials.protocol });
 		return false;
 	}
 }

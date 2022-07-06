@@ -46,7 +46,7 @@ async function execute(message, args) {
     const worldPath = await utils.getWorldPath(message.guildId, message);
     if(!worldPath) return;
 
-    const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./userdata/stats/${uuidv4}.json`, message);
+    const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./userdata/stats/${uuidv4}.json`, message.guildId, message);
     if(!statFile) return;
     const statData = JSON.parse(statFile);
 

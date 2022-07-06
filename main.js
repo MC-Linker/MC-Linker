@@ -54,11 +54,7 @@ client.on('guildDelete', async guild => {
     if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
     console.log(addPh(keys.main.success.guild_delete.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
 
-    //Fake message
-    const message = {};
-    message.replyOptions = () => {};
-    message.respond = () => {};
-    await plugin.disconnect(guild.id, message);
+    await plugin.disconnect(guild.id, guild.client);
 
     //Delete connection folder
     fs.remove(`./serverdata/connections/${guild.id}`, err => {

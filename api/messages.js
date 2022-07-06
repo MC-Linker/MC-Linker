@@ -3,6 +3,15 @@ const Discord = require('discord.js');
 const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
+const defaultMessage = {
+    respond(key, placeholders) {
+        reply(null, key, placeholders);
+    },
+    channel: {
+        send() {}
+    }
+};
+
 const ph = {};
 ph.fromAuthor = function(author) {
     if(!(author instanceof Discord.User)) return {};
@@ -148,6 +157,9 @@ function addPh(key, ...placeholders) {
 
 
 function reply(interaction, key, ...placeholders) {
+    //Only log to console if interaction doesnt exist
+    if(key?.console && !interaction) return console.log(addPh(key.console, placeholders));
+
     if(!interaction || !key || !placeholders) return console.error(keys.api.messages.errors.no_reply_arguments.console);
 
     placeholders = Object.assign(
@@ -445,4 +457,4 @@ function getArgs(client, interaction) {
     return args;
 }
 
-module.exports = { keys, ph, reply, replyOptions, addPh, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUsersFromMention, getArgs };
+module.exports = { keys, ph, reply, replyOptions, addPh, defaultMessage, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUsersFromMention, getArgs };

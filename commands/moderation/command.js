@@ -133,8 +133,7 @@ async function execute(message, args) {
         return;
     }
 
-    //Replace pings and @s with corresponding username
-    //TODO replace ~ ~ ~ with player coordinates
+    //TODO Replace pings and @s with corresponding username and ~ ~ ~ with player coordinates
     for (let i = 0; i < args.length; i++) {
         const arg = args[i];
 
@@ -149,7 +148,7 @@ async function execute(message, args) {
         args[i] = arg.replace(arg, username);
     }
 
-    const resp = await plugin.execute(`${command} ${args.join(' ')}`, message);
+    const resp = await plugin.execute(`${command} ${args.join(' ')}`, message.guildId, message);
     if(!resp) return;
 
     let respMessage = resp.status === 200 ? resp.json.message : keys.api.plugin.warnings.no_response_message;
@@ -166,7 +165,6 @@ async function execute(message, args) {
 }
 
 async function getPlaceholder(key, arguments) {
-    const fakeMessage = { respond: () => {} };
     const colors = [
         "black",
         "dark_blue",
@@ -205,7 +203,7 @@ async function getPlaceholder(key, arguments) {
             };
 
             const onlinePlayers = [];
-            const username = await utils.getUsername(arguments.user, fakeMessage);
+            const username = await utils.getUsername(arguments.user);
 
             if(onlinePlayers) onlinePlayers.forEach(player => placeholder[player] = player);
             if(username) {
