@@ -1,4 +1,4 @@
-# TODO SMP Bot
+# TODO BOT
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
 + Get online player's inventories from the plugin instead of file
@@ -6,11 +6,11 @@
 + Add JSDoc
 + Add universal fetch method for plugin requests: `fetch(path, json, hash)`
 + **Add missing placeholders of `/command` and maybe extract the data to another file.**
-+ **Make plugin link more accessible (in error messages etc)**
++ **Make plugin link more accessible (in error messages, `/setup` etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
 + Add button to show enchantments and shulkerboxes in /inventory
 + Support for multiple connections (or bungee support)
-+ Mod support (get textures and names of mod items**)**
++ Mod support (get textures and names of mod items)
 + `/online`
 + `/stats @user statTab` (more stats with one command)
 + `/schematics`
@@ -40,7 +40,7 @@
 + Web Dashboard
 + Bedrock support
 
-# TODO Plugin
+# TODO PLUGIN
 + Release plugins for lower versions, bungee and sponge on GitHub
 + `/dm` (dm discord user)
 + Show replies to chat messages
