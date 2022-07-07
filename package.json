@@ -1,7 +1,7 @@
 {
-  "name": "minecraft-smp-bot",
+  "name": "mc-linker",
   "version": "1.0.0",
-  "description": "View minecraft stats, advancements and inventories in Discord! Also includes texturepack and moderation tools and much more.",
+  "description": "View minecraft stats, advancements and inventories in Discord! Also includes moderation tools, minecraft commands and much more.",
   "main": "main.js",
   "scripts": {
     "jest": "jest",
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lianecx/Minecraft-SMP-Bot.git"
+    "url": "git+https://github.com/MC-Linker/MC-Linker.git"
   },
   "keywords": [],
   "author": "Lianecx",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Lianecx/Minecraft-SMP-Bot/issues"
+    "url": "https://github.com/MC-Linker/MC-Linker/issues"
   },
-  "homepage": "https://github.com/Lianecx/Minecraft-SMP-Bot#readme",
+  "homepage": "https://github.com/MC-Linker/MC-Linker#readme",
   "dependencies": {
     "@discordjs/builders": "^0.13.0",
     "@discordjs/rest": "^0.4.1",
