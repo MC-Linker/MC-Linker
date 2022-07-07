@@ -756,7 +756,7 @@
 
 
   "api.plugin.warnings.not_completely_disconnected.title": "Not Completely Disconnected",
-  "api.plugin.warnings.not_completely_disconnected.description": "%emoji_warning% The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/SMP-Plugin/connection.conn` or by **removing** the plugin completely.",
+  "api.plugin.warnings.not_completely_disconnected.description": "%emoji_warning% The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely.",
 
   "api.plugin.warnings.automatically_disconnected.title": "Automatically Disconnected",
   "api.plugin.warnings.automatically_disconnected.description": "%emoji_warning% Automatically disconnected from the old server (**%ip%**) to ensure no complications happen.",
@@ -864,7 +864,7 @@
   "api.plugin.success.get.console": "Got file [%path%]",
   "api.plugin.success.put.console": "Put file [%path%]",
   "api.plugin.success.listening.console": "Listening on port %port%",
-  "api.plugin.success.root_response": "To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>",
+  "api.plugin.success.root_response": "To invite the MC Linker, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>",
 
 
 
