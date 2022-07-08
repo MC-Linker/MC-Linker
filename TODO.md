@@ -1,10 +1,11 @@
 # TODO BOT
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ FTP: Get world path from `level-name` in `server.properties` (Find server.properties, then download and read it)
 + Get online player's inventories from the plugin instead of file
 + Create block, item and entity images with code
 + Add JSDoc
-+ Add universal fetch method for plugin requests: `fetch(path, json, hash)`
++ DM command author when
 + **Add missing placeholders of `/command` and maybe extract the data to another file.**
 + **Make plugin link more accessible (in error messages, `/setup` etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
