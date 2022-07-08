@@ -1,6 +1,8 @@
 const { keys, getUsersFromMention, addPh } = require('../../api/messages');
 const Discord = require('discord.js');
+const nbt = require('prismarine-nbt');
 const utils = require('../../api/utils');
+const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const mcData = require('minecraft-data')('1.19');
 const commands = require('../../resources/data/commands.json');
@@ -183,6 +185,7 @@ async function getPlaceholder(key, arguments) {
         "yellow",
         "white",
     ];
+    let worldPath;
 
     let placeholder = {};
     switch (key) {
@@ -216,9 +219,26 @@ async function getPlaceholder(key, arguments) {
                 placeholder[attribute.name] = attribute.resource
             );
             break;
-        case 'datapacks':
+        case 'disabled_datapacks':
+        case 'enabled_datapacks':
             //TODO get datapacks
-             break;
+            worldPath = await utils.getWorldPath(arguments.guild);
+            if(!worldPath) return {};
+            const levelNbt = await ftp.get(`${worldPath}/level.dat`, `./serverdata/levels/${arguments.guild}.dat`, arguments.guild);
+            if(!levelNbt) return {};
+
+            try {
+                const level = await nbt.parse(levelNbt, 'big');
+
+                let datapacks = nbt.simplify(level.parsed)?.Data?.DataPacks;
+                if(key === 'enabled_datapacks') datapacks = datapacks?.Enabled;
+                else if(key === 'disabled_datapacks') datapacks = datapacks?.Disabled;
+
+                datapacks?.forEach(datapack =>
+                    placeholder[datapack] = datapack
+                );
+            } catch(ignored) {}
+            break;
         case 'functions':
             //TODO get functions
             break;

@@ -130,16 +130,16 @@
       "": ["enable", "disable", "list"]
     },
     {
-      "disable": ["%datapacks%"],
-      "enable": ["%datapacks%"],
+      "disable": ["%enabled_datapacks%"],
+      "enable": ["%disabled_datapacks%"],
       "list": ["available", "enabled"]
     },
     {
       "enable": ["first", "last", "before", "after"]
     },
     {
-      "before": ["%datapacks%"],
-      "after": ["%datapacks%"]
+      "before": ["%enabled_datapacks%"],
+      "after": ["%enabled_datapacks%"]
     }
   ],
   "debug": [

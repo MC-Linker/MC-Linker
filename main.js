@@ -50,7 +50,6 @@ client.on('guildCreate', guild => {
 });
 
 client.on('guildDelete', async guild => {
-
     if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
     console.log(addPh(keys.main.success.guild_delete.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
 
