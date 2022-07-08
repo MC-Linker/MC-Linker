@@ -158,7 +158,7 @@ function addPh(key, ...placeholders) {
 
 function reply(interaction, key, ...placeholders) {
     //Only log to console if interaction doesnt exist
-    if(key?.console && !interaction) return console.log(addPh(key.console, placeholders));
+    if(key?.console && !interaction) return console.log(addPh(key.console, Object.assign({}, ...placeholders)));
 
     if(!interaction || !key || !placeholders) return console.error(keys.api.messages.errors.no_reply_arguments.console);
 

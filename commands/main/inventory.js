@@ -25,13 +25,14 @@ async function execute(message, args) {
 
     let playerData;
     try {
-        playerData = await nbt.parse(nbtFile);
+        playerData = await nbt.parse(nbtFile, 'big');
+        playerData = nbt.simplify(playerData.parsed);
     } catch(err) {
         message.respond(keys.commands.inventory.errors.could_not_parse, ph.fromError(err));
         return;
     }
 
-    const inventory = playerData.parsed.value['Inventory'].value.value;
+    const inventory = playerData.Inventory;
 
     const invCanvas = Canvas.createCanvas(352, 332);
     const ctx = invCanvas.getContext('2d');
@@ -44,15 +45,15 @@ async function execute(message, args) {
         .setTitle(keys.commands.inventory.success.enchantments.title)
         .setColor(keys.commands.inventory.success.enchantments.color);
 
-    let slotDims = [16, 284];
+    let slotDims = [];
 
     for (let i = 0; i < inventory.length; i++) {
-        const slot = inventory[i]['Slot'].value;
-        const id = inventory[i].id.value;
+        const slot = inventory[i].Slot;
+        const id = inventory[i].id;
         const itemId = id.split(':').pop();
-        const count = inventory[i]['Count'].value;
-        const damage = inventory[i].tag?.value['Damage']?.value;
-        const enchantments = inventory[i].tag?.value['Enchantments']?.value.value;
+        const count = inventory[i].Count;
+        const damage = inventory[i].tag?.Damage;
+        const enchantments = inventory[i].tag?.Enchantments;
 
         if (enchantments) {
             const formattedItem = id.replace('minecraft:', '').replaceAll('_', ' ').cap();
@@ -63,11 +64,11 @@ async function execute(message, args) {
             )}`;
 
             for (const enchantment of enchantments) {
-                const formattedEnchant = enchantment.id.value.replace('minecraft:', '').replaceAll('_', ' ').cap();
+                const formattedEnchant = enchantment.id.replace('minecraft:', '').replaceAll('_', ' ').cap();
 
                 invField += `\n${addPh(
                     keys.commands.inventory.success.enchantments.fields.enchantment.content_enchantment,
-                    { "enchantment_name": formattedEnchant, "enchantment_level": enchantment.lvl.value }
+                    { "enchantment_name": formattedEnchant, "enchantment_level": enchantment.lvl }
                 )}`;
             }
 

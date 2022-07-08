@@ -23,10 +23,10 @@ async function execute(message, args) {
         let user = args[2];
         let password = args[3];
         const port = args[4] ?? 21;
-        let version = args[5] ?? 19;
+        let version = args[5]?.split('.')?.pop() ?? 19;
         let path = args[6];
 
-        version = parseInt(version.split('.').pop());
+        version = parseInt(version);
 
         if (!host || !user || !password || !port) {
             message.respond(keys.commands.connect.warnings.no_credentials);
