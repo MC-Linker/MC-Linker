@@ -520,6 +520,7 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
+            await fs.ensureFile(putPath);
             const fileStream = fs.createWriteStream(putPath);
             resp.body.pipe(fileStream);
 
