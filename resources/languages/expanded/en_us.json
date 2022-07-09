@@ -1103,7 +1103,7 @@
       "errors": {
         "no_response": {
           "title": "Plugin Does Not Respond",
-          "description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
+          "description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) enabled.",
           "console": "Plugin does not respond"
         },
         "no_webhook_permission": {

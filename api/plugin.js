@@ -333,8 +333,6 @@ function disconnect(guildId, client, message = defaultMessage) {
 
 function unregisterChannel(ip, guildId, channelId, client, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(guildId, message)) return resolve(false);
-
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
@@ -415,8 +413,6 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
 
 function registerChannel(ip, guildId, channelId, types, webhookId, client, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(guildId, message)) return resolve(false);
-
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
@@ -505,8 +501,6 @@ function registerChannel(ip, guildId, channelId, types, webhookId, client, messa
 
 function get(getPath, putPath, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(guildId, message)) return resolve(false);
-
         const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(guildId, message);
@@ -520,6 +514,7 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
+            await fs.ensureFile(putPath);
             const fileStream = fs.createWriteStream(putPath);
             resp.body.pipe(fileStream);
 
@@ -542,8 +537,6 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
 
 function put(getPath, putPath, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(guildId, message)) return resolve(false);
-
         const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(guildId, message);
@@ -574,8 +567,6 @@ function put(getPath, putPath, guildId, message = defaultMessage) {
 
 async function find(start, maxDepth, file, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(guildId, message)) return resolve(false);
-
         const ip = await utils.getIp(guildId, message);
         if (!ip) return resolve(false);
         const hash = await utils.getHash(guildId, message);
@@ -598,8 +589,6 @@ async function find(start, maxDepth, file, guildId, message = defaultMessage) {
 
 function execute(command, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(guildId, message)) return resolve(false);
-
         const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
         const hash = await utils.getHash(guildId, message);
@@ -633,14 +622,6 @@ function verify(ip, message = defaultMessage) {
             resolve(false);
         }
     });
-}
-
-async function checkProtocol(guildId, message = defaultMessage) {
-    if(await utils.getProtocol(guildId, message) !== 'plugin') {
-        message.respond(keys.api.plugin.warnings.not_connected);
-        return false;
-    }
-    return true;
 }
 
 async function updateConn(message = defaultMessage) {

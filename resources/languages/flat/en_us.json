@@ -772,7 +772,7 @@
   "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
 
   "api.plugin.errors.no_response.title": "Plugin Does Not Respond",
-  "api.plugin.errors.no_response.description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
+  "api.plugin.errors.no_response.description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
 
   "api.plugin.errors.no_webhook_permission.title": "No Webhook Permission",
