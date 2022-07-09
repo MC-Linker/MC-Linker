@@ -18,7 +18,6 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
 		try {
 			const file = await ftpClient.get(getPath);
 
-			await fs.ensureFile(putPath);
 			const writeStream = fs.createWriteStream(putPath);
 
 			file.pipe(writeStream);
