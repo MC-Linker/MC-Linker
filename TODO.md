@@ -4,6 +4,7 @@
 + FTP: Get world path from `level-name` in `server.properties` (Find server.properties, then download and read it)
 + Get online player's inventories from the plugin instead of file
 + **Ensure that file exists in get() method**
++ Store data files in user and server folder
 + Create block, item and entity images with code
 + Add JSDoc
 + DM command author when response fails to send
@@ -13,6 +14,7 @@
 + Add button to show more information (button grid) in /inventory
 + Support for multiple connections (or bungee support)
 + Mod support (get textures and names of mod items)
++ Properly parse time and distance for stats (minutes, hours, days, weeks) (centimeters, meters, kilometers)
 + `/online`
 + `/logs`
 + `/stats @user statTab` (more stats with one command)
