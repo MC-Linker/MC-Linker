@@ -68,8 +68,13 @@ async function autocomplete(interaction) {
                     }
 
                     const placeholder = await getPlaceholder(
-                        suggestion.replaceAll('%', ''),
-                        { user: interaction.user.id, guild: interaction.guildId, focused: focused.value, commands: Object.keys(commands), commandSuggestions: filteredArguments }
+                        suggestion.replaceAll('%', ''), {
+                            user: interaction.user,
+                            guild: interaction.guild,
+                            focused: focused.value,
+                            commands: Object.keys(commands),
+                            commandSuggestions: filteredArguments
+                        }
                     );
                     if(!placeholder) {
                         console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
@@ -153,20 +158,20 @@ async function execute(message, args) {
     const resp = await plugin.execute(`${command} ${args.join(' ')}`, message.guildId, message);
     if(!resp) return;
 
-    let respMessage = resp.status === 200 ? resp.json.message : keys.api.plugin.warnings.no_response_message;
+    let respMessage = resp.status === 200 && resp.json.message ? resp.json.message : keys.api.plugin.warnings.no_response_message;
 
     //Either '+' or '-' depending on color code
     let colorChar = '';
     if(resp.json.color === 'c' || resp.status !== 200) colorChar = '- ';
     else if(resp.json.color === 'a') colorChar = '+ ';
 
-    //Wrap in discord code block for color
+    //Wrap in discord code block for color and swag
     respMessage = `\`\`\`diff\n${colorChar}${respMessage}\`\`\``;
 
     message.respond(keys.commands.command.success, { "response": respMessage });
 }
 
-async function getPlaceholder(key, arguments) {
+async function getPlaceholder(key, args) {
     const colors = [
         "black",
         "dark_blue",
@@ -185,12 +190,11 @@ async function getPlaceholder(key, arguments) {
         "yellow",
         "white",
     ];
-    let worldPath;
 
     let placeholder = {};
     switch (key) {
         case 'advancements':
-            const advancements = await utils.searchAllAdvancements(arguments.focused ?? '');
+            const advancements = await utils.searchAllAdvancements(args.focused ?? '');
             //Combine to one object and map to name and category.value
             advancements.forEach(advancement =>
                 placeholder[advancement.name] = `minecraft:${advancement.category}/${advancement.value}`
@@ -206,7 +210,7 @@ async function getPlaceholder(key, arguments) {
             };
 
             const onlinePlayers = [];
-            const username = await utils.getUsername(arguments.user);
+            const username = await utils.getUsername(args.user.id);
 
             if(onlinePlayers) onlinePlayers.forEach(player => placeholder[player] = player);
             if(username) {
@@ -221,34 +225,27 @@ async function getPlaceholder(key, arguments) {
             break;
         case 'disabled_datapacks':
         case 'enabled_datapacks':
-            //TODO get datapacks
-            worldPath = await utils.getWorldPath(arguments.guild);
-            if(!worldPath) return {};
-            const levelNbt = await ftp.get(`${worldPath}/level.dat`, `./serverdata/levels/${arguments.guild}.dat`, arguments.guild);
-            if(!levelNbt) return {};
+            const level = await getNBTFile(`level.dat`, `./serverdata/levels/${args.guild.id}.dat`);
 
-            try {
-                const level = await nbt.parse(levelNbt, 'big');
+            let datapacks = level?.Data?.DataPacks;
+            if(key === 'enabled_datapacks') placeholder = datapacks?.Enabled;
+            else if(key === 'disabled_datapacks') placeholder = datapacks?.Disabled;
 
-                let datapacks = nbt.simplify(level.parsed)?.Data?.DataPacks;
-                if(key === 'enabled_datapacks') datapacks = datapacks?.Enabled;
-                else if(key === 'disabled_datapacks') datapacks = datapacks?.Disabled;
-
-                datapacks?.forEach(datapack =>
-                    placeholder[datapack] = datapack
-                );
-            } catch(ignored) {}
             break;
         case 'functions':
             //TODO get functions
             break;
         case 'player_coordinates':
-            //TODO get player coordinates
-            placeholder = ['~ ~ ~'];
-            break;
         case 'player_coordinates_xz':
-            //TODO get player coordinates xz
-            placeholder = ['~ ~'];
+            const uuid = await utils.getUUIDv4(args.user);
+            if(!uuid) return {};
+            const playerData = await getNBTFile(`playerdata/${uuid}.dat`, `./userdata/playernbt/${args.user.id}.dat`);
+
+            const [x, y, z] = playerData?.Pos;
+            if(!x || !z || !y) return {};
+
+            if(key === 'player_coordinates') placeholder = { '~ ~ ~': `${x} ${y} ${z}` };
+            else if(key === 'player_coordinates_xz') placeholder = { '~ ~': `${x} ${z}` };
             break;
         case 'items':
             mcData.itemsArray.forEach(item =>
@@ -621,13 +618,24 @@ async function getPlaceholder(key, arguments) {
             );
             break;
         case 'scoreboards':
-            //TODO get scoreboards
+            const scoreboards = await getNBTFile(`data/scoreboard.dat`, `./serverdata/scoreboards/${args.guild.id}.dat`);
+
+            placeholder = scoreboards?.data?.Objectives?.map(scoreboard => scoreboard.Name) ?? {};
             break;
         case 'bossbars':
             //TODO get bossbars
+            const bossbars = await getNBTFile(`level.dat`, `./serverdata/levels/${args.guild.id}.dat`);
+            if(!bossbars) return {};
+
+            try {
+                console.log(bossbars?.Data?.CustomBossEvents)
+                placeholder = Object.keys(bossbars?.Data?.CustomBossEvents);
+            } catch(err) {
+                return {};
+            }
             break;
         case 'commands':
-            placeholder = arguments.commands;
+            placeholder = args.commands;
             break;
         case 'slots':
             const slots = [
@@ -3081,7 +3089,9 @@ async function getPlaceholder(key, arguments) {
             );
             break;
         case 'teams':
-            //TODO get teams
+            const teams = await getNBTFile(`data/scoreboard.dat`, `./serverdata/scoreboards/${args.guild.id}.dat`);
+
+            placeholder = teams?.data?.Teams?.map(team => team.Name) ?? {};
             break;
         case 'pois':
             placeholder = [
@@ -4356,7 +4366,7 @@ async function getPlaceholder(key, arguments) {
             placeholder.push('reset');
             break;
         case key.includes('_argument_') ? key : null:
-            placeholder = arguments.commandSuggestions;
+            placeholder = args.commandSuggestions;
             break;
         case key.endsWith('_criteria') ? key : null:
             //TODO get advancement criteria
@@ -4371,6 +4381,21 @@ async function getPlaceholder(key, arguments) {
     }
 
     return placeholder;
+
+    async function getNBTFile(getPath, putPath) {
+        const worldPath = await utils.getWorldPath(args.guild.id);
+        if(!worldPath) return {};
+        const nbtBuffer = await ftp.get(`${worldPath}/${getPath}`, putPath, args.guild.id);
+        if(!nbtBuffer) return {};
+
+        try {
+            const nbtObject = await nbt.parse(nbtBuffer, 'big');
+
+            return nbt.simplify(nbtObject.parsed);
+        } catch(ignored) {
+            return {};
+        }
+    }
 }
 
 
