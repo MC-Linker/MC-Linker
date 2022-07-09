@@ -3,16 +3,18 @@
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
 + FTP: Get world path from `level-name` in `server.properties` (Find server.properties, then download and read it)
 + Get online player's inventories from the plugin instead of file
++ **Ensure that file exists in get() method**
 + Create block, item and entity images with code
 + Add JSDoc
-+ DM command author when
++ DM command author when response fails to send
 + **Add missing placeholders of `/command` and maybe extract the data to another file.**
 + **Make plugin link more accessible (in error messages, `/setup` etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
-+ Add button to show enchantments and shulkerboxes in /inventory
++ Add button to show more information (button grid) in /inventory
 + Support for multiple connections (or bungee support)
 + Mod support (get textures and names of mod items)
 + `/online`
++ `/logs`
 + `/stats @user statTab` (more stats with one command)
 + `/schematics`
 + Use already downloaded files to execute commands (downloaded files could be replaced by someone else who connected to the same uuid)
@@ -30,14 +32,14 @@
 + `/shownbt EnderItems/...`
 + `/gamerule`
 + `/seed`
-+ `/restart` &` /stop` & `/start`
++ `/restart` & `/stop` & `/start`
 + `/private on/off`
 + `/server-info`
 + `/edit motd/servericon/...`
-+ `/editinventory`
-+ `/editadvancements`
-+ `/editstats`
-+ `/editenderchest`
++ `/edit inventory`
++ `/edit advancements`
++ `/edit stats`
++ `/edit enderchest`
 + Web Dashboard
 + Bedrock support
 
