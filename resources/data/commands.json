@@ -56,7 +56,9 @@
     {
       "": ["add", "get", "list", "remove", "set"]
     },
-    {},
+    {
+      "remove": ["%bossbars%"]
+    },
     {
       "arg0=get": ["max", "players", "value", "visible"],
       "arg0=set": ["color", "max", "name", "players", "style", "value", "visible"]
