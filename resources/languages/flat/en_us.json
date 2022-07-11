@@ -224,7 +224,7 @@
 
   "commands.stats.errors.could_not_autocomplete.console": "Could not respond to stats autocomplete",
 
-  "commands.stats.success.stat_message.custom": "**%stat_name%** **%stat_value%**",
+  "commands.stats.success.stat_message.custom": "**%stat_name%**: **%stat_value%**",
   "commands.stats.success.stat_message.mined": "has mined **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.broken": "has broken **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.crafted": "has crafted **%stat_value% %stat_name%**",

@@ -340,7 +340,7 @@
       },
       "success": {
         "stat_message": {
-          "custom": "**%stat_name%** **%stat_value%**",
+          "custom": "**%stat_name%**: **%stat_value%**",
           "mined": "has mined **%stat_value% %stat_name%**",
           "broken": "has broken **%stat_value% %stat_name%**",
           "crafted": "has crafted **%stat_value% %stat_name%**",

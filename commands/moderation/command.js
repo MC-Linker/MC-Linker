@@ -225,7 +225,7 @@ async function getPlaceholder(key, args) {
             break;
         case 'disabled_datapacks':
         case 'enabled_datapacks':
-            const level = await getNBTFile(`level.dat`, `./serverdata/levels/${args.guild.id}.dat`);
+            const level = await getNBTFile(`level.dat`, `./serverdata/connections/${args.guild.id}/level.dat`);
 
             let datapacks = level?.Data?.DataPacks;
             if(key === 'enabled_datapacks') placeholder = datapacks?.Enabled;
@@ -618,13 +618,13 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'scoreboards':
-            const scoreboards = await getNBTFile(`data/scoreboard.dat`, `./serverdata/scoreboards/${args.guild.id}.dat`);
+            const scoreboards = await getNBTFile(`data/scoreboard.dat`, `./serverdata/connections/${args.guild.id}/scoreboard.dat`);
 
             placeholder = scoreboards?.data?.Objectives?.map(scoreboard => scoreboard.Name) ?? {};
             break;
         case 'bossbars':
             //TODO get bossbars
-            const bossbars = await getNBTFile(`level.dat`, `./serverdata/levels/${args.guild.id}.dat`);
+            const bossbars = await getNBTFile(`level.dat`, `./serverdata/connections/${args.guild.id}/level.dat`);
             if(!bossbars) return {};
 
             try {
@@ -3089,7 +3089,7 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'teams':
-            const teams = await getNBTFile(`data/scoreboard.dat`, `./serverdata/scoreboards/${args.guild.id}.dat`);
+            const teams = await getNBTFile(`data/scoreboard.dat`, `./serverdata/connections/${args.guild.id}/scoreboard.dat`);
 
             placeholder = teams?.data?.Teams?.map(team => team.Name) ?? {};
             break;
