@@ -299,7 +299,7 @@ function disconnect(guildId, client, message = defaultMessage) {
 
             if(connIndex === -1) {
                 message.respond(keys.api.plugin.warnings.not_connected);
-                return;
+                return resolve(false);
             }
 
             const resp = await fetch(`http://${ip}/disconnect/`, {
@@ -310,7 +310,7 @@ function disconnect(guildId, client, message = defaultMessage) {
             if(!await checkStatus(resp, message)) return resolve(false);
 
             const conn = pluginConnections[connIndex];
-            for(const channel of conn.channels) {
+            if(conn?.channels) for(const channel of conn.channels) {
                 //Delete webhook
                 if(channel.webhook) {
                     const guild = await client.guilds.cache.get(guildId);
@@ -564,7 +564,7 @@ function put(getPath, putPath, guildId, message = defaultMessage) {
     });
 }
 
-async function find(start, maxDepth, file, guildId, message = defaultMessage) {
+async function list(folder, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(guildId, message);
         if (!ip) return resolve(false);
@@ -572,13 +572,14 @@ async function find(start, maxDepth, file, guildId, message = defaultMessage) {
         if (!hash) return resolve(false);
 
         try {
-            const resp = await fetch(`http://${ip}/file/find/?file=${file}&path=${start}&depth=${maxDepth}`, {
+            const resp = await fetch(`http://${ip}/file/list/?folder=${encodeURIComponent(folder)}`, {
                 headers: {
                     Authorization: `Basic ${hash}`
                 }
             });
             if (!await checkStatus(resp, message)) return resolve(false);
-            resolve(resp.text());
+
+            resolve(resp.json());
         } catch (err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
@@ -603,6 +604,29 @@ function execute(command, guildId, message = defaultMessage) {
             if(!await checkStatus(resp, message)) return resolve(false);
 
             resolve({ json: await resp.json(), status: resp.status });
+        } catch(err) {
+            message.respond(keys.api.plugin.errors.no_response);
+            resolve(false);
+        }
+    });
+}
+
+function getOnlinePlayers(guildId, message = defaultMessage) {
+    return new Promise(async resolve => {
+        const ip = await utils.getIp(guildId, message);
+        if(!ip) return resolve(false);
+        const hash = await utils.getHash(guildId, message);
+        if(!hash) return resolve(false);
+
+        try {
+            const resp = await fetch(`http://${ip}/players/`, {
+                headers: {
+                    Authorization: `Basic ${hash}`
+                }
+            });
+            if(!await checkStatus(resp, message)) return resolve(false);
+
+            resolve(await resp.json());
         } catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
@@ -649,4 +673,4 @@ async function checkStatus(response, message = defaultMessage) {
     } else return !!response.ok;
 }
 
-module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, unregisterChannel, disconnect, get, put, find, execute, verify };
+module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, unregisterChannel, disconnect, get, put, list, execute, getOnlinePlayers, verify };
