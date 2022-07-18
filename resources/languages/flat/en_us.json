@@ -758,7 +758,7 @@
   "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
 
   "api.plugin.errors.no_response.title": "Plugin Does Not Respond",
-  "api.plugin.errors.no_response.description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) enabled.",
+  "api.plugin.errors.no_response.description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
 
   "api.plugin.errors.no_webhook_permission.title": "No Webhook Permission",
@@ -1278,7 +1278,7 @@
 
 
   "data.connect.name": "connect",
-  "data.connect.long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**",
+  "data.connect.long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
   "data.connect.short_description": "Connect your minecraft server or account with the bot.",
   "data.connect.usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> <port> <version>",
   "data.connect.example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password port 1.17",

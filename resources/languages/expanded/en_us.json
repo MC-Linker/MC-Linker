@@ -1084,7 +1084,7 @@
       "errors": {
         "no_response": {
           "title": "Plugin Does Not Respond",
-          "description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) enabled.",
+          "description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled.",
           "console": "Plugin does not respond"
         },
         "no_webhook_permission": {
@@ -1831,7 +1831,7 @@
     },
     "connect": {
       "name": "connect",
-      "long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**",
+      "long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
       "short_description": "Connect your minecraft server or account with the bot.",
       "usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> <port> <version>",
       "example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password port 1.17",
