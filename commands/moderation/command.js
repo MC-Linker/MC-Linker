@@ -9,7 +9,6 @@ const commands = require('../../resources/data/commands.json');
 
 
 async function autocomplete(interaction) {
-    //TODO Add some super fancy autocomplete for target selectors
     const respondArray = [];
     const focused = interaction.options.getFocused(true);
 
@@ -201,7 +200,6 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'target_selectors':
-            //TODO get online players
             placeholder = {
                 "@a": "@a",
                 "@p": "@p",
@@ -209,7 +207,9 @@ async function getPlaceholder(key, args) {
                 "@e": "@e",
             };
 
-            const onlinePlayers = [];
+            let onlinePlayers = await plugin.getOnlinePlayers(args.guild.id);
+            if(!onlinePlayers) onlinePlayers = [];
+
             const username = await utils.getUsername(args.user.id);
 
             if(onlinePlayers) onlinePlayers.forEach(player => placeholder[player] = player);
@@ -233,7 +233,7 @@ async function getPlaceholder(key, args) {
 
             break;
         case 'functions':
-            //TODO get functions
+            placeholder = await getFunctions();
             break;
         case 'player_coordinates':
         case 'player_coordinates_xz':
@@ -609,7 +609,7 @@ async function getPlaceholder(key, args) {
             break;
         case 'effects':
             mcData.effectsArray.forEach(effect =>
-                placeholder[effect.displayName] = effect.name
+                placeholder[effect.displayName] = toSnakeCase(effect.name)
             );
             break;
         case 'enchantments':
@@ -623,12 +623,10 @@ async function getPlaceholder(key, args) {
             placeholder = scoreboards?.data?.Objectives?.map(scoreboard => scoreboard.Name) ?? {};
             break;
         case 'bossbars':
-            //TODO get bossbars
             const bossbars = await getNBTFile(`level.dat`, `./serverdata/connections/${args.guild.id}/level.dat`);
             if(!bossbars) return {};
 
             try {
-                console.log(bossbars?.Data?.CustomBossEvents)
                 placeholder = Object.keys(bossbars?.Data?.CustomBossEvents);
             } catch(err) {
                 return {};
@@ -4382,6 +4380,10 @@ async function getPlaceholder(key, args) {
 
     return placeholder;
 
+    function toSnakeCase(string) {
+        return string.replace(/([A-Z])/g, (_, y) => "_" + y.toLowerCase()).replace(/^_/, "");
+    }
+
     async function getNBTFile(getPath, putPath) {
         const worldPath = await utils.getWorldPath(args.guild.id);
         if(!worldPath) return {};
@@ -4395,6 +4397,41 @@ async function getPlaceholder(key, args) {
         } catch(ignored) {
             return {};
         }
+    }
+
+    async function getFunctions() {
+        const worldPath = await utils.getWorldPath(args.guild.id);
+        if(!worldPath) return [];
+
+        let allFunctions = [];
+
+        const datapacks = await ftp.list(`${worldPath}/datapacks/`, args.guild.id);
+        if(!datapacks) return [];
+
+        for (const datapack of datapacks) {
+            if(!datapack.isDirectory) continue;
+
+            const namespaces = await ftp.list(`${worldPath}/datapacks/${datapack.name}/data/`, args.guild.id);
+            if(!namespaces) continue;
+
+            for (const namespace of namespaces) {
+                if(!namespace.isDirectory) continue;
+                await listFunctions(datapack.name, namespace.name, '');
+            }
+        }
+
+        async function listFunctions(datapack, namespace, path) {
+            const functions = await ftp.list(`${worldPath}/datapacks/${datapack}/data/${namespace}/functions/${path}`, args.guild.id);
+            if(!functions) return;
+
+            for(const func of functions) {
+                const funcPath = `${path}/${func.name}`.replace(/^\//, '');
+                if(func.isDirectory) await listFunctions(datapack, namespace, funcPath);
+                else if(func.name.endsWith('.mcfunction')) allFunctions.push(funcPath.replaceAll('.mcfunction', ''));
+            }
+        }
+
+        return allFunctions;
     }
 }
 

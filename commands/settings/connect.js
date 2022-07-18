@@ -48,6 +48,7 @@ async function execute(message, args) {
 
         message.respond(keys.commands.connect.warnings.connecting);
 
+        //Automatically disconnect from plugin
         const ip = await utils.getIp(message.guildId);
         if(ip) {
             const disconnected = await plugin.disconnect(message.guildId, message.client);
