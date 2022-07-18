@@ -1,3 +1,5 @@
+[![Crowdin](https://badges.crowdin.net/minecraft-smp-bot/localized.svg)](https://crowdin.com/project/minecraft-smp-bot) [![Commit Activity](https://img.shields.io/github/commit-activity/m/Lianecx/Minecraft-SMP-Bot)](https://github.com/Lianecx/Minecraft-SMP-Bot) [![Total Commits](https://badgen.net/github/commits/Lianecx/Minecraft-SMP-Bot/main)](https://github.com/Lianecx/Minecraft-SMP-Bot) [![Code Size](https://img.shields.io/github/languages/code-size/Lianecx/Minecraft-SMP-Bot)](https://github.com/Lianecx/Minecraft-SMP-Bot) [![Repo Size](https://img.shields.io/github/repo-size/Lianecx/Minecraft-SMP-Bot)](https://github.com/Lianecx/Minecraft-SMP-Bot) [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-red)](https://github.com/Lianecx/Minecraft-SMP-Bot/blob/main/LICENSE.md)
+<br>
 View minecraft stats, advancements and inventories in Discord! Also includes moderation tools, minecraft commands and much more.
 
 # DESCRIPTION

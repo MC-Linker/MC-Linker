@@ -1,0 +1,12 @@
+version: '3.5'
+services:
+  Minecraft-SMP-Bot:
+    image: lianecx/mclinker
+    ports:
+      - 3100:3100
+    volumes:
+      - serverdata:/usr/src/app/serverdata
+      - userdata:/usr/src/app/userdata
+volumes:
+  serverdata:
+  userdata:
