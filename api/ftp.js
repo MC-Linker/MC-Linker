@@ -24,6 +24,8 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
 			file.pipe(writeStream);
 			file.on('error', err => {
 				message.respond(keys.api.ftp.errors.could_not_stream, { "path": getPath, "error": err });
+
+				ftpClient.client.end();
 				resolve(false);
 			});
 			writeStream.on('finish', async () => {
@@ -52,10 +54,11 @@ function put(getPath, putPath, guildId, message = defaultMessage) {
 
 		try {
 			await ftpClient.put(fs.createReadStream(getPath), putPath);
-			ftpClient.client.end();
 		} catch(err) {
 			message.respond(keys.api.ftp.errors.could_not_put, { "path": putPath }, ph.fromError(err));
 			resolve(false);
+		} finally {
+			ftpClient.client.end();
 		}
 
 		message.respond(keys.api.ftp.success.put, { "path": putPath });
@@ -84,6 +87,33 @@ function connect(credentials) {
 
 			console.log(addPh(keys.api.ftp.success.connect.console, { "protocol": credentials.protocol }));
 			return true;
+		}
+	});
+}
+
+function list(folder, guildId, message = defaultMessage) {
+	return new Promise(async resolve => {
+		const ftpData = await utils.getServerData(guildId, message);
+		if (!ftpData) return resolve(false);
+
+		if (ftpData.protocol === 'plugin') return resolve(await plugin.list(folder, guildId, message));
+
+		const ftpClient = await getFtpClient(ftpData, message);
+		if (!ftpClient) return resolve(false);
+
+		try {
+			const list = await ftpClient.list(folder);
+
+			resolve(list.map(item => {
+				return {
+					isDirectory: item.isDirectory(),
+					name: item.getName(),
+				}
+			}));
+		} catch(err) {
+			resolve(false);
+		} finally {
+			ftpClient.client.end();
 		}
 	});
 }
@@ -126,4 +156,4 @@ async function getFtpClient(credentials, message = defaultMessage) {
 	}
 }
 
-module.exports = { get, put, connect, find };
+module.exports = { get, put, connect, find, list };
