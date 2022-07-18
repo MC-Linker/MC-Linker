@@ -48,6 +48,13 @@ async function execute(message, args) {
 
         message.respond(keys.commands.connect.warnings.connecting);
 
+        const ip = await utils.getIp(message.guildId);
+        if(ip) {
+            const disconnected = await plugin.disconnect(message.guildId, message.client);
+            if(!disconnected) message.channel.send(addPh(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { "ip": ip }));
+            else message.channel.send(addPh(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { "ip": ip }));
+        }
+
         const protocol = await ftp.connect({ host, password, user, port });
         if(!protocol) {
             message.respond(keys.commands.connect.errors.could_not_connect_ftp);
