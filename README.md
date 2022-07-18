@@ -11,9 +11,9 @@ To use most of the commands you’ll have to connect your Minecraft **java editi
 	+ Download the "Discord Linker" plugin using [this link](https://www.spigotmc.org/resources/categories/tools-and-utilities.15/)
 	+ Put the plugin on your Minecraft server (must support plugins)
 	+ Restart your Minecraft server or execute `/reload confirm` on your Minecraft server
-	+ Execute `/connect plugin YOUR.SERVER.IP` in Discord
+	+ Execute `/connect plugin <your server ip>` in Discord
 	+ Follow the instructions sent in DM
-	+ After connecting you can also execute `/chatchannel CHANNEL` in Discord if you want to connect the minecraft chat with Discord
+	+ After connecting you can also execute `/chatchannel <channel>` in Discord if you want to connect the minecraft chat with Discord
 + FTP (doesn't support minecraft chat)
 	+ Get the ftp credentials on your Minecraft server’s dashboard. Not all server hosts support ftp, join the [Support Server](https://discord.gg/rX36kZUGNK) or ask your host's support team if you need help getting the credentials
 	+ Execute `/connect ftp` in Discord and enter your credentials
@@ -32,12 +32,12 @@ To use most of the commands you’ll have to connect your Minecraft **java editi
 + `/command`: Execute any minecraft command.
 
 # TROUBLESHOOTING
-+ Unfortunately, **Aternos** and **Minehut** servers are currently don't work because they do not support ftp or additional ports for plugins.
-+ If you receive the error: `Address already in use` in the server console follow the instructions of the next point.
++ Unfortunately, **Aternos** and **Minehut** servers currently don't work because they do not support ftp or additional ports for plugins
++ If you receive the error: `Address already in use` in the server console follow the instructions of the next point
 + If you receive the error: `Plugin does not respond` by the Discord bot although your server is online, follow these steps:
-	+ Register or port forward an additional port (if supported from your server host)
+	+ Register or forward an additional port (if supported from your server host)
 	+ Execute `/linker port <port>` in Minecraft.
-	+ Execute `/connect plugin YOUR.SERVER.IP <port>` in Discord and make sure to specify the correct port from the config.yml
+	+ Execute `/connect plugin <your server ip> <port>` in Discord and make sure to specify the correct port from the config.yml
 + More help => [Support Server](https://discord.gg/rX36kZUGNK)
 
 
