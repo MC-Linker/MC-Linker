@@ -139,7 +139,6 @@ async function execute(message, args) {
         return;
     }
 
-    //TODO Replace pings and @s with corresponding username and ~ ~ ~ with player coordinates
     for (let i = 0; i < args.length; i++) {
         const arg = args[i];
 
@@ -4434,6 +4433,5 @@ async function getPlaceholder(key, args) {
         return allFunctions;
     }
 }
-
 
 module.exports = { execute, autocomplete };
