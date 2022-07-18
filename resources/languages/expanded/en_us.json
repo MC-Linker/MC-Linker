@@ -107,35 +107,35 @@
           "fields": {
             "main": {
               "title": "%emoji_main% Main %emoji_main%",
-              "content": "Main commands such as `/inventory`, or `/advancements`."
+              "content": "Main commands such as %inventory_command_mention%, or %advancements_command_mention%."
             },
             "moderation": {
               "title": "%emoji_moderation% Moderation %emoji_moderation%",
-              "content": "Moderation commands such as `/ban` or `/command`."
+              "content": "Moderation commands such as %ban_command_mention% or %command_command_mention%."
             },
             "other": {
               "title": "%emoji_other_1% Other %emoji_other_2%",
-              "content": "Other commands such as `/message`."
+              "content": "Other commands such as %message_command_mention%."
             },
             "settings": {
               "title": "%emoji_settings% Settings %emoji_settings%",
-              "content": "Setup and settings such as `/connect` or `/disable`."
+              "content": "Setup and settings such as %connect_command_mention% or %disable_command_mention%."
             },
             "information": {
               "title": "​",
-              "content": "**All commands in a category** can be viewed with: **/help <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
+              "content": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
             }
           }
         },
         "category": {
           "fields": {
             "command": {
-              "title": "%command_name%",
+              "title": "**%command_mention%**",
               "content": "%command_short_description%"
             },
             "information": {
               "title": "​",
-              "content": "**More info about a command** can be viewed with: **/help <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
+              "content": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
             }
           }
         },
@@ -148,7 +148,7 @@
           "color": "NOT_QUITE_BLACK",
           "fields": {
             "command": {
-              "title": "%command_name%",
+              "title": "**%command_mention%**",
               "content": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%"
             }
           }
@@ -770,6 +770,14 @@
         "version_below_7": {
           "title": "Version Below 1.7",
           "description": "%emoji_warning% The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet."
+        },
+        "not_completely_disconnected": {
+          "title": "Not Completely Disconnected",
+          "description": "%emoji_warning% The plugin connection (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely."
+        },
+        "automatically_disconnected": {
+          "title": "Automatically Disconnected",
+          "description": "%emoji_warning% Automatically disconnected from the plugin connection (**%ip%**) to ensure no complications happen."
         },
         "connecting": {
           "title": "Connecting...",
