@@ -89,16 +89,16 @@ ph.emojis = function() {
     return placeholders;
 };
 
-ph.fromStd = function(interaction) {
-    return Object.assign(
-        this.fromAuthor(interaction?.member?.user ?? interaction.user),
-        this.fromGuild(interaction.guild),
-        this.fromInteraction(interaction),
-        this.fromChannel(interaction.channel),
-        this.fromClient(interaction.client),
-        this.emojis(),
-        { "timestamp_now": Builders.time(Date.now()/1000) }
-    );
+ph.fromCommand = function(command) {
+    if(!(command instanceof Discord.ApplicationCommand)) return {};
+
+    return {
+        "command_mention": `</${command.name}:${command.id}>`,
+        "command_name": command.name,
+        "command_id": command.id,
+        "command_short_description": command.description,
+        "command_timestamp": Builders.time(new Date(command.createdTimestamp)),
+    }
 };
 
 ph.fromError = function(err) {
@@ -108,6 +108,54 @@ ph.fromError = function(err) {
         "error": err.stack,
         "error_message": err.message,
     }
+};
+
+ph.fromStd = function(interaction) {
+    if(!(interaction instanceof Discord.Interaction || !(interaction instanceof Discord.Message))) return {};
+
+    return Object.assign(
+        this.fromAuthor(interaction.user),
+        this.fromGuild(interaction.guild),
+        this.fromInteraction(interaction),
+        this.fromChannel(interaction.channel),
+        this.fromClient(interaction.client),
+        this.emojis(),
+        { "timestamp_now": Builders.time(Date.now()/1000) }
+    );
+};
+
+ph.fromCommandName = async function(commandName, clientOrGuild) {
+    let commands;
+    if(clientOrGuild instanceof Discord.Guild) {
+        commands = await clientOrGuild.commands.fetch();
+    } else if(clientOrGuild instanceof Discord.Client) {
+        commands = await clientOrGuild.application.commands.fetch();
+    }
+
+    const command = commands.find(cmd => cmd.name === commandName);
+
+    if(!(command instanceof Discord.ApplicationCommand)) return {};
+
+    return this.fromCommand(command);
+};
+
+ph.fromAllCommands = async function (clientOrGuild) {
+    let commands;
+    if (clientOrGuild instanceof Discord.Guild) {
+        commands = await clientOrGuild.commands.fetch();
+    } else if (clientOrGuild instanceof Discord.Client) {
+        commands = await clientOrGuild.application.commands.fetch();
+    }
+
+    const allPh = commands.map(cmd => prependName(this.fromCommand(cmd), cmd.name));
+
+    function prependName(ph, name) {
+        const newPh = {};
+        for([k, v] of Object.entries(ph)) newPh[`${name}_${k}`] = v;
+        return newPh;
+    }
+
+    return Object.assign({}, ...allPh);
 };
 
 
