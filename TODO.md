@@ -6,12 +6,14 @@
 + **Ensure that file exists in get() method**
 + Store data files in user and server folder
 + Create block, item and entity images with code
++ Cache user and server data for better performance
 + Add JSDoc
++ **Update to Discord.JS v14**
 + DM command author when response fails to send
 + **Add missing placeholders of `/command` and maybe extract the data to another file.**
 + **Make plugin link more accessible (in error messages, `/setup` etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
-+ Add button to show more information (button grid) in /inventory
++ Add button to show more information for each slot (button grid) in /inventory
 + Support for multiple connections (or bungee support)
 + Mod support (get textures and names of mod items)
 + Properly parse time and distance for stats (minutes, hours, days, weeks) (centimeters, meters, kilometers)
