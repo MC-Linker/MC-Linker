@@ -30,7 +30,7 @@ async function execute(message, args) {
     }
 
     if(method === 'plugin') {
-        const disconnect = await plugin.disconnect(message.guildId, message);
+        const disconnect = await plugin.disconnect(message.guildId, message.client, message);
         if(!disconnect) return;
     }
 

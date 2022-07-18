@@ -40,9 +40,9 @@ async function execute(message, args) {
                     else webhook = await channel.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
                 }
 
-                const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, menu);
+                const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, message.client, message.client, menu);
                 if(!regChannel) {
-                    webhook.delete();
+                    webhook?.delete();
                     return;
                 }
 
@@ -84,9 +84,9 @@ async function execute(message, args) {
 
         const connection = await utils.getServerData(message.guild.id, message);
         if(!connection) return;
-        const channelIndex = connection.channels.findIndex(c => c.id === channel.id);
+        const channelIndex = connection.channels?.findIndex(c => c.id === channel.id);
 
-        if(channelIndex === -1) {
+        if(!channelIndex || channelIndex === -1) {
             message.respond(keys.commands.chatchannel.warnings.channel_not_added);
             return;
         } else {

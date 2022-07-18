@@ -77,26 +77,26 @@
   "commands.help.success.no_args.color": "NOT_QUITE_BLACK",
 
   "commands.help.success.no_args.fields.main.title": "%emoji_main% Main %emoji_main%",
-  "commands.help.success.no_args.fields.main.content": "Main commands such as `/inventory`, or `/advancements`.",
+  "commands.help.success.no_args.fields.main.content": "Main commands such as %inventory_command_mention%, or %advancements_command_mention%.",
 
   "commands.help.success.no_args.fields.moderation.title": "%emoji_moderation% Moderation %emoji_moderation%",
-  "commands.help.success.no_args.fields.moderation.content": "Moderation commands such as `/ban` or `/unban`.",
+  "commands.help.success.no_args.fields.moderation.content": "Moderation commands such as %ban_command_mention% or %command_command_mention%.",
 
   "commands.help.success.no_args.fields.other.title": "%emoji_other_1% Other %emoji_other_2%",
-  "commands.help.success.no_args.fields.other.content": "Other commands such as `/message` or `/text`.",
+  "commands.help.success.no_args.fields.other.content": "Other commands such as %message_command_mention%.",
 
   "commands.help.success.no_args.fields.settings.title": "%emoji_settings% Settings %emoji_settings%",
-  "commands.help.success.no_args.fields.settings.content": "Setup and settings such as `/connect` or `/disable`.",
+  "commands.help.success.no_args.fields.settings.content": "Setup and settings such as %connect_command_mention% or %disable_command_mention%.",
 
   "commands.help.success.no_args.fields.information.title": "\u200B",
-  "commands.help.success.no_args.fields.information.content": "**All commands in a category** can be viewed with: **/help <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
+  "commands.help.success.no_args.fields.information.content": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
-  "commands.help.success.category.fields.command.title": "%command_name%",
+  "commands.help.success.category.fields.command.title": "**%command_mention%**",
   "commands.help.success.category.fields.command.content": "%command_short_description%",
 
   "commands.help.success.category.fields.information.title": "\u200B",
-  "commands.help.success.category.fields.information.content": "**More info about a command** can be viewed with: **/help <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
+  "commands.help.success.category.fields.information.content": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
   "commands.help.success.command.title": "Help Menu",
@@ -104,7 +104,7 @@
   "commands.help.success.command.author.icon_url": "%client_avatar%",
   "commands.help.success.command.color": "NOT_QUITE_BLACK",
 
-  "commands.help.success.command.fields.command.title": "%command_name%",
+  "commands.help.success.command.fields.command.title": "**%command_mention%**",
   "commands.help.success.command.fields.command.content": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%",
 
 
@@ -147,10 +147,6 @@
   "commands.advancements.warnings.not_completed.description": "%emoji_warning% Advancement **%advancement_title%** not completed/unlocked or misspelled!",
   "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
 
-  "commands.advancements.errors.could_not_read_file.title": "Could Not Read File",
-  "commands.advancements.errors.could_not_read_file.description": "%emoji_error% Could not read advancement file. Please try again.",
-  "commands.advancements.errors.could_not_read_file.console": "Error reading advancement file from disk %error%",
-
   "commands.advancements.errors.could_not_autocomplete.console": "Could not respond to advancements autocomplete",
 
   "commands.advancements.success.base.title": "%username%",
@@ -176,10 +172,6 @@
   "commands.inventory.warnings.no_username.title": "No Username Specified",
   "commands.inventory.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
   "commands.inventory.warnings.no_username.console": "No username specified",
-
-  "commands.inventory.errors.could_not_read_file.title": "Could Not Read File",
-  "commands.inventory.errors.could_not_read_file.description": "%emoji_error% Could not read inventory file. Please try again.",
-  "commands.inventory.errors.could_not_read_file.console": "Error reading inventory file from disk %error%",
 
   "commands.inventory.errors.could_not_parse.title": "Could not Read Inventory",
   "commands.inventory.errors.could_not_parse.description": "%emoji_error% Could not read inventory.",
@@ -226,17 +218,13 @@
 
   "commands.stats.warnings.no_image.console": "No Image available for %stat_name%",
 
-  "commands.stats.errors.could_not_read_file.title": "Could Not Read File",
-  "commands.stats.errors.could_not_read_file.description": "%emoji_error% Could not read stats file. Please try again.",
-  "commands.stats.errors.could_not_read_file.console": "Error reading stats file from disk %error%",
-
   "commands.stats.errors.could_not_parse.title": "Could Not Find Category",
   "commands.stats.errors.could_not_parse.description": "%emoji_error% %username% has never done anything in this category.",
   "commands.stats.errors.could_not_parse.console": "Error trying to parse stat json %error%",
 
   "commands.stats.errors.could_not_autocomplete.console": "Could not respond to stats autocomplete",
 
-  "commands.stats.success.stat_message.custom": "**%stat_name%** **%stat_value%**",
+  "commands.stats.success.stat_message.custom": "**%stat_name%**: **%stat_value%**",
   "commands.stats.success.stat_message.mined": "has mined **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.broken": "has broken **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.crafted": "has crafted **%stat_value% %stat_name%**",
@@ -245,12 +233,13 @@
   "commands.stats.success.stat_message.dropped": "has dropped **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.killed": "has killed **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
-  "commands.stats.success.stat_message.time_played": "has played for **%stat_value%** hours",
+  "commands.stats.success.stat_message.time": "**%stat_name%**: **%stat_value%** hours",
+  "commands.stats.success.stat_message.distance": "**%stat_name%**: **%stat_value%** meters",
 
   "commands.stats.success.final.title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
   "commands.stats.success.final.fields.username.title": "%username%",
   "commands.stats.success.final.fields.username.content": "%stat_message%",
-  "commands.stats.success.final.image": "attachment://%stat_name%.png",
+  "commands.stats.success.final.thumbnail": "attachment://%stat_value%.png",
 
 
 
@@ -263,12 +252,103 @@
   "commands.ban.warnings.no_username.console": "No username specified",
 
   "commands.ban.warnings.response_warning.title": "Ban Player",
-  "commands.ban.warnings.response_warning.description": "%emoji_warning% Banned player **%username%**: `%reason%`\n%response%",
+  "commands.ban.warnings.response_warning.description": "%emoji_warning% Banned player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.ban.warnings.response_warning.color": "ORANGE",
 
   "commands.ban.success.title": "Ban Player",
   "commands.ban.success.description": "%emoji_success% Successfully banned player **%username%**: `%reason%`",
   "commands.ban.success.color": "ORANGE",
+
+
+
+  "commands.command.warnings.could_not_find_placeholders.console": "Could not find placeholder value for %placeholder%",
+
+  "commands.command.warnings.no_permission.title": "No Permission",
+  "commands.command.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.command.warnings.no_permission.console": "No command permission",
+
+  "commands.command.warnings.no_command.title": "No Command Specified",
+  "commands.command.warnings.no_command.description": "%emoji_warning% Please specify a minecraft command-name.",
+  "commands.command.warnings.no_command.console": "No command specified",
+
+  "commands.command.success.title": "Command Executed",
+  "commands.command.success.description": "**Command Response:**\n\n%response%",
+  "commands.command.success.color": "BLUE",
+
+
+  "commands.deop.warnings.no_permission.title": "No Permission",
+  "commands.deop.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.deop.warnings.no_permission.console": "No deop permission",
+
+  "commands.deop.warnings.no_username.title": "No Username Specified",
+  "commands.deop.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "commands.deop.warnings.no_username.console": "No username specified",
+
+  "commands.deop.warnings.response_warning.title": "Deop Player",
+  "commands.deop.warnings.response_warning.description": "Deoped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
+  "commands.deop.warnings.response_warning.color": "BLUE",
+
+  "commands.deop.success.title": "Deop Player",
+  "commands.deop.success.description": "%emoji_success% Successfully Deoped player **%username%**",
+  "commands.deop.success.color": "BLUE",
+
+
+
+  "commands.gamemode.warnings.no_permission.title": "No Permission",
+  "commands.gamemode.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.gamemode.warnings.no_permission.console": "No ban permission",
+
+  "commands.gamemode.warnings.no_username.title": "No Username Specified",
+  "commands.gamemode.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "commands.gamemode.warnings.no_username.console": "No username specified",
+
+  "commands.gamemode.warnings.no_gamemode.title": "No Gamemode Specified",
+  "commands.gamemode.warnings.no_gamemode.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "commands.gamemode.warnings.no_gamemode.console": "No username specified",
+
+  "commands.gamemode.warnings.response_warning.title": "Change Gamemode",
+  "commands.gamemode.warnings.response_warning.description": "%emoji_warning% Change gamemode: **%username%** -> **%gamemode%**\nCould not fetch response message! This commonly happens after using `/reload`.",
+  "commands.gamemode.warnings.response_warning.color": "ORANGE",
+
+  "commands.gamemode.success.title": "Ban Player",
+  "commands.gamemode.success.description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**",
+  "commands.gamemode.success.color": "ORANGE",
+
+
+
+  "commands.kick.warnings.no_permission.title": "No Permission",
+  "commands.kick.warnings.no_permission.description": "%emoji_no_entry% This command can only be used with the `Kick Member` permission!",
+  "commands.kick.warnings.no_permission.console": "No kick permission",
+
+  "commands.kick.warnings.no_username.title": "No Username Specified",
+  "commands.kick.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "commands.kick.warnings.no_username.console": "No username specified",
+
+  "commands.kick.warnings.response_warning.title": "Kick Player",
+  "commands.kick.warnings.response_warning.description": "%emoji_warning% Kicked player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
+  "commands.kick.warnings.response_warning.color": "ORANGE",
+
+  "commands.kick.success.title": "Kick Player",
+  "commands.kick.success.description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`",
+  "commands.kick.success.color": "ORANGE",
+
+
+
+  "commands.op.warnings.no_permission.title": "No Permission",
+  "commands.op.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.op.warnings.no_permission.console": "No op permission",
+
+  "commands.op.warnings.no_username.title": "No Username Specified",
+  "commands.op.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "commands.op.warnings.no_username.console": "No username specified",
+
+  "commands.op.warnings.response_warning.title": "OP Player",
+  "commands.op.warnings.response_warning.description": "Oped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
+  "commands.op.warnings.response_warning.color": "BLUE",
+
+  "commands.op.success.title": "OP Player",
+  "commands.op.success.description": "%emoji_success% Successfully oped player **%username%**",
+  "commands.op.success.color": "BLUE",
 
 
 
@@ -281,34 +361,12 @@
   "commands.unban.warnings.no_username.console": "No username specified",
 
   "commands.unban.warnings.response_warning.title": "Unban Player",
-  "commands.unban.warnings.response_warning.description": "Unbanned player **%username%**\n%response%",
+  "commands.unban.warnings.response_warning.description": "Unbanned player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.unban.warnings.response_warning.color": "BLUE",
 
   "commands.unban.success.title": "Unban Player",
   "commands.unban.success.description": "%emoji_success% Successfully unbanned player **%username%**",
   "commands.unban.success.color": "BLUE",
-
-
-
-  "commands.loadingscreen.warnings.no_image.title": "No Image specified",
-  "commands.loadingscreen.warnings.no_image.description": "%emoji_warning% Please attach an image, specify an image url or ping someone.",
-  "commands.loadingscreen.warnings.no_image.console": "No image specified",
-
-  "commands.loadingscreen.warnings.invalid_format.title": "Invalid Image Format",
-  "commands.loadingscreen.warnings.invalid_format.description": "%emoji_warning% Invalid image format **%image_format%**",
-  "commands.loadingscreen.warnings.invalid_format.console": "Invalid image format %image_format%",
-
-  "commands.loadingscreen.errors.could_not_get_size.title": "Could Not Get Size",
-  "commands.loadingscreen.errors.could_not_get_size.description": "%emoji_error% Could not get size of image. `/help loadingscreen` for correct usage.",
-  "commands.loadingscreen.errors.could_not_get_size.console": "Could not get image size",
-
-  "commands.loadingscreen.errors.could_not_load.title": "Could Not Load Image",
-  "commands.loadingscreen.errors.could_not_load.description": "%emoji_warning% Could not load image. `/help loadingscreen` for correct usage.",
-  "commands.loadingscreen.errors.could_not_load.console": "Could not load image",
-
-  "commands.loadingscreen.success.title": "Minecraft Loading Screen",
-  "commands.loadingscreen.success.description": "%emoji_success% Here's your Minecraft loading screen! Make sure to put it in: `<resourcepack>/assets/minecraft/textures/gui/title/`",
-  "commands.loadingscreen.success.image": "attachment://mojangstudios.png",
 
 
 
@@ -321,34 +379,13 @@
   "commands.message.warnings.no_message.console": "No message specified",
 
   "commands.message.warnings.response_warning.title": "Send Message",
-  "commands.message.warnings.response_warning.description": "Sent message to player **%username%**\n%response%",
+  "commands.message.warnings.response_warning.description": "Sent message to player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.message.warnings.response_warning.color": "BLUE",
 
   "commands.message.success.title": "Send Message",
   "commands.message.success.description": "%emoji_success% Successfully sent message to player **%username%**",
   "commands.message.success.color": "BLUE",
 
-
-
-  "commands.text.warnings.no_font.title": "No Font Specified",
-  "commands.text.warnings.no_font.description": "%emoji_warning% Please specify a font. To make a minecraft-styled text use `minecrafter`. Use `/help text` to view all special fonts.",
-  "commands.text.warnings.no_font.console": "No font specified",
-
-  "commands.text.warnings.no_color.title": "No Color Specified",
-  "commands.text.warnings.no_color.description": "%emoji_warning% Please specify a color. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).",
-  "commands.text.warnings.no_color.console": "No color specified",
-
-  "commands.text.warnings.no_text.title": "No Text Specified",
-  "commands.text.warnings.no_text.description": "%emoji_warning% Please specify a text.",
-  "commands.text.warnings.no_text.console": "No text specified",
-
-  "commands.text.errors.could_not_apply_text.title": "Could Not Apply Text",
-  "commands.text.errors.could_not_apply_text.description": "%emoji_error% Please check if you specified a valid font or color.",
-  "commands.text.errors.could_not_apply_text.console": "Could not apply text",
-
-  "commands.text.success.title": "Custom Text Image",
-  "commands.text.success.description": "%emoji_success% Here's your custom text image.",
-  "commands.text.success.image": "attachment://text_image.png",
 
 
   "commands.chatchannel.warnings.no_permission.title": "No Permission",
@@ -372,7 +409,7 @@
   "commands.chatchannel.warnings.no_text_channel.console": "No text channel specified",
 
   "commands.chatchannel.warnings.channel_not_added.title": "Channel Not Added",
-  "commands.chatchannel.warnings.channel_not_added.description": "%emoji_warning% The specified channel was never added.",
+  "commands.chatchannel.warnings.channel_not_added.description": "%emoji_warning% The specified channel is not added.",
   "commands.chatchannel.warnings.channel_not_added.console": "Channel not added",
 
   "commands.chatchannel.errors.could_not_write_file.title": "Could Not Save Channels",
@@ -395,8 +432,8 @@
   "commands.chatchannel.success.choose.components.log.type": "SELECT_MENU",
   "commands.chatchannel.success.choose.components.log.id": "log",
   "commands.chatchannel.success.choose.components.log.min_values": 1,
-  "commands.chatchannel.success.choose.components.log.max_values": 8,
-  "commands.chatchannel.success.choose.components.log.placeholder": "Select up to 8 message types.",
+  "commands.chatchannel.success.choose.components.log.max_values": 10,
+  "commands.chatchannel.success.choose.components.log.placeholder": "Select up to 10 message types.",
 
   "commands.chatchannel.success.choose.components.log.options.chat.label": "Chat Messages",
   "commands.chatchannel.success.choose.components.log.options.chat.description": "Send a message whenever a player chats.",
@@ -491,6 +528,12 @@
   "commands.connect.warnings.version_below_7.title": "Version Below 1.7",
   "commands.connect.warnings.version_below_7.description": "%emoji_warning% The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet.",
 
+  "commands.connect.warnings.not_completely_disconnected.title": "Not Completely Disconnected",
+  "commands.connect.warnings.not_completely_disconnected.description": "%emoji_warning% The plugin connection (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely.",
+
+  "commands.connect.warnings.automatically_disconnected.title": "Automatically Disconnected",
+  "commands.connect.warnings.automatically_disconnected.description": "%emoji_warning% Automatically disconnected from the plugin connection (**%ip%**) to ensure no complications happen.",
+
   "commands.connect.warnings.connecting.title": "Connecting...",
   "commands.connect.warnings.connecting.description": "Connecting to ftp... (Can take up to one minute)",
 
@@ -513,8 +556,8 @@
   "commands.connect.warnings.verification.color": "DARK_GOLD",
 
   "commands.connect.errors.could_not_connect_ftp.title": "Could Not Connect",
-  "commands.connect.errors.could_not_connect_ftp.description": "%emoji_error% Could not connect to server with ftp or sftp. Please check your credentials and try again.",
-  "commands.connect.errors.could_not_connect_ftp.console": "Could not connect with ftp or sftp.",
+  "commands.connect.errors.could_not_connect_ftp.description": "%emoji_error% Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again.",
+  "commands.connect.errors.could_not_connect_ftp.console": "Could not connect with ftp, sftp or ftps.",
 
   "commands.connect.errors.could_not_connect_plugin.title": "Could Not Connect",
   "commands.connect.errors.could_not_connect_plugin.description": "%emoji_error% Could not connect to server with plugin.",
@@ -675,13 +718,9 @@
 
 
 
-  "api.ftp.errors.unknown_ftp_error.title": "Could Not Connect",
-  "api.ftp.errors.unknown_ftp_error.description": "%emoji_error% Could not connect to server.",
-  "api.ftp.errors.unknown_ftp_error.console": "Unknown ftp error %error%",
-
   "api.ftp.errors.could_not_connect.title": "Could Not Connect",
   "api.ftp.errors.could_not_connect.description": "%emoji_error% Could not connect to server.",
-  "api.ftp.errors.could_not_connect.console": "Could not connect to server %error%",
+  "api.ftp.errors.could_not_connect.console": "Could not connect to server with %protocol% %error%",
 
   "api.ftp.errors.could_not_get.title": "Could Not Download",
   "api.ftp.errors.could_not_get.description": "%emoji_error% The user never joined the server.",
@@ -691,15 +730,19 @@
   "api.ftp.errors.could_not_put.description": "%emoji_error% Could not upload file",
   "api.ftp.errors.could_not_put.console": "Could not put file [%path%] %error%",
 
+  "api.ftp.errors.could_not_stream.title": "Could Not Download",
+  "api.ftp.errors.could_not_stream.description": "%emoji_error% Could not download files. Please try again.",
+  "api.ftp.errors.could_not_stream.console": "Could not stream file [%path%] %error%",
+
   "api.ftp.success.get.console": "Got file [%path%]",
   "api.ftp.success.put.console": "Put file [%path%]",
-  "api.ftp.success.connect.console": "Connected with ftp",
+  "api.ftp.success.connect.console": "Connected with %protocol%",
   "api.ftp.success.find.console": "Found file %path%",
 
 
 
   "api.plugin.warnings.not_completely_disconnected.title": "Not Completely Disconnected",
-  "api.plugin.warnings.not_completely_disconnected.description": "%emoji_warning% The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/SMP-Plugin/connection.conn` or by **removing** the plugin completely.",
+  "api.plugin.warnings.not_completely_disconnected.description": "%emoji_warning% The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely.",
 
   "api.plugin.warnings.automatically_disconnected.title": "Automatically Disconnected",
   "api.plugin.warnings.automatically_disconnected.description": "%emoji_warning% Automatically disconnected from the old server (**%ip%**) to ensure no complications happen.",
@@ -709,12 +752,18 @@
   "api.plugin.warnings.not_connected.console": "Not connected",
 
   "api.plugin.warnings.channel_not_added.title": "Channel Not Added",
-  "api.plugin.warnings.channel_not_added.description": "%emoji_warning% The specified channel was never added.",
+  "api.plugin.warnings.channel_not_added.description": "%emoji_warning% The specified channel is not added.",
   "api.plugin.warnings.channel_not_added.console": "Channel not added",
 
+  "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
+
   "api.plugin.errors.no_response.title": "Plugin Does Not Respond",
-  "api.plugin.errors.no_response.description": "%emoji_error% Plugin doesn't respond. Please check if the server is online and the plugin enabled.",
+  "api.plugin.errors.no_response.description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/smp-plugin.98749/) enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
+
+  "api.plugin.errors.no_webhook_permission.title": "No Webhook Permission",
+  "api.plugin.errors.no_webhook_permission.description": "%emoji_error% The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission.",
+  "api.plugin.errors.no_webhook_permission.console": "No webhook permission",
 
   "api.plugin.errors.could_not_add_webhook.title": "Could Not Add Webhook",
   "api.plugin.errors.could_not_add_webhook.description": "%emoji_error% The chatchannel webhook got deleted for an unknown reason and could not be re-added.",
@@ -801,7 +850,7 @@
   "api.plugin.success.get.console": "Got file [%path%]",
   "api.plugin.success.put.console": "Put file [%path%]",
   "api.plugin.success.listening.console": "Listening on port %port%",
-  "api.plugin.success.root_response": "To invite the Minecraft SMP Bot, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>",
+  "api.plugin.success.root_response": "To invite the MC Linker, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>",
 
 
 
@@ -909,7 +958,7 @@
   "data.stats.long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
   "data.stats.short_description": "Look at your and other member's minecraft server stats.",
   "data.stats.usage": "/stats <stat-category **id**> <stat-item/block/entity **id**> <@mention>/<username>",
-  "data.stats.example": "/stats mined iron_ore @Lianecx\n/stats custom play_time @BastiGHG\n/stats killed blaze ILoveCheese",
+  "data.stats.example": "/stats mined iron_ore @Lianecx\n/stats custom play_time BastiGHG\n/stats killed blaze ILoveCheese",
 
   "data.stats.options.custom.type": "SUBCOMMAND",
   "data.stats.options.custom.name": "custom",
@@ -1059,8 +1108,8 @@
   "data.ban.name": "ban",
   "data.ban.long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
   "data.ban.short_description": "Ban a player from the minecraft server.",
-  "data.ban.usage": "/ban <@mention/username>",
-  "data.ban.example": "/ban @Lianecx\n/ban cheaterGuy",
+  "data.ban.usage": "/ban <@mention/username> [reason]",
+  "data.ban.example": "/ban @Lianecx\n/ban cheaterGuy CHEATING...",
 
   "data.ban.options.user.type": "STRING",
   "data.ban.options.user.name": "user",
@@ -1074,6 +1123,94 @@
 
 
 
+  "data.command.name": "command",
+  "data.command.long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
+  "data.command.short_description": "Execute any command on the minecraft-server.",
+  "data.command.usage": "/command <command-name> [arguments]",
+  "data.command.example": "/command gamemode creative Lianecx\n/command give Lianecx Golden Apple\n/command tp @a 0 0 0",
+
+  "data.command.options.command.type": "STRING",
+  "data.command.options.command.name": "command",
+  "data.command.options.command.description": "Set the command name.",
+  "data.command.options.command.required": true,
+  "data.command.options.command.autocomplete": true,
+
+  "data.command.options.arg1.type": "STRING", "data.command.options.arg1.name": "argument1", "data.command.options.arg1.description": "Set the first command argument.", "data.command.options.arg1.required": false, "data.command.options.arg1.autocomplete": true,
+  "data.command.options.arg2.type": "STRING", "data.command.options.arg2.name": "argument2", "data.command.options.arg2.description": "Set the second command argument.", "data.command.options.arg2.required": false, "data.command.options.arg2.autocomplete": true,
+  "data.command.options.arg3.type": "STRING", "data.command.options.arg3.name": "argument3", "data.command.options.arg3.description": "Set the third command argument.", "data.command.options.arg3.required": false, "data.command.options.arg3.autocomplete": true,
+  "data.command.options.arg4.type": "STRING", "data.command.options.arg4.name": "argument4", "data.command.options.arg4.description": "Set the fourth command argument.", "data.command.options.arg4.required": false, "data.command.options.arg4.autocomplete": true,
+  "data.command.options.arg5.type": "STRING", "data.command.options.arg5.name": "argument5", "data.command.options.arg5.description": "Set the fifth command argument.", "data.command.options.arg5.required": false, "data.command.options.arg5.autocomplete": true,
+  "data.command.options.arg6.type": "STRING", "data.command.options.arg6.name": "argument6", "data.command.options.arg6.description": "Set the sixth command argument.", "data.command.options.arg6.required": false, "data.command.options.arg6.autocomplete": true,
+  "data.command.options.arg7.type": "STRING", "data.command.options.arg7.name": "argument7", "data.command.options.arg7.description": "Set the seventh command argument.", "data.command.options.arg7.required": false, "data.command.options.arg7.autocomplete": true,
+  "data.command.options.arg8.type": "STRING", "data.command.options.arg8.name": "argument8", "data.command.options.arg8.description": "Set the eighth command argument.", "data.command.options.arg8.required": false, "data.command.options.arg8.autocomplete": true,
+  "data.command.options.arg9.type": "STRING", "data.command.options.arg9.name": "argument9", "data.command.options.arg9.description": "Set the ninth command argument.", "data.command.options.arg9.required": false, "data.command.options.arg9.autocomplete": true,
+
+
+
+  "data.deop.name": "deop",
+  "data.deop.long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
+  "data.deop.short_description": "Deop players on the minecraft-server.",
+  "data.deop.usage": "/deop <@mention/username>",
+  "data.deop.example": "/deop @Lianecx\n/deop CoolGuy",
+
+  "data.deop.options.user.type": "STRING",
+  "data.deop.options.user.name": "user",
+  "data.deop.options.user.description": "Set the user you want to deop.",
+  "data.deop.options.user.required": true,
+
+
+  "data.gamemode.name": "gamemode",
+  "data.gamemode.long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
+  "data.gamemode.short_description": "Change the gamemode of a player on the minecraft-server.",
+  "data.gamemode.usage": "/gamemode <@mention/username> <gamemode>",
+  "data.gamemode.example": "/gamemode @TheTerrain creative\n/gamemode MySelf adventure",
+
+  "data.gamemode.options.user.type": "STRING",
+  "data.gamemode.options.user.name": "user",
+  "data.gamemode.options.user.description": "Set the user you want to change the gamemode of.",
+  "data.gamemode.options.user.required": true,
+
+  "data.gamemode.options.reason.type": "STRING",
+  "data.gamemode.options.reason.name": "gamemode",
+  "data.gamemode.options.reason.description": "Set the gamemode.",
+  "data.gamemode.options.reason.required": true,
+  "data.gamemode.options.reason.choices": [
+    ["Creative", "creative"], ["Survival", "survival"], ["Adventure", "adventure"], ["Spectator", "spectator"]
+  ],
+
+
+
+  "data.kick.name": "kick",
+  "data.kick.long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
+  "data.kick.short_description": "Kick a player from the minecraft server.",
+  "data.kick.usage": "/kick <@mention/username> [reason]",
+  "data.kick.example": "/kick @Lianecx\n/kick player no_reason",
+
+  "data.kick.options.user.type": "STRING",
+  "data.kick.options.user.name": "user",
+  "data.kick.options.user.description": "Set the user you want to kick.",
+  "data.kick.options.user.required": true,
+
+  "data.kick.options.reason.type": "STRING",
+  "data.kick.options.reason.name": "reason",
+  "data.kick.options.reason.description": "Set a reason for the kick.",
+  "data.kick.options.reason.required": false,
+
+
+
+  "data.op.name": "op",
+  "data.op.long_description": "OP players on the **minecraft-server**. Can only be used by admins.",
+  "data.op.short_description": "OP players on the minecraft-server.",
+  "data.op.usage": "/op <@mention/username>",
+  "data.op.example": "/op @Lianecx\n/op CoolGuy",
+
+  "data.op.options.user.type": "STRING",
+  "data.op.options.user.name": "user",
+  "data.op.options.user.description": "Set the user you want to OP.",
+  "data.op.options.user.required": true,
+
+
+
   "data.unban.name": "unban",
   "data.unban.long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
   "data.unban.short_description": "Unban a banned player from the minecraft-server.",
@@ -1084,19 +1221,6 @@
   "data.unban.options.user.name": "user",
   "data.unban.options.user.description": "Set the user you want to unban.",
   "data.unban.options.user.required": true,
-
-
-
-  "data.loadingscreen.name": "loadingscreen",
-  "data.loadingscreen.long_description": "Convert an attachment, image-link or @mention to a minecraft loading-screen.",
-  "data.loadingscreen.short_description": "Convert an image-link to a minecraft loading-screen.",
-  "data.loadingscreen.usage": "/loadingscreen <attachment/imageLink/@mention>",
-  "data.loadingscreen.example": "/loadingscreen @Lianecx\n/loadingscreen https://picsum.photos/200/200",
-
-  "data.loadingscreen.options.url.type": "STRING",
-  "data.loadingscreen.options.url.name": "url",
-  "data.loadingscreen.options.url.description": "Set the URL of the image you want to convert.",
-  "data.loadingscreen.options.url.required": true,
 
 
 
@@ -1118,33 +1242,10 @@
 
 
 
-  "data.text.name": "text",
-  "data.text.long_description": "Create images with text with different fonts and colors. All color ids can be found [here](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#color_keywords).\n**Special fonts**: `varela_round`, `minecrafter`, `mojang`, `minecraft`",
-  "data.text.short_description": "Create images with text with different fonts and colors.",
-  "data.text.usage": "/text <Any Font> <color> <Your text>",
-  "data.text.example": "/text minecraft red I love this bot!",
-
-  "data.text.options.font.type": "STRING",
-  "data.text.options.font.name": "font",
-  "data.text.options.font.description": "Set a font for your text.",
-  "data.text.options.font.required": true,
-
-  "data.text.options.color.type": "STRING",
-  "data.text.options.color.name": "color",
-  "data.text.options.color.description": "Set the color for your text.",
-  "data.text.options.color.required": true,
-
-  "data.text.options.text.type": "STRING",
-  "data.text.options.text.name": "text",
-  "data.text.options.text.description": "Enter your text here.",
-  "data.text.options.text.required": true,
-
-
-
   "data.chatchannel.name": "chatchannel",
   "data.chatchannel.long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
   "data.chatchannel.short_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
-  "data.chatchannel.usage": "/chatchannel add/remove <channel> <useWebhooks>\n/chatchannel",
+  "data.chatchannel.usage": "/chatchannel add/remove <channel> [useWebhooks]",
   "data.chatchannel.example": "/chatchannel add #smp-chat",
 
 
@@ -1177,15 +1278,15 @@
 
 
   "data.connect.name": "connect",
-  "data.connect.long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**",
+  "data.connect.long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/smp-plugin.98749/).**",
   "data.connect.short_description": "Connect your minecraft server or account with the bot.",
-  "data.connect.usage": "/connect ftp/plugin/user <options> <...>",
+  "data.connect.usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> <port> <version>",
   "data.connect.example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password port 1.17",
 
 
   "data.connect.options.ftp.type": "SUBCOMMAND",
   "data.connect.options.ftp.name": "ftp",
-  "data.connect.options.ftp.description": "Connect your Minecraft server using ftp/sftp.",
+  "data.connect.options.ftp.description": "Connect your Minecraft server using ftp/sftp/ftps.",
 
   "data.connect.options.ftp.options.host.type": "STRING",
   "data.connect.options.ftp.options.host.name": "host",
@@ -1205,18 +1306,18 @@
   "data.connect.options.ftp.options.port.type": "INTEGER",
   "data.connect.options.ftp.options.port.name": "port",
   "data.connect.options.ftp.options.port.description": "Set the ftp-port.",
-  "data.connect.options.ftp.options.port.required": true,
+  "data.connect.options.ftp.options.port.required": false,
   "data.connect.options.ftp.options.port.min_value": 1,
   "data.connect.options.ftp.options.port.max_value": 65536,
 
   "data.connect.options.ftp.options.version.type": "STRING",
   "data.connect.options.ftp.options.version.name": "version",
   "data.connect.options.ftp.options.version.description": "Set the Minecraft version.",
-  "data.connect.options.ftp.options.version.required": true,
+  "data.connect.options.ftp.options.version.required": false,
   "data.connect.options.ftp.options.version.choices": [
     ["1.5", "5"], ["1.6", "6"], ["1.7", "7"], ["1.8", "8"], ["1.9", "9"], ["1.10", "10"],
     ["1.11", "11"], ["1.12", "12"], ["1.13", "13"], ["1.14", "14"], ["1.15", "15"], ["1.16", "16"],
-    ["1.17", "17"], ["1.18", "18"]
+    ["1.17", "17"], ["1.18", "18"], ["1.19", "19"]
   ],
 
   "data.connect.options.ftp.options.path.type": "STRING",
@@ -1227,7 +1328,7 @@
 
   "data.connect.options.plugin.type": "SUBCOMMAND",
   "data.connect.options.plugin.name": "plugin",
-  "data.connect.options.plugin.description": "Connect your Minecraft server using ftp/sftp.",
+  "data.connect.options.plugin.description": "Connect your Minecraft server using ftp/sftp/ftps.",
 
   "data.connect.options.plugin.options.ip.type": "STRING",
   "data.connect.options.plugin.options.ip.name": "ip",
@@ -1242,7 +1343,7 @@
 
   "data.connect.options.account.type": "SUBCOMMAND",
   "data.connect.options.account.name": "account",
-  "data.connect.options.account.description": "Connect your Minecraft server using ftp/sftp.",
+  "data.connect.options.account.description": "Connect your Minecraft server using ftp/sftp/ftps.",
 
   "data.connect.options.account.options.username.type": "STRING",
   "data.connect.options.account.options.username.name": "username",
@@ -1254,7 +1355,7 @@
   "data.disable.name": "disable",
   "data.disable.long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in /help <command>.",
   "data.disable.short_description": "Disable a specific command/stat/advancement.",
-  "data.disable.usage": "/disable commands/stats/advance,emts <command/stat/advancement> **//**\ndisable list commands/stats/advancements",
+  "data.disable.usage": "/disable (commands|stats|advancements) <command|stat|advancement>\n/disable list (commands|stats|advancements)",
   "data.disable.example": "/disable commands txp\n/disable stats picked_up\n/disable advancements adventuring_time\n/disable list commands",
 
 
@@ -1307,7 +1408,7 @@
   "data.disconnect.name": "disconnect",
   "data.disconnect.long_description": "Disconnect your minecraft java-edition server or minecraft java-edition account from the bot and delete all saved credentials. To connect again, use `/connect`.",
   "data.disconnect.short_description": "Disconnect your minecraft server or minecraft account from the bot.",
-  "data.disconnect.usage": "/disconnect ftp/plugin/user",
+  "data.disconnect.usage": "/disconnect (ftp|plugin|user)",
   "data.disconnect.example": "/disconnect ftp\n/disconnect account",
 
   "data.disconnect.options.ftp.type": "SUBCOMMAND",
@@ -1327,7 +1428,7 @@
   "data.enable.name": "enable",
   "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in `/help <command>`.",
   "data.enable.short_description": "Enable a disabled command/stat/advancement (All enabled by default)",
-  "data.enable.usage": "/enable commands/stats/advancements <command/stat/advancement>",
+  "data.enable.usage": "/enable (commands|stats|advancements) <command|stat|advancement>",
   "data.enable.example": "/enable commands txp\n/enable stats picked_up\n/enable advancements adventuring_time",
 
 

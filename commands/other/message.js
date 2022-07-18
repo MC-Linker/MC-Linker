@@ -19,10 +19,10 @@ async function execute(message, args) {
     const mcUsername = username.id ? await utils.getUsername(username.id, message) : username;
     if(!mcUsername) return;
 
-    const resp = await plugin.chatPrivate(chatMsg, message.member.user.tag, mcUsername, message);
+    const resp = await plugin.chatPrivate(chatMsg, message.guildId, message.member.user.tag, mcUsername, message);
     if(!resp) return;
 
-    if(resp.status === 206) message.respond(keys.commands.message.warnings.response_warning, argPlaceholder, { "response": resp.message });
+    if(resp.status === 206) message.respond(keys.commands.message.warnings.response_warning, argPlaceholder, { "response": resp.json.message });
     else message.respond(keys.commands.message.success, argPlaceholder);
 }
 

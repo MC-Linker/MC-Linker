@@ -1,7 +1,7 @@
 {
-  "name": "minecraft-smp-bot",
+  "name": "mc-linker",
   "version": "1.0.0",
-  "description": "View minecraft stats, advancements and inventories in Discord! Also includes texturepack and moderation tools and much more.",
+  "description": "View minecraft stats, advancements and inventories in Discord! Also includes moderation tools, minecraft commands and much more.",
   "main": "main.js",
   "scripts": {
     "jest": "jest",
@@ -11,33 +11,33 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lianecx/Minecraft-SMP-Bot.git"
+    "url": "git+https://github.com/MC-Linker/MC-Linker.git"
   },
   "keywords": [],
   "author": "Lianecx",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Lianecx/Minecraft-SMP-Bot/issues"
+    "url": "https://github.com/MC-Linker/MC-Linker/issues"
   },
-  "homepage": "https://github.com/Lianecx/Minecraft-SMP-Bot#readme",
+  "homepage": "https://github.com/MC-Linker/MC-Linker#readme",
   "dependencies": {
     "@discordjs/builders": "^0.13.0",
     "@discordjs/rest": "^0.4.1",
     "canvas": "^2.9.0",
-    "discord-api-types": "^0.32.1",
+    "discord-api-types": "^0.33.0",
     "discord.js": "^13.6.0",
     "express": "^4.17.3",
     "fs-extra": "^10.1.0",
-    "ftp": "^0.3.10",
-    "jest": "^28.1.0",
-    "nbt": "^0.8.1",
+    "ftp-sftp": "^1.0.2",
+    "minecraft-data": "^3.5.0",
     "node-fetch": "^2.6.7",
+    "prismarine-nbt": "^2.2.1",
     "probe-image-size": "^7.2.3",
-    "ssh2-sftp-client": "^8.0.0",
     "topgg-autoposter": "^2.0.1"
   },
   "devDependencies": {
     "corde": "^4.4.6",
+    "jest": "^28.1.0",
     "lodash": "^4.17.21"
   }
 }

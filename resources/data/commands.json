@@ -1,0 +1,915 @@
+{
+  "advancement": [
+    {
+      "": ["grant", "revoke"]
+    },
+    {
+      "": ["everything", "from", "until", "through", "only"]
+    },
+    {
+      "everything": [],
+      "": ["%advancements%"]
+    },
+    {
+      "arg1=only": ["%arg2_criteria%"]
+    }
+  ],
+  "attribute": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%attributes%"]
+    },
+    {
+      "": ["base", "get", "modifier"]
+    },
+    {
+      "base": ["get", "set"],
+      "modifier": ["add", "remove", "value"]
+    },
+    {
+      "value": ["get"]
+    },
+    {},
+    {},
+    {
+      "arg3=add": ["add", "multiply", "multiply_base"]
+    }
+  ],
+  "ban": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "ban-ip": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "banlist": [
+    {
+      "": ["ips", "players"]
+    }
+  ],
+  "bossbar": [
+    {
+      "": ["add", "get", "list", "remove", "set"]
+    },
+    {
+      "remove": ["%bossbars%"]
+    },
+    {
+      "arg0=get": ["max", "players", "value", "visible"],
+      "arg0=set": ["color", "max", "name", "players", "style", "value", "visible"]
+    },
+    {
+      "color": ["blue", "green", "pink", "purple", "red", "white", "yellow"],
+      "players": ["%target_selectors%"],
+      "style": ["notched_6", "notched_10", "notched_12", "notched_20", "progress"],
+      "visible": ["true", "false"]
+    }
+  ],
+  "clear": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%items%", "%item_tags%", "%block_tags%"]
+    }
+  ],
+  "clone": [
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["replace", "masked", "filtered"]
+    },
+    {
+      "filtered": ["%block_tags%", "%blocks%"],
+      "replace": ["force", "move", "normal"],
+      "masked": ["force", "move", "normal"]
+    },
+    {
+      "arg3=filtered": ["force", "move", "normal"]
+    }
+  ],
+  "data": [
+    {
+      "": ["get", "merge", "modify", "remove"]
+    },
+    {
+      "": ["block", "entity", "storage"]
+    },
+    {
+      "entity": ["%target_selectors%"]
+    },
+    {
+      "arg0=modify": ["append", "insert", "merge", "prepend", "set"]
+    },
+    {
+      "append": ["from", "value"],
+      "prepend": ["from", "value"],
+      "merge": ["from", "value"],
+      "set": ["from", "value"]
+    },
+    {
+      "arg3=insert": ["from", "value"],
+      "from": ["block", "entity", "storage"]
+    },
+    {
+      "from": ["block", "entity", "storage"]
+    }
+  ],
+  "datapack": [
+    {
+      "": ["enable", "disable", "list"]
+    },
+    {
+      "disable": ["%enabled_datapacks%"],
+      "enable": ["%disabled_datapacks%"],
+      "list": ["available", "enabled"]
+    },
+    {
+      "enable": ["first", "last", "before", "after"]
+    },
+    {
+      "before": ["%enabled_datapacks%"],
+      "after": ["%enabled_datapacks%"]
+    }
+  ],
+  "debug": [
+    {
+      "": ["start", "stop", "function"]
+    },
+    {
+      "function": ["%functions%"]
+    }
+  ],
+  "defaultgamemode": [
+    {
+      "": ["survival", "creative", "adventure", "spectator"]
+    }
+  ],
+  "deop": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "difficulty": [
+    {
+      "": ["easy", "hard", "normal", "peaceful"]
+    }
+  ],
+  "effect": [
+    {
+      "": ["clear", "give"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%effects%"]
+    },
+    {},
+    {},
+    {
+      "arg0=give": ["true", "false"]
+    }
+  ],
+  "enchant": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%enchantments%"]
+    },
+    {
+      "": ["%arg1_levels%"]
+    }
+  ],
+  "execute": [
+    {
+      "": ["align", "anchored", "as", "at", "facing", "in", "positioned", "rotated", "store", "if", "unless", "run"]
+    },
+    {
+      "align": ["x", "y", "z", "xy", "xz", "yx", "yz", "zx", "zy", "xyz", "xzy", "yxz", "yzx", "zxy", "zyx"],
+      "anchored": ["eyes", "feet"],
+      "as": ["%target_selectors%"],
+      "at": ["%target_selectors%"],
+      "facing": ["entity", "%player_coordinates%"],
+      "in": ["overworld", "the_end", "the_nether"],
+      "positioned": ["as", "%player_coordinates%"],
+      "rotated": ["as"],
+      "if": ["block", "blocks", "data", "entity", "predicate", "score"],
+      "unless": ["block", "blocks", "data", "entity", "predicate", "score"],
+      "store": ["result", "success"],
+      "run": ["%commands%"]
+    },
+    {
+      "entity": ["%target_selectors%"],
+      "as": ["%target_selectors%"],
+      "block": ["%player_coordinates%"],
+      "blocks": ["%player_coordinates%"],
+      "data": ["block", "entity", "storage"],
+      "score": ["%target_selectors%"],
+      "arg-2=store": ["block", "bossbar", "entity", "score", "storage"],
+      "arg-2=run": ["%arg-1_argument_0%"],
+      "arg-2=facing": ["%execute_argument_0%"],
+      "arg-2=align": ["%execute_argument_0%"],
+      "arg-2=anchored": ["%execute_argument_0%"],
+      "arg-2=at": ["%execute_argument_0%"],
+      "arg-2=as": ["%execute_argument_0%"],
+      "arg-2=in": ["%execute_argument_0%"],
+      "arg-2=positioned": ["%execute_argument_0%"]
+    },
+    {
+      "entity": ["%target_selectors%"],
+      "block": ["%player_coordinates%"],
+      "bossbar": ["%bossbars%"],
+      "score": ["%target_selectors%"],
+      "arg-2=block": ["%block_tags%", "%blocks%"],
+      "arg-2=blocks": ["%player_coordinates%"],
+      "arg-2=score": ["%scoreboards%"],
+      "arg-3=run": ["%arg-2_argument_1%"],
+      "arg-3=facing & arg-2=entity": ["eyes", "feet"],
+      "arg-2=entity & arg-3=if": ["%execute_argument_0%"],
+      "arg-2=entity & arg-3=unless": ["%execute_argument_0%"],
+      "arg-2=predicate": ["%execute_argument_0%"],
+      "arg-3=positioned & arg-2=as": ["%execute_argument_0%"],
+      "arg-3=rotated & arg-2=as": ["%execute_argument_0%"],
+      "arg-3=facing": ["%execute_argument_1%"],
+      "arg-3=align": ["%execute_argument_1%"],
+      "arg-3=anchored": ["%execute_argument_1%"],
+      "arg-3=at": ["%execute_argument_1%"],
+      "arg-3=as": ["%execute_argument_1%"],
+      "arg-3=in": ["%execute_argument_1%"],
+      "arg-3=positioned": ["%execute_argument_1%"]
+    },
+    {
+      "arg-2=bossbar": ["max", "value"],
+      "arg-2=score": ["%scoreboards%"],
+      "arg-3=score": ["<", "<=", "=", ">=", ">", "matches"],
+      "arg-3=blocks": ["%player_coordinates%"],
+      "arg-4=run": ["%arg-3_argument_2%"],
+      "arg-3=block": ["%execute_argument_0%"],
+      "arg-4=facing & arg-3=entity": ["%execute_argument_0%"],
+      "arg-3=entity & arg-4=if": ["%execute_argument_1%"],
+      "arg-3=entity & arg-4=unless": ["%execute_argument_1%"],
+      "arg-3=predicate": ["%execute_argument_1%"],
+      "arg-4=positioned & arg-3=as": ["%execute_argument_1%"],
+      "arg-4=rotated & arg-3=as": ["%execute_argument_1%"],
+      "arg-4=facing": ["%execute_argument_2%"],
+      "arg-4=align": ["%execute_argument_2%"],
+      "arg-4=anchored": ["%execute_argument_2%"],
+      "arg-4=at": ["%execute_argument_2%"],
+      "arg-4=as": ["%execute_argument_2%"],
+      "arg-4=in": ["%execute_argument_2%"],
+      "arg-4=positioned": ["%execute_argument_2%"]
+    },
+    {
+      "<": ["%target_selectors%"],
+      "<=": ["%target_selectors%"],
+      "=": ["%target_selectors%"],
+      ">=": ["%target_selectors%"],
+      ">": ["%target_selectors%"],
+      "arg-5=store & arg-3=block": ["byte", "short", "int", "long", "float", "double"],
+      "arg-5=store & arg-3=entity": ["byte", "short", "int", "long", "float", "double"],
+      "arg-5=store & arg-3=storage": ["byte", "short", "int", "long", "float", "double"],
+      "arg-4=blocks": ["all", "masked"],
+      "arg-5=run": ["%arg-4_argument_3%"],
+      "arg-3=score": ["%execute_argument_0%"],
+      "arg-4=data": ["%execute_argument_0%"],
+      "arg-3=bossbar": ["%execute_argument_0%"],
+      "arg-4=block": ["%execute_argument_1%"],
+      "arg-5=facing & arg-4=entity": ["%execute_argument_1%"],
+      "arg-5=entity & arg-4=if": ["%execute_argument_2%"],
+      "arg-5=entity & arg-4=unless": ["%execute_argument_2%"],
+      "arg-4=predicate": ["%execute_argument_2%"],
+      "arg-5=positioned & arg-4=as": ["%execute_argument_2%"],
+      "arg-5=rotated & arg-4=as": ["%execute_argument_2%"],
+      "arg-5=facing": ["%execute_argument_3%"],
+      "arg-5=align": ["%execute_argument_3%"],
+      "arg-5=anchored": ["%execute_argument_3%"],
+      "arg-5=at": ["%execute_argument_3%"],
+      "arg-5=as": ["%execute_argument_3%"],
+      "arg-5=in": ["%execute_argument_3%"],
+      "arg-5=positioned": ["%execute_argument_3%"]
+    },
+    {
+      "arg-2=<": ["%scoreboards%"],
+      "arg-2=<=": ["%scoreboards%"],
+      "arg-2=": ["%scoreboards%"],
+      "arg-2=>=": ["%scoreboards%"],
+      "arg-2=>": ["%scoreboards%"],
+      "arg-6=run": ["%arg-5_argument_4%"],
+      "arg-5=blocks": ["%execute_argument_0%"],
+      "arg-2=matches": ["%execute_argument_0%"],
+      "arg-4=score": ["%execute_argument_1%"],
+      "arg-5=data": ["%execute_argument_1%"],
+      "arg-4=bossbar": ["%execute_argument_1%"],
+      "arg-5=block": ["%execute_argument_2%"],
+      "arg-6=facing & arg-5=entity": ["%execute_argument_2%"],
+      "arg-6=entity & arg-5=if": ["%execute_argument_3%"],
+      "arg-6=entity & arg-5=unless": ["%execute_argument_3%"],
+      "arg-5=predicate": ["%execute_argument_3%"],
+      "arg-6=positioned & arg-5=as": ["%execute_argument_3%"],
+      "arg-6=rotated & arg-5=as": ["%execute_argument_3%"],
+      "arg-6=facing": ["%execute_argument_4%"],
+      "arg-6=align": ["%execute_argument_4%"],
+      "arg-6=anchored": ["%execute_argument_4%"],
+      "arg-6=at": ["%execute_argument_4%"],
+      "arg-6=as": ["%execute_argument_4%"],
+      "arg-6=positioned": ["%execute_argument_4%"]
+    },
+    {
+      "arg-7=run": ["%arg-6_argument_5%"],
+      "arg-7=store & arg-5=block": ["%execute_argument_0%"],
+      "arg-7=store & arg-5=entity": ["%execute_argument_0%"],
+      "arg-7=store & arg-5=storage": ["%execute_argument_0%"],
+      "arg-3=<": ["%execute_argument_0%"],
+      "arg-3=<=": ["%execute_argument_0%"],
+      "arg-3=": ["%execute_argument_0%"],
+      "arg-3=>=": ["%execute_argument_0%"],
+      "arg-3=>": ["%execute_argument_0%"],
+      "arg-6=blocks": ["%execute_argument_1%"],
+      "arg-3=matches": ["%execute_argument_1%"],
+      "arg-5=bossbar": ["%execute_argument_2%"],
+      "arg-5=score": ["%execute_argument_2%"],
+      "arg-6=data": ["%execute_argument_2%"],
+      "arg-6=block": ["%execute_argument_3%"],
+      "arg-7=facing & arg-6=entity": ["%execute_argument_3%"],
+      "arg-7=entity & arg-6=if": ["%execute_argument_4%"],
+      "arg-7=entity & arg-6=unless": ["%execute_argument_4%"],
+      "arg-6=predicate": ["%execute_argument_4%"],
+      "arg-7=positioned & arg-6=as": ["%execute_argument_4%"],
+      "arg-7=rotated & arg-6=as": ["%execute_argument_4%"],
+      "arg-7=facing": ["%execute_argument_5%"],
+      "arg-7=align": ["%execute_argument_5%"],
+      "arg-7=anchored": ["%execute_argument_5%"],
+      "arg-7=at": ["%execute_argument_5%"],
+      "arg-7=as": ["%execute_argument_5%"],
+      "arg-7=positioned": ["%execute_argument_5%"]
+    },
+    {
+      "arg-7=run": ["%arg-7_argument_6%"],
+      "arg-8=store & arg-6=block": ["%execute_argument_1%"],
+      "arg-8=store & arg-6=entity": ["%execute_argument_1%"],
+      "arg-8=store & arg-6=storage": ["%execute_argument_1%"],
+      "arg-4=<": ["%execute_argument_1%"],
+      "arg-4=<=": ["%execute_argument_1%"],
+      "arg-4=": ["%execute_argument_1%"],
+      "arg-4=>=": ["%execute_argument_1%"],
+      "arg-4=>": ["%execute_argument_1%"],
+      "arg-7=blocks": ["%execute_argument_2%"],
+      "arg-4=matches": ["%execute_argument_2%"],
+      "arg-6=bossbar": ["%execute_argument_3%"],
+      "arg-6=score": ["%execute_argument_3%"],
+      "arg-7=data": ["%execute_argument_3%"],
+      "arg-7=block": ["%execute_argument_4%"],
+      "arg-8=facing & arg-7=entity": ["%execute_argument_4%"],
+      "arg-8=entity & arg-7=if": ["%execute_argument_5%"],
+      "arg-8=entity & arg-7=unless": ["%execute_argument_5%"],
+      "arg-7=predicate": ["%execute_argument_5%"],
+      "arg-8=positioned & arg-7=as": ["%execute_argument_5%"],
+      "arg-8=rotated & arg-7=as": ["%execute_argument_5%"],
+      "arg-8=facing": ["%execute_argument_6%"],
+      "arg-8=align": ["%execute_argument_6%"],
+      "arg-8=anchored": ["%execute_argument_6%"],
+      "arg-8=at": ["%execute_argument_6%"],
+      "arg-8=as": ["%execute_argument_6%"],
+      "arg-8=positioned": ["%execute_argument_6%"]
+    }
+  ],
+  "experience": [
+    {
+      "": ["add", "set", "query"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "query": ["levels", "points"]
+    },
+    {
+      "arg0=add": ["levels", "points"],
+      "arg0=set": ["levels", "points"]
+    }
+  ],
+  "fill": [
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%blocks%"]
+    },
+    {
+      "": ["destroy", "hollow", "keep", "outline", "replace"]
+    },
+    {
+      "replace": ["%block_tags%", "%blocks%"]
+    }
+  ],
+  "forceload": [
+    {
+      "": ["add", "remove", "query"]
+    },
+    {
+      "remove": ["all", "%player_coordinates_xz%"],
+      "": ["%player_coordinates_xz%"]
+    }
+  ],
+  "function": [
+    {
+      "": ["%functions%"]
+    }
+  ],
+  "gamemode": [
+    {
+      "any": ["creative", "spectator", "survival", "adventure"]
+    },
+    {
+      "any": ["%target_selectors%"]
+    }
+  ],
+  "gamerule": [
+    {
+      "": ["%gamerules%"]
+    },
+    {
+      "": ["true", "false"]
+    }
+  ],
+  "give": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%items%"]
+    }
+  ],
+  "help": [
+    {
+      "": ["%commands%"]
+    }
+  ],
+  "item": [
+    {
+      "": ["modify", "replace"]
+    },
+    {
+      "": ["block", "entity"]
+    },
+    {
+      "block": ["%player_coordinates%"],
+      "entity": ["%target_selectors%"]
+    },
+    {
+      "": ["%slots%"]
+    },
+    {
+      "arg0=replace": ["from", "with"]
+    },
+    {
+      "from": ["block", "entity"],
+      "with": ["%items%"]
+    },
+    {
+      "block": ["%player_coordinates%"],
+      "entity": ["%target_selectors%"]
+    },
+    {
+    }
+  ],
+  "jfr": [
+    {
+      "": ["start", "stop"]
+    }
+  ],
+  "kick": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "kill": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "list": [
+    {
+      "": ["uuids"]
+    }
+  ],
+  "locate":[
+    {
+      "": ["structure", "biome", "poit"]
+    },
+    {
+      "structure": ["%structures%", "%structure_tags%"],
+      "biome": ["%biomes%", "%biome_tags%"],
+      "poi": ["%pois%", "%poi_tags%"]
+    }
+  ],
+  "loot": [
+    {
+      "": ["give", "insert", "replace", "spawn"]
+    },
+    {
+      "give": ["%target_selectors%"],
+      "insert": ["%player_coordinates%"],
+      "spawn": ["%player_coordinates%"],
+      "replace": ["block", "entity"]
+    },
+    {
+      "block": ["%player_coordinates%"],
+      "entity": ["%target_selectors%"],
+      "arg0=give": ["fish", "kill", "loot", "mine"],
+      "arg0=insert": ["fish", "kill", "loot", "mine"],
+      "arg0=spawn": ["fish", "kill", "loot", "mine"]
+    },
+    {
+      "arg0=replace": ["%slots%"],
+      "fish": ["%loot%"],
+      "loot": ["%loot%"],
+      "mine": ["%player_coordinates%"]
+    },
+    {
+      "arg2=fish": ["%player_coordinates%"],
+      "arg2=mine": ["mainhand", "offhand", "%items%"]
+    },
+    {
+      "arg2=fish": ["mainhand", "offhand", "%items%"]
+    }
+  ],
+  "me": [],
+  "msg": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "op": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "pardon": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "pardon-ip": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "particle": [
+    {
+      "": ["%effects%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    },
+    {},
+    {},
+    {
+      "": ["force", "normal"]
+    },
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "perf": [
+    {
+      "": ["start", "stop"]
+    }
+  ],
+  "place": [
+    {
+      "": ["feature", "jigsaw", "structure", "template"]
+    },
+    {
+      "feature": ["%features%"],
+      "structure": ["%structures%"],
+      "jigsaw": ["%jigsaws%"],
+      "template": ["%templates%"]
+    },
+    {
+      "arg0=feature": ["%player_coordinates%"],
+      "arg0=structure": ["%player_coordinates%"],
+      "arg0=template": ["%player_coordinates%"]
+    },
+    {
+      "arg0=template": ["180", "clockwise_90", "counterclockwise_90", "none"]
+    },
+    {
+      "arg0=template": ["front_back", "left_right", "none"],
+      "arg0=jigsaw": ["%player_coordinates%"]
+    }
+  ],
+  "playsound": [
+    {
+      "": ["%sounds%"]
+    },
+    {
+      "": ["master", "music", "record", "weather", "block", "hostile", "neutral", "player", "ambient", "voice"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    }
+  ],
+  "recipe": [
+    {
+      "": ["give", "take"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%recipes%"]
+    }
+  ],
+  "reload": [
+    {
+      "": ["confirm", "permissions", "commands"]
+    }
+  ],
+  "restart": [],
+  "save-all": [
+    {
+      "": ["flush"]
+    }
+  ],
+  "save-off": [],
+  "save-on": [],
+  "say": [],
+  "schedule": [
+    {
+      "": ["clear", "function"]
+    },
+    {
+      "function": ["%functions%"]
+    },
+    {},
+    {
+      "arg0=function": ["append", "replace"]
+    }
+  ],
+  "scoreboard": [
+    {
+      "": ["objectives", "players"]
+    },
+    {
+      "objectives": ["list", "add", "remove", "setdisplay", "modify"],
+      "players": ["list", "get", "set", "add", "remove", "reset", "test", "enable", "operation"]
+    },
+    {
+      "modify": ["%scoreboards%"],
+      "arg0=objectives & remove ": ["%scoreboards%"],
+      "arg0=players": ["%target_selectors%"],
+      "setdisplay": ["%scoreboard_displays%"]
+    },
+    {
+      "arg0=objectives & arg1=add": ["%scoreboard_criteria%"],
+      "arg1=modify": ["displayname", "rendertype"],
+      "arg1=setdisplay": ["%scoreboards%"],
+      "arg0=players & arg1=add": ["%scoreboards%"],
+      "arg0=players & arg1=remove": ["%scoreboards%"],
+      "arg1=reset": ["%scoreboards%"],
+      "arg1=enable": ["%scoreboards%"],
+      "arg1=get": ["%scoreboards%"],
+      "arg1=set": ["%scoreboards%"],
+      "arg1=operation": ["%scoreboards%"]
+    },
+    {
+      "rendertype": ["integer", "hearts"],
+      "arg2=list": ["ascending", "descending"],
+      "arg2=sidebar": ["ascending", "descending"],
+      "arg1=operation": ["+=", "-=", "*=", "/=", "%=", "=", "<", ">", "><"]
+    },
+    {
+      "arg1=operation": ["%target_selectors%"]
+    },
+    {
+      "arg1=operation": ["%scoreboards%"]
+    }
+  ],
+  "seed": [],
+  "setblock": [
+    {
+      "": ["%player_coordinates%"]
+    },
+    {
+      "": ["%blocks%"]
+    },
+    {
+      "": ["destroy", "keep", "replace"]
+    }
+  ],
+  "setidletimeout": [],
+  "setworldspawn": [
+    {
+      "": ["%player_coordinates%"]
+    }
+  ],
+  "spawnpoint": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    }
+  ],
+  "spectate": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "spreadplayers": [
+    {
+      "": ["%player_coordinates_xz%"]
+    },
+    {},
+    {},
+    {
+      "": ["false", "true", "under"]
+    },
+    {
+      "false": ["%target_selectors%"],
+      "true": ["%target_selectors%"]
+    },
+    {
+      "arg3=under": ["false", "true"]
+    },
+    {
+      "arg3=under": ["%target_selectors%"]
+    }
+  ],
+  "stop": [],
+  "stopsound": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["*", "master", "music", "record", "weather", "block", "hostile", "neutral", "player", "ambient", "voice"]
+    },
+    {
+      "": ["%sounds%"]
+    }
+  ],
+  "summon": [
+    {
+      "": ["%entities%"]
+    },
+    {
+      "": ["%player_coordinates%"]
+    }
+  ],
+  "tag": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["add", "list", "remove"]
+    }
+  ],
+  "team": [
+    {
+      "": ["list", "add", "remove", "remove", "empty", "join", "leave", "modify"]
+    },
+    {
+      "empty": ["%teams%"],
+      "remove": ["%teams%"],
+      "join": ["%teams%"],
+      "leave": ["%target_selectors%"],
+      "modify": ["%teams%"]
+    },
+    {
+      "arg1=join": ["%target_selectors%"],
+      "arg1=modify": ["displayName", "color", "friendlyFire", "seeFriendlyInvisibles", "nametagVisibility", "deathMessageVisibility", "collisionRule", "prefix", "suffix"]
+    },
+    {
+      "color": ["%colors%"],
+      "collisionRule": ["always", "never", "pushOtherTeams", "pushOwnTeam"],
+      "nametagVisilibty": ["never", "hideForOtherTeams", "hideForOwnTeam", "always"],
+      "deathMessageVisibility": ["never", "hideForOtherTeams", "hideForOwnTeam", "always"],
+      "friendlyFire": ["true", "false"],
+      "seeFriendlyInvisibles": ["true", "false"]
+    }
+  ],
+  "teammsg": [],
+  "teleport": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "tell": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "tellraw": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "time": [
+    {
+      "": ["add", "query", "set"]
+    },
+    {
+      "query": ["daytime", "gametime", "day"],
+      "set": ["day", "night", "noon", "midnight"]
+    }
+  ],
+  "title": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["clear", "reset", "title", "subtitle", "actionbar", "times"]
+    }
+  ],
+  "tm": [],
+  "tp": [
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "trigger": [
+    {
+      "": ["%scoreboards%"]
+    },
+    {
+      "": ["add", "set"]
+    }
+  ],
+  "w": [
+    {
+      "": ["%target_selectors%"]
+    }
+  ],
+  "weather": [
+    {
+      "": ["clear", "rain", "thunder"]
+    }
+  ],
+  "whitelist": [
+    {
+      "": ["on", "off", "add", "remove", "list", "reload"]
+    },
+    {
+      "add": ["%target_selectors%"],
+      "remove": ["%target_selectors%"]
+    }
+  ],
+  "worldborder": [
+    {
+      "": ["add", "center", "damage", "get", "set", "warning"]
+    },
+    {
+      "center": ["%player_coordinates_xz%"],
+      "damage": ["amount", "buffer"],
+      "warning": ["distance", "time"]
+    }
+  ],
+  "xp": [
+    {
+      "": ["add", "set", "query"]
+    },
+    {
+      "": ["%target_selectors%"]
+    },
+    {
+      "query": ["levels", "points"]
+    },
+    {
+      "arg0=add": ["levels", "points"],
+      "arg0=set": ["levels", "points"]
+    }
+  ]
+}

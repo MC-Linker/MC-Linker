@@ -3,6 +3,15 @@ const Discord = require('discord.js');
 const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
+const defaultMessage = {
+    respond(key, placeholders) {
+        reply(null, key, placeholders);
+    },
+    channel: {
+        send() {}
+    }
+};
+
 const ph = {};
 ph.fromAuthor = function(author) {
     if(!(author instanceof Discord.User)) return {};
@@ -80,9 +89,32 @@ ph.emojis = function() {
     return placeholders;
 };
 
+ph.fromCommand = function(command) {
+    if(!(command instanceof Discord.ApplicationCommand)) return {};
+
+    return {
+        "command_mention": `</${command.name}:${command.id}>`,
+        "command_name": command.name,
+        "command_id": command.id,
+        "command_short_description": command.description,
+        "command_timestamp": Builders.time(new Date(command.createdTimestamp)),
+    }
+};
+
+ph.fromError = function(err) {
+    if(!(err instanceof Error)) return {};
+
+    return {
+        "error": err.stack,
+        "error_message": err.message,
+    }
+};
+
 ph.fromStd = function(interaction) {
+    if(!(interaction instanceof Discord.Interaction || !(interaction instanceof Discord.Message))) return {};
+
     return Object.assign(
-        this.fromAuthor(interaction?.member?.user ?? interaction.user),
+        this.fromAuthor(interaction.user),
         this.fromGuild(interaction.guild),
         this.fromInteraction(interaction),
         this.fromChannel(interaction.channel),
@@ -92,12 +124,38 @@ ph.fromStd = function(interaction) {
     );
 };
 
-ph.fromError = function(err) {
-    if(!(err instanceof Error)) return {};
-
-    return {
-        "error": err.stack
+ph.fromCommandName = async function(commandName, clientOrGuild) {
+    let commands;
+    if(clientOrGuild instanceof Discord.Guild) {
+        commands = await clientOrGuild.commands.fetch();
+    } else if(clientOrGuild instanceof Discord.Client) {
+        commands = await clientOrGuild.application.commands.fetch();
     }
+
+    const command = commands.find(cmd => cmd.name === commandName);
+
+    if(!(command instanceof Discord.ApplicationCommand)) return {};
+
+    return this.fromCommand(command);
+};
+
+ph.fromAllCommands = async function (clientOrGuild) {
+    let commands;
+    if (clientOrGuild instanceof Discord.Guild) {
+        commands = await clientOrGuild.commands.fetch();
+    } else if (clientOrGuild instanceof Discord.Client) {
+        commands = await clientOrGuild.application.commands.fetch();
+    }
+
+    const allPh = commands.map(cmd => prependName(this.fromCommand(cmd), cmd.name));
+
+    function prependName(ph, name) {
+        const newPh = {};
+        for([k, v] of Object.entries(ph)) newPh[`${name}_${k}`] = v;
+        return newPh;
+    }
+
+    return Object.assign({}, ...allPh);
 };
 
 
@@ -108,19 +166,48 @@ function addPh(key, ...placeholders) {
         return key.replace(/%\w+%/g, match =>
             placeholders[match.replaceAll('%', '')] ?? match
         );
-    } else if(typeof key !== 'object') return key;
+    } else if(Array.isArray(key)) {
+        let replaced = {};
 
-    const replacedObject = {};
+        for(const string of key) {
+            const match = string.match(/%.+%/g)?.shift();
+            if(match) {
+                const placeholder = placeholders[match.replaceAll('%', '')];
 
-    for([k, v] of Object.entries(key)) {
-        replacedObject[k] = addPh(v, placeholders);
-    }
+                if(Array.isArray(placeholder)) {
+                    for(const v of placeholder) {
+                        if(!v.match(/%.+%/g)) replaced[v] = v;
+                    }
+                } else if(typeof placeholder === 'object') {
+                    for([k, v] of Object.entries(placeholder)) replaced[k] = v;
+                } else {
+                    const v = placeholder ?? match;
+                    replaced[v] = v;
+                }
 
-    return replacedObject;
+                continue;
+            }
+
+            replaced[string] = string;
+        }
+
+        return replaced;
+    } else if(typeof key === 'object') {
+        const replacedObject = {};
+
+        for([k, v] of Object.entries(key)) {
+            replacedObject[k] = addPh(v, placeholders);
+        }
+
+        return replacedObject;
+    } else return key;
 }
 
 
 function reply(interaction, key, ...placeholders) {
+    //Only log to console if interaction doesnt exist
+    if(key?.console && !interaction) return console.log(addPh(key.console, Object.assign({}, ...placeholders)));
+
     if(!interaction || !key || !placeholders) return console.error(keys.api.messages.errors.no_reply_arguments.console);
 
     placeholders = Object.assign(
@@ -196,6 +283,7 @@ function getEmbedBuilder(key, ...placeholders) {
     if(key.color) embed.setColor(key.color);
     if(key.author) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
+    if(key.thumbnail) embed.setThumbnail(key.thumbnail);
     if(key.timestamp) embed.setTimestamp(Number(key.timestamp));
     if(key.footer) embed.setFooter({ text: key.footer.text, iconURL: key.footer.icon_url });
     if(key.url) embed.setURL(key.url);
@@ -216,13 +304,13 @@ function getCommandBuilder(key) {
     if(!key.options) return builder;
 
     for (const option of Object.values(key.options)) {
-        addEmbedOption(builder, option);
+        addSlashCommandOption(builder, option);
     }
 
     return builder;
 }
 
-function addEmbedOption(builder, key) {
+function addSlashCommandOption(builder, key) {
     if(!key.type || !key.name || !key.description) return;
 
     let optionBuilder;
@@ -326,11 +414,20 @@ function addEmbedOption(builder, key) {
 
             if(key.options) {
                 for (const option of Object.values(key.options)) {
-                    addEmbedOption(optionBuilder, option);
+                    addSlashCommandOption(optionBuilder, option);
                 }
             }
 
             builder.addSubcommand(optionBuilder);
+            break;
+        case 'ATTACHMENT':
+            optionBuilder = new Builders.SlashCommandAttachmentOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false);
+
+            builder.addAttachmentOption(optionBuilder);
             break;
     }
 }
@@ -371,38 +468,41 @@ function addComponent(actionRow, key) {
     actionRow.addComponents(componentBuilder);
 }
 
-function getUserFromMention(client, mention) {
-    if(typeof mention !== 'string') return;
+function getUsersFromMention(client, mention) {
+    if(typeof mention !== 'string') return [];
 
-    const matches = mention.matchAll(Discord.MessageMentions.USERS_PATTERN).next().value;
-    if (!matches) return;
+    const matches = mention.matchAll(Discord.MessageMentions.USERS_PATTERN);
+    if (!matches) return [];
 
-    // matches[0] = entire mention
-    // matches[1] = Id
-    const id = matches[1];
-    return client.users.cache.get(id);
+    const userArray = [];
+    for (let match of matches) {
+        // match[0] = entire mention
+        // match[1] = Id
+        userArray.push(client.users.cache.get(match[1]));
+    }
+
+    return userArray;
 }
 
 function getArgs(client, interaction) {
     if(!(interaction instanceof Discord.CommandInteraction)) return [];
 
     const args = [];
-    let options = interaction.options;
 
-    //Push Subcommand group
-    if(options._group) args.push(options._group);
-    //Push Subcommand
-    if(options._subcommand) args.push(options._subcommand);
-
-    if(options._hoistedOptions[0]) {
-        options._hoistedOptions.forEach(option => {
-            if(option.name === 'user' && option.type === 'STRING') args.push(getUserFromMention(client, option.value) ?? option.value);
-            else if(option.type === 'CHANNEL') args.push(option.channel);
-            else args.push(option.value);
-        });
+    function addArgs(option) {
+        if(option.type === 'SUB_COMMAND_GROUP' || option.type === 'SUB_COMMAND') {
+            args.push(option.name);
+            option.options.forEach(opt => addArgs(opt));
+        } else if(option.type === 'STRING' && option.name === 'user') args.push(getUsersFromMention(client, option.value)?.[0] ?? option.value);
+        else if(option.type === 'CHANNEL') args.push(option.channel);
+        else if(option.type === 'ROLE') args.push(option.role);
+        else if(option.type === 'ATTACHMENT') args.push(option.attachment);
+        else args.push(option.value);
     }
+
+    interaction.options.data.forEach(option => addArgs(option));
 
     return args;
 }
 
-module.exports = { keys, ph, reply, replyOptions, addPh, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUserFromMention, getArgs };
+module.exports = { keys, ph, reply, replyOptions, addPh, defaultMessage, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUsersFromMention, getArgs };

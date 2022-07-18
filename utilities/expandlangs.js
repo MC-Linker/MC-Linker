@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const lodash = require('lodash');
+const _ = require('lodash');
 
 convertKeys();
 
@@ -11,7 +11,7 @@ function convertKeys() {
 
         const converted = {};
         for([key, value] of Object.entries(keys)) {
-            lodash.set(converted, key, value);
+            _.set(converted, key, value);
         }
 
 

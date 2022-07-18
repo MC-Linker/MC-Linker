@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const crypto = require('crypto');
 const express = require('express');
 const utils = require('./utils');
-const { keys, addPh, ph, getEmbedBuilder } = require('./messages');
+const { keys, addPh, ph, getEmbedBuilder, defaultMessage } = require('./messages');
 const { botPort, pluginVersion } = require('../config.json');
 
 let pluginConnections = [];
@@ -44,7 +44,7 @@ async function loadExpress(client) {
 
         let chatEmbed;
 
-        if(req.body.type === 'advancements') {
+        if(req.body.type === 'advancement') {
             let advancementTitle;
             let advancementDesc;
 
@@ -63,19 +63,26 @@ async function loadExpress(client) {
         } else if(req.body.type === 'chat') {
             chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
 
+            let allWebhooks;
             //Fetch all webhooks in guild
-            let allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
+            try {
+                allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
+            } catch(err) {}
 
             for (const channel of channels) {
                 const discordChannel = client.channels.cache.get(channel.id);
 
+                if(!allWebhooks) {
+                    discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    return;
+                }
+
                 if (!channel.webhook) {
-                    discordChannel?.send({ embeds: [chatEmbed] })
+                    discordChannel.send({ embeds: [chatEmbed] })
                         .catch(() => {});
                     continue;
                 }
 
-                //Rename webhook if necessary
                 let webhook = allWebhooks.get(channel.webhook);
 
                 //Create new webhook if old one doesn't exist
@@ -86,7 +93,7 @@ async function loadExpress(client) {
                     //Fake interaction
                     discordChannel.respond = () => discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
 
-                    const regChannel = await registerChannel(ip, guildId, channel.id, channel.types, webhook.id, discordChannel);
+                    const regChannel = await registerChannel(ip, guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
                     if(!regChannel) {
                         webhook.delete();
                         return;
@@ -179,8 +186,13 @@ async function chat(message) {
     }
 }
 
-async function chatPrivate(msg, username, target, message) {
+async function chatPrivate(msg, guildId, username, target, message = defaultMessage) {
     return new Promise(async resolve => {
+        const ip = await utils.getIp(guildId, message);
+        if(!ip) return resolve(false);
+        const hash = await utils.getHash(guildId, message);
+        if(!hash) return resolve(false);
+
         const chatJson = {
             "msg": msg.replaceAll('\u200B', ''),
             "username": username,
@@ -189,9 +201,10 @@ async function chatPrivate(msg, username, target, message) {
         };
 
         try {
-            const resp = await fetch(`http://${conn.ip}/chat/`, {
+            const resp = await fetch(`http://${ip}/chat/`, {
+                method: 'POST',
                 headers: {
-                    Authorization: `Basic ${conn.hash}`
+                    Authorization: `Basic ${hash}`
                 },
                 body: JSON.stringify(chatJson)
             });
@@ -200,14 +213,13 @@ async function chatPrivate(msg, username, target, message) {
 
             resolve({ message: await resp.text(), status: resp.status });
         } catch(err) {
-            resolve(false);
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
 }
 
-function connect(ip, guildId, verifyCode, message) {
+function connect(ip, guildId, verifyCode, message = defaultMessage) {
     return new Promise(async resolve => {
         const hash = crypto.randomBytes(32).toString('base64');
 
@@ -274,7 +286,7 @@ function connect(ip, guildId, verifyCode, message) {
     });
 }
 
-function disconnect(guildId, message) {
+function disconnect(guildId, client, message = defaultMessage) {
     return new Promise(async resolve => {
         const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
@@ -287,7 +299,7 @@ function disconnect(guildId, message) {
 
             if(connIndex === -1) {
                 message.respond(keys.api.plugin.warnings.not_connected);
-                return;
+                return resolve(false);
             }
 
             const resp = await fetch(`http://${ip}/disconnect/`, {
@@ -298,10 +310,10 @@ function disconnect(guildId, message) {
             if(!await checkStatus(resp, message)) return resolve(false);
 
             const conn = pluginConnections[connIndex];
-            for(const channel of conn.channels) {
+            if(conn?.channels) for(const channel of conn.channels) {
                 //Delete webhook
                 if(channel.webhook) {
-                    const guild = await message.client.guilds.cache.get(guildId);
+                    const guild = await client.guilds.cache.get(guildId);
                     let allWebhooks = await guild.fetchWebhooks();
                     allWebhooks.get(channel.webhook).delete();
                 }
@@ -319,10 +331,8 @@ function disconnect(guildId, message) {
     });
 }
 
-function unregisterChannel(ip, guildId, channelId, message) {
+function unregisterChannel(ip, guildId, channelId, client, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
-
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
@@ -365,7 +375,7 @@ function unregisterChannel(ip, guildId, channelId, message) {
 
             //Delete webhook
             if(channel.webhook) {
-                const guild = await message.client.guilds.cache.get(guildId);
+                const guild = await client.guilds.cache.get(guildId);
                 let allWebhooks = await guild.fetchWebhooks();
                 allWebhooks.get(channel.webhook).delete();
             }
@@ -401,10 +411,8 @@ function unregisterChannel(ip, guildId, channelId, message) {
     });
 }
 
-function registerChannel(ip, guildId, channelId, types, webhookId, message) {
+function registerChannel(ip, guildId, channelId, types, webhookId, client, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
-
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
@@ -460,7 +468,7 @@ function registerChannel(ip, guildId, channelId, types, webhookId, message) {
             if(channelIndex !== -1) {
                 const channel = conn.channels[channelIndex];
                 if(channel.webhook) {
-                    const guild = await message.client.guilds.cache.get(guildId);
+                    const guild = await client.guilds.cache.get(guildId);
                     let allWebhooks = await guild.fetchWebhooks();
                     allWebhooks.get(channel.webhook)?.delete();
                 }
@@ -491,14 +499,11 @@ function registerChannel(ip, guildId, channelId, types, webhookId, message) {
     });
 }
 
-function get(getPath, putPath, message) {
+function get(getPath, putPath, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
-
-
-        const ip = await utils.getIp(message.guildId, message);
+        const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
-        const hash = await utils.getHash(message.guildId, message);
+        const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
         try {
@@ -509,6 +514,7 @@ function get(getPath, putPath, message) {
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
+            // await fs.ensureFile(putPath);
             const fileStream = fs.createWriteStream(putPath);
             resp.body.pipe(fileStream);
 
@@ -516,10 +522,10 @@ function get(getPath, putPath, message) {
                 message.respond(keys.api.plugin.errors.could_not_stream, { "path": getPath, "error": err });
                 resolve(false);
             });
-            fileStream.on('finish', () => {
-                fileStream.close();
+            fileStream.on('finish', async () => {
                 message.respond(keys.api.plugin.success.get, { "path": getPath });
-                resolve(true);
+
+                resolve(await fs.readFile(putPath));
             });
         } catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
@@ -528,14 +534,11 @@ function get(getPath, putPath, message) {
     });
 }
 
-function put(getPath, putPath, message) {
+function put(getPath, putPath, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
-
-
-        const ip = await utils.getIp(message.guildId, message);
+        const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
-        const hash = await utils.getHash(message.guildId, message);
+        const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
         try {
@@ -561,24 +564,22 @@ function put(getPath, putPath, message) {
     });
 }
 
-async function find(start, maxDepth, file, message) {
+async function list(folder, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
-
-
-        const ip = await utils.getIp(message.guildId, message);
+        const ip = await utils.getIp(guildId, message);
         if (!ip) return resolve(false);
-        const hash = await utils.getHash(message.guildId, message);
+        const hash = await utils.getHash(guildId, message);
         if (!hash) return resolve(false);
 
         try {
-            const resp = await fetch(`http://${ip}/file/find/?file=${file}&path=${start}&depth=${maxDepth}`, {
+            const resp = await fetch(`http://${ip}/file/list/?folder=${encodeURIComponent(folder)}`, {
                 headers: {
                     Authorization: `Basic ${hash}`
                 }
             });
             if (!await checkStatus(resp, message)) return resolve(false);
-            resolve(resp.text());
+
+            resolve(resp.json());
         } catch (err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
@@ -586,13 +587,11 @@ async function find(start, maxDepth, file, message) {
     });
 }
 
-function execute(command, message) {
+function execute(command, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
-        if(!await checkProtocol(message.guildId, message)) return resolve(false);
-
-        const ip = await utils.getIp(message.guildId, message);
+        const ip = await utils.getIp(guildId, message);
         if(!ip) return resolve(false);
-        const hash = await utils.getHash(message.guildId, message);
+        const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
         try {
@@ -603,7 +602,8 @@ function execute(command, message) {
             });
 
             if(!await checkStatus(resp, message)) return resolve(false);
-            resolve({ message: await resp.text(), status: resp.status });
+
+            resolve({ json: await resp.json(), status: resp.status });
         } catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
@@ -611,7 +611,30 @@ function execute(command, message) {
     });
 }
 
-function verify(ip, message) {
+function getOnlinePlayers(guildId, message = defaultMessage) {
+    return new Promise(async resolve => {
+        const ip = await utils.getIp(guildId, message);
+        if(!ip) return resolve(false);
+        const hash = await utils.getHash(guildId, message);
+        if(!hash) return resolve(false);
+
+        try {
+            const resp = await fetch(`http://${ip}/players/`, {
+                headers: {
+                    Authorization: `Basic ${hash}`
+                }
+            });
+            if(!await checkStatus(resp, message)) return resolve(false);
+
+            resolve(await resp.json());
+        } catch(err) {
+            message.respond(keys.api.plugin.errors.no_response);
+            resolve(false);
+        }
+    });
+}
+
+function verify(ip, message = defaultMessage) {
     return new Promise(async resolve => {
         try {
             const resp = await fetch(`http://${ip}/verify/`);
@@ -624,15 +647,7 @@ function verify(ip, message) {
     });
 }
 
-async function checkProtocol(guildId, message) {
-    if(await utils.getProtocol(guildId, message) !== 'plugin') {
-        message.respond(keys.api.plugin.warnings.not_connected);
-        return false;
-    }
-    return true;
-}
-
-async function updateConn(message) {
+async function updateConn(message = defaultMessage) {
     return new Promise(resolve => {
         fs.outputJson('./serverdata/connections/connections.json', pluginConnections, { spaces: 2 })
             .catch(err => {
@@ -642,7 +657,7 @@ async function updateConn(message) {
     });
 }
 
-async function checkStatus(response, message) {
+async function checkStatus(response, message = defaultMessage) {
     if(response.status === 400) {
         message.respond(keys.api.plugin.errors.status_400, { "error": await response.text() });
         return false;
@@ -658,4 +673,4 @@ async function checkStatus(response, message) {
     } else return !!response.ok;
 }
 
-module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, unregisterChannel, disconnect, get, put, find, execute, verify };
+module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, unregisterChannel, disconnect, get, put, list, execute, getOnlinePlayers, verify };

@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const dns = require('dns/promises');
 const utils = require('../../api/utils.js');
 const Discord = require('discord.js');
-const sftp = require('../../api/sftp');
 const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const { pluginPort } = require('../../config.json');
@@ -23,14 +22,16 @@ async function execute(message, args) {
         const host = args[1];
         let user = args[2];
         let password = args[3];
-        const port = args[4];
-        const version = args[5];
+        const port = args[4] ?? 21;
+        let version = args[5]?.split('.')?.pop() ?? 19;
         let path = args[6];
+
+        version = parseInt(version);
 
         if (!host || !user || !password || !port) {
             message.respond(keys.commands.connect.warnings.no_credentials);
             return;
-        } else if(!version) {
+        } else if(isNaN(version)) {
             message.respond(keys.commands.connect.warnings.no_version);
             return;
         } else if(port <= 0 || port > 65536) {
@@ -41,89 +42,45 @@ async function execute(message, args) {
         if(user === 'none') user = '';
         if(password === 'none') password = '';
 
-        if (version.split('.').pop() <= 11 && version.split('.').pop() > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.fromStd(message)));
-        else if (version.split('.').pop() <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.fromStd(message)));
+        //Send version warnings
+        if (version <= 11 && version > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.fromStd(message)));
+        else if (version <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.fromStd(message)));
 
         message.respond(keys.commands.connect.warnings.connecting);
 
-        let ftpData = {};
+        //Automatically disconnect from plugin
+        const ip = await utils.getIp(message.guildId);
+        if(ip) {
+            const disconnected = await plugin.disconnect(message.guildId, message.client);
+            if(!disconnected) message.channel.send(addPh(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { "ip": ip }));
+            else message.channel.send(addPh(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { "ip": ip }));
+        }
 
-        //Try ftp
-        const connectFtp = await ftp.connect({
-            host: host,
-            pass: password,
-            user: user,
-            port: port
-        });
+        const protocol = await ftp.connect({ host, password, user, port });
+        if(!protocol) {
+            message.respond(keys.commands.connect.errors.could_not_connect_ftp);
+            return;
+        }
 
-        //Could not connect with ftp
-        if(connectFtp !== true) {
-            //Try sftp
-            const connectSftp = await sftp.connect({
-                host: host,
-                pass: password,
-                user: user,
-                port: port,
-            });
-
-            //Could not connect with sftp
-            if (connectSftp !== true) {
-                message.respond(keys.commands.connect.errors.could_not_connect_ftp);
+        //Search for world path if not given
+        if(!path) {
+            message.respond(keys.commands.connect.warnings.searching_level);
+            path = await ftp.find('level.dat', '', 3, { host, password, user, port, protocol });
+            if(!path) {
+                message.respond(keys.commands.connect.errors.could_not_find_level);
                 return;
             }
-
-            //Connected with sftp
-
-            if(!path) {
-                message.respond(keys.commands.connect.warnings.searching_level);
-                path = await sftp.find('level.dat', '', 3, {
-                    host: host,
-                    pass: password,
-                    user: user,
-                    port: port,
-                });
-                if(!path) {
-                    message.respond(keys.commands.connect.errors.could_not_find_level);
-                    return;
-                }
-            }
-
-            ftpData = {
-                "host": host,
-                "user": user,
-                "password": password,
-                "port": port,
-                "path": path,
-                "version": version,
-                "protocol": 'sftp'
-            }
-        } else {
-            //Connected with ftp
-
-            if(!path) {
-                message.respond(keys.commands.connect.warnings.searching_level);
-                path = await ftp.find('level.dat', '', 3, {
-                    host: host,
-                    pass: password,
-                    user: user,
-                    port: port,
-                });
-                if(!path) {
-                    message.respond(keys.commands.connect.errors.could_not_find_level);
-                    return;
-                }
-            }
-
-            ftpData = {
-                "host": host,
-                "user": user,
-                "password": password,
-                "port": port,
-                "path": path,
-                "version": version,
-                "protocol": 'ftp'
-            }
         }
+
+        const ftpData = {
+            "host": host,
+            "user": user,
+            "password": password,
+            "port": port,
+            "path": path,
+            "version": version,
+            "protocol": protocol,
+        };
 
         //Connected with either ftp or sftp
         //Save connection

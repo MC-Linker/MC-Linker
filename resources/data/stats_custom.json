@@ -337,7 +337,7 @@
     },
     {
       "name": "Time Played",
-      "description": "The total amount of time played (tracked in ticks). This is not necessarily displayed in minutes - it displays in seconds, minutes, hours or days whichever makes the most sense. If the game is paused this number ceases to increase. If \"5.50 h\" is displayed this means that you have played for 5 hours and 30 minutes (not 50 minutes).",
+      "description": "The total amount of time played (tracked in ticks). If the game is paused this number ceases to increase. If \"5.50 h\" is displayed this means that you have played for 5 hours and 30 minutes (not 50 minutes).",
       "value": "play_time"
     },
     {
@@ -352,7 +352,7 @@
     },
     {
       "name": "Time with World Open",
-      "description": "The total amount of time the world was opened (tracked in ticks). Unlike Play Time, if the game is paused this number continues to increase. [1.17]",
+      "description": "The total amount of time the world was opened (tracked in ticks). Unlike Play Time, if the game is paused this number continues to increase.",
       "value": "total_world_time"
     },
     {

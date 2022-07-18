@@ -14,7 +14,7 @@ const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
 const settings = require('./api/settings');
-const { getUserFromMention, getArgs, addPh, keys, reply, replyOptions, ph } = require('./api/messages');
+const { getArgs, addPh, keys, reply, replyOptions, ph } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
@@ -28,7 +28,7 @@ process.on('unhandledRejection', async err => {
  * @returns {String} The formatted string.
  */
 String.prototype.cap = function() {
-    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase()
+    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 
 if(topggToken) {
@@ -50,15 +50,10 @@ client.on('guildCreate', guild => {
 });
 
 client.on('guildDelete', async guild => {
-
     if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
     console.log(addPh(keys.main.success.guild_delete.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
 
-    //Fake message
-    const message = {};
-    message.replyOptions = () => {};
-    message.respond = () => {};
-    await plugin.disconnect(guild.id, message);
+    await plugin.disconnect(guild.id, guild.client);
 
     //Delete connection folder
     fs.remove(`./serverdata/connections/${guild.id}`, err => {
@@ -137,22 +132,25 @@ client.on('interactionCreate', async interaction => {
     if(interaction.isCommand()) {
 
         //Making interaction compatible with normal commands
-        const user = getUserFromMention(client, interaction.options.getString('user'));
-        if(user) {
-            interaction.mentions = {
-                users: new Discord.Collection().set(user.id, user)
-            }
-        } else {
-            interaction.mentions = {
-                users: new Discord.Collection()
-            };
-        }
-        interaction.attachments = [];
+        interaction.mentions = {
+            users: new Discord.Collection(),
+            roles: new Discord.Collection(),
+            channels: new Discord.Collection(),
+        };
+        interaction.attachments = new Discord.Collection();
+
 
         const args = getArgs(client, interaction);
+        //Add mentions and attachments from args
+        args.forEach(arg => {
+            if(arg instanceof Discord.User) interaction.mentions.users.set(arg.id, arg);
+            else if(arg instanceof Discord.Role) interaction.mentions.roles.set(arg.id, arg);
+            else if(arg instanceof Discord.Channel) interaction.mentions.channels.set(arg.id, arg);
+            else if(arg instanceof Discord.MessageAttachment) interaction.attachments.set(arg.id, arg);
+        });
 
-        if(interaction.commandName === 'message') await interaction.deferReply({ ephemeral: true });
-        else await interaction.deferReply();
+        if(interaction.commandName === 'message') await interaction?.deferReply({ ephemeral: true });
+        else await interaction?.deferReply();
 
         if (interaction.commandName === 'help') {
             interaction.respond(keys.commands.executed);

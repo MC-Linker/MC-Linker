@@ -1,7 +1,8 @@
 const fs = require('fs-extra');
 const fetch = require('node-fetch');
 const Discord = require('discord.js');
-const { keys, addPh, ph } = require('./messages');
+const mcData = require('minecraft-data')('1.19');
+const { keys, addPh, ph, defaultMessage } = require('./messages');
 
 function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
@@ -68,47 +69,50 @@ function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSea
 
 function searchStats(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
-        if(category !== 'custom') {
-            fs.readdir(`./resources/images/minecraft/${category}`, (err, images) => {
-                if(err) return resolve(false);
+        let dataList;
+        let matchingStats = [];
 
-                const matchingImages = images.filter(image => image.includes(searchString.replaceAll(' ', '_')));
-                if(matchingImages.length >= 25) matchingImages.length = 25;
+        if(category === 'mined') dataList = mcData.blocksArray;
+        else if(category === 'broken' || category === 'crafted' || category === 'used' || category === 'picked_up' || category === 'dropped') dataList = mcData.itemsArray;
+        else if(category === 'killed' || category === 'killed_by') dataList = mcData.entitiesArray;
 
-                const respondArray = [];
-                matchingImages.forEach(image => {
-                    let formattedImage = image.replaceAll('.png', '');
-                    formattedImage = formattedImage.split('_').map(word => word.cap()).join(' ');
+        if(dataList) {
+            matchingStats = dataList.filter(data => {
+                //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+                let match = false;
+                if(shouldSearchNames) match = data.displayName.toLowerCase().includes(searchString.toLowerCase());
+                if(!match && shouldSearchValues) match = data.name.includes(searchString.toLowerCase());
 
-                    respondArray.push({
-                        name: formattedImage,
-                        value: image.replaceAll('.png', ''),
-                    });
-                });
+                return match;
+            }).map(data => {
+                return {
+                    name: data.displayName,
+                    value: data.name,
+                };
+            }); //Only include displayName and name
 
-                resolve(respondArray);
-            });
-        } else {
+            matchingStats = [...new Set(matchingStats)]; //Remove duplicates
+            if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
+
+            resolve(matchingStats);
+        } else if(category === 'custom') {
             fs.readJson('./resources/data/stats_custom.json', (err, statData) => {
                 if(err) return resolve([]);
 
-                let matchingStats;
-
-                matchingStats = Object.values(statData.stats).filter(stat => {
+                matchingStats = statData.stats.filter(stat => {
                     //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
-                    let match;
-                    if(shouldSearchNames) match = stat.name.toLowerCase().includes(searchString);
-                    if(shouldSearchValues || !match) match = stat.value.toLowerCase().includes(searchString);
+                    let match = false;
+                    if(shouldSearchNames) match = stat.name.toLowerCase().includes(searchString.toLowerCase());
+                    if(!match && shouldSearchValues) match = stat.value.includes(searchString.toLowerCase());
 
                     return match;
                 });
-
                 matchingStats = [...new Set(matchingStats)]; //Remove duplicates
-                if(matchingStats.length >= maxLength) matchingStats.length = maxLength;
+                if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
 
                 resolve(matchingStats);
             });
-        }
+        } else return resolve([]);
     });
 }
 
@@ -128,7 +132,7 @@ function isGuildConnected(guildId) {
     });
 }
 
-function getUUIDv4(user, message) {
+function getUUIDv4(user, message = defaultMessage) {
     return new Promise(async resolve => {
         if(user instanceof Discord.User) {
             const userData = await getUserData(user.id, message);
@@ -149,27 +153,27 @@ function getUUIDv4(user, message) {
     });
 }
 
-async function getUsername(userId, message) {
+async function getUsername(userId, message = defaultMessage) {
     const userData = await getUserData(userId, message);
     return userData?.name;
 }
 
-async function getWorldPath(guildId, message) {
+async function getWorldPath(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     return serverData?.path;
 }
 
-async function getVersion(guildId, message) {
+async function getVersion(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
-    return serverData?.version.split('.').pop();
+    return serverData?.version;
 }
 
-async function getProtocol(guildId, message) {
+async function getProtocol(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     return serverData?.protocol;
 }
 
-async function getHash(guildId, message) {
+async function getHash(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     //If connected but not with plugin
     if(serverData && serverData.protocol !== 'plugin') message.respond(keys.api.utils.errors.not_connected_with_plugin);
@@ -177,7 +181,7 @@ async function getHash(guildId, message) {
     return serverData?.hash;
 }
 
-async function getIp(guildId, message) {
+async function getIp(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     //If connected but not with plugin
     if(serverData && serverData?.protocol !== 'plugin') message.respond(keys.api.utils.errors.not_connected_with_plugin);
@@ -185,7 +189,7 @@ async function getIp(guildId, message) {
     return serverData?.ip;
 }
 
-function getServerData(guildId, message) {
+function getServerData(guildId, message = defaultMessage) {
     return new Promise(resolve => {
         fs.readJson(`./serverdata/connections/${guildId}/connection.json`, 'utf8')
             .then(serverJson => resolve(serverJson))
@@ -196,7 +200,7 @@ function getServerData(guildId, message) {
     });
 }
 
-function getUserData(userId, message) {
+function getUserData(userId, message = defaultMessage) {
     return new Promise(resolve => {
         fs.readJson(`./userdata/connections/${userId}/connection.json`, 'utf8')
             .then(userJson => resolve(userJson))
