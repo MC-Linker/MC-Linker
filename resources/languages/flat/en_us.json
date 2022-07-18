@@ -294,6 +294,28 @@
 
 
 
+  "commands.gamemode.warnings.no_permission.title": "No Permission",
+  "commands.gamemode.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.gamemode.warnings.no_permission.console": "No ban permission",
+
+  "commands.gamemode.warnings.no_username.title": "No Username Specified",
+  "commands.gamemode.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "commands.gamemode.warnings.no_username.console": "No username specified",
+
+  "commands.gamemode.warnings.no_gamemode.title": "No Gamemode Specified",
+  "commands.gamemode.warnings.no_gamemode.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "commands.gamemode.warnings.no_gamemode.console": "No username specified",
+
+  "commands.gamemode.warnings.response_warning.title": "Change Gamemode",
+  "commands.gamemode.warnings.response_warning.description": "%emoji_warning% Change gamemode: **%username%** -> **%gamemode%**\nCould not fetch response message! This commonly happens after using `/reload`.",
+  "commands.gamemode.warnings.response_warning.color": "ORANGE",
+
+  "commands.gamemode.success.title": "Ban Player",
+  "commands.gamemode.success.description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**",
+  "commands.gamemode.success.color": "ORANGE",
+
+
+
   "commands.kick.warnings.no_permission.title": "No Permission",
   "commands.kick.warnings.no_permission.description": "%emoji_no_entry% This command can only be used with the `Kick Member` permission!",
   "commands.kick.warnings.no_permission.console": "No kick permission",
@@ -345,48 +367,6 @@
   "commands.unban.success.title": "Unban Player",
   "commands.unban.success.description": "%emoji_success% Successfully unbanned player **%username%**",
   "commands.unban.success.color": "BLUE",
-
-
-
-  "commands.whitelist.warnings.no_permission.title": "No Permission",
-  "commands.whitelist.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins!",
-  "commands.whitelist.warnings.no_permission.console": "No whitelist permission",
-
-  "commands.whitelist.warnings.no_username.title": "No Username Specified",
-  "commands.whitelist.warnings.no_username.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.whitelist.warnings.no_username.console": "No username specified",
-
-  "commands.whitelist.warnings.add_warning.title": "Add player",
-  "commands.whitelist.warnings.add_warning.description": "Added player **%username%** to the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.whitelist.warnings.add_warning.color": "BLUE",
-
-  "commands.whitelist.warnings.remove_warning.title": "Remove player",
-  "commands.whitelist.warnings.remove_warning.description": "Removed player **%username%** from the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.whitelist.warnings.remove_warning.color": "ORANGE",
-
-  "commands.whitelist.warnings.enable_warning.title": "Enable Whitelist",
-  "commands.whitelist.warnings.enable_warning.description": "Enabled the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.whitelist.warnings.enable_warning.color": "BLUE",
-
-  "commands.whitelist.warnings.disable_warning.title": "Disable Whitelist",
-  "commands.whitelist.warnings.disable_warning.description": "Disabled the whitelist.\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.whitelist.warnings.disable_warning.color": "ORANGE",
-
-  "commands.whitelist.success.add.title": "Add player",
-  "commands.whitelist.success.add.description": "%emoji_success% Successfully added player **%username%** to the whitelist.",
-  "commands.whitelist.success.add.color": "BLUE",
-
-  "commands.whitelist.success.remove.title": "Remove Player",
-  "commands.whitelist.success.remove.description": "%emoji_success% Successfully removed player **%username%** from the whitelist",
-  "commands.whitelist.success.remove.color": "ORANGE",
-
-  "commands.whitelist.success.enable.title": "Enable Whitelist",
-  "commands.whitelist.success.enable.description": "%emoji_success% Successfully enabled the whitelist.",
-  "commands.whitelist.success.enable.color": "BLUE",
-
-  "commands.whitelist.success.disable.title": "Disable Whitelist",
-  "commands.whitelist.success.disable.description": "%emoji_success% Successfully disabled the whitelist.",
-  "commands.whitelist.success.disable.color": "ORANGE",
 
 
 
@@ -1143,19 +1123,6 @@
 
 
 
-  "data.deop.name": "deop",
-  "data.deop.long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
-  "data.deop.short_description": "Deop players on the minecraft-server.",
-  "data.deop.usage": "/deop <@mention/username>",
-  "data.deop.example": "/deop @Lianecx\n/deop CoolGuy",
-
-  "data.deop.options.user.type": "STRING",
-  "data.deop.options.user.name": "user",
-  "data.deop.options.user.description": "Set the user you want to deop.",
-  "data.deop.options.user.required": true,
-
-
-
   "data.command.name": "command",
   "data.command.long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
   "data.command.short_description": "Execute any command on the minecraft-server.",
@@ -1177,6 +1144,39 @@
   "data.command.options.arg7.type": "STRING", "data.command.options.arg7.name": "argument7", "data.command.options.arg7.description": "Set the seventh command argument.", "data.command.options.arg7.required": false, "data.command.options.arg7.autocomplete": true,
   "data.command.options.arg8.type": "STRING", "data.command.options.arg8.name": "argument8", "data.command.options.arg8.description": "Set the eighth command argument.", "data.command.options.arg8.required": false, "data.command.options.arg8.autocomplete": true,
   "data.command.options.arg9.type": "STRING", "data.command.options.arg9.name": "argument9", "data.command.options.arg9.description": "Set the ninth command argument.", "data.command.options.arg9.required": false, "data.command.options.arg9.autocomplete": true,
+
+
+
+  "data.deop.name": "deop",
+  "data.deop.long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
+  "data.deop.short_description": "Deop players on the minecraft-server.",
+  "data.deop.usage": "/deop <@mention/username>",
+  "data.deop.example": "/deop @Lianecx\n/deop CoolGuy",
+
+  "data.deop.options.user.type": "STRING",
+  "data.deop.options.user.name": "user",
+  "data.deop.options.user.description": "Set the user you want to deop.",
+  "data.deop.options.user.required": true,
+
+
+  "data.gamemode.name": "gamemode",
+  "data.gamemode.long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
+  "data.gamemode.short_description": "Change the gamemode of a player on the minecraft-server.",
+  "data.gamemode.usage": "/gamemode <@mention/username> <gamemode>",
+  "data.gamemode.example": "/gamemode @TheTerrain creative\n/gamemode MySelf adventure",
+
+  "data.gamemode.options.user.type": "STRING",
+  "data.gamemode.options.user.name": "user",
+  "data.gamemode.options.user.description": "Set the user you want to change the gamemode of.",
+  "data.gamemode.options.user.required": true,
+
+  "data.gamemode.options.reason.type": "STRING",
+  "data.gamemode.options.reason.name": "gamemode",
+  "data.gamemode.options.reason.description": "Set the gamemode.",
+  "data.gamemode.options.reason.required": true,
+  "data.gamemode.options.reason.choices": [
+    ["Creative", "creative"], ["Survival", "survival"], ["Adventure", "adventure"], ["Spectator", "spectator"]
+  ],
 
 
 
@@ -1221,43 +1221,6 @@
   "data.unban.options.user.name": "user",
   "data.unban.options.user.description": "Set the user you want to unban.",
   "data.unban.options.user.required": true,
-
-
-
-  "data.whitelist.name": "whitelist",
-  "data.whitelist.long_description": "Manage the whitelist of the **minecraft-server**. Can only be used by administrators.",
-  "data.whitelist.short_description": "Manage the whitelist of the minecraft-server.",
-  "data.whitelist.usage": "/whitelist add/remove <@mention/username>\n/whitelist enable/disable",
-  "data.whitelist.example": "/whitelist add @Lianecx\n/whitelist enable",
-
-  "data.whitelist.options.add.type": "SUBCOMMAND",
-  "data.whitelist.options.add.name": "add",
-  "data.whitelist.options.add.description": "Add a player to the whitelist.",
-
-  "data.whitelist.options.add.options.user.type": "STRING",
-  "data.whitelist.options.add.options.user.name": "user",
-  "data.whitelist.options.add.options.user.description": "Set the user you want to add to the whitelist.",
-  "data.whitelist.options.add.options.user.required": true,
-
-
-  "data.whitelist.options.remove.type": "SUBCOMMAND",
-  "data.whitelist.options.remove.name": "remove",
-  "data.whitelist.options.remove.description": "Remove a player from the whitelist.",
-
-  "data.whitelist.options.remove.options.user.type": "STRING",
-  "data.whitelist.options.remove.options.user.name": "user",
-  "data.whitelist.options.remove.options.user.description": "Set the user you want to remove from the whitelist.",
-  "data.whitelist.options.remove.options.user.required": true,
-
-
-  "data.whitelist.options.enable.type": "SUBCOMMAND",
-  "data.whitelist.options.enable.name": "enable",
-  "data.whitelist.options.enable.description": "Enable the whitelist on the minecraft-server.",
-
-
-  "data.whitelist.options.disable.type": "SUBCOMMAND",
-  "data.whitelist.options.disable.name": "disable",
-  "data.whitelist.options.disable.description": "Disable the whitelist on the minecraft-server.",
 
 
 
