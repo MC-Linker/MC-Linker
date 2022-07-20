@@ -1,6 +1,7 @@
 # TODO BOT
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ Switch from express to fastify
 + FTP: Get world path from `level-name` in `server.properties` (Find server.properties, then download and read it)
 + Get online player's inventories from the plugin instead of file
 + **Ensure that file exists in get() method**
