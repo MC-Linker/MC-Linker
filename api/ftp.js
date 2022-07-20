@@ -35,7 +35,7 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
 				resolve(await fs.readFile(putPath));
 			});
 		} catch(err) {
-			message.respond(keys.api.ftp.errors.could_not_get, { "path": putPath }, ph.fromError(err));
+			message.respond(keys.api.ftp.errors.could_not_get, { "path": getPath }, ph.fromError(err));
 			resolve(false);
 		}
 	});
