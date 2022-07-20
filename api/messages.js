@@ -4,8 +4,8 @@ const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
 const defaultMessage = {
-    respond(key, placeholders) {
-        reply(null, key, placeholders);
+    respond(key, ...placeholders) {
+        reply(null, key,...placeholders);
     },
     channel: {
         send() {}
