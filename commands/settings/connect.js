@@ -52,8 +52,14 @@ async function execute(message, args) {
         const ip = await utils.getIp(message.guildId);
         if(ip) {
             const disconnected = await plugin.disconnect(message.guildId, message.client);
-            if(!disconnected) message.channel.send(addPh(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { "ip": ip }));
-            else message.channel.send(addPh(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { "ip": ip }));
+
+            if(!disconnected) {
+                const embed = getEmbedBuilder(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { "ip": ip });
+                message.channel.send({ embeds: [embed] });
+            } else {
+                const embed = getEmbedBuilder(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { "ip": ip });
+                message.channel.send({ embeds: [embed] });
+            }
         }
 
         const protocol = await ftp.connect({ host, password, user, port });
