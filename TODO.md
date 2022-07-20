@@ -11,7 +11,6 @@
 + **Update to Discord.JS v14**
 + DM command author when response fails to send
 + **Add missing placeholders of `/command` and maybe extract the data to another file.**
-+ **Make plugin link more accessible (in error messages, `/setup` etc)**
 + Support for offline uuids (download server.properties to check for offline mode)
 + Add button to show more information for each slot (button grid) in /inventory
 + Support for multiple connections (or bungee support)
@@ -48,6 +47,7 @@
 + Bedrock support
 
 # TODO PLUGIN
-+ Release plugins for lower versions, bungee and sponge on GitHub
++ **Release plugins for lower versions, bungee and sponge on GitHub**
 + `/dm` (dm discord user)
++ `/discord` (customizable message)
 + Show replies to chat messages
