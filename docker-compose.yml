@@ -1,7 +1,7 @@
 version: '3.5'
 services:
-  Minecraft-SMP-Bot:
-    image: lianecx/mclinker
+  MC-Linker:
+    image: lianecx/mc-linker
     restart: on-failure
     ports:
       - "3100:3100"
