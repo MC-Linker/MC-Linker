@@ -757,7 +757,7 @@
           "description": "Connecting to ftp... (Can take up to one minute)"
         },
         "searching_level": {
-          "title": "Searching For World",
+          "title": "Searching For World...",
           "description": "%emoji_success% Successfully connected with the ftp server. Searching world folder... (Can take up to one minute)",
           "console": "Searching for level.dat..."
         },
