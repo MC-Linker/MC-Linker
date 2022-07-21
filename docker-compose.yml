@@ -2,6 +2,7 @@ version: '3.5'
 services:
   MC-Linker:
     image: lianecx/mc-linker
+    container_name: MC-Linker
     restart: on-failure
     ports:
       - "3100:3100"

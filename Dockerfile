@@ -1,6 +1,7 @@
-# To Build Run: docker build . -t Lianecx/SMPBOT
+# To Build Run: docker build . -t Lianecx/MC-Linker
 
-FROM node:18
+# FROM node:18
+FROM node:18-slim
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -8,9 +9,6 @@ WORKDIR /usr/src/app
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 COPY package*.json ./
-RUN npm install -g @mapbox/node-pre-gyp
-RUN apt update
-RUN apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev 
 RUN npm install
 # If you are building your code for production
 # RUN npm ci --only=production
