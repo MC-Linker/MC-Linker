@@ -7,8 +7,8 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ./serverdata:/usr/src/app/serverdata
-      - ./userdata:/usr/src/app/userdata
+      - serverdata:/usr/src/app/serverdata
+      - userdata:/usr/src/app/userdata
   syncthing:
     image: syncthing/syncthing
     container_name: syncthing
