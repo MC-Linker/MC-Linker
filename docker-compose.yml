@@ -7,8 +7,12 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - serverdata:/usr/src/app/serverdata
-      - userdata:/usr/src/app/userdata
+      - type: bind
+        source: ./serverdata
+        target: /usr/src/app/serverdata
+      - type: bind
+        source: ./userdata
+        target: /usr/src/app/userdata
   syncthing:
     image: syncthing/syncthing
     container_name: syncthing
@@ -22,7 +26,3 @@ services:
       - 8384:8384 # Web UI
       - 22000:22000/tcp # TCP file transfers
     restart: unless-stopped
-volumes:
-  serverdata:
-  userdata:
-
