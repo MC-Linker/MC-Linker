@@ -8,7 +8,7 @@ async function execute(message, args) {
         message.respond(
             keys.commands.help.success.no_args,
             { "invite_link": discordLink },
-            await ph.fromAllCommands(message.guild),
+            await ph.fromAllCommands(message.client),
         );
     } else {
         const commandName = args[0].toLowerCase();
