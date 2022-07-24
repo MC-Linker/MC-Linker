@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const fetch = require('node-fetch');
 const Discord = require('discord.js');
+const crypto = require('crypto');
 const mcData = require('minecraft-data')('1.19');
 const { keys, addPh, ph, defaultMessage } = require('./messages');
 
@@ -142,15 +143,24 @@ function getUUIDv4(user, message = defaultMessage) {
                 let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`);
                 data = await data.json();
 
-                const uuidv4 = data.id.split('');
-                for (let i = 8; i <= 23; i += 5) uuidv4.splice(i, 0, '-');
-                resolve(uuidv4.join(''));
+                resolve(addHyphen(data.id));
             } catch(err) {
                 message.respond(keys.api.utils.errors.could_not_get_uuid, { "username": user });
                 resolve(false);
             }
         }
     });
+}
+
+function getUUIDv3(username) {
+    const hash = crypto.createHash('md5');
+    hash.update(`OfflinePlayer:${username}`);
+    let digest = hash.digest();
+
+    digest[6] = digest[6] & 0x0f | 0x30;  // set version to 3
+    digest[8] = digest[8] & 0x3f | 0x80;  // set to variant 2
+
+    return addHyphen(digest.toString('hex'));
 }
 
 async function getUsername(userId, message = defaultMessage) {
@@ -211,4 +221,10 @@ function getUserData(userId, message = defaultMessage) {
     });
 }
 
-module.exports = { searchAllAdvancements, searchAdvancements, searchStats, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUIDv4 };
+function addHyphen(uuid) {
+    uuid = [...uuid];
+    for (let i=8; i<=23; i+=5) uuid.splice(i, 0, '-');
+    return uuid.join('');
+}
+
+module.exports = { searchAllAdvancements, searchAdvancements, searchStats, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUIDv4, getUUIDv3 };
