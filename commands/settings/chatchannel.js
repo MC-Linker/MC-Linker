@@ -87,7 +87,6 @@ async function execute(message, args) {
         const channelIndex = connection.channels?.findIndex(c => c.id === channel.id);
 
         if(channelIndex === undefined || channelIndex === -1) {
-            console.log(connection)
             message.respond(keys.commands.chatchannel.warnings.channel_not_added);
             return;
         } else {

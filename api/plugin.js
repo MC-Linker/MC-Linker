@@ -336,12 +336,6 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
         const hash = await utils.getHash(guildId, message);
         if(!hash) return resolve(false);
 
-        const connectJson = {
-            "guild": guildId,
-            "ip": ip,
-            "channel": channelId,
-        };
-
         pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
 
         //Find connection
@@ -359,6 +353,12 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
             resolve(false);
             return;
         }
+
+        const connectJson = {
+            "guild": guildId,
+            "ip": ip,
+            "channel": channel,
+        };
 
         try {
             let resp = await fetch(`http://${ip}/channel/remove`, {
