@@ -1946,7 +1946,7 @@
         "plugin": {
           "type": "SUBCOMMAND",
           "name": "plugin",
-          "description": "Connect your Minecraft server using ftp/sftp/ftps.",
+          "description": "Connect your Minecraft server using the Discord-Linker plugin.",
           "options": {
             "ip": {
               "type": "STRING",

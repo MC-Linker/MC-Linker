@@ -87,6 +87,7 @@ async function execute(message, args) {
         const channelIndex = connection.channels?.findIndex(c => c.id === channel.id);
 
         if(channelIndex === undefined || channelIndex === -1) {
+            console.log(connection)
             message.respond(keys.commands.chatchannel.warnings.channel_not_added);
             return;
         } else {
@@ -94,7 +95,7 @@ async function execute(message, args) {
             connection.channels.splice(channelIndex, 1);
         }
 
-        const unregChannel = await plugin.unregisterChannel(ip, message.guildId, channel.id, message);
+        const unregChannel = await plugin.unregisterChannel(ip, message.guildId, channel.id, message.client, message);
         if(!unregChannel) return;
 
         fs.outputJson(`./serverdata/connections/${message.guild.id}/connection.json`, connection, { spaces: 2 }, err => {

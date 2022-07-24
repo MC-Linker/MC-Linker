@@ -1328,7 +1328,7 @@
 
   "data.connect.options.plugin.type": "SUBCOMMAND",
   "data.connect.options.plugin.name": "plugin",
-  "data.connect.options.plugin.description": "Connect your Minecraft server using ftp/sftp/ftps.",
+  "data.connect.options.plugin.description": "Connect your Minecraft server using the Discord-Linker plugin.",
 
   "data.connect.options.plugin.options.ip.type": "STRING",
   "data.connect.options.plugin.options.ip.name": "ip",
