@@ -5,7 +5,7 @@ const { prefix } = require('../config.json');
 
 const defaultMessage = {
     respond(key, ...placeholders) {
-        reply(null, key,...placeholders);
+        return reply(null, key,...placeholders);
     },
     channel: {
         send() {}
@@ -13,11 +13,12 @@ const defaultMessage = {
 };
 
 function addResponseMethods(interaction) {
-    if(!(interaction instanceof Discord.Message) || !(interaction instanceof Discord.Interaction)) return interaction;
+    if(!(interaction instanceof Discord.Message) && !(interaction instanceof Discord.Interaction)) return interaction;
     if(interaction instanceof Discord.AutocompleteInteraction) return interaction;
 
     interaction.respond = (key, ...placeholders) => reply(interaction, key, ...placeholders);
     interaction.replyOptions = options => replyOptions(interaction, options);
+    return interaction;
 }
 
 

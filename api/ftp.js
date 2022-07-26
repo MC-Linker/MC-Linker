@@ -16,6 +16,8 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
 		if (!ftpClient) return resolve(false);
 
 		try {
+			await fs.ensureFile(putPath);
+
 			const file = await ftpClient.get(getPath);
 
 			// await fs.ensureFile(putPath);
