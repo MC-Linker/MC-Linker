@@ -1,6 +1,7 @@
 # TODO BOT
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ Parse pings in chat channel (@username#tag)
 + Switch from express to fastify
 + Check Bot's permissions before doing stuff
 + FTP: Get world path from `level-name` in `server.properties` (Find server.properties, then download and read it)
@@ -12,10 +13,10 @@
 + Add JSDoc
 + **Update to Discord.JS v14**
 + DM command author when response fails to send
-+ **Add missing placeholders of `/command` and maybe extract the data to another file.**
-+ Support for offline and floodgate uuids (download server.properties to check for offline mode)
++ Maybe extract the `/command` data to another file.
++ **Support for offline and floodgate uuids (download server.properties to check for offline mode)**
 + Add button to show more information for each slot (button grid) in /inventory
-+ Support for multiple connections (or bungee support)
++ Support for multiple connections to single plugin
 + Mod support (get textures and names of mod items)
 + Properly parse time and distance for stats (minutes, hours, days, weeks) (centimeters, meters, kilometers)
 + `/online`
