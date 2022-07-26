@@ -14,7 +14,7 @@ const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
 const settings = require('./api/settings');
-const { getArgs, addPh, keys, reply, replyOptions, ph } = require('./api/messages');
+const { getArgs, addResponseMethods, addPh, keys, ph } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 
@@ -76,13 +76,7 @@ for (const folder of commandFolders) {
 client.on('messageCreate', async message => {
     if (!message.content.startsWith(prefix)) plugin.chat(message);
 
-    //Add own response handlers
-    message.respond = (key, ...placeholders) => {
-        return reply(message, key, ...placeholders);
-    };
-    message.replyOptions = options => {
-        return replyOptions(message, options);
-    };
+    message = addResponseMethods(message);
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.success.ping);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -116,15 +110,7 @@ client.on('messageCreate', async message => {
 });
 
 client.on('interactionCreate', async interaction => {
-    //Add own response handlers if not autocomplete
-    if(!interaction.isAutocomplete()) {
-        interaction.respond = (key, ...placeholders) => {
-            return reply(interaction, key, ...placeholders);
-        };
-        interaction.replyOptions = options => {
-            return replyOptions(interaction, options);
-        };
-    }
+    interaction = addResponseMethods(interaction);
 
     //check if in guild
     if(!interaction.guildId) return interaction.respond(keys.main.warnings.not_in_guild);

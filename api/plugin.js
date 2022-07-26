@@ -78,8 +78,10 @@ async function loadExpress(client) {
                 }
 
                 if (!channel.webhook) {
-                    discordChannel.send({ embeds: [chatEmbed] })
-                        .catch(() => {});
+                    try {
+                        discordChannel.send({ embeds: [chatEmbed] })
+                            .catch(() => {});
+                    } catch (ignored) {}
                     continue;
                 }
 

@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs-extra');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
-const { keys, getEmbedBuilder, ph } = require('../../api/messages');
+const { keys, addResponseMethods, reply, getEmbedBuilder, ph } = require('../../api/messages');
 
 async function execute(message, args) {
     const method = args[0];
@@ -29,6 +29,8 @@ async function execute(message, args) {
 
         const collector = logChooserMsg.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 20000, max: 1 });
         collector.on('collect', async menu => {
+            menu = addResponseMethods(menu);
+
             if(menu.customId === 'log' && menu.member.user.id === message.member.user.id) {
                 const ip = await utils.getIp(message.guild.id, message);
                 if(!ip) return;
@@ -40,7 +42,7 @@ async function execute(message, args) {
                     else webhook = await channel.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
                 }
 
-                const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, message.client, message.client, menu);
+                const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, message.client, menu);
                 if(!regChannel) {
                     webhook?.delete();
                     return;
@@ -65,11 +67,11 @@ async function execute(message, args) {
 
                     console.log(keys.commands.chatchannel.success.add.console);
                     const successEmbed = getEmbedBuilder(keys.commands.chatchannel.success.add, ph.fromStd(message));
-                    menu.reply({ embeds: [successEmbed] });
+                    menu.replyOptions({ embeds: [successEmbed] });
                 });
             } else {
                 const notAuthorEmbed = getEmbedBuilder(keys.commands.chatchannel.warnings.not_author, ph.fromStd(message));
-                menu.reply({ embeds: [notAuthorEmbed], ephemeral: true });
+                menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
             }
         });
         collector.on('end', collected => {
