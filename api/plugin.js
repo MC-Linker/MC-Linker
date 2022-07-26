@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const fs = require('fs-extra');
 const crypto = require('crypto');
 const express = require('express');
+const Discord = require('discord.js');
 const utils = require('./utils');
 const { keys, addPh, ph, getEmbedBuilder, defaultMessage } = require('./messages');
 const { botPort, pluginVersion } = require('../config.json');
@@ -163,7 +164,8 @@ async function chat(message) {
         return false;
     });
 
-    let content = message.cleanContent;
+    let content = Discord.Util.escapeMarkdown(message.cleanContent)
+        .replace(/\\`|\\\*|\\_|\\~|\\\|/g, '');
     message.attachments?.forEach(attach => content += `\n${attach.url}`);
 
     const chatJson = {
