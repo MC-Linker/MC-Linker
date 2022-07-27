@@ -756,10 +756,10 @@
           "title": "Connecting...",
           "description": "Connecting to ftp... (Can take up to one minute)"
         },
-        "searching_level": {
-          "title": "Searching For World...",
-          "description": "%emoji_success% Successfully connected with the ftp server. Searching world folder... (Can take up to one minute)",
-          "console": "Searching for level.dat..."
+        "searching_properties": {
+          "title": "Searching For Server...",
+          "description": "%emoji_success% Successfully connected with the ftp server. Searching server folder... (Can take up to one minute)",
+          "console": "Searching for server.properties..."
         },
         "check_dms": {
           "title": "Check Your DMs",
@@ -790,10 +790,15 @@
           "title": "Could Not Connect",
           "description": "%emoji_error% Could not connect to server with plugin."
         },
-        "could_not_find_level": {
-          "title": "Could Not Find World",
-          "description": "%emoji_error% Could not find world folder. Please specify the world path manually.",
-          "console": "Could not find level.dat"
+        "could_not_find_properties": {
+          "title": "Could Not Find Server",
+          "description": "%emoji_error% Could not find server folder. Please specify the server path manually.",
+          "console": "Could not find server.properties"
+        },
+        "could_not_get_properties": {
+          "title": "Could Not Get Server Properties",
+          "description": "%emoji_error% Could not get server properties. Please try again.",
+          "console": "Could not get server.properties"
         },
         "could_not_write_server_file": {
           "title": "Could Not Save Credentials",
@@ -1831,10 +1836,10 @@
     },
     "connect": {
       "name": "connect",
-      "long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
+      "long_description": "Connect your minecraft java-edition server or account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
       "short_description": "Connect your minecraft server or account with the bot.",
-      "usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> <port> <version>",
-      "example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password port 1.17",
+      "usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> [port] [version]",
+      "example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password",
       "options": {
         "ftp": {
           "type": "SUBCOMMAND",
@@ -1938,7 +1943,7 @@
             "path": {
               "type": "STRING",
               "name": "path",
-              "description": "Set the world-path (Format: /path/to/world).",
+              "description": "Set the server-path (Format: /path/to/server).",
               "required": false
             }
           }

@@ -4,13 +4,13 @@ const utils = require('./utils');
 const plugin = require('./plugin');
 const { keys, addPh, ph, defaultMessage } = require('./messages');
 
-function get(getPath, putPath, guildId, message = defaultMessage) {
+function get(getPath, putPath, credentials, message = defaultMessage) {
 	return new Promise(async resolve => {
-		const ftpData = await utils.getServerData(guildId, message);
+		const ftpData = await getData(credentials, message);
 		if (!ftpData) return resolve(false);
 
 		//Redirect to plugin
-		if (ftpData.protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, guildId, message));
+		if (ftpData.protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, credentials, message));
 
 		const ftpClient = await getFtpClient(ftpData, message);
 		if (!ftpClient) return resolve(false);
@@ -19,7 +19,6 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
 			await fs.ensureFile(putPath);
 
 			const file = await ftpClient.get(getPath);
-
 			// await fs.ensureFile(putPath);
 			const writeStream = fs.createWriteStream(putPath);
 
@@ -43,13 +42,13 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
 	});
 }
 
-function put(getPath, putPath, guildId, message = defaultMessage) {
+function put(getPath, putPath, credentials, message = defaultMessage) {
 	return new Promise(async resolve => {
-		const ftpData = await utils.getServerData(guildId, message);
+		const ftpData = await getData(credentials, message);
 		if (!ftpData) return resolve(false);
 
 		//Redirect to plugin
-		if (ftpData.protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, guildId, message));
+		if (ftpData.protocol === 'plugin') return resolve(await plugin.get(getPath, putPath, credentials, message));
 
 		const ftpClient = await getFtpClient(ftpData, message);
 		if (!ftpClient) return resolve(false);
@@ -93,12 +92,12 @@ function connect(credentials) {
 	});
 }
 
-function list(folder, guildId, message = defaultMessage) {
+function list(folder, credentials, message = defaultMessage) {
 	return new Promise(async resolve => {
-		const ftpData = await utils.getServerData(guildId, message);
+		const ftpData = await getData(credentials, message);
 		if (!ftpData) return resolve(false);
 
-		if (ftpData.protocol === 'plugin') return resolve(await plugin.list(folder, guildId, message));
+		if (ftpData.protocol === 'plugin') return resolve(await plugin.list(folder, credentials, message));
 
 		const ftpClient = await getFtpClient(ftpData, message);
 		if (!ftpClient) return resolve(false);
@@ -120,9 +119,9 @@ function list(folder, guildId, message = defaultMessage) {
 	});
 }
 
-function find(file, start, maxDepth, credentials) {
+function find(file, start, maxDepth, credentials, message = defaultMessage) {
 	return new Promise(async resolve => {
-		const ftpClient = await getFtpClient(credentials);
+		const ftpClient = await getFtpClient(credentials, message);
 		if (!ftpClient) return resolve(false);
 
 		const foundFile = await findFile(ftpClient, file, start, maxDepth);
@@ -149,13 +148,24 @@ async function findFile(ftpClient, file, path, maxDepth) {
 }
 
 async function getFtpClient(credentials, message = defaultMessage) {
+	if(typeof credentials !== 'object') credentials = await getData(credentials);
+
 	try {
-		if(credentials.protocol === 'ftp') return await ftp.create(credentials.host, credentials.port, credentials.user, credentials.password);
-		if(credentials.protocol === 'sftp') return await sftp.create(credentials.host, credentials.port, credentials.user, credentials.password);
+		if(credentials.protocol === 'ftp')
+			return await ftp.create(credentials.host, credentials.port, credentials.user, credentials.password);
+		else if(credentials.protocol === 'sftp')
+			return await sftp.create(credentials.host, credentials.port, credentials.user, credentials.password);
 	} catch(err) {
 		message.respond(keys.api.ftp.errors.could_not_connect, ph.fromError(err), { "protocol": credentials.protocol });
 		return false;
 	}
+}
+
+async function getData(credentials, message) {
+	if(typeof credentials === 'string')
+		return await utils.getServerData(credentials, message);
+	else if(typeof credentials === 'object') return credentials;
+	else return false;
 }
 
 module.exports = { get, put, connect, find, list };

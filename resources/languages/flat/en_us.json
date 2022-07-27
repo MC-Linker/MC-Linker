@@ -537,9 +537,9 @@
   "commands.connect.warnings.connecting.title": "Connecting...",
   "commands.connect.warnings.connecting.description": "Connecting to ftp... (Can take up to one minute)",
 
-  "commands.connect.warnings.searching_level.title": "Searching For World...",
-  "commands.connect.warnings.searching_level.description": "%emoji_success% Successfully connected with the ftp server. Searching world folder... (Can take up to one minute)",
-  "commands.connect.warnings.searching_level.console": "Searching for level.dat...",
+  "commands.connect.warnings.searching_properties.title": "Searching For Server...",
+  "commands.connect.warnings.searching_properties.description": "%emoji_success% Successfully connected with the ftp server. Searching server folder... (Can take up to one minute)",
+  "commands.connect.warnings.searching_properties.console": "Searching for server.properties...",
 
   "commands.connect.warnings.check_dms.title": "Check Your DMs",
   "commands.connect.warnings.check_dms.description": "%emoji_red_success% Please check your DMs to complete the connection.",
@@ -562,9 +562,13 @@
   "commands.connect.errors.could_not_connect_plugin.title": "Could Not Connect",
   "commands.connect.errors.could_not_connect_plugin.description": "%emoji_error% Could not connect to server with plugin.",
 
-  "commands.connect.errors.could_not_find_level.title": "Could Not Find World",
-  "commands.connect.errors.could_not_find_level.description": "%emoji_error% Could not find world folder. Please specify the world path manually.",
-  "commands.connect.errors.could_not_find_level.console": "Could not find level.dat",
+  "commands.connect.errors.could_not_find_properties.title": "Could Not Find Server",
+  "commands.connect.errors.could_not_find_properties.description": "%emoji_error% Could not find server folder. Please specify the server path manually.",
+  "commands.connect.errors.could_not_find_properties.console": "Could not find server.properties",
+
+  "commands.connect.errors.could_not_get_properties.title": "Could Not Get Server Properties",
+  "commands.connect.errors.could_not_get_properties.description": "%emoji_error% Could not get server properties. Please try again.",
+  "commands.connect.errors.could_not_get_properties.console": "Could not get server.properties",
 
   "commands.connect.errors.could_not_write_server_file.title": "Could Not Save Credentials",
   "commands.connect.errors.could_not_write_server_file.description": "%emoji_error% Could not save credentials. Please try again.",
@@ -1278,10 +1282,10 @@
 
 
   "data.connect.name": "connect",
-  "data.connect.long_description": "Connect your minecraft java-edition server or minecraft java-edition account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
+  "data.connect.long_description": "Connect your minecraft java-edition server or account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
   "data.connect.short_description": "Connect your minecraft server or account with the bot.",
-  "data.connect.usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> <port> <version>",
-  "data.connect.example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password port 1.17",
+  "data.connect.usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> [port] [version]",
+  "data.connect.example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password",
 
 
   "data.connect.options.ftp.type": "SUBCOMMAND",
@@ -1322,7 +1326,7 @@
 
   "data.connect.options.ftp.options.path.type": "STRING",
   "data.connect.options.ftp.options.path.name": "path",
-  "data.connect.options.ftp.options.path.description": "Set the world-path (Format: /path/to/world).",
+  "data.connect.options.ftp.options.path.description": "Set the server-path (Format: /path/to/server).",
   "data.connect.options.ftp.options.path.required": false,
 
 

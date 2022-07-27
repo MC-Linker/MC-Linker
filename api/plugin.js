@@ -190,12 +190,10 @@ async function chat(message) {
     }
 }
 
-async function chatPrivate(msg, guildId, username, target, message = defaultMessage) {
+async function chatPrivate(msg, credentials, username, target, message = defaultMessage) {
     return new Promise(async resolve => {
-        const ip = await utils.getIp(guildId, message);
-        if(!ip) return resolve(false);
-        const hash = await utils.getHash(guildId, message);
-        if(!hash) return resolve(false);
+        let { ip, hash } = await getAuthentication(credentials, message);
+        if(!ip || !hash) return resolve(false);
 
         const chatJson = {
             "msg": msg.replaceAll('\u200B', ''),
@@ -290,12 +288,10 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
     });
 }
 
-function disconnect(guildId, client, message = defaultMessage) {
+function disconnect(credentials, client, message = defaultMessage) {
     return new Promise(async resolve => {
-        const ip = await utils.getIp(guildId, message);
-        if(!ip) return resolve(false);
-        const hash = await utils.getHash(guildId, message);
-        if(!hash) return resolve(false);
+        let { ip, hash } = await getAuthentication(credentials, message);
+        if(!ip || !hash) return resolve(false);
 
         try {
             pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
@@ -415,10 +411,10 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
     });
 }
 
-function registerChannel(ip, guildId, channelId, types, webhookId, client, message = defaultMessage) {
+function registerChannel(guildId, channelId, types, webhookId, client, message = defaultMessage) {
     return new Promise(async resolve => {
-        const hash = await utils.getHash(guildId, message);
-        if(!hash) return resolve(false);
+        let { ip, hash } = await getAuthentication(guildId, message);
+        if(!ip || !hash) return resolve(false);
 
         const connectJson = {
             "guild": guildId,
@@ -503,12 +499,10 @@ function registerChannel(ip, guildId, channelId, types, webhookId, client, messa
     });
 }
 
-function get(getPath, putPath, guildId, message = defaultMessage) {
+function get(getPath, putPath, credentials, message = defaultMessage) {
     return new Promise(async resolve => {
-        const ip = await utils.getIp(guildId, message);
-        if(!ip) return resolve(false);
-        const hash = await utils.getHash(guildId, message);
-        if(!hash) return resolve(false);
+        let { ip, hash } = await getAuthentication(credentials, message);
+        if(!ip || !hash) return resolve(false);
 
         try {
             const resp = await fetch(`http://${ip}/file/get/?path=${getPath}`, {
@@ -538,12 +532,10 @@ function get(getPath, putPath, guildId, message = defaultMessage) {
     });
 }
 
-function put(getPath, putPath, guildId, message = defaultMessage) {
+function put(getPath, putPath, credentials, message = defaultMessage) {
     return new Promise(async resolve => {
-        const ip = await utils.getIp(guildId, message);
-        if(!ip) return resolve(false);
-        const hash = await utils.getHash(guildId, message);
-        if(!hash) return resolve(false);
+        let { ip, hash } = await getAuthentication(credentials, message);
+        if(!ip || !hash) return resolve(false);
 
         try {
             let readStream = fs.createReadStream(getPath);
@@ -568,12 +560,10 @@ function put(getPath, putPath, guildId, message = defaultMessage) {
     });
 }
 
-async function list(folder, guildId, message = defaultMessage) {
+async function list(folder, credentials, message = defaultMessage) {
     return new Promise(async resolve => {
-        const ip = await utils.getIp(guildId, message);
-        if (!ip) return resolve(false);
-        const hash = await utils.getHash(guildId, message);
-        if (!hash) return resolve(false);
+        let { ip, hash } = await getAuthentication(credentials, message);
+        if(!ip || !hash) return resolve(false);
 
         try {
             const resp = await fetch(`http://${ip}/file/list/?folder=${encodeURIComponent(folder)}`, {
@@ -591,12 +581,10 @@ async function list(folder, guildId, message = defaultMessage) {
     });
 }
 
-function execute(command, guildId, message = defaultMessage) {
+function execute(command, credentials, message = defaultMessage) {
     return new Promise(async resolve => {
-        const ip = await utils.getIp(guildId, message);
-        if(!ip) return resolve(false);
-        const hash = await utils.getHash(guildId, message);
-        if(!hash) return resolve(false);
+        let { ip, hash } = await getAuthentication(credentials, message);
+        if(!ip || !hash) return resolve(false);
 
         try {
             const resp = await fetch(`http://${ip}/command/?cmd=${encodeURIComponent(command)}`, {
@@ -615,12 +603,10 @@ function execute(command, guildId, message = defaultMessage) {
     });
 }
 
-function getOnlinePlayers(guildId, message = defaultMessage) {
+function getOnlinePlayers(credentials, message = defaultMessage) {
     return new Promise(async resolve => {
-        const ip = await utils.getIp(guildId, message);
-        if(!ip) return resolve(false);
-        const hash = await utils.getHash(guildId, message);
-        if(!hash) return resolve(false);
+        let { ip, hash } = await getAuthentication(credentials, message);
+        if(!ip || !hash) return resolve(false);
 
         try {
             const resp = await fetch(`http://${ip}/players/`, {
@@ -649,6 +635,17 @@ function verify(ip, message = defaultMessage) {
             resolve(false);
         }
     });
+}
+
+async function getAuthentication(credentials, message) {
+    if(typeof credentials === 'string') {
+        return {
+            ip: await utils.getIp(credentials, message),
+            hash: await utils.getHash(credentials, message),
+        };
+    }
+    else if(typeof credentials === 'object') return { ip: credentials.ip, hash: credentials.hash };
+    else return false;
 }
 
 async function updateConn(message = defaultMessage) {
