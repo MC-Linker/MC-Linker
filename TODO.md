@@ -4,26 +4,24 @@
 + Parse pings in chat channel (@username#tag)
 + Switch from express to fastify
 + Check Bot's permissions before doing stuff
-+ FTP: Get world path from `level-name` in `server.properties` (Find server.properties, then download and read it)
 + Get online player's inventories from the plugin instead of file
-+ **Ensure that file exists in get() method**
-+ Store data files in user and server folder
-+ Create block, item and entity images with code
++ Store data files in user and server folder (only for connected users)
++ Create isometric block, item and entity renders with code
 + Cache user and server data for better performance
 + Add JSDoc
 + **Update to Discord.JS v14**
 + DM command author when response fails to send
-+ Maybe extract the `/command` data to another file.
++ Extract the `/command` data to another file.
 + **Support for offline and floodgate uuids (download server.properties to check for offline mode)**
 + Add button to show more information for each slot (button grid) in /inventory
-+ Support for multiple connections to single plugin
++ Support for multiple connections from different servers to single plugin
 + Mod support (get textures and names of mod items)
 + Properly parse time and distance for stats (minutes, hours, days, weeks) (centimeters, meters, kilometers)
 + `/online`
 + `/logs`
 + `/stats @user statTab` (more stats with one command)
 + `/schematics`
-+ Use already downloaded files to execute commands (downloaded files could be replaced by someone else who connected to the same uuid)
++ Use already downloaded files to execute commands (only for connected users otherwise downloaded files could be replaced by someone else who connected to the same uuid).
 + `/settings <lang>`
 + `/totem`
 + `/scoreboard` (image of scoreboard)

@@ -23,6 +23,6 @@ services:
     volumes:
       - ./:/var/syncthing/MC-Linker
     ports:
-      - 8384:8384 # Web UI
-      - 22000:22000/tcp # TCP file transfers
+      - "8384:8384" # Web UI
+      - "22000:22000/tcp" # TCP file transfers
     restart: unless-stopped
