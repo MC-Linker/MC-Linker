@@ -68,33 +68,43 @@ async function execute(message, args) {
             return;
         }
 
-        //Search for world path if not given
+        //Search for server path if not given
         if(!path) {
-            message.respond(keys.commands.connect.warnings.searching_level);
-            path = await ftp.find('level.dat', '', 3, { host, password, user, port, protocol });
+            message.respond(keys.commands.connect.warnings.searching_properties);
+            path = await ftp.find('server.properties', '', 2, { host, password, user, port, protocol });
             if(!path) {
-                message.respond(keys.commands.connect.errors.could_not_find_level);
+                message.respond(keys.commands.connect.errors.could_not_find_properties);
                 return;
             }
         }
+
+        const serverProperties = await ftp.get(`${path}/server.properties`, `./serverdata/connections/${message.guildId}/server.properties`, { host, user, password, port, protocol });
+        if(!serverProperties) {
+            message.respond(keys.commands.connect.errors.could_not_get_properties);
+            return;
+        }
+        const propertiesObject = Object.fromEntries(serverProperties.toString().split('\n').map(prop => prop.split('=')));
 
         const ftpData = {
             "host": host,
             "user": user,
             "password": password,
             "port": port,
-            "path": path,
+            "online": propertiesObject['online-mode'] === 'true',
+            "path": `${path}/${propertiesObject['level-name']}`,
             "version": version,
             "protocol": protocol,
         };
 
         //Connected with either ftp or sftp
         //Save connection
-        fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, ftpData, { spaces: 2 }, err => {
+        fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, ftpData, { spaces: 2 }, async err => {
             if (err) {
                 message.respond(keys.commands.connect.errors.could_not_write_server_file);
                 return;
             }
+
+            await fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, ftpData, { spaces: 2 });
 
             message.respond(keys.commands.connect.success.ftp);
         });
@@ -131,7 +141,7 @@ async function execute(message, args) {
             await dmChannel.send({ embeds: [verifyEmbed] });
         }
 
-        const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180000, errors: ['time'] });
+        const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000, errors: ['time'] });
 
         if(!collector.first()) {
             console.log(keys.commands.connect.warnings.no_reply_in_time.console);
@@ -162,8 +172,9 @@ async function execute(message, args) {
             "path": decodeURIComponent(connectPlugin.path),
             "hash": connectPlugin.hash,
             "guild": connectPlugin.guild,
+            "online": connectPlugin.online,
             "chat": false,
-            "protocol": "plugin"
+            "protocol": "plugin",
         };
 
         fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {

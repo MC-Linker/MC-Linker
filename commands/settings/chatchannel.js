@@ -32,9 +32,6 @@ async function execute(message, args) {
             menu = addResponseMethods(menu);
 
             if(menu.customId === 'log' && menu.member.user.id === message.member.user.id) {
-                const ip = await utils.getIp(message.guild.id, message);
-                if(!ip) return;
-
                 //Create webhook for channel
                 let webhook;
                 if(useWebhooks && menu.values.includes('chat')) {
@@ -42,7 +39,7 @@ async function execute(message, args) {
                     else webhook = await channel.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
                 }
 
-                const regChannel = await plugin.registerChannel(ip, message.guildId, channel.id, menu.values, webhook?.id, message.client, menu);
+                const regChannel = await plugin.registerChannel(message.guildId, channel.id, menu.values, webhook?.id, message.client, menu);
                 if(!regChannel) {
                     webhook?.delete();
                     return;
