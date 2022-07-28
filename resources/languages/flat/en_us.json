@@ -795,7 +795,7 @@
 
   "api.plugin.errors.status_404.title": "Could Not Download",
   "api.plugin.errors.status_404.description": "%emoji_error% The user never joined the server.",
-  "api.plugin.errors.status_404.console": "Invalid Path",
+  "api.plugin.errors.status_404.console": "Invalid Path [%path%]",
 
   "api.plugin.errors.status_500.title": "Unknown Plugin Error",
   "api.plugin.errors.status_500.description": "%emoji_error% An unknown plugin error occurred.",
