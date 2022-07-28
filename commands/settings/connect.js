@@ -104,8 +104,6 @@ async function execute(message, args) {
                 return;
             }
 
-            await fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, ftpData, { spaces: 2 });
-
             message.respond(keys.commands.connect.success.ftp);
         });
 
