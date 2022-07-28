@@ -71,7 +71,7 @@ async function loadExpress(client) {
             } catch(err) {}
 
             for (const channel of channels) {
-                const discordChannel = await client.channels.cache.fetch(channel.id);
+                const discordChannel = await client.channels.fetch(channel.id);
 
                 if(!allWebhooks) {
                     discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
@@ -313,7 +313,7 @@ function disconnect(guildId, client, message = defaultMessage) {
             if(conn?.channels) for(const channel of conn.channels) {
                 //Delete webhook
                 if(channel.webhook) {
-                    const guild = await client.guilds.cache.fetch(guildId);
+                    const guild = await client.guilds.fetch(guildId);
                     let allWebhooks = await guild.fetchWebhooks();
                     allWebhooks.get(channel.webhook).delete();
                 }
@@ -375,7 +375,7 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
 
             //Delete webhook
             if(channel.webhook) {
-                const guild = await client.guilds.cache.get(guildId);
+                const guild = await client.guilds.fetch(guildId);
                 let allWebhooks = await guild.fetchWebhooks();
                 allWebhooks.get(channel.webhook).delete();
             }
@@ -468,7 +468,7 @@ function registerChannel(guildId, channelId, types, webhookId, client, message =
             if(channelIndex !== -1) {
                 const channel = conn.channels[channelIndex];
                 if(channel.webhook) {
-                    const guild = await client.guilds.cache.get(guildId);
+                    const guild = await client.guilds.fetch(guildId);
                     let allWebhooks = await guild.fetchWebhooks();
                     allWebhooks.get(channel.webhook)?.delete();
                 }
