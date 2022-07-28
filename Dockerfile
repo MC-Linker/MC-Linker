@@ -1,4 +1,4 @@
-# To Build Run: docker build . -t Lianecx/MC-Linker
+# To Build Run: docker build . -t Lianecx/mc-linker
 
 # FROM node:18
 FROM node:18-slim

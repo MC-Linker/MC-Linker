@@ -5,12 +5,22 @@ const { prefix } = require('../config.json');
 
 const defaultMessage = {
     respond(key, ...placeholders) {
-        reply(null, key,...placeholders);
+        return reply(null, key,...placeholders);
     },
     channel: {
         send() {}
     }
 };
+
+function addResponseMethods(interaction) {
+    if(!(interaction instanceof Discord.Message) && !(interaction instanceof Discord.Interaction)) return interaction;
+    if(interaction instanceof Discord.AutocompleteInteraction) return interaction;
+
+    interaction.respond = (key, ...placeholders) => reply(interaction, key, ...placeholders);
+    interaction.replyOptions = options => replyOptions(interaction, options);
+    return interaction;
+}
+
 
 const ph = {};
 ph.fromAuthor = function(author) {
@@ -241,8 +251,11 @@ function replyOptions(interaction, options) {
     }
 
     try {
-        if (interaction instanceof Discord.Message || !interaction?.deferred) return interaction.reply(options).catch(handleError);
-        else return interaction.editReply(options).catch(handleError);
+        if (interaction instanceof Discord.Message) return interaction.reply(options).catch(handleError);
+        else if(interaction instanceof Discord.Interaction) {
+            if(interaction.deferred) interaction.editReply(options).catch(handleError);
+            else interaction.reply(options).catch(handleError);
+        }
     } catch(err) {
         handleError(err);
     }
@@ -505,4 +518,4 @@ function getArgs(client, interaction) {
     return args;
 }
 
-module.exports = { keys, ph, reply, replyOptions, addPh, defaultMessage, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUsersFromMention, getArgs };
+module.exports = { keys, ph, reply, replyOptions, addResponseMethods, addPh, defaultMessage, getCommandBuilder, getEmbedBuilder, getComponentBuilder, getUsersFromMention, getArgs };

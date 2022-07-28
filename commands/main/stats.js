@@ -40,13 +40,13 @@ async function execute(message, args) {
         return;
     }
 
-    const uuidv4 = await utils.getUUIDv4(user, message);
-    if(!uuidv4) return;
+    const uuid = await utils.getUUID(user, message.guildId, message);
+    if(!uuid) return;
 
     const worldPath = await utils.getWorldPath(message.guildId, message);
     if(!worldPath) return;
 
-    const statFile = await ftp.get(`${worldPath}/stats/${uuidv4}.json`, `./userdata/stats/${uuidv4}.json`, message.guildId, message);
+    const statFile = await ftp.get(`${worldPath}/stats/${uuid}.json`, `./userdata/stats/${uuid}.json`, message.guildId, message);
     if(!statFile) return;
     const statData = JSON.parse(statFile);
 

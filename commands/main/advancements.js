@@ -53,13 +53,13 @@ async function execute(message, args) {
         return;
     }
 
-    const uuidv4 = await utils.getUUIDv4(user, message);
-    if(!uuidv4) return;
+    const uuid = await utils.getUUID(user, message.guildId, message);
+    if(!uuid) return;
 
     const worldPath = await utils.getWorldPath(message.guildId, message);
     if(!worldPath) return;
 
-    const amFile = await ftp.get(`${worldPath}/advancements/${uuidv4}.json`, `./userdata/advancements/${uuidv4}.json`, message.guildId, message);
+    const amFile = await ftp.get(`${worldPath}/advancements/${uuid}.json`, `./userdata/advancements/${uuid}.json`, message.guildId, message);
     if(!amFile) return;
     const advancementData = JSON.parse(amFile);
 

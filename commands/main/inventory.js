@@ -14,13 +14,13 @@ async function execute(message, args) {
         return;
     }
 
-    const uuidv4 = await utils.getUUIDv4(user, message);
-    if(!uuidv4) return;
+    const uuid = await utils.getUUID(user, message.guildId, message);
+    if(!uuid) return;
 
     const worldPath = await utils.getWorldPath(message.guildId, message);
     if(!worldPath) return;
 
-    const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuidv4}.dat`, `./userdata/playernbt/${uuidv4}.dat`, message.guildId, message);
+    const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuid}.dat`, `./userdata/playernbt/${uuid}.dat`, message.guildId, message);
     if(!nbtFile) return;
 
     let playerData;
@@ -178,7 +178,7 @@ async function execute(message, args) {
         }
     }
 
-    const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuidv4}/body/10.5/10/json`);
+    const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuid}/body/10.5/10/json`);
     const { skin: skinBase64 } = await skinJson.json();
     const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
     ctx.drawImage(skinImg, 70, 20, 65, 131);
