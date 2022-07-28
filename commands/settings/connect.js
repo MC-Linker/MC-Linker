@@ -197,7 +197,7 @@ async function execute(message, args) {
             return;
         }
 
-        let uuidv4 = await utils.getUUIDv4(mcUsername, message);
+        let uuidv4 = await utils.getUUID(mcUsername, message.guildId,message);
         if(!uuidv4) return;
 
         const connectionJson = {
@@ -205,7 +205,7 @@ async function execute(message, args) {
             'name': mcUsername
         };
 
-       fs.outputJson(`./userdata/connections/${message.member.user.id}/connection.json`, connectionJson, 'utf-8', err => {
+       fs.outputJson(`./userdata/connections/${message.member.user.id}/connection.json`, connectionJson, { spaces: 2 }, err => {
             if (err) {
                 message.respond(keys.commands.connect.errors.could_not_write_user_file);
                 return;
