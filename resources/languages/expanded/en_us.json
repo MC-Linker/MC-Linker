@@ -1130,7 +1130,7 @@
         "status_404": {
           "title": "Could Not Download",
           "description": "%emoji_error% The user never joined the server.",
-          "console": "Invalid Path [%path%]"
+          "console": "Invalid Path"
         },
         "status_500": {
           "title": "Unknown Plugin Error",
