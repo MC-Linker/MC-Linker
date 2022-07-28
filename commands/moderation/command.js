@@ -236,7 +236,7 @@ async function getPlaceholder(key, args) {
             break;
         case 'player_coordinates':
         case 'player_coordinates_xz':
-            const uuid = await utils.getUUIDv4(args.user);
+            const uuid = await utils.getUUID(args.user, args.guild);
             if(!uuid) return {};
             const playerData = await getNBTFile(`playerdata/${uuid}.dat`, `./userdata/playernbt/${uuid}.dat`);
 
