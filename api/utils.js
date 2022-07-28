@@ -152,15 +152,36 @@ function getUUIDv4(user, message = defaultMessage) {
     });
 }
 
-function getUUIDv3(username) {
-    const hash = crypto.createHash('md5');
-    hash.update(`OfflinePlayer:${username}`);
-    let digest = hash.digest();
+function getUUIDv3(user, message = defaultMessage) {
+    return new Promise(async resolve => {
+        if(user instanceof Discord.User) {
+            const userData = await getUserData(user.id, message);
+            resolve(createUUID(userData?.name));
+        }
+        else resolve(createUUID(user));
+    });
 
-    digest[6] = digest[6] & 0x0f | 0x30;  // set version to 3
-    digest[8] = digest[8] & 0x3f | 0x80;  // set to variant 2
+    function createUUID(username) {
+        if(typeof username !== 'string') return;
 
-    return addHyphen(digest.toString('hex'));
+        const hash = crypto.createHash('md5');
+        hash.update(`OfflinePlayer:${username}`);
+        let digest = hash.digest();
+
+        digest[6] = digest[6] & 0x0f | 0x30;  // set version to 3
+        digest[8] = digest[8] & 0x3f | 0x80;  // set to variant 2
+
+        return addHyphen(digest.toString('hex'));
+    }
+}
+
+function getUUID(user, guildId, message = defaultMessage) {
+    return new Promise(async resolve => {
+        const serverData = await getServerData(guildId, message);
+
+        if(serverData?.online === undefined || serverData?.online) resolve(await getUUIDv4(user, message));
+        else resolve(await getUUIDv3(user, message));
+    });
 }
 
 async function getUsername(userId, message = defaultMessage) {
@@ -227,4 +248,4 @@ function addHyphen(uuid) {
     return uuid.join('');
 }
 
-module.exports = { searchAllAdvancements, searchAdvancements, searchStats, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUIDv4, getUUIDv3 };
+module.exports = { searchAllAdvancements, searchAdvancements, searchStats, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUID };
