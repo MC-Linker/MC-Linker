@@ -36,8 +36,8 @@ To use most of the commands you’ll have to connect your Minecraft **java editi
 + If you receive the error: `Address already in use` in the server console follow the instructions of the next point
 + If you receive the error: `Plugin does not respond` by the Discord bot although your server is online, follow these steps:
 	+ Register or forward an additional port (if supported from your server host)
-	+ Execute `/linker port <port>` in Minecraft
-	+ Execute `/connect plugin <your server ip> <port>` in Discord and make sure to specify the correct port from the config.yml
+	+ Execute `/linker port <port>` in Minecraft and make sure to specify the newly registered/forwarded port
+	+ Execute `/connect plugin <your server ip> <port>` with the same port
 + More help => [Support Server](https://discord.gg/rX36kZUGNK)
 
 
