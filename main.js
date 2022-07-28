@@ -9,6 +9,7 @@ console.log(
 const fs = require('fs-extra');
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
+const Canvas = require('@napi-rs/canvas');
 const plugin = require('./api/plugin');
 const helpCommand = require('./src/help');
 const disableButton = require('./src/disableButton');
@@ -42,6 +43,8 @@ client.once('ready', async () => {
     console.log(addPh(keys.main.success.login.console, ph.fromClient(client), { prefix, "guild_count": client.guilds.cache.size }));
     client.user.setActivity('/help', { type: 'LISTENING' });
     await plugin.loadExpress(client);
+
+    Canvas.GlobalFonts.registerFromPath('./resources/fonts/Minecraft.ttf', 'Minecraft');
 });
 
 client.on('guildCreate', guild => {
