@@ -1,6 +1,6 @@
 # TODO BOT
 
-+ Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...), maybe OOP
 + Parse pings in chat channel (@username#tag)
 + Switch from express to fastify
 + Check Bot's permissions before doing stuff
