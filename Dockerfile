@@ -10,9 +10,6 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
-# Install canvas dependencies
-RUN apt update && apt-get -y install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
 RUN npm install
 # If you are building your code for production
 # RUN npm ci --only=production

@@ -1,6 +1,6 @@
 # TODO BOT
 
-+ Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...)
++ Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...), maybe OOP
 + Parse pings in chat channel (@username#tag)
 + Switch from express to fastify
 + Check Bot's permissions before doing stuff
@@ -12,7 +12,7 @@
 + **Update to Discord.JS v14**
 + DM command author when response fails to send
 + Extract the `/command` data to another file.
-+ **Support for offline and floodgate uuids (download server.properties to check for offline mode)**
++ Support for floodgate uuids
 + Add button to show more information for each slot (button grid) in /inventory
 + Support for multiple connections from different servers to single plugin
 + Mod support (get textures and names of mod items)

@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs-extra');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
-const { keys, addResponseMethods, reply, getEmbedBuilder, ph } = require('../../api/messages');
+const { keys, addResponseMethods, getEmbedBuilder, ph } = require('../../api/messages');
 
 async function execute(message, args) {
     const method = args[0];
@@ -30,6 +30,7 @@ async function execute(message, args) {
         const collector = logChooserMsg.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 20000, max: 1 });
         collector.on('collect', async menu => {
             menu = addResponseMethods(menu);
+            menu.deferReply();
 
             if(menu.customId === 'log' && menu.member.user.id === message.member.user.id) {
                 //Create webhook for channel
@@ -51,6 +52,7 @@ async function execute(message, args) {
                     "path": regChannel.path,
                     "hash": regChannel.hash,
                     "guild": regChannel.guild,
+                    "online": regChannel.online,
                     "chat": true,
                     "channels": regChannel.channels,
                     "protocol": "plugin"

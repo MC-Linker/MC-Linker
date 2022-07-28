@@ -1,7 +1,7 @@
 const utils = require('../../api/utils');
 const nbt = require('prismarine-nbt');
 const ftp = require('../../api/ftp');
-const Canvas = require('canvas');
+const Canvas = require('@napi-rs/canvas');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19');
@@ -38,8 +38,6 @@ async function execute(message, args) {
     const ctx = invCanvas.getContext('2d');
     const background = await Canvas.loadImage('./resources/images/other/inventory_blank.png');
     ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
-
-    Canvas.registerFont('./resources/fonts/Minecraft.ttf', {family: 'Minecraft'});
 
     let enchantEmbed = new Discord.MessageEmbed()
         .setTitle(keys.commands.inventory.success.enchantments.title)
@@ -141,7 +139,7 @@ async function execute(message, args) {
         if (count > 1) {
             ctx.font = '14px Minecraft';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(count, slotDims[0], slotDims[1] + 32, 15);
+            ctx.fillText(count.toString(), slotDims[0], slotDims[1] + 32, 15);
         }
 
         if (damage) {
@@ -183,7 +181,7 @@ async function execute(message, args) {
     const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
     ctx.drawImage(skinImg, 70, 20, 65, 131);
 
-    const invImg = new Discord.MessageAttachment(invCanvas.toBuffer(), `Inventory_Player.png`);
+    const invImg = new Discord.MessageAttachment(invCanvas.toBuffer('image/png'), `Inventory_Player.png`);
     const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.fromStd(message), {username: user});
 
     if (enchantEmbed.fields.length >= 1) message.replyOptions({
