@@ -71,7 +71,7 @@ async function loadExpress(client) {
             } catch(err) {}
 
             for (const channel of channels) {
-                const discordChannel = await client.channels.fetch(channel.id);
+                const discordChannel = client.channels.cache.get(channel.id);
 
                 if(!allWebhooks) {
                     discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
@@ -80,7 +80,7 @@ async function loadExpress(client) {
 
                 if (!channel.webhook) {
                     try {
-                        discordChannel.send({ embeds: [chatEmbed] })
+                        discordChannel?.send({ embeds: [chatEmbed] })
                             .catch(() => {});
                     } catch (ignored) {}
                     continue;
@@ -313,8 +313,7 @@ function disconnect(guildId, client, message = defaultMessage) {
             if(conn?.channels) for(const channel of conn.channels) {
                 //Delete webhook
                 if(channel.webhook) {
-                    const guild = await client.guilds.fetch(guildId);
-                    let allWebhooks = await guild.fetchWebhooks();
+                    const allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
                     allWebhooks.get(channel.webhook).delete();
                 }
             }
@@ -375,8 +374,7 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
 
             //Delete webhook
             if(channel.webhook) {
-                const guild = await client.guilds.fetch(guildId);
-                let allWebhooks = await guild.fetchWebhooks();
+                const allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
                 allWebhooks.get(channel.webhook).delete();
             }
 
@@ -468,8 +466,7 @@ function registerChannel(guildId, channelId, types, webhookId, client, message =
             if(channelIndex !== -1) {
                 const channel = conn.channels[channelIndex];
                 if(channel.webhook) {
-                    const guild = await client.guilds.fetch(guildId);
-                    let allWebhooks = await guild.fetchWebhooks();
+                    const allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
                     allWebhooks.get(channel.webhook)?.delete();
                 }
 
