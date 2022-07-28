@@ -74,7 +74,7 @@ async function loadExpress(client) {
                 const discordChannel = client.channels.cache.get(channel.id);
 
                 if(!allWebhooks) {
-                    discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    discordChannel?.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
                     return;
                 }
 

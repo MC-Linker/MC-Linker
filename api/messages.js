@@ -247,14 +247,14 @@ function reply(interaction, key, ...placeholders) {
 function replyOptions(interaction, options) {
     function handleError(err) {
         console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.fromError(err), { "interaction": interaction }));
-        interaction?.channel?.send(options);
+        return interaction?.channel?.send(options);
     }
 
     try {
         if (interaction instanceof Discord.Message) return interaction.reply(options).catch(handleError);
         else if(interaction instanceof Discord.Interaction) {
-            if(interaction.deferred) interaction.editReply(options).catch(handleError);
-            else interaction.reply(options).catch(handleError);
+            if(interaction.deferred) return interaction.editReply(options).catch(handleError);
+            else return interaction.reply(options).catch(handleError);
         }
     } catch(err) {
         handleError(err);
