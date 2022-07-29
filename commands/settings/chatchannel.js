@@ -30,7 +30,7 @@ async function execute(message, args) {
         const collector = logChooserMsg.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 20000, max: 1 });
         collector.on('collect', async menu => {
             menu = addResponseMethods(menu);
-            menu.deferReply();
+            await menu.deferReply();
 
             if(menu.customId === 'log' && menu.member.user.id === message.member.user.id) {
                 //Create webhook for channel
