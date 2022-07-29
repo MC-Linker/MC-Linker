@@ -84,11 +84,11 @@ async function execute(message, args) {
 
             //New field for every 25 items
             if(counter === 24 || i === disabled.length-1) {
-                listEmbed.addField(
-                    listString,
-                    keys.commands.disable.success.list.final.fields.disabled.content,
-                    keys.commands.disable.success.list.final.fields.disabled.inline
-                );
+                listEmbed.addFields({
+                    name: listString,
+                    value: keys.commands.disable.success.list.final.fields.disabled.content,
+                    inline: keys.commands.disable.success.list.final.fields.disabled.inline
+                });
                 listString = "";
                 counter = 0;
             }
@@ -101,7 +101,7 @@ async function execute(message, args) {
         let toDisable = args?.join(' ').toLowerCase();
         const argPlaceholder = { "disable": toDisable, type };
 
-        if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+        if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
             message.respond(keys.commands.disable.warnings.no_permission);
             return;
         } else if(!toDisable) {

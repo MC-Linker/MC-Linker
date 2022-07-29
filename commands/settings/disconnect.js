@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const plugin = require('../../api/plugin');
 const utils = require("../../api/utils");
 const { keys } = require('../../api/messages');
+const Discord = require('discord.js');
 
 async function execute(message, args) {
     const method = args[0];
@@ -20,6 +21,11 @@ async function execute(message, args) {
     }
 
     if(method === 'plugin' || method === 'ftp') {
+        if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
+            message.respond(keys.commands.disconnect.warnings.no_permission);
+            return;
+        }
+
         const protocol = await utils.getProtocol(message.guildId, message);
         if(!protocol) return;
 

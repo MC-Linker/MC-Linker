@@ -290,7 +290,8 @@
           "description": "%emoji_success% Here's the inventory of **%username%**:\n",
           "image": "attachment://Inventory_Player.png"
         }
-      }
+      },
+      "image_description": "Image of player's inventory"
     },
     "stats": {
       "warnings": {
@@ -923,6 +924,11 @@
           "title": "No Method Specified",
           "description": "%emoji_warning% Please set the connection method (`ftp`, `plugin`, `user`).",
           "console": "No method specified"
+        },
+        "no_permission": {
+          "title": "No Permission",
+          "description": "%emoji_no_entry% This command can only be used by admins.",
+          "console": "No permission"
         },
         "invalid_method": {
           "title": "Invalid Method Specified",

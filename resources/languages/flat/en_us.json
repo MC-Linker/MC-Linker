@@ -190,6 +190,8 @@
   "commands.inventory.success.final.description": "%emoji_success% Here's the inventory of **%username%**:\n",
   "commands.inventory.success.final.image": "attachment://Inventory_Player.png",
 
+  "commands.inventory.image_description": "Image of player's inventory",
+
 
 
   "commands.stats.warnings.no_username.title": "No Username Specified",
@@ -656,6 +658,10 @@
   "commands.disconnect.warnings.no_method.title": "No Method Specified",
   "commands.disconnect.warnings.no_method.description": "%emoji_warning% Please set the connection method (`ftp`, `plugin`, `user`).",
   "commands.disconnect.warnings.no_method.console": "No method specified",
+
+  "commands.disconnect.warnings.no_permission.title": "No Permission",
+  "commands.disconnect.warnings.no_permission.description": "%emoji_no_entry% This command can only be used by admins.",
+  "commands.disconnect.warnings.no_permission.console": "No permission",
 
   "commands.disconnect.warnings.invalid_method.title": "Invalid Method Specified",
   "commands.disconnect.warnings.invalid_method.description": "%emoji_warning% You can only disconnect from `ftp`, `plugin` or `account`.",

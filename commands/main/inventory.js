@@ -39,7 +39,7 @@ async function execute(message, args) {
     const background = await Canvas.loadImage('./resources/images/other/inventory_blank.png');
     ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
-    let enchantEmbed = new Discord.MessageEmbed()
+    let enchantEmbed = new Discord.EmbedBuilder()
         .setTitle(keys.commands.inventory.success.enchantments.title)
         .setColor(keys.commands.inventory.success.enchantments.color);
 
@@ -70,11 +70,11 @@ async function execute(message, args) {
                 )}`;
             }
 
-            enchantEmbed.addField(
-                keys.commands.inventory.success.enchantments.fields.enchantment.title,
-                invField,
-                keys.commands.inventory.success.enchantments.fields.enchantment.inline
-            );
+            enchantEmbed.addFields({
+                name: keys.commands.inventory.success.enchantments.fields.enchantment.title,
+                value: invField,
+                inline: keys.commands.inventory.success.enchantments.fields.enchantment.inline
+            });
         }
 
         const allSlotDims = {
@@ -181,8 +181,11 @@ async function execute(message, args) {
     const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
     ctx.drawImage(skinImg, 70, 20, 65, 131);
 
-    const invImg = new Discord.MessageAttachment(invCanvas.toBuffer('image/png'), `Inventory_Player.png`);
-    const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.fromStd(message), {username: user});
+    const invImg = new Discord.AttachmentBuilder(
+        invCanvas.toBuffer('image/png'),
+        { name: `Inventory_Player.png`, description: keys.commands.inventory.image_description }
+    );
+    const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.fromStd(message), { username: user });
 
     if (enchantEmbed.fields.length >= 1) message.replyOptions({
         files: [invImg],

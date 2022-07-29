@@ -9,7 +9,7 @@ async function execute(message, args) {
     let channel = message.mentions.channels?.first() ?? args[1];
     const useWebhooks = typeof args[2] === 'boolean' ? args[2] : args[2]?.toLowerCase() === 'true';
 
-    if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+    if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         message.respond(keys.commands.chatchannel.warnings.no_permission);
         return;
     } else if(!method) {
@@ -18,7 +18,7 @@ async function execute(message, args) {
     } else if(!channel) {
         message.respond(keys.commands.chatchannel.warnings.no_channel);
         return;
-    } else if(!channel?.isText()) {
+    } else if(!channel.isTextBased()) {
         message.respond(keys.commands.chatchannel.warnings.no_text_channel);
         return;
     }

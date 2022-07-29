@@ -164,7 +164,7 @@ async function chat(message) {
         return false;
     });
 
-    let content = Discord.Util.escapeMarkdown(message.cleanContent)
+    let content = Discord.escapeMarkdown(message.cleanContent)
         .replace(/\\`|\\\*|\\_|\\~|\\\|/g, '');
     message.attachments?.forEach(attach => content += `\n${attach.url}`);
 

@@ -42,7 +42,7 @@ async function execute(message, args) {
     let toEnable = args?.join(' ').toLowerCase();
     const argPlaceholder = { type, "enable": toEnable };
 
-    if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+    if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         message.respond(keys.commands.enable.warnings.no_permission);
         return;
     } else if(!type) {

@@ -8,7 +8,7 @@ async function execute(message, args) {
 	args.shift(); // Shift user
 	let reason = args[0] ? args.join(' ') : 'Banned by an operator.';
 
-	if (!message.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) {
+	if (!message.member.permissions.has(Discord.PermissionFlagsBits.BanMembers)) {
 		message.respond(keys.commands.ban.warnings.no_permission);
 		return;
 	} else if(!user) {

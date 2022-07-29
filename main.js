@@ -17,7 +17,7 @@ const enableButton = require('./src/enableButton');
 const settings = require('./api/settings');
 const { getArgs, addResponseMethods, addPh, keys, ph } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
+const client = new Discord.Client({ intents: [Discord.GatewayIntentBits.GuildMessages, Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.DirectMessages] });
 
 //Handle rejected promises
 process.on('unhandledRejection', async err => {
@@ -85,7 +85,7 @@ client.on('messageCreate', async message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     //check if in guild
-    if(!message.guildId) return message.respond(keys.main.warnings.not_in_guild);
+    if(!message.inGuild()) return message.respond(keys.main.warnings.not_in_guild);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
@@ -134,20 +134,19 @@ client.on('interactionCreate', async interaction => {
         args.forEach(arg => {
             if(arg instanceof Discord.User) interaction.mentions.users.set(arg.id, arg);
             else if(arg instanceof Discord.Role) interaction.mentions.roles.set(arg.id, arg);
-            else if(arg instanceof Discord.Channel) interaction.mentions.channels.set(arg.id, arg);
-            else if(arg instanceof Discord.MessageAttachment) interaction.attachments.set(arg.id, arg);
+            else if(arg instanceof Discord.BaseChannel) interaction.mentions.channels.set(arg.id, arg);
+            else if(arg instanceof Discord.Attachment) interaction.attachments.set(arg.id, arg);
         });
 
         if(interaction.commandName === 'message') await interaction?.deferReply({ ephemeral: true });
         else await interaction?.deferReply();
 
+        interaction.respond(keys.commands.executed);
+
         if (interaction.commandName === 'help') {
-            interaction.respond(keys.commands.executed);
             await helpCommand.execute(interaction, args);
         } else {
             const command = client.commands.get(interaction.commandName);
-
-            interaction.respond(keys.commands.executed);
 
             //Check if command disabled
             if(await settings.isDisabled(interaction.guildId, 'commands', interaction.commandName)) {

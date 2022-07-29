@@ -1,4 +1,3 @@
-const Builders = require('@discordjs/builders');
 const Discord = require('discord.js');
 const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
@@ -13,7 +12,7 @@ const defaultMessage = {
 };
 
 function addResponseMethods(interaction) {
-    if(!(interaction instanceof Discord.Message) && !(interaction instanceof Discord.Interaction)) return interaction;
+    if(!(interaction instanceof Discord.Message) && !(interaction instanceof Discord.BaseInteraction)) return interaction;
     if(interaction instanceof Discord.AutocompleteInteraction) return interaction;
 
     interaction.respond = (key, ...placeholders) => reply(interaction, key, ...placeholders);
@@ -31,7 +30,7 @@ ph.fromAuthor = function(author) {
         "author_tag": author.tag,
         "author_id": author.id,
         "author_avatar": author.displayAvatarURL({ format: 'png' }),
-        "author_timestamp": Builders.time(new Date(author.createdTimestamp)),
+        "author_timestamp": Discord.time(new Date(author.createdTimestamp)),
     }
 };
 ph.fromGuild = function(guild) {
@@ -41,7 +40,7 @@ ph.fromGuild = function(guild) {
         "guild_name": guild.name,
         "guild_id": guild.id,
         "guild_member_count": guild.memberCount,
-        "guild_timestamp": Builders.time(new Date(guild.createdTimestamp)),
+        "guild_timestamp": Discord.time(new Date(guild.createdTimestamp)),
     }
 };
 ph.fromInteraction = function(interaction) {
@@ -51,19 +50,19 @@ ph.fromInteraction = function(interaction) {
 
         return {
             "interaction_name": commandName,
-            "interaction_timestamp": Builders.time(new Date(interaction.createdTimestamp)),
+            "interaction_timestamp": Discord.time(new Date(interaction.createdTimestamp)),
             "args": args.join(' '),
         }
     } else if(interaction instanceof Discord.CommandInteraction) {
         return {
             "interaction_name": interaction.commandName,
-            "interaction_timestamp": Builders.time(new Date(interaction.createdTimestamp)),
+            "interaction_timestamp": Discord.time(new Date(interaction.createdTimestamp)),
             "args": getArgs(interaction.client, interaction).join(' '),
         }
     } else if(interaction instanceof Discord.ButtonInteraction) {
         return {
             "interaction_id": interaction.customId,
-            "interaction_timestamp": Builders.time(new Date(interaction.createdTimestamp)),
+            "interaction_timestamp": Discord.time(new Date(interaction.createdTimestamp)),
         }
     }
 
@@ -76,7 +75,7 @@ ph.fromChannel = function(channel) {
         "channel_name": channel.name,
         "channel_description": channel.topic,
         "channel_id": channel.id,
-        "channel_timestamp": Builders.time(new Date(channel.createdTimestamp)),
+        "channel_timestamp": Discord.time(new Date(channel.createdTimestamp)),
     }
 };
 ph.fromClient = function(client) {
@@ -87,7 +86,7 @@ ph.fromClient = function(client) {
         "client_tag": client.user.tag,
         "client_id": client.user.id,
         "client_avatar": client.user.displayAvatarURL({ format: 'png' }),
-        "client_timestamp": Builders.time(new Date(client.user.createdTimestamp)),
+        "client_timestamp": Discord.time(new Date(client.user.createdTimestamp)),
     }
 };
 ph.emojis = function() {
@@ -107,7 +106,7 @@ ph.fromCommand = function(command) {
         "command_name": command.name,
         "command_id": command.id,
         "command_short_description": command.description,
-        "command_timestamp": Builders.time(new Date(command.createdTimestamp)),
+        "command_timestamp": Discord.time(new Date(command.createdTimestamp)),
     }
 };
 
@@ -121,7 +120,7 @@ ph.fromError = function(err) {
 };
 
 ph.fromStd = function(interaction) {
-    if(!(interaction instanceof Discord.Interaction || !(interaction instanceof Discord.Message))) return {};
+    if(!(interaction instanceof Discord.BaseInteraction || !(interaction instanceof Discord.Message))) return {};
 
     return Object.assign(
         this.fromAuthor(interaction.user),
@@ -130,7 +129,7 @@ ph.fromStd = function(interaction) {
         this.fromChannel(interaction.channel),
         this.fromClient(interaction.client),
         this.emojis(),
-        { "timestamp_now": Builders.time(Date.now()/1000) }
+        { "timestamp_now": Discord.time(Date.now()/1000) }
     );
 };
 
@@ -251,8 +250,10 @@ function replyOptions(interaction, options) {
     }
 
     try {
+        if(!interaction?.isRepliable()) return;
+
         if (interaction instanceof Discord.Message) return interaction.reply(options).catch(handleError);
-        else if(interaction instanceof Discord.Interaction) {
+        else if(interaction instanceof Discord.BaseInteraction) {
             if(interaction.deferred) return interaction.editReply(options).catch(handleError);
             else return interaction.reply(options).catch(handleError);
         }
@@ -266,7 +267,7 @@ function getComponentBuilder(key, ...placeholders) {
     if(!key) return console.error(keys.api.messages.errors.no_component_key.console);
     key = addPh(key, ...placeholders);
 
-    const actionRow = new Discord.MessageActionRow();
+    const actionRow = new Discord.ActionRowBuilder();
 
     for(const component of Object.values(key.components)) {
         addComponent(actionRow, component);
@@ -282,12 +283,12 @@ function getEmbedBuilder(key, ...placeholders) {
     key = addPh(key, ...placeholders);
 
     //Create embed from key
-    const embed = new Discord.MessageEmbed();
+    const embed = new Discord.EmbedBuilder();
 
     if(key.fields) {
         for (const field of Object.values(key.fields)) {
             if(!field.title || !field.content) continue;
-            embed.addField(field.title, field.content, field.inline);
+            embed.addFields({ name: field.title, value: field.content, inline: field.inline });
         }
     }
 
@@ -309,10 +310,10 @@ function getCommandBuilder(key) {
     if(!key) return console.error(keys.api.messages.errors.no_command_key.console);
     if(!key.name || !key.short_description) return console.error(keys.api.messages.errors.no_command_arguments.console);
 
-    const builder = new Builders.SlashCommandBuilder()
+    const builder = new Discord.SlashCommandBuilder()
         .setName(key.name)
         .setDescription(key.short_description)
-        .setDefaultPermission(key.default_permission ?? true);
+        .setDefaultMemberPermissions(key.default_member_permissions);
 
     if(!key.options) return builder;
 
@@ -328,8 +329,8 @@ function addSlashCommandOption(builder, key) {
 
     let optionBuilder;
     switch(key.type.toUpperCase()) {
-        case 'STRING':
-            optionBuilder = new Builders.SlashCommandStringOption();
+        case Discord.ApplicationCommandOptionType.String:
+            optionBuilder = new Discord.SlashCommandStringOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -344,8 +345,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addStringOption(optionBuilder);
             break;
-        case 'USER':
-            optionBuilder = new Builders.SlashCommandUserOption();
+        case Discord.ApplicationCommandOptionType.User:
+            optionBuilder = new Discord.SlashCommandUserOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -353,8 +354,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addUserOption(optionBuilder);
             break;
-        case 'NUMBER':
-            optionBuilder = new Builders.SlashCommandNumberOption();
+        case Discord.ApplicationCommandOptionType.Number:
+            optionBuilder = new Discord.SlashCommandNumberOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -367,8 +368,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addNumberOption(optionBuilder);
             break;
-        case 'BOOLEAN':
-            optionBuilder = new Builders.SlashCommandBooleanOption();
+        case Discord.ApplicationCommandOptionType.Boolean:
+            optionBuilder = new Discord.SlashCommandBooleanOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -376,8 +377,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addBooleanOption(optionBuilder);
             break;
-        case 'INTEGER':
-            optionBuilder = new Builders.SlashCommandIntegerOption();
+        case Discord.ApplicationCommandOptionType.Integer:
+            optionBuilder = new Discord.SlashCommandIntegerOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -390,8 +391,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addIntegerOption(optionBuilder);
             break;
-        case 'CHANNEL':
-            optionBuilder = new Builders.SlashCommandChannelOption();
+        case Discord.ApplicationCommandOptionType.Channel:
+            optionBuilder = new Discord.SlashCommandChannelOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -401,8 +402,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addChannelOption(optionBuilder);
             break;
-        case 'ROLE':
-            optionBuilder = new Builders.SlashCommandRoleOption();
+        case Discord.ApplicationCommandOptionType.Role:
+            optionBuilder = new Discord.SlashCommandRoleOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -410,8 +411,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addRoleOption(optionBuilder);
             break;
-        case 'MENTIONABLE':
-            optionBuilder = new Builders.SlashCommandMentionableOption();
+        case Discord.ApplicationCommandOptionType.Mentionable:
+            optionBuilder = new Discord.SlashCommandMentionableOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -419,8 +420,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addMentionableOption(optionBuilder);
             break;
-        case 'SUBCOMMAND':
-            optionBuilder = new Builders.SlashCommandSubcommandBuilder();
+        case Discord.ApplicationCommandOptionType.Subcommand:
+            optionBuilder = new Discord.SlashCommandSubcommandBuilder();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description);
@@ -433,8 +434,8 @@ function addSlashCommandOption(builder, key) {
 
             builder.addSubcommand(optionBuilder);
             break;
-        case 'ATTACHMENT':
-            optionBuilder = new Builders.SlashCommandAttachmentOption();
+        case Discord.ApplicationCommandOptionType.Attachment:
+            optionBuilder = new Discord.SlashCommandAttachmentOption();
 
             optionBuilder.setName(key.name)
                 .setDescription(key.description)
@@ -450,10 +451,10 @@ function addComponent(actionRow, key) {
 
     let componentBuilder;
     switch(key.type.toUpperCase()) {
-        case 'BUTTON':
+        case Discord.ComponentType.Button:
             if(!key.style) return;
 
-            componentBuilder = new Discord.MessageButton()
+            componentBuilder = new Discord.ButtonBuilder()
                 .setCustomId(key.id)
                 .setDisabled(key.disabled ?? false)
                 .setStyle(key.style);
@@ -463,10 +464,10 @@ function addComponent(actionRow, key) {
             if(key.label) componentBuilder.setLabel(key.label);
 
             break;
-        case 'SELECT_MENU':
+        case Discord.ComponentType.SelectMenu:
             if(!key.options) return;
 
-            componentBuilder = new Discord.MessageSelectMenu()
+            componentBuilder = new Discord.SelectMenuBuilder()
                 .setCustomId(key.id)
                 .setDisabled(key.disabled ?? false)
                 .setMinValues(key.min_values)
@@ -484,7 +485,7 @@ function addComponent(actionRow, key) {
 function getUsersFromMention(client, mention) {
     if(typeof mention !== 'string') return [];
 
-    const matches = mention.matchAll(Discord.MessageMentions.USERS_PATTERN);
+    const matches = mention.matchAll(Discord.MessageMentions.UsersPattern);
     if (!matches) return [];
 
     const userArray = [];
@@ -503,13 +504,13 @@ function getArgs(client, interaction) {
     const args = [];
 
     function addArgs(option) {
-        if(option.type === 'SUB_COMMAND_GROUP' || option.type === 'SUB_COMMAND') {
+        if(option.type === Discord.ApplicationCommandOptionType.SubcommandGroup || Discord.ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
             option.options.forEach(opt => addArgs(opt));
-        } else if(option.type === 'STRING' && option.name === 'user') args.push(getUsersFromMention(client, option.value)?.[0] ?? option.value);
-        else if(option.type === 'CHANNEL') args.push(option.channel);
-        else if(option.type === 'ROLE') args.push(option.role);
-        else if(option.type === 'ATTACHMENT') args.push(option.attachment);
+        } else if(option.type === Discord.ApplicationCommandOptionType.User && option.name === 'user') args.push(getUsersFromMention(client, option.value)?.[0] ?? option.value);
+        else if(option.type === Discord.ApplicationCommandOptionType.Channel) args.push(option.channel);
+        else if(option.type === Discord.ApplicationCommandOptionType.Role) args.push(option.role);
+        else if(option.type === Discord.ApplicationCommandOptionType.Attachment) args.push(option.attachment);
         else args.push(option.value);
     }
 

@@ -7,7 +7,7 @@ async function execute(message, args) {
     const user = message.mentions.users.first() ?? args[0];
     const gamemode = args[1];
 
-    if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+    if (!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         message.respond(keys.commands.gamemode.warnings.no_permission);
         return;
     } else if(!user) {

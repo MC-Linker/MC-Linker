@@ -3,7 +3,7 @@ const settings = require('../api/settings');
 const { keys, ph, getEmbedBuilder, getComponentBuilder} = require('../api/messages');
 
 async function execute(interaction) {
-    if (!interaction.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+    if (!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         interaction.respond(keys.buttons.enable.warnings.no_permission);
         return;
     }

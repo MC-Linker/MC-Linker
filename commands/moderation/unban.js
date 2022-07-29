@@ -6,7 +6,7 @@ const { keys } = require('../../api/messages');
 async function execute(message, args) {
 	const user = message.mentions.users.first() ?? args[0];
 
-	if (!message.member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS)) {
+	if (!message.member.permissions.has(Discord.PermissionFlagsBits.BanMembers)) {
 		message.respond(keys.commands.unban.warnings.no_permission);
 		return;
 	} else if(!user) {

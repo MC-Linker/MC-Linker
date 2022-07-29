@@ -13,7 +13,7 @@ async function execute(message, args) {
     if(!method) {
         message.respond(keys.commands.connect.warnings.no_method);
         return;
-    } else if(method !== 'account' && !message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+    } else if(method !== 'account' && !message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         message.respond(keys.commands.connect.warnings.no_permission);
         return;
     }

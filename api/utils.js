@@ -10,6 +10,7 @@ function searchAdvancements(searchString, category, shouldSearchNames = true, sh
         fs.readJson('./resources/data/advancements.json', 'utf8')
             .then(advancementData => {
                 const matchingCategory = advancementData.categories[category];
+                if(!matchingCategory) return resolve([]);
 
                 let matchingTitles = matchingCategory.filter(advancement => {
                     //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value

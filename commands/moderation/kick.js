@@ -8,7 +8,7 @@ async function execute(message, args) {
     args.shift(); //Shift user
     let reason = args[0] ? args.join(' ') : 'Kicked by an operator.';
 
-    if (!message.member.permissions.has(Discord.Permissions.FLAGS.KICK_MEMBERS)) {
+    if (!message.member.permissions.has(Discord.PermissionFlagsBits.KickMembers)) {
         message.respond(keys.commands.kick.warnings.no_permission);
         return;
     } else if(!user) {

@@ -1,5 +1,5 @@
 const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
+const { Routes } = require('discord-api-types/v10');
 const { token, clientId, guildId } = require('../config.json');
 const { keys, getCommandBuilder } = require('../api/messages');
 const fs = require('fs-extra');
@@ -49,6 +49,7 @@ for(const command of Object.values(keys.data)) {
 
 	if(command.name === 'disable') disableJson = builder.toJSON();
 	else if(command.name === 'help') helpJson = builder.toJSON();
+	else if(command.name === 'help') helpJson = builder.toJSON();
 	else commands.push(builder.toJSON()); //Push all commands to `commands`
 
 	if(command.name !== 'enable' && command.name !== 'disable' && command.name !== 'help') disableChoices.push({ name: command.name.cap(), value: command.name });
@@ -63,7 +64,6 @@ for (const folder of commandFolders) {
 	helpChoices.push({ name: folder.cap(), value: folder });
 	console.log(`Loaded category: ${folder}`);
 }
-
 
 disableJson.options[0].options[0].choices = disableChoices; //Set command choices
 helpJson.options[0].choices = helpChoices; //Set command and category choices

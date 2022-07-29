@@ -131,7 +131,7 @@ async function execute(message, args) {
     const command = args[0];
     args.shift(); //Shift commandName
 
-    if (!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+    if (!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         message.respond(keys.commands.command.warnings.no_permission);
         return;
     } else if(!command) {
