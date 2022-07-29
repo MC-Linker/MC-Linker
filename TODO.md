@@ -17,6 +17,7 @@
 + Add button to show more information for each slot (button grid) in `/inventory`
 + Support for multiple connections from different servers to single plugin
 + Mod support (get textures and names of mod items, etc.)
++ **Connect Teams with Discord Roles**
 + Properly parse time and distance for stats (minutes, hours, days, weeks) (centimeters, meters, kilometers)
 + `/online` (list of online players)
 + `/logs` (show all logs in time span, download logs from /logs folder)

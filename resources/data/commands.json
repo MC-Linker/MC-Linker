@@ -512,7 +512,7 @@
   ],
   "locate":[
     {
-      "": ["structure", "biome", "poit"]
+      "": ["structure", "biome", "poi"]
     },
     {
       "structure": ["%structures%", "%structure_tags%"],
