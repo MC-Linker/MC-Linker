@@ -32,6 +32,7 @@ async function execute(message, args) {
         return;
     }
 
+    // noinspection JSUnresolvedVariable
     const inventory = playerData.Inventory;
 
     const invCanvas = Canvas.createCanvas(352, 332);
@@ -39,43 +40,15 @@ async function execute(message, args) {
     const background = await Canvas.loadImage('./resources/images/other/inventory_blank.png');
     ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
-    let enchantEmbed = new Discord.EmbedBuilder()
-        .setTitle(keys.commands.inventory.success.enchantments.title)
-        .setColor(keys.commands.inventory.success.enchantments.color);
-
     let slotDims = [];
 
     for (let i = 0; i < inventory.length; i++) {
+        // noinspection JSUnresolvedVariable
         const slot = inventory[i].Slot;
         const id = inventory[i].id;
         const itemId = id.split(':').pop();
         const count = inventory[i].Count;
         const damage = inventory[i].tag?.Damage;
-        const enchantments = inventory[i].tag?.Enchantments;
-
-        if (enchantments) {
-            const formattedItem = id.replace('minecraft:', '').replaceAll('_', ' ').cap();
-
-            let invField = `\n${addPh(
-                keys.commands.inventory.success.enchantments.fields.enchantment.content_slot,
-                { "item_name": formattedItem, "slot": slot }
-            )}`;
-
-            for (const enchantment of enchantments) {
-                const formattedEnchant = enchantment.id.replace('minecraft:', '').replaceAll('_', ' ').cap();
-
-                invField += `\n${addPh(
-                    keys.commands.inventory.success.enchantments.fields.enchantment.content_enchantment,
-                    { "enchantment_name": formattedEnchant, "enchantment_level": enchantment.lvl }
-                )}`;
-            }
-
-            enchantEmbed.addFields({
-                name: keys.commands.inventory.success.enchantments.fields.enchantment.title,
-                value: invField,
-                inline: keys.commands.inventory.success.enchantments.fields.enchantment.inline
-            });
-        }
 
         const allSlotDims = {
             0: [16, 284],
@@ -187,11 +160,7 @@ async function execute(message, args) {
     );
     const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.fromStd(message), { username: user });
 
-    if (enchantEmbed.fields.length >= 1) message.replyOptions({
-        files: [invImg],
-        embeds: [invEmbed, enchantEmbed]
-    });
-    else message.replyOptions({ files: [invImg], embeds: [invEmbed] });
+    message.replyOptions({ files: [invImg], embeds: [invEmbed] });
 }
 
 module.exports = { execute };
