@@ -1,7 +1,7 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 const { token, clientId, guildId } = require('../config.json');
-const { keys, getCommandBuilder } = require('../api/messages');
+const { keys } = require('../api/messages');
 const fs = require('fs-extra');
 
 /*
@@ -22,12 +22,14 @@ process.argv.slice(2).forEach(arg => {
 	arg[1] = arg[1].split(',');
 
 	if(arg[0] === 'deploy') {
+		// noinspection JSUnresolvedFunction
 		arg[1].forEach(type => {
 			if(type === 'guild') deployGuild = true;
 			else if(type === 'global') deployGlobal = true;
 		});
 	}
 	if(arg[0] === 'delete') {
+		// noinspection JSUnresolvedFunction
 		arg[1].forEach(type => {
 			if(type === 'guild') deleteGuild = true;
 			else if(type === 'global') deleteGlobal = true;
@@ -45,12 +47,10 @@ const commands = [];
 
 //Get Builders and push commands
 for(const command of Object.values(keys.data)) {
-	const builder = getCommandBuilder(command);
-
-	if(command.name === 'disable') disableJson = builder.toJSON();
-	else if(command.name === 'help') helpJson = builder.toJSON();
-	else if(command.name === 'help') helpJson = builder.toJSON();
-	else commands.push(builder.toJSON()); //Push all commands to `commands`
+	if(command.name === 'disable') disableJson = command;
+	else if(command.name === 'help') helpJson = command;
+	else if(command.name === 'help') helpJson = command;
+	else commands.push(command); //Push all commands to `commands`
 
 	if(command.name !== 'enable' && command.name !== 'disable' && command.name !== 'help') disableChoices.push({ name: command.name.cap(), value: command.name });
 	if(command.name !== 'help') helpChoices.push({ name: command.name.cap(), value: command.name });

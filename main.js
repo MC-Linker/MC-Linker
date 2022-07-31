@@ -41,7 +41,7 @@ if(topggToken) {
 
 client.once('ready', async () => {
     console.log(addPh(keys.main.success.login.console, ph.fromClient(client), { prefix, "guild_count": client.guilds.cache.size }));
-    client.user.setActivity('/help', { type: 'LISTENING' });
+    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
     await plugin.loadExpress(client);
 
     Canvas.GlobalFonts.registerFromPath('./resources/fonts/Minecraft.ttf', 'Minecraft');
@@ -60,7 +60,7 @@ client.on('guildDelete', async guild => {
 
     //Delete connection folder
     fs.remove(`./serverdata/connections/${guild.id}`, err => {
-        if (err) console.log(addPh(keys.main.errors.no_connection_file.console, ph.fromGuild(guild)));
+        if(err) console.log(addPh(keys.main.errors.no_connection_file.console, ph.fromGuild(guild)));
         else console.log(addPh(keys.main.success.disconnected.console, ph.fromGuild(guild)));
     });
 });
@@ -91,23 +91,23 @@ client.on('messageCreate', async message => {
     const commandName = args.shift().toLowerCase();
 
     if(commandName === 'help') {
-        message.respond(keys.commands.executed);
+        await message.respond(keys.commands.executed);
         await helpCommand.execute(message, args);
     } else {
         const command = client.commands.get(commandName);
         if(!command) return;
 
-        message.respond(keys.commands.executed);
+        await message.respond(keys.commands.executed);
 
         if(await settings.isDisabled(message.guildId, 'commands', commandName)) {
-            message.respond(keys.main.warnings.disabled);
+            await message.respond(keys.main.warnings.disabled);
         }
 
         try {
             await command?.execute?.(message, args)
                 .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err)));
         } catch (err) {
-            message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err))
+            await message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err))
         }
     }
 });
@@ -141,7 +141,7 @@ client.on('interactionCreate', async interaction => {
         if(interaction.commandName === 'message') await interaction?.deferReply({ ephemeral: true });
         else await interaction?.deferReply();
 
-        interaction.respond(keys.commands.executed);
+        await interaction.respond(keys.commands.executed);
 
         if (interaction.commandName === 'help') {
             await helpCommand.execute(interaction, args);
@@ -150,7 +150,7 @@ client.on('interactionCreate', async interaction => {
 
             //Check if command disabled
             if(await settings.isDisabled(interaction.guildId, 'commands', interaction.commandName)) {
-                interaction.respond(keys.main.warnings.disabled);
+                await interaction.respond(keys.main.warnings.disabled);
                 return;
             }
 
@@ -158,14 +158,20 @@ client.on('interactionCreate', async interaction => {
                 await command?.execute?.(interaction, args)
                     .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err)));
             } catch (err) {
-                interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err));
+                await interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err));
             }
         }
 
     } else if(interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
         if(!command) return;
-        command?.autocomplete?.(interaction);
+
+        try {
+            command?.autocomplete?.(interaction)
+                .catch(err => message.respond(keys.main.errors.could_not_autocomplete_command, ph.fromError(err)));
+        } catch (err) {
+            await message.respond(keys.main.errors.could_not_autocomplete_command, ph.fromError(err))
+        }
 
     } else if (interaction.isButton()) {
         console.log(addPh(keys.buttons.clicked.console, { "button_id": interaction.customId }, ph.fromStd(interaction)));

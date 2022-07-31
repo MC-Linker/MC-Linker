@@ -92,13 +92,14 @@ async function autocomplete(interaction) {
 
             const suggestionsObject = addPh(formattedSuggestions, placeholders);
             for([k, v] of Object.entries(suggestionsObject)) {
-                if(k?.includes(focused.value.toLowerCase()) || v?.includes(focused.value.toLowerCase())) respondArray.push({ name: k, value: v });
+                if(k?.includes(focused.value.toLowerCase()) || v?.includes(focused.value.toLowerCase()))
+                    respondArray.push({ name: k, value: v });
             }
         } else return;
     }
 
     if(respondArray.length >= 25) respondArray.length = 25;
-    interaction.respond(respondArray);
+    interaction.respond(respondArray).catch(() => console.log(keys.commands.command.errors.could_not_autocomplete.console));
 }
 
 //Suggestion key:
@@ -206,12 +207,10 @@ async function getPlaceholder(key, args) {
                 "@e": "@e",
             };
 
-            let onlinePlayers = await plugin.getOnlinePlayers(args.guild.id);
-            if(!onlinePlayers) onlinePlayers = [];
-
+            let onlinePlayers = await plugin.getOnlinePlayers(args.guild.id) ?? [];
             const username = await utils.getUsername(args.user.id);
 
-            if(onlinePlayers) onlinePlayers.forEach(player => placeholder[player] = player);
+            onlinePlayers.forEach(player => placeholder[player] = player);
             if(username) {
                 placeholder["@s"] = username;
                 placeholder[username] = username;

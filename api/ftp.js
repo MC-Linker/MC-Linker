@@ -26,11 +26,13 @@ function get(getPath, putPath, credentials, message = defaultMessage) {
 			file.on('error', err => {
 				message.respond(keys.api.ftp.errors.could_not_stream, { "path": getPath, "error": err });
 
+				// noinspection JSUnresolvedVariable
 				ftpClient.client.end();
 				resolve(false);
 			});
 			writeStream.on('finish', async () => {
 				message.respond(keys.api.ftp.success.get, { "path": getPath });
+				// noinspection JSUnresolvedVariable
 				ftpClient.client.end();
 
 				resolve(await fs.readFile(putPath));
@@ -59,6 +61,7 @@ function put(getPath, putPath, credentials, message = defaultMessage) {
 			message.respond(keys.api.ftp.errors.could_not_put, { "path": putPath }, ph.fromError(err));
 			resolve(false);
 		} finally {
+			// noinspection JSUnresolvedVariable
 			ftpClient.client.end();
 		}
 
@@ -84,6 +87,7 @@ function connect(credentials) {
 		async function tryConnect() {
 			const ftpClient = await getFtpClient(credentials);
 			if (!ftpClient) return false;
+			// noinspection JSUnresolvedVariable
 			ftpClient.client.end();
 
 			console.log(addPh(keys.api.ftp.success.connect.console, { "protocol": credentials.protocol }));
@@ -114,6 +118,7 @@ function list(folder, credentials, message = defaultMessage) {
 		} catch(err) {
 			resolve(false);
 		} finally {
+			// noinspection JSUnresolvedVariable
 			ftpClient.client.end();
 		}
 	});
@@ -125,6 +130,7 @@ function find(file, start, maxDepth, credentials, message = defaultMessage) {
 		if (!ftpClient) return resolve(false);
 
 		const foundFile = await findFile(ftpClient, file, start, maxDepth);
+		// noinspection JSUnresolvedVariable
 		ftpClient.client.end();
 		if(!foundFile) return resolve(false);
 
@@ -156,7 +162,7 @@ async function getFtpClient(credentials, message = defaultMessage) {
 		else if(credentials.protocol === 'sftp')
 			return await sftp.create(credentials.host, credentials.port, credentials.user, credentials.password);
 	} catch(err) {
-		message.respond(keys.api.ftp.errors.could_not_connect, ph.fromError(err), { "protocol": credentials.protocol });
+		message.respond(keys.api.ftp.errors.could_not_connect, { "protocol": credentials.protocol });
 		return false;
 	}
 }
