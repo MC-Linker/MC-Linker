@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
+const { EmbedBuilder, ButtonBuilder } = require('discord.js');
 const { discordLink } = require('../config.json');
-const { keys, getEmbedBuilder, ph, addPh, getComponentBuilder } = require('../api/messages');
+const { keys, ph, addPh } = require('../api/messages');
 const settings = require('../api/settings');
 
 async function execute(message, args) {
@@ -22,44 +23,46 @@ async function execute(message, args) {
                 }
 
                 commands = commands.filter(command => command.endsWith('.js'));
-                const helpEmbed = getEmbedBuilder(keys.commands.help.success.base, ph.fromStd(message));
+                const helpEmbed = EmbedBuilder.from(addPh(keys.commands.help.success.base, ph.fromStd(message)));
                 for (let commandFile of commands) {
                     commandFile = commandFile.split('.').shift();
                     command = keys.data[commandFile];
 
-                    helpEmbed.addField(
-                        addPh(keys.commands.help.success.category.fields.command.title, await ph.fromCommandName(commandName, message.guild)),
-                        addPh(keys.commands.help.success.category.fields.command.content, await ph.fromCommandName(commandName, message.guild))
-                    );
+                    helpEmbed.addFields(addPh(
+                        keys.commands.help.success.category.embeds[0].fields[0],
+                        await ph.fromCommandName(commandName, message.guild)
+                    ));
                 }
 
-                helpEmbed.addField(
-                    keys.commands.help.success.category.fields.information.title,
-                    addPh(keys.commands.help.success.category.fields.information.content, { "discord_link": discordLink }, await ph.fromCommandName(commandName, message.guild))
-                );
-                message.replyOptions({embeds: [helpEmbed]});
+                helpEmbed.addFields(addPh(
+                    keys.commands.help.success.category.embeds[0].fields[1],
+                    { "discord_link": discordLink }, await ph.fromCommandName(commandName, message.guild)
+                ));
+
+                message.replyOptions({ embeds: [helpEmbed] });
             });
         } else {
-            const helpEmbed = getEmbedBuilder(
+            // noinspection JSUnresolvedVariable
+            const helpEmbed = EmbedBuilder.from(addPh(
                 keys.commands.help.success.command,
                 ph.fromStd(message),
                 { "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example },
                 await ph.fromCommandName(commandName, message.guild)
-            );
+            ));
 
             const disabled = await settings.getDisabled(message.guildId, 'commands');
             if (!disabled.find(disable => disable === command.name)) {
-                const disableRow = getComponentBuilder(
-                    keys.commands.help.success.disable_button,
+                const disableRow = ButtonBuilder.from(addPh(
+                    keys.commands.help.success.disable_button.components[0],
                     { "command_name": command.name }, ph.emojis()
-                );
+                ));
 
                 message.replyOptions({ embeds: [helpEmbed], components: [disableRow] });
             } else if (disabled) {
-                const enableRow = getComponentBuilder(
-                    keys.commands.help.success.enable_button,
+                const enableRow = ButtonBuilder.from(addPh(
+                    keys.commands.help.success.enable_button.components[0],
                     { "command_name": command.name }, ph.emojis()
-                );
+                ));
 
                 helpEmbed.setDescription(keys.commands.help.success.disabled.description);
                 message.replyOptions({ embeds: [helpEmbed], components: [enableRow] });
