@@ -954,7 +954,7 @@
   "data.inventory.type": "ChatInput",
   "data.inventory.long_description": "Get an image of the current player's inventory.",
   "data.inventory.description": "Get an image of the current player's inventory.",
-  "data.inventory.usage": "inventory <mention/username>",
+  "data.inventory.usage": "inventory <@mention/username>",
   "data.inventory.example": "/inventory @Lianecx\n/inventory TheTerrain",
 
   "data.inventory.options.0.type": "String",

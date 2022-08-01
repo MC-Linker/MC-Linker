@@ -18,6 +18,7 @@ async function loadExpress(client) {
     app.post('/chat', async (req, res) => {
         res.send('Success');
 
+        // noinspection JSUnresolvedVariable
         const player = req.body.player?.replaceAll(' ', '');
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
         const message = req.body.message;
@@ -51,8 +52,8 @@ async function loadExpress(client) {
 
             if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
-            const advancementKey = message.replaceAll('minecraft:', '').split('/');
-            const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
+            const { category, id } = message.replaceAll('minecraft:', '').split('/');
+            const advancement = await utils.searchAdvancements(id, category, false, true, 1);
 
             advancementTitle = advancement[0]?.name;
             advancementDesc = advancement[0]?.description;
@@ -62,12 +63,23 @@ async function loadExpress(client) {
 
             chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
         } else if(req.body.type === 'chat') {
+            const guild = client.guilds.cache.get(guildId);
+
+            //Parse pings (@name#tag)
+            argPlaceholder.message = message.replace(/@(\w+)#(\d{4})/, async (mention, name, tag) => {
+                const users = await guild.members.search({ query: name });
+                if(users.first().user.discriminator === tag) return users.first();
+
+                return mention;
+            });
+            console.log(argPlaceholder.message)
+
             chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
 
             let allWebhooks;
             //Fetch all webhooks in guild
             try {
-                allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
+                allWebhooks = await guild.fetchWebhooks();
             } catch(err) {}
 
             for (const channel of channels) {
@@ -96,7 +108,7 @@ async function loadExpress(client) {
                     //Fake interaction
                     discordChannel.respond = () => discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
 
-                    const regChannel = await registerChannel(ip, guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
+                    const regChannel = await registerChannel(guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
                     if(!regChannel) {
                         webhook.delete();
                         return;
@@ -116,7 +128,7 @@ async function loadExpress(client) {
                     fs.outputJson(`./serverdata/connections/${guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {
                         if(err) {
                             webhook.delete();
-                            discordChannel.respond(keys.commands.chatchannel.errors.could_not_write_file);
+                            discordChannel.send(addPh(keys.commands.chatchannel.errors.could_not_write_file));
                         }
                     });
                 }
