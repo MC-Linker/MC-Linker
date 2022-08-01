@@ -2040,7 +2040,7 @@
       "type": "ChatInput",
       "long_description": "Get an image of the current player's inventory.",
       "description": "Get an image of the current player's inventory.",
-      "usage": "inventory <mention/username>",
+      "usage": "inventory <@mention/username>",
       "example": "/inventory @Lianecx\n/inventory TheTerrain",
       "options": [
         {
