@@ -1,8 +1,9 @@
 # TODO BOT
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...), maybe OOP
++ Better logs (multilevel, more information)
 + `/chatchannel list` (**Lists chatchannels**)
-+ Parse pings in chat channel (@username#tag)
++ Parse pings in chat channel (@username#tag), **Testing**
 + Switch from express to fastify
 + Check Bot's permissions before doing stuff
 + Get online player's inventories from the plugin instead of file (for faster updates)
@@ -27,7 +28,7 @@
 + `/settings` (language settings and more)
 + `/totem` (Generate totem from skin)
 + `/scoreboard` (image of the specified scoreboard)
-+ Context Menus (inventory, ban, unban, op, deop, kick, add to whitelist, remove from whitelist, ...)
++ Context Menus (inventory, ban, op, kick, add to whitelist), restricted to 5 commands
 + Crafter Bot Commands (Recipes, Block Info, etc.)
 + `/setup` (Detailed guide on how to set up with various server hosts)
 + `/resourcepack` (Info and Upload option for resource pack)
