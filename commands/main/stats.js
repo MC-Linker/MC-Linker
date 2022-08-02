@@ -88,7 +88,7 @@ async function execute(message, args) {
 
         const statEmbed = getEmbedBuilder(
             keys.commands.stats.success.final,
-            ph.fromStd(message),
+            ph.std(message),
             argPlaceholder,
             { "stat_message": statMessage, "stat_value": stat }
         );
@@ -106,7 +106,7 @@ async function execute(message, args) {
             message.replyOptions({ embeds: [statEmbed], files: [`./resources/images/minecraft/${imgType}/${stat}.png`] });
         });
     } catch (err) {
-        message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.fromError(err));
+        message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.error(err));
     }
 }
 

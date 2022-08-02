@@ -661,7 +661,7 @@ async function updateConn(message = defaultMessage) {
     return new Promise(resolve => {
         fs.outputJson('./serverdata/connections/connections.json', pluginConnections, { spaces: 2 })
             .catch(err => {
-                message.respond(keys.api.plugin.errors.could_not_update, ph.fromError(err));
+                message.respond(keys.api.plugin.errors.could_not_update, ph.error(err));
                 resolve(false);
             }).then(() => resolve(true));
     });

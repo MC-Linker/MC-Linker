@@ -22,7 +22,7 @@ function addResponseMethods(interaction) {
 
 
 const ph = {};
-ph.fromAuthor = function(author) {
+ph.author = function(author) {
     if(!(author instanceof Discord.User)) return {};
 
     return {
@@ -33,7 +33,7 @@ ph.fromAuthor = function(author) {
         "author_timestamp": Discord.time(new Date(author.createdTimestamp)),
     }
 };
-ph.fromGuild = function(guild) {
+ph.guild = function(guild) {
     if(!(guild instanceof Discord.Guild)) return {};
 
     return {
@@ -43,7 +43,7 @@ ph.fromGuild = function(guild) {
         "guild_timestamp": Discord.time(new Date(guild.createdTimestamp)),
     }
 };
-ph.fromInteraction = function(interaction) {
+ph.interaction = function(interaction) {
     if(interaction instanceof Discord.Message) {
         const args = interaction.content.slice(prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
@@ -68,7 +68,7 @@ ph.fromInteraction = function(interaction) {
 
     return {};
 };
-ph.fromChannel = function(channel) {
+ph.channel = function(channel) {
     if(!(channel instanceof Discord.TextChannel)) return {};
 
     return {
@@ -78,7 +78,7 @@ ph.fromChannel = function(channel) {
         "channel_timestamp": Discord.time(new Date(channel.createdTimestamp)),
     }
 };
-ph.fromClient = function(client) {
+ph.client = function(client) {
     if(!(client instanceof Discord.Client)) return {};
 
     return {
@@ -98,7 +98,7 @@ ph.emojis = function() {
     return placeholders;
 };
 
-ph.fromCommand = function(command) {
+ph.command = function(command) {
     if(!(command instanceof Discord.ApplicationCommand)) return {};
 
     return {
@@ -110,7 +110,7 @@ ph.fromCommand = function(command) {
     }
 };
 
-ph.fromError = function(err) {
+ph.error = function(err) {
     if(!(err instanceof Error)) return {};
 
     return {
@@ -119,21 +119,21 @@ ph.fromError = function(err) {
     }
 };
 
-ph.fromStd = function(interaction) {
+ph.std = function(interaction) {
     if(!(interaction instanceof Discord.BaseInteraction || !(interaction instanceof Discord.Message))) return {};
 
     return Object.assign(
-        this.fromAuthor(interaction.user),
-        this.fromGuild(interaction.guild),
-        this.fromInteraction(interaction),
-        this.fromChannel(interaction.channel),
-        this.fromClient(interaction.client),
+        this.author(interaction.user),
+        this.guild(interaction.guild),
+        this.interaction(interaction),
+        this.channel(interaction.channel),
+        this.client(interaction.client),
         this.emojis(),
         { "timestamp_now": Discord.time(Date.now()/1000) }
     );
 };
 
-ph.fromCommandName = async function(commandName, clientOrGuild) {
+ph.commandName = async function(commandName, clientOrGuild) {
     let commands;
     if(clientOrGuild instanceof Discord.Guild) {
         commands = await clientOrGuild.commands.fetch();
@@ -145,10 +145,10 @@ ph.fromCommandName = async function(commandName, clientOrGuild) {
 
     if(!(command instanceof Discord.ApplicationCommand)) return {};
 
-    return this.fromCommand(command);
+    return this.command(command);
 };
 
-ph.fromAllCommands = async function (clientOrGuild) {
+ph.allCommands = async function (clientOrGuild) {
     let commands;
     if (clientOrGuild instanceof Discord.Guild) {
         commands = await clientOrGuild.commands.fetch();
@@ -156,7 +156,7 @@ ph.fromAllCommands = async function (clientOrGuild) {
         commands = await clientOrGuild.application.commands.fetch();
     }
 
-    const allPh = commands.map(cmd => prependName(this.fromCommand(cmd), cmd.name));
+    const allPh = commands.map(cmd => prependName(this.command(cmd), cmd.name));
 
     function prependName(ph, name) {
         const newPh = {};
@@ -227,7 +227,7 @@ function reply(interaction, key, ...placeholders) {
     if(!interaction || !key || !placeholders) return console.error(keys.api.messages.errors.no_reply_arguments.console);
 
     placeholders = Object.assign(
-        ph.fromStd(interaction),
+        ph.std(interaction),
         ...placeholders
     );
 
@@ -242,7 +242,7 @@ function reply(interaction, key, ...placeholders) {
 
 function replyOptions(interaction, options) {
     function handleError(err) {
-        console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.fromError(err), { "interaction": interaction }));
+        console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { "interaction": interaction }));
         return interaction?.channel?.send(options);
     }
 

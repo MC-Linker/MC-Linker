@@ -43,8 +43,8 @@ async function execute(message, args) {
         if(password === 'none') password = '';
 
         //Send version warnings
-        if (version <= 11 && version > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.fromStd(message)));
-        else if (version <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.fromStd(message)));
+        if (version <= 11 && version > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.std(message)));
+        else if (version <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.std(message)));
 
         message.respond(keys.commands.connect.warnings.connecting);
 
@@ -128,7 +128,7 @@ async function execute(message, args) {
 
         message.respond(keys.commands.connect.warnings.check_dms);
 
-        const verifyEmbed = getEmbedBuilder(keys.commands.connect.warnings.verification, ph.fromStd(message));
+        const verifyEmbed = getEmbedBuilder(keys.commands.connect.warnings.verification, ph.std(message));
 
         let dmChannel = await message.member.user.createDM();
         try {
@@ -143,24 +143,24 @@ async function execute(message, args) {
 
         if(!collector.first()) {
             console.log(keys.commands.connect.warnings.no_reply_in_time.console);
-            const noReplyEmbed = getEmbedBuilder(keys.commands.connect.warnings.no_reply_in_time, ph.fromStd(message));
+            const noReplyEmbed = getEmbedBuilder(keys.commands.connect.warnings.no_reply_in_time, ph.std(message));
             dmChannel.send({ embeds: [noReplyEmbed] });
             return;
         }
 
         const connectPlugin = await plugin.connect(`${ip}:${port}`, message.guildId, collector.first(), message);
         if(!connectPlugin) {
-            const noConnectionEmbed = getEmbedBuilder(keys.commands.connect.errors.could_not_connect_plugin, ph.fromStd(message));
+            const noConnectionEmbed = getEmbedBuilder(keys.commands.connect.errors.could_not_connect_plugin, ph.std(message));
             dmChannel.send({ embeds: [noConnectionEmbed] });
             return;
         }
 
         else if(connectPlugin === 401) {
-            const incorrectCodeEmbed = getEmbedBuilder(keys.commands.connect.errors.incorrect_code, ph.fromStd(message));
+            const incorrectCodeEmbed = getEmbedBuilder(keys.commands.connect.errors.incorrect_code, ph.std(message));
             dmChannel.send({ embeds: [incorrectCodeEmbed] });
             return;
         } else {
-            const verificationEmbed = getEmbedBuilder(keys.commands.connect.success.verification, ph.fromStd(message));
+            const verificationEmbed = getEmbedBuilder(keys.commands.connect.success.verification, ph.std(message));
             dmChannel.send({ embeds: [verificationEmbed] });
         }
 

@@ -9,7 +9,7 @@ async function execute(message, args) {
         message.respond(
             keys.commands.help.success.no_args,
             { "invite_link": discordLink },
-            await ph.fromAllCommands(message.client),
+            await ph.allCommands(message.client),
         );
     } else {
         const commandName = args[0].toLowerCase();
@@ -23,20 +23,20 @@ async function execute(message, args) {
                 }
 
                 commands = commands.filter(command => command.endsWith('.js'));
-                const helpEmbed = EmbedBuilder.from(addPh(keys.commands.help.success.base, ph.fromStd(message)));
+                const helpEmbed = EmbedBuilder.from(addPh(keys.commands.help.success.base, ph.std(message)));
                 for (let commandFile of commands) {
                     commandFile = commandFile.split('.').shift();
                     command = keys.data[commandFile];
 
                     helpEmbed.addFields(addPh(
                         keys.commands.help.success.category.embeds[0].fields[0],
-                        await ph.fromCommandName(commandName, message.guild)
+                        await ph.commandName(commandName, message.guild)
                     ));
                 }
 
                 helpEmbed.addFields(addPh(
                     keys.commands.help.success.category.embeds[0].fields[1],
-                    { "discord_link": discordLink }, await ph.fromCommandName(commandName, message.guild)
+                    { "discord_link": discordLink }, await ph.commandName(commandName, message.guild)
                 ));
 
                 message.replyOptions({ embeds: [helpEmbed] });
@@ -45,9 +45,9 @@ async function execute(message, args) {
             // noinspection JSUnresolvedVariable
             const helpEmbed = EmbedBuilder.from(addPh(
                 keys.commands.help.success.command,
-                ph.fromStd(message),
+                ph.std(message),
                 { "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example },
-                await ph.fromCommandName(commandName, message.guild)
+                await ph.commandName(commandName, message.guild)
             ));
 
             const disabled = await settings.getDisabled(message.guildId, 'commands');

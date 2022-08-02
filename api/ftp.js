@@ -38,7 +38,7 @@ function get(getPath, putPath, credentials, message = defaultMessage) {
 				resolve(await fs.readFile(putPath));
 			});
 		} catch(err) {
-			message.respond(keys.api.ftp.errors.could_not_get, { "path": getPath }, ph.fromError(err));
+			message.respond(keys.api.ftp.errors.could_not_get, { "path": getPath }, ph.error(err));
 			resolve(false);
 		}
 	});
@@ -58,7 +58,7 @@ function put(getPath, putPath, credentials, message = defaultMessage) {
 		try {
 			await ftpClient.put(fs.createReadStream(getPath), putPath);
 		} catch(err) {
-			message.respond(keys.api.ftp.errors.could_not_put, { "path": putPath }, ph.fromError(err));
+			message.respond(keys.api.ftp.errors.could_not_put, { "path": putPath }, ph.error(err));
 			resolve(false);
 		} finally {
 			// noinspection JSUnresolvedVariable

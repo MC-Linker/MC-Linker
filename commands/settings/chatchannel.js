@@ -65,11 +65,11 @@ async function execute(message, args) {
                     }
 
                     console.log(keys.commands.chatchannel.success.add.console);
-                    const successEmbed = getEmbedBuilder(keys.commands.chatchannel.success.add, ph.fromStd(message));
+                    const successEmbed = getEmbedBuilder(keys.commands.chatchannel.success.add, ph.std(message));
                     menu.replyOptions({ embeds: [successEmbed] });
                 });
             } else {
-                const notAuthorEmbed = getEmbedBuilder(keys.commands.chatchannel.warnings.not_author, ph.fromStd(message));
+                const notAuthorEmbed = getEmbedBuilder(keys.commands.chatchannel.warnings.not_author, ph.std(message));
                 menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
             }
         });

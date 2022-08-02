@@ -29,7 +29,7 @@ function searchAdvancements(searchString, category, shouldSearchNames = true, sh
                 if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
                 resolve(matchingTitles);
             }).catch(err => {
-                console.log(addPh(keys.api.utils.errors.could_not_read_advancements.console, ph.fromError(err)));
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements.console, ph.error(err)));
                 resolve([]);
             });
     });
@@ -63,7 +63,7 @@ function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSea
                 if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
                 resolve(matchingTitles);
             }).catch(err => {
-                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, ph.fromError(err)));
+                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, ph.error(err)));
                 resolve([]);
             });
     });

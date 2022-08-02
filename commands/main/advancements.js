@@ -1,7 +1,7 @@
 const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
-const { time } = require('@discordjs/builders');
+const { time, EmbedBuilder } = require('discord.js');
 const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
 
 async function autocomplete(interaction) {
@@ -67,10 +67,10 @@ async function execute(message, args) {
     let equals = '';
     for(const {} of letters) equals += '=';
 
-    const baseEmbed = getEmbedBuilder(
+    const baseEmbed = EmbedBuilder.from(addPh(
         keys.commands.advancements.success.base,
-        ph.fromStd(message), { equals, "username": user.username ?? user, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
-    );
+        ph.std(message), { equals, "username": user.username ?? user, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+    ));
 
     try {
         let amEmbed;

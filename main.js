@@ -21,7 +21,7 @@ const client = new Discord.Client({ intents: [Discord.GatewayIntentBits.GuildMes
 
 //Handle rejected promises
 process.on('unhandledRejection', async err => {
-    console.log(addPh(keys.main.errors.unknown_rejection.console, ph.fromError(err)));
+    console.log(addPh(keys.main.errors.unknown_rejection.console, ph.error(err)));
 });
 
 /*
@@ -40,7 +40,7 @@ if(topggToken) {
 }
 
 client.once('ready', async () => {
-    console.log(addPh(keys.main.success.login.console, ph.fromClient(client), { prefix, "guild_count": client.guilds.cache.size }));
+    console.log(addPh(keys.main.success.login.console, ph.client(client), { prefix, "guild_count": client.guilds.cache.size }));
     client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
     await plugin.loadExpress(client);
 
@@ -49,19 +49,19 @@ client.once('ready', async () => {
 
 client.on('guildCreate', guild => {
     if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create.console, { guild }));
-    console.log(addPh(keys.main.success.guild_create.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
+    console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { "guild_count": client.guilds.cache.size }));
 });
 
 client.on('guildDelete', async guild => {
     if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
-    console.log(addPh(keys.main.success.guild_delete.console, ph.fromGuild(guild), { "guild_count": client.guilds.cache.size }));
+    console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { "guild_count": client.guilds.cache.size }));
 
     await plugin.disconnect(guild.id, guild.client);
 
     //Delete connection folder
     fs.remove(`./serverdata/connections/${guild.id}`, err => {
-        if(err) console.log(addPh(keys.main.errors.no_connection_file.console, ph.fromGuild(guild)));
-        else console.log(addPh(keys.main.success.disconnected.console, ph.fromGuild(guild)));
+        if(err) console.log(addPh(keys.main.errors.no_connection_file.console, ph.guild(guild)));
+        else console.log(addPh(keys.main.success.disconnected.console, ph.guild(guild)));
     });
 });
 
@@ -105,9 +105,9 @@ client.on('messageCreate', async message => {
 
         try {
             await command?.execute?.(message, args)
-                .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err)));
+                .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
         } catch (err) {
-            await message.respond(keys.main.errors.could_not_execute_command, ph.fromError(err))
+            await message.respond(keys.main.errors.could_not_execute_command, ph.error(err))
         }
     }
 });
@@ -156,9 +156,9 @@ client.on('interactionCreate', async interaction => {
 
             try {
                 await command?.execute?.(interaction, args)
-                    .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err)));
+                    .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
             } catch (err) {
-                await interaction.respond(keys.main.errors.could_not_execute_command, ph.fromError(err));
+                await interaction.respond(keys.main.errors.could_not_execute_command, ph.error(err));
             }
         }
 
@@ -168,13 +168,13 @@ client.on('interactionCreate', async interaction => {
 
         try {
             command?.autocomplete?.(interaction)
-                .catch(err => message.respond(keys.main.errors.could_not_autocomplete_command, ph.fromError(err)));
+                .catch(err => message.respond(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
         } catch (err) {
-            await message.respond(keys.main.errors.could_not_autocomplete_command, ph.fromError(err))
+            await message.respond(keys.main.errors.could_not_autocomplete_command, ph.error(err))
         }
 
     } else if (interaction.isButton()) {
-        console.log(addPh(keys.buttons.clicked.console, { "button_id": interaction.customId }, ph.fromStd(interaction)));
+        console.log(addPh(keys.buttons.clicked.console, { "button_id": interaction.customId }, ph.std(interaction)));
 
         await interaction.deferReply({ ephemeral: true });
         if (interaction.customId.startsWith('disable')) {

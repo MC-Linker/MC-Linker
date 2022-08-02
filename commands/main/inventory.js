@@ -28,7 +28,7 @@ async function execute(message, args) {
         playerData = await nbt.parse(nbtFile, 'big');
         playerData = nbt.simplify(playerData.parsed);
     } catch(err) {
-        message.respond(keys.commands.inventory.errors.could_not_parse, ph.fromError(err));
+        message.respond(keys.commands.inventory.errors.could_not_parse, ph.error(err));
         return;
     }
 
@@ -158,7 +158,7 @@ async function execute(message, args) {
         invCanvas.toBuffer('image/png'),
         { name: `Inventory_Player.png`, description: keys.commands.inventory.image_description }
     );
-    const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.fromStd(message), { username: user });
+    const invEmbed = getEmbedBuilder(keys.commands.inventory.success.final, ph.std(message), { username: user });
 
     message.replyOptions({ files: [invImg], embeds: [invEmbed] });
 }
