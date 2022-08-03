@@ -222,6 +222,7 @@ function addPh(key, ...placeholders) {
 
 function reply(interaction, key, ...placeholders) {
     //Only log to console if interaction doesn't exist
+    // noinspection JSUnresolvedVariable
     if(key?.console && !interaction) return console.log(addPh(key.console, Object.assign({}, ...placeholders)));
 
     if(!interaction || !key || !placeholders) return console.error(keys.api.messages.errors.no_reply_arguments.console);
@@ -231,12 +232,28 @@ function reply(interaction, key, ...placeholders) {
         ...placeholders
     );
 
-    key = addPh(key, placeholders);
+    const options = {
+        embeds: [],
+        components: [],
+    };
+
+    if(key.embeds) {
+        for(let embed of key.embeds) {
+            embed = getEmbed(embed, placeholders);
+            if(embed) options.embeds.push(embed); //Add embeds to message options
+        }
+    }
+
+    if(key.components) {
+        const actionRow = getActionRow(key, placeholders);
+        if(actionRow) options.components.push(actionRow); //Add components to message options
+    }
 
     //Reply to interaction
+    // noinspection JSUnresolvedVariable
     if(key.console) console.log(addPh(key.console, placeholders));
 
-    if(!key.embeds) return; //If only console don't reply
+    if(!key.embeds && !key.components) return; //If only console don't reply
     return replyOptions(interaction, key);
 }
 
@@ -258,6 +275,308 @@ function replyOptions(interaction, options) {
         handleError(err);
     }
 }
+
+
+function getEmbed(key, ...placeholders) {
+    if(!key) return console.error(keys.api.messages.errors.no_embed_key.console);
+
+    key = addPh(key, ...placeholders);
+
+    const embed = new Discord.EmbedBuilder();
+
+    if(key.fields) {
+        for (const field of key.fields) {
+            if(!field.title || !field.content) continue;
+            embed.setFields({ name: field.title, value: field.content, inline: field.inline });
+        }
+    }
+
+    if(key.title) embed.setTitle(key.title);
+    if(key.description) embed.setDescription(key.description);
+    if(key.color) embed.setColor(key.color);
+    if(key.author?.name) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
+    if(key.image) embed.setImage(key.image);
+    if(key.thumbnail) embed.setThumbnail(key.thumbnail);
+    if(key.timestamp) embed.setTimestamp(Number(key.timestamp));
+    if(key.footer?.text) embed.setFooter({ text: key.footer.text, iconURL: key.footer.icon_url });
+    if(key.url) embed.setURL(key.url);
+
+    return embed;
+}
+
+function getActionRow(key, ...placeholders) {
+    if(!key) return console.error(keys.api.messages.errors.no_component_key.console);
+
+    const actionRow = new Discord.ActionRowBuilder();
+
+    for(let component of key.components) {
+        component = getComponent(component, placeholders);
+        if(component) actionRow.addComponents(component);
+    }
+
+    return actionRow;
+}
+
+function getComponent(key, ...placeholders) {
+    if(!key.type) return;
+    key = addPh(key, ...placeholders);
+
+    let componentBuilder;
+    switch(Discord.ComponentType[key.type]) {
+        case Discord.ComponentType.Button:
+            if(!key.style) return;
+
+            componentBuilder = new Discord.ButtonBuilder()
+                .setDisabled(key.disabled ?? false)
+                .setStyle(Discord.ButtonStyle[key.style]);
+
+            if(key.custom_id) componentBuilder.setCustomId(key.custom_id);
+            if(key.emoji) componentBuilder.setEmoji(key.emoji);
+            if(key.url) componentBuilder.setURL(key.url);
+            if(key.label) componentBuilder.setLabel(key.label);
+
+            break;
+        case Discord.ComponentType.SelectMenu:
+            if(!key.options || !key.custom_id) return;
+
+            componentBuilder = new Discord.SelectMenuBuilder()
+                .setCustomId(key.custom_id)
+                .setDisabled(key.disabled ?? false);
+
+            if(key.min_values) componentBuilder.setMinValues(key.min_values);
+            if(key.max_values) componentBuilder.setMaxValues(key.max_values);
+            if(key.placeholder) componentBuilder.setPlaceholder(key.placeholder);
+
+            if(key.options) {
+                for (const option of key.options) {
+                    if(!option.label || !option.value) return;
+
+                    const optionBuilder = new Discord.SelectMenuOptionBuilder()
+                        .setLabel(option.label)
+                        .setValue(option.value)
+                        .setDefault(key.default ?? false);
+
+                    if(option.description) optionBuilder.setDescription(option.description);
+                    if(option.emoji) optionBuilder.setEmoji(option.emoji);
+
+                    componentBuilder.addOptions(option);
+                }
+            }
+
+            break;
+        case Discord.ComponentType.TextInput:
+            if(!key.style || !key.custom_id || !key.label) return;
+
+            componentBuilder = new Discord.TextInputBuilder()
+                .setStyle(Discord.TextInputStyle[key.style])
+                .setCustomId(key.custom_id)
+                .setLabel(key.label)
+                .setDisabled(key.disabled ?? false)
+                .setRequired(key.required ?? false);
+
+            if(key.max_length) componentBuilder.setMaxLength(key.max_length);
+            if(key.min_length) componentBuilder.setMinLength(key.min_length);
+            if(key.value) componentBuilder.setValue(key.value);
+            if(key.placeholder) componentBuilder.setPlaceholder(key.placeholder);
+            if(key.label) componentBuilder.setLabel(key.label);
+
+            break;
+    }
+
+    return componentBuilder;
+}
+
+function getCommand(key) {
+    if(!key) return console.error(keys.api.messages.errors.no_command_key.console);
+    if(!key.name || !key.type) return console.error(keys.api.messages.errors.no_command_arguments.console);
+
+    let commandBuilder;
+    switch(Discord.ApplicationCommandType[key.type]) {
+        case Discord.ApplicationCommandType.ChatInput:
+            if(!key.description) return;
+
+            commandBuilder = new Discord.SlashCommandBuilder()
+                .setName(key.name)
+                .setDescription(key.description);
+
+            if(key.default_member_permissions) commandBuilder.setDefaultMemberPermissions(key.default_member_permissions);
+            if(key.dm_permission) commandBuilder.setDMPermission(key.dm_permission);
+
+            for (const option of key.options) {
+                addSlashCommandOption(commandBuilder, option);
+            }
+
+            break;
+        case Discord.ApplicationCommandType.Message:
+        case Discord.ApplicationCommandType.User:
+            if(!key.description) return;
+
+            commandBuilder = new Discord.ContextMenuCommandBuilder()
+                .setName(key.name)
+                .setType(key.type);
+
+
+            if(key.default_member_permissions) commandBuilder.setDefaultMemberPermissions(key.default_member_permissions);
+            if(key.dm_permission) commandBuilder.setDMPermission(key.dm_permission);
+
+            break;
+    }
+
+    return commandBuilder;
+}
+
+function addSlashCommandOption(builder, key) {
+    if(!key.type || !key.name || !key.description) return;
+
+    let optionBuilder;
+    switch(Discord.ApplicationCommandOptionType[key.type]) {
+        case Discord.ApplicationCommandOptionType.String:
+            optionBuilder = new Discord.SlashCommandStringOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false)
+                .setAutocomplete(key.autocomplete ?? false);
+
+            if(key.max_length) optionBuilder.setMaxLength(key.max_length);
+            if(key.min_length) optionBuilder.setMinLength(key.max_length);
+
+            if(key.choices) {
+                for(const choice of key.choices) {
+                    if(!choice.name || !choice.value) continue;
+                    optionBuilder.addChoices(choice);
+                }
+            }
+
+            builder.addStringOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.User:
+            optionBuilder = new Discord.SlashCommandUserOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false);
+
+            builder.addUserOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.Number:
+            optionBuilder = new Discord.SlashCommandNumberOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false)
+                .setAutocomplete(key.autocomplete ?? false);
+
+            if(key.min_value) optionBuilder.setMinValue(key.min_value);
+            if(key.max_value) optionBuilder.setMaxValue(key.max_value);
+
+            if(key.choices) {
+                for(const choice of key.choices) {
+                    if(!choice.name || !choice.value) continue;
+                    optionBuilder.addChoices(choice);
+                }
+            }
+
+            builder.addNumberOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.Boolean:
+            optionBuilder = new Discord.SlashCommandBooleanOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false);
+
+            builder.addBooleanOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.Integer:
+            optionBuilder = new Discord.SlashCommandIntegerOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false)
+                .setAutocomplete(key.autocomplete ?? false);
+
+            if(key.min_value) optionBuilder.setMinValue(key.min_value);
+            if(key.max_value) optionBuilder.setMaxValue(key.max_value);
+
+            if(key.choices) {
+                for(const choice of key.choices) {
+                    if(!choice.name || !choice.value) continue;
+                    optionBuilder.addChoices(choice);
+                }
+            }
+
+            builder.addIntegerOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.Channel:
+            optionBuilder = new Discord.SlashCommandChannelOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false);
+
+            if(key.channel_types) optionBuilder.addChannelTypes(...key.channel_types);
+
+            builder.addChannelOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.Role:
+            optionBuilder = new Discord.SlashCommandRoleOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false);
+
+            builder.addRoleOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.Mentionable:
+            optionBuilder = new Discord.SlashCommandMentionableOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false);
+
+            builder.addMentionableOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.Attachment:
+            optionBuilder = new Discord.SlashCommandAttachmentOption();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description)
+                .setRequired(key.required ?? false);
+
+            builder.addAttachmentOption(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.SubcommandGroup:
+            optionBuilder = new Discord.SlashCommandSubcommandGroupBuilder();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description);
+
+            if(key.options) {
+                for (const option of key.options) {
+                    addSlashCommandOption(optionBuilder, option);
+                }
+            }
+
+            optionBuilder = builder.addSubcommandGroup(optionBuilder);
+            break;
+        case Discord.ApplicationCommandOptionType.Subcommand:
+            optionBuilder = new Discord.SlashCommandSubcommandBuilder();
+
+            optionBuilder.setName(key.name)
+                .setDescription(key.description);
+
+            if(key.options) {
+                for (const option of key.options) {
+                    addSlashCommandOption(optionBuilder, option);
+                }
+            }
+
+            optionBuilder = builder.addSubcommand(optionBuilder);
+            break;
+    }
+}
+
 
 function getUsersFromMention(client, mention) {
     if(typeof mention !== 'string') return [];
@@ -298,4 +617,4 @@ function getArgs(client, interaction) {
     return args;
 }
 
-module.exports = { keys, ph, reply, replyOptions, addResponseMethods, addPh, defaultMessage, getUsersFromMention, getArgs };
+module.exports = { keys, ph, reply, replyOptions, addPh, getEmbed, getCommand, getActionRow, addResponseMethods, defaultMessage, getUsersFromMention, getArgs };
