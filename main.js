@@ -39,9 +39,15 @@ if(topggToken) {
     poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
 }
 
+function setActivity() {
+    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
+    setTimeout(setActivity, 3600000)
+}
+
 client.once('ready', async () => {
     console.log(addPh(keys.main.success.login.console, ph.client(client), { prefix, "guild_count": client.guilds.cache.size }));
-    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
+    setActivity();
+
     await plugin.loadExpress(client);
 
     Canvas.GlobalFonts.registerFromPath('./resources/fonts/Minecraft.ttf', 'Minecraft');
