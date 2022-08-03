@@ -105,7 +105,7 @@ ph.command = function(command) {
         "command_mention": `</${command.name}:${command.id}>`,
         "command_name": command.name,
         "command_id": command.id,
-        "command_short_description": command.description,
+        "command_description": command.description,
         "command_timestamp": Discord.time(new Date(command.createdTimestamp)),
     }
 };
@@ -246,15 +246,15 @@ function reply(interaction, key, ...placeholders) {
 
     if(key.components) {
         const actionRow = getActionRow(key, placeholders);
-        if(actionRow) options.components.push(actionRow); //Add components to message options
+        if(actionRow) options.components.push(actionRow); //Add components message options
     }
 
     //Reply to interaction
     // noinspection JSUnresolvedVariable
     if(key.console) console.log(addPh(key.console, placeholders));
 
-    if(!key.embeds && !key.components) return; //If only console don't reply
-    return replyOptions(interaction, key);
+    if(!key.embeds && !key.components && !key.files) return; //If only console don't reply
+    return replyOptions(interaction, options);
 }
 
 function replyOptions(interaction, options) {
@@ -286,8 +286,8 @@ function getEmbed(key, ...placeholders) {
 
     if(key.fields) {
         for (const field of key.fields) {
-            if(!field.title || !field.content) continue;
-            embed.setFields({ name: field.title, value: field.content, inline: field.inline });
+            if(!field.name || !field.value) continue;
+            embed.addFields({ name: field.name, value: field.value, inline: field.inline });
         }
     }
 
@@ -310,7 +310,7 @@ function getActionRow(key, ...placeholders) {
     const actionRow = new Discord.ActionRowBuilder();
 
     for(let component of key.components) {
-        component = getComponent(component, placeholders);
+        component = getComponent(component, ...placeholders);
         if(component) actionRow.addComponents(component);
     }
 
