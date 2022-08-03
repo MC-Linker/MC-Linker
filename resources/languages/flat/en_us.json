@@ -94,8 +94,8 @@
   "commands.help.success.no_args.embeds.0.fields.4.value": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
 
 
-  "commands.help.success.category.embeds.0.fields.0.name": "**%command_mention%**",
-  "commands.help.success.category.embeds.0.fields.0.value": "%command_short_description%",
+  "commands.help.success.category.embeds.0.fields.0.name": "%command_mention%",
+  "commands.help.success.category.embeds.0.fields.0.value": "%command_description%",
 
   "commands.help.success.category.embeds.0.fields.1.name": "\u200B",
   "commands.help.success.category.embeds.0.fields.1.value": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
@@ -106,7 +106,7 @@
   "commands.help.success.command.embeds.0.author.icon_url": "%client_avatar%",
   "commands.help.success.command.embeds.0.color": "NotQuiteBlack",
 
-  "commands.help.success.command.embeds.0.fields.0.name": "**%command_mention%**",
+  "commands.help.success.command.embeds.0.fields.0.name": "%command_mention%",
   "commands.help.success.command.embeds.0.fields.0.value": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%",
 
 

@@ -163,8 +163,8 @@
             {
               "fields": [
                 {
-                  "name": "**%command_mention%**",
-                  "value": "%command_short_description%"
+                  "name": "%command_mention%",
+                  "value": "%command_description%"
                 },
                 {
                   "name": "​",
@@ -185,7 +185,7 @@
               "color": "NotQuiteBlack",
               "fields": [
                 {
-                  "name": "**%command_mention%**",
+                  "name": "%command_mention%",
                   "value": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%"
                 }
               ]
@@ -2686,7 +2686,7 @@
       "long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in /help <command>.",
       "description": "Disable a specific command/stat/advancement.",
       "usage": "/disable (commands|stats|advancements) <command|stat|advancement>\n/disable list (commands|stats|advancements)",
-      "example": "/disable commands inventory\n/disable stats picked_up\n/disable advancements adventuring_time\n/disable list commands",
+      "example": "/disable commands txp\n/disable stats picked_up\n/disable advancements adventuring_time\n/disable list commands",
       "options": [
         {
           "type": "Subcommand",

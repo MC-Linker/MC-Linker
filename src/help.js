@@ -1,7 +1,6 @@
 const fs = require('fs-extra');
-const { EmbedBuilder, ButtonBuilder } = require('discord.js');
 const { discordLink } = require('../config.json');
-const { keys, ph, addPh } = require('../api/messages');
+const { keys, ph, addPh, getEmbed, getActionRow } = require('../api/messages');
 const settings = require('../api/settings');
 
 async function execute(message, args) {
@@ -16,56 +15,56 @@ async function execute(message, args) {
 
         let command = keys.data[commandName];
         if (!command) {
+            //Show command list of category
             fs.readdir(`./commands/${commandName}`, async (err, commands) => {
                 if (err) {
-                    message.respond(keys.commands.help.warnings.command_does_not_exist, {"command_name": commandName});
+                    message.respond(keys.commands.help.warnings.command_does_not_exist, { "command_name": commandName });
                     return;
                 }
 
                 commands = commands.filter(command => command.endsWith('.js'));
-                const helpEmbed = EmbedBuilder.from(addPh(keys.commands.help.success.base, ph.std(message)));
+                const helpEmbed = getEmbed(keys.commands.help.success.base.embeds[0], ph.std(message));
                 for (let commandFile of commands) {
                     commandFile = commandFile.split('.').shift();
                     command = keys.data[commandFile];
 
                     helpEmbed.addFields(addPh(
                         keys.commands.help.success.category.embeds[0].fields[0],
-                        await ph.commandName(commandName, message.guild)
+                        await ph.commandName(command.name, message.client),
                     ));
                 }
 
                 helpEmbed.addFields(addPh(
                     keys.commands.help.success.category.embeds[0].fields[1],
-                    { "discord_link": discordLink }, await ph.commandName(commandName, message.guild)
+                    { "discord_link": discordLink },
                 ));
 
                 message.replyOptions({ embeds: [helpEmbed] });
             });
         } else {
             // noinspection JSUnresolvedVariable
-            const helpEmbed = EmbedBuilder.from(addPh(
-                keys.commands.help.success.command,
+            const helpEmbed = getEmbed(
+                keys.commands.help.success.command.embeds[0],
                 ph.std(message),
                 { "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example },
-                await ph.commandName(commandName, message.guild)
-            ));
+                await ph.commandName(commandName, message.client),
+            );
 
-            const disabled = await settings.getDisabled(message.guildId, 'commands');
-            if (!disabled.find(disable => disable === command.name)) {
-                const disableRow = ButtonBuilder.from(addPh(
-                    keys.commands.help.success.disable_button.components[0],
+            if (await settings.isDisabled(message.guildId, 'commands', command.name)) {
+                const enableRow = getActionRow(
+                    keys.commands.help.success.enable_button,
                     { "command_name": command.name }, ph.emojis()
-                ));
+                );
+
+                helpEmbed.setDescription(keys.commands.help.success.disabled.embeds[0].description);
+                message.replyOptions({ embeds: [helpEmbed], components: [enableRow] });
+            } else {
+                const disableRow = getActionRow(
+                    keys.commands.help.success.disable_button,
+                    { "command_name": command.name }, ph.emojis()
+                );
 
                 message.replyOptions({ embeds: [helpEmbed], components: [disableRow] });
-            } else if (disabled) {
-                const enableRow = ButtonBuilder.from(addPh(
-                    keys.commands.help.success.enable_button.components[0],
-                    { "command_name": command.name }, ph.emojis()
-                ));
-
-                helpEmbed.setDescription(keys.commands.help.success.disabled.description);
-                message.replyOptions({ embeds: [helpEmbed], components: [enableRow] });
             }
         }
     }
