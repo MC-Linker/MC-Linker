@@ -17,7 +17,14 @@ const enableButton = require('./src/enableButton');
 const settings = require('./api/settings');
 const { getArgs, addResponseMethods, addPh, keys, ph } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
-const client = new Discord.Client({ intents: [Discord.GatewayIntentBits.GuildMessages, Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.DirectMessages] });
+const client = new Discord.Client({
+    intents: [
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.DirectMessages,
+        Discord.GatewayIntentBits.MessageContent,
+    ],
+});
 
 //Handle rejected promises
 process.on('unhandledRejection', async err => {
