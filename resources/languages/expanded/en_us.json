@@ -1519,16 +1519,16 @@
     "messages": {
       "errors": {
         "no_command_arguments": {
-          "console": "Could not get command builder: No name or short description specified"
+          "console": "Could not get command: No name or type specified"
         },
         "no_command_key": {
-          "console": "Could not get command builder: No key specified"
+          "console": "Could not get command: No key specified"
         },
         "no_embed_key": {
-          "console": "Could not get embed builder: No key specified"
+          "console": "Could not get embed: No key specified"
         },
         "no_component_key": {
-          "console": "Could not get component builder: No key specified"
+          "console": "Could not get component: No key specified"
         },
         "no_reply_arguments": {
           "console": "Could not reply: No message, key or placeholders specified"
@@ -2361,6 +2361,7 @@
     },
     "gamemode": {
       "name": "gamemode",
+      "type": "ChatInput",
       "long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
       "description": "Change the gamemode of a player on the minecraft-server.",
       "usage": "/gamemode <@mention/username> <gamemode>",
@@ -2378,22 +2379,22 @@
           "description": "Set the gamemode.",
           "required": true,
           "choices": [
-            [
-              "Creative",
-              "creative"
-            ],
-            [
-              "Survival",
-              "survival"
-            ],
-            [
-              "Adventure",
-              "adventure"
-            ],
-            [
-              "Spectator",
-              "spectator"
-            ]
+            {
+              "name": "Creative",
+              "value": "creative"
+            },
+            {
+              "name": "Survival",
+              "value": "survival"
+            },
+            {
+              "name": "Adventure",
+              "value": "adventure"
+            },
+            {
+              "name": "Spectator",
+              "value": "spectator"
+            }
           ]
         }
       ]
@@ -2575,66 +2576,66 @@
               "description": "Set the Minecraft version.",
               "required": false,
               "choices": [
-                [
-                  "1.5",
-                  "5"
-                ],
-                [
-                  "1.6",
-                  "6"
-                ],
-                [
-                  "1.7",
-                  "7"
-                ],
-                [
-                  "1.8",
-                  "8"
-                ],
-                [
-                  "1.9",
-                  "9"
-                ],
-                [
-                  "1.10",
-                  "10"
-                ],
-                [
-                  "1.11",
-                  "11"
-                ],
-                [
-                  "1.12",
-                  "12"
-                ],
-                [
-                  "1.13",
-                  "13"
-                ],
-                [
-                  "1.14",
-                  "14"
-                ],
-                [
-                  "1.15",
-                  "15"
-                ],
-                [
-                  "1.16",
-                  "16"
-                ],
-                [
-                  "1.17",
-                  "17"
-                ],
-                [
-                  "1.18",
-                  "18"
-                ],
-                [
-                  "1.19",
-                  "19"
-                ]
+                {
+                  "name": "1.5",
+                  "value": "5"
+                },
+                {
+                  "name": "1.6",
+                  "value": "6"
+                },
+                {
+                  "name": "1.7",
+                  "value": "7"
+                },
+                {
+                  "name": "1.8",
+                  "value": "8"
+                },
+                {
+                  "name": "1.9",
+                  "value": "9"
+                },
+                {
+                  "name": "1.10",
+                  "value": "10"
+                },
+                {
+                  "name": "1.11",
+                  "value": "11"
+                },
+                {
+                  "name": "1.12",
+                  "value": "12"
+                },
+                {
+                  "name": "1.13",
+                  "value": "13"
+                },
+                {
+                  "name": "1.14",
+                  "value": "14"
+                },
+                {
+                  "name": "1.15",
+                  "value": "15"
+                },
+                {
+                  "name": "1.16",
+                  "value": "16"
+                },
+                {
+                  "name": "1.17",
+                  "value": "17"
+                },
+                {
+                  "name": "1.18",
+                  "value": "18"
+                },
+                {
+                  "name": "1.19",
+                  "value": "19"
+                }
               ]
             },
             {
@@ -2685,7 +2686,7 @@
       "long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in /help <command>.",
       "description": "Disable a specific command/stat/advancement.",
       "usage": "/disable (commands|stats|advancements) <command|stat|advancement>\n/disable list (commands|stats|advancements)",
-      "example": "/disable commands txp\n/disable stats picked_up\n/disable advancements adventuring_time\n/disable list commands",
+      "example": "/disable commands inventory\n/disable stats picked_up\n/disable advancements adventuring_time\n/disable list commands",
       "options": [
         {
           "type": "Subcommand",

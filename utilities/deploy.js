@@ -1,7 +1,7 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 const { token, clientId, guildId } = require('../config.json');
-const { keys } = require('../api/messages');
+const { keys, getCommand } = require('../api/messages');
 const fs = require('fs-extra');
 
 /*
@@ -37,25 +37,32 @@ process.argv.slice(2).forEach(arg => {
 	}
 });
 
+const excludedDisable = ['enable', 'disable', 'help'];
+const excludedHelp = ['help'];
+
 const helpChoices = [];
-let helpJson;
+let helpBuilder;
 
 const disableChoices = [];
-let disableJson;
+let disableBuilder;
 
 const commands = [];
 
 //Get Builders and push commands
 for(const command of Object.values(keys.data)) {
-	if(command.name === 'disable') disableJson = command;
-	else if(command.name === 'help') helpJson = command;
-	else if(command.name === 'help') helpJson = command;
-	else commands.push(command); //Push all commands to `commands`
+	const builder = getCommand(command);
 
-	if(command.name !== 'enable' && command.name !== 'disable' && command.name !== 'help') disableChoices.push({ name: command.name.cap(), value: command.name });
-	if(command.name !== 'help') helpChoices.push({ name: command.name.cap(), value: command.name });
+	if(builder.name === 'disable') disableBuilder = builder;
+	else if(builder.name === 'help') helpBuilder = builder;
+	else commands.push(builder.toJSON()); //Push all commands to `commands`
 
-	console.log(`Loaded command: ${command.name}`);
+	//Push command choices
+	if(!excludedDisable.includes(builder.name))
+		disableChoices.push({ name: builder.name.cap(), value: builder.name });
+	if(!excludedHelp.includes(builder.name))
+		helpChoices.push({ name: builder.name.cap(), value: builder.name });
+
+	console.log(`Loaded command: ${builder.name}`);
 }
 
 //Push categories
@@ -65,10 +72,14 @@ for (const folder of commandFolders) {
 	console.log(`Loaded category: ${folder}`);
 }
 
-disableJson.options[0].options[0].choices = disableChoices; //Set command choices
-helpJson.options[0].choices = helpChoices; //Set command and category choices
-commands.push(disableJson);
-commands.push(helpJson);
+//Push command choices
+// noinspection JSUnresolvedVariable
+disableBuilder.options[0].options[0].choices = disableChoices; //Set command choices
+// noinspection JSUndefinedPropertyAssignment
+helpBuilder.options[0].choices = helpChoices; //Set command and category choices
+
+commands.push(disableBuilder.toJSON());
+commands.push(helpBuilder.toJSON());
 
 
 // noinspection JSCheckFunctionSignatures,JSClosureCompilerSyntax

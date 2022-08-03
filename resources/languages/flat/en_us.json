@@ -710,10 +710,10 @@
 
 
 
-  "api.messages.errors.no_command_arguments.console": "Could not get command builder: No name or short description specified",
-  "api.messages.errors.no_command_key.console": "Could not get command builder: No key specified",
-  "api.messages.errors.no_embed_key.console": "Could not get embed builder: No key specified",
-  "api.messages.errors.no_component_key.console": "Could not get component builder: No key specified",
+  "api.messages.errors.no_command_arguments.console": "Could not get command: No name or type specified",
+  "api.messages.errors.no_command_key.console": "Could not get command: No key specified",
+  "api.messages.errors.no_embed_key.console": "Could not get embed: No key specified",
+  "api.messages.errors.no_component_key.console": "Could not get component: No key specified",
   "api.messages.errors.no_reply_arguments.console": "Could not reply: No message, key or placeholders specified",
 
   "api.messages.errors.could_not_reply.console": "Could not reply to interaction %error%\n%interaction%",
@@ -1174,6 +1174,7 @@
 
 
   "data.gamemode.name": "gamemode",
+  "data.gamemode.type": "ChatInput",
   "data.gamemode.long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
   "data.gamemode.description": "Change the gamemode of a player on the minecraft-server.",
   "data.gamemode.usage": "/gamemode <@mention/username> <gamemode>",
@@ -1188,9 +1189,14 @@
   "data.gamemode.options.1.name": "gamemode",
   "data.gamemode.options.1.description": "Set the gamemode.",
   "data.gamemode.options.1.required": true,
-  "data.gamemode.options.1.choices": [
-    ["Creative", "creative"], ["Survival", "survival"], ["Adventure", "adventure"], ["Spectator", "spectator"]
-  ],
+  "data.gamemode.options.1.choices.0.name": "Creative",
+  "data.gamemode.options.1.choices.0.value": "creative",
+  "data.gamemode.options.1.choices.1.name": "Survival",
+  "data.gamemode.options.1.choices.1.value": "survival",
+  "data.gamemode.options.1.choices.2.name": "Adventure",
+  "data.gamemode.options.1.choices.2.value": "adventure",
+  "data.gamemode.options.1.choices.3.name": "Spectator",
+  "data.gamemode.options.1.choices.3.value": "spectator",
 
 
 
@@ -1334,11 +1340,22 @@
   "data.connect.options.0.options.4.name": "version",
   "data.connect.options.0.options.4.description": "Set the Minecraft version.",
   "data.connect.options.0.options.4.required": false,
-  "data.connect.options.0.options.4.choices": [
-    ["1.5", "5"], ["1.6", "6"], ["1.7", "7"], ["1.8", "8"], ["1.9", "9"], ["1.10", "10"],
-    ["1.11", "11"], ["1.12", "12"], ["1.13", "13"], ["1.14", "14"], ["1.15", "15"], ["1.16", "16"],
-    ["1.17", "17"], ["1.18", "18"], ["1.19", "19"]
-  ],
+  "data.connect.options.0.options.4.choices.0.name": "1.5", "data.connect.options.0.options.4.choices.0.value": "5",
+  "data.connect.options.0.options.4.choices.1.name": "1.6", "data.connect.options.0.options.4.choices.1.value": "6",
+  "data.connect.options.0.options.4.choices.2.name": "1.7", "data.connect.options.0.options.4.choices.2.value": "7",
+  "data.connect.options.0.options.4.choices.3.name": "1.8", "data.connect.options.0.options.4.choices.3.value": "8",
+  "data.connect.options.0.options.4.choices.4.name": "1.9", "data.connect.options.0.options.4.choices.4.value": "9",
+  "data.connect.options.0.options.4.choices.5.name": "1.10", "data.connect.options.0.options.4.choices.5.value": "10",
+  "data.connect.options.0.options.4.choices.6.name": "1.11", "data.connect.options.0.options.4.choices.6.value": "11",
+  "data.connect.options.0.options.4.choices.7.name": "1.12", "data.connect.options.0.options.4.choices.7.value": "12",
+  "data.connect.options.0.options.4.choices.8.name": "1.13", "data.connect.options.0.options.4.choices.8.value": "13",
+  "data.connect.options.0.options.4.choices.9.name": "1.14", "data.connect.options.0.options.4.choices.9.value": "14",
+  "data.connect.options.0.options.4.choices.10.name": "1.15", "data.connect.options.0.options.4.choices.10.value": "15",
+  "data.connect.options.0.options.4.choices.11.name": "1.16", "data.connect.options.0.options.4.choices.11.value": "16",
+  "data.connect.options.0.options.4.choices.12.name": "1.17", "data.connect.options.0.options.4.choices.12.value": "17",
+  "data.connect.options.0.options.4.choices.13.name": "1.18", "data.connect.options.0.options.4.choices.13.value": "18",
+  "data.connect.options.0.options.4.choices.14.name": "1.19", "data.connect.options.0.options.4.choices.14.value": "19",
+
 
   "data.connect.options.0.options.5.type": "String",
   "data.connect.options.0.options.5.name": "path",
