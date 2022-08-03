@@ -39,14 +39,9 @@ if(topggToken) {
     poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
 }
 
-function setActivity() {
-    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
-    setTimeout(setActivity, 3600000)
-}
-
 client.once('ready', async () => {
     console.log(addPh(keys.main.success.login.console, ph.client(client), { prefix, "guild_count": client.guilds.cache.size }));
-    setActivity();
+    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
     await plugin.loadExpress(client);
 
@@ -110,6 +105,7 @@ client.on('messageCreate', async message => {
         }
 
         try {
+            // noinspection JSUnresolvedFunction
             await command?.execute?.(message, args)
                 .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
         } catch (err) {
