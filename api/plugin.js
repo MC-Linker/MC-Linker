@@ -1,10 +1,12 @@
+// noinspection HttpUrlsUsage
+
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
 const crypto = require('crypto');
 const express = require('express');
 const Discord = require('discord.js');
 const utils = require('./utils');
-const { keys, addPh, ph, getEmbedBuilder, defaultMessage } = require('./messages');
+const { keys, addPh, ph, getEmbed, defaultMessage } = require('./messages');
 const { botPort, pluginVersion } = require('../config.json');
 
 let pluginConnections = [];
@@ -52,7 +54,7 @@ async function loadExpress(client) {
 
             if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
-            const { category, id } = message.replaceAll('minecraft:', '').split('/');
+            const [category, id] = message.replaceAll('minecraft:', '').split('/');
             const advancement = await utils.searchAdvancements(id, category, false, true, 1);
 
             advancementTitle = advancement[0]?.name;
@@ -61,20 +63,18 @@ async function loadExpress(client) {
             if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
             if(!advancementTitle) advancementTitle = message;
 
-            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
+            chatEmbed = getEmbed(keys.api.plugin.success.messages.advancement.embeds[0], argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
         } else if(req.body.type === 'chat') {
             const guild = client.guilds.cache.get(guildId);
 
-            //Parse pings (@name#tag)
-            argPlaceholder.message = message.replace(/@(\w+)#(\d{4})/, async (mention, name, tag) => {
-                const users = await guild.members.search({ query: name });
-                if(users.first().user.discriminator === tag) return users.first();
+            //Parse pings (@name)
+            let mentions = message.match(/@(\S+)/g);
+            for(const mention of mentions ?? []) {
+                const users = await guild.members.search({ query: mention.replace('@', '') });
+                argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
+            }
 
-                return mention;
-            });
-            console.log(argPlaceholder.message)
-
-            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
+            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat.embeds[0], argPlaceholder, ph.emojis());
 
             let allWebhooks;
             //Fetch all webhooks in guild
@@ -86,7 +86,7 @@ async function loadExpress(client) {
                 const discordChannel = client.channels.cache.get(channel.id);
 
                 if(!allWebhooks) {
-                    discordChannel?.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission.embeds[0], ph.emojis())] });
                     return;
                 }
 
@@ -106,7 +106,7 @@ async function loadExpress(client) {
                     else webhook = await discordChannel.createWebhook(player, { reason: "ChatChannel to Minecraft", avatar: authorURL });
 
                     //Fake interaction
-                    discordChannel.respond = () => discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
+                    discordChannel.respond = () => discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook.embeds[0], ph.emojis())] });
 
                     const regChannel = await registerChannel(guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
                     if(!regChannel) {
@@ -128,7 +128,7 @@ async function loadExpress(client) {
                     fs.outputJson(`./serverdata/connections/${guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {
                         if(err) {
                             webhook.delete();
-                            discordChannel.send(addPh(keys.commands.chatchannel.errors.could_not_write_file));
+                            discordChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_write_file)] });
                         }
                     });
                 }
@@ -141,12 +141,12 @@ async function loadExpress(client) {
                     });
                 }
 
-                if (discordChannel.isThread()) webhook.send({ threadId: discordChannel.id, content: message });
-                else webhook.send(message);
+                if (discordChannel.isThread()) webhook.send({ threadId: discordChannel.id, content: argPlaceholder.message });
+                else webhook.send(argPlaceholder.message);
             }
             return;
         } else {
-            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
+            chatEmbed = getEmbed(keys.api.plugin.success.messages[req.body.type].embeds[0], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
         }
 
         //why not triple-catch (try/catch, .catch, optional chaining)
@@ -240,7 +240,7 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
         const connectJson = {
             "ip": ip,
             "chat": false,
-            "guild": guildId
+            "guild": guildId,
         };
 
         pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
