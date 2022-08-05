@@ -14,8 +14,8 @@ async function autocomplete(interaction) {
     matchingTitles.forEach(title => {
         respondArray.push({
             name: title.name,
-            value: `${title.category}.${title.value}`
-        })
+            value: `${title.category}.${title.value}`,
+        });
     });
 
     interaction.respond(respondArray).catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete.console));
@@ -28,7 +28,8 @@ async function execute(message, args) {
     if(!advancement) {
         message.respond(keys.commands.advancements.warnings.no_advancement);
         return;
-    } else if(!user) {
+    }
+    else if(!user) {
         message.respond(keys.commands.advancements.warnings.no_username);
         return;
     }
@@ -38,7 +39,8 @@ async function execute(message, args) {
         //Allows for category.advancement (i.e. nether.root)
         const [category, id] = advancement.split('.');
         matchingAdvancement = await utils.searchAdvancements(id, category, false, true, 1);
-    } else matchingAdvancement = await utils.searchAllAdvancements(advancement, true, true, 1);
+    }
+    else matchingAdvancement = await utils.searchAllAdvancements(advancement, true, true, 1);
     matchingAdvancement = matchingAdvancement.shift();
 
     advancement = matchingAdvancement?.value ?? advancement;
@@ -49,7 +51,7 @@ async function execute(message, args) {
     if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
         message.respond(
             keys.commands.advancements.warnings.advancement_disabled,
-            { "advancement_title": advancementTitle }
+            { 'advancement_title': advancementTitle },
         );
         return;
     }
@@ -70,7 +72,12 @@ async function execute(message, args) {
 
     const baseEmbed = getEmbed(
         keys.commands.advancements.success.base,
-        ph.std(message), { equals, "username": user.username ?? user, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+        ph.std(message), {
+            equals,
+            'username': user.username ?? user,
+            'advancement_title': advancementTitle,
+            'advancement_description': advancementDesc,
+        },
     );
 
     try {
@@ -85,12 +92,13 @@ async function execute(message, args) {
 
             amEmbed = baseEmbed.addFields(addPh(
                 keys.commands.advancements.success.final.embeds[0].fields,
-                { "advancement_requirement": criteria.split(':').pop(), "advancement_timestamp": time(new Date(date)) }
+                { 'advancement_requirement': criteria.split(':').pop(), 'advancement_timestamp': time(new Date(date)) },
             ));
 
             if(!done) amEmbed.setFooter(keys.commands.advancements.success.not_done.embeds[0].footer);
             else amEmbed.setFooter(keys.commands.advancements.success.done.embeds[0].footer);
-        } else {
+        }
+        else {
             const allAdvancements = Object.keys(advancementData);
             //Filter either by category + id or just id
             const filteredAdvancement = category ?
@@ -110,12 +118,12 @@ async function execute(message, args) {
 
                 amString +=
                     `\n${keys.commands.advancements.success.final.embeds[0].fields[0].name}
-                    ${addPh(keys.commands.advancements.success.final.embeds[0].fields[0].value, 
-                    { "advancement_requirement": formattedCriteria })}
+                    ${addPh(keys.commands.advancements.success.final.embeds[0].fields[0].value,
+                        { 'advancement_requirement': formattedCriteria })}
                     
                     ${keys.commands.advancements.success.final.embeds[0].fields[1].name}
-                    ${addPh(keys.commands.advancements.success.final.embeds[0].fields[1].value, 
-                    { "advancement_timestamp": time(new Date(date)) })}`;
+                    ${addPh(keys.commands.advancements.success.final.embeds[0].fields[1].value,
+                        { 'advancement_timestamp': time(new Date(date)) })}`;
 
                 //Add one field for every 2 criteria
                 if(counter % 2 || criteriaKeys.length === 1) {
@@ -130,10 +138,14 @@ async function execute(message, args) {
             else amEmbed.setFooter(keys.commands.advancements.success.done.embeds[0].footer);
         }
 
-        console.log(addPh(keys.commands.advancements.success.final.console, { "advancement_title": advancementTitle, "username": user.username ?? user }));
+        console.log(addPh(keys.commands.advancements.success.final.console, {
+            'advancement_title': advancementTitle,
+            'username': user.username ?? user,
+        }));
         message.replyOptions({ embeds: [amEmbed] });
-    } catch (err) {
-        message.respond(keys.commands.advancements.warnings.not_completed, { "advancement_title": advancementTitle });
+    }
+    catch(err) {
+        message.respond(keys.commands.advancements.warnings.not_completed, { 'advancement_title': advancementTitle });
     }
 }
 

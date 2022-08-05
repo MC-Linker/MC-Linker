@@ -48,7 +48,7 @@ const allSlotDims = {
     101: [16, 88],
     102: [16, 52],
     103: [16, 16],
-    "-106": [154, 124],
+    '-106': [154, 124],
 };
 
 async function execute(message, args) {
@@ -71,7 +71,8 @@ async function execute(message, args) {
     try {
         playerData = await nbt.parse(nbtFile, 'big');
         playerData = nbt.simplify(playerData.parsed);
-    } catch(err) {
+    }
+    catch(err) {
         message.respond(keys.commands.inventory.errors.could_not_parse, ph.error(err));
         return;
     }
@@ -84,7 +85,7 @@ async function execute(message, args) {
     const background = await Canvas.loadImage('./resources/images/other/inventory_blank.png');
     ctx.drawImage(background, 0, 0, invCanvas.width, invCanvas.height);
 
-    for (let i = 0; i < inventory.length; i++) {
+    for(let i = 0; i < inventory.length; i++) {
         // noinspection JSUnresolvedVariable
         const slot = inventory[i].Slot;
         const id = inventory[i].id;
@@ -93,31 +94,32 @@ async function execute(message, args) {
         const damage = inventory[i].tag?.Damage;
 
         const [x, y] = allSlotDims[slot];
-        if (!x || !y) continue; //Continue for modded slots
+        if(!x || !y) continue; //Continue for modded slots
 
         try {
             //Draw image
             const itemImg = await Canvas.loadImage(`./resources/images/minecraft/items/${itemId}.png`);
             ctx.drawImage(itemImg, 0, 0, 80, 80, x, y, 32, 32);
-        } catch (err) {
+        }
+        catch(err) {
             //Draw name
-            console.log(addPh(keys.commands.inventory.errors.no_image.console, { "item_name": itemId }));
+            console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
             ctx.font = '6px Minecraft';
             ctx.fillStyle = '#000000';
             ctx.fillText(itemId, x, y + 16);
         }
 
         //Draw count
-        if (count > 1) {
+        if(count > 1) {
             ctx.font = '14px Minecraft';
             ctx.fillStyle = '#ffffff';
             ctx.fillText(count.toString(), x, y + 32, 15);
         }
 
-        if (damage) {
+        if(damage) {
             const maxDurability = mcData.itemsByName[itemId].maxDurability;
 
-            if (maxDurability) {
+            if(maxDurability) {
                 const durabilityPercent = 100 - damage / maxDurability * 100;
                 const durabilityPx = Math.floor(durabilityPercent / 100 * 34);
 
@@ -155,7 +157,7 @@ async function execute(message, args) {
 
     const invImg = new Discord.AttachmentBuilder(
         invCanvas.toBuffer('image/png'),
-        { name: `Inventory_Player.png`, description: keys.commands.inventory.image_description }
+        { name: `Inventory_Player.png`, description: keys.commands.inventory.image_description },
     );
     const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(message), { username: user });
 
