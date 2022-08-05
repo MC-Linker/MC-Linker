@@ -9,7 +9,7 @@ const fs = require('fs-extra');
  * @returns {String} The formatted string.
  */
 String.prototype.cap = function() {
-	return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase()
+    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 
 let deployGuild = false;
@@ -18,23 +18,23 @@ let deleteGuild = false;
 let deleteGlobal = false;
 
 process.argv.slice(2).forEach(arg => {
-	arg = arg.split('=');
-	arg[1] = arg[1].split(',');
+    arg = arg.split('=');
+    arg[1] = arg[1].split(',');
 
-	if(arg[0] === 'deploy') {
-		// noinspection JSUnresolvedFunction
-		arg[1].forEach(type => {
-			if(type === 'guild') deployGuild = true;
-			else if(type === 'global') deployGlobal = true;
-		});
-	}
-	if(arg[0] === 'delete') {
-		// noinspection JSUnresolvedFunction
-		arg[1].forEach(type => {
-			if(type === 'guild') deleteGuild = true;
-			else if(type === 'global') deleteGlobal = true;
-		});
-	}
+    if(arg[0] === 'deploy') {
+        // noinspection JSUnresolvedFunction
+        arg[1].forEach(type => {
+            if(type === 'guild') deployGuild = true;
+            else if(type === 'global') deployGlobal = true;
+        });
+    }
+    if(arg[0] === 'delete') {
+        // noinspection JSUnresolvedFunction
+        arg[1].forEach(type => {
+            if(type === 'guild') deleteGuild = true;
+            else if(type === 'global') deleteGlobal = true;
+        });
+    }
 });
 
 const excludedDisable = ['enable', 'disable', 'help'];
@@ -50,26 +50,26 @@ const commands = [];
 
 //Get Builders and push commands
 for(const command of Object.values(keys.data)) {
-	const builder = getCommand(command);
+    const builder = getCommand(command);
 
-	if(builder.name === 'disable') disableBuilder = builder;
-	else if(builder.name === 'help') helpBuilder = builder;
-	else commands.push(builder.toJSON()); //Push all commands to `commands`
+    if(builder.name === 'disable') disableBuilder = builder;
+    else if(builder.name === 'help') helpBuilder = builder;
+    else commands.push(builder.toJSON()); //Push all commands to `commands`
 
-	//Push command choices
-	if(!excludedDisable.includes(builder.name))
-		disableChoices.push({ name: builder.name.cap(), value: builder.name });
-	if(!excludedHelp.includes(builder.name))
-		helpChoices.push({ name: builder.name.cap(), value: builder.name });
+    //Push command choices
+    if(!excludedDisable.includes(builder.name))
+        disableChoices.push({ name: builder.name.cap(), value: builder.name });
+    if(!excludedHelp.includes(builder.name))
+        helpChoices.push({ name: builder.name.cap(), value: builder.name });
 
-	console.log(`Loaded command: ${builder.name}`);
+    console.log(`Loaded command: ${builder.name}`);
 }
 
 //Push categories
 const commandFolders = fs.readdirSync('./commands/');
-for (const folder of commandFolders) {
-	helpChoices.push({ name: folder.cap(), value: folder });
-	console.log(`Loaded category: ${folder}`);
+for(const folder of commandFolders) {
+    helpChoices.push({ name: folder.cap(), value: folder });
+    console.log(`Loaded category: ${folder}`);
 }
 
 //Push command choices
@@ -86,41 +86,42 @@ commands.push(helpBuilder.toJSON());
 const rest = new REST({ version: '9' }).setToken(token);
 
 (async () => {
-	try {
-		if(deployGuild) {
-			console.log('Started deploying application guild (/) commands.');
-			await rest.put(
-				Routes.applicationGuildCommands(clientId, guildId),
-				{ body: commands },
-			);
-		}
-		if(deployGlobal) {
-			console.log('Started deploying application global (/) commands.');
-			await rest.put(
-				Routes.applicationCommands(clientId),
-				{ body: commands },
-			);
-		}
+    try {
+        if(deployGuild) {
+            console.log('Started deploying application guild (/) commands.');
+            await rest.put(
+                Routes.applicationGuildCommands(clientId, guildId),
+                { body: commands },
+            );
+        }
+        if(deployGlobal) {
+            console.log('Started deploying application global (/) commands.');
+            await rest.put(
+                Routes.applicationCommands(clientId),
+                { body: commands },
+            );
+        }
 
-		if(deleteGuild) {
-			console.log('Started deleting application guild (/) commands.');
-			const resp = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
+        if(deleteGuild) {
+            console.log('Started deleting application guild (/) commands.');
+            const resp = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
 
-			for (const command of resp) {
-				await rest.delete(`${Routes.applicationGuildCommands(clientId, guildId)}/${command.id}`);
-			}
-		}
-		if(deleteGlobal) {
-			console.log('Started deleting application global (/) commands.');
-			const resp = await rest.get(Routes.applicationCommands(clientId));
+            for(const command of resp) {
+                await rest.delete(`${Routes.applicationGuildCommands(clientId, guildId)}/${command.id}`);
+            }
+        }
+        if(deleteGlobal) {
+            console.log('Started deleting application global (/) commands.');
+            const resp = await rest.get(Routes.applicationCommands(clientId));
 
-			for (const command of resp) {
-				await rest.delete(`${Routes.applicationCommands(clientId)}/${command.id}`);
-			}
-		}
+            for(const command of resp) {
+                await rest.delete(`${Routes.applicationCommands(clientId)}/${command.id}`);
+            }
+        }
 
-		console.log('Successfully refreshed application (/) commands.');
-	} catch (err) {
-		console.log('Could not refresh application (/) commands.', err);
-	}
+        console.log('Successfully refreshed application (/) commands.');
+    }
+    catch(err) {
+        console.log('Could not refresh application (/) commands.', err);
+    }
 })();
