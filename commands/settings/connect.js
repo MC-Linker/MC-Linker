@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const { pluginPort } = require('../../config.json');
-const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
+const { keys, ph, addPh, getEmbed } = require('../../api/messages');
 
 async function execute(message, args) {
     const method = args[0];
@@ -54,10 +54,10 @@ async function execute(message, args) {
             const disconnected = await plugin.disconnect(message.guildId, message.client);
 
             if(!disconnected) {
-                const embed = getEmbedBuilder(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { "ip": ip });
+                const embed = getEmbed(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { "ip": ip });
                 message.channel.send({ embeds: [embed] });
             } else {
-                const embed = getEmbedBuilder(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { "ip": ip });
+                const embed = getEmbed(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { "ip": ip });
                 message.channel.send({ embeds: [embed] });
             }
         }
@@ -128,7 +128,7 @@ async function execute(message, args) {
 
         message.respond(keys.commands.connect.warnings.check_dms);
 
-        const verifyEmbed = getEmbedBuilder(keys.commands.connect.warnings.verification, ph.std(message));
+        const verifyEmbed = getEmbed(keys.commands.connect.warnings.verification, ph.std(message));
 
         let dmChannel = await message.member.user.createDM();
         try {
@@ -139,28 +139,28 @@ async function execute(message, args) {
             await dmChannel.send({ embeds: [verifyEmbed] });
         }
 
-        const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000, errors: ['time'] });
+        const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000 });
 
         if(!collector.first()) {
             console.log(keys.commands.connect.warnings.no_reply_in_time.console);
-            const noReplyEmbed = getEmbedBuilder(keys.commands.connect.warnings.no_reply_in_time, ph.std(message));
+            const noReplyEmbed = getEmbed(keys.commands.connect.warnings.no_reply_in_time, ph.std(message));
             dmChannel.send({ embeds: [noReplyEmbed] });
             return;
         }
 
         const connectPlugin = await plugin.connect(`${ip}:${port}`, message.guildId, collector.first(), message);
         if(!connectPlugin) {
-            const noConnectionEmbed = getEmbedBuilder(keys.commands.connect.errors.could_not_connect_plugin, ph.std(message));
+            const noConnectionEmbed = getEmbed(keys.commands.connect.errors.could_not_connect_plugin, ph.std(message));
             dmChannel.send({ embeds: [noConnectionEmbed] });
             return;
         }
 
         else if(connectPlugin === 401) {
-            const incorrectCodeEmbed = getEmbedBuilder(keys.commands.connect.errors.incorrect_code, ph.std(message));
+            const incorrectCodeEmbed = getEmbed(keys.commands.connect.errors.incorrect_code, ph.std(message));
             dmChannel.send({ embeds: [incorrectCodeEmbed] });
             return;
         } else {
-            const verificationEmbed = getEmbedBuilder(keys.commands.connect.success.verification, ph.std(message));
+            const verificationEmbed = getEmbed(keys.commands.connect.success.verification, ph.std(message));
             dmChannel.send({ embeds: [verificationEmbed] });
         }
 

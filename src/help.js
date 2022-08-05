@@ -23,7 +23,7 @@ async function execute(message, args) {
                 }
 
                 commands = commands.filter(command => command.endsWith('.js'));
-                const helpEmbed = getEmbed(keys.commands.help.success.base.embeds[0], ph.std(message));
+                const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(message));
                 for (let commandFile of commands) {
                     commandFile = commandFile.split('.').shift();
                     command = keys.data[commandFile];
@@ -31,6 +31,7 @@ async function execute(message, args) {
                     helpEmbed.addFields(addPh(
                         keys.commands.help.success.category.embeds[0].fields[0],
                         await ph.commandName(command.name, message.client),
+                        { "command_description": command.description },
                     ));
                 }
 
@@ -44,7 +45,7 @@ async function execute(message, args) {
         } else {
             // noinspection JSUnresolvedVariable
             const helpEmbed = getEmbed(
-                keys.commands.help.success.command.embeds[0],
+                keys.commands.help.success.command,
                 ph.std(message),
                 { "command_long_description": command.long_description, "command_usage": command.usage, "command_example": command.example },
                 await ph.commandName(commandName, message.client),

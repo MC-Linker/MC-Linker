@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedVariable
+
 const { keys, getUsersFromMention, addPh } = require('../../api/messages');
 const Discord = require('discord.js');
 const nbt = require('prismarine-nbt');
@@ -5,6 +7,7 @@ const utils = require('../../api/utils');
 const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const mcData = require('minecraft-data')('1.19');
+
 const commands = require('../../resources/data/commands.json');
 
 
@@ -90,10 +93,18 @@ async function autocomplete(interaction) {
                 formattedSuggestions.push(suggestion);
             }
 
-            const suggestionsObject = addPh(formattedSuggestions, placeholders);
-            for([k, v] of Object.entries(suggestionsObject)) {
-                if(k?.includes(focused.value.toLowerCase()) || v?.includes(focused.value.toLowerCase()))
-                    respondArray.push({ name: k, value: v });
+            const suggestions = addPh(formattedSuggestions, placeholders);
+
+            if(Array.isArray(suggestions)) {
+                for(const sug of suggestions) {
+                    if(sug?.toLowerCase()?.includes(focused.value.toLowerCase()))
+                        respondArray.push({ name: sug, value: sug });
+                }
+            } else {
+                for([k, v] of Object.entries(suggestions)) {
+                    if(k?.toLowerCase()?.includes(focused.value.toLowerCase()) || v?.toLowerCase()?.includes(focused.value.toLowerCase()))
+                        respondArray.push({ name: k, value: v });
+                }
             }
         } else return;
     }

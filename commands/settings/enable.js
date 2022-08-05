@@ -18,15 +18,13 @@ async function autocomplete(interaction) {
 
         if (subcommand === 'advancements') {
             const matchingTitle = await utils.searchAllAdvancements(disable, true, true, 1);
-
             formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
 
         } else if (subcommand === 'stats') {
-            formattedDisable = disable.split('_').map(word => word.cap()).join(' ');
-
-        } else {
-            formattedDisable = disable.cap();
+            const matchingStat = await utils.searchAllStats(disable, true, true, 1);
+            formattedDisable = matchingStat.shift()?.name ?? disable.cap();
         }
+        else formattedDisable = disable.cap();
 
         respondArray.push({
             name: formattedDisable,

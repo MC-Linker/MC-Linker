@@ -1,42 +1,23 @@
 const Discord = require('discord.js');
-const fs = require('fs-extra');
 const utils = require('../../api/utils');
 const settings = require('../../api/settings');
-const { keys, getEmbedBuilder, addPh} = require('../../api/messages');
+const { keys, getEmbed, addPh } = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
     const focused = interaction.options.getFocused().toLowerCase();
 
+    let matchingKeys;
     if(subcommand === 'advancements') {
-        const matchingTitles = await utils.searchAllAdvancements(focused);
-        interaction.respond(matchingTitles);
+        matchingKeys = await utils.searchAllAdvancements(focused);
     } else if(subcommand === 'stats') {
-        const respondArray = [];
-        ['entities', 'items'].forEach(imgType => {
-            fs.readdir(`./resources/images/minecraft/${imgType}`, (err, images) => {
-                if(err) return;
-
-                const matchingImages = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
-                if (matchingImages.length >= 25) matchingImages.length = 25;
-
-                matchingImages.forEach(image => {
-                    let formattedImage = image.replaceAll('.png', '');
-                    formattedImage = formattedImage.split('_').map(word => word.cap()).join(' ');
-
-                    respondArray.push({
-                        name: formattedImage,
-                        value: image.replaceAll('.png', ''),
-                    });
-                });
-
-                if(imgType === 'items') {
-                    if(respondArray.length >= 25) respondArray.length = 25;
-                    interaction.respond(respondArray).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete));
-                }
-            });
-        });
+        matchingKeys = await utils.searchAllStats(focused);
     }
+
+    //Remove all description fields
+    matchingKeys.map(title => delete title.description);
+
+    interaction.respond(matchingKeys).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete.console));
 }
 
 async function execute(message, args) {
@@ -66,7 +47,7 @@ async function execute(message, args) {
             return;
         }
 
-        const listEmbed = getEmbedBuilder(keys.commands.disable.success.list.base, { "type": toList.cap() });
+        const listEmbed = getEmbed(keys.commands.disable.success.list.base, { "type": toList.cap() });
 
         let counter = 1;
         let listString = "";
@@ -76,21 +57,18 @@ async function execute(message, args) {
             if(toList === 'advancements') {
                 const matchingTitle = await utils.searchAllAdvancements(disable, true, true, 1);
                 disable = matchingTitle.shift()?.name ?? disable;
-            } else if (toList === 'stats') disable = disable.split('_').map(word => word.cap()).join(' ');
+            } else if (toList === 'stats') {
+                const matchingStat = await utils.searchAllStats(disable, true, true, 1);
+                disable = matchingStat.shift()?.name ?? disable;
+            }
             else disable = disable.replace('_', ' ').cap();
 
-
-            listString += addPh(keys.commands.disable.success.list.final.fields.disabled.title, { disable }) + "\n";
+            listString += `${addPh(keys.commands.disable.success.list.final.embeds[0].fields[0].name, { disable })}\n`;
 
             //New field for every 25 items
-            if(counter === 24 || i === disabled.length-1) {
-                listEmbed.addFields({
-                    name: listString,
-                    value: keys.commands.disable.success.list.final.fields.disabled.content,
-                    inline: keys.commands.disable.success.list.final.fields.disabled.inline
-                });
+            if(counter % 25 || i === disabled.length-1) {
+                listEmbed.addFields(addPh(keys.commands.disable.success.list.final.embeds[0].fields[0], { disable: listString}));
                 listString = "";
-                counter = 0;
             }
 
             counter++;
@@ -130,7 +108,8 @@ async function execute(message, args) {
             const matchingTitle = await utils.searchAllAdvancements(toDisable, true, true, 1);
             formattedToDisable = matchingTitle.shift()?.name ?? toDisable.cap();
         } else if(type === 'stats') {
-            formattedToDisable = toDisable.split('_').map(word => word.cap()).join(' ');
+            const matchingStat = await utils.searchAllStats(toDisable, true, true, 1);
+            formattedToDisable = matchingStat.shift()?.name ?? toDisable.cap();
         }
 
         if(!await settings.disable(message.guildId, type, toDisable)) {

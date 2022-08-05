@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const fs = require('fs-extra');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
-const { keys, addResponseMethods, getEmbedBuilder, ph } = require('../../api/messages');
+const { keys, addResponseMethods, getEmbed, ph } = require('../../api/messages');
 
 async function execute(message, args) {
     const method = args[0];
@@ -27,17 +27,16 @@ async function execute(message, args) {
     if(method === 'add') {
         const logChooserMsg = await message.respond(keys.commands.chatchannel.success.choose);
 
-        const collector = logChooserMsg.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 20000, max: 1 });
+        const collector = logChooserMsg.createMessageComponentCollector({ componentType: Discord.ComponentType.SelectMenu, time: 30_000, max: 1 });
         collector.on('collect', async menu => {
             menu = addResponseMethods(menu);
-            await menu.deferReply();
 
             if(menu.customId === 'log' && menu.member.user.id === message.member.user.id) {
                 //Create webhook for channel
                 let webhook;
                 if(useWebhooks && menu.values.includes('chat')) {
-                    if(channel.isThread()) webhook = await channel.parent.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
-                    else webhook = await channel.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
+                    if(channel.isThread()) webhook = await channel.parent.createWebhook({ name: "ChatChannel", reason: "ChatChannel to Minecraft" });
+                    else webhook = await channel.createWebhook({ name: "ChatChannel", reason: "ChatChannel to Minecraft" });
                 }
 
                 const regChannel = await plugin.registerChannel(message.guildId, channel.id, menu.values, webhook?.id, message.client, menu);
@@ -64,12 +63,10 @@ async function execute(message, args) {
                         return;
                     }
 
-                    console.log(keys.commands.chatchannel.success.add.console);
-                    const successEmbed = getEmbedBuilder(keys.commands.chatchannel.success.add, ph.std(message));
-                    menu.replyOptions({ embeds: [successEmbed] });
+                    menu.respond(keys.commands.chatchannel.success.add, ph.std(message));
                 });
             } else {
-                const notAuthorEmbed = getEmbedBuilder(keys.commands.chatchannel.warnings.not_author, ph.std(message));
+                const notAuthorEmbed = getEmbed(keys.commands.chatchannel.warnings.not_author, ph.std(message));
                 menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
             }
         });

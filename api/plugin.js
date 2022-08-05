@@ -54,7 +54,7 @@ async function loadExpress(client) {
 
             if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
-            const [category, id] = message.replaceAll('minecraft:', '').split('/');
+            const [category, id] = message.replace('minecraft:', '').split('/');
             const advancement = await utils.searchAdvancements(id, category, false, true, 1);
 
             advancementTitle = advancement[0]?.name;
@@ -63,7 +63,7 @@ async function loadExpress(client) {
             if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
             if(!advancementTitle) advancementTitle = message;
 
-            chatEmbed = getEmbed(keys.api.plugin.success.messages.advancement.embeds[0], argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
+            chatEmbed = getEmbed(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
         } else if(req.body.type === 'chat') {
             const guild = client.guilds.cache.get(guildId);
 
@@ -74,7 +74,7 @@ async function loadExpress(client) {
                 argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
             }
 
-            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat.embeds[0], argPlaceholder, ph.emojis());
+            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
 
             let allWebhooks;
             //Fetch all webhooks in guild
@@ -86,7 +86,7 @@ async function loadExpress(client) {
                 const discordChannel = client.channels.cache.get(channel.id);
 
                 if(!allWebhooks) {
-                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission.embeds[0], ph.emojis())] });
+                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
                     return;
                 }
 
@@ -102,11 +102,11 @@ async function loadExpress(client) {
 
                 //Create new webhook if old one doesn't exist
                 if(!webhook) {
-                    if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(player, { reason: "ChatChannel to Minecraft", avatar: authorURL });
-                    else webhook = await discordChannel.createWebhook(player, { reason: "ChatChannel to Minecraft", avatar: authorURL });
+                    if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook({ name: player, reason: "ChatChannel to Minecraft", avatar: authorURL });
+                    else webhook = await discordChannel.createWebhook({ name: player, reason: "ChatChannel to Minecraft", avatar: authorURL });
 
                     //Fake interaction
-                    discordChannel.respond = () => discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook.embeds[0], ph.emojis())] });
+                    discordChannel.respond = () => discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
 
                     const regChannel = await registerChannel(guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
                     if(!regChannel) {
@@ -146,7 +146,7 @@ async function loadExpress(client) {
             }
             return;
         } else {
-            chatEmbed = getEmbed(keys.api.plugin.success.messages[req.body.type].embeds[0], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
+            chatEmbed = getEmbed(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
         }
 
         //why not triple-catch (try/catch, .catch, optional chaining)
@@ -259,10 +259,10 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
                 else message.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, { "ip": conn.ip }));
             } catch(err) {
                 message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { "ip": conn.ip }));
-            } finally {
-                pluginConnections.splice(connIndex, 1);
             }
-        } else if(conn) pluginConnections.splice(connIndex, 1);
+        }
+        //Remove old connection
+        if(conn) pluginConnections.splice(connIndex, 1);
 
         try {
             let resp = await fetch(`http://${ip}/connect/`, {
@@ -322,7 +322,7 @@ function disconnect(guildId, client, message = defaultMessage) {
             if(!await checkStatus(resp, message)) return resolve(false);
 
             const conn = pluginConnections[connIndex];
-            if(conn?.channels) for(const channel of conn.channels) {
+            for(const channel of conn?.channels ?? []) {
                 //Delete webhook
                 if(channel.webhook) {
                     const allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();

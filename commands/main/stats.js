@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
-const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
+const { keys, ph, addPh, getEmbed } = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
@@ -86,11 +86,10 @@ async function execute(message, args) {
             )
         }
 
-        const statEmbed = getEmbedBuilder(
+        const statEmbed = getEmbed(
             keys.commands.stats.success.final,
             ph.std(message),
-            argPlaceholder,
-            { "stat_message": statMessage, "stat_value": stat }
+            argPlaceholder, { "stat_message": statMessage, "stat_value": stat }
         );
 
         let imgType;
