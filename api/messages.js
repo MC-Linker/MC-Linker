@@ -7,7 +7,7 @@ const defaultMessage = {
         return reply(null, key,...placeholders);
     },
     channel: {
-        send() {}
+        send(content) {}
     }
 };
 
@@ -120,10 +120,10 @@ ph.error = function(err) {
 };
 
 ph.std = function(interaction) {
-    if(!(interaction instanceof Discord.BaseInteraction || !(interaction instanceof Discord.Message))) return {};
+    if(!(interaction instanceof Discord.BaseInteraction) && !(interaction instanceof Discord.Message)) return {};
 
     return Object.assign(
-        this.author(interaction.user),
+        this.author(interaction.member.user),
         this.guild(interaction.guild),
         this.interaction(interaction),
         this.channel(interaction.channel),
@@ -133,17 +133,12 @@ ph.std = function(interaction) {
     );
 };
 
-ph.commandName = async function(commandName, clientOrGuild) {
-    let commands;
-    if(clientOrGuild instanceof Discord.Guild) {
-        commands = await clientOrGuild.commands.fetch();
-    } else if(clientOrGuild instanceof Discord.Client) {
-        commands = await clientOrGuild.application.commands.fetch();
-    }
+ph.commandName = async function(commandName, client) {
+    if(!(client instanceof Discord.Client)) return {};
 
+    let commands = await client.application.commands.fetch();
     const command = commands.find(cmd => cmd.name === commandName);
-
-    if(!(command instanceof Discord.ApplicationCommand)) return {};
+    if(!command) return {};
 
     return this.command(command);
 };
@@ -195,6 +190,7 @@ function addPh(key, ...placeholders) {
                         if(!v.match(/%.+%/g)) replaced.push(v);
                     }
                 } else if(typeof placeholder === 'object') {
+                    replaced = {};
                     for([k, v] of Object.entries(placeholder)) replaced[k] = v;
                 } else {
                     const v = placeholder ?? match;
@@ -279,6 +275,9 @@ function replyOptions(interaction, options) {
 
 function getEmbed(key, ...placeholders) {
     if(!key) return console.error(keys.api.messages.errors.no_embed_key.console);
+
+    //Get first embed
+    if(key.embeds) key = key.embeds[0];
 
     key = addPh(key, ...placeholders);
 
@@ -581,7 +580,8 @@ function addSlashCommandOption(builder, key) {
 function getUsersFromMention(client, mention) {
     if(typeof mention !== 'string') return [];
 
-    const matches = mention.matchAll(Discord.MessageMentions.UsersPattern);
+    const usersPattern = new RegExp(Discord.MessageMentions.UsersPattern.source, "g");
+    const matches = mention.matchAll(usersPattern);
     if (!matches) return [];
 
     const userArray = [];
@@ -604,9 +604,10 @@ function getArgs(client, interaction) {
             args.push(option.name);
             option.options.forEach(opt => addArgs(opt));
         }
-        else if(option.type === Discord.ApplicationCommandOptionType.User && option.name === 'user')
+        else if(option.type === Discord.ApplicationCommandOptionType.String && option.name === 'user')
             args.push(getUsersFromMention(client, option.value)?.[0] ?? option.value);
         else if(option.type === Discord.ApplicationCommandOptionType.Channel) args.push(option.channel);
+        else if(option.type === Discord.ApplicationCommandOptionType.User) args.push(option.user);
         else if(option.type === Discord.ApplicationCommandOptionType.Role) args.push(option.role);
         else if(option.type === Discord.ApplicationCommandOptionType.Attachment) args.push(option.attachment);
         else args.push(option.value);
