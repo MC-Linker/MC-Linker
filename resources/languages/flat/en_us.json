@@ -63,6 +63,22 @@
 
 
 
+  "commands.eval.warnings.no_command.embeds.0.title": "No Command Specified",
+  "commands.eval.warnings.no_command.embeds.0.description": "%emoji_warning% Please specify a command to evaluate.",
+  "commands.eval.warnings.no_command.console": "No command specified",
+
+  "commands.eval.success.embeds.0.title": "Successfully Evaluated Command",
+  "commands.eval.success.embeds.0.description": "%output%",
+  "commands.eval.success.embeds.0.color": "Green",
+  "commands.eval.success.console": "Successfully evaluated command",
+
+  "commands.eval.errors.unknown_error.embeds.0.title": "Unknown Error",
+  "commands.eval.errors.unknown_error.embeds.0.description": "%output_error%",
+  "commands.eval.errors.unknown_error.embeds.0.color": "Red",
+  "commands.eval.errors.unknown_error.console": "Unknown error %error%",
+
+
+
   "commands.help.warnings.command_does_not_exist.embeds.0.title": "Command/Category Does Not Exist",
   "commands.help.warnings.command_does_not_exist.embeds.0.description": "%emoji_warning% Command/Category **%command_name%** does not exist.",
   "commands.help.warnings.command_does_not_exist.console": "Command/Category does not exist",

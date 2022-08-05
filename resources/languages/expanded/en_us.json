@@ -99,6 +99,41 @@
     "executed": {
       "console": "%author_tag% executed /%interaction_name% %args% in %guild_name%"
     },
+    "eval": {
+      "warnings": {
+        "no_command": {
+          "embeds": [
+            {
+              "title": "No Command Specified",
+              "description": "%emoji_warning% Please specify a command to evaluate."
+            }
+          ],
+          "console": "No command specified"
+        }
+      },
+      "success": {
+        "embeds": [
+          {
+            "title": "Successfully Evaluated Command",
+            "description": "%output%",
+            "color": "Green"
+          }
+        ],
+        "console": "Successfully evaluated command"
+      },
+      "errors": {
+        "unknown_error": {
+          "embeds": [
+            {
+              "title": "Unknown Error",
+              "description": "%output_error%",
+              "color": "Red"
+            }
+          ],
+          "console": "Unknown error %error%"
+        }
+      }
+    },
     "help": {
       "warnings": {
         "command_does_not_exist": {

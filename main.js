@@ -12,11 +12,12 @@ const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
 const plugin = require('./api/plugin');
 const helpCommand = require('./src/help');
+const evalCommand = require('./src/eval');
 const disableButton = require('./src/disableButton');
 const enableButton = require('./src/enableButton');
 const settings = require('./api/settings');
 const { getArgs, addResponseMethods, addPh, keys, ph } = require('./api/messages');
-const { prefix, token, topggToken } = require('./config.json');
+const { prefix, token, topggToken, ownerId } = require('./config.json');
 const client = new Discord.Client({
     intents: [
         Discord.GatewayIntentBits.GuildMessages,
@@ -101,6 +102,9 @@ client.on('messageCreate', async message => {
     if(commandName === 'help') {
         await message.respond(keys.commands.executed);
         await helpCommand.execute(message, args);
+    } else if(commandName === 'eval' && message.author.id === ownerId) {
+        await message.respond(keys.commands.executed);
+        await evalCommand.execute(message, args);
     } else {
         const command = client.commands.get(commandName);
         if(!command) return;
