@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const plugin = require('../../api/plugin');
-const utils = require("../../api/utils");
+const utils = require('../../api/utils');
 const { keys } = require('../../api/messages');
 const Discord = require('discord.js');
 
@@ -46,7 +46,7 @@ async function execute(message, args) {
             return;
         }
 
-        message.respond(keys.commands.disconnect.success, { method, "method_cap": method.cap() });
+        message.respond(keys.commands.disconnect.success, { method, 'method_cap': method.cap() });
     });
 }
 
