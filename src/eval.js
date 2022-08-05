@@ -41,16 +41,16 @@ async function execute(interaction, args) {
         // noinspection JSUnusedLocalSymbols
         const console = {
             log(...args) {
-                for (const [i, arg] of args.entries()) {
+                for(const [i, arg] of args.entries()) {
                     const evalOut2 = new ConsoleOutput();
                     const console2 = new Console({ stdout: evalOut2 });
 
                     console2.log(arg);
 
-                    if (i > 0) out = out.slice(0, -1) + " " + evalOut2._read();
+                    if(i > 0) out = out.slice(0, -1) + ' ' + evalOut2._read();
                     else out += evalOut2._read();
                 }
-            }
+            },
         };
 
         outputConsole.log(
@@ -61,7 +61,7 @@ async function execute(interaction, args) {
                 catch(err) {
                     return err;
                 }
-            })()`)
+            })()`),
         );
 
         //Auto-add return if no console.log or return present
@@ -75,7 +75,7 @@ async function execute(interaction, args) {
 
         //If it's too long, send an attachment
         if(out.length > maxCharLength) {
-            const attachment = new Discord.AttachmentBuilder(Buffer.from(out, 'utf8'), { name: 'eval.js'});
+            const attachment = new Discord.AttachmentBuilder(Buffer.from(out, 'utf8'), { name: 'eval.js' });
             interaction.replyOptions({ files: [attachment] });
         }
         else {
@@ -89,54 +89,3 @@ async function execute(interaction, args) {
 
 
 module.exports = { execute };
-
-/*const { Console } = require("console")
-const { Duplex } = require("stream")
-
-class ConsoleOutput extends Duplex {
-    constructor(...args){
-        super(...args)
-        this.output = ""
-    }
-
-    _write(e){
-        this.output += e
-    }
-
-    _read(){
-        return this.output
-    }
-}
-
-async function execute(code) {
-    code = code.replace(/^```(js|javascript)?|```$/g, "").trim()
-    const evalOut = new ConsoleOutput()
-    evalOut.setEncoding("utf8")
-    const console3 = new Console({
-        stdout: evalOut
-    })
-    let out = ""
-    try {
-        const console = {
-            log(...args) {
-                for (const [i, arg] of args.entries()) {
-                    const evalOut2 = new ConsoleOutput()
-                    const console2 = new Console({
-                        stdout: evalOut2
-                    })
-                    console2.log(arg)
-                    if (i > 0) {
-                        out = out.slice(0, -1) + " " + evalOut2._read()
-                    } else {
-                        out += evalOut2._read()
-                    }
-                }
-            }
-        }
-        console3.log(await eval(`(async () => {try{return await (async () => {${code.includes("return") || code.includes("console.log") ? code : "return " + code}})()}catch(err){return err}})()`))
-        if (code.includes("return") || !code.includes("console.log")) out += evalOut._read()
-        return out.trim()
-    } catch (err) {
-        return err.message
-    }
-}*/
