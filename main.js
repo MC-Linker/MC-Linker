@@ -1,9 +1,9 @@
 console.log(
-    '\x1b[1m'     + // Bold (1)
+    '\x1b[1m' + // Bold (1)
     '\x1b[44;37m' + // Blue BG (44); White FG (37)
-    '%s'          + // Insert second argument
+    '%s' + // Insert second argument
     '\x1b[0m',      // Reset color (0)
-    'Loading...'    // Second argument (%s)
+    'Loading...',    // Second argument (%s)
 );
 
 const fs = require('fs-extra');
@@ -48,7 +48,11 @@ if(topggToken) {
 }
 
 client.once('ready', async () => {
-    console.log(addPh(keys.main.success.login.console, ph.client(client), { prefix, "guild_count": client.guilds.cache.size }));
+    console.log(addPh(
+        keys.main.success.login.console,
+        ph.client(client),
+        { prefix, 'guild_count': client.guilds.cache.size },
+    ));
     client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
     await plugin.loadExpress(client);
@@ -58,12 +62,12 @@ client.once('ready', async () => {
 
 client.on('guildCreate', guild => {
     if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create.console, { guild }));
-    console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { "guild_count": client.guilds.cache.size }));
+    console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 });
 
 client.on('guildDelete', async guild => {
     if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
-    console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { "guild_count": client.guilds.cache.size }));
+    console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
     await plugin.disconnect(guild.id, guild.client);
 
@@ -76,22 +80,22 @@ client.on('guildDelete', async guild => {
 
 client.commands = new Discord.Collection();
 const commandFolders = fs.readdirSync('./commands/');
-for (const folder of commandFolders) {
-	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(command => command.endsWith('.js'));
-	for (const file of commandFiles) {
-		const command = require(`./commands/${folder}/${file}`);
-		client.commands.set(file.replace('.js', ''), command);
-	}
+for(const folder of commandFolders) {
+    const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(command => command.endsWith('.js'));
+    for(const file of commandFiles) {
+        const command = require(`./commands/${folder}/${file}`);
+        client.commands.set(file.replace('.js', ''), command);
+    }
 }
 
 
 client.on('messageCreate', async message => {
-    if (!message.content.startsWith(prefix)) plugin.chat(message);
+    if(!message.content.startsWith(prefix)) plugin.chat(message);
 
     message = addResponseMethods(message);
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.success.ping);
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if(!message.content.startsWith(prefix) || message.author.bot) return;
 
     //check if in guild
     if(!message.inGuild()) return message.respond(keys.main.warnings.not_in_guild);
@@ -102,10 +106,12 @@ client.on('messageCreate', async message => {
     if(commandName === 'help') {
         await message.respond(keys.commands.executed);
         await helpCommand.execute(message, args);
-    } else if(commandName === 'eval' && message.author.id === ownerId) {
+    }
+    else if(commandName === 'eval' && message.author.id === ownerId) {
         await message.respond(keys.commands.executed);
         await evalCommand.execute(message, args);
-    } else {
+    }
+    else {
         const command = client.commands.get(commandName);
         if(!command) return;
 
@@ -119,8 +125,9 @@ client.on('messageCreate', async message => {
             // noinspection JSUnresolvedFunction
             await command?.execute?.(message, args)
                 .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
-        } catch (err) {
-            await message.respond(keys.main.errors.could_not_execute_command, ph.error(err))
+        }
+        catch(err) {
+            await message.respond(keys.main.errors.could_not_execute_command, ph.error(err));
         }
     }
 });
@@ -156,9 +163,10 @@ client.on('interactionCreate', async interaction => {
 
         await interaction.respond(keys.commands.executed);
 
-        if (interaction.commandName === 'help') {
+        if(interaction.commandName === 'help') {
             await helpCommand.execute(interaction, args);
-        } else {
+        }
+        else {
             const command = client.commands.get(interaction.commandName);
 
             //Check if command disabled
@@ -170,29 +178,34 @@ client.on('interactionCreate', async interaction => {
             try {
                 await command?.execute?.(interaction, args)
                     .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
-            } catch (err) {
+            }
+            catch(err) {
                 await interaction.respond(keys.main.errors.could_not_execute_command, ph.error(err));
             }
         }
 
-    } else if(interaction.isAutocomplete()) {
+    }
+    else if(interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
         if(!command) return;
 
         try {
             await command?.autocomplete?.(interaction)
                 .catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err))));
-        } catch (err) {
+        }
+        catch(err) {
             await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err)));
         }
 
-    } else if (interaction.isButton()) {
-        console.log(addPh(keys.buttons.clicked.console, { "button_id": interaction.customId }, ph.std(interaction)));
+    }
+    else if(interaction.isButton()) {
+        console.log(addPh(keys.buttons.clicked.console, { 'button_id': interaction.customId }, ph.std(interaction)));
 
         await interaction.deferReply({ ephemeral: true });
-        if (interaction.customId.startsWith('disable')) {
+        if(interaction.customId.startsWith('disable')) {
             await disableButton.execute(interaction);
-        } else if (interaction.customId.startsWith('enable')) {
+        }
+        else if(interaction.customId.startsWith('enable')) {
             await enableButton.execute(interaction);
         }
     }
