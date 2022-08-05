@@ -1,17 +1,18 @@
 const { keys } = require('../../api/messages');
-const Discord = require("discord.js");
-const utils = require("../../api/utils");
-const plugin = require("../../api/plugin");
+const Discord = require('discord.js');
+const utils = require('../../api/utils');
+const plugin = require('../../api/plugin');
 
 async function execute(message, args) {
     const user = message.mentions.users.first() ?? args[0];
     args.shift(); //Shift user
     let reason = args[0] ? args.join(' ') : 'Kicked by an operator.';
 
-    if (!message.member.permissions.has(Discord.PermissionFlagsBits.KickMembers)) {
+    if(!message.member.permissions.has(Discord.PermissionFlagsBits.KickMembers)) {
         message.respond(keys.commands.kick.warnings.no_permission);
         return;
-    } else if(!user) {
+    }
+    else if(!user) {
         message.respond(keys.commands.kick.warnings.no_username);
         return;
     }

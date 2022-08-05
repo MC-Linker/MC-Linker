@@ -7,13 +7,15 @@ async function execute(message, args) {
     const user = message.mentions.users.first() ?? args[0];
     const gamemode = args[1];
 
-    if (!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
+    if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         message.respond(keys.commands.gamemode.warnings.no_permission);
         return;
-    } else if(!user) {
+    }
+    else if(!user) {
         message.respond(keys.commands.gamemode.warnings.no_username);
         return;
-    } else if(!gamemode) {
+    }
+    else if(!gamemode) {
         message.respond(keys.commands.gamemode.warnings.no_gamemode);
         return;
     }
@@ -24,7 +26,10 @@ async function execute(message, args) {
     const resp = await plugin.execute(`gamemode ${gamemode} ${mcUsername}`, message.guildId, message);
     if(!resp) return;
 
-    if(resp.status === 206) message.respond(keys.commands.gamemode.warnings.response_warning, { username: user, gamemode: gamemode.cap() });
+    if(resp.status === 206) message.respond(keys.commands.gamemode.warnings.response_warning, {
+        username: user,
+        gamemode: gamemode.cap(),
+    });
     else message.respond(keys.commands.gamemode.success, { username: user, gamemode: gamemode.cap() });
 }
 
