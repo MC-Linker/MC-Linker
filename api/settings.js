@@ -13,7 +13,8 @@ function disable(guildId, type, value) {
         let disableData;
         try {
             disableData = await fs.readJson(`./serverdata/connections/${guildId}/disable.json`, 'utf-8');
-        } catch(err) {
+        }
+        catch(err) {
             if(err.code === 'ENOENT') disableData = disableBaseData;
             else {
                 console.log(addPh(keys.api.settings.errors.could_not_read_file.console, ph.error(err)));
@@ -32,7 +33,8 @@ function disable(guildId, type, value) {
         try {
             await fs.outputJson(`./serverdata/connections/${guildId}/disable.json`, disableData, { spaces: 2 });
             resolve(true);
-        } catch(err) {
+        }
+        catch(err) {
             console.log(addPh(keys.api.settings.errors.could_not_write_file.console, ph.error(err)));
             resolve(false);
         }
@@ -44,7 +46,8 @@ function enable(guildId, type, value) {
         let disableData;
         try {
             disableData = await fs.readJson(`./serverdata/connections/${guildId}/disable.json`, 'utf-8');
-        } catch(err) {
+        }
+        catch(err) {
             console.log(addPh(keys.api.settings.errors.could_not_read_file.console, ph.error(err)));
             resolve(false);
             return;
@@ -58,7 +61,8 @@ function enable(guildId, type, value) {
         try {
             await fs.outputJson(`./serverdata/connections/${guildId}/disable.json`, disableData, { spaces: 2 });
             resolve(true);
-        } catch(err) {
+        }
+        catch(err) {
             console.log(addPh(keys.api.settings.errors.could_not_write_file.console, ph.error(err)));
             resolve(false);
         }

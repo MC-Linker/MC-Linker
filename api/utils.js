@@ -32,7 +32,7 @@ function searchAdvancements(searchString, category, shouldSearchNames = true, sh
     });
 }
 
-function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength= 25) {
+function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(async resolve => {
         let matchingTitles = [];
 
@@ -75,7 +75,8 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
             if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
 
             resolve(matchingStats);
-        } else if(category === 'custom') {
+        }
+        else if(category === 'custom') {
             matchingStats = customStats.stats.filter(stat => {
                 //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
                 let match = false;
@@ -88,11 +89,12 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
             if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
 
             resolve(matchingStats);
-        } else return resolve([]);
+        }
+        else return resolve([]);
     });
 }
 
-function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength= 25) {
+function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(async resolve => {
         let matchingStats = [];
 
@@ -102,7 +104,7 @@ function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValu
         for(const list of statLists) {
             const matchingKeys = await searchStats(searchString, list, shouldSearchNames, shouldSearchValues, maxLength);
             matchingKeys.forEach(key => matchingStats.push(key));
-            console.log(matchingStats)
+            console.log(matchingStats);
         }
 
         matchingStats = [...new Set(matchingStats)]; //Remove duplicates
@@ -133,14 +135,16 @@ function getUUIDv4(user, message = defaultMessage) {
         if(user instanceof Discord.User) {
             const userData = await getUserData(user.id, message);
             resolve(userData?.id);
-        } else {
+        }
+        else {
             try {
                 let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`);
                 data = await data.json();
 
                 resolve(addHyphen(data.id));
-            } catch(err) {
-                message.respond(keys.api.utils.errors.could_not_get_uuid, { "username": user });
+            }
+            catch(err) {
+                message.respond(keys.api.utils.errors.could_not_get_uuid, { 'username': user });
                 resolve(false);
             }
         }
@@ -239,8 +243,24 @@ function getUserData(userId, message = defaultMessage) {
 
 function addHyphen(uuid) {
     uuid = [...uuid];
-    for (let i=8; i<=23; i+=5) uuid.splice(i, 0, '-');
+    for(let i = 8; i <= 23; i += 5) uuid.splice(i, 0, '-');
     return uuid.join('');
 }
 
-module.exports = { searchAllAdvancements, searchAdvancements, searchAllStats, searchStats, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUID };
+module.exports = {
+    searchAllAdvancements,
+    searchAdvancements,
+    searchAllStats,
+    searchStats,
+    isGuildConnected,
+    isUserConnected,
+    getUserData,
+    getServerData,
+    getUsername,
+    getIp,
+    getProtocol,
+    getHash,
+    getWorldPath,
+    getVersion,
+    getUUID,
+};
