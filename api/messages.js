@@ -260,7 +260,7 @@ function replyOptions(interaction, options) {
     }
 
     try {
-        if(!interaction?.isRepliable()) return;
+        if(!interaction?.isRepliable?.()) return interaction?.channel?.send(options);
 
         if (interaction instanceof Discord.Message) return interaction.reply(options).catch(handleError);
         else if(interaction instanceof Discord.BaseInteraction) {
