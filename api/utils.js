@@ -3,69 +3,47 @@ const fetch = require('node-fetch');
 const Discord = require('discord.js');
 const crypto = require('crypto');
 const mcData = require('minecraft-data')('1.19');
-const { keys, addPh, ph, defaultMessage } = require('./messages');
+const { keys, defaultMessage } = require('./messages');
+
+const advancementData = require('../resources/data/advancements.json');
+const customStats = require('../resources/data/stats_custom.json');
 
 function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     return new Promise(resolve => {
-        fs.readJson('./resources/data/advancements.json', 'utf8')
-            .then(advancementData => {
-                const matchingCategory = advancementData.categories[category];
-                if(!matchingCategory) return resolve([]);
+        const matchingCategory = advancementData.categories[category];
+        if(!matchingCategory) return resolve([]);
 
-                let matchingTitles = matchingCategory.filter(advancement => {
-                    //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
-                    let match;
-                    if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
-                    if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
+        let matchingTitles = matchingCategory.filter(advancement => {
+            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
+            let match;
+            if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString.toLowerCase());
+            if(shouldSearchValues && !match) match = advancement.value.includes(searchString.toLowerCase());
 
-                    return match;
-                });
+            return match;
+        });
 
-                //Add category field
-                const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === matchingCategory);
-                matchingTitles.map(title => title.category = categoryKey);
+        //Add category field
+        const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === matchingCategory);
+        matchingTitles.map(title => title.category = categoryKey);
 
-                matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
-                if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
-                resolve(matchingTitles);
-            }).catch(err => {
-                console.log(addPh(keys.api.utils.errors.could_not_read_advancements.console, ph.error(err)));
-                resolve([]);
-            });
+        matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
+        if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
+        resolve(matchingTitles);
     });
 }
 
 function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength= 25) {
-    return new Promise(resolve => {
-        fs.readJson('./resources/data/advancements.json', 'utf8')
-            .then(advancementData => {
-                let matchingTitles = [];
-                let matchingKeys = [];
+    return new Promise(async resolve => {
+        let matchingTitles = [];
 
-                Object.values(advancementData.categories).forEach(category => {
-                    matchingKeys = category.filter(advancement => {
-                        //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
-                        let match;
-                        if(shouldSearchNames) match = advancement.name.toLowerCase().includes(searchString);
-                        if(shouldSearchValues || !match) match = advancement.value.toLowerCase().includes(searchString);
+        for(const category of Object.keys(advancementData.categories)) {
+            const matchingKeys = await searchAdvancements(searchString, category, shouldSearchNames, shouldSearchValues, maxLength);
+            matchingKeys.forEach(key => matchingTitles.push(key));
+        }
 
-                        return match;
-                    });
-
-                    //Add category field
-                    const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === category);
-                    matchingKeys.map(key => key.category = categoryKey);
-
-                    matchingKeys.forEach(key => matchingTitles.push(key));
-                });
-
-                matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
-                if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
-                resolve(matchingTitles);
-            }).catch(err => {
-                console.log(addPh(keys.api.utils.errors.could_not_read_advancements, ph.error(err)));
-                resolve([]);
-            });
+        matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
+        if(matchingTitles.length >= maxLength) matchingTitles.length = maxLength;
+        resolve(matchingTitles);
     });
 }
 
@@ -83,7 +61,7 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
                 //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
                 let match = false;
                 if(shouldSearchNames) match = data.displayName.toLowerCase().includes(searchString.toLowerCase());
-                if(!match && shouldSearchValues) match = data.name.includes(searchString.toLowerCase());
+                if(shouldSearchValues && !match) match = data.name.includes(searchString.toLowerCase());
 
                 return match;
             }).map(data => {
@@ -98,25 +76,41 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
 
             resolve(matchingStats);
         } else if(category === 'custom') {
-            fs.readJson('./resources/data/stats_custom.json', (err, statData) => {
-                if(err) return resolve([]);
+            matchingStats = customStats.stats.filter(stat => {
+                //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+                let match = false;
+                if(shouldSearchNames) match = stat.name.toLowerCase().includes(searchString.toLowerCase());
+                if(!match && shouldSearchValues) match = stat.value.includes(searchString.toLowerCase());
 
-                matchingStats = statData.stats.filter(stat => {
-                    //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
-                    let match = false;
-                    if(shouldSearchNames) match = stat.name.toLowerCase().includes(searchString.toLowerCase());
-                    if(!match && shouldSearchValues) match = stat.value.includes(searchString.toLowerCase());
-
-                    return match;
-                });
-                matchingStats = [...new Set(matchingStats)]; //Remove duplicates
-                if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
-
-                resolve(matchingStats);
+                return match;
             });
+            matchingStats = [...new Set(matchingStats)]; //Remove duplicates
+            if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
+
+            resolve(matchingStats);
         } else return resolve([]);
     });
 }
+
+function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength= 25) {
+    return new Promise(async resolve => {
+        let matchingStats = [];
+
+        //                        Blocks     Items   Entities   Custom
+        const statLists = ['mined', 'broken', 'killed', 'custom'];
+
+        for(const list of statLists) {
+            const matchingKeys = await searchStats(searchString, list, shouldSearchNames, shouldSearchValues, maxLength);
+            matchingKeys.forEach(key => matchingStats.push(key));
+            console.log(matchingStats)
+        }
+
+        matchingStats = [...new Set(matchingStats)]; //Remove duplicates
+        if(matchingStats.length >= maxLength) matchingStats.length = maxLength;
+        resolve(matchingStats);
+    });
+}
+
 
 function isUserConnected(userId) {
     return new Promise(resolve => {
@@ -180,7 +174,7 @@ function getUUID(user, guildId, message = defaultMessage) {
     return new Promise(async resolve => {
         const serverData = await getServerData(guildId, message);
 
-        if(serverData?.online === undefined || serverData?.online) resolve(await getUUIDv4(user, message));
+        if(serverData?.online === undefined || serverData.online) resolve(await getUUIDv4(user, message));
         else resolve(await getUUIDv3(user, message));
     });
 }
@@ -249,4 +243,4 @@ function addHyphen(uuid) {
     return uuid.join('');
 }
 
-module.exports = { searchAllAdvancements, searchAdvancements, searchStats, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUID };
+module.exports = { searchAllAdvancements, searchAdvancements, searchAllStats, searchStats, isGuildConnected, isUserConnected, getUserData, getServerData, getUsername, getIp, getProtocol, getHash, getWorldPath, getVersion, getUUID };
