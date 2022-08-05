@@ -44,7 +44,7 @@
   "main.errors.could_not_execute_command.embeds.0.description": "%emoji_error% An unknown error occurred while executing this command. Please try again.",
   "main.errors.could_not_execute_command.console": "Could not execute command %error%",
 
-  "main.errors.could_not_autocomplete_command.console": "Could not autocomplete command %error%",
+  "main.errors.could_not_autocomplete_command.console": "Could not respond to command autocomplete",
 
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers.",
 
@@ -163,9 +163,9 @@
   "commands.advancements.success.not_done.embeds.0.footer.text": "Advancement not unlocked/completed",
   "commands.advancements.success.not_done.embeds.0.footer.icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png",
 
-  "commands.advancements.success.final.embeds.0.fields.0.name": "Requirement",
+  "commands.advancements.success.final.embeds.0.fields.0.name": "**Requirement**",
   "commands.advancements.success.final.embeds.0.fields.0.value": "%advancement_requirement%",
-  "commands.advancements.success.final.embeds.0.fields.1.name": "Unlocked on",
+  "commands.advancements.success.final.embeds.0.fields.1.name": "**Unlocked on**",
   "commands.advancements.success.final.embeds.0.fields.1.value": "%advancement_timestamp%",
   "commands.advancements.success.final.console": "Sent advancement %advancement_title% of %username%",
 
@@ -426,7 +426,7 @@
 
 
   "commands.chatchannel.success.choose.embeds.0.title": "Select Message Types",
-  "commands.chatchannel.success.choose.embeds.0.description": "Select all message types you want the bot to send. (You have 20 seconds to select)",
+  "commands.chatchannel.success.choose.embeds.0.description": "Select all message types you want the bot to send. (You have 30 seconds to select)",
 
   "commands.chatchannel.success.choose.components.0.type": "SelectMenu",
   "commands.chatchannel.success.choose.components.0.custom_id": "log",
@@ -818,7 +818,7 @@
   "api.plugin.success.messages.quit.embeds.0.author.title": "%username%",
   "api.plugin.success.messages.quit.embeds.0.author.icon_url": "%author_url%",
   "api.plugin.success.messages.quit.embeds.0.description": "%emoji_leave% **%username%** left the game",
-  "api.plugin.success.messages.quit.embeds.0.color": "YELLOW",
+  "api.plugin.success.messages.quit.embeds.0.color": "Yellow",
 
   "api.plugin.success.messages.advancement.embeds.0.author.title": "%username%",
   "api.plugin.success.messages.advancement.embeds.0.author.icon_url": "%author_url%",
@@ -860,8 +860,6 @@
   "api.plugin.success.root_response": "To invite the MC Linker, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>",
 
 
-
-  "api.utils.errors.could_not_read_advancements.console": "Could not read advancements file %error%",
 
   "api.utils.errors.could_not_get_uuid.embeds.0.title": "Could Not Get UUID",
   "api.utils.errors.could_not_get_uuid.embeds.0.description": "%emoji_error% **%username%** is not a valid minecraft java edition account name.",
@@ -911,7 +909,7 @@
   "buttons.enable.errors.already_enabled.console": "Could not enable %command_name%",
 
   "buttons.enable.success.response.embeds.0.title": "Enabled Command",
-  "buttons.enable.success.response.embeds.0.embeds.description": "%emoji_success% Successfully enabled command **%command_name%**.",
+  "buttons.enable.success.response.embeds.0.description": "%emoji_success% Successfully enabled command **%command_name%**.",
   "buttons.enable.success.response.console": "Enabled command %command_name%",
 
   "buttons.enable.success.help.embeds.0.description": "```diff\n+ [COMMAND ENABLED]```",
@@ -987,7 +985,7 @@
   "data.stats.options.0.options.1.required": true,
 
 
-  "data.stats.options.1.type": "SUBCOMMAND",
+  "data.stats.options.1.type": "Subcommand",
   "data.stats.options.1.name": "mined",
   "data.stats.options.1.description": "Statistic related to the number of blocks a player mined.",
 
@@ -1437,9 +1435,12 @@
   "data.disable.options.3.options.0.name": "category",
   "data.disable.options.3.options.0.description": "Set the category which you want to list",
   "data.disable.options.3.options.0.required": true,
-  "data.disable.options.3.options.0.choices": [
-    ["commands", "commands"], ["advancements", "advancements"], ["stats", "stats"]
-  ],
+  "data.disable.options.3.options.0.choices.0.name": "commands",
+  "data.disable.options.3.options.0.choices.0.value": "commands",
+  "data.disable.options.3.options.0.choices.1.name": "advancements",
+  "data.disable.options.3.options.0.choices.1.value": "advancements",
+  "data.disable.options.3.options.0.choices.2.name": "stats",
+  "data.disable.options.3.options.0.choices.2.value": "stats",
 
 
 

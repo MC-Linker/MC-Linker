@@ -4,6 +4,9 @@
       "": ["grant", "revoke"]
     },
     {
+      "": ["%target_selectors%"]
+    },
+    {
       "": ["everything", "from", "until", "through", "only"]
     },
     {

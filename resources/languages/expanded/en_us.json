@@ -68,7 +68,7 @@
         "console": "Could not execute command %error%"
       },
       "could_not_autocomplete_command": {
-        "console": "Could not autocomplete command %error%"
+        "console": "Could not respond to command autocomplete"
       }
     },
     "success": {
@@ -319,11 +319,11 @@
             {
               "fields": [
                 {
-                  "name": "Requirement",
+                  "name": "**Requirement**",
                   "value": "%advancement_requirement%"
                 },
                 {
-                  "name": "Unlocked on",
+                  "name": "**Unlocked on**",
                   "value": "%advancement_timestamp%"
                 }
               ]
@@ -901,7 +901,7 @@
           "embeds": [
             {
               "title": "Select Message Types",
-              "description": "Select all message types you want the bot to send. (You have 20 seconds to select)"
+              "description": "Select all message types you want the bot to send. (You have 30 seconds to select)"
             }
           ],
           "components": [
@@ -1766,7 +1766,7 @@
                   "icon_url": "%author_url%"
                 },
                 "description": "%emoji_leave% **%username%** left the game",
-                "color": "YELLOW"
+                "color": "Yellow"
               }
             ]
           },
@@ -1863,9 +1863,6 @@
     },
     "utils": {
       "errors": {
-        "could_not_read_advancements": {
-          "console": "Could not read advancements file %error%"
-        },
         "could_not_get_uuid": {
           "embeds": [
             {
@@ -1980,9 +1977,7 @@
           "embeds": [
             {
               "title": "Enabled Command",
-              "embeds": {
-                "description": "%emoji_success% Successfully enabled command **%command_name%**."
-              }
+              "description": "%emoji_success% Successfully enabled command **%command_name%**."
             }
           ],
           "console": "Enabled command %command_name%"
@@ -2080,7 +2075,7 @@
           ]
         },
         {
-          "type": "SUBCOMMAND",
+          "type": "Subcommand",
           "name": "mined",
           "description": "Statistic related to the number of blocks a player mined.",
           "options": [
@@ -2740,18 +2735,18 @@
               "description": "Set the category which you want to list",
               "required": true,
               "choices": [
-                [
-                  "commands",
-                  "commands"
-                ],
-                [
-                  "advancements",
-                  "advancements"
-                ],
-                [
-                  "stats",
-                  "stats"
-                ]
+                {
+                  "name": "commands",
+                  "value": "commands"
+                },
+                {
+                  "name": "advancements",
+                  "value": "advancements"
+                },
+                {
+                  "name": "stats",
+                  "value": "stats"
+                }
               ]
             }
           ]
