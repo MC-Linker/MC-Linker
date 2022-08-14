@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const { pluginPort } = require('../../config.json');
-const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
+const { keys, ph, addPh, getEmbed } = require('../../api/messages');
 
 async function execute(message, args) {
     const method = args[0];
@@ -13,7 +13,8 @@ async function execute(message, args) {
     if(!method) {
         message.respond(keys.commands.connect.warnings.no_method);
         return;
-    } else if(method !== 'account' && !message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+    }
+    else if(method !== 'account' && !message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         message.respond(keys.commands.connect.warnings.no_permission);
         return;
     }
@@ -28,13 +29,15 @@ async function execute(message, args) {
 
         version = parseInt(version);
 
-        if (!host || !user || !password || !port) {
+        if(!host || !user || !password || !port) {
             message.respond(keys.commands.connect.warnings.no_credentials);
             return;
-        } else if(isNaN(version)) {
+        }
+        else if(isNaN(version)) {
             message.respond(keys.commands.connect.warnings.no_version);
             return;
-        } else if(port <= 0 || port > 65536) {
+        }
+        else if(port <= 0 || port > 65536) {
             message.respond(keys.commands.connect.warnings.invalid_port);
             return;
         }
@@ -43,8 +46,8 @@ async function execute(message, args) {
         if(password === 'none') password = '';
 
         //Send version warnings
-        if (version <= 11 && version > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.fromStd(message)));
-        else if (version <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.fromStd(message)));
+        if(version <= 11 && version > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.std(message)));
+        else if(version <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.std(message)));
 
         message.respond(keys.commands.connect.warnings.connecting);
 
@@ -54,10 +57,11 @@ async function execute(message, args) {
             const disconnected = await plugin.disconnect(message.guildId, message.client);
 
             if(!disconnected) {
-                const embed = getEmbedBuilder(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { "ip": ip });
+                const embed = getEmbed(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { 'ip': ip });
                 message.channel.send({ embeds: [embed] });
-            } else {
-                const embed = getEmbedBuilder(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { "ip": ip });
+            }
+            else {
+                const embed = getEmbed(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { 'ip': ip });
                 message.channel.send({ embeds: [embed] });
             }
         }
@@ -78,7 +82,11 @@ async function execute(message, args) {
             }
         }
 
-        const serverProperties = await ftp.get(`${path}/server.properties`, `./serverdata/connections/${message.guildId}/server.properties`, { host, user, password, port, protocol });
+        const serverProperties = await ftp.get(
+            `${path}/server.properties`,
+            `./serverdata/connections/${message.guildId}/server.properties`,
+            { host, user, password, port, protocol },
+        );
         if(!serverProperties) {
             message.respond(keys.commands.connect.errors.could_not_get_properties);
             return;
@@ -86,20 +94,20 @@ async function execute(message, args) {
         const propertiesObject = Object.fromEntries(serverProperties.toString().split('\n').map(prop => prop.split('=')));
 
         const ftpData = {
-            "host": host,
-            "user": user,
-            "password": password,
-            "port": port,
-            "online": propertiesObject['online-mode'] === 'true',
-            "path": `${path}/${propertiesObject['level-name']}`,
-            "version": version,
-            "protocol": protocol,
+            'host': host,
+            'user': user,
+            'password': password,
+            'port': port,
+            'online': propertiesObject['online-mode'] === 'true',
+            'path': `${path}/${propertiesObject['level-name']}`,
+            'version': version,
+            'protocol': protocol,
         };
 
         //Connected with either ftp or sftp
         //Save connection
         fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, ftpData, { spaces: 2 }, async err => {
-            if (err) {
+            if(err) {
                 message.respond(keys.commands.connect.errors.could_not_write_server_file);
                 return;
             }
@@ -108,7 +116,8 @@ async function execute(message, args) {
         });
 
 
-    } else if(method === 'plugin') {
+    }
+    else if(method === 'plugin') {
         let ip = args[1]?.split(':').shift();
         const port = args[2] ?? pluginPort;
 
@@ -121,62 +130,66 @@ async function execute(message, args) {
             //Lookup ip of dns
             const { address } = await dns.lookup(ip, 4);
             if(address) ip = address;
-        } catch(ignored) {}
+        }
+        catch(ignored) {
+        }
 
         const verify = await plugin.verify(`${ip}:${port}`, message);
         if(!verify) return;
 
         message.respond(keys.commands.connect.warnings.check_dms);
 
-        const verifyEmbed = getEmbedBuilder(keys.commands.connect.warnings.verification, ph.fromStd(message));
+        const verifyEmbed = getEmbed(keys.commands.connect.warnings.verification, ph.std(message));
 
         let dmChannel = await message.member.user.createDM();
         try {
             await dmChannel.send({ embeds: [verifyEmbed] });
-        } catch(err) {
+        }
+        catch(err) {
             dmChannel = message.channel;
             message.respond(keys.commands.connect.warnings.could_not_dm);
             await dmChannel.send({ embeds: [verifyEmbed] });
         }
 
-        const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000, errors: ['time'] });
+        const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000 });
 
         if(!collector.first()) {
             console.log(keys.commands.connect.warnings.no_reply_in_time.console);
-            const noReplyEmbed = getEmbedBuilder(keys.commands.connect.warnings.no_reply_in_time, ph.fromStd(message));
+            const noReplyEmbed = getEmbed(keys.commands.connect.warnings.no_reply_in_time, ph.std(message));
             dmChannel.send({ embeds: [noReplyEmbed] });
             return;
         }
 
         const connectPlugin = await plugin.connect(`${ip}:${port}`, message.guildId, collector.first(), message);
         if(!connectPlugin) {
-            const noConnectionEmbed = getEmbedBuilder(keys.commands.connect.errors.could_not_connect_plugin, ph.fromStd(message));
+            const noConnectionEmbed = getEmbed(keys.commands.connect.errors.could_not_connect_plugin, ph.std(message));
             dmChannel.send({ embeds: [noConnectionEmbed] });
             return;
         }
 
         else if(connectPlugin === 401) {
-            const incorrectCodeEmbed = getEmbedBuilder(keys.commands.connect.errors.incorrect_code, ph.fromStd(message));
+            const incorrectCodeEmbed = getEmbed(keys.commands.connect.errors.incorrect_code, ph.std(message));
             dmChannel.send({ embeds: [incorrectCodeEmbed] });
             return;
-        } else {
-            const verificationEmbed = getEmbedBuilder(keys.commands.connect.success.verification, ph.fromStd(message));
+        }
+        else {
+            const verificationEmbed = getEmbed(keys.commands.connect.success.verification, ph.std(message));
             dmChannel.send({ embeds: [verificationEmbed] });
         }
 
         const pluginJson = {
-            "ip": connectPlugin.ip,
-            "version": connectPlugin.version.split('.')[1],
-            "path": decodeURIComponent(connectPlugin.path),
-            "hash": connectPlugin.hash,
-            "guild": connectPlugin.guild,
-            "online": connectPlugin.online,
-            "chat": false,
-            "protocol": "plugin",
+            'ip': connectPlugin.ip,
+            'version': connectPlugin.version.split('.')[1],
+            'path': decodeURIComponent(connectPlugin.path),
+            'hash': connectPlugin.hash,
+            'guild': connectPlugin.guild,
+            'online': connectPlugin.online,
+            'chat': false,
+            'protocol': 'plugin',
         };
 
         fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {
-            if (err) {
+            if(err) {
                 message.respond(keys.commands.connect.errors.could_not_write_server_file);
                 return;
             }
@@ -184,34 +197,37 @@ async function execute(message, args) {
             message.respond(keys.commands.connect.success.plugin);
         });
 
-    } else if(method === 'account') {
+    }
+    else if(method === 'account') {
         const mcUsername = args[1];
 
         if(!mcUsername) {
             message.respond(keys.commands.connect.warnings.no_username);
             return;
-        } else if(message.mentions.users.size) {
+        }
+        else if(message.mentions.users.size) {
             message.respond(keys.commands.connect.warnings.user_pinged);
             return;
         }
 
-        let uuidv4 = await utils.getUUID(mcUsername, message.guildId,message);
+        let uuidv4 = await utils.getUUID(mcUsername, message.guildId, message);
         if(!uuidv4) return;
 
         const connectionJson = {
             'id': uuidv4,
-            'name': mcUsername
+            'name': mcUsername,
         };
 
-       fs.outputJson(`./userdata/connections/${message.member.user.id}/connection.json`, connectionJson, { spaces: 2 }, err => {
-            if (err) {
+        fs.outputJson(`./userdata/connections/${message.member.user.id}/connection.json`, connectionJson, { spaces: 2 }, err => {
+            if(err) {
                 message.respond(keys.commands.connect.errors.could_not_write_user_file);
                 return;
             }
 
-           message.respond(keys.commands.connect.success.account, { "username": mcUsername, "uuid": uuidv4 });
+            message.respond(keys.commands.connect.success.account, { 'username': mcUsername, 'uuid': uuidv4 });
         });
-    } else {
+    }
+    else {
         message.respond(keys.commands.connect.warnings.invalid_method);
     }
 }

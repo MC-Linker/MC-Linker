@@ -2,23 +2,26 @@ const Discord = require('discord.js');
 const fs = require('fs-extra');
 const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
-const { keys, addResponseMethods, getEmbedBuilder, ph } = require('../../api/messages');
+const { keys, addResponseMethods, getEmbed, ph } = require('../../api/messages');
 
 async function execute(message, args) {
     const method = args[0];
     let channel = message.mentions.channels?.first() ?? args[1];
     const useWebhooks = typeof args[2] === 'boolean' ? args[2] : args[2]?.toLowerCase() === 'true';
 
-    if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+    if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
         message.respond(keys.commands.chatchannel.warnings.no_permission);
         return;
-    } else if(!method) {
+    }
+    else if(!method) {
         message.respond(keys.commands.chatchannel.warnings.no_method);
         return;
-    } else if(!channel) {
+    }
+    else if(!channel) {
         message.respond(keys.commands.chatchannel.warnings.no_channel);
         return;
-    } else if(!channel?.isText()) {
+    }
+    else if(!channel.isTextBased()) {
         message.respond(keys.commands.chatchannel.warnings.no_text_channel);
         return;
     }
@@ -27,17 +30,26 @@ async function execute(message, args) {
     if(method === 'add') {
         const logChooserMsg = await message.respond(keys.commands.chatchannel.success.choose);
 
-        const collector = logChooserMsg.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 20000, max: 1 });
+        const collector = logChooserMsg.createMessageComponentCollector({
+            componentType: Discord.ComponentType.SelectMenu,
+            time: 30_000,
+            max: 1,
+        });
         collector.on('collect', async menu => {
             menu = addResponseMethods(menu);
-            await menu.deferReply();
 
             if(menu.customId === 'log' && menu.member.user.id === message.member.user.id) {
                 //Create webhook for channel
                 let webhook;
                 if(useWebhooks && menu.values.includes('chat')) {
-                    if(channel.isThread()) webhook = await channel.parent.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
-                    else webhook = await channel.createWebhook("ChatChannel", { reason: "ChatChannel to Minecraft" });
+                    if(channel.isThread()) webhook = await channel.parent.createWebhook({
+                        name: 'ChatChannel',
+                        reason: 'ChatChannel to Minecraft',
+                    });
+                    else webhook = await channel.createWebhook({
+                        name: 'ChatChannel',
+                        reason: 'ChatChannel to Minecraft',
+                    });
                 }
 
                 const regChannel = await plugin.registerChannel(message.guildId, channel.id, menu.values, webhook?.id, message.client, menu);
@@ -47,15 +59,15 @@ async function execute(message, args) {
                 }
 
                 const pluginJson = {
-                    "ip": regChannel.ip,
-                    "version": regChannel.version.split('.')[1],
-                    "path": regChannel.path,
-                    "hash": regChannel.hash,
-                    "guild": regChannel.guild,
-                    "online": regChannel.online,
-                    "chat": true,
-                    "channels": regChannel.channels,
-                    "protocol": "plugin"
+                    'ip': regChannel.ip,
+                    'version': regChannel.version.split('.')[1],
+                    'path': regChannel.path,
+                    'hash': regChannel.hash,
+                    'guild': regChannel.guild,
+                    'online': regChannel.online,
+                    'chat': true,
+                    'channels': regChannel.channels,
+                    'protocol': 'plugin',
                 };
 
                 fs.outputJson(`./serverdata/connections/${message.guild.id}/connection.json`, pluginJson, { spaces: 2 }, err => {
@@ -64,12 +76,11 @@ async function execute(message, args) {
                         return;
                     }
 
-                    console.log(keys.commands.chatchannel.success.add.console);
-                    const successEmbed = getEmbedBuilder(keys.commands.chatchannel.success.add, ph.fromStd(message));
-                    menu.replyOptions({ embeds: [successEmbed] });
+                    menu.respond(keys.commands.chatchannel.success.add, ph.std(message));
                 });
-            } else {
-                const notAuthorEmbed = getEmbedBuilder(keys.commands.chatchannel.warnings.not_author, ph.fromStd(message));
+            }
+            else {
+                const notAuthorEmbed = getEmbed(keys.commands.chatchannel.warnings.not_author, ph.std(message));
                 menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
             }
         });
@@ -78,8 +89,9 @@ async function execute(message, args) {
             else message.respond(keys.commands.chatchannel.warnings.already_responded);
         });
 
-    //Remove chatchannel
-    } else if(method === 'remove') {
+        //Remove chatchannel
+    }
+    else if(method === 'remove') {
         const ip = await utils.getIp(message.guild.id, message);
         if(!ip) return;
 
@@ -90,7 +102,8 @@ async function execute(message, args) {
         if(channelIndex === undefined || channelIndex === -1) {
             message.respond(keys.commands.chatchannel.warnings.channel_not_added);
             return;
-        } else {
+        }
+        else {
             //Remove chatchannel from connection
             connection.channels.splice(channelIndex, 1);
         }
@@ -106,7 +119,8 @@ async function execute(message, args) {
 
             message.respond(keys.commands.chatchannel.success.remove);
         });
-    } else {
+    }
+    else {
         message.respond(keys.commands.chatchannel.warnings.invalid_method);
     }
 }

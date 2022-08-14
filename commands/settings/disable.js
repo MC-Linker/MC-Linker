@@ -1,42 +1,24 @@
 const Discord = require('discord.js');
-const fs = require('fs-extra');
 const utils = require('../../api/utils');
 const settings = require('../../api/settings');
-const { keys, getEmbedBuilder, addPh} = require('../../api/messages');
+const { keys, getEmbed, addPh } = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const subcommand = interaction.options.getSubcommand();
     const focused = interaction.options.getFocused().toLowerCase();
 
+    let matchingKeys;
     if(subcommand === 'advancements') {
-        const matchingTitles = await utils.searchAllAdvancements(focused);
-        interaction.respond(matchingTitles);
-    } else if(subcommand === 'stats') {
-        const respondArray = [];
-        ['entities', 'items'].forEach(imgType => {
-            fs.readdir(`./resources/images/minecraft/${imgType}`, (err, images) => {
-                if(err) return;
-
-                const matchingImages = images.filter(image => image.includes(focused.replaceAll(' ', '_')));
-                if (matchingImages.length >= 25) matchingImages.length = 25;
-
-                matchingImages.forEach(image => {
-                    let formattedImage = image.replaceAll('.png', '');
-                    formattedImage = formattedImage.split('_').map(word => word.cap()).join(' ');
-
-                    respondArray.push({
-                        name: formattedImage,
-                        value: image.replaceAll('.png', ''),
-                    });
-                });
-
-                if(imgType === 'items') {
-                    if(respondArray.length >= 25) respondArray.length = 25;
-                    interaction.respond(respondArray).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete));
-                }
-            });
-        });
+        matchingKeys = await utils.searchAllAdvancements(focused);
     }
+    else if(subcommand === 'stats') {
+        matchingKeys = await utils.searchAllStats(focused);
+    }
+
+    //Remove all description fields
+    matchingKeys.map(title => delete title.description);
+
+    interaction.respond(matchingKeys).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete.console));
 }
 
 async function execute(message, args) {
@@ -49,68 +31,71 @@ async function execute(message, args) {
         return;
     }
 
-    if (type === 'list') {
+    if(type === 'list') {
         const toList = args?.join(' ').toLowerCase();
 
         if(!toList) {
             message.respond(keys.commands.disable.warnings.no_list_type);
             return;
-        } else if(toList !== 'stats' && toList !== 'advancements' && toList !== 'commands') {
+        }
+        else if(toList !== 'stats' && toList !== 'advancements' && toList !== 'commands') {
             message.respond(keys.commands.disable.warnings.invalid_type);
             return;
         }
 
         const disabled = await settings.getDisabled(message.guildId, toList);
         if(disabled.length === 0) {
-            message.respond(keys.commands.disable.success.nothing_disabled, { "type": toList });
+            message.respond(keys.commands.disable.success.nothing_disabled, { 'type': toList });
             return;
         }
 
-        const listEmbed = getEmbedBuilder(keys.commands.disable.success.list.base, { "type": toList.cap() });
+        const listEmbed = getEmbed(keys.commands.disable.success.list.base, { 'type': toList.cap() });
 
         let counter = 1;
-        let listString = "";
-        for(let i = 0; i<disabled.length; i++) {
+        let listString = '';
+        for(let i = 0; i < disabled.length; i++) {
             let disable = disabled[i];
 
             if(toList === 'advancements') {
                 const matchingTitle = await utils.searchAllAdvancements(disable, true, true, 1);
                 disable = matchingTitle.shift()?.name ?? disable;
-            } else if (toList === 'stats') disable = disable.split('_').map(word => word.cap()).join(' ');
+            }
+            else if(toList === 'stats') {
+                const matchingStat = await utils.searchAllStats(disable, true, true, 1);
+                disable = matchingStat.shift()?.name ?? disable;
+            }
             else disable = disable.replace('_', ' ').cap();
 
-
-            listString += addPh(keys.commands.disable.success.list.final.fields.disabled.title, { disable }) + "\n";
+            listString += `${addPh(keys.commands.disable.success.list.final.embeds[0].fields[0].name, { disable })}\n`;
 
             //New field for every 25 items
-            if(counter === 24 || i === disabled.length-1) {
-                listEmbed.addField(
-                    listString,
-                    keys.commands.disable.success.list.final.fields.disabled.content,
-                    keys.commands.disable.success.list.final.fields.disabled.inline
-                );
-                listString = "";
-                counter = 0;
+            if(counter % 25 || i === disabled.length - 1) {
+                listEmbed.addFields(addPh(keys.commands.disable.success.list.final.embeds[0].fields[0], { disable: listString }));
+                listString = '';
             }
 
             counter++;
         }
 
         message.replyOptions({ embeds: [listEmbed] });
-    } else {
+    }
+    else {
         let toDisable = args?.join(' ').toLowerCase();
-        const argPlaceholder = { "disable": toDisable, type };
+        const argPlaceholder = { 'disable': toDisable, type };
 
-        if(!message.member.permissions.has(Discord.Permissions.FLAGS.ADMINISTRATOR)) {
+        if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
             message.respond(keys.commands.disable.warnings.no_permission);
             return;
-        } else if(!toDisable) {
+        }
+        else if(!toDisable) {
             message.respond(keys.commands.disable.warnings.no_disable, argPlaceholder);
             return;
-        } else if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
+        }
+        else if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
             message.respond(keys.commands.disable.warnings.invalid_type);
             return;
-        } else if(type === 'commands' && disabledCommands.includes(toDisable)) {
+        }
+        else if(type === 'commands' && disabledCommands.includes(toDisable)) {
             message.respond(keys.commands.disable.warnings.disabled_command, argPlaceholder);
             return;
         }
@@ -126,19 +111,22 @@ async function execute(message, args) {
 
             toDisable = command.name;
             formattedToDisable = toDisable.cap();
-        } else if(type === 'advancements') {
+        }
+        else if(type === 'advancements') {
             const matchingTitle = await utils.searchAllAdvancements(toDisable, true, true, 1);
             formattedToDisable = matchingTitle.shift()?.name ?? toDisable.cap();
-        } else if(type === 'stats') {
-            formattedToDisable = toDisable.split('_').map(word => word.cap()).join(' ');
+        }
+        else if(type === 'stats') {
+            const matchingStat = await utils.searchAllStats(toDisable, true, true, 1);
+            formattedToDisable = matchingStat.shift()?.name ?? toDisable.cap();
         }
 
         if(!await settings.disable(message.guildId, type, toDisable)) {
-            message.respond(keys.commands.disable.errors.could_not_disable, { type, "disable": formattedToDisable });
+            message.respond(keys.commands.disable.errors.could_not_disable, { type, 'disable': formattedToDisable });
             return;
         }
 
-        message.respond(keys.commands.disable.success.disabled, { type, "disable": formattedToDisable });
+        message.respond(keys.commands.disable.success.disabled, { type, 'disable': formattedToDisable });
     }
 }
 

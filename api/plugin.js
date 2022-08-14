@@ -1,13 +1,16 @@
+// noinspection HttpUrlsUsage
+
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
 const crypto = require('crypto');
 const express = require('express');
 const Discord = require('discord.js');
 const utils = require('./utils');
-const { keys, addPh, ph, getEmbedBuilder, defaultMessage } = require('./messages');
+const { keys, addPh, ph, getEmbed, defaultMessage } = require('./messages');
 const { botPort, pluginVersion } = require('../config.json');
 
 let pluginConnections = [];
+
 async function loadExpress(client) {
     pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
     const app = express();
@@ -18,13 +21,14 @@ async function loadExpress(client) {
     app.post('/chat', async (req, res) => {
         res.send('Success');
 
+        // noinspection JSUnresolvedVariable
         const player = req.body.player?.replaceAll(' ', '');
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
         const message = req.body.message;
         const channels = req.body.channels;
         const guildId = req.body.guild;
         const ip = req.body.ip;
-        const argPlaceholder = { ip, "username": player, "author_url": authorURL, message };
+        const argPlaceholder = { ip, 'username': player, 'author_url': authorURL, message };
 
         //Get connection JSON of guild
         const conn = pluginConnections.find(conn => conn.guildId === guildId && conn.ip === ip);
@@ -33,14 +37,15 @@ async function loadExpress(client) {
         //If no connection on that ip and not already warned
         if(!conn && !alreadyWarnedServers.includes(guildId)) {
             try {
-                for (const channel of channels) {
+                for(const channel of channels) {
                     await client.channels.cache.get(channel.id)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
                         .catch(() => {});
                 }
 
                 alreadyWarnedServers.push(guildId);
                 return;
-            } catch(ignored) {}
+            }
+            catch(ignored) {}
         }
 
         let chatEmbed;
@@ -51,8 +56,8 @@ async function loadExpress(client) {
 
             if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
-            const advancementKey = message.replaceAll('minecraft:', '').split('/');
-            const advancement = await utils.searchAdvancements(advancementKey[1], advancementKey[0], false, true, 1);
+            const [category, id] = message.replace('minecraft:', '').split('/');
+            const advancement = await utils.searchAdvancements(id, category, false, true, 1);
 
             advancementTitle = advancement[0]?.name;
             advancementDesc = advancement[0]?.description;
@@ -60,29 +65,44 @@ async function loadExpress(client) {
             if(!advancementDesc) advancementDesc = keys.commands.advancements.no_description_available;
             if(!advancementTitle) advancementTitle = message;
 
-            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.advancement, argPlaceholder, { "advancement_title": advancementTitle, "advancement_description": advancementDesc });
-        } else if(req.body.type === 'chat') {
-            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
+            chatEmbed = getEmbed(keys.api.plugin.success.messages.advancement, argPlaceholder, {
+                'advancement_title': advancementTitle,
+                'advancement_description': advancementDesc,
+            });
+        }
+        else if(req.body.type === 'chat') {
+            const guild = client.guilds.cache.get(guildId);
+
+            //Parse pings (@name)
+            let mentions = message.match(/@(\S+)/g);
+            for(const mention of mentions ?? []) {
+                const users = await guild.members.search({ query: mention.replace('@', '') });
+                argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
+            }
+
+            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
 
             let allWebhooks;
             //Fetch all webhooks in guild
             try {
-                allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
-            } catch(err) {}
+                allWebhooks = await guild.fetchWebhooks();
+            }
+            catch(err) {}
 
-            for (const channel of channels) {
+            for(const channel of channels) {
                 const discordChannel = client.channels.cache.get(channel.id);
 
                 if(!allWebhooks) {
-                    discordChannel?.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
                     return;
                 }
 
-                if (!channel.webhook) {
+                if(!channel.webhook) {
                     try {
                         discordChannel?.send({ embeds: [chatEmbed] })
                             .catch(() => {});
-                    } catch (ignored) {}
+                    }
+                    catch(ignored) {}
                     continue;
                 }
 
@@ -90,60 +110,73 @@ async function loadExpress(client) {
 
                 //Create new webhook if old one doesn't exist
                 if(!webhook) {
-                    if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(player, { reason: "ChatChannel to Minecraft", avatar: authorURL });
-                    else webhook = await discordChannel.createWebhook(player, { reason: "ChatChannel to Minecraft", avatar: authorURL });
+                    if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook({
+                        name: player,
+                        reason: 'ChatChannel to Minecraft',
+                        avatar: authorURL,
+                    });
+                    else webhook = await discordChannel.createWebhook({
+                        name: player,
+                        reason: 'ChatChannel to Minecraft',
+                        avatar: authorURL,
+                    });
 
                     //Fake interaction
-                    discordChannel.respond = () => discordChannel.send({ embeds: [getEmbedBuilder(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
+                    discordChannel.respond = () => discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
 
-                    const regChannel = await registerChannel(ip, guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
+                    const regChannel = await registerChannel(guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
                     if(!regChannel) {
                         webhook.delete();
                         return;
                     }
 
                     const pluginJson = {
-                        "ip": regChannel.ip,
-                        "version": regChannel.version.split('.')[1],
-                        "path": regChannel.path,
-                        "hash": regChannel.hash,
-                        "guild": regChannel.guild,
-                        "chat": true,
-                        "channels": regChannel.channels,
-                        "protocol": "plugin"
+                        'ip': regChannel.ip,
+                        'version': regChannel.version.split('.')[1],
+                        'path': regChannel.path,
+                        'hash': regChannel.hash,
+                        'guild': regChannel.guild,
+                        'chat': true,
+                        'channels': regChannel.channels,
+                        'protocol': 'plugin',
                     };
 
                     fs.outputJson(`./serverdata/connections/${guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {
                         if(err) {
                             webhook.delete();
-                            discordChannel.respond(keys.commands.chatchannel.errors.could_not_write_file);
+                            discordChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_write_file)] });
                         }
                     });
                 }
 
                 //Edit webhook if name doesnt match
-                if (webhook.name !== player) {
+                if(webhook.name !== player) {
                     await webhook.edit({
                         name: player,
                         avatar: authorURL,
                     });
                 }
 
-                if (discordChannel.isThread()) webhook.send({ threadId: discordChannel.id, content: message });
-                else webhook.send(message);
+                if(discordChannel.isThread()) webhook.send({
+                    threadId: discordChannel.id,
+                    content: argPlaceholder.message,
+                });
+                else webhook.send(argPlaceholder.message);
             }
             return;
-        } else {
-            chatEmbed = getEmbedBuilder(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { "timestamp_now": Date.now() });
+        }
+        else {
+            chatEmbed = getEmbed(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { 'timestamp_now': Date.now() });
         }
 
         //why not triple-catch (try/catch, .catch, optional chaining)
         try {
-            for (const channel of channels) {
+            for(const channel of channels) {
                 await client.channels.cache.get(channel.id)?.send({ embeds: [chatEmbed] })
                     .catch(() => {});
             }
-        } catch(ignored) {}
+        }
+        catch(ignored) {}
     });
 
     //Returns latest version
@@ -151,7 +184,9 @@ async function loadExpress(client) {
 
     app.get('/', (req, res) => res.send(keys.api.plugin.success.root_response));
 
-    app.listen(botPort, function () { console.log(addPh(keys.api.plugin.success.listening.console, { "port": this.address().port })) });
+    app.listen(botPort, function() {
+        console.log(addPh(keys.api.plugin.success.listening.console, { 'port': this.address().port }));
+    });
     return app;
 }
 
@@ -164,14 +199,14 @@ async function chat(message) {
         return false;
     });
 
-    let content = Discord.Util.escapeMarkdown(message.cleanContent)
+    let content = Discord.escapeMarkdown(message.cleanContent)
         .replace(/\\`|\\\*|\\_|\\~|\\\|/g, '');
     message.attachments?.forEach(attach => content += `\n${attach.url}`);
 
     const chatJson = {
-        "msg": content.replaceAll('\u200B', ''),
-        "username": message.author.username,
-        "private": false
+        'msg': content.replaceAll('\u200B', ''),
+        'username': message.author.username,
+        'private': false,
     };
 
     if(conn?.chat && !message.author.bot) {
@@ -179,12 +214,13 @@ async function chat(message) {
             await fetch(`http://${conn.ip}/chat/`, {
                 method: 'POST',
                 headers: {
-                    Authorization: `Basic ${conn.hash}`
+                    Authorization: `Basic ${conn.hash}`,
                 },
-                body: JSON.stringify(chatJson)
+                body: JSON.stringify(chatJson),
             });
             return true;
-        } catch(err) {
+        }
+        catch(err) {
             return false;
         }
     }
@@ -196,25 +232,26 @@ async function chatPrivate(msg, credentials, username, target, message = default
         if(!ip || !hash) return resolve(false);
 
         const chatJson = {
-            "msg": msg.replaceAll('\u200B', ''),
-            "username": username,
-            "private": true,
-            "target": target,
+            'msg': msg.replaceAll('\u200B', ''),
+            'username': username,
+            'private': true,
+            'target': target,
         };
 
         try {
             const resp = await fetch(`http://${ip}/chat/`, {
                 method: 'POST',
                 headers: {
-                    Authorization: `Basic ${hash}`
+                    Authorization: `Basic ${hash}`,
                 },
-                body: JSON.stringify(chatJson)
+                body: JSON.stringify(chatJson),
             });
 
             if(!await checkStatus(resp, message)) return resolve(false);
 
             resolve({ message: await resp.text(), status: resp.status });
-        } catch(err) {
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -226,9 +263,9 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
         const hash = crypto.randomBytes(32).toString('base64');
 
         const connectJson = {
-            "ip": ip,
-            "chat": false,
-            "guild": guildId
+            'ip': ip,
+            'chat': false,
+            'guild': guildId,
         };
 
         pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
@@ -240,17 +277,18 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
             try {
                 const resp = await fetch(`http://${conn.ip}/disconnect/`, {
                     headers: {
-                        Authorization: `Basic ${conn.hash}`
-                    }
+                        Authorization: `Basic ${conn.hash}`,
+                    },
                 });
-                if(!resp.ok) message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { "ip": conn.ip }));
-                else message.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, { "ip": conn.ip }));
-            } catch(err) {
-                message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { "ip": conn.ip }));
-            } finally {
-                pluginConnections.splice(connIndex, 1);
+                if(!resp.ok) message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { 'ip': conn.ip }));
+                else message.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, { 'ip': conn.ip }));
             }
-        } else if(conn) pluginConnections.splice(connIndex, 1);
+            catch(err) {
+                message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { 'ip': conn.ip }));
+            }
+        }
+        //Remove old connection
+        if(conn) pluginConnections.splice(connIndex, 1);
 
         try {
             let resp = await fetch(`http://${ip}/connect/`, {
@@ -259,17 +297,17 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
                 headers: {
                     Authorization: `Basic ${verifyCode}, Basic ${hash}`,
                     'Content-Type': 'application/json',
-                }
+                },
             });
             if(resp.status === 401) return resolve(401);
             else if(!await checkStatus(resp, message)) return resolve(false);
             resp = await resp.json();
 
             pluginConnections.push({
-                "guildId": guildId,
-                "hash": resp.hash,
-                "chat": false,
-                "ip": ip,
+                'guildId': guildId,
+                'hash': resp.hash,
+                'chat': false,
+                'ip': ip,
             });
             const update = await updateConn(message);
             if(!update) {
@@ -277,11 +315,13 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
                 //Try to disconnect
                 fetch(`http://${ip}/disconnect/`, {
                     headers: {
-                        Authorization: `Basic ${hash}`
-                    }
+                        Authorization: `Basic ${hash}`,
+                    },
                 }).catch(() => {});
-            } else resolve(resp);
-        } catch(err) {
+            }
+            else resolve(resp);
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -304,13 +344,13 @@ function disconnect(guildId, client, message = defaultMessage) {
 
             const resp = await fetch(`http://${ip}/disconnect/`, {
                 headers: {
-                    Authorization: `Basic: ${hash}`
-                }
+                    Authorization: `Basic: ${hash}`,
+                },
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
             const conn = pluginConnections[connIndex];
-            if(conn?.channels) for(const channel of conn.channels) {
+            for(const channel of conn?.channels ?? []) {
                 //Delete webhook
                 if(channel.webhook) {
                     const allWebhooks = await client.guilds.cache.get(guildId).fetchWebhooks();
@@ -323,7 +363,8 @@ function disconnect(guildId, client, message = defaultMessage) {
 
             const update = await updateConn(message);
             resolve(update);
-        } catch(err) {
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -354,9 +395,9 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
         }
 
         const connectJson = {
-            "guild": guildId,
-            "ip": ip,
-            "channel": channel,
+            'guild': guildId,
+            'ip': ip,
+            'channel': channel,
         };
 
         try {
@@ -366,7 +407,7 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
                 headers: {
                     Authorization: `Basic ${hash}`,
                     'Content-Type': 'application/json',
-                }
+                },
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
@@ -398,11 +439,13 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
                 //Try to disconnect
                 fetch(`http://${ip}/disconnect/`, {
                     headers: {
-                        Authorization: `Basic ${hash}`
-                    }
+                        Authorization: `Basic ${hash}`,
+                    },
                 }).catch(() => {});
-            } else resolve(resp);
-        } catch(err) {
+            }
+            else resolve(resp);
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -415,11 +458,11 @@ function registerChannel(guildId, channelId, types, webhookId, client, message =
         if(!ip || !hash) return resolve(false);
 
         const connectJson = {
-            "guild": guildId,
-            "ip": ip,
-            "channel": {
-                "id": channelId,
-                "types": [],
+            'guild': guildId,
+            'ip': ip,
+            'channel': {
+                'id': channelId,
+                'types': [],
             },
         };
 
@@ -438,7 +481,7 @@ function registerChannel(guildId, channelId, types, webhookId, client, message =
                 headers: {
                     Authorization: `Basic ${hash}`,
                     'Content-Type': 'application/json',
-                }
+                },
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
@@ -452,7 +495,7 @@ function registerChannel(guildId, channelId, types, webhookId, client, message =
                 return;
             }
 
-             //Get conn and then delete it
+            //Get conn and then delete it
             const conn = pluginConnections[connIndex];
             pluginConnections.splice(connIndex, 1);
 
@@ -485,11 +528,13 @@ function registerChannel(guildId, channelId, types, webhookId, client, message =
                 //Try to disconnect
                 fetch(`http://${ip}/disconnect/`, {
                     headers: {
-                        Authorization: `Basic ${hash}`
-                    }
+                        Authorization: `Basic ${hash}`,
+                    },
                 }).catch(() => {});
-            } else resolve(resp);
-        } catch(err) {
+            }
+            else resolve(resp);
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -504,8 +549,8 @@ function get(getPath, putPath, credentials, message = defaultMessage) {
         try {
             const resp = await fetch(`http://${ip}/file/get/?path=${getPath}`, {
                 headers: {
-                    Authorization: `Basic ${hash}`
-                }
+                    Authorization: `Basic ${hash}`,
+                },
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
@@ -514,15 +559,16 @@ function get(getPath, putPath, credentials, message = defaultMessage) {
             resp.body.pipe(fileStream);
 
             resp.body.on('error', err => {
-                message.respond(keys.api.plugin.errors.could_not_stream, { "path": getPath, "error": err });
+                message.respond(keys.api.plugin.errors.could_not_stream, { 'path': getPath, 'error': err });
                 resolve(false);
             });
             fileStream.on('finish', async () => {
-                message.respond(keys.api.plugin.success.get, { "path": getPath });
+                message.respond(keys.api.plugin.success.get, { 'path': getPath });
 
                 resolve(await fs.readFile(putPath));
             });
-        } catch(err) {
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -542,15 +588,16 @@ function put(getPath, putPath, credentials, message = defaultMessage) {
                 method: 'POST',
                 headers: {
                     Authorization: `Basic ${hash}`,
-                    'Content-length': fileStats.size
+                    'Content-length': fileStats.size,
                 },
-                body: readStream
+                body: readStream,
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
-            message.respond(keys.api.plugin.success.put, { "path": putPath });
+            message.respond(keys.api.plugin.success.put, { 'path': putPath });
             resolve(true);
-        } catch(err) {
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -565,13 +612,14 @@ async function list(folder, credentials, message = defaultMessage) {
         try {
             const resp = await fetch(`http://${ip}/file/list/?folder=${encodeURIComponent(folder)}`, {
                 headers: {
-                    Authorization: `Basic ${hash}`
-                }
+                    Authorization: `Basic ${hash}`,
+                },
             });
-            if (!await checkStatus(resp, message)) return resolve(false);
+            if(!await checkStatus(resp, message)) return resolve(false);
 
             resolve(resp.json());
-        } catch (err) {
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -586,14 +634,15 @@ function execute(command, credentials, message = defaultMessage) {
         try {
             const resp = await fetch(`http://${ip}/command/?cmd=${encodeURIComponent(command)}`, {
                 headers: {
-                    Authorization: `Basic ${hash}`
-                }
+                    Authorization: `Basic ${hash}`,
+                },
             });
 
             if(!await checkStatus(resp, message)) return resolve(false);
 
             resolve({ json: await resp.json(), status: resp.status });
-        } catch(err) {
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -608,13 +657,14 @@ function getOnlinePlayers(credentials, message = defaultMessage) {
         try {
             const resp = await fetch(`http://${ip}/players/`, {
                 headers: {
-                    Authorization: `Basic ${hash}`
-                }
+                    Authorization: `Basic ${hash}`,
+                },
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
             resolve(await resp.json());
-        } catch(err) {
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -627,7 +677,8 @@ function verify(ip, message = defaultMessage) {
             const resp = await fetch(`http://${ip}/verify/`);
             if(!await checkStatus(resp, message)) return resolve(false);
             resolve(true);
-        } catch(err) {
+        }
+        catch(err) {
             message.respond(keys.api.plugin.errors.no_response);
             resolve(false);
         }
@@ -649,7 +700,7 @@ async function updateConn(message = defaultMessage) {
     return new Promise(resolve => {
         fs.outputJson('./serverdata/connections/connections.json', pluginConnections, { spaces: 2 })
             .catch(err => {
-                message.respond(keys.api.plugin.errors.could_not_update, ph.fromError(err));
+                message.respond(keys.api.plugin.errors.could_not_update, ph.error(err));
                 resolve(false);
             }).then(() => resolve(true));
     });
@@ -657,18 +708,36 @@ async function updateConn(message = defaultMessage) {
 
 async function checkStatus(response, message = defaultMessage) {
     if(response.status === 400) {
-        message.respond(keys.api.plugin.errors.status_400, { "error": await response.text() });
+        message.respond(keys.api.plugin.errors.status_400, { 'error': await response.text() });
         return false;
-    } else if(response.status === 500) {
-        message.respond(keys.api.plugin.errors.status_500, { "error": await response.text() });
+    }
+    else if(response.status === 500) {
+        message.respond(keys.api.plugin.errors.status_500, { 'error': await response.text() });
         return false;
-    } else if(response.status === 404) {
+    }
+    else if(response.status === 404) {
         message.respond(keys.api.plugin.errors.status_404);
         return false;
-    } else if(response.status === 401) {
+    }
+    else if(response.status === 401) {
         message.respond(keys.api.plugin.errors.status_401);
         return false;
-    } else return !!response.ok;
+    }
+    else return !!response.ok;
 }
 
-module.exports = { loadExpress, chat, chatPrivate, connect, registerChannel, unregisterChannel, disconnect, get, put, list, execute, getOnlinePlayers, verify };
+module.exports = {
+    loadExpress,
+    chat,
+    chatPrivate,
+    connect,
+    registerChannel,
+    unregisterChannel,
+    disconnect,
+    get,
+    put,
+    list,
+    execute,
+    getOnlinePlayers,
+    verify,
+};

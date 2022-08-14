@@ -1,8 +1,9 @@
 const settings = require('../../api/settings');
 const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
-const { time } = require('@discordjs/builders');
-const { keys, ph, addPh, getEmbedBuilder } = require('../../api/messages');
+const mcData = require('minecraft-data')('1.19');
+const { time } = require('discord.js');
+const { keys, ph, addPh, getEmbed } = require('../../api/messages');
 
 async function autocomplete(interaction) {
     const focused = interaction.options.getFocused().toLowerCase();
@@ -13,8 +14,8 @@ async function autocomplete(interaction) {
     matchingTitles.forEach(title => {
         respondArray.push({
             name: title.name,
-            value: `${title.category}.${title.value}`
-        })
+            value: `${title.category}.${title.value}`,
+        });
     });
 
     interaction.respond(respondArray).catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete.console));
@@ -27,7 +28,8 @@ async function execute(message, args) {
     if(!advancement) {
         message.respond(keys.commands.advancements.warnings.no_advancement);
         return;
-    } else if(!user) {
+    }
+    else if(!user) {
         message.respond(keys.commands.advancements.warnings.no_username);
         return;
     }
@@ -35,9 +37,10 @@ async function execute(message, args) {
     let matchingAdvancement;
     if(advancement.includes('.')) {
         //Allows for category.advancement (i.e. nether.root)
-        const splitAdvancement = advancement.split('.');
-        matchingAdvancement = await utils.searchAdvancements(splitAdvancement[1], splitAdvancement[0], false, true, 1);
-    } else matchingAdvancement = await utils.searchAllAdvancements(advancement, true, true, 1);
+        const [category, id] = advancement.split('.');
+        matchingAdvancement = await utils.searchAdvancements(id, category, false, true, 1);
+    }
+    else matchingAdvancement = await utils.searchAllAdvancements(advancement, true, true, 1);
     matchingAdvancement = matchingAdvancement.shift();
 
     advancement = matchingAdvancement?.value ?? advancement;
@@ -48,7 +51,7 @@ async function execute(message, args) {
     if(await settings.isDisabled(message.guildId, 'advancements', advancement)) {
         message.respond(
             keys.commands.advancements.warnings.advancement_disabled,
-            { "advancement_title": advancementTitle }
+            { 'advancement_title': advancementTitle },
         );
         return;
     }
@@ -63,13 +66,18 @@ async function execute(message, args) {
     if(!amFile) return;
     const advancementData = JSON.parse(amFile);
 
-    const letters = advancementTitle.split('');
+    const letters = [...advancementTitle];
     let equals = '';
     for(const {} of letters) equals += '=';
 
-    const baseEmbed = getEmbedBuilder(
+    const baseEmbed = getEmbed(
         keys.commands.advancements.success.base,
-        ph.fromStd(message), { equals, "username": user.username ?? user, "advancement_title": advancementTitle, "advancement_description": advancementDesc }
+        ph.std(message), {
+            equals,
+            'username': user.username ?? user,
+            'advancement_title': advancementTitle,
+            'advancement_description': advancementDesc,
+        },
     );
 
     try {
@@ -82,17 +90,15 @@ async function execute(message, args) {
             const date = advancementData[filteredAdvancement]['criteria'][criteria];
             const done = advancementData[filteredAdvancement]['done'];
 
-            amEmbed = baseEmbed.addField(
-                keys.commands.advancements.success.final.fields.requirement.title,
-                addPh(keys.commands.advancements.success.final.fields.requirement.content, { "advancement_requirement": criteria.split(':').pop() })
-            ).addField(
-                keys.commands.advancements.success.final.fields.unlocked.title,
-                addPh(keys.commands.advancements.success.final.fields.unlocked.content, { "advancement_timestamp": time(new Date(date)) })
-            );
+            amEmbed = baseEmbed.addFields(addPh(
+                keys.commands.advancements.success.final.embeds[0].fields,
+                { 'advancement_requirement': criteria.split(':').pop(), 'advancement_timestamp': time(new Date(date)) },
+            ));
 
-            if(!done) amEmbed.setFooter({ text: keys.commands.advancements.success.not_done.footer.text, iconURL: keys.commands.advancements.success.not_done.footer.icon_url });
-            else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
-        } else {
+            if(!done) amEmbed.setFooter(keys.commands.advancements.success.not_done.embeds[0].footer);
+            else amEmbed.setFooter(keys.commands.advancements.success.done.embeds[0].footer);
+        }
+        else {
             const allAdvancements = Object.keys(advancementData);
             //Filter either by category + id or just id
             const filteredAdvancement = category ?
@@ -102,32 +108,44 @@ async function execute(message, args) {
             const criteriaKeys = Object.keys(advancementData[filteredAdvancement]['criteria']);
             const done = advancementData[filteredAdvancement]['done'];
 
-            let counter = 0;
+            let counter = 1;
             let amString = '';
-            for (const criteria of criteriaKeys) {
+            for(const criteria of criteriaKeys) {
                 const date = advancementData[filteredAdvancement]['criteria'][criteria];
+
+                let formattedCriteria = criteria.split(':').pop();
+                formattedCriteria = mcData.itemsByName[formattedCriteria]?.displayName ?? formattedCriteria;
+
                 amString +=
-                    `\n**${keys.commands.advancements.success.final.fields.requirement.title}**
-                    ${addPh(keys.commands.advancements.success.final.fields.requirement.content, { "advancement_requirement": criteria.split(':').pop() })}
+                    `\n${keys.commands.advancements.success.final.embeds[0].fields[0].name}
+                    ${addPh(keys.commands.advancements.success.final.embeds[0].fields[0].value,
+                        { 'advancement_requirement': formattedCriteria })}
                     
-                    **${keys.commands.advancements.success.final.fields.unlocked.title}**
-                    ${addPh(keys.commands.advancements.success.final.fields.unlocked.content, { "advancement_timestamp": time(new Date(date)) })}`;
+                    ${keys.commands.advancements.success.final.embeds[0].fields[1].name}
+                    ${addPh(keys.commands.advancements.success.final.embeds[0].fields[1].value,
+                        { 'advancement_timestamp': time(new Date(date)) })}`;
 
                 //Add one field for every 2 criteria
-                if(counter === 1 || criteriaKeys.length === 1) {
-                    amEmbed = baseEmbed.addField('\u200b', amString, true);
-                    amString = ''; counter = 0;
-                } else counter++;
+                if(counter % 2 || criteriaKeys.length === 1) {
+                    amEmbed = baseEmbed.addFields({ name: '\u200b', value: amString, inline: true });
+                    amString = '';
+                }
+
+                counter++;
             }
 
-            if(!done) amEmbed.setFooter({ text: keys.commands.advancements.success.not_done.footer.text, iconURL: keys.commands.advancements.success.not_done.footer.icon_url });
-            else amEmbed.setFooter({ text: keys.commands.advancements.success.done.footer.text, iconURL: keys.commands.advancements.success.done.footer.icon_url });
+            if(!done) amEmbed.setFooter(keys.commands.advancements.success.not_done.embeds[0].footer);
+            else amEmbed.setFooter(keys.commands.advancements.success.done.embeds[0].footer);
         }
 
-        console.log(addPh(keys.commands.advancements.success.final.console, { "advancement_title": advancementTitle, "username": user.username ?? user }));
+        console.log(addPh(keys.commands.advancements.success.final.console, {
+            'advancement_title': advancementTitle,
+            'username': user.username ?? user,
+        }));
         message.replyOptions({ embeds: [amEmbed] });
-    } catch (err) {
-        message.respond(keys.commands.advancements.warnings.not_completed, { "advancement_title": advancementTitle });
+    }
+    catch(err) {
+        message.respond(keys.commands.advancements.warnings.not_completed, { 'advancement_title': advancementTitle });
     }
 }
 

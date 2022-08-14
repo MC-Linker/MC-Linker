@@ -12,22 +12,23 @@ function restoreConnections() {
 
     const connections = [];
     //Loop over guild connections
-    for (const serverFolder of serverFolders) {
+    for(const serverFolder of serverFolders) {
         console.group(`Restoring ${serverFolder}...`);
 
         let serverConnection;
         try {
             serverConnection = fs.readJsonSync(`./serverdata/connections/${serverFolder}/connection.json`, 'utf-8');
-        } catch(err) {
+        }
+        catch(err) {
             console.log('Couldn\'t read connection file...', err);
             continue;
         }
 
         const connJson = {
-            "guildId": serverConnection.guild,
-            "hash": serverConnection.hash,
-            "chat": serverConnection.chat,
-            "ip": serverConnection.ip
+            'guildId': serverConnection.guild,
+            'hash': serverConnection.hash,
+            'chat': serverConnection.chat,
+            'ip': serverConnection.ip,
         };
         if(serverConnection.channel) connJson.channelId = serverConnection.channel;
 
