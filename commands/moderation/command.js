@@ -236,6 +236,46 @@ async function getPlaceholder(key, args) {
                 placeholder[attribute.name] = attribute.resource,
             );
             break;
+        case 'gamerules':
+            placeholder = [
+                'announceAdvancements',
+                'commandBlockOutput',
+                'disableElytraMovementCheck',
+                'disableRaids',
+                'doDaylightCycle',
+                'doEntityDrops',
+                'doFireTick',
+                'doInsomnia',
+                'doImmediateRespawn',
+                'doLimitedCrafting',
+                'doMobLoot',
+                'doMobSpawning',
+                'doPatrolSpawning',
+                'doTileDrops',
+                'doTraderSpawning',
+                'doWardenSpawning',
+                'doWeatherCycle',
+                'drowningDamage',
+                'fallDamage',
+                'fireDamage',
+                'forgiveDeadPlayers',
+                'freezeDamage',
+                'keepInventory',
+                'logAdminCommands',
+                'maxCommandChainLength',
+                'maxEntityCramming',
+                'mobGriefing',
+                'naturalRegeneration',
+                'playersSleepingPercentage',
+                'randomTickSpeed',
+                'reducedDebugInfo',
+                'sendCommandFeedback',
+                'showDeathMessages',
+                'spawnRadius',
+                'spectatorsGenerateChunks',
+                'universalAnger',
+            ];
+            break;
         case 'disabled_datapacks':
         case 'enabled_datapacks':
             const level = await getNBTFile(`level.dat`, `./serverdata/connections/${args.guild.id}/level.dat`);
@@ -650,7 +690,7 @@ async function getPlaceholder(key, args) {
             placeholder = args.commands;
             break;
         case 'slots':
-            const slots = [
+            placeholder = [
                 'armor.chest',
                 'armor.feet',
                 'armor.head',
@@ -662,17 +702,16 @@ async function getPlaceholder(key, args) {
                 'horse.chest',
                 'horse.armor',
             ];
+
             //Push extra slots
             for(let i = 0; i < 54; i++) {
-                if(i >= 0 && i <= 7) slots.push(`villager.${i}`);
-                if(i >= 0 && i <= 8) slots.push(`hotbar.${i}`);
-                if(i >= 0 && i <= 14) slots.push(`horse.${i}`);
-                if(i >= 0 && i <= 26) slots.push(`inventory.${i}`);
-                if(i >= 0 && i <= 26) slots.push(`enderchest.${i}`);
-                if(i >= 0 && i <= 53) slots.push(`container.${i}`);
+                if(i >= 0 && i <= 7) placeholder.push(`villager.${i}`);
+                if(i >= 0 && i <= 8) placeholder.push(`hotbar.${i}`);
+                if(i >= 0 && i <= 14) placeholder.push(`horse.${i}`);
+                if(i >= 0 && i <= 26) placeholder.push(`inventory.${i}`);
+                if(i >= 0 && i <= 26) placeholder.push(`enderchest.${i}`);
+                if(i >= 0 && i <= 53) placeholder.push(`container.${i}`);
             }
-
-            placeholder = slots;
             break;
         case 'loot':
             //Block Loot
