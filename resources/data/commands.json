@@ -4,6 +4,9 @@
       "": ["grant", "revoke"]
     },
     {
+      "": ["%target_selectors%"]
+    },
+    {
       "": ["everything", "from", "until", "through", "only"]
     },
     {
@@ -512,7 +515,7 @@
   ],
   "locate":[
     {
-      "": ["structure", "biome", "poit"]
+      "": ["structure", "biome", "poi"]
     },
     {
       "structure": ["%structures%", "%structure_tags%"],
