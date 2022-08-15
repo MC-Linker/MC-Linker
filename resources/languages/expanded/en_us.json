@@ -2274,7 +2274,9 @@
     "ban": {
       "name": "ban",
       "type": "ChatInput",
-      "default_member_permissions": "BanMembers",
+      "default_member_permissions": [
+        "BanMembers"
+      ],
       "long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
       "description": "Ban a player from the minecraft server.",
       "usage": "/ban <@mention/username> [reason]",
@@ -2297,7 +2299,9 @@
     "command": {
       "name": "command",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
       "description": "Execute any command on the minecraft-server.",
       "usage": "/command <command-name> [arguments]",
@@ -2378,7 +2382,9 @@
     "deop": {
       "name": "deop",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
       "description": "Deop players on the minecraft-server.",
       "usage": "/deop <@mention/username>",
@@ -2395,7 +2401,9 @@
     "gamemode": {
       "name": "gamemode",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
       "description": "Change the gamemode of a player on the minecraft-server.",
       "usage": "/gamemode <@mention/username> <gamemode>",
@@ -2436,7 +2444,9 @@
     "kick": {
       "name": "kick",
       "type": "ChatInput",
-      "default_member_permissions": "KickMembers",
+      "default_member_permissions": [
+        "KickMembers"
+      ],
       "long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
       "description": "Kick a player from the minecraft server.",
       "usage": "/kick <@mention/username> [reason]",
@@ -2459,7 +2469,9 @@
     "op": {
       "name": "op",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "OP players on the **minecraft-server**. Can only be used by admins.",
       "description": "OP players on the minecraft-server.",
       "usage": "/op <@mention/username>",
@@ -2476,7 +2488,9 @@
     "unban": {
       "name": "unban",
       "type": "ChatInput",
-      "default_member_permissions": "BanMembers",
+      "default_member_permissions": [
+        "BanMembers"
+      ],
       "long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
       "description": "Unban a banned player from the minecraft-server.",
       "usage": "/unban <@mention/username>",
@@ -2515,7 +2529,9 @@
     "chatchannel": {
       "name": "chatchannel",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
       "description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
       "usage": "/chatchannel add/remove <channel> [useWebhooks]",
@@ -2572,7 +2588,9 @@
     "connect": {
       "name": "connect",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Connect your minecraft java-edition server or account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
       "description": "Connect your minecraft server or account with the bot.",
       "usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> [port] [version]",
@@ -2722,7 +2740,9 @@
     "disable": {
       "name": "disable",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in /help <command>.",
       "description": "Disable a specific command/stat/advancement.",
       "usage": "/disable (commands|stats|advancements) <command|stat|advancement>\n/disable list (commands|stats|advancements)",
@@ -2801,7 +2821,9 @@
     "disconnect": {
       "name": "disconnect",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Disconnect your minecraft java-edition server or minecraft java-edition account from the bot and delete all saved credentials. To connect again, use `/connect`.",
       "description": "Disconnect your minecraft server or minecraft account from the bot.",
       "usage": "/disconnect (ftp|plugin|user)",
@@ -2827,7 +2849,9 @@
     "enable": {
       "name": "enable",
       "type": "ChatInput",
-      "default_member_permissions": "Administrator",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in `/help <command>`.",
       "description": "Enable a disabled command/stat/advancement (All enabled by default)",
       "usage": "/enable (commands|stats|advancements) <command|stat|advancement>",

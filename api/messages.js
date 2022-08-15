@@ -397,7 +397,15 @@ function getCommand(key) {
                 .setDescription(key.description)
                 .setDMPermission(key.dm_permission);
 
-            if(key.default_member_permissions) commandBuilder.setDefaultMemberPermissions(Discord.PermissionFlagsBits[key.default_member_permissions]);
+            if(key.default_member_permissions) {
+                const permissionBits = new Discord.PermissionsBitField();
+                for(const permission of key.default_member_permissions) {
+                    permissionBits.add(Discord.PermissionFlagsBits[permission]);
+                }
+
+                commandBuilder.setDefaultMemberPermissions(permissionBits.bitfield);
+            }
+
 
             for(const option of key.options) {
                 addSlashCommandOption(commandBuilder, option);
@@ -413,8 +421,14 @@ function getCommand(key) {
                 .setType(key.type)
                 .setDMPermission(key.dm_permission);
 
-            if(key.default_member_permissions) commandBuilder.setDefaultMemberPermissions(Discord.PermissionFlagsBits[key.default_member_permissions]);
+            if(key.default_member_permissions) {
+                const permissionBits = new Discord.PermissionsBitField();
+                for(const permission of key.default_member_permissions) {
+                    permissionBits.add(Discord.PermissionFlagsBits[permission]);
+                }
 
+                commandBuilder.setDefaultMemberPermissions(permissionBits.bitfield);
+            }
 
             break;
     }

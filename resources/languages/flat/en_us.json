@@ -1132,7 +1132,7 @@
 
   "data.ban.name": "ban",
   "data.ban.type": "ChatInput",
-  "data.ban.default_member_permissions": "BanMembers",
+  "data.ban.default_member_permissions": ["BanMembers"],
   "data.ban.long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
   "data.ban.description": "Ban a player from the minecraft server.",
   "data.ban.usage": "/ban <@mention/username> [reason]",
@@ -1152,7 +1152,7 @@
 
   "data.command.name": "command",
   "data.command.type": "ChatInput",
-  "data.command.default_member_permissions": "Administrator",
+  "data.command.default_member_permissions": ["Administrator"],
   "data.command.long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
   "data.command.description": "Execute any command on the minecraft-server.",
   "data.command.usage": "/command <command-name> [arguments]",
@@ -1178,7 +1178,7 @@
 
   "data.deop.name": "deop",
   "data.deop.type": "ChatInput",
-  "data.deop.default_member_permissions": "Administrator",
+  "data.deop.default_member_permissions": ["Administrator"],
   "data.deop.long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
   "data.deop.description": "Deop players on the minecraft-server.",
   "data.deop.usage": "/deop <@mention/username>",
@@ -1192,7 +1192,7 @@
 
   "data.gamemode.name": "gamemode",
   "data.gamemode.type": "ChatInput",
-  "data.gamemode.default_member_permissions": "Administrator",
+  "data.gamemode.default_member_permissions": ["Administrator"],
   "data.gamemode.long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
   "data.gamemode.description": "Change the gamemode of a player on the minecraft-server.",
   "data.gamemode.usage": "/gamemode <@mention/username> <gamemode>",
@@ -1220,7 +1220,7 @@
 
   "data.kick.name": "kick",
   "data.kick.type": "ChatInput",
-  "data.kick.default_member_permissions": "KickMembers",
+  "data.kick.default_member_permissions": ["KickMembers"],
   "data.kick.long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
   "data.kick.description": "Kick a player from the minecraft server.",
   "data.kick.usage": "/kick <@mention/username> [reason]",
@@ -1240,7 +1240,7 @@
 
   "data.op.name": "op",
   "data.op.type": "ChatInput",
-  "data.op.default_member_permissions": "Administrator",
+  "data.op.default_member_permissions": ["Administrator"],
   "data.op.long_description": "OP players on the **minecraft-server**. Can only be used by admins.",
   "data.op.description": "OP players on the minecraft-server.",
   "data.op.usage": "/op <@mention/username>",
@@ -1255,7 +1255,7 @@
 
   "data.unban.name": "unban",
   "data.unban.type": "ChatInput",
-  "data.unban.default_member_permissions": "BanMembers",
+  "data.unban.default_member_permissions": ["BanMembers"],
   "data.unban.long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
   "data.unban.description": "Unban a banned player from the minecraft-server.",
   "data.unban.usage": "/unban <@mention/username>",
@@ -1289,7 +1289,7 @@
 
   "data.chatchannel.name": "chatchannel",
   "data.chatchannel.type": "ChatInput",
-  "data.chatchannel.default_member_permissions": "Administrator",
+  "data.chatchannel.default_member_permissions": ["Administrator"],
   "data.chatchannel.long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
   "data.chatchannel.description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
   "data.chatchannel.usage": "/chatchannel add/remove <channel> [useWebhooks]",
@@ -1326,7 +1326,7 @@
 
   "data.connect.name": "connect",
   "data.connect.type": "ChatInput",
-  "data.connect.default_member_permissions": "Administrator",
+  "data.connect.default_member_permissions": ["Administrator"],
   "data.connect.long_description": "Connect your minecraft java-edition server or account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
   "data.connect.description": "Connect your minecraft server or account with the bot.",
   "data.connect.usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> [port] [version]",
@@ -1414,7 +1414,7 @@
 
   "data.disable.name": "disable",
   "data.disable.type": "ChatInput",
-  "data.disable.default_member_permissions": "Administrator",
+  "data.disable.default_member_permissions": ["Administrator"],
   "data.disable.long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in /help <command>.",
   "data.disable.description": "Disable a specific command/stat/advancement.",
   "data.disable.usage": "/disable (commands|stats|advancements) <command|stat|advancement>\n/disable list (commands|stats|advancements)",
@@ -1472,7 +1472,7 @@
 
   "data.disconnect.name": "disconnect",
   "data.disconnect.type": "ChatInput",
-  "data.disconnect.default_member_permissions": "Administrator",
+  "data.disconnect.default_member_permissions": ["Administrator"],
   "data.disconnect.long_description": "Disconnect your minecraft java-edition server or minecraft java-edition account from the bot and delete all saved credentials. To connect again, use `/connect`.",
   "data.disconnect.description": "Disconnect your minecraft server or minecraft account from the bot.",
   "data.disconnect.usage": "/disconnect (ftp|plugin|user)",
@@ -1494,7 +1494,7 @@
 
   "data.enable.name": "enable",
   "data.enable.type": "ChatInput",
-  "data.enable.default_member_permissions": "Administrator",
+  "data.enable.default_member_permissions": ["Administrator"],
   "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in `/help <command>`.",
   "data.enable.description": "Enable a disabled command/stat/advancement (All enabled by default)",
   "data.enable.usage": "/enable (commands|stats|advancements) <command|stat|advancement>",
