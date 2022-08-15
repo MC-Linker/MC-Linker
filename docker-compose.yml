@@ -13,16 +13,3 @@ services:
       - type: bind
         source: ./userdata
         target: /usr/src/app/userdata
-  syncthing:
-    image: syncthing/syncthing
-    container_name: syncthing
-    hostname: mc-linker-gcp
-    environment:
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - ./:/var/syncthing/MC-Linker
-    ports:
-      - "8384:8384" # Web UI
-      - "22000:22000/tcp" # TCP file transfers
-    restart: unless-stopped
