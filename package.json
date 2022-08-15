@@ -30,7 +30,8 @@
     "node-fetch": "^2.6.7",
     "prismarine-nbt": "^2.2.1",
     "probe-image-size": "^7.2.3",
-    "topgg-autoposter": "^2.0.1"
+    "topgg-autoposter": "^2.0.1",
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
     "@discordjs/rest": "^1.0.1",
