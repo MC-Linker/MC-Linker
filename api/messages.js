@@ -394,10 +394,10 @@ function getCommand(key) {
 
             commandBuilder = new Discord.SlashCommandBuilder()
                 .setName(key.name)
-                .setDescription(key.description);
+                .setDescription(key.description)
+                .setDMPermission(key.dm_permission);
 
-            if(key.default_member_permissions) commandBuilder.setDefaultMemberPermissions(key.default_member_permissions);
-            if(key.dm_permission) commandBuilder.setDMPermission(key.dm_permission);
+            if(key.default_member_permissions) commandBuilder.setDefaultMemberPermissions(Discord.PermissionFlagsBits[key.default_member_permissions]);
 
             for(const option of key.options) {
                 addSlashCommandOption(commandBuilder, option);
@@ -410,11 +410,11 @@ function getCommand(key) {
 
             commandBuilder = new Discord.ContextMenuCommandBuilder()
                 .setName(key.name)
-                .setType(key.type);
+                .setType(key.type)
+                .setDMPermission(key.dm_permission);
 
+            if(key.default_member_permissions) commandBuilder.setDefaultMemberPermissions(Discord.PermissionFlagsBits[key.default_member_permissions]);
 
-            if(key.default_member_permissions) commandBuilder.setDefaultMemberPermissions(key.default_member_permissions);
-            if(key.dm_permission) commandBuilder.setDMPermission(key.dm_permission);
 
             break;
     }
