@@ -1,8 +1,12 @@
+//noinspection JSUnresolvedVariable
+
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
 const { token, clientId, guildId } = require('../config.json');
 const { keys, getCommand } = require('../api/messages');
 const fs = require('fs-extra');
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 
 /*
  * Converts the first letter of a string to uppercase.
@@ -17,25 +21,36 @@ let deployGlobal = false;
 let deleteGuild = false;
 let deleteGlobal = false;
 
-process.argv.slice(2).forEach(arg => {
-    arg = arg.split('=');
-    arg[1] = arg[1].split(',');
+const argv = yargs(hideBin(process.argv))
+    .command(['deploy [location..]', 'dep'], 'Deploys the slash commands in the specified location.', yargs => {
+        yargs.positional('location', {
+            description: 'The location to deploy the commands to. Valid locations are: guild, global. If no location is specified, the commands will be deployed globally.',
+            type: 'string',
+            choices: ['guild', 'global'],
+            default: 'global',
+        });
+    })
+    .command(['delete [location..]', 'del'], 'Deletes the slash commands from the specified location.', yargs => {
+        yargs.positional('location', {
+            description: 'The location to delete the commands from. Valid locations are: guild, global. If no location is specified, the commands will be deleted globally.',
+            type: 'string',
+            choices: ['guild', 'global'],
+            default: 'global',
+        });
+    })
+    .strict()
+    .help()
+    .argv;
 
-    if(arg[0] === 'deploy') {
-        // noinspection JSUnresolvedFunction
-        arg[1].forEach(type => {
-            if(type === 'guild') deployGuild = true;
-            else if(type === 'global') deployGlobal = true;
-        });
-    }
-    if(arg[0] === 'delete') {
-        // noinspection JSUnresolvedFunction
-        arg[1].forEach(type => {
-            if(type === 'guild') deleteGuild = true;
-            else if(type === 'global') deleteGlobal = true;
-        });
-    }
-});
+if(argv._.includes('deploy') || argv._.includes('dep')) {
+    deployGuild = argv.location.includes('guild');
+    deployGlobal = argv.location.includes('global');
+}
+if(argv._.includes('delete') || argv._.includes('del')) {
+    deleteGuild = argv.location.includes('guild');
+    deleteGlobal = argv.location.includes('global');
+}
+
 
 const excludedDisable = ['enable', 'disable', 'help'];
 const excludedHelp = ['help'];
@@ -73,9 +88,7 @@ for(const folder of commandFolders) {
 }
 
 //Push command choices
-// noinspection JSUnresolvedVariable
 disableBuilder.options[0].options[0].choices = disableChoices; //Set command choices
-// noinspection JSUndefinedPropertyAssignment
 helpBuilder.options[0].choices = helpChoices; //Set command and category choices
 
 commands.push(disableBuilder.toJSON());
@@ -83,7 +96,7 @@ commands.push(helpBuilder.toJSON());
 
 
 // noinspection JSCheckFunctionSignatures,JSClosureCompilerSyntax
-const rest = new REST({ version: '9' }).setToken(token);
+const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
     try {
