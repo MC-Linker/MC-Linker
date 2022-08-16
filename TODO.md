@@ -1,9 +1,8 @@
 # TODO BOT
 
-+ Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...), maybe OOP
++ Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...) and OOP
 + Better logs (multilevel, more information)
 + `/chatchannel list` (**Lists chatchannels**)
-+ Parse pings in chat channel (@username#tag), **Testing**
 + Switch from express to fastify
 + Check Bot's permissions before doing stuff
 + Get online player's inventories from the plugin instead of file (for faster updates)
@@ -11,14 +10,13 @@
 + Create isometric block, item and entity renders in code
 + Cache user and server data for better performance
 + **Add JSDoc**
-+ **Update to Discord.JS v14**
 + DM command author when response fails to send
 + Extract the `/command` data to different files
 + Support for floodgate (bedrock) uuids
 + Add button to show more information for each slot (button grid) in `/inventory`
-+ Send error when connecting with a different server to already connected plugin
++ **Send error when connecting with a different server to already connected plugin**
 + Mod support (get textures and names of mod items, etc.)
-+ **Connect Teams with Discord Roles**
++ **Connect Minecraft Teams with Discord Roles**
 + Properly parse time and distance for stats (minutes, hours, days, weeks) (centimeters, meters, kilometers)
 + `/online` (list of online players)
 + `/logs` (show all logs in time span, download logs from /logs folder)
@@ -36,7 +34,7 @@
 + `/datapacks` (List and Upload option for datapacks)
 + `/plugins` (List and Upload option for plugins)
 + `/usercache` (List of users that joined the server)
-+ `/op list` & `/ban list` & `/whitelist list` & `/connect list` (list of cool stuff)
++ `/op list` & `/ban list` & `/whitelist list` & `/connect list` (lists of cool stuff)
 + `/gamerule`
 + `/seed`
 + `/restart` & `/stop` & `/start`
