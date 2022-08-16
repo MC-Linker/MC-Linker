@@ -22,33 +22,46 @@ let deleteGuild = false;
 let deleteGlobal = false;
 
 const argv = yargs(hideBin(process.argv))
-    .command(['deploy [location..]', 'dep'], 'Deploys the slash commands in the specified location.', yargs => {
-        yargs.positional('location', {
-            description: 'The location to deploy the commands to. Valid locations are: guild, global. If no location is specified, the commands will be deployed globally.',
-            type: 'string',
-            choices: ['guild', 'global'],
-            default: 'global',
-        });
-    })
-    .command(['delete [location..]', 'del'], 'Deletes the slash commands from the specified location.', yargs => {
-        yargs.positional('location', {
-            description: 'The location to delete the commands from. Valid locations are: guild, global. If no location is specified, the commands will be deleted globally.',
-            type: 'string',
-            choices: ['guild', 'global'],
-            default: 'global',
-        });
+    .command(['deploy [location]', 'dep'], 'Deploys the slash commands in the specified location.')
+    .command(['delete', 'del'], 'Deletes the slash commands from the specified location.')
+    .option('location', {
+        description: 'The location to deploy the commands to. Valid locations are: guild, global, all. If no location is specified, the commands will be deployed globally.',
+        type: 'string',
+        choices: ['guild', 'global', 'all'],
+        default: 'global',
+        global: true,
+        alias: ['loc', 'l'],
     })
     .strict()
     .help()
     .argv;
 
+/*const argv = yargs(hideBin(process.argv))
+    .option('deploy', {
+        description: 'Deploys the slash commands in the specified location. Valid locations are guild, global and all. If no location is specified, the commands will be deployed globally.',
+        type: 'string',
+        alias: 'dep',
+        choices: ['guild', 'global', 'all'],
+        default: 'global'
+    })
+    .option('delete', {
+        description: 'Deletes the slash commands in the specified location. Valid locations are guild, global and all. If no location is specified, the commands will be deleted globally.',
+        type: 'string',
+        alias: 'del',
+        choices: ['guild', 'global', 'all'],
+        default: 'global'
+    })
+    .strict()
+    .help()
+    .argv;*/
+
 if(argv._.includes('deploy') || argv._.includes('dep')) {
-    deployGuild = argv.location.includes('guild');
-    deployGlobal = argv.location.includes('global');
+    deployGuild = argv.location.includes('guild') || argv.location.includes('all');
+    deployGlobal = argv.location.includes('global') || argv.location.includes('all');
 }
 if(argv._.includes('delete') || argv._.includes('del')) {
-    deleteGuild = argv.location.includes('guild');
-    deleteGlobal = argv.location.includes('global');
+    deleteGuild = argv.location.includes('guild') || argv.location.includes('all');
+    deleteGlobal = argv.location.includes('global') || argv.location.includes('all');
 }
 
 
