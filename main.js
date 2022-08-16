@@ -201,11 +201,12 @@ client.on('interactionCreate', async interaction => {
     else if(interaction.isButton()) {
         console.log(addPh(keys.buttons.clicked.console, { 'button_id': interaction.customId }, ph.std(interaction)));
 
-        await interaction.deferReply({ ephemeral: true });
         if(interaction.customId.startsWith('disable')) {
+            await interaction.deferReply({ ephemeral: true });
             await disableButton.execute(interaction);
         }
         else if(interaction.customId.startsWith('enable')) {
+            await interaction.deferReply({ ephemeral: true });
             await enableButton.execute(interaction);
         }
     }
