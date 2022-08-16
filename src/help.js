@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const { discordLink } = require('../config.json');
-const { keys, ph, addPh, getEmbed, getActionRow } = require('../api/messages');
+const { keys, ph, addPh, getEmbed, getActionRows } = require('../api/messages');
 const settings = require('../api/settings');
 
 async function execute(message, args) {
@@ -58,21 +58,21 @@ async function execute(message, args) {
             );
 
             if(await settings.isDisabled(message.guildId, 'commands', command.name)) {
-                const enableRow = getActionRow(
+                const enableRows = getActionRows(
                     keys.commands.help.success.enable_button,
                     { 'command_name': command.name }, ph.emojis(),
                 );
 
                 helpEmbed.setDescription(keys.commands.help.success.disabled.embeds[0].description);
-                message.replyOptions({ embeds: [helpEmbed], components: [enableRow] });
+                message.replyOptions({ embeds: [helpEmbed], components: enableRows });
             }
             else {
-                const disableRow = getActionRow(
+                const disableRows = getActionRows(
                     keys.commands.help.success.disable_button,
                     { 'command_name': command.name }, ph.emojis(),
                 );
 
-                message.replyOptions({ embeds: [helpEmbed], components: [disableRow] });
+                message.replyOptions({ embeds: [helpEmbed], components: disableRows });
             }
         }
     }

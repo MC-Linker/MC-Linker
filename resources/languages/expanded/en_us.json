@@ -877,6 +877,15 @@
           ],
           "console": "No channel specified"
         },
+        "no_channels": {
+          "embeds": [
+            {
+              "title": "No Channels Added",
+              "description": "%emoji_warning% There are no added channels."
+            }
+          ],
+          "console": "No channels added"
+        },
         "no_text_channel": {
           "embeds": [
             {
@@ -895,11 +904,19 @@
           ],
           "console": "Channel not added"
         },
-        "not_author": {
+        "not_author_select": {
           "embeds": [
             {
               "title": "No Permission",
               "description": "%emoji_warning% Only the command sender can select message types."
+            }
+          ]
+        },
+        "not_author_button": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "%emoji_warning% Only the command sender can choose a channel."
             }
           ]
         },
@@ -1018,7 +1035,38 @@
             }
           ],
           "console": "Successfully removed chat channel"
-        }
+        },
+        "list": {
+          "embeds": [
+            {
+              "title": "List Chat Channels",
+              "description": "%emoji_success% %channel%",
+              "fields": [
+                {
+                  "name": "Logging",
+                  "value": "%channel_types%"
+                },
+                {
+                  "name": "Webhook Mode",
+                  "value": "%webhooks%"
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed chat channel"
+        },
+        "channel_button": {
+          "components": [
+            {
+              "type": "Button",
+              "label": "Channel #%index1%",
+              "custom_id": "channel_%index%",
+              "style": "Success"
+            }
+          ]
+        },
+        "enabled": "Enabled",
+        "disabled": "Disabled"
       }
     },
     "connect": {
@@ -2582,6 +2630,11 @@
               ]
             }
           ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "List all chatchannels."
         }
       ]
     },
