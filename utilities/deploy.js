@@ -36,25 +36,6 @@ const argv = yargs(hideBin(process.argv))
     .help()
     .argv;
 
-/*const argv = yargs(hideBin(process.argv))
-    .option('deploy', {
-        description: 'Deploys the slash commands in the specified location. Valid locations are guild, global and all. If no location is specified, the commands will be deployed globally.',
-        type: 'string',
-        alias: 'dep',
-        choices: ['guild', 'global', 'all'],
-        default: 'global'
-    })
-    .option('delete', {
-        description: 'Deletes the slash commands in the specified location. Valid locations are guild, global and all. If no location is specified, the commands will be deleted globally.',
-        type: 'string',
-        alias: 'del',
-        choices: ['guild', 'global', 'all'],
-        default: 'global'
-    })
-    .strict()
-    .help()
-    .argv;*/
-
 if(argv._.includes('deploy') || argv._.includes('dep')) {
     deployGuild = argv.location.includes('guild') || argv.location.includes('all');
     deployGlobal = argv.location.includes('global') || argv.location.includes('all');
