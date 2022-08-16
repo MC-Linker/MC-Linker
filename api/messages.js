@@ -242,8 +242,7 @@ function reply(interaction, key, ...placeholders) {
     }
 
     if(key.components) {
-        const actionRow = getActionRow(key, placeholders);
-        if(actionRow) options.components.push(actionRow); //Add components message options
+        options.components = getActionRows(key, placeholders); //Add components message options
     }
 
     //Reply to interaction
@@ -303,20 +302,19 @@ function getEmbed(key, ...placeholders) {
     return embed;
 }
 
-function getActionRow(key, ...placeholders) {
+function getActionRows(key, ...placeholders) {
     if(!key) return console.error(keys.api.messages.errors.no_component_key.console);
 
-    const actionRow = new Discord.ActionRowBuilder();
+    const allComponents = key.components?.map(component => getComponent(component, ...placeholders))
+        ?.filter(component => component !== undefined);
 
-    for(let component of key.components) {
-        component = getComponent(component, ...placeholders);
-        if(component) actionRow.addComponents(component);
-    }
-
-    return actionRow;
+    return createActionRows(allComponents);
 }
 
 function getComponent(key, ...placeholders) {
+    //Get first component
+    if(key.components) key = key.components[0];
+
     if(!key.type) return;
     key = addPh(key, ...placeholders);
 
@@ -578,6 +576,21 @@ function addSlashCommandOption(builder, key) {
     }
 }
 
+function createActionRows(components) {
+    const actionRows = [];
+    let currentRow = new Discord.ActionRowBuilder();
+
+    for(let i=0; i<components.length; i++) {
+        if(i % 5 === 0 && i > 0) {
+            actionRows.push(currentRow);
+            currentRow = new Discord.ActionRowBuilder();
+        }
+
+        currentRow.addComponents(components[i]);
+    }
+
+    return actionRows.length === 0 ? [currentRow] : actionRows;
+}
 
 function getUsersFromMention(client, mention) {
     if(typeof mention !== 'string') return [];
@@ -628,8 +641,10 @@ module.exports = {
     addPh,
     getEmbed,
     getCommand,
-    getActionRow,
+    getActionRows,
+    getComponent,
     addResponseMethods,
+    createActionRows,
     defaultMessage,
     getUsersFromMention,
     getArgs,

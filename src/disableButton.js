@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const settings = require('../api/settings');
-const { keys, ph, getEmbed, getActionRow } = require('../api/messages');
+const { keys, ph, getEmbed, getActionRows } = require('../api/messages');
 
 async function execute(interaction) {
     if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
@@ -22,7 +22,7 @@ async function execute(interaction) {
 
     const command = keys.data[commandName];
 
-    const enableRow = getActionRow(keys.commands.help.success.enable_button, { 'command_name': commandName }, ph.emojis());
+    const enableRows = getActionRows(keys.commands.help.success.enable_button, { 'command_name': commandName }, ph.emojis());
     // noinspection JSUnresolvedVariable
     const helpEmbed = getEmbed(
         keys.commands.help.success.command,
@@ -36,7 +36,7 @@ async function execute(interaction) {
     ).setDescription(keys.buttons.disable.success.help.embeds[0].description)
         .setColor(keys.buttons.disable.success.help.embeds[0].color);
 
-    interaction.message.edit({ embeds: [helpEmbed], components: [enableRow] });
+    interaction.message.edit({ embeds: [helpEmbed], components: enableRows });
 }
 
 module.exports = { execute };
