@@ -2,27 +2,27 @@
 
 + Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...) and OOP
 + Better logs (multilevel, more information)
-+ `/chatchannel list` (**Lists chatchannels**)
-+ Switch from express to fastify
 + Check Bot's permissions before doing stuff
 + Get online player's inventories from the plugin instead of file (for faster updates)
 + Store data files in user and server folder (only for connected users)
 + Create isometric block, item and entity renders in code
 + Cache user and server data for better performance
-+ **Add JSDoc**
++ Add JSDoc
 + DM command author when response fails to send
 + Extract the `/command` data to different files
 + Support for floodgate (bedrock) uuids
-+ Add button to show more information for each slot (button grid) in `/inventory`
-+ **Send error when connecting with a different server to already connected plugin**
++ **Add button to show more information for each slot (button grid) in `/inventory`**
++ Send error when connecting with a different server to already connected plugin
 + Mod support (get textures and names of mod items, etc.)
-+ **Connect Minecraft Teams with Discord Roles**
-+ Properly parse time and distance for stats (minutes, hours, days, weeks) (centimeters, meters, kilometers)
++ Connect Minecraft Teams with Discord Roles
++ Properly parse time and distance for stats (miNutes, hours, days, weeks) (centimeters, meters, kilometers)
++ `/chatconsole` (log console in code blocks)
 + `/online` (list of online players)
 + `/logs` (show all logs in time span, download logs from /logs folder)
-+ `/stats @user statTab` (more stats shown with one command)
++ `/stats statTab @user` (more stats shown with one command)
 + `/schematics` (list, 3d view and upload of schematics)
-+ Use already downloaded files to execute commands (only for connected users otherwise downloaded files could be replaced by someone else who connected to the same uuid).
++ Use already downloaded files to execute commands (only for connected users otherwise downloaded files could be
+  replaced by someone else who connected to the same uuid).
 + `/settings` (language settings and more)
 + `/totem` (Generate totem from skin)
 + `/scoreboard` (image of the specified scoreboard)
