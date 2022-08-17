@@ -23,7 +23,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.25",
     "discord.js": "^14.1.1",
-    "express": "^4.17.3",
+    "fastify": "^4.5.0",
     "fs-extra": "^10.1.0",
     "ftp-sftp": "^1.0.2",
     "minecraft-data": "^3.9.1",

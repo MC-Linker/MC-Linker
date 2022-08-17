@@ -196,7 +196,6 @@ client.on('interactionCreate', async interaction => {
         catch(err) {
             await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err)));
         }
-
     }
     else if(interaction.isButton()) {
         console.log(addPh(keys.buttons.clicked.console, { 'button_id': interaction.customId }, ph.std(interaction)));

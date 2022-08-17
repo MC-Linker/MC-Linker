@@ -887,23 +887,16 @@
   "api.plugin.success.messages.start.embeds.0.description": "%emoji_startup% **%message%**",
   "api.plugin.success.messages.start.embeds.0.color": "Green",
   "api.plugin.success.messages.start.embeds.0.timestamp": "%timestamp_now%",
-
   "api.plugin.success.messages.close.embeds.0.description": "%emoji_shutdown% **%message%**",
   "api.plugin.success.messages.close.embeds.0.color": "Red",
   "api.plugin.success.messages.close.embeds.0.timestamp": "%timestamp_now%",
-
-
   "api.plugin.success.get.console": "Got file [%path%]",
   "api.plugin.success.put.console": "Put file [%path%]",
-  "api.plugin.success.listening.console": "Listening on port %port%",
+  "api.plugin.success.listening.console": "Listening on %address%",
   "api.plugin.success.root_response": "To invite the MC Linker, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>",
-
-
-
   "api.utils.errors.could_not_get_uuid.embeds.0.title": "Could Not Get UUID",
   "api.utils.errors.could_not_get_uuid.embeds.0.description": "%emoji_error% **%username%** is not a valid minecraft java edition account name.",
   "api.utils.errors.could_not_get_uuid.console": "Could not get uuid of %username%",
-
   "api.utils.errors.could_not_read_server_file.embeds.0.title": "Server Not Connected",
   "api.utils.errors.could_not_read_server_file.embeds.0.description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
   "api.utils.errors.could_not_read_server_file.console": "Could not read server file",

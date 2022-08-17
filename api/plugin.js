@@ -3,7 +3,7 @@
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
 const crypto = require('crypto');
-const express = require('express');
+const Fastify = require('fastify');
 const Discord = require('discord.js');
 const utils = require('./utils');
 const { keys, addPh, ph, getEmbed, defaultMessage } = require('./messages');
@@ -13,21 +13,19 @@ let pluginConnections = [];
 
 async function loadExpress(client) {
     pluginConnections = await fs.readJson('./serverdata/connections/connections.json', 'utf-8');
-    const app = express();
-    app.use(express.json());
+    const fastify = Fastify();
 
     const alreadyWarnedServers = []; //Only warn for the same server once each restart
 
-    app.post('/chat', async (req, res) => {
-        res.send('Success');
+    fastify.post('/chat', async (request, reply) => {
+        reply.send('Success');
 
-        // noinspection JSUnresolvedVariable
-        const player = req.body.player?.replaceAll(' ', '');
+        const player = request.body.player?.replaceAll(' ', '');
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
-        const message = req.body.message;
-        const channels = req.body.channels;
-        const guildId = req.body.guild;
-        const ip = req.body.ip;
+        const message = request.body.message;
+        const channels = request.body.channels;
+        const guildId = request.body.guild;
+        const ip = request.body.ip;
         const argPlaceholder = { ip, 'username': player, 'author_url': authorURL, message };
 
         //Get connection JSON of guild
@@ -50,7 +48,7 @@ async function loadExpress(client) {
 
         let chatEmbed;
 
-        if(req.body.type === 'advancement') {
+        if(request.body.type === 'advancement') {
             let advancementTitle;
             let advancementDesc;
 
@@ -70,7 +68,7 @@ async function loadExpress(client) {
                 'advancement_description': advancementDesc,
             });
         }
-        else if(req.body.type === 'chat') {
+        else if(request.body.type === 'chat') {
             const guild = client.guilds.cache.get(guildId);
 
             //Parse pings (@name)
@@ -166,28 +164,31 @@ async function loadExpress(client) {
             return;
         }
         else {
-            chatEmbed = getEmbed(keys.api.plugin.success.messages[req.body.type], argPlaceholder, ph.emojis(), { 'timestamp_now': Date.now() });
+            chatEmbed = getEmbed(keys.api.plugin.success.messages[request.body.type], argPlaceholder, ph.emojis(), { 'timestamp_now': Date.now() });
         }
 
         //why not triple-catch (try/catch, .catch, optional chaining)
         try {
             for(const channel of channels) {
                 await client.channels.cache.get(channel.id)?.send({ embeds: [chatEmbed] })
-                    .catch(() => {});
+                    .catch(() => {
+                    });
             }
         }
-        catch(ignored) {}
+        catch(ignored) {
+        }
     });
 
     //Returns latest version
-    app.get('/version', (req, res) => res.send(pluginVersion));
+    fastify.get('/version', () => pluginVersion);
+    //Root endpoint
+    fastify.get('/', () => keys.api.plugin.success.root_response);
 
-    app.get('/', (req, res) => res.send(keys.api.plugin.success.root_response));
-
-    app.listen(botPort, function() {
-        console.log(addPh(keys.api.plugin.success.listening.console, { 'port': this.address().port }));
+    fastify.listen({ port: botPort }, (err, address) => {
+        if(err) throw err;
+        console.log(addPh(keys.api.plugin.success.listening.console, { address }));
     });
-    return app;
+    return fastify;
 }
 
 async function chat(message) {
