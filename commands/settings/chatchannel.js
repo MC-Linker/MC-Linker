@@ -165,7 +165,10 @@ async function execute(message, args) {
             );
 
             const index = connection.channels.indexOf(channel);
-            const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, { index1: index+1, index: index });
+            const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
+                index1: index + 1,
+                index: index,
+            });
 
             listEmbeds.push(channelEmbed);
             channelButtons.push(channelButton);
@@ -174,7 +177,10 @@ async function execute(message, args) {
 
         const listMessage = await message.replyOptions({ embeds: [listEmbeds[0]], components: channelButtons });
 
-        const collector = listMessage.createMessageComponentCollector({ componentType: Discord.ComponentType.Button, time: 120_000 });
+        const collector = listMessage.createMessageComponentCollector({
+            componentType: Discord.ComponentType.Button,
+            time: 120_000,
+        });
         collector.on('collect', async button => {
             if(!button.customId.startsWith('channel')) return;
 
