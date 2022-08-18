@@ -18,6 +18,7 @@ async function loadExpress(client) {
     const alreadyWarnedServers = []; //Only warn for the same server once each restart
 
     fastify.post('/chat', async (request, reply) => {
+        console.log(request.body);
         reply.send('Success');
 
         const player = request.body.player?.replaceAll(' ', '');
@@ -184,7 +185,7 @@ async function loadExpress(client) {
     //Root endpoint
     fastify.get('/', () => keys.api.plugin.success.root_response);
 
-    fastify.listen({ port: botPort }, (err, address) => {
+    fastify.listen({ port: botPort, host: '0.0.0.0' }, (err, address) => {
         if(err) throw err;
         console.log(addPh(keys.api.plugin.success.listening.console, { address }));
     });
@@ -282,7 +283,7 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
                     },
                 });
                 if(!resp.ok) message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { 'ip': conn.ip }));
-                else message.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, { 'ip': conn.ip }));
+                else message.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), { 'ip': conn.ip }));
             }
             catch(err) {
                 message.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { 'ip': conn.ip }));

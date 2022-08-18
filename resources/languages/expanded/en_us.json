@@ -1821,7 +1821,7 @@
             "embeds": [
               {
                 "author": {
-                  "title": "%username%",
+                  "name": "%username%",
                   "icon_url": "%author_url%"
                 },
                 "description": "%message%",
@@ -1833,7 +1833,7 @@
             "embeds": [
               {
                 "author": {
-                  "title": "%username%",
+                  "name": "%username%",
                   "icon_url": "%author_url%"
                 },
                 "description": "%emoji_join% **%username%** joined the game",
@@ -1845,7 +1845,7 @@
             "embeds": [
               {
                 "author": {
-                  "title": "%username%",
+                  "name": "%username%",
                   "icon_url": "%author_url%"
                 },
                 "description": "%emoji_leave% **%username%** left the game",
@@ -1857,7 +1857,7 @@
             "embeds": [
               {
                 "author": {
-                  "title": "%username%",
+                  "name": "%username%",
                   "icon_url": "%author_url%"
                 },
                 "description": "**%username%** has made the advancement: [**%advancement_title%**]\n*%advancement_description%*",
@@ -1869,7 +1869,7 @@
             "embeds": [
               {
                 "author": {
-                  "title": "%username%",
+                  "name": "%username%",
                   "icon_url": "%author_url%"
                 },
                 "description": "%emoji_death% %message%",
@@ -1881,7 +1881,7 @@
             "embeds": [
               {
                 "author": {
-                  "title": "%username%",
+                  "name": "%username%",
                   "icon_url": "%author_url%"
                 },
                 "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
@@ -1893,7 +1893,7 @@
             "embeds": [
               {
                 "author": {
-                  "title": "%username%",
+                  "name": "%username%",
                   "icon_url": "%author_url%"
                 },
                 "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
@@ -1905,7 +1905,7 @@
             "embeds": [
               {
                 "author": {
-                  "title": "%username%",
+                  "name": "%username%",
                   "icon_url": "%author_url%"
                 },
                 "description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
@@ -1941,7 +1941,7 @@
         "listening": {
           "console": "Listening on %address%"
         },
-        "root_response": "To invite the MC Linker, open this link: <a href=https://top.gg/bot/712759741528408064 >https://top.gg/bot/712759741528408064</a>"
+        "root_response": "To invite the MC Linker, open this link: https://top.gg/bot/712759741528408064"
       }
     },
     "utils": {
