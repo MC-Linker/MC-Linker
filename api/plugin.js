@@ -18,7 +18,6 @@ async function loadExpress(client) {
     const alreadyWarnedServers = []; //Only warn for the same server once each restart
 
     fastify.post('/chat', async (request, reply) => {
-        console.log(request.body);
         reply.send('Success');
 
         const player = request.body.player?.replaceAll(' ', '');
@@ -201,8 +200,7 @@ async function chat(message) {
         return false;
     });
 
-    let content = Discord.escapeMarkdown(message.cleanContent)
-        .replace(/\\`|\\\*|\\_|\\~|\\\|/g, '');
+    let content = message.cleanContent;
     message.attachments?.forEach(attach => content += `\n${attach.url}`);
 
     const chatJson = {

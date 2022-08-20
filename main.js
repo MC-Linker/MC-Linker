@@ -1,9 +1,9 @@
 console.log(
-    '\x1b[1m' + // Bold (1)
+    '\x1b[1m' +     // Bold (1)
     '\x1b[44;37m' + // Blue BG (44); White FG (37)
-    '%s' + // Insert second argument
+    '%s' +          // Insert second argument
     '\x1b[0m',      // Reset color (0)
-    'Loading...',    // Second argument (%s)
+    'Loading...',   // Second argument (%s)
 );
 
 const fs = require('fs-extra');
