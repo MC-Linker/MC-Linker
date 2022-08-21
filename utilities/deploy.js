@@ -33,6 +33,7 @@ const argv = yargs(hideBin(process.argv))
         alias: ['loc', 'l'],
     })
     .strict()
+    .demandCommand()
     .help()
     .argv;
 
