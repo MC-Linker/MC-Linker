@@ -12,10 +12,9 @@
 + Extract the `/command` data to different files
 + Support for floodgate (bedrock) uuids
 + **Add button to show more information for each slot (button grid) in `/inventory`**
-+ Send error when connecting with a different server to already connected plugin
 + Mod support (get textures and names of mod items, etc.)
 + Connect Minecraft Teams with Discord Roles
-+ Properly parse time and distance for stats (miNutes, hours, days, weeks) (centimeters, meters, kilometers)
++ Properly parse time and distance for stats (minutes, hours, days, weeks) (centimeters, meters, kilometers)
 + `/chatconsole` (log console in code blocks)
 + `/online` (list of online players)
 + `/logs` (show all logs in time span, download logs from /logs folder)
