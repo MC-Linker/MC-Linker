@@ -4,7 +4,6 @@ const fetch = require('node-fetch');
 const fs = require('fs-extra');
 const crypto = require('crypto');
 const Fastify = require('fastify');
-const Discord = require('discord.js');
 const utils = require('./utils');
 const { keys, addPh, ph, getEmbed, defaultMessage } = require('./messages');
 const { botPort, pluginVersion } = require('../config.json');
@@ -201,7 +200,7 @@ async function chat(message) {
     });
 
     let content = message.cleanContent;
-    message.attachments?.forEach(attach => content += `\n${attach.url}`);
+    message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
 
     const chatJson = {
         'msg': content.replaceAll('\u200B', ''),
