@@ -2260,7 +2260,7 @@
         {
           "type": "Boolean",
           "name": "show_details",
-          "description": "Set if buttons that show details about items should be shown.",
+          "description": "Set whether to display buttons that show more details about items.",
           "required": false
         }
       ]

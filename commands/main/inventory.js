@@ -116,10 +116,10 @@ async function execute(message, args) {
         './resources/images/other/inventory_blank.png',
         playerData.Inventory,
         Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-        showDetails ? pushInvButton.bind(null, itemButtons) : () => {
-        }, //Push itemButtons if showDetails
+        showDetails ? pushInvButton.bind(null, itemButtons) : () => {}, //Push itemButtons if showDetails is set to true
     );
 
+    //Draw skin in inventory
     const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuid}/body/10.5/10/json`);
     const { skin: skinBase64 } = await skinJson.json();
     const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
@@ -142,6 +142,7 @@ async function execute(message, args) {
 
     const invMessage = await message.replyOptions(replyOptions);
 
+    //Create component collector for slot buttons
     const collector = invMessage.createMessageComponentCollector({
         componentType: Discord.ComponentType.Button,
         time: 120_000,
@@ -149,34 +150,34 @@ async function execute(message, args) {
 
     let shulkerButtons = [];
     collector.on('collect', async button => {
-        if(!button.customId.startsWith('slot')) return;
+        const buttonId = button.customId;
+        if(!buttonId.startsWith('slot')) return;
 
         if(button.user.id !== message.member.user.id) {
             const notAuthorEmbed = getEmbed(keys.commands.inventory.warnings.not_author_button, ph.emojis());
             button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
             return;
         }
-
-        if(button.customId === 'slot_next' || button.customId === 'slot_next_shulker') {
+        if(buttonId === 'slot_next' || buttonId === 'slot_next_shulker') {
             const backButton = getComponent(
                 keys.commands.inventory.success.back_button,
-                { id: button.customId === 'slot_next' ? 'slot_back' : 'slot_back_shulker' },
+                { id: buttonId === 'slot_next' ? 'slot_back' : 'slot_back_shulker' },
             );
-            const replyButtons = button.customId === 'slot_next' ? itemButtons.slice(24) : shulkerButtons.slice(24);
+            const replyButtons = buttonId === 'slot_next' ? itemButtons.slice(24) : shulkerButtons.slice(24);
             replyButtons.push(backButton);
             button.update({ components: createActionRows(replyButtons) });
             return;
         }
-        else if(button.customId === 'slot_back' || button.customId === 'slot_back_shulker') {
+        else if(buttonId === 'slot_back' || buttonId === 'slot_back_shulker') {
             const replyComponents = getComponentOption(
-                button.customId === 'slot_back' ? itemButtons : shulkerButtons,
-                getComponent(keys.commands.inventory.success.next_button, { id: button.customId === 'slot_back' ? 'slot_next' : 'slot_next_shulker' }),
+                buttonId === 'slot_back' ? itemButtons : shulkerButtons,
+                getComponent(keys.commands.inventory.success.next_button, { id: buttonId === 'slot_back' ? 'slot_next' : 'slot_next_shulker' }),
             );
 
             const replyOptions = { components: replyComponents };
 
             //When going back from shulker to inventory, reset image
-            if(button.customId === 'slot_back' && button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
+            if(buttonId === 'slot_back' && button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
                 invEmbed.setImage('attachment://Inventory_Player.png');
                 replyOptions.embeds = [invEmbed];
                 replyOptions.files = [invAttach];
@@ -185,11 +186,11 @@ async function execute(message, args) {
             return;
         }
 
-        const index = parseInt(button.customId.split('_').pop());
+        const index = parseInt(buttonId.split('_').pop());
         let item = playerData.Inventory[index];
         //If item is a shulker, get item from shulker inventory
-        if(button.customId.includes('_shulker_')) {
-            const shulkerIndex = parseInt(button.customId.split('_')[2]);
+        if(buttonId.includes('_shulker_')) {
+            const shulkerIndex = parseInt(buttonId.split('_')[2]);
             item = item.tag.BlockEntityTag.Items[shulkerIndex];
         }
 
@@ -223,7 +224,7 @@ async function execute(message, args) {
                 };
             }).filter(i => i); //Remove undefined items
 
-            //Add parentSlot to shulker items to add in customId on buttons
+            //Add parentIndex to shulker items to add in customId on buttons
             const mappedShulkerItems = item.tag.BlockEntityTag.Items.map(item => {
                 return {
                     ...item,
@@ -264,7 +265,7 @@ async function execute(message, args) {
                 ),
             });
         }
-        else if(button.customId.includes('_shulker_')) {
+        else if(buttonId.includes('_shulker_')) {
             button.update({ embeds: [invEmbed, itemEmbed] });
         }
         else if(button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
@@ -277,8 +278,7 @@ async function execute(message, args) {
     });
 }
 
-async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {
-}) {
+async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
     const canvas = Canvas.createCanvas(352, 332);
     const ctx = canvas.getContext('2d');
     const background = await Canvas.loadImage(backgroundPath);
