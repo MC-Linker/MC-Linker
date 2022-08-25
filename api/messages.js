@@ -581,13 +581,16 @@ function createActionRows(components) {
     let currentRow = new Discord.ActionRowBuilder();
 
     for(let i=0; i<components.length; i++) {
-        if(i % 5 === 0 && i > 0) {
+        //1 for select menus, 5 for buttons
+        const componentAmount = components[i].type === Discord.ComponentType.SelectMenu ? 1 : 5;
+        if(i % componentAmount === 0 && i > 0) {
             actionRows.push(currentRow);
             currentRow = new Discord.ActionRowBuilder();
         }
 
         currentRow.addComponents(components[i]);
     }
+    if(currentRow.components.length > 0) actionRows.push(currentRow);
 
     return actionRows.length === 0 ? [currentRow] : actionRows;
 }
