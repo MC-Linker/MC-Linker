@@ -378,6 +378,14 @@
             }
           ],
           "console": "No username specified"
+        },
+        "not_author_button": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "%emoji_warning% Only the command sender can show item information."
+            }
+          ]
         }
       },
       "errors": {
@@ -395,6 +403,36 @@
         }
       },
       "success": {
+        "item_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Primary",
+              "custom_id": "slot_%index%",
+              "label": "%slot%: %name%"
+            }
+          ]
+        },
+        "next_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "%id%",
+              "label": "Next"
+            }
+          ]
+        },
+        "back_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "%id%",
+              "label": "Back"
+            }
+          ]
+        },
         "final": {
           "embeds": [
             {
@@ -403,9 +441,101 @@
               "image": "attachment://Inventory_Player.png"
             }
           ]
+        },
+        "item": {
+          "embeds": [
+            {
+              "title": "Item Information",
+              "description": "%emoji_success% Here's information about the **%name%**. [%count%/%max_count%]",
+              "author": {
+                "name": "%username%'s %slot_name% slot",
+                "icon_url": "%avatar%"
+              },
+              "footer": {
+                "text": "Item Id: %id%"
+              }
+            }
+          ]
+        },
+        "item_durability": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Durability",
+                  "value": "%durability%/%max_durability%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "item_lore": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Lore",
+                  "value": "%lore%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "item_enchantments": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Enchantments",
+                  "value": "%enchantments%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "item_custom_name": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Custom Name",
+                  "value": "**%custom_name%**\n%custom_name_json%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "item_potion": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Potion Effects",
+                  "value": "%effects%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
         }
       },
-      "image_description": "Image of player's inventory"
+      "slots": {
+        "feet": "Feet",
+        "legs": "Legs",
+        "chest": "Chest",
+        "head": "Head",
+        "offhand": "Offhand",
+        "first": "1st",
+        "second": "2nd",
+        "third": "3rd",
+        "default": "%slot%th"
+      },
+      "inventory_description": "Image of player's inventory",
+      "shulker_description": "Image of shulker contents"
     },
     "stats": {
       "warnings": {
@@ -2126,6 +2256,12 @@
           "name": "user",
           "description": "Set the user you want to get the inventory from.",
           "required": true
+        },
+        {
+          "type": "Boolean",
+          "name": "show_details",
+          "description": "Set if buttons that show details about items should be shown.",
+          "required": false
         }
       ]
     },
