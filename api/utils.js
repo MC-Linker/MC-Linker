@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const fetch = require('node-fetch');
 const Discord = require('discord.js');
 const crypto = require('crypto');
-const mcData = require('minecraft-data')('1.19');
+const mcData = require('minecraft-data')('1.19.2');
 const { keys, defaultMessage } = require('./messages');
 
 const advancementData = require('../resources/data/advancements.json');

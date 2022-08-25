@@ -6,7 +6,7 @@ const nbt = require('prismarine-nbt');
 const utils = require('../../api/utils');
 const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
-const mcData = require('minecraft-data')('1.19');
+const mcData = require('minecraft-data')('1.19.2');
 
 const commands = require('../../resources/data/commands.json');
 
