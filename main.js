@@ -61,15 +61,16 @@ client.once('ready', async () => {
 });
 
 client.on('guildCreate', guild => {
-    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create.console, { guild }));
+    // if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create.console, { guild }));
     console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 });
 
 client.on('guildDelete', async guild => {
-    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
+    if (!client.isReady() || !guild.available) return; //Prevent server outages from deleting data
+    // if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
     console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
-    await plugin.disconnect(guild.id, guild.client);
+    await plugin.disconnect(guild.id, client);
 
     //Delete connection folder
     fs.remove(`./serverdata/connections/${guild.id}`, err => {
