@@ -75,6 +75,9 @@
       "login": {
         "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers."
       },
+      "command_load": {
+        "console": "Successfully loaded command: %category%/%command%"
+      },
       "ping": {
         "embeds": [
           {
