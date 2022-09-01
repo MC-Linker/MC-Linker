@@ -4,7 +4,7 @@ const ServerConnectionManager = require('./ServerConnectionManager');
 const UserConnectionManager = require('./UserConnectionManager');
 const fs = require('fs-extra');
 const Command = require('./Command');
-const { keys, addPh } = require('../api/messages');
+const { keys, addPh } = require('../../api/messages');
 const path = require('path');
 
 class MCLinker extends Client {

@@ -35,7 +35,7 @@ class ConnectionManager extends CachedManager {
     }
 
     /**
-     * Removes a user-connection from the cache and deletes the data from the file system.
+     * Removes a connection from the cache and deletes the data from the file system.
      * @param {ServerConnectionResolvable|UserConnectionResolvable} connection - The connection to disconnect.
      * @returns {Promise<boolean>} - Whether the disconnection was successful.
      */

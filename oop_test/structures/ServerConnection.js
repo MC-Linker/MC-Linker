@@ -1,6 +1,8 @@
 const { Snowflake } = require('discord.js');
 const SettingsData = require('./SettingsConnection');
 const Connection = require('./Connection');
+const PluginProtocol = require('./PluginProtocol');
+const FtpProtocol = require('./FtpProtocol');
 
 class ServerConnection extends Connection {
 
@@ -60,6 +62,12 @@ class ServerConnection extends Connection {
          * @type {SettingsConnection}
          */
         this.settings = new SettingsData(client, this.id, outputPath);
+
+        /**
+         * The ftp or plugin protocol for this server.
+         * @type {PluginProtocol|FtpProtocol}
+         */
+        this.protocol = data.protocol === 'plugin' ? new PluginProtocol(client) : new FtpProtocol(client);
     }
 
     async _patch(data) {
