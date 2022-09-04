@@ -49,6 +49,41 @@ class FtpProtocol extends Protocol {
         this.password = data.password ?? this.password;
     }
 
+    /**
+     * @inheritDoc
+     */
+    async connect() {
+        return Promise.resolve(false);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    async get() {
+        return Promise.resolve(undefined);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    async list() {
+        return Promise.resolve([]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    async put() {
+        return Promise.resolve(false);
+    }
+
+    /**
+     * Finds a file on the server.
+     * @returns {Promise<string>} - The path to the file.
+     */
+    async find() {
+
+    }
 }
 
 
