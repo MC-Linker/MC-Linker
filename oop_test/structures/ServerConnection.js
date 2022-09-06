@@ -66,10 +66,23 @@ class ServerConnection extends Connection {
          * The ftp or plugin protocol for this server.
          * @type {PluginProtocol|FtpProtocol}
          */
-        this.protocol = data.protocol === 'plugin' ? new PluginProtocol(client) : new FtpProtocol(client);
+        this.protocol = data.protocol === 'plugin' ?
+            new PluginProtocol(client, {
+                ip: data.ip,
+                port: data.port,
+                hash: data.hash,
+            }) :
+            new FtpProtocol(client, {
+                ip: data.ip,
+                port: data.port,
+                password: data.password,
+                username: data.username,
+                sftp: data.protocol === 'sftp',
+            });
     }
 
     async _patch(data) {
+
         /**
          * The id of this server.
          * @type {string}
@@ -135,6 +148,8 @@ class ServerConnection extends Connection {
              * */
             this.channels = data.channels;
         }
+
+        await this.protocol._patch(data);
     }
 
     /**
@@ -161,19 +176,32 @@ class ServerConnection extends Connection {
      * @inheritDoc
      */
     getData() {
-        return {
-            id: this.id,
-            ip: this.ip,
-            port: this.port,
-            version: this.version,
-            path: this.path,
-            online: this.online,
-            protocol: this.protocol,
-            username: this.username,
-            password: this.password,
-            hash: this.hash,
-            channels: this.channels
-        };
+        if(this.protocol instanceof PluginProtocol) {
+            return {
+                id: this.id,
+                ip: this.ip,
+                port: this.port,
+                version: this.version,
+                path: this.path,
+                hash: this.hash,
+                online: this.online,
+                channels: this.channels,
+                protocol: 'plugin',
+            };
+        }
+        else if(this.protocol instanceof FtpProtocol) {
+            return {
+                id: this.id,
+                ip: this.ip,
+                port: this.port,
+                version: this.version,
+                path: this.path,
+                password: this.password,
+                username: this.username,
+                online: this.online,
+                protocol: this.protocol.sftp ? 'sftp' : 'ftp',
+            };
+        }
     }
 }
 
