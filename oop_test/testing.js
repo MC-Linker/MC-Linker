@@ -6,16 +6,16 @@ const client = new MCLinker();
 
     /** @type {UserConnectionData} */
     const userData1 = {
-        id: '1',
+        id: '123456789',
         username: 'user1',
-        uuid: '1',
+        uuid: '12345678-1234-1234-1234-123456789012',
     };
 
     /** @type {UserConnectionData} */
     const userData2 = {
         id: '987654321',
         username: 'Test User 2',
-        uuid: '987654321',
+        uuid: '987654321-1234-1234-1234-123456789012',
     };
 
     /** @type {PluginServerConnectionData} */

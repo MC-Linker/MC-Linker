@@ -1,4 +1,3 @@
-const { Snowflake } = require('discord.js');
 const SettingsData = require('./SettingsConnection');
 const Connection = require('./Connection');
 const PluginProtocol = require('./PluginProtocol');
@@ -8,14 +7,14 @@ class ServerConnection extends Connection {
 
     /**
      * @typedef {object} ChatChannelData - The data for a chatchannel.
-     * @property {Snowflake} id - The id of the channel.
+     * @property {string} id - The id of the channel.
      * @property {string[]} types - The enabled types of the chatchannel.
-     * @property {Snowflake} [webhook] - The related webhook of the chatchannel.
+     * @property {string} [webhook] - The related webhook of the chatchannel.
      */
 
     /**
      * @typedef {object} PluginServerConnectionData - The data for a server-connection established by the plugin.
-     * @property {Snowflake} id - The id of the server.
+     * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
      * @property {number} port - The port used to connect to the server plugin.
      * @property {number} version - The minor minecraft version of the server.
@@ -29,7 +28,7 @@ class ServerConnection extends Connection {
 
     /**
      * @typedef {object} FTPServerConnectionData - The data for a server-connection established by ftp or sftp.
-     * @property {Snowflake} id - The id of the server.
+     * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
      * @property {string} username - The ftp username used to connect to the server.
      * @property {string} password - The ftp password used to connect to the server.
@@ -45,7 +44,7 @@ class ServerConnection extends Connection {
      */
 
     /**
-     * @typedef {ServerConnection|Snowflake} ServerConnectionResolvable - Data that resolves to a ServerConnection object.
+     * @typedef {ServerConnection|string} ServerConnectionResolvable - Data that resolves to a ServerConnection object.
      */
 
     /**
@@ -73,7 +72,7 @@ class ServerConnection extends Connection {
     async _patch(data) {
         /**
          * The id of this server.
-         * @type {Snowflake}
+         * @type {string}
          * */
         this.id = data.id ?? this.id;
         /**

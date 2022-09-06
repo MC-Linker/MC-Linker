@@ -1,5 +1,4 @@
 const fs = require('fs-extra');
-const { Snowflake } = require('discord.js');
 const Connection = require('./Connection');
 
 class SettingsConnection extends Connection {
@@ -15,13 +14,13 @@ class SettingsConnection extends Connection {
      * @typedef {object} SettingsData - The data for the settings.
      * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
      * @property {string} language - The language code id this server uses.
-     * @property {Snowflake} id - The id of the server the settings are connected to.
+     * @property {string} id - The id of the server the settings are connected to.
      */
 
     /**
      *
      * @param {MCLinker} client - The client to create the settings for.
-     * @param {SettingsData|Snowflake} dataOrId - The data for the settings or the id of the server the settings are connected to.
+     * @param {SettingsData|string} dataOrId - The data for the settings or the id of the server the settings are connected to.
      * @param outputPath - The path to write the settings to.
      * @returns {SettingsConnection} - A new SettingsConnection instance.
      */
@@ -46,7 +45,7 @@ class SettingsConnection extends Connection {
 
         /**
          * The id of the server the settings are connected to.
-         * @type {Snowflake}
+         * @type {string}
          * */
         this.id = data.id ?? this.id;
 

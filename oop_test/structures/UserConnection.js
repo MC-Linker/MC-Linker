@@ -1,17 +1,16 @@
-const { Snowflake } = require('discord.js');
 const { createUUIDv3 } = require('../../api/utils');
 const Connection = require('./Connection');
 
 class UserConnection extends Connection {
     /**
      * @typedef {object} UserConnectionData - The data for a user connection.
-     * @property {Snowflake} id - The id of the user.
+     * @property {string} id - The id of the user.
      * @property {string} uuid - The minecraft uuid of the user.
      * @property {string} username - The minecraft username of the user.
      */
 
     /**
-     * @typedef {UserConnection|Snowflake} UserConnectionResolvable - Data that resolves to a UserConnection object.
+     * @typedef {UserConnection|string} UserConnectionResolvable - Data that resolves to a UserConnection object.
      */
 
     /**
@@ -26,7 +25,7 @@ class UserConnection extends Connection {
 
     /**
      * Gets the uuid of this user respecting whether the server is online mode.
-     * @param {Snowflake|ServerConnection} server - The server to get the online mode property from.
+     * @param {string|ServerConnection} server - The server to get the online mode property from.
      * @returns {string} - The uuid of the user.
      */
     getUUID(server) {
@@ -38,7 +37,7 @@ class UserConnection extends Connection {
     async _patch(data) {
         /**
          * The id of this user.
-         * @type {Snowflake}
+         * @type {string}
          */
         this.id = data.id ?? this.id;
         /**
