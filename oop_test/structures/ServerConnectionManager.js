@@ -18,7 +18,7 @@ class ServerConnectionManager extends ConnectionManager {
      * @inheritDoc
      */
     async _load() {
-        await super.load();
+        await super._load();
 
         for(const connection of this.cache.values()) {
             const settings = await fs.readFile(`${this.outputPath}/${connection.id}/settings.json`, 'utf8');

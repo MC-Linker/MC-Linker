@@ -57,9 +57,8 @@ class ConnectionManager extends CachedManager {
         const connections = await fs.readdir(this.outputPath);
         for(const connectionFile of connections) {
             const connection = await fs.readFile(`${this.outputPath}/${connectionFile}/connection.json`, 'utf8');
-            console.log(`${this.outputPath}/${connectionFile}/connection.json`, connection)
 
-            await this.connect(JSON.parse(connection));
+            await this._add(JSON.parse(connection), true, { extras: [this.outputPath] });
         }
     }
 }
