@@ -1,5 +1,6 @@
 const Sftp = require('ssh2-sftp-client');
 const BaseClient = require('./BaseClient');
+const fs = require('fs-extra');
 
 class SftpClient extends BaseClient {
 
@@ -26,7 +27,9 @@ class SftpClient extends BaseClient {
     async find(name, start, maxDepth) {
         try {
             await this.client.connect(this.credentials);
-            return await this._findFile(name, start, maxDepth);
+            const foundFile = await this._findFile(name, start, maxDepth);
+            await this.client.end();
+            return foundFile;
         } catch(_) {
             return undefined;
         }
@@ -34,6 +37,8 @@ class SftpClient extends BaseClient {
 
     async get(source, destination) {
         try {
+            await fs.ensureFile(destination);
+
             await this.client.connect(this.credentials);
             await this.client.get(source, destination);
             await this.client.end();
