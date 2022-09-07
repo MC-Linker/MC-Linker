@@ -1,7 +1,7 @@
 //noinspection JSUnresolvedVariable
 
-const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
+const { REST } = require('discord.js');
 const { token, clientId, guildId } = require('../config.json');
 const { keys, getCommand } = require('../api/messages');
 const fs = require('fs-extra');
