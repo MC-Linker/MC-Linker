@@ -55,5 +55,7 @@ const client = new MCLinker();
     const playerdata = await serverConnection2.protocol.get(Protocol.FilePath.PlayerData(serverConnection2.path, userConnection1.uuid), './files/playerdata.dat');
     console.log('PlayerData', playerdata);
 
+    console.log(client.serverConnections, client.userConnections);
+
     await new Promise(r => setTimeout(r, 100000));
 })();

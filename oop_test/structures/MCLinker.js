@@ -43,7 +43,12 @@ class MCLinker extends Client {
          */
         this.commands = new Discord.Collection();
 
-        //Load commands
+        this._loadCommands(commandPath);
+        this.serverConnections.load();
+        this.userConnections.load();
+    }
+
+    _loadCommands(commandPath) {
         const commandCategories = fs.readdirSync(commandPath);
         for(const category of commandCategories) {
             const commandFiles = fs.readdirSync(`${commandPath}/${category}`)

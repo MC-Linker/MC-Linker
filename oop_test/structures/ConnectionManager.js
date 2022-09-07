@@ -1,4 +1,5 @@
 const { CachedManager } = require('discord.js');
+const fs = require('fs-extra');
 
 class ConnectionManager extends CachedManager {
 
@@ -46,6 +47,15 @@ class ConnectionManager extends CachedManager {
             return this.cache.delete(this.resolveId(connection));
         }
         else return false;
+    }
+
+    async load() {
+        const connections = await fs.readdir(this.outputPath);
+        for(const connectionFile of connections) {
+            const connection = await fs.readFile(`${this.outputPath}/${connectionFile}/connection.json`, 'utf8');
+            await this.connect(JSON.parse(connection));
+            //TODO FIX SETTINGS LOAD
+        }
     }
 }
 
