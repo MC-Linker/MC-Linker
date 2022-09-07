@@ -39,6 +39,8 @@ class SettingsConnection extends Connection {
         }
 
         super(client, dataOrId, outputPath);
+
+        this._patch(dataOrId);
     }
 
     async _patch(data) {
@@ -116,7 +118,7 @@ class SettingsConnection extends Connection {
     /**
      * @inheritDoc
      */
-    async delete() {
+    async _delete() {
         return await fs.rm(`${this.outputPath}/settings.json`)
             .then(() => true)
             .catch(() => false);

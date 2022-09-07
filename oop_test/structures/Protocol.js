@@ -8,7 +8,6 @@ const FilePath = {
     Advancements: (worldPath, uuid) => `${worldPath}/advancements/${uuid}.json`,
     Stats: (worldPath, uuid) => `${worldPath}/stats/${uuid}.json`,
     PlayerData: (worldPath, uuid) => `${worldPath}/playerdata/${uuid}.dat`,
-    Properties: worldPath => `${worldPath}/server.properties`,
 };
 
 class Protocol extends Base {

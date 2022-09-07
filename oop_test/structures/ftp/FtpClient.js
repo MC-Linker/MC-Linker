@@ -19,7 +19,7 @@ class FtpClient extends BaseClient {
     connect() {
         return new Promise(resolve => {
             this.client.on('ready', () => {
-                resolve(true);
+                this.client.on('close', () => resolve(true));
                 this.client.end();
             });
             this.client.on('error', () => resolve(false));
@@ -31,7 +31,8 @@ class FtpClient extends BaseClient {
     find(name, start, maxDepth) {
         return new Promise(resolve => {
             this.client.on('ready', () => {
-                resolve(this._findFile(name, start, maxDepth));
+                const foundFile = this._findFile(name, start, maxDepth);
+                this.client.on('close', () => resolve(foundFile));
                 this.client.end();
             });
             this.client.on('error', () => resolve(false));
@@ -50,8 +51,8 @@ class FtpClient extends BaseClient {
                         if (err) return resolve(false);
 
                         stream.once('close', () => {
+                            this.client.on('close', () => resolve(true));
                             this.client.end();
-                            resolve(true);
                         });
                         stream.pipe(fs.createWriteStream(destination));
                     });
@@ -68,7 +69,7 @@ class FtpClient extends BaseClient {
             this.client.on('ready', () => {
                 this.client.list(folder, (err, listing) => {
                     if (err) return resolve(false);
-                    resolve(listing.map(item => { return { name: item.name, isDirectory: item.type === 'd' } }));
+                    this.client.on('close', () => resolve(listing.map(item => { return { name: item.name, isDirectory: item.type === 'd' } })));
                     this.client.end();
                 });
             });
@@ -83,8 +84,9 @@ class FtpClient extends BaseClient {
             this.client.on('ready', () => {
                 this.client.put(source, destination, err => {
                     if (err) return resolve(false);
-                    resolve(true);
+                    this.client.on('close', () => resolve(true));
                     this.client.end();
+                    resolve(true);
                 });
             });
             this.client.on('error', () => resolve(false));
@@ -95,22 +97,17 @@ class FtpClient extends BaseClient {
 
     _findFile(name, path, maxDepth) {
         return new Promise(resolve => {
-            this.client.on('ready', () => {
-                this.client.list(path, (err, listing) => {
-                    if (err) return resolve(undefined);
+            this.client.list(path, (err, listing) => {
+                if (err) return resolve(undefined);
 
-                    for(const item of listing) {
-                        if(item.type !== 'd' && item.name === name) return path;
-                        else if(item.type === 'd') {
-                            const foundFile = this._findFile(name, `${path}/${item.name}`, maxDepth);
-                            if(foundFile) return resolve(foundFile);
-                        }
+                for(const item of listing) {
+                    if(item.type !== 'd' && item.name === name) return path;
+                    else if(item.type === 'd') {
+                        const foundFile = this._findFile(name, `${path}/${item.name}`, maxDepth);
+                        if(foundFile) return resolve(foundFile);
                     }
-                });
+                }
             });
-            this.client.on('error', () => resolve(false));
-
-            this.client.connect(this.credentials);
         });
     }
 }

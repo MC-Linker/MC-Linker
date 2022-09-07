@@ -9,7 +9,7 @@ const client = new MCLinker();
     const userData1 = {
         id: '123456789',
         username: 'user1',
-        uuid: '12345678-1234-1234-1234-123456789012',
+        uuid: 'f134e0bb-eb3e-4714-8c88-c13a35f694cc',
     };
 
     /** @type {UserConnectionData} */
@@ -22,7 +22,7 @@ const client = new MCLinker();
     /** @type {PluginServerConnectionData} */
     const serverData1 = {
         id: '123456789',
-        ip: '123.456.789.0',
+        ip: '192.168.124.134',
         port: 25565,
         version: 14,
         path: './world',
@@ -32,10 +32,28 @@ const client = new MCLinker();
         protocol: 'plugin',
     };
 
-    const userConnection = await client.userConnections.connect(userData1);
-    const serverConnection = await client.serverConnections.connect(serverData1);
+    /** @type {FtpServerConnectionData} */
+    const serverData2 = {
+        id: '987654321',
+        ip: 'HOST',
+        port: 21,
+        username: 'USER',
+        password: 'PASS',
+        path: '/minecraftbukkit/survival',
+        online: false,
+        version: 19,
+        protocol: 'ftp',
+    };
 
-    await serverConnection.protocol.get(Protocol.FilePath.Advancements('./', userConnection.uuid), './advancements.json');
+    const userConnection1 = await client.userConnections.connect(userData1);
+    const serverConnection2 = await client.serverConnections.connect(serverData2);
+
+    const advancements = await serverConnection2.protocol.get(Protocol.FilePath.Advancements(serverConnection2.path, userConnection1.uuid), './files/advancements.json');
+    console.log('Advancements', advancements);
+    const stats = await serverConnection2.protocol.get(Protocol.FilePath.Stats(serverConnection2.path, userConnection1.uuid), './files/stats.json');
+    console.log('Stats', stats);
+    const playerdata = await serverConnection2.protocol.get(Protocol.FilePath.PlayerData(serverConnection2.path, userConnection1.uuid), './files/playerdata.dat');
+    console.log('PlayerData', playerdata);
 
     await new Promise(r => setTimeout(r, 100000));
 })();
