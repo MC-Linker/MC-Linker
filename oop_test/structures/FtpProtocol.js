@@ -1,4 +1,7 @@
 const Protocol = require('./Protocol');
+const FtpClient = require('./ftp/FtpClient');
+const SftpClient = require('./ftp/SftpClient');
+const fs = require('fs-extra');
 
 class FtpProtocol extends Protocol {
 
@@ -47,42 +50,77 @@ class FtpProtocol extends Protocol {
          * @type {string}
          */
         this.password = data.password ?? this.password;
+
+        /**
+         * Whether to use sftp or ftp.
+         * @type {boolean}
+         */
+        this.sftp = data.sftp ?? this.sftp;
+
+        const credentials = { ip: this.ip, port: this.port, username: this.username, password: this.password };
+
+        /**
+         * The client used to connect to the ftp server.
+         * @type {FtpClient|SftpClient}
+         */
+        this.ftpClient = this.sftp ? new SftpClient(credentials) : new FtpClient(credentials);
     }
 
     /**
      * @inheritDoc
      */
     async connect() {
-        return Promise.resolve(false);
+        return await this.ftpClient.connect();
     }
 
     /**
      * @inheritDoc
+     * @returns {Promise<?Buffer>} - The file data.
      */
-    async get() {
-        return Promise.resolve(undefined);
+    async get(getPath, putPath) {
+        if(await this.ftpClient.get(getPath, putPath)) {
+            return await fs.readFile(putPath);
+        } else return null;
     }
 
     /**
      * @inheritDoc
+     * @returns {Promise<FileData[]>} - The files in the given folder.
      */
-    async list() {
-        return Promise.resolve([]);
+    async list(folder) {
+        return await this.ftpClient.list(folder);
     }
 
     /**
      * @inheritDoc
+     * @returns {Promise<boolean>} - Whether the file was successfully put.
      */
-    async put() {
-        return Promise.resolve(false);
+    async put(getPath, putPath) {
+        return await this.ftpClient.put(getPath, putPath);
     }
 
     /**
      * Finds a file on the server.
-     * @returns {Promise<string>} - The path to the file.
+     * @param {string} name - The name of the file to search for.
+     * @param {string} start - The folder to start searching in.
+     * @param {number} maxDepth - The maximum depth to search.
+     * @returns {Promise<?string>} - The path to the file.
      */
-    async find() {
+    async find(name, start, maxDepth) {
+        return await this.ftpClient.find(name, start, maxDepth);
 
+    }
+
+    /**
+     * @inheritDoc
+     */
+    static async testConnection(data) {
+        try {
+            const ftpClient = data.sftp ? new SftpClient(data) : new FtpClient(data);
+            return await ftpClient.connect();
+        } catch (e) {
+            return false;
+        }
     }
 }
 

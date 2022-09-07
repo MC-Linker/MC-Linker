@@ -38,6 +38,7 @@ class Connection extends Base {
     /**
      * Deletes the data of the connection from the fs.
      * @returns {Promise<boolean>} - Whether the deletion was successful.
+     * @private
      */
     async _delete() {
         return await fs.rm(`${this.outputPath}/connection.json`)

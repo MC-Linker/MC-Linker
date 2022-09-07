@@ -7,7 +7,7 @@ const { Base } = require('discord.js');
 const FilePath = {
     Advancements: (worldPath, uuid) => `${worldPath}/advancements/${uuid}.json`,
     Stats: (worldPath, uuid) => `${worldPath}/stats/${uuid}.json`,
-    Playerdata: (worldPath, uuid) => `${worldPath}/playerdata/${uuid}.dat`,
+    PlayerData: (worldPath, uuid) => `${worldPath}/playerdata/${uuid}.dat`,
     Properties: worldPath => `${worldPath}/server.properties`,
 };
 
@@ -72,6 +72,7 @@ class Protocol extends Base {
     /**
      * Tests the connection to the server with the given credentials.
      * @param {ProtocolData} data - The data to test the connection with.
+     * @returns {Promise<boolean>} - Whether the connection was successful.
      * @abstract
      */
     static testConnection(data) {
@@ -80,4 +81,4 @@ class Protocol extends Base {
 }
 
 module.exports = Protocol;
-module.exports = { Path: FilePath };
+module.exports = { FilePath };

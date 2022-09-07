@@ -35,7 +35,7 @@ const client = new MCLinker();
     const userConnection = await client.userConnections.connect(userData1);
     const serverConnection = await client.serverConnections.connect(serverData1);
 
-    await serverConnection.protocol.get(Protocol.Path.Advancements('./', userConnection.uuid), './advancements.json');
+    await serverConnection.protocol.get(Protocol.FilePath.Advancements('./', userConnection.uuid), './advancements.json');
 
     await new Promise(r => setTimeout(r, 100000));
 })();
