@@ -21,6 +21,7 @@ class UserConnection extends Connection {
      */
     constructor(client, data, outputPath) {
         super(client, data, outputPath);
+        this._patch(data);
     }
 
     /**

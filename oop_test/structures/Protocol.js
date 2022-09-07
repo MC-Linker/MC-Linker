@@ -80,4 +80,4 @@ class Protocol extends Base {
 }
 
 module.exports = Protocol;
-module.exports = { FilePath };
+module.exports.FilePath = FilePath;

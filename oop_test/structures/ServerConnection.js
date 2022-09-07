@@ -1,4 +1,4 @@
-const SettingsData = require('./SettingsConnection');
+const SettingsConnection = require('./SettingsConnection');
 const Connection = require('./Connection');
 const PluginProtocol = require('./PluginProtocol');
 const FtpProtocol = require('./FtpProtocol');
@@ -27,7 +27,7 @@ class ServerConnection extends Connection {
      */
 
     /**
-     * @typedef {object} FTPServerConnectionData - The data for a server-connection established by ftp or sftp.
+     * @typedef {object} FtpServerConnectionData - The data for a server-connection established by ftp or sftp.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
      * @property {string} username - The ftp username used to connect to the server.
@@ -40,7 +40,7 @@ class ServerConnection extends Connection {
      */
 
     /**
-     * @typedef {PluginServerConnectionData|FTPServerConnectionData} ServerConnectionData - The data of the server.
+     * @typedef {PluginServerConnectionData|FtpServerConnectionData} ServerConnectionData - The data of the server.
      */
 
     /**
@@ -60,7 +60,7 @@ class ServerConnection extends Connection {
          * The settings for this server.
          * @type {SettingsConnection}
          */
-        this.settings = new SettingsData(client, this.id, outputPath);
+        this.settings = new SettingsConnection(client, data.id, outputPath);
 
         /**
          * The ftp or plugin protocol for this server.
@@ -79,6 +79,8 @@ class ServerConnection extends Connection {
                 username: data.username,
                 sftp: data.protocol === 'sftp',
             });
+
+        this._patch(data);
     }
 
     async _patch(data) {
@@ -113,11 +115,6 @@ class ServerConnection extends Connection {
          * @type {boolean}
          * */
         this.online = data.online ?? this.online;
-        /**
-         * The protocol used to connect to this server.
-         * @type {'plugin'|'ftp'|'sftp'}
-         * */
-        this.protocol = data.protocol ?? this.protocol;
 
 
         if('username' in data) {
