@@ -25,11 +25,12 @@
     "discord.js": "^14.3.0",
     "fastify": "^4.5.3",
     "fs-extra": "^10.1.0",
-    "ftp-sftp": "^1.0.2",
+    "ftp": "^0.3.10",
     "minecraft-data": "^3.12.0",
     "node-fetch": "^2.6.7",
     "prismarine-nbt": "^2.2.1",
     "probe-image-size": "^7.2.3",
+    "ssh2-sftp-client": "^9.0.4",
     "topgg-autoposter": "^2.0.1",
     "yargs": "^17.5.1"
   },
