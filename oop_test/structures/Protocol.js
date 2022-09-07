@@ -52,8 +52,7 @@ class Protocol extends Base {
     }
 
     /**
-     * Tests the connection to the server.
-     * @returns {Promise<boolean>} - Whether the connection was successful.
+     * Connects to the server.
      * @abstract
      */
     async connect() {

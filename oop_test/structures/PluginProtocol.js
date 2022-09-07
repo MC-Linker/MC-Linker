@@ -320,19 +320,24 @@ class PluginProtocol extends Protocol {
      * @private
      */
     async _fetch(method, route, data = {}, queries = {}) {
-        let url = new URL(`http://${this.ip}:${this.port}${route}`);
+        let url = new URL(`http://${this.ip}:${this.port}`);
+        url.pathname = route;
         for(const key in queries) {
             url.searchParams.append(key, queries[key]);
         }
 
+        return await PluginProtocol._fetch(method, url, data, this.hash);
+    }
+
+    static async _fetch(method, url, hash, body = {}) {
         try {
             return await fetch(url.toString(), {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Basic ${this.hash}`, //TODO make Bearer
+                    'Authorization': `Basic ${hash}`, //TODO make Bearer
                 },
-                body: typeof data === 'object' ? JSON.stringify(data) : data,
+                body: typeof body === 'object' ? JSON.stringify(body) : body,
             });
         } catch(err) {
             return null;
@@ -343,8 +348,8 @@ class PluginProtocol extends Protocol {
      * @inheritDoc
      */
     static async testConnection(data) {
-        //TODO fetch base to test?
-        const response = await this._fetch(...PluginRoutes.Base()); // TODO fix
+        const url = `http://${data.ip}:${data.port}${PluginRoutes.Base()[1]}`;
+        const response = await PluginProtocol._fetch(PluginRoutes.Base()[0], url, data.hash);
         if(response) return response.ok;
         return false;
     }
