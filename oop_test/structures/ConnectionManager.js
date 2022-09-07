@@ -49,12 +49,17 @@ class ConnectionManager extends CachedManager {
         else return false;
     }
 
-    async load() {
+    /**
+     * Loads all connections from the file system.
+     * @returns {Promise<void>}
+     */
+    async _load() {
         const connections = await fs.readdir(this.outputPath);
         for(const connectionFile of connections) {
             const connection = await fs.readFile(`${this.outputPath}/${connectionFile}/connection.json`, 'utf8');
+            console.log(`${this.outputPath}/${connectionFile}/connection.json`, connection)
+
             await this.connect(JSON.parse(connection));
-            //TODO FIX SETTINGS LOAD
         }
     }
 }

@@ -43,19 +43,20 @@ class MCLinker extends Client {
          */
         this.commands = new Discord.Collection();
 
-        this._loadCommands(commandPath);
-        this.serverConnections.load();
-        this.userConnections.load();
+        /**
+         * The path to the commands folder.
+         * @type {string}
+         */
+        this.commandPath = commandPath;
     }
 
-    _loadCommands(commandPath) {
-        const commandCategories = fs.readdirSync(commandPath);
+    async _loadCommands() {
+        const commandCategories = await fs.readdir(this.commandPath);
         for(const category of commandCategories) {
-            const commandFiles = fs.readdirSync(`${commandPath}/${category}`)
-                .filter(command => command.endsWith('.js'));
+            const commandFiles = await fs.readdir(`${this.commandPath}/${category}`);
 
             for(const file of commandFiles) {
-                let command = require(path.resolve(`${commandPath}/${category}/${file}`));
+                let command = require(path.resolve(`${this.commandPath}/${category}/${file}`));
                 command = new command();
 
                 if(command instanceof Command) {
@@ -64,6 +65,12 @@ class MCLinker extends Client {
                 }
             }
         }
+    }
+
+    async loadEverything() {
+        await this.serverConnections._load();
+        await this.userConnections._load();
+        await this._loadCommands();
     }
 }
 
