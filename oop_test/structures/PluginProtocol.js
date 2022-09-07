@@ -335,7 +335,7 @@ class PluginProtocol extends Protocol {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Basic ${hash}`, //TODO make Bearer
+                    'Authorization': `Bearer ${hash}`,
                 },
                 body: typeof body === 'object' ? JSON.stringify(body) : body,
             });
