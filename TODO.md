@@ -1,7 +1,7 @@
 # TODO BOT
 
 + **Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...) and OOP**
-+ Better logs (multilevel, more information)
++ **Better logs (multilevel, more information)**
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user and server folder (only for connected users)
 + Create isometric block, item and entity renders in code
