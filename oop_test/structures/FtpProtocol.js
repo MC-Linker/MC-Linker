@@ -115,12 +115,8 @@ class FtpProtocol extends Protocol {
      * @inheritDoc
      */
     static async testConnection(data) {
-        try {
-            const ftpClient = data.sftp ? new SftpClient(data) : new FtpClient(data);
-            return await ftpClient.connect();
-        } catch (e) {
-            return false;
-        }
+        const ftpClient = data.sftp ? new SftpClient(data) : new FtpClient(data);
+        return await ftpClient.connect();
     }
 }
 

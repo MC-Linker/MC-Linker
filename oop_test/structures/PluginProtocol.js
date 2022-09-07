@@ -9,6 +9,14 @@ const fetch = require('node-fetch');
  */
 const PluginRoutes = {
     /**
+     * Base URL
+     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     */
+    Base: () => [
+        'GET',
+        '/',
+    ],
+    /**
      * Uploads a file to the server.
      * @param {ReadStream} fileStream - The file to upload.
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
@@ -333,10 +341,10 @@ class PluginProtocol extends Protocol {
 
     /**
      * @inheritDoc
-     * @returns {Promise<boolean>} - The response from the plugin.
      */
     static async testConnection(data) {
-        const response = await this._fetch(...PluginRoutes.Connect(this.ip, this.id)); // TODO
+        //TODO fetch base to test?
+        const response = await this._fetch(...PluginRoutes.Base()); // TODO fix
         if(response) return response.ok;
         return false;
     }
