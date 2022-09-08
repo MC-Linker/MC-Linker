@@ -19,12 +19,14 @@ const PluginRoutes = {
     /**
      * Uploads a file to the server.
      * @param {ReadStream} fileStream - The file to upload.
+     * @param {string} path - The remote path to upload the file to.
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
      */
-    PutFile: fileStream => [
+    PutFile: (fileStream, path) => [
         'POST',
         '/file/put',
         fileStream,
+        { path },
     ],
     /**
      * Downloads a file from the server.
@@ -224,7 +226,7 @@ class PluginProtocol extends Protocol {
      */
     async put(getPath, putPath) {
         try {
-            const response = await this._fetch(...PluginRoutes.PutFile(fs.createReadStream(getPath)));
+            const response = await this._fetch(...PluginRoutes.PutFile(fs.createReadStream(getPath), putPath));
             return fetchToPluginResponse(response);
         } catch(err) {
             return null;

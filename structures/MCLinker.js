@@ -17,7 +17,7 @@ class MCLinker extends Client {
      */
     constructor(commandPath = './commands', options = {
         intents: [
-            Discord.GatewayIntentBits.GuildMessages,
+            Discord.IntentsBitField.GuildMessages,
             Discord.GatewayIntentBits.Guilds,
             Discord.GatewayIntentBits.DirectMessages,
             Discord.GatewayIntentBits.MessageContent,
