@@ -1,4 +1,4 @@
-const { createUUIDv3 } = require('../../api/utils');
+const { createUUIDv3 } = require('../api/utils');
 const Connection = require('./Connection');
 
 class UserConnection extends Connection {
