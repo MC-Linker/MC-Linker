@@ -68,6 +68,7 @@ class FtpProtocol extends Protocol {
 
     /**
      * @inheritDoc
+     * @returns {Promise<boolean>} - Whether the connection was successful.
      */
     async connect() {
         return await this.ftpClient.connect();

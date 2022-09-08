@@ -56,8 +56,9 @@ class MCLinker extends Client {
             const commandFiles = await fs.readdir(`${this.commandPath}/${category}`);
 
             for(const file of commandFiles) {
-                let command = require(path.resolve(`${this.commandPath}/${category}/${file}`));
-                command = new command();
+                // noinspection LocalVariableNamingConventionJS
+                const CommandFile = require(path.resolve(`${this.commandPath}/${category}/${file}`));
+                const command = new CommandFile();
 
                 if(command instanceof Command) {
                     this.commands.set(command.name, command);

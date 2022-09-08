@@ -1,12 +1,7 @@
+const { AutocompleteInteraction } = require('discord.js');
 const Command = require('./Command');
 
 class AutocompleteCommand extends Command {
-
-    /**
-     * @inheritDoc
-     * @abstract
-     */
-    name;
 
     /**
      * @inheritDoc

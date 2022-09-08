@@ -43,7 +43,7 @@ class SettingsConnection extends Connection {
         this._patch(dataOrId);
     }
 
-    async _patch(data) {
+    _patch(data) {
 
         /**
          * The id of the server the settings are connected to.

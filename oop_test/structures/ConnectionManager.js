@@ -54,6 +54,8 @@ class ConnectionManager extends CachedManager {
      * @returns {Promise<void>}
      */
     async _load() {
+        await fs.ensureDir(this.outputPath);
+
         const connections = await fs.readdir(this.outputPath);
         for(const connectionFile of connections) {
             const connection = await fs.readFile(`${this.outputPath}/${connectionFile}/connection.json`, 'utf8');

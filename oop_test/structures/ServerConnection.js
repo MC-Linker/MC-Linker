@@ -83,7 +83,7 @@ class ServerConnection extends Connection {
         this._patch(data);
     }
 
-    async _patch(data) {
+    _patch(data) {
 
         /**
          * The id of this server.
@@ -146,7 +146,7 @@ class ServerConnection extends Connection {
             this.channels = data.channels;
         }
 
-        await this.protocol._patch(data);
+        this.protocol._patch(data);
     }
 
     /**

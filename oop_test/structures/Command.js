@@ -1,11 +1,15 @@
+const { CommandInteraction, Message } = require('discord.js');
+
 class Command {
 
-    /**
-     * The name of a command.
-     * @type {string}
-     * @abstract
-     */
-    name;
+    constructor(name) {
+        /**
+         * The name of this command.
+         * @type {string}
+         * @abstract
+         */
+        this.name = name;
+    }
 
     /**
      * Handles the execution of a command.

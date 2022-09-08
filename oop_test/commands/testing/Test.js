@@ -3,8 +3,7 @@ const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 class Test extends AutocompleteCommand {
 
     constructor() {
-        super();
-        this.name = 'test';
+        super('test');
     }
 
 

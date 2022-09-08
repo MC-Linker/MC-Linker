@@ -35,7 +35,7 @@ class UserConnection extends Connection {
         else return createUUIDv3(this.username);
     }
 
-    async _patch(data) {
+    _patch(data) {
         /**
          * The id of this user.
          * @type {string}
