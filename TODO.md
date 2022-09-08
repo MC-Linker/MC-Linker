@@ -1,12 +1,10 @@
 # TODO BOT
 
-+ **Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...) and OOP**
 + **Better logs (multilevel, more information)**
++ **Add bot server class (fastify)**
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user and server folder (only for connected users)
 + Create isometric block, item and entity renders in code
-+ **Cache user and server data for better performance**
-+ **Add JSDoc**
 + DM command author when response fails to send
 + Extract the `/command` data to different files
 + Support for floodgate (bedrock) uuids
