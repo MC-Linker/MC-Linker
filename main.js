@@ -105,7 +105,7 @@ client.on('messageCreate', async message => {
 
         try {
             // noinspection JSUnresolvedFunction
-            await command.execute(message, args)
+            await command.execute(message, client, args)
                 .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
         }
         catch(err) {
@@ -159,7 +159,7 @@ client.on('interactionCreate', async interaction => {
             }
 
             try {
-                await command.execute(interaction, args)
+                await command.execute(interaction, client, args)
                     .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
             }
             catch(err) {
@@ -173,7 +173,7 @@ client.on('interactionCreate', async interaction => {
         if(!command || !(command instanceof AutocompleteCommand)) return;
 
         try {
-            await command.autocomplete(interaction)
+            await command.autocomplete(interaction, client)
                 .catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err))));
         }
         catch(err) {
