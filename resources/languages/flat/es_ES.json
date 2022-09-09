@@ -86,7 +86,7 @@
   "commands.help.success.command.embeds.0.fields.0.value": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%",
   "commands.help.success.disable_button.components.0.type": "Button",
   "commands.help.success.disable_button.components.0.style": "Danger",
-  "commands.help.success.disable_button.components.0.custom_id": "deshabilitar_%command_name%",
+  "commands.help.success.disable_button.components.0.custom_id": "disable_%command_name%",
   "commands.help.success.disable_button.components.0.label": "¡Deshabilitar este comando!",
   "commands.help.success.disable_button.components.0.emoji": "%emoji_error%",
   "commands.help.success.enable_button.components.0.type": "Button",
