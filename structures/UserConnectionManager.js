@@ -1,5 +1,6 @@
 const UserConnection = require('./UserConnection');
 const ConnectionManager = require('./ConnectionManager');
+const { getUsersFromMention } = require('../api/messages');
 
 class UserConnectionManager extends ConnectionManager {
 
@@ -18,6 +19,10 @@ class UserConnectionManager extends ConnectionManager {
      * @type {Map<string, UserConnection>}
      */
     cache;
+
+    uuidFromArgument(arg) {
+        const user = getUsersFromMention(arg, this.client);
+    }
 }
 
 module.exports = UserConnectionManager;

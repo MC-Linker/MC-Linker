@@ -30,7 +30,7 @@ class Advancements extends AutocompleteCommand {
 
     async execute(interaction, client, args) {
         let advancement = args[0].toLowerCase();
-        const user = interaction.mentions.users.first() ?? args[1];
+        const uuid = client.userConnections.uuidFromArgument(args[1]);
         const server = client.serverConnections.cache.get(interaction.guildId);
 
         if(!server) {
@@ -39,7 +39,7 @@ class Advancements extends AutocompleteCommand {
         else if(!advancement) {
             return interaction.respond(keys.commands.advancements.warnings.no_advancement);
         }
-        else if(!user) {
+        else if(!uuid) {
             return interaction.respond(keys.commands.advancements.warnings.no_username);
         }
 
@@ -64,13 +64,7 @@ class Advancements extends AutocompleteCommand {
             );
         }
 
-        const uuid = await utils.getUUID(user, interaction.guildId, interaction);
-        if(!uuid) return;
-
-        const worldPath = await utils.getWorldPath(interaction.guildId, interaction);
-        if(!worldPath) return;
-
-        const amFile = await server.protocol.get(Protocol.FilePath.Advancements(worldPath, uuid), `./userdata/advancements/${uuid}.json`);
+        const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, uuid), `./userdata/advancements/${uuid}.json`);
         if(!amFile) return;
         const advancementData = JSON.parse(amFile);
 
@@ -82,7 +76,7 @@ class Advancements extends AutocompleteCommand {
             keys.commands.advancements.success.base,
             ph.std(interaction), {
                 equals,
-                'username': user.username ?? user,
+                'username': uuid.username ?? uuid,
                 'advancement_title': advancementTitle,
                 'advancement_description': advancementDesc,
             },
@@ -148,7 +142,7 @@ class Advancements extends AutocompleteCommand {
 
             console.log(addPh(keys.commands.advancements.success.final.console, {
                 'advancement_title': advancementTitle,
-                'username': user.username ?? user,
+                'username': uuid.username ?? uuid,
             }));
             interaction.replyOptions({ embeds: [amEmbed] });
         }
