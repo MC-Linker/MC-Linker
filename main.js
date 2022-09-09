@@ -6,7 +6,6 @@ console.log(
     'Loading...',   // Second argument (%s)
 );
 
-const fs = require('fs-extra');
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
@@ -15,17 +14,12 @@ const helpCommand = require('./src/help');
 const evalCommand = require('./src/eval');
 const disableButton = require('./buttons/disable');
 const enableButton = require('./buttons/enable');
-const settings = require('./api/settings');
 const { getArgs, addResponseMethods, addPh, keys, ph } = require('./api/messages');
 const { prefix, token, topggToken, ownerId } = require('./config.json');
-const client = new Discord.Client({
-    intents: [
-        Discord.GatewayIntentBits.GuildMessages,
-        Discord.GatewayIntentBits.Guilds,
-        Discord.GatewayIntentBits.DirectMessages,
-        Discord.GatewayIntentBits.MessageContent,
-    ],
-});
+const MCLinker = require('./structures/MCLinker');
+const AutocompleteCommand = require('./structures/AutocompleteCommand');
+
+const client = new MCLinker();
 
 //Handle rejected promises
 process.on('unhandledRejection', async err => {
@@ -61,37 +55,23 @@ client.once('ready', async () => {
 });
 
 client.on('guildCreate', guild => {
-    // if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create.console, { guild }));
     console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 });
 
 client.on('guildDelete', async guild => {
     if (!client.isReady() || !guild.available) return; //Prevent server outages from deleting data
-    // if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
     console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
-    await plugin.disconnect(guild.id, client);
-
-    //Delete connection folder
-    fs.remove(`./serverdata/connections/${guild.id}`, err => {
-        if(err) console.log(addPh(keys.main.errors.no_connection_file.console, ph.guild(guild)));
-        else console.log(addPh(keys.main.success.disconnected.console, ph.guild(guild)));
-    });
+    await client.serverConnections.disconnect(guild.id);
 });
 
-client.commands = new Discord.Collection();
-const commandFolders = fs.readdirSync('./commands/');
-for(const folder of commandFolders) {
-    const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(command => command.endsWith('.js'));
-    for(const file of commandFiles) {
-        const command = require(`./commands/${folder}/${file}`);
-        client.commands.set(file.replace('.js', ''), command);
-    }
-}
-
-
 client.on('messageCreate', async message => {
-    if(!message.content.startsWith(prefix)) plugin.chat(message);
+    const server = client.serverConnections.cache.get(message.guildId);
+    if(!message.content.startsWith(prefix) && server) {
+        let content = message.cleanContent;
+        message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
+        server?.protocol?.chat(content);
+    }
 
     message = addResponseMethods(message);
 
@@ -118,13 +98,14 @@ client.on('messageCreate', async message => {
 
         await message.respond(keys.commands.executed);
 
-        if(await settings.isDisabled(message.guildId, 'commands', commandName)) {
+        const server = client.serverConnections.cache.get(message.guildId);
+        if(server?.settings?.isDisabled('commands', commandName)) {
             await message.respond(keys.main.warnings.disabled);
         }
 
         try {
             // noinspection JSUnresolvedFunction
-            await command?.execute?.(message, args)
+            await command.execute(message, args)
                 .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
         }
         catch(err) {
@@ -171,13 +152,14 @@ client.on('interactionCreate', async interaction => {
             const command = client.commands.get(interaction.commandName);
 
             //Check if command disabled
-            if(await settings.isDisabled(interaction.guildId, 'commands', interaction.commandName)) {
+            const server = client.serverConnections.cache.get(interaction.guildId);
+            if(server?.settings?.isDisabled('commands', interaction.commandName)) {
                 await interaction.respond(keys.main.warnings.disabled);
                 return;
             }
 
             try {
-                await command?.execute?.(interaction, args)
+                await command.execute(interaction, args)
                     .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
             }
             catch(err) {
@@ -188,10 +170,10 @@ client.on('interactionCreate', async interaction => {
     }
     else if(interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
-        if(!command) return;
+        if(!command || !(command instanceof AutocompleteCommand)) return;
 
         try {
-            await command?.autocomplete?.(interaction)
+            await command.autocomplete(interaction)
                 .catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err))));
         }
         catch(err) {
@@ -212,7 +194,4 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-const login = () => client.login(token);
-login();
-
-module.exports = { login, client };
+client.login(token);

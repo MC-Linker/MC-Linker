@@ -457,11 +457,11 @@
   "commands.chatchannel.warnings.no_permission.console": "No admin permission",
 
   "commands.chatchannel.warnings.no_method.embeds.0.title": "No Method Specified",
-  "commands.chatchannel.warnings.no_method.embeds.0.description": "%emoji_warning% Please specify a method (`add` or `remove`).",
+  "commands.chatchannel.warnings.no_method.embeds.0.description": "%emoji_warning% Please specify a method (`add`, `remove` or `lidy`).",
   "commands.chatchannel.warnings.no_method.console": "No method specified",
 
   "commands.chatchannel.warnings.invalid_method.embeds.0.title": "Invalid Method Specified",
-  "commands.chatchannel.warnings.invalid_method.embeds.0.description": "%emoji_warning% You can only specify `add` or `remove`.",
+  "commands.chatchannel.warnings.invalid_method.embeds.0.description": "%emoji_warning% You can only specify `add`, `remove` or `list`.",
   "commands.chatchannel.warnings.invalid_method.console": "Invalid method specified",
 
   "commands.chatchannel.warnings.no_channel.embeds.0.title": "No Channel Specified",
