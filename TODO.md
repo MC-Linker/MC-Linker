@@ -1,6 +1,6 @@
 # TODO BOT
 
-+ **Better logs (multilevel, more information)**
++ **Better logs (pino)**
 + **Add server class (fastify)**
 + **Add class for tl interactions**
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
