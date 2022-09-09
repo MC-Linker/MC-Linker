@@ -1,6 +1,6 @@
 {
   "name": "mc-linker",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "View minecraft stats, advancements and inventories in Discord! Also includes moderation tools, minecraft commands and much more.",
   "main": "main.js",
   "repository": {
