@@ -1,7 +1,8 @@
 # TODO BOT
 
 + **Better logs (multilevel, more information)**
-+ **Add bot server class (fastify)**
++ **Add server class (fastify)**
++ **Add class for tl interactions**
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user and server folder (only for connected users)
 + Create isometric block, item and entity renders in code
