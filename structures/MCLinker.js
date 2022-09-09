@@ -39,7 +39,7 @@ class MCLinker extends Client {
 
         /**
          * A collection of all commands in this bot.
-         * @type {Collection<string, Command>}
+         * @type {Map<string, Command>}
          */
         this.commands = new Discord.Collection();
 

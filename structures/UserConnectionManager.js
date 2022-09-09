@@ -12,6 +12,12 @@ class UserConnectionManager extends ConnectionManager {
     constructor(client, outputPath = './userdata/connections') {
         super(client, UserConnection, outputPath);
     }
+
+    /**
+     * The user connection cache of this manager.
+     * @type {Map<string, UserConnection>}
+     */
+    cache;
 }
 
 module.exports = UserConnectionManager;

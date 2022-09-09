@@ -15,6 +15,12 @@ class ServerConnectionManager extends ConnectionManager {
     }
 
     /**
+     * The server connection cache of this manager.
+     * @type {Map<string, ServerConnection>}
+     */
+    cache;
+
+    /**
      * @inheritDoc
      */
     async _load() {

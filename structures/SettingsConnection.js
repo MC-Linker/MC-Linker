@@ -90,7 +90,7 @@ class SettingsConnection extends Connection {
     async disable(type, value) {
         const currentValues = this.disabled[type];
         currentValues.push(value);
-        return this.edit({ [type]: [currentValues] });
+        return await this.edit({ [type]: [currentValues] });
     }
 
     /**
@@ -103,7 +103,17 @@ class SettingsConnection extends Connection {
         const currentValues = this.disabled[type];
         const index = currentValues.indexOf(value);
         if(index !== -1) currentValues.splice(index, 1);
-        return this.edit({ [type]: [currentValues] });
+        return await this.edit({ [type]: [currentValues] });
+    }
+
+    /**
+     * Checks whether a command, advancement or stat is disabled.
+     * @param {'commands'|'advancements'|'stats'} type - The type of the value to check.
+     * @param {string} value - The value to check.
+     * @returns {boolean}
+     */
+    async isDisabled(type, value) {
+        return this.disabled[type].includes(value);
     }
 
     /**

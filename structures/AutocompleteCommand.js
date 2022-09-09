@@ -5,20 +5,19 @@ class AutocompleteCommand extends Command {
 
     /**
      * @inheritDoc
-     * @returns {void}
      * @abstract
      */
-    execute(interaction, args) {
+    async execute(interaction, args) {
         throw new Error('Not implemented');
     }
 
     /**
      * Handles the autocompletion of a command.
      * @param {AutocompleteInteraction} interaction - The autocomplete interaction.
-     * @returns {void}
+     * @returns {Promise<void>}
      * @abstract
      */
-    autocomplete(interaction) {
+    async autocomplete(interaction) {
         throw new Error('Not implemented');
     }
 
