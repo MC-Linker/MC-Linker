@@ -3,10 +3,10 @@ const { CommandInteraction, Message } = require('discord.js');
 class Command {
 
     constructor(name) {
+
         /**
          * The name of this command.
          * @type {string}
-         * @abstract
          */
         this.name = name;
     }
@@ -14,11 +14,12 @@ class Command {
     /**
      * Handles the execution of a command.
      * @param {Message|CommandInteraction} interaction - The message/slash command interaction
+     * @param {MCLinker} client - The MCLinker client
      * @param {String[]} args - The command arguments set by the user
-     * @returns {Promise<void>}
+     * @returns {void|Promise<void>}
      * @abstract
      */
-    async execute(interaction, args) {
+    execute(interaction, client, args) {
         throw new Error('Not implemented');
     }
 }
