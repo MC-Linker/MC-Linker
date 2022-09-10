@@ -30,7 +30,7 @@ class Advancements extends AutocompleteCommand {
 
     async execute(interaction, client, args) {
         let advancement = args[0].toLowerCase();
-        const uuid = client.userConnections.uuidFromArgument(args[1]);
+        const uuid = await client.userConnections.uuidFromArgument(args[1]);
         const server = client.serverConnections.cache.get(interaction.guildId);
 
         if(!server) {
@@ -39,8 +39,14 @@ class Advancements extends AutocompleteCommand {
         else if(!advancement) {
             return interaction.respond(keys.commands.advancements.warnings.no_advancement);
         }
-        else if(!uuid) {
+        else if(uuid.error === 'nullish') {
             return interaction.respond(keys.commands.advancements.warnings.no_username);
+        }
+        else if(uuid.error === 'cache') {
+            return interaction.respond(keys.api.connections.user_not_connected);
+        }
+        else if(uuid.error === 'fetch') {
+            return interaction.respond(keys.api.utils.errors.could_not_fetch_uuid);
         }
 
         let matchingAdvancement;

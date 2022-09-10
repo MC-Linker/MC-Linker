@@ -235,6 +235,18 @@ function getUserData(userId, message = defaultMessage) {
     });
 }
 
+async function fetchUUID(username) {
+    try {
+        let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
+            .then(data => data.json());
+
+        return addHyphen(data.id);
+    }
+    catch(err) {
+        return undefined;
+    }
+}
+
 function addHyphen(uuid) {
     uuid = [...uuid];
     for(let i = 8; i <= 23; i += 5) uuid.splice(i, 0, '-');
@@ -257,4 +269,5 @@ module.exports = {
     getWorldPath,
     getVersion,
     getUUID,
+    fetchUUID,
 };

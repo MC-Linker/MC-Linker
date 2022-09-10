@@ -987,7 +987,7 @@
           "embeds": [
             {
               "title": "No Method Specified",
-              "description": "%emoji_warning% Please specify a method (`add` or `remove`)."
+              "description": "%emoji_warning% Please specify a method (`add`, `remove` or `lidy`)."
             }
           ],
           "console": "No method specified"
@@ -996,7 +996,7 @@
           "embeds": [
             {
               "title": "Invalid Method Specified",
-              "description": "%emoji_warning% You can only specify `add` or `remove`."
+              "description": "%emoji_warning% You can only specify `add`, `remove` or `list`."
             }
           ],
           "console": "Invalid method specified"
@@ -2079,14 +2079,14 @@
     },
     "utils": {
       "errors": {
-        "could_not_get_uuid": {
+        "could_not_fetch_uuid": {
           "embeds": [
             {
-              "title": "Could Not Get UUID",
+              "title": "Could Not Fetch UUID",
               "description": "%emoji_error% **%username%** is not a valid minecraft java edition account name."
             }
           ],
-          "console": "Could not get uuid of %username%"
+          "console": "Could not fetch uuid of %username%"
         },
         "could_not_read_server_file": {
           "embeds": [
