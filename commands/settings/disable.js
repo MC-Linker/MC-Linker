@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const utils = require('../../api/utils');
-const settings = require('../../api/settings');
 const { keys, getEmbed, addPh } = require('../../api/messages');
 
 async function autocomplete(interaction) {

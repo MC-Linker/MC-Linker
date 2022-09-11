@@ -1,6 +1,4 @@
 const fs = require('fs-extra');
-const settings = require('../../api/settings');
-const ftp = require('../../api/ftp');
 const utils = require('../../api/utils');
 const { keys, ph, addPh, getEmbed } = require('../../api/messages');
 

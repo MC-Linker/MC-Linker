@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const dns = require('dns/promises');
 const utils = require('../../api/utils.js');
 const Discord = require('discord.js');
-const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const { pluginPort } = require('../../config.json');
 const { keys, ph, addPh, getEmbed } = require('../../api/messages');

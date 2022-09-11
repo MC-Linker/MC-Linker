@@ -13,6 +13,7 @@ class UserConnectionManager extends ConnectionManager {
      */
     constructor(client, outputPath = './userdata/connections') {
         super(client, UserConnection, outputPath);
+        this.cache = super.cache;
     }
 
     /**

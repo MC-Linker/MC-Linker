@@ -1,5 +1,4 @@
 const utils = require('../../api/utils');
-const settings = require('../../api/settings');
 const Discord = require('discord.js');
 const { keys } = require('../../api/messages');
 

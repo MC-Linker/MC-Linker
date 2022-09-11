@@ -1,10 +1,8 @@
 // noinspection JSUnresolvedVariable
-
 const { keys, getUsersFromMention, addPh } = require('../../api/messages');
 const Discord = require('discord.js');
 const nbt = require('prismarine-nbt');
 const utils = require('../../api/utils');
-const ftp = require('../../api/ftp');
 const plugin = require('../../api/plugin');
 const mcData = require('minecraft-data')('1.19.2');
 

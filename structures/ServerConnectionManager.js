@@ -12,6 +12,7 @@ class ServerConnectionManager extends ConnectionManager {
      */
     constructor(client, outputPath = './serverdata/connections') {
         super(client, ServerConnection, outputPath);
+        this.cache = super.cache;
     }
 
     /**

@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const settings = require('../api/settings');
 const { keys, ph, getEmbed, getActionRows } = require('../api/messages');
 
 async function execute(interaction) {

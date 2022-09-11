@@ -1,4 +1,3 @@
-const { Client, ClientOptions } = require('discord.js');
 const Discord = require('discord.js');
 const ServerConnectionManager = require('./ServerConnectionManager');
 const UserConnectionManager = require('./UserConnectionManager');
@@ -7,17 +6,17 @@ const Command = require('./Command');
 const { keys, addPh } = require('../api/messages');
 const path = require('path');
 
-class MCLinker extends Client {
+class MCLinker extends Discord.Client {
 
     /**
      * Creates a new MCLinker client instance.
      * @param {string} commandPath - The path to the commands folder.
-     * @param {ClientOptions} options - The options to pass to the Discord.js client.
+     * @param {Discord.ClientOptions} options - The options to pass to the Discord.js client.
      * @returns {MCLinker} - The new MCLinker client instance.
      */
     constructor(commandPath = './commands', options = {
         intents: [
-            Discord.IntentsBitField.GuildMessages,
+            Discord.GatewayIntentBits.GuildMessages,
             Discord.GatewayIntentBits.Guilds,
             Discord.GatewayIntentBits.DirectMessages,
             Discord.GatewayIntentBits.MessageContent,
@@ -58,9 +57,9 @@ class MCLinker extends Client {
             for(const file of commandFiles) {
                 // noinspection LocalVariableNamingConventionJS
                 const CommandFile = require(path.resolve(`${this.commandPath}/${category}/${file}`));
-                const command = new CommandFile();
+                if(CommandFile.prototype instanceof Command) {
+                    const command = new CommandFile();
 
-                if(command instanceof Command) {
                     this.commands.set(command.name, command);
                     console.log(addPh(keys.main.success.command_load.console, { command: command.name, category: category }));
                 }
@@ -68,6 +67,10 @@ class MCLinker extends Client {
         }
     }
 
+    /**
+     * Loads all commands, user and server connections into the cache
+     * @returns {Promise<void>} - A promise that resolves when all commands, user and server connections are loaded.
+     */
     async loadEverything() {
         await this.serverConnections._load();
         await this.userConnections._load();

@@ -1,6 +1,5 @@
 const utils = require('../../api/utils');
 const nbt = require('prismarine-nbt');
-const ftp = require('../../api/ftp');
 const Canvas = require('@napi-rs/canvas');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');

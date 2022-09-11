@@ -1,7 +1,6 @@
 const fs = require('fs-extra');
 const { discordLink } = require('../config.json');
 const { keys, ph, addPh, getEmbed, getActionRows } = require('../api/messages');
-const settings = require('../api/settings');
 
 async function execute(message, args) {
     if(!args[0]) {

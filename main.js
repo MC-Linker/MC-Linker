@@ -9,12 +9,11 @@ console.log(
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
-const plugin = require('./api/plugin');
 const helpCommand = require('./src/help');
 const evalCommand = require('./src/eval');
 const disableButton = require('./buttons/disable');
 const enableButton = require('./buttons/enable');
-const { getArgs, addResponseMethods, addPh, keys, ph } = require('./api/messages');
+const { getArgs, addPh, keys, ph, toTranslatedMessage, toTranslatedInteraction } = require('./api/messages');
 const { prefix, token, topggToken, ownerId } = require('./config.json');
 const MCLinker = require('./structures/MCLinker');
 const AutocompleteCommand = require('./structures/AutocompleteCommand');
@@ -49,8 +48,9 @@ client.once('ready', async () => {
     ));
     client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
-    await plugin.loadExpress(client);
+    await client.loadEverything();
 
+    // await plugin.loadExpress(client);
     Canvas.GlobalFonts.registerFromPath('./resources/fonts/Minecraft.ttf', 'Minecraft');
 });
 
@@ -67,13 +67,13 @@ client.on('guildDelete', async guild => {
 
 client.on('messageCreate', async message => {
     const server = client.serverConnections.cache.get(message.guildId);
-    if(!message.content.startsWith(prefix) && server) {
+    if(server && !message.content.startsWith(prefix)) {
         let content = message.cleanContent;
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
         server?.protocol?.chat(content);
     }
 
-    message = addResponseMethods(message);
+    message = toTranslatedMessage(message);
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.success.ping);
     if(!message.content.startsWith(prefix) || message.author.bot) return;
@@ -115,7 +115,7 @@ client.on('messageCreate', async message => {
 });
 
 client.on('interactionCreate', async interaction => {
-    interaction = addResponseMethods(interaction);
+    interaction = toTranslatedInteraction(interaction);
 
     //check if in guild
     if(!interaction.guildId) return interaction.respond(keys.main.warnings.not_in_guild);

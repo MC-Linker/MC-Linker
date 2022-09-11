@@ -11,13 +11,20 @@ const defaultMessage = {
     },
 };
 
-function addResponseMethods(interaction) {
-    if(!(interaction instanceof Discord.Message) && !(interaction instanceof Discord.BaseInteraction)) return interaction;
-    if(interaction instanceof Discord.AutocompleteInteraction) return interaction;
-
-    interaction.respond = (key, ...placeholders) => reply(interaction, key, ...placeholders);
+function addTranslatedResponses(interaction) {
+    interaction.replyTl = (key, ...placeholders) => reply(interaction, key, ...placeholders);
     interaction.replyOptions = options => replyOptions(interaction, options);
     return interaction;
+}
+
+function toTranslatedMessage(message) {
+    if(!(message instanceof Discord.Message)) return message;
+    return addTranslatedResponses(message);
+}
+
+function toTranslatedInteraction(interaction) {
+    if(!(interaction instanceof Discord.BaseInteraction) || interaction instanceof Discord.AutocompleteInteraction) return interaction;
+    return addTranslatedResponses(message);
 }
 
 
@@ -641,12 +648,13 @@ module.exports = {
     ph,
     reply,
     replyOptions,
+    toTranslatedInteraction,
+    toTranslatedMessage,
     addPh,
     getEmbed,
     getCommand,
     getActionRows,
     getComponent,
-    addResponseMethods,
     createActionRows,
     defaultMessage,
     getUsersFromMention,
