@@ -2,13 +2,25 @@ const { CommandInteraction, Message } = require('discord.js');
 
 class Command {
 
-    constructor(name) {
+    constructor(name, defer = true, ephemeral = false) {
 
         /**
          * The name of this command.
          * @type {string}
          */
         this.name = name;
+
+        /**
+         * Indicates whether to defer this command.
+         * @type {boolean}
+         */
+        this.defer = defer;
+
+        /**
+         * Indicates whether to defer this command as ephemeral.
+         * @type {boolean}
+         */
+        this.ephemeral = ephemeral;
     }
 
     /**
