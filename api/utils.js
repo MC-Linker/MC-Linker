@@ -1,9 +1,5 @@
-const fs = require('fs-extra');
 const fetch = require('node-fetch');
-const Discord = require('discord.js');
-const crypto = require('crypto');
 const mcData = require('minecraft-data')('1.19.2');
-const { keys, defaultMessage } = require('./messages');
 
 const advancementData = require('../resources/data/advancements.json');
 const customStats = require('../resources/data/stats_custom.json');
@@ -107,134 +103,6 @@ function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValu
     });
 }
 
-
-function isUserConnected(userId) {
-    return new Promise(resolve => {
-        fs.access(`./userdata/connections/${userId}/connection.json`)
-            .then(() => resolve(true))
-            .catch(() => resolve(false));
-    });
-}
-
-function isGuildConnected(guildId) {
-    return new Promise(resolve => {
-        fs.access(`./serverdata/connections/${guildId}/connection.json`)
-            .then(() => resolve(true))
-            .catch(() => resolve(false));
-    });
-}
-
-function getUUIDv4(user, message = defaultMessage) {
-    return new Promise(async resolve => {
-        if(user instanceof Discord.User) {
-            const userData = await getUserData(user.id, message);
-            resolve(userData?.id);
-        }
-        else {
-            try {
-                let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${user}`);
-                data = await data.json();
-
-                resolve(addHyphen(data.id));
-            }
-            catch(err) {
-                message.replyTl(keys.api.utils.errors.could_not_get_uuid, { 'username': user });
-                resolve(false);
-            }
-        }
-    });
-}
-
-function getUUIDv3(user, message = defaultMessage) {
-    return new Promise(async resolve => {
-        if(user instanceof Discord.User) {
-            const userData = await getUserData(user.id, message);
-            resolve(createUUID(userData?.name));
-        }
-        else resolve(createUUID(user));
-    });
-
-    function createUUID(username) {
-        if(typeof username !== 'string') return;
-
-        const hash = crypto.createHash('md5');
-        hash.update(`OfflinePlayer:${username}`);
-        let digest = hash.digest();
-
-        digest[6] = digest[6] & 0x0f | 0x30;  // set version to 3
-        digest[8] = digest[8] & 0x3f | 0x80;  // set to variant 2
-
-        return addHyphen(digest.toString('hex'));
-    }
-}
-
-function getUUID(user, guildId, message = defaultMessage) {
-    return new Promise(async resolve => {
-        const serverData = await getServerData(guildId, message);
-
-        if(serverData?.online === undefined || serverData.online) resolve(await getUUIDv4(user, message));
-        else resolve(await getUUIDv3(user, message));
-    });
-}
-
-async function getUsername(userId, message = defaultMessage) {
-    const userData = await getUserData(userId, message);
-    return userData?.name;
-}
-
-async function getWorldPath(guildId, message = defaultMessage) {
-    const serverData = await getServerData(guildId, message);
-    return serverData?.path;
-}
-
-async function getVersion(guildId, message = defaultMessage) {
-    const serverData = await getServerData(guildId, message);
-    return serverData?.version;
-}
-
-async function getProtocol(guildId, message = defaultMessage) {
-    const serverData = await getServerData(guildId, message);
-    return serverData?.protocol;
-}
-
-async function getHash(guildId, message = defaultMessage) {
-    const serverData = await getServerData(guildId, message);
-    //If connected but not with plugin
-    if(serverData && serverData.protocol !== 'plugin') message.replyTl(keys.api.utils.errors.not_connected_with_plugin);
-
-    return serverData?.hash;
-}
-
-async function getIp(guildId, message = defaultMessage) {
-    const serverData = await getServerData(guildId, message);
-    //If connected but not with plugin
-    if(serverData && serverData?.protocol !== 'plugin') message.replyTl(keys.api.utils.errors.not_connected_with_plugin);
-
-    return serverData?.ip;
-}
-
-function getServerData(guildId, message = defaultMessage) {
-    return new Promise(resolve => {
-        fs.readJson(`./serverdata/connections/${guildId}/connection.json`, 'utf8')
-            .then(serverJson => resolve(serverJson))
-            .catch(() => {
-                message.replyTl(keys.api.utils.errors.could_not_read_server_file);
-                resolve(false);
-            });
-    });
-}
-
-function getUserData(userId, message = defaultMessage) {
-    return new Promise(resolve => {
-        fs.readJson(`./userdata/connections/${userId}/connection.json`, 'utf8')
-            .then(userJson => resolve(userJson))
-            .catch(() => {
-                message.replyTl(keys.api.utils.errors.could_not_read_user_file);
-                resolve(false);
-            });
-    });
-}
-
 async function fetchUUID(username) {
     try {
         let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
@@ -258,16 +126,5 @@ module.exports = {
     searchAdvancements,
     searchAllStats,
     searchStats,
-    isGuildConnected,
-    isUserConnected,
-    getUserData,
-    getServerData,
-    getUsername,
-    getIp,
-    getProtocol,
-    getHash,
-    getWorldPath,
-    getVersion,
-    getUUID,
     fetchUUID,
 };
