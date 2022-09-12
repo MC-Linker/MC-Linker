@@ -111,7 +111,7 @@ async function autocomplete(interaction) {
     }
 
     if(respondArray.length >= 25) respondArray.length = 25;
-    interaction.respond(respondArray).catch(() => console.log(keys.commands.command.errors.could_not_autocomplete.console));
+    interaction.replyTl(respondArray).catch(() => console.log(keys.commands.command.errors.could_not_autocomplete.console));
 }
 
 //Suggestion key:
@@ -145,11 +145,11 @@ async function execute(message, args) {
     args.shift(); //Shift commandName
 
     if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-        message.respond(keys.commands.command.warnings.no_permission);
+        message.replyTl(keys.commands.command.warnings.no_permission);
         return;
     }
     else if(!command) {
-        message.respond(keys.commands.command.warnings.no_command);
+        message.replyTl(keys.commands.command.warnings.no_command);
         return;
     }
 
@@ -180,7 +180,7 @@ async function execute(message, args) {
     //Wrap in discord code block for color and swag
     respMessage = `\`\`\`diff\n${colorChar}${respMessage}\`\`\``;
 
-    message.respond(keys.commands.command.success, { 'response': respMessage });
+    message.replyTl(keys.commands.command.success, { 'response': respMessage });
 }
 
 async function getPlaceholder(key, args) {

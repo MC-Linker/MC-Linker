@@ -8,11 +8,11 @@ async function execute(message, args) {
     const method = args[0];
 
     if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-        message.respond(keys.commands.chatchannel.warnings.no_permission);
+        message.replyTl(keys.commands.chatchannel.warnings.no_permission);
         return;
     }
     else if(!method) {
-        message.respond(keys.commands.chatchannel.warnings.no_method);
+        message.replyTl(keys.commands.chatchannel.warnings.no_method);
         return;
     }
 
@@ -22,15 +22,15 @@ async function execute(message, args) {
         const useWebhooks = typeof args[2] === 'boolean' ? args[2] : args[2]?.toLowerCase() === 'true';
 
         if(!channel) {
-            message.respond(keys.commands.chatchannel.warnings.no_channel);
+            message.replyTl(keys.commands.chatchannel.warnings.no_channel);
             return;
         }
         else if(!channel.isTextBased()) {
-            message.respond(keys.commands.chatchannel.warnings.no_text_channel);
+            message.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
             return;
         }
 
-        const logChooserMsg = await message.respond(keys.commands.chatchannel.success.choose);
+        const logChooserMsg = await message.replyTl(keys.commands.chatchannel.success.choose);
 
         const collector = logChooserMsg.createMessageComponentCollector({
             componentType: Discord.ComponentType.SelectMenu,
@@ -81,16 +81,16 @@ async function execute(message, args) {
 
             fs.outputJson(`./serverdata/connections/${message.guild.id}/connection.json`, pluginJson, { spaces: 2 }, err => {
                 if(err) {
-                    message.respond(keys.commands.chatchannel.errors.could_not_write_file);
+                    message.replyTl(keys.commands.chatchannel.errors.could_not_write_file);
                     return;
                 }
 
-                menu.respond(keys.commands.chatchannel.success.add, ph.std(message));
+                menu.replyTl(keys.commands.chatchannel.success.add, ph.std(message));
             });
         });
         collector.on('end', collected => {
-            if(!collected.size) message.respond(keys.commands.chatchannel.warnings.not_collected);
-            else message.respond(keys.commands.chatchannel.warnings.already_responded);
+            if(!collected.size) message.replyTl(keys.commands.chatchannel.warnings.not_collected);
+            else message.replyTl(keys.commands.chatchannel.warnings.already_responded);
         });
 
     }
@@ -99,11 +99,11 @@ async function execute(message, args) {
         let channel = message.mentions.channels?.first() ?? args[1];
 
         if(!channel) {
-            message.respond(keys.commands.chatchannel.warnings.no_channel);
+            message.replyTl(keys.commands.chatchannel.warnings.no_channel);
             return;
         }
         else if(!channel.isTextBased()) {
-            message.respond(keys.commands.chatchannel.warnings.no_text_channel);
+            message.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
             return;
         }
 
@@ -115,7 +115,7 @@ async function execute(message, args) {
         const channelIndex = connection.channels?.findIndex(c => c.id === channel.id);
 
         if(channelIndex === undefined || channelIndex === -1) {
-            message.respond(keys.commands.chatchannel.warnings.channel_not_added);
+            message.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
             return;
         }
         else {
@@ -128,11 +128,11 @@ async function execute(message, args) {
 
         fs.outputJson(`./serverdata/connections/${message.guild.id}/connection.json`, connection, { spaces: 2 }, err => {
             if(err) {
-                message.respond(keys.commands.chatchannel.errors.could_not_write_file);
+                message.replyTl(keys.commands.chatchannel.errors.could_not_write_file);
                 return;
             }
 
-            message.respond(keys.commands.chatchannel.success.remove);
+            message.replyTl(keys.commands.chatchannel.success.remove);
         });
     }
     else if(method === 'list') {
@@ -140,7 +140,7 @@ async function execute(message, args) {
         if(!connection) return;
 
         if(!connection.channels) {
-            message.respond(keys.commands.chatchannel.warnings.no_channels);
+            message.replyTl(keys.commands.chatchannel.warnings.no_channels);
             return;
         }
 
@@ -195,7 +195,7 @@ async function execute(message, args) {
         });
     }
     else {
-        message.respond(keys.commands.chatchannel.warnings.invalid_method);
+        message.replyTl(keys.commands.chatchannel.warnings.invalid_method);
     }
 }
 

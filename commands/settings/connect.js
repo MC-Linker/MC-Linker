@@ -10,11 +10,11 @@ async function execute(message, args) {
     const method = args[0];
 
     if(!method) {
-        message.respond(keys.commands.connect.warnings.no_method);
+        message.replyTl(keys.commands.connect.warnings.no_method);
         return;
     }
     else if(method !== 'account' && !message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-        message.respond(keys.commands.connect.warnings.no_permission);
+        message.replyTl(keys.commands.connect.warnings.no_permission);
         return;
     }
 
@@ -29,15 +29,15 @@ async function execute(message, args) {
         version = parseInt(version);
 
         if(!host || !user || !password || !port) {
-            message.respond(keys.commands.connect.warnings.no_credentials);
+            message.replyTl(keys.commands.connect.warnings.no_credentials);
             return;
         }
         else if(isNaN(version)) {
-            message.respond(keys.commands.connect.warnings.no_version);
+            message.replyTl(keys.commands.connect.warnings.no_version);
             return;
         }
         else if(port <= 0 || port > 65536) {
-            message.respond(keys.commands.connect.warnings.invalid_port);
+            message.replyTl(keys.commands.connect.warnings.invalid_port);
             return;
         }
 
@@ -48,7 +48,7 @@ async function execute(message, args) {
         if(version <= 11 && version > 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.std(message)));
         else if(version <= 7) message.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.std(message)));
 
-        message.respond(keys.commands.connect.warnings.connecting);
+        message.replyTl(keys.commands.connect.warnings.connecting);
 
         //Automatically disconnect from plugin
         const ip = await utils.getIp(message.guildId);
@@ -67,16 +67,16 @@ async function execute(message, args) {
 
         const protocol = await ftp.connect({ host, password, user, port });
         if(!protocol) {
-            message.respond(keys.commands.connect.errors.could_not_connect_ftp);
+            message.replyTl(keys.commands.connect.errors.could_not_connect_ftp);
             return;
         }
 
         //Search for server path if not given
         if(!path) {
-            message.respond(keys.commands.connect.warnings.searching_properties);
+            message.replyTl(keys.commands.connect.warnings.searching_properties);
             path = await ftp.find('server.properties', '', 2, { host, password, user, port, protocol });
             if(!path) {
-                message.respond(keys.commands.connect.errors.could_not_find_properties);
+                message.replyTl(keys.commands.connect.errors.could_not_find_properties);
                 return;
             }
         }
@@ -87,7 +87,7 @@ async function execute(message, args) {
             { host, user, password, port, protocol },
         );
         if(!serverProperties) {
-            message.respond(keys.commands.connect.errors.could_not_get_properties);
+            message.replyTl(keys.commands.connect.errors.could_not_get_properties);
             return;
         }
         const propertiesObject = Object.fromEntries(serverProperties.toString().split('\n').map(prop => prop.split('=')));
@@ -107,11 +107,11 @@ async function execute(message, args) {
         //Save connection
         fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, ftpData, { spaces: 2 }, async err => {
             if(err) {
-                message.respond(keys.commands.connect.errors.could_not_write_server_file);
+                message.replyTl(keys.commands.connect.errors.could_not_write_server_file);
                 return;
             }
 
-            message.respond(keys.commands.connect.success.ftp);
+            message.replyTl(keys.commands.connect.success.ftp);
         });
 
 
@@ -121,7 +121,7 @@ async function execute(message, args) {
         const port = args[2] ?? pluginPort;
 
         if(!ip) {
-            message.respond(keys.commands.connect.warnings.no_ip);
+            message.replyTl(keys.commands.connect.warnings.no_ip);
             return;
         }
 
@@ -136,7 +136,7 @@ async function execute(message, args) {
         const verify = await plugin.verify(`${ip}:${port}`, message);
         if(!verify) return;
 
-        message.respond(keys.commands.connect.warnings.check_dms);
+        message.replyTl(keys.commands.connect.warnings.check_dms);
 
         const verifyEmbed = getEmbed(keys.commands.connect.warnings.verification, ph.std(message));
 
@@ -146,7 +146,7 @@ async function execute(message, args) {
         }
         catch(err) {
             dmChannel = message.channel;
-            message.respond(keys.commands.connect.warnings.could_not_dm);
+            message.replyTl(keys.commands.connect.warnings.could_not_dm);
             await dmChannel.send({ embeds: [verifyEmbed] });
         }
 
@@ -189,11 +189,11 @@ async function execute(message, args) {
 
         fs.outputJson(`./serverdata/connections/${message.guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {
             if(err) {
-                message.respond(keys.commands.connect.errors.could_not_write_server_file);
+                message.replyTl(keys.commands.connect.errors.could_not_write_server_file);
                 return;
             }
 
-            message.respond(keys.commands.connect.success.plugin);
+            message.replyTl(keys.commands.connect.success.plugin);
         });
 
     }
@@ -201,11 +201,11 @@ async function execute(message, args) {
         const mcUsername = args[1];
 
         if(!mcUsername) {
-            message.respond(keys.commands.connect.warnings.no_username);
+            message.replyTl(keys.commands.connect.warnings.no_username);
             return;
         }
         else if(message.mentions.users.size) {
-            message.respond(keys.commands.connect.warnings.user_pinged);
+            message.replyTl(keys.commands.connect.warnings.user_pinged);
             return;
         }
 
@@ -219,15 +219,15 @@ async function execute(message, args) {
 
         fs.outputJson(`./userdata/connections/${message.member.user.id}/connection.json`, connectionJson, { spaces: 2 }, err => {
             if(err) {
-                message.respond(keys.commands.connect.errors.could_not_write_user_file);
+                message.replyTl(keys.commands.connect.errors.could_not_write_user_file);
                 return;
             }
 
-            message.respond(keys.commands.connect.success.account, { 'username': mcUsername, 'uuid': uuidv4 });
+            message.replyTl(keys.commands.connect.success.account, { 'username': mcUsername, 'uuid': uuidv4 });
         });
     }
     else {
-        message.respond(keys.commands.connect.warnings.invalid_method);
+        message.replyTl(keys.commands.connect.warnings.invalid_method);
     }
 }
 

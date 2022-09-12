@@ -32,7 +32,7 @@ async function autocomplete(interaction) {
         });
     }
 
-    interaction.respond(respondArray).catch(() => console.log(keys.commands.enable.errors.could_not_autocomplete));
+    interaction.replyTl(respondArray).catch(() => console.log(keys.commands.enable.errors.could_not_autocomplete));
 }
 
 async function execute(message, args) {
@@ -41,19 +41,19 @@ async function execute(message, args) {
     const argPlaceholder = { type, 'enable': toEnable };
 
     if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-        message.respond(keys.commands.enable.warnings.no_permission);
+        message.replyTl(keys.commands.enable.warnings.no_permission);
         return;
     }
     else if(!type) {
-        message.respond(keys.commands.enable.warnings.no_type);
+        message.replyTl(keys.commands.enable.warnings.no_type);
         return;
     }
     else if(!toEnable) {
-        message.respond(keys.commands.enable.warnings.no_enable);
+        message.replyTl(keys.commands.enable.warnings.no_enable);
         return;
     }
     else if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
-        message.respond(keys.commands.enable.warnings.invalid_type);
+        message.replyTl(keys.commands.enable.warnings.invalid_type);
         return;
     }
 
@@ -62,7 +62,7 @@ async function execute(message, args) {
         const command = keys.data[toEnable];
 
         if(!command) {
-            message.respond(keys.commands.enable.warnings.command_does_not_exist, argPlaceholder);
+            message.replyTl(keys.commands.enable.warnings.command_does_not_exist, argPlaceholder);
             return;
         }
 
@@ -80,14 +80,14 @@ async function execute(message, args) {
     }
 
     if(!await settings.enable(message.guildId, type, toEnable)) {
-        message.respond(keys.commands.enable.warnings.already_enabled, {
+        message.replyTl(keys.commands.enable.warnings.already_enabled, {
             'type': type.cap(),
             'enable': formattedToEnable,
         });
         return;
     }
 
-    message.respond(keys.commands.enable.success, { type, 'enable': formattedToEnable });
+    message.replyTl(keys.commands.enable.success, { type, 'enable': formattedToEnable });
 }
 
 module.exports = { execute, autocomplete };

@@ -3,7 +3,7 @@ const { keys, ph, getEmbed, getActionRows } = require('../api/messages');
 
 async function execute(interaction) {
     if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-        interaction.respond(keys.buttons.enable.warnings.no_permission);
+        interaction.replyTl(keys.buttons.enable.warnings.no_permission);
         return;
     }
 
@@ -11,10 +11,10 @@ async function execute(interaction) {
 
     const enable = await settings.enable(interaction.guildId, 'commands', commandName);
     if(enable) {
-        interaction.respond(keys.buttons.enable.success.response, { 'command_name': commandName });
+        interaction.replyTl(keys.buttons.enable.success.response, { 'command_name': commandName });
     }
     else {
-        interaction.respond(keys.buttons.enable.errors.already_enabled, { 'command_name': commandName });
+        interaction.replyTl(keys.buttons.enable.errors.already_enabled, { 'command_name': commandName });
         return;
     }
 

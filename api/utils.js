@@ -138,7 +138,7 @@ function getUUIDv4(user, message = defaultMessage) {
                 resolve(addHyphen(data.id));
             }
             catch(err) {
-                message.respond(keys.api.utils.errors.could_not_get_uuid, { 'username': user });
+                message.replyTl(keys.api.utils.errors.could_not_get_uuid, { 'username': user });
                 resolve(false);
             }
         }
@@ -200,7 +200,7 @@ async function getProtocol(guildId, message = defaultMessage) {
 async function getHash(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     //If connected but not with plugin
-    if(serverData && serverData.protocol !== 'plugin') message.respond(keys.api.utils.errors.not_connected_with_plugin);
+    if(serverData && serverData.protocol !== 'plugin') message.replyTl(keys.api.utils.errors.not_connected_with_plugin);
 
     return serverData?.hash;
 }
@@ -208,7 +208,7 @@ async function getHash(guildId, message = defaultMessage) {
 async function getIp(guildId, message = defaultMessage) {
     const serverData = await getServerData(guildId, message);
     //If connected but not with plugin
-    if(serverData && serverData?.protocol !== 'plugin') message.respond(keys.api.utils.errors.not_connected_with_plugin);
+    if(serverData && serverData?.protocol !== 'plugin') message.replyTl(keys.api.utils.errors.not_connected_with_plugin);
 
     return serverData?.ip;
 }
@@ -218,7 +218,7 @@ function getServerData(guildId, message = defaultMessage) {
         fs.readJson(`./serverdata/connections/${guildId}/connection.json`, 'utf8')
             .then(serverJson => resolve(serverJson))
             .catch(() => {
-                message.respond(keys.api.utils.errors.could_not_read_server_file);
+                message.replyTl(keys.api.utils.errors.could_not_read_server_file);
                 resolve(false);
             });
     });
@@ -229,7 +229,7 @@ function getUserData(userId, message = defaultMessage) {
         fs.readJson(`./userdata/connections/${userId}/connection.json`, 'utf8')
             .then(userJson => resolve(userJson))
             .catch(() => {
-                message.respond(keys.api.utils.errors.could_not_read_user_file);
+                message.replyTl(keys.api.utils.errors.could_not_read_user_file);
                 resolve(false);
             });
     });

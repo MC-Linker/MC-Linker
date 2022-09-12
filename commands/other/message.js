@@ -9,11 +9,11 @@ async function execute(message, args) {
     const argPlaceholder = { username, 'message': chatMsg };
 
     if(!username) {
-        message.respond(keys.commands.message.warnings.no_username);
+        message.replyTl(keys.commands.message.warnings.no_username);
         return;
     }
     else if(!chatMsg) {
-        message.respond(keys.commands.message.warnings.no_message);
+        message.replyTl(keys.commands.message.warnings.no_message);
         return;
     }
 
@@ -23,8 +23,8 @@ async function execute(message, args) {
     const resp = await plugin.chatPrivate(chatMsg, message.guildId, message.member.user.tag, mcUsername, message);
     if(!resp) return;
 
-    if(resp.status === 206) message.respond(keys.commands.message.warnings.response_warning, argPlaceholder, { 'response': resp.json.message });
-    else message.respond(keys.commands.message.success, argPlaceholder);
+    if(resp.status === 206) message.replyTl(keys.commands.message.warnings.response_warning, argPlaceholder, { 'response': resp.json.message });
+    else message.replyTl(keys.commands.message.success, argPlaceholder);
 }
 
 module.exports = { execute };

@@ -7,7 +7,7 @@ async function autocomplete(interaction) {
     const focused = interaction.options.getFocused().toLowerCase();
 
     const stats = await utils.searchStats(focused, subcommand);
-    interaction.respond(stats).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
+    interaction.replyTl(stats).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
 }
 
 async function execute(message, args) {
@@ -17,15 +17,15 @@ async function execute(message, args) {
     const argPlaceholder = { 'stat_category': category, 'username': user?.username ?? user };
 
     if(!category) {
-        message.respond(keys.commands.stats.warnings.no_category);
+        message.replyTl(keys.commands.stats.warnings.no_category);
         return;
     }
     else if(!stat) {
-        message.respond(keys.commands.stats.warnings.no_stat);
+        message.replyTl(keys.commands.stats.warnings.no_stat);
         return;
     }
     else if(!user) {
-        message.respond(keys.commands.stats.warnings.no_username);
+        message.replyTl(keys.commands.stats.warnings.no_username);
         return;
     }
 
@@ -33,11 +33,11 @@ async function execute(message, args) {
     argPlaceholder.stat_name = statName[0]?.name ?? stat;
 
     if(await settings.isDisabled(message.guildId, 'stats', category)) {
-        message.respond(keys.commands.stats.warnings.category_disabled, argPlaceholder);
+        message.replyTl(keys.commands.stats.warnings.category_disabled, argPlaceholder);
         return;
     }
     else if(await settings.isDisabled(message.guildId, 'stats', stat)) {
-        message.respond(keys.commands.stats.warnings.stat_disabled, argPlaceholder);
+        message.replyTl(keys.commands.stats.warnings.stat_disabled, argPlaceholder);
         return;
     }
 
@@ -70,7 +70,7 @@ async function execute(message, args) {
         }
 
         if(!statMatch) {
-            message.respond(keys.commands.stats.warnings.no_match, argPlaceholder);
+            message.replyTl(keys.commands.stats.warnings.no_match, argPlaceholder);
             return;
         }
 
@@ -101,7 +101,7 @@ async function execute(message, args) {
 
         fs.access(`./resources/images/minecraft/${imgType}/${stat}.png`, err => {
             if(err) {
-                message.respond(keys.commands.stats.warnings.no_image, { 'stat_name': stat });
+                message.replyTl(keys.commands.stats.warnings.no_image, { 'stat_name': stat });
                 message.replyOptions({ embeds: [statEmbed] });
                 return;
             }
@@ -112,7 +112,7 @@ async function execute(message, args) {
         });
     }
     catch(err) {
-        message.respond(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.error(err));
+        message.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.error(err));
     }
 }
 

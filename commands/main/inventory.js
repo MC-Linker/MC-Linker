@@ -76,7 +76,7 @@ async function execute(message, args) {
     const user = message.mentions.users.first() ?? args[0];
     const showDetails = typeof args[1] === 'boolean' ? args[1] : args[1]?.toLowerCase() === 'true';
     if(!user) {
-        message.respond(keys.commands.inventory.warnings.no_username);
+        message.replyTl(keys.commands.inventory.warnings.no_username);
         return;
     }
 
@@ -95,7 +95,7 @@ async function execute(message, args) {
         playerData = nbt.simplify(playerData.parsed);
     }
     catch(err) {
-        message.respond(keys.commands.inventory.errors.could_not_parse, ph.error(err));
+        message.replyTl(keys.commands.inventory.errors.could_not_parse, ph.error(err));
         return;
     }
 

@@ -3,7 +3,7 @@ const { keys, ph, getEmbed, getActionRows } = require('../api/messages');
 
 async function execute(interaction) {
     if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-        interaction.respond(keys.buttons.disable.warnings.no_permission);
+        interaction.replyTl(keys.buttons.disable.warnings.no_permission);
         return;
     }
 
@@ -12,10 +12,10 @@ async function execute(interaction) {
     //Disable command
     const disabled = await settings.disable(interaction.guildId, 'commands', commandName);
     if(disabled) {
-        interaction.respond(keys.buttons.disable.success.response, { 'command_name': commandName });
+        interaction.replyTl(keys.buttons.disable.success.response, { 'command_name': commandName });
     }
     else {
-        interaction.respond(keys.buttons.disable.errors.could_not_disable, { 'command_name': commandName });
+        interaction.replyTl(keys.buttons.disable.errors.could_not_disable, { 'command_name': commandName });
         return;
     }
 

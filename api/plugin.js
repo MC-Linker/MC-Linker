@@ -250,7 +250,7 @@ async function chatPrivate(msg, credentials, username, target, message = default
             resolve({ message: await resp.text(), status: resp.status });
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -320,7 +320,7 @@ function connect(ip, guildId, verifyCode, message = defaultMessage) {
             else resolve(resp);
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -336,7 +336,7 @@ function disconnect(guildId, client, message = defaultMessage) {
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
 
             if(connIndex === -1) {
-                message.respond(keys.api.plugin.warnings.not_connected);
+                message.replyTl(keys.api.plugin.warnings.not_connected);
                 return resolve(false);
             }
 
@@ -363,7 +363,7 @@ function disconnect(guildId, client, message = defaultMessage) {
             resolve(update);
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -379,7 +379,7 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
         //Find connection
         const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
         if(connIndex === -1) {
-            message.respond(keys.api.plugin.warnings.not_connected);
+            message.replyTl(keys.api.plugin.warnings.not_connected);
             resolve(false);
             return;
         }
@@ -387,7 +387,7 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
         const conn = pluginConnections[connIndex];
         const channel = conn.channels.find(c => c.id === channelId);
         if(!channel) {
-            message.respond(keys.api.plugin.warnings.channel_not_added);
+            message.replyTl(keys.api.plugin.warnings.channel_not_added);
             resolve(false);
             return;
         }
@@ -444,7 +444,7 @@ function unregisterChannel(ip, guildId, channelId, client, message = defaultMess
             else resolve(resp);
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -488,7 +488,7 @@ function registerChannel(guildId, channelId, types, webhookId, client, message =
             //Find connection
             const connIndex = pluginConnections.findIndex(conn => conn.guildId === guildId);
             if(connIndex === -1) {
-                message.respond(keys.api.plugin.warnings.not_connected);
+                message.replyTl(keys.api.plugin.warnings.not_connected);
                 resolve(false);
                 return;
             }
@@ -533,7 +533,7 @@ function registerChannel(guildId, channelId, types, webhookId, client, message =
             else resolve(resp);
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -557,17 +557,17 @@ function get(getPath, putPath, credentials, message = defaultMessage) {
             resp.body.pipe(fileStream);
 
             resp.body.on('error', err => {
-                message.respond(keys.api.plugin.errors.could_not_stream, { 'path': getPath, 'error': err });
+                message.replyTl(keys.api.plugin.errors.could_not_stream, { 'path': getPath, 'error': err });
                 resolve(false);
             });
             fileStream.on('finish', async () => {
-                message.respond(keys.api.plugin.success.get, { 'path': getPath });
+                message.replyTl(keys.api.plugin.success.get, { 'path': getPath });
 
                 resolve(await fs.readFile(putPath));
             });
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -592,11 +592,11 @@ function put(getPath, putPath, credentials, message = defaultMessage) {
             });
             if(!await checkStatus(resp, message)) return resolve(false);
 
-            message.respond(keys.api.plugin.success.put, { 'path': putPath });
+            message.replyTl(keys.api.plugin.success.put, { 'path': putPath });
             resolve(true);
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -618,7 +618,7 @@ async function list(folder, credentials, message = defaultMessage) {
             resolve(resp.json());
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -641,7 +641,7 @@ function execute(command, credentials, message = defaultMessage) {
             resolve({ json: await resp.json(), status: resp.status });
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -663,7 +663,7 @@ function getOnlinePlayers(credentials, message = defaultMessage) {
             resolve(await resp.json());
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -677,7 +677,7 @@ function verify(ip, message = defaultMessage) {
             resolve(true);
         }
         catch(err) {
-            message.respond(keys.api.plugin.errors.no_response);
+            message.replyTl(keys.api.plugin.errors.no_response);
             resolve(false);
         }
     });
@@ -698,7 +698,7 @@ async function updateConn(message = defaultMessage) {
     return new Promise(resolve => {
         fs.outputJson('./serverdata/connections/connections.json', pluginConnections, { spaces: 2 })
             .catch(err => {
-                message.respond(keys.api.plugin.errors.could_not_update, ph.error(err));
+                message.replyTl(keys.api.plugin.errors.could_not_update, ph.error(err));
                 resolve(false);
             }).then(() => resolve(true));
     });
@@ -706,19 +706,19 @@ async function updateConn(message = defaultMessage) {
 
 async function checkStatus(response, message = defaultMessage) {
     if(response.status === 400) {
-        message.respond(keys.api.plugin.errors.status_400, { 'error': await response.text() });
+        message.replyTl(keys.api.plugin.errors.status_400, { 'error': await response.text() });
         return false;
     }
     else if(response.status === 500) {
-        message.respond(keys.api.plugin.errors.status_500, { 'error': await response.text() });
+        message.replyTl(keys.api.plugin.errors.status_500, { 'error': await response.text() });
         return false;
     }
     else if(response.status === 404) {
-        message.respond(keys.api.plugin.errors.status_404);
+        message.replyTl(keys.api.plugin.errors.status_404);
         return false;
     }
     else if(response.status === 401) {
-        message.respond(keys.api.plugin.errors.status_401);
+        message.replyTl(keys.api.plugin.errors.status_401);
         return false;
     }
     else return !!response.ok;

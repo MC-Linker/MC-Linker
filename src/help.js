@@ -4,7 +4,7 @@ const { keys, ph, addPh, getEmbed, getActionRows } = require('../api/messages');
 
 async function execute(message, args) {
     if(!args[0]) {
-        message.respond(
+        message.replyTl(
             keys.commands.help.success.no_args,
             { 'invite_link': discordLink },
             await ph.allCommands(message.client),
@@ -18,7 +18,7 @@ async function execute(message, args) {
             //Show command list of category
             fs.readdir(`./commands/${commandName}`, async (err, commands) => {
                 if(err) {
-                    message.respond(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName });
+                    message.replyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName });
                     return;
                 }
 

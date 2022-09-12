@@ -3,28 +3,57 @@ const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
 const defaultMessage = {
-    respond(key, ...placeholders) {
-        return reply(null, key, ...placeholders);
+    replyTl(key, ...placeholders) {
+        return replyTl(null, key, ...placeholders);
     },
     channel: {
         send(content) {},
     },
 };
 
+
 function addTranslatedResponses(interaction) {
-    interaction.replyTl = (key, ...placeholders) => reply(interaction, key, ...placeholders);
+    interaction.replyTl = (key, ...placeholders) => replyTl(interaction, key, ...placeholders);
     interaction.replyOptions = options => replyOptions(interaction, options);
     return interaction;
 }
 
+/**
+ * @callback TypeReplyTl - Reply to an interaction with a translation key.
+ * @param {Discord.InteractionReplyOptions|Discord.ReplyMessageOptions} key - The translation key to send.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Discord.Message|Discord.InteractionResponse}
+ */
+
+/**
+ * @callback TypeReplyOptions - Reply to an interaction with options.
+ * @param {Discord.InteractionReplyOptions|Discord.ReplyMessageOptions} options - The options to send.
+ * @returns {Discord.Message|Discord.InteractionResponse}
+ */
+
+/**
+ * @typedef {object} TranslatedResponses
+ * @property {TypeReplyTl} replyTl
+ * @property {TypeReplyOptions} replyOptions
+ */
+
+/**
+ * Converts a message to a translated message.
+ * @param {Discord.Message} message - The message to convert to a translated message.
+ * @returns {Discord.Message & TranslatedResponses}
+ */
 function toTranslatedMessage(message) {
-    if(!(message instanceof Discord.Message)) return message;
     return addTranslatedResponses(message);
 }
 
+/**
+ * Converts an interaction to a translated interaction.
+ * @template {Discord.BaseInteraction} I
+ * @param {I} interaction - The interaction to convert to a translated interaction.
+ * @returns {I & TranslatedResponses}
+ */
 function toTranslatedInteraction(interaction) {
-    if(!(interaction instanceof Discord.BaseInteraction) || interaction instanceof Discord.AutocompleteInteraction) return interaction;
-    return addTranslatedResponses(message);
+    return addTranslatedResponses(interaction);
 }
 
 
@@ -226,8 +255,8 @@ function addPh(key, ...placeholders) {
 }
 
 
-function reply(interaction, key, ...placeholders) {
-    //Only log to console if interaction doesn't exist
+function replyTl(interaction, key, ...placeholders) {
+    //Log to console if interaction doesn't exist
     // noinspection JSUnresolvedVariable
     if(key?.console && !interaction) return console.log(addPh(key.console, Object.assign({}, ...placeholders)));
 
@@ -646,7 +675,7 @@ function getArgs(client, interaction) {
 module.exports = {
     keys,
     ph,
-    reply,
+    replyTl,
     replyOptions,
     toTranslatedInteraction,
     toTranslatedMessage,

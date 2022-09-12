@@ -17,7 +17,7 @@ async function autocomplete(interaction) {
     //Remove all description fields
     matchingKeys.map(title => delete title.description);
 
-    interaction.respond(matchingKeys).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete.console));
+    interaction.replyTl(matchingKeys).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete.console));
 }
 
 async function execute(message, args) {
@@ -26,7 +26,7 @@ async function execute(message, args) {
     const disabledCommands = ['enable', 'disable', 'help'];
 
     if(!type) {
-        message.respond(keys.commands.disable.warnings.no_type);
+        message.replyTl(keys.commands.disable.warnings.no_type);
         return;
     }
 
@@ -34,17 +34,17 @@ async function execute(message, args) {
         const toList = args?.join(' ').toLowerCase();
 
         if(!toList) {
-            message.respond(keys.commands.disable.warnings.no_list_type);
+            message.replyTl(keys.commands.disable.warnings.no_list_type);
             return;
         }
         else if(toList !== 'stats' && toList !== 'advancements' && toList !== 'commands') {
-            message.respond(keys.commands.disable.warnings.invalid_type);
+            message.replyTl(keys.commands.disable.warnings.invalid_type);
             return;
         }
 
         const disabled = await settings.getDisabled(message.guildId, toList);
         if(disabled.length === 0) {
-            message.respond(keys.commands.disable.success.nothing_disabled, { 'type': toList });
+            message.replyTl(keys.commands.disable.success.nothing_disabled, { 'type': toList });
             return;
         }
 
@@ -83,19 +83,19 @@ async function execute(message, args) {
         const argPlaceholder = { 'disable': toDisable, type };
 
         if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-            message.respond(keys.commands.disable.warnings.no_permission);
+            message.replyTl(keys.commands.disable.warnings.no_permission);
             return;
         }
         else if(!toDisable) {
-            message.respond(keys.commands.disable.warnings.no_disable, argPlaceholder);
+            message.replyTl(keys.commands.disable.warnings.no_disable, argPlaceholder);
             return;
         }
         else if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
-            message.respond(keys.commands.disable.warnings.invalid_type);
+            message.replyTl(keys.commands.disable.warnings.invalid_type);
             return;
         }
         else if(type === 'commands' && disabledCommands.includes(toDisable)) {
-            message.respond(keys.commands.disable.warnings.disabled_command, argPlaceholder);
+            message.replyTl(keys.commands.disable.warnings.disabled_command, argPlaceholder);
             return;
         }
 
@@ -104,7 +104,7 @@ async function execute(message, args) {
             const command = keys.data[toDisable];
 
             if(!command) {
-                message.respond(keys.commands.disable.warnings.command_does_not_exist, argPlaceholder);
+                message.replyTl(keys.commands.disable.warnings.command_does_not_exist, argPlaceholder);
                 return;
             }
 
@@ -121,11 +121,11 @@ async function execute(message, args) {
         }
 
         if(!await settings.disable(message.guildId, type, toDisable)) {
-            message.respond(keys.commands.disable.errors.could_not_disable, { type, 'disable': formattedToDisable });
+            message.replyTl(keys.commands.disable.errors.could_not_disable, { type, 'disable': formattedToDisable });
             return;
         }
 
-        message.respond(keys.commands.disable.success.disabled, { type, 'disable': formattedToDisable });
+        message.replyTl(keys.commands.disable.success.disabled, { type, 'disable': formattedToDisable });
     }
 }
 

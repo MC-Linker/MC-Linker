@@ -24,7 +24,7 @@ class Advancements extends AutocompleteCommand {
             });
         });
 
-        interaction.respond(respondArray)
+        interaction.replyTl(respondArray)
             .catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete.console));
     }
 
@@ -34,19 +34,19 @@ class Advancements extends AutocompleteCommand {
         const server = client.serverConnections.cache.get(interaction.guildId);
 
         if(!server) {
-            return interaction.respond(keys.api.connections.server_not_connected);
+            return interaction.replyTl(keys.api.connections.server_not_connected);
         }
         else if(!advancement) {
-            return interaction.respond(keys.commands.advancements.warnings.no_advancement);
+            return interaction.replyTl(keys.commands.advancements.warnings.no_advancement);
         }
         else if(uuid.error === 'nullish') {
-            return interaction.respond(keys.commands.advancements.warnings.no_username);
+            return interaction.replyTl(keys.commands.advancements.warnings.no_username);
         }
         else if(uuid.error === 'cache') {
-            return interaction.respond(keys.api.connections.user_not_connected);
+            return interaction.replyTl(keys.api.connections.user_not_connected);
         }
         else if(uuid.error === 'fetch') {
-            return interaction.respond(keys.api.utils.errors.could_not_fetch_uuid);
+            return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid);
         }
 
         let matchingAdvancement;
@@ -64,7 +64,7 @@ class Advancements extends AutocompleteCommand {
         const advancementDesc = matchingAdvancement?.description ?? keys.commands.advancements.no_description_available;
 
         if(server?.settings?.isDisabled('advancements', advancement)) {
-            return interaction.respond(
+            return interaction.replyTl(
                 keys.commands.advancements.warnings.advancement_disabled,
                 { 'advancement_title': advancementTitle },
             );
@@ -153,7 +153,7 @@ class Advancements extends AutocompleteCommand {
             interaction.replyOptions({ embeds: [amEmbed] });
         }
         catch(err) {
-            interaction.respond(keys.commands.advancements.warnings.not_completed, { 'advancement_title': advancementTitle });
+            interaction.replyTl(keys.commands.advancements.warnings.not_completed, { 'advancement_title': advancementTitle });
         }
     }
 }

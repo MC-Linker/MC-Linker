@@ -27,7 +27,7 @@ const maxCharLength = 4086;
 async function execute(interaction, args) {
     const command = args?.join(' ')?.replace(/^```(js|javascript)?|```$/g, '')?.trim();
     if(!command) {
-        interaction.respond(keys.commands.eval.warnings.no_command);
+        interaction.replyTl(keys.commands.eval.warnings.no_command);
         return;
     }
 
@@ -79,11 +79,11 @@ async function execute(interaction, args) {
             interaction.replyOptions({ files: [attachment] });
         }
         else {
-            interaction.respond(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, maxCharLength)) });
+            interaction.replyTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, maxCharLength)) });
         }
     }
     catch(err) {
-        interaction.respond(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, maxCharLength)) }, ph.error(err));
+        interaction.replyTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, maxCharLength)) }, ph.error(err));
     }
 }
 
