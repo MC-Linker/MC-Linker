@@ -5,9 +5,9 @@ class AutocompleteCommand extends Command {
 
     /**
      * @inheritDoc
-     * @param {Message|CommandInteraction} interaction - The message/slash command interaction
-     * @param {MCLinker} client - The MCLinker client
-     * @param {String[]} args - The command arguments set by the user
+     * @param {(Message|CommandInteraction & TranslatedResponses)} interaction - The message/slash command interaction.
+     * @param {MCLinker} client - The MCLinker client.
+     * @param {String[]} args - The command arguments set by the user.
      * @returns {void|Promise<void>}
      * @abstract
      */
@@ -18,7 +18,7 @@ class AutocompleteCommand extends Command {
     /**
      * Handles the autocompletion of a command.
      * @param {AutocompleteInteraction} interaction - The autocomplete interaction.
-     * @param {MCLinker} client - The MCLinker client
+     * @param {MCLinker} client - The MCLinker client.
      * @returns {void|Promise<void>}
      * @abstract
      */
