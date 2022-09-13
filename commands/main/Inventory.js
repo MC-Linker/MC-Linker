@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
 const { keys, addPh, getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
+const Command = require('../../structures/Command');
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -72,210 +73,219 @@ const armorSlotNames = {
     45: keys.commands.inventory.slots.offhand,
 };
 
-async function execute(message, args) {
-    const user = message.mentions.users.first() ?? args[0];
-    const showDetails = typeof args[1] === 'boolean' ? args[1] : args[1]?.toLowerCase() === 'true';
-    if(!user) {
-        message.replyTl(keys.commands.inventory.warnings.no_username);
-        return;
+class Inventory extends Command {
+
+    constructor() {
+        super('inventory');
     }
 
-    const uuid = await utils.getUUID(user, message.guildId, message);
-    if(!uuid) return;
-
-    const worldPath = await utils.getWorldPath(message.guildId, message);
-    if(!worldPath) return;
-
-    const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuid}.dat`, `./userdata/playernbt/${uuid}.dat`, message.guildId, message);
-    if(!nbtFile) return;
-
-    let playerData;
-    try {
-        playerData = await nbt.parse(nbtFile, 'big');
-        playerData = nbt.simplify(playerData.parsed);
-    }
-    catch(err) {
-        message.replyTl(keys.commands.inventory.errors.could_not_parse, ph.error(err));
-        return;
-    }
-
-    //Convert slots to network slots
-    playerData.Inventory = playerData.Inventory.map(item => {
-        return {
-            ...item,
-            Slot: dataSlotToNetworkSlot(item.Slot),
-        };
-    });
-
-    const itemButtons = [];
-    const {
-        canvas: invCanvas,
-        ctx,
-    } = await renderContainer(
-        './resources/images/other/inventory_blank.png',
-        playerData.Inventory,
-        Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-        showDetails ? pushInvButton.bind(null, itemButtons) : () => {}, //Push itemButtons if showDetails is set to true
-    );
-
-    //Draw skin in inventory
-    const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuid}/body/10.5/10/json`);
-    const { skin: skinBase64 } = await skinJson.json();
-    const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
-    ctx.drawImage(skinImg, 70, 20, 65, 131);
-
-    const invAttach = new Discord.AttachmentBuilder(
-        invCanvas.toBuffer('image/png'),
-        { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
-    );
-    const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(message), { username: user });
-
-    const replyOptions = {
-        files: [invAttach],
-        embeds: [invEmbed],
-        components: getComponentOption(
-            itemButtons,
-            getComponent(keys.commands.inventory.success.next_button, { id: 'slot_next' }),
-        ),
-    };
-
-    const invMessage = await message.replyOptions(replyOptions);
-
-    //Create component collector for slot buttons
-    const collector = invMessage.createMessageComponentCollector({
-        componentType: Discord.ComponentType.Button,
-        time: 120_000,
-    });
-
-    let shulkerButtons = [];
-    collector.on('collect', async button => {
-        const buttonId = button.customId;
-        if(!buttonId.startsWith('slot')) return;
-
-        if(button.user.id !== message.member.user.id) {
-            const notAuthorEmbed = getEmbed(keys.commands.inventory.warnings.not_author_button, ph.emojis());
-            button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
-            return;
-        }
-        if(buttonId === 'slot_next' || buttonId === 'slot_next_shulker') {
-            const backButton = getComponent(
-                keys.commands.inventory.success.back_button,
-                { id: buttonId === 'slot_next' ? 'slot_back' : 'slot_back_shulker' },
-            );
-            const replyButtons = buttonId === 'slot_next' ? itemButtons.slice(24) : shulkerButtons.slice(24);
-            replyButtons.push(backButton);
-            button.update({ components: createActionRows(replyButtons) });
-            return;
-        }
-        else if(buttonId === 'slot_back' || buttonId === 'slot_back_shulker') {
-            const replyComponents = getComponentOption(
-                buttonId === 'slot_back' ? itemButtons : shulkerButtons,
-                getComponent(keys.commands.inventory.success.next_button, { id: buttonId === 'slot_back' ? 'slot_next' : 'slot_next_shulker' }),
-            );
-
-            const replyOptions = { components: replyComponents };
-
-            //When going back from shulker to inventory, reset image
-            if(buttonId === 'slot_back' && button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
-                invEmbed.setImage('attachment://Inventory_Player.png');
-                replyOptions.embeds = [invEmbed];
-                replyOptions.files = [invAttach];
-            }
-            button.update(replyOptions);
+    async execute(interaction, client, args) {
+        const user = interaction.mentions.users.first() ?? args[0];
+        const showDetails = typeof args[1] === 'boolean' ? args[1] : args[1]?.toLowerCase() === 'true';
+        if(!user) {
+            interaction.replyTl(keys.commands.inventory.warnings.no_username);
             return;
         }
 
-        const index = parseInt(buttonId.split('_').pop());
-        let item = playerData.Inventory[index];
-        //If item is a shulker, get item from shulker inventory
-        if(buttonId.includes('_shulker_')) {
-            const shulkerIndex = parseInt(buttonId.split('_')[2]);
-            item = item.tag.BlockEntityTag.Items[shulkerIndex];
+        const uuid = await utils.getUUID(user, interaction.guildId, interaction);
+        if(!uuid) return;
+
+        const worldPath = await utils.getWorldPath(interaction.guildId, interaction);
+        if(!worldPath) return;
+
+        const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuid}.dat`, `./userdata/playernbt/${uuid}.dat`, interaction.guildId, interaction);
+        if(!nbtFile) return;
+
+        let playerData;
+        try {
+            playerData = await nbt.parse(nbtFile, 'big');
+            playerData = nbt.simplify(playerData.parsed);
+        }
+        catch(err) {
+            interaction.replyTl(keys.commands.inventory.errors.could_not_parse, ph.error(err));
+            return;
         }
 
-        const formattedId = item.id.split(':').pop();
-        const slot = item.Slot;
-        const itemStats = mcData.itemsByName[formattedId];
+        //Convert slots to network slots
+        playerData.Inventory = playerData.Inventory.map(item => {
+            return {
+                ...item,
+                Slot: dataSlotToNetworkSlot(item.Slot),
+            };
+        });
 
-        const username = user instanceof Discord.User ? await utils.getUsername(user.id) : user;
-        const itemEmbed = getEmbed(
-            keys.commands.inventory.success.item,
-            {
-                slot_name: armorSlotNames[slot] ?? addPh(keys.commands.inventory.slots.default, { slot }),
-                name: itemStats?.displayName ?? formattedId,
-                id: item.id,
-                count: item.Count,
-                max_count: itemStats?.stackSize ?? 64,
-                username,
-                avatar: `https://minotar.net/helm/${username}/64.png`,
-            },
-            ph.emojis(),
+        const itemButtons = [];
+        const {
+            canvas: invCanvas,
+            ctx,
+        } = await renderContainer(
+            './resources/images/other/inventory_blank.png',
+            playerData.Inventory,
+            Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
+            showDetails ? pushInvButton.bind(null, itemButtons) : () => {}, //Push itemButtons if showDetails is set to true
         );
-        addInfo(itemEmbed, item.tag, itemStats);
 
-        if(item.tag?.BlockEntityTag?.Items) {
-            //Increase slot numbers by 18 in inventory
-            const mappedInvItems = playerData.Inventory.map(item => {
-                if(armorSlotCoords[item.Slot]) return; //Exclude armor slots
-                return {
-                    ...item,
-                    Slot: item.Slot + 18,
-                };
-            }).filter(i => i); //Remove undefined items
+        //Draw skin in inventory
+        const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuid}/body/10.5/10/json`);
+        const { skin: skinBase64 } = await skinJson.json();
+        const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+        ctx.drawImage(skinImg, 70, 20, 65, 131);
 
-            //Add parentIndex to shulker items to add in customId on buttons
-            const mappedShulkerItems = item.tag.BlockEntityTag.Items.map(item => {
-                return {
-                    ...item,
-                    parentIndex: index,
-                };
-            });
+        const invAttach = new Discord.AttachmentBuilder(
+            invCanvas.toBuffer('image/png'),
+            { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
+        );
+        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(interaction), { username: user });
 
-            //Shulker Items + Inventory
-            const allItems = mappedShulkerItems.concat(mappedInvItems);
+        /** @type {Discord.InteractionReplyOptions} */
+        const replyOptions = {
+            files: [invAttach],
+            embeds: [invEmbed],
+            components: getComponentOption(
+                itemButtons,
+                getComponent(keys.commands.inventory.success.next_button, { id: 'slot_next' }),
+            ),
+        };
 
-            shulkerButtons = []; //Clear previous buttons
-            const { canvas: shulkerImage } = await renderContainer(
-                './resources/images/other/shulker_blank.png',
-                allItems,
-                shulkerSlotCoords,
-                pushShulkerButton.bind(null, shulkerButtons),
+        const invMessage = await interaction.replyOptions(replyOptions);
+
+        //Create component collector for slot buttons
+        const collector = invMessage.createMessageComponentCollector({
+            componentType: Discord.ComponentType.Button,
+            time: 120_000,
+        });
+
+        let shulkerButtons = [];
+        collector.on('collect', async button => {
+            const buttonId = button.customId;
+            if(!buttonId.startsWith('slot')) return;
+
+            if(button.user.id !== interaction.member.user.id) {
+                const notAuthorEmbed = getEmbed(keys.commands.inventory.warnings.not_author_button, ph.emojis());
+                button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
+                return;
+            }
+            if(buttonId === 'slot_next' || buttonId === 'slot_next_shulker') {
+                const backButton = getComponent(
+                    keys.commands.inventory.success.back_button,
+                    { id: buttonId === 'slot_next' ? 'slot_back' : 'slot_back_shulker' },
+                );
+                const replyButtons = buttonId === 'slot_next' ? itemButtons.slice(24) : shulkerButtons.slice(24);
+                replyButtons.push(backButton);
+                button.update({ components: createActionRows(replyButtons) });
+                return;
+            }
+            else if(buttonId === 'slot_back' || buttonId === 'slot_back_shulker') {
+                const replyComponents = getComponentOption(
+                    buttonId === 'slot_back' ? itemButtons : shulkerButtons,
+                    getComponent(keys.commands.inventory.success.next_button, { id: buttonId === 'slot_back' ? 'slot_next' : 'slot_next_shulker' }),
+                );
+
+                const replyOptions = { components: replyComponents };
+
+                //When going back from shulker to inventory, reset image
+                if(buttonId === 'slot_back' && button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
+                    invEmbed.setImage('attachment://Inventory_Player.png');
+                    replyOptions.embeds = [invEmbed];
+                    replyOptions.files = [invAttach];
+                }
+                button.update(replyOptions);
+                return;
+            }
+
+            const index = parseInt(buttonId.split('_').pop());
+            let item = playerData.Inventory[index];
+            //If item is a shulker, get item from shulker inventory
+            if(buttonId.includes('_shulker_')) {
+                const shulkerIndex = parseInt(buttonId.split('_')[2]);
+                item = item.tag.BlockEntityTag.Items[shulkerIndex];
+            }
+
+            const formattedId = item.id.split(':').pop();
+            const slot = item.Slot;
+            const itemStats = mcData.itemsByName[formattedId];
+
+            const username = user instanceof Discord.User ? await utils.getUsername(user.id) : user;
+            const itemEmbed = getEmbed(
+                keys.commands.inventory.success.item,
+                {
+                    slot_name: armorSlotNames[slot] ?? addPh(keys.commands.inventory.slots.default, { slot }),
+                    name: itemStats?.displayName ?? formattedId,
+                    id: item.id,
+                    count: item.Count,
+                    max_count: itemStats?.stackSize ?? 64,
+                    username,
+                    avatar: `https://minotar.net/helm/${username}/64.png`,
+                },
+                ph.emojis(),
             );
+            addInfo(itemEmbed, item.tag, itemStats);
 
-            //Push to 24th slot if more than 25 items to make sure both back and next buttons are sent
-            shulkerButtons.splice(
-                shulkerButtons.length > 25 ? 23 : 24,
-                0,
-                getComponent(keys.commands.inventory.success.back_button, { id: 'slot_back' }),
-            );
+            if(item.tag?.BlockEntityTag?.Items) {
+                //Increase slot numbers by 18 in inventory
+                const mappedInvItems = playerData.Inventory.map(item => {
+                    if(armorSlotCoords[item.Slot]) return; //Exclude armor slots
+                    return {
+                        ...item,
+                        Slot: item.Slot + 18,
+                    };
+                }).filter(i => i); //Remove undefined items
 
-            const shulkerAttach = new Discord.AttachmentBuilder(
-                shulkerImage.toBuffer('image/png'),
-                { name: `Shulker_Contents.png`, description: keys.commands.inventory.shulker_description },
-            );
+                //Add parentIndex to shulker items to add in customId on buttons
+                const mappedShulkerItems = item.tag.BlockEntityTag.Items.map(item => {
+                    return {
+                        ...item,
+                        parentIndex: index,
+                    };
+                });
 
-            invEmbed.setImage('attachment://Shulker_Contents.png');
-            button.update({
-                embeds: [invEmbed],
-                files: [shulkerAttach],
-                components: getComponentOption(
-                    shulkerButtons,
-                    getComponent(keys.commands.inventory.success.next_button, { id: 'slot_next_shulker' }),
-                ),
-            });
-        }
-        else if(buttonId.includes('_shulker_')) {
-            button.update({ embeds: [invEmbed, itemEmbed] });
-        }
-        else if(button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
-            invEmbed.setImage('attachment://Inventory_Player.png');
-            button.update(replyOptions);
-        }
-        else {
-            button.update({ embeds: [invEmbed, itemEmbed] });
-        }
-    });
+                //Shulker Items + Inventory
+                const allItems = mappedShulkerItems.concat(mappedInvItems);
+
+                shulkerButtons = []; //Clear previous buttons
+                const { canvas: shulkerImage } = await renderContainer(
+                    './resources/images/other/shulker_blank.png',
+                    allItems,
+                    shulkerSlotCoords,
+                    pushShulkerButton.bind(null, shulkerButtons),
+                );
+
+                //Push to 24th slot if more than 25 items to make sure both back and next buttons are sent
+                shulkerButtons.splice(
+                    shulkerButtons.length > 25 ? 23 : 24,
+                    0,
+                    getComponent(keys.commands.inventory.success.back_button, { id: 'slot_back' }),
+                );
+
+                const shulkerAttach = new Discord.AttachmentBuilder(
+                    shulkerImage.toBuffer('image/png'),
+                    { name: `Shulker_Contents.png`, description: keys.commands.inventory.shulker_description },
+                );
+
+                invEmbed.setImage('attachment://Shulker_Contents.png');
+                await button.update({
+                    embeds: [invEmbed],
+                    files: [shulkerAttach],
+                    components: getComponentOption(
+                        shulkerButtons,
+                        getComponent(keys.commands.inventory.success.next_button, { id: 'slot_next_shulker' }),
+                    ),
+                });
+            }
+            else if(buttonId.includes('_shulker_')) {
+                await button.update({ embeds: [invEmbed, itemEmbed] });
+            }
+            else if(button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
+                invEmbed.setImage('attachment://Inventory_Player.png');
+                await button.update(replyOptions);
+            }
+            else {
+                await button.update({ embeds: [invEmbed, itemEmbed] });
+            }
+        });
+    }
 }
+
 
 async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
     const canvas = Canvas.createCanvas(352, 332);
@@ -507,4 +517,4 @@ function dataSlotToNetworkSlot(index) {
     return index;
 }
 
-module.exports = { execute };
+module.exports = Inventory;

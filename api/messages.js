@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const { InteractionReplyOptions, ReplyMessageOptions, Message, InteractionResponse } = require('discord.js');
 const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
@@ -20,15 +21,15 @@ function addTranslatedResponses(interaction) {
 
 /**
  * @callback TypeReplyTl - Reply to an interaction with a translation key.
- * @param {Discord.InteractionReplyOptions|Discord.ReplyMessageOptions} key - The translation key to send.
+ * @param {InteractionReplyOptions|ReplyMessageOptions} key - The translation key to send.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Discord.Message|Discord.InteractionResponse}
+ * @returns {Message|InteractionResponse}
  */
 
 /**
  * @callback TypeReplyOptions - Reply to an interaction with options.
- * @param {Discord.InteractionReplyOptions|Discord.ReplyMessageOptions} options - The options to send.
- * @returns {Discord.Message|Discord.InteractionResponse}
+ * @param {InteractionReplyOptions|ReplyMessageOptions} options - The options to send.
+ * @returns {Message|InteractionResponse}
  */
 
 /**
@@ -39,8 +40,8 @@ function addTranslatedResponses(interaction) {
 
 /**
  * Converts a message to a translated message.
- * @param {Discord.Message} message - The message to convert to a translated message.
- * @returns {Discord.Message & TranslatedResponses}
+ * @param {Message} message - The message to convert to a translated message.
+ * @returns {Message & TranslatedResponses}
  */
 function toTranslatedMessage(message) {
     return addTranslatedResponses(message);
