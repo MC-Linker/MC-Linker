@@ -119,7 +119,7 @@ class Inventory extends Command {
             canvas: invCanvas,
             ctx,
         } = await renderContainer(
-            './resources/images/other/inventory_blank.png',
+            './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
             showDetails ? pushInvButton.bind(null, itemButtons) : () => {}, //Push itemButtons if showDetails is set to true
@@ -244,7 +244,7 @@ class Inventory extends Command {
 
                 shulkerButtons = []; //Clear previous buttons
                 const { canvas: shulkerImage } = await renderContainer(
-                    './resources/images/other/shulker_blank.png',
+                    './resources/images/containers/shulker_blank.png',
                     allItems,
                     shulkerSlotCoords,
                     pushShulkerButton.bind(null, shulkerButtons),
@@ -304,7 +304,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
 
         try {
             //Draw image
-            const itemImg = await Canvas.loadImage(`./resources/images/minecraft/items/${itemId}.png`);
+            const itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
             ctx.drawImage(itemImg, 0, 0, 80, 80, x, y, 32, 32);
         }
         catch(err) {

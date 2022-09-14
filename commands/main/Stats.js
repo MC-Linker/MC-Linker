@@ -106,7 +106,7 @@ class Stats extends AutocompleteCommand {
             if(category === 'killed' || category === 'killed_by') imgType = 'entities';
             else imgType = 'items';
 
-            fs.access(`./resources/images/minecraft/${imgType}/${stat}.png`, err => {
+            fs.access(`./resources/images/${imgType}/${stat}.png`, err => {
                 if(err) {
                     interaction.replyTl(keys.commands.stats.warnings.no_image, { 'stat_name': stat });
                     interaction.replyOptions({ embeds: [statEmbed] });
@@ -114,7 +114,7 @@ class Stats extends AutocompleteCommand {
                 }
                 interaction.replyOptions({
                     embeds: [statEmbed],
-                    files: [`./resources/images/minecraft/${imgType}/${stat}.png`],
+                    files: [`./resources/images/${imgType}/${stat}.png`],
                 });
             });
         }
