@@ -5,12 +5,16 @@ const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Stats extends AutocompleteCommand {
 
+    constructor() {
+        super('stats');
+    }
+
     async autocomplete(interaction, client) {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
         const stats = await utils.searchStats(focused, subcommand);
-        interaction.replyTl(stats).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
+        interaction.respond(stats).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
     }
 
     async execute(interaction, client, args) {

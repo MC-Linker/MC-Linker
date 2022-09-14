@@ -25,7 +25,7 @@ class Command {
 
     /**
      * Handles the execution of a command.
-     * @param {(Message|CommandInteraction & TranslatedResponses)} interaction - The message/slash command interaction.
+     * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @param {String[]} args - The command arguments set by the user.
      * @returns {void|Promise<void>}

@@ -24,7 +24,7 @@ class Advancements extends AutocompleteCommand {
             });
         });
 
-        interaction.replyTl(respondArray)
+        interaction.respond(respondArray)
             .catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete.console));
     }
 

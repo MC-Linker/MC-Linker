@@ -7,111 +7,161 @@ const plugin = require('../../api/plugin');
 const mcData = require('minecraft-data')('1.19.2');
 
 const commands = require('../../resources/data/commands.json');
+const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
+class Command extends AutocompleteCommand {
 
-async function autocomplete(interaction) {
-    const respondArray = [];
-    const focused = interaction.options.getFocused(true);
-
-    if(focused.name === 'command') {
-        Object.keys(commands).forEach(cmd => {
-            if(cmd.includes(focused.value)) respondArray.push({ name: cmd, value: cmd });
-        });
+    constructor() {
+        super('command');
     }
-    else {
-        const allOptions = [...interaction.options.data];
-        const commandName = allOptions[0].value.toLowerCase();
-        allOptions.shift(); //Shift command name
 
-        const placeholders = {};
+    async autocomplete(interaction, client) {
+        const respondArray = [];
+        const focused = interaction.options.getFocused(true);
 
-        const cmdKey = Object.keys(commands).find(cmd => cmd === commandName);
-        const focusedIndex = allOptions.findIndex(opt => opt.name === focused.name);
+        if(focused.name === 'command') {
+            Object.keys(commands).forEach(cmd => {
+                if(cmd.includes(focused.value)) respondArray.push({ name: cmd, value: cmd });
+            });
+        }
+        else {
+            const allOptions = [...interaction.options.data];
+            const commandName = allOptions[0].value.toLowerCase();
+            allOptions.shift(); //Shift command name
 
-        const allSuggestions = commands[cmdKey];
-        if(!allSuggestions) return;
-        const suggestions = allSuggestions[focusedIndex];
-        if(!suggestions) return;
+            const placeholders = {};
 
-        const previousArgument = allOptions?.[focusedIndex - 1]?.value;
+            const cmdKey = Object.keys(commands).find(cmd => cmd === commandName);
+            const focusedIndex = allOptions.findIndex(opt => opt.name === focused.name);
 
-        let filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
+            const allSuggestions = commands[cmdKey];
+            if(!allSuggestions) return;
+            const suggestions = allSuggestions[focusedIndex];
+            if(!suggestions) return;
 
-        const filteredSuggestions = suggestions?.[filteredKey] ?? suggestions?.[''];
-        if(filteredSuggestions) {
-            const formattedSuggestions = [];
-            for(const sug of filteredSuggestions) {
-                //Run logic for each placeholder and add properties to ph object
-                await addPlaceholders(sug);
-            }
+            const previousArgument = allOptions?.[focusedIndex - 1]?.value;
 
-            async function addPlaceholders(suggestion) {
-                if(suggestion.match(/%.+%/g)) {
-                    //Replace arg[0-9] with corresponding value for placeholders
-                    //arg2 => value of 2nd option
-                    suggestion = suggestion.replace(/%arg(-?\d)_.+%/g, (match, index) => {
-                        index = parseInt(index);
+            let filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
 
-                        if(index < 0) index = allOptions.length + index - 1; //Allow relative (negative) indexes
-                        return allOptions?.[index]?.value ? match.replace(/arg-?\d/, allOptions?.[index]?.value) : match;
-                    });
+            const filteredSuggestions = suggestions?.[filteredKey] ?? suggestions?.[''];
+            if(filteredSuggestions) {
+                const formattedSuggestions = [];
+                for(const sug of filteredSuggestions) {
+                    //Run logic for each placeholder and add properties to ph object
+                    await addPlaceholders(sug);
+                }
 
-                    let filteredArguments;
-                    if(suggestion.includes('_argument_')) {
-                        const [command, index] = suggestion.split(/%(.+)_argument_(\d)%/).filter(n => n);
-                        const commandSuggestions = commands[command]?.[parseInt(index)];
+                const suggestions = addPh(formattedSuggestions, placeholders);
 
-                        if(commandSuggestions) {
-                            const filteredCommandKey = findSuggestionKey(commandSuggestions, previousArgument, allOptions);
-
-                            filteredArguments = commandSuggestions[filteredCommandKey] ?? commandSuggestions[''];
-                        }
+                if(Array.isArray(suggestions)) {
+                    for(const sug of suggestions) {
+                        if(sug?.toLowerCase()?.includes(focused.value.toLowerCase()))
+                            respondArray.push({ name: sug, value: sug });
                     }
-
-                    const placeholder = await getPlaceholder(
-                        suggestion.replaceAll('%', ''), {
-                            user: interaction.user,
-                            guild: interaction.guild,
-                            focused: focused.value,
-                            commands: Object.keys(commands),
-                            commandSuggestions: filteredArguments,
-                        },
-                    );
-                    if(!placeholder) {
-                        console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
-                        return;
+                }
+                else {
+                    for([k, v] of Object.entries(suggestions)) {
+                        if(k?.toLowerCase()?.includes(focused.value.toLowerCase()) || v?.toLowerCase()?.includes(focused.value.toLowerCase()))
+                            respondArray.push({ name: k, value: v });
                     }
-
-                    if(filteredArguments) {
-                        for(const argument of filteredArguments) await addPlaceholders(argument);
-                    }
-                    //Add Placeholder
-                    placeholders[suggestion.replaceAll('%', '')] = placeholder;
                 }
 
                 formattedSuggestions.push(suggestion);
-            }
 
-            const suggestions = addPh(formattedSuggestions, placeholders);
 
-            if(Array.isArray(suggestions)) {
-                for(const sug of suggestions) {
-                    if(sug?.toLowerCase()?.includes(focused.value.toLowerCase()))
-                        respondArray.push({ name: sug, value: sug });
+                async function addPlaceholders(suggestion) {
+                    if(suggestion.match(/%.+%/g)) {
+                        //Replace arg[0-9] with corresponding value for placeholders
+                        //arg2 => value of 2nd option
+                        suggestion = suggestion.replace(/%arg(-?\d)_.+%/g, (match, index) => {
+                            index = parseInt(index);
+
+                            if(index < 0) index = allOptions.length + index - 1; //Allow relative (negative) indexes
+                            return allOptions?.[index]?.value ? match.replace(/arg-?\d/, allOptions?.[index]?.value) : match;
+                        });
+
+                        let filteredArguments;
+                        if(suggestion.includes('_argument_')) {
+                            const [command, index] = suggestion.split(/%(.+)_argument_(\d)%/).filter(n => n);
+                            const commandSuggestions = commands[command]?.[parseInt(index)];
+
+                            if(commandSuggestions) {
+                                const filteredCommandKey = findSuggestionKey(commandSuggestions, previousArgument, allOptions);
+
+                                filteredArguments = commandSuggestions[filteredCommandKey] ?? commandSuggestions[''];
+                            }
+                        }
+
+                        const placeholder = await getPlaceholder(
+                            suggestion.replaceAll('%', ''), {
+                                user: interaction.user,
+                                guild: interaction.guild,
+                                focused: focused.value,
+                                commands: Object.keys(commands),
+                                commandSuggestions: filteredArguments,
+                            },
+                        );
+                        if(!placeholder) {
+                            console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
+                            return;
+                        }
+
+                        if(filteredArguments) {
+                            for(const argument of filteredArguments) await addPlaceholders(argument);
+                        }
+                        //Add Placeholder
+                        placeholders[suggestion.replaceAll('%', '')] = placeholder;
+                    }
                 }
             }
-            else {
-                for([k, v] of Object.entries(suggestions)) {
-                    if(k?.toLowerCase()?.includes(focused.value.toLowerCase()) || v?.toLowerCase()?.includes(focused.value.toLowerCase()))
-                        respondArray.push({ name: k, value: v });
-                }
-            }
+            else return;
         }
-        else return;
+
+        if(respondArray.length >= 25) respondArray.length = 25;
+        interaction.respond(respondArray).catch(() => console.log(keys.commands.command.errors.could_not_autocomplete.console));
     }
 
-    if(respondArray.length >= 25) respondArray.length = 25;
-    interaction.replyTl(respondArray).catch(() => console.log(keys.commands.command.errors.could_not_autocomplete.console));
+    async execute(interaction, client, args) {
+        const command = args[0];
+        args.shift(); //Shift commandName
+
+        if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
+            interaction.replyTl(keys.commands.command.warnings.no_permission);
+            return;
+        }
+        else if(!command) {
+            interaction.replyTl(keys.commands.command.warnings.no_command);
+            return;
+        }
+
+        for(let i = 0; i < args.length; i++) {
+            const arg = args[i];
+
+            let user;
+            if(arg === '@s') user = interaction.member.user;
+            else user = getUsersFromMention(interaction.client, arg)?.[0];
+            if(!user) continue;
+
+            const username = await utils.getUsername(user.id, interaction);
+            if(!username) return;
+
+            args[i] = arg.replace(arg, username);
+        }
+
+        const resp = await plugin.execute(`${command} ${args.join(' ')}`, interaction.guildId, interaction);
+        if(!resp) return;
+
+        let respMessage = resp.status === 200 && resp.json.message ? resp.json.message : keys.api.plugin.warnings.no_response_message;
+
+        //Either '+' or '-' depending on color code
+        let colorChar = '';
+        if(resp.json.color === 'c' || resp.status !== 200) colorChar = '- ';
+        else if(resp.json.color === 'a') colorChar = '+ ';
+
+        //Wrap in discord code block for color and swag
+        respMessage = `\`\`\`diff\n${colorChar}${respMessage}\`\`\``;
+
+        interaction.replyTl(keys.commands.command.success, { 'response': respMessage });    }
 }
 
 //Suggestion key:
@@ -137,50 +187,6 @@ function findSuggestionKey(suggestions, previousArgument, allOptions) {
 
         return returnBool;
     });
-}
-
-
-async function execute(message, args) {
-    const command = args[0];
-    args.shift(); //Shift commandName
-
-    if(!message.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-        message.replyTl(keys.commands.command.warnings.no_permission);
-        return;
-    }
-    else if(!command) {
-        message.replyTl(keys.commands.command.warnings.no_command);
-        return;
-    }
-
-    for(let i = 0; i < args.length; i++) {
-        const arg = args[i];
-
-        let user;
-        if(arg === '@s') user = message.member.user;
-        else user = getUsersFromMention(message.client, arg)?.[0];
-        if(!user) continue;
-
-        const username = await utils.getUsername(user.id, message);
-        if(!username) return;
-
-        args[i] = arg.replace(arg, username);
-    }
-
-    const resp = await plugin.execute(`${command} ${args.join(' ')}`, message.guildId, message);
-    if(!resp) return;
-
-    let respMessage = resp.status === 200 && resp.json.message ? resp.json.message : keys.api.plugin.warnings.no_response_message;
-
-    //Either '+' or '-' depending on color code
-    let colorChar = '';
-    if(resp.json.color === 'c' || resp.status !== 200) colorChar = '- ';
-    else if(resp.json.color === 'a') colorChar = '+ ';
-
-    //Wrap in discord code block for color and swag
-    respMessage = `\`\`\`diff\n${colorChar}${respMessage}\`\`\``;
-
-    message.replyTl(keys.commands.command.success, { 'response': respMessage });
 }
 
 async function getPlaceholder(key, args) {
@@ -4487,4 +4493,4 @@ async function getPlaceholder(key, args) {
     }
 }
 
-module.exports = { execute, autocomplete };
+module.exports = Command;
