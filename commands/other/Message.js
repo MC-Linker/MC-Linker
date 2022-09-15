@@ -5,6 +5,11 @@ const Command = require('../../structures/Command');
 
 class Message extends Command {
 
+    constructor() {
+        super('message', true, true);
+    }
+
+
     async execute(interaction, client, args) {
         const username = interaction.mentions.users.first() ?? args[0];
         args.shift(); //Remove username from args

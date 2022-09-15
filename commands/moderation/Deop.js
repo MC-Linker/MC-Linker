@@ -6,6 +6,10 @@ const Command = require('../../structures/Command');
 
 class Deop extends Command {
 
+    constructor() {
+        super('deop');
+    }
+
     async execute(interaction, client, args) {
         const user = interaction.mentions.users.first() ?? args[0];
 

@@ -5,6 +5,11 @@ const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Enable extends AutocompleteCommand {
 
+    constructor() {
+        super('enable');
+    }
+
+
     async autocomplete(interaction, client) {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();

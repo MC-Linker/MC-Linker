@@ -6,6 +6,10 @@ const Command = require('../../structures/Command');
 
 class Gamemode extends Command {
 
+    constructor() {
+        super('gamemode');
+    }
+
     async execute(interaction, client, args) {
         const user = interaction.mentions.users.first() ?? args[0];
         const gamemode = args[1];

@@ -7,6 +7,11 @@ const Command = require('../../structures/Command');
 
 class Disconnect extends Command {
 
+    constructor() {
+        super('disconnect');
+    }
+
+
     async execute(interaction, client, args) {
         const method = args[0];
 

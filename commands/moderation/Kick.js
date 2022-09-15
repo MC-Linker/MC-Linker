@@ -6,6 +6,10 @@ const Command = require('../../structures/Command');
 
 class Kick extends Command {
 
+    constructor() {
+        super('kick');
+    }
+
     async execute(interaction, client, args) {
         const user = interaction.mentions.users.first() ?? args[0];
         args.shift(); //Shift user

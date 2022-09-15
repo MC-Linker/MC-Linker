@@ -7,6 +7,10 @@ const Command = require('../../structures/Command');
 
 class Chatchannel extends Command {
 
+    constructor() {
+        super('chatchannel');
+    }
+
     async execute(interaction, client, args) {
         const method = args[0];
 

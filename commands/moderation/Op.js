@@ -4,7 +4,12 @@ const utils = require('../../api/utils');
 const plugin = require('../../api/plugin');
 const Command = require('../../structures/Command');
 
+// noinspection JSClassNamingConvention
 class Op extends Command {
+
+    constructor() {
+        super('op');
+    }
 
     async execute(interaction, client, args) {
         const user = interaction.mentions.users.first() ?? args[0];

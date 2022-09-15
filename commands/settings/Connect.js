@@ -9,6 +9,10 @@ const Command = require('../../structures/Command');
 
 class Connect extends Command {
 
+    constructor() {
+        super('connect');
+    }
+
     async execute(interaction, client, args) {
         const method = args[0];
 
