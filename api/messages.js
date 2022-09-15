@@ -1,17 +1,7 @@
 const Discord = require('discord.js');
-const { InteractionReplyOptions, ReplyMessageOptions, Message, InteractionResponse } = require('discord.js');
+const { InteractionReplyOptions, ReplyMessageOptions, Message, InteractionResponse, Channel, BaseInteraction, User, Guild, ApplicationCommand, BaseClient } = require('discord.js');
 const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
-
-const defaultMessage = {
-    replyTl(key, ...placeholders) {
-        return replyTl(null, key, ...placeholders);
-    },
-    channel: {
-        send(content) {},
-    },
-};
-
 
 function addTranslatedResponses(interaction) {
     interaction.replyTl = (key, ...placeholders) => replyTl(interaction, key, ...placeholders);
@@ -21,14 +11,14 @@ function addTranslatedResponses(interaction) {
 
 /**
  * @callback TypeReplyTl - Reply to an interaction with a translation key.
- * @param {InteractionReplyOptions|ReplyMessageOptions} key - The translation key to send.
+ * @param {InteractionReplyOptions|ReplyMessageOptions} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Message|InteractionResponse}
  */
 
 /**
  * @callback TypeReplyOptions - Reply to an interaction with options.
- * @param {InteractionReplyOptions|ReplyMessageOptions} options - The options to send.
+ * @param {InteractionReplyOptions|ReplyMessageOptions} options - The options to reply with.
  * @returns {Message|InteractionResponse}
  */
 
@@ -58,7 +48,17 @@ function toTranslatedInteraction(interaction) {
 }
 
 
+/**
+ * Default placeholders for discord.js structures.
+ * @type {object}
+ */
 const ph = {};
+
+/**
+ * Placeholders for an author.
+ * @param {User} author - The author to get placeholders for.
+ * @returns {{}|{author_id: string, author_avatar: string, author_username: string, author_timestamp: `<t:${bigint}>`, author_tag: string}}
+ */
 ph.author = function(author) {
     if(!(author instanceof Discord.User)) return {};
 
@@ -70,6 +70,12 @@ ph.author = function(author) {
         'author_timestamp': Discord.time(new Date(author.createdTimestamp)),
     };
 };
+
+/**
+ * Placeholders for a guild.
+ * @param {Guild} guild - The guild to get placeholders for.
+ * @returns {{}|{guild_name: string, guild_member_count: number, guild_id: string, guild_timestamp: `<t:${bigint}>`}}
+ */
 ph.guild = function(guild) {
     if(!(guild instanceof Discord.Guild)) return {};
 
@@ -80,6 +86,12 @@ ph.guild = function(guild) {
         'guild_timestamp': Discord.time(new Date(guild.createdTimestamp)),
     };
 };
+
+/**
+ * Placeholders for an interaction.
+ * @param {BaseInteraction|Message} interaction - The interaction to get placeholders for.
+ * @returns {{}|{args?: string, interaction_name: string, interaction_timestamp: `<t:${bigint}>`}}
+ */
 ph.interaction = function(interaction) {
     if(interaction instanceof Discord.Message) {
         const args = interaction.content.slice(prefix.length).trim().split(/ +/);
@@ -107,6 +119,12 @@ ph.interaction = function(interaction) {
 
     return {};
 };
+
+/**
+ * Placeholders for a channel.
+ * @param {Channel} channel - The channel to get placeholders for.
+ * @returns {{}|{channel_name: string, channel_timestamp: `<t:${bigint}>`, channel_description: string, channel_id: string}}
+ */
 ph.channel = function(channel) {
     if(!(channel instanceof Discord.TextChannel)) return {};
 
@@ -117,6 +135,12 @@ ph.channel = function(channel) {
         'channel_timestamp': Discord.time(new Date(channel.createdTimestamp)),
     };
 };
+
+/**
+ * Placeholders for the client.
+ * @param {BaseClient} client - The client to get placeholders for.
+ * @returns {{}|{client_timestamp: `<t:${bigint}>`, client_username: string, client_avatar: string, client_tag: string, client_id: string}}
+ */
 ph.client = function(client) {
     if(!(client instanceof Discord.Client)) return {};
 
@@ -128,6 +152,11 @@ ph.client = function(client) {
         'client_timestamp': Discord.time(new Date(client.user.createdTimestamp)),
     };
 };
+
+/**
+ * Emoji placeholders.
+ * @returns {object}
+ */
 ph.emojis = function() {
     const emojis = Object.entries(keys.emojis);
     const placeholders = {};
@@ -137,6 +166,11 @@ ph.emojis = function() {
     return placeholders;
 };
 
+/**
+ * Placeholders for a command.
+ * @param {ApplicationCommand} command - The command to get placeholders for.
+ * @returns {{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}}
+ */
 ph.command = function(command) {
     if(!(command instanceof Discord.ApplicationCommand)) return {};
 
@@ -149,6 +183,11 @@ ph.command = function(command) {
     };
 };
 
+/**
+ * Placeholders for an error.
+ * @param {Error} err - The error to get placeholders for.
+ * @returns {{}|{error_message: string, error: string}}
+ */
 ph.error = function(err) {
     if(!(err instanceof Error)) return {};
 
@@ -158,6 +197,11 @@ ph.error = function(err) {
     };
 };
 
+/**
+ * Standard placeholders for an interaction.
+ * @param {BaseInteraction|Message} interaction - The interaction to get placeholders for.
+ * @returns {object}
+ */
 ph.std = function(interaction) {
     if(!(interaction instanceof Discord.BaseInteraction) && !(interaction instanceof Discord.Message)) return {};
 
@@ -172,6 +216,12 @@ ph.std = function(interaction) {
     );
 };
 
+/**
+ * Placeholders for a command by name.
+ * @param {string} commandName - The name of the command to get placeholders for.
+ * @param {BaseClient} client - The client to get the command from.
+ * @returns {Promise<{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}>}
+ */
 ph.commandName = async function(commandName, client) {
     if(!(client instanceof Discord.Client)) return {};
 
@@ -182,6 +232,11 @@ ph.commandName = async function(commandName, client) {
     return this.command(command);
 };
 
+/**
+ * Placeholders for all commands.
+ * @param {BaseClient} client - The client to get the commands from.
+ * @returns {Promise<object>}
+ */
 ph.allCommands = async function(client) {
     if(!(client instanceof Discord.Client)) return {};
 
@@ -197,7 +252,13 @@ ph.allCommands = async function(client) {
     }
 };
 
-
+/**
+ * Adds placeholders to a language key.
+ * @template K
+ * @param {K} key - The language key to add placeholders to.
+ * @param {...object} placeholders - The placeholders to add.
+ * @returns {K}
+ */
 function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
@@ -255,7 +316,13 @@ function addPh(key, ...placeholders) {
     else return key;
 }
 
-
+/**
+ * Reply to an interaction with a translation key.
+ * @param {BaseInteraction|Message} interaction - The interaction to reply to.
+ * @param {InteractionReplyOptions|ReplyMessageOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Message|InteractionResponse}
+ */
 function replyTl(interaction, key, ...placeholders) {
     //Log to console if interaction doesn't exist
     // noinspection JSUnresolvedVariable
@@ -290,14 +357,26 @@ function replyTl(interaction, key, ...placeholders) {
     return replyOptions(interaction, options);
 }
 
+/**
+ * Reply to an interaction with options.
+ * @param {BaseInteraction|Message} interaction - The interaction to reply to.
+ * @param {InteractionReplyOptions|ReplyMessageOptions} options - The options to reply with.
+ * @returns {Message|InteractionResponse}
+ */
 function replyOptions(interaction, options) {
+    if(!interaction) return;
+
     function handleError(err) {
         console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { 'interaction': interaction }));
-        return interaction?.channel?.send(options);
+        try {
+            return interaction.channel.send(options);
+        } catch(err) {
+            console.log(addPh(keys.api.messages.errors.could_not_reply_channel.console, ph.error(err), { 'interaction': interaction }));
+        }
     }
 
     try {
-        if(!interaction?.isRepliable?.()) return interaction?.channel?.send(options);
+        if(!interaction.isRepliable?.()) return interaction.channel?.send(options);
 
         if(interaction instanceof Discord.Message) return interaction.reply(options).catch(handleError);
         else if(interaction instanceof Discord.BaseInteraction) {
@@ -686,7 +765,6 @@ module.exports = {
     getActionRows,
     getComponent,
     createActionRows,
-    defaultMessage,
     getUsersFromMention,
     getArgs,
 };

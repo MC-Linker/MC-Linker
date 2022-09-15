@@ -63,7 +63,7 @@ class Advancements extends AutocompleteCommand {
         const advancementTitle = matchingAdvancement?.name ?? advancement;
         const advancementDesc = matchingAdvancement?.description ?? keys.commands.advancements.no_description_available;
 
-        if(server?.settings?.isDisabled('advancements', advancement)) {
+        if(server.settings.isDisabled('advancements', advancement)) {
             return interaction.replyTl(
                 keys.commands.advancements.warnings.advancement_disabled,
                 { 'advancement_title': advancementTitle },
@@ -72,7 +72,7 @@ class Advancements extends AutocompleteCommand {
 
         const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, uuid.uuid), `./userdata/advancements/${uuid.uuid}.json`);
         if(!amFile) return;
-        const advancementData = JSON.parse(amFile);
+        const advancementData = JSON.parse(amFile.toString('utf-8'));
 
         const letters = [...advancementTitle];
         let equals = '';
