@@ -70,7 +70,7 @@ class Advancements extends AutocompleteCommand {
             );
         }
 
-        const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, uuid), `./userdata/advancements/${uuid}.json`);
+        const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, uuid.uuid), `./userdata/advancements/${uuid.uuid}.json`);
         if(!amFile) return;
         const advancementData = JSON.parse(amFile);
 

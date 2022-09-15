@@ -1,4 +1,3 @@
-const utils = require('../../api/utils');
 const nbt = require('prismarine-nbt');
 const Canvas = require('@napi-rs/canvas');
 const Discord = require('discord.js');
@@ -162,7 +161,7 @@ class Inventory extends Command {
 
             if(button.user.id !== interaction.member.user.id) {
                 const notAuthorEmbed = getEmbed(keys.commands.inventory.warnings.not_author_button, ph.emojis());
-                button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
+                await button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
                 return;
             }
             if(buttonId === 'slot_next' || buttonId === 'slot_next_shulker') {
@@ -172,7 +171,7 @@ class Inventory extends Command {
                 );
                 const replyButtons = buttonId === 'slot_next' ? itemButtons.slice(24) : shulkerButtons.slice(24);
                 replyButtons.push(backButton);
-                button.update({ components: createActionRows(replyButtons) });
+                await button.update({ components: createActionRows(replyButtons) });
                 return;
             }
             else if(buttonId === 'slot_back' || buttonId === 'slot_back_shulker') {
@@ -189,7 +188,7 @@ class Inventory extends Command {
                     replyOptions.embeds = [invEmbed];
                     replyOptions.files = [invAttach];
                 }
-                button.update(replyOptions);
+                await button.update(replyOptions);
                 return;
             }
 

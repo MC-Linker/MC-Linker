@@ -1,7 +1,5 @@
 const { keys } = require('../../api/messages');
 const Discord = require('discord.js');
-const utils = require('../../api/utils');
-const plugin = require('../../api/plugin');
 const Command = require('../../structures/Command');
 
 // noinspection JSClassNamingConvention

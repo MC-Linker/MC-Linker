@@ -1,7 +1,5 @@
 const Discord = require('discord.js');
 const fs = require('fs-extra');
-const utils = require('../../api/utils');
-const plugin = require('../../api/plugin');
 const { keys, addResponseMethods, getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
 const Command = require('../../structures/Command');
 

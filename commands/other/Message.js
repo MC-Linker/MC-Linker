@@ -1,5 +1,3 @@
-const plugin = require('../../api/plugin');
-const utils = require('../../api/utils');
 const { keys } = require('../../api/messages');
 const Command = require('../../structures/Command');
 

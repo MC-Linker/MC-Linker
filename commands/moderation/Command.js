@@ -3,11 +3,10 @@ const { keys, getUsersFromMention, addPh } = require('../../api/messages');
 const Discord = require('discord.js');
 const nbt = require('prismarine-nbt');
 const utils = require('../../api/utils');
-const plugin = require('../../api/plugin');
 const mcData = require('minecraft-data')('1.19.2');
+const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 const commands = require('../../resources/data/commands.json');
-const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Command extends AutocompleteCommand {
 

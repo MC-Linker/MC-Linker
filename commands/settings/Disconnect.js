@@ -1,6 +1,4 @@
 const fs = require('fs-extra');
-const plugin = require('../../api/plugin');
-const utils = require('../../api/utils');
 const { keys } = require('../../api/messages');
 const Discord = require('discord.js');
 const Command = require('../../structures/Command');

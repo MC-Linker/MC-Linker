@@ -2,6 +2,7 @@
 const fs = require('fs-extra');
 restoreConnections();
 
+//TODO Update restore
 function restoreConnections() {
     //Read guild connection folders
     const serverFolders = fs.readdirSync('./serverdata/connections');
