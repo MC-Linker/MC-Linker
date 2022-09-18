@@ -112,7 +112,7 @@ class SettingsConnection extends Connection {
      * @param {string} value - The value to check.
      * @returns {boolean}
      */
-    async isDisabled(type, value) {
+    isDisabled(type, value) {
         return this.disabled[type].includes(value);
     }
 

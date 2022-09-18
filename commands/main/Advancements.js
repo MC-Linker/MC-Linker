@@ -71,7 +71,9 @@ class Advancements extends AutocompleteCommand {
         }
 
         const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, uuid.uuid), `./userdata/advancements/${uuid.uuid}.json`);
-        if(!amFile) return;
+        if(!amFile) {
+            return interaction.replyTl(keys.commands.advancements.errors.could_not_get_advancements);
+        }
         const advancementData = JSON.parse(amFile.toString('utf-8'));
 
         const letters = [...advancementTitle];
@@ -87,6 +89,7 @@ class Advancements extends AutocompleteCommand {
                 'advancement_description': advancementDesc,
             },
         );
+        if(!baseEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_command);
 
         try {
             let amEmbed;
@@ -150,6 +153,7 @@ class Advancements extends AutocompleteCommand {
                 'advancement_title': advancementTitle,
                 'username': uuid.username ?? uuid,
             }));
+
             interaction.replyOptions({ embeds: [amEmbed] });
         }
         catch(err) {

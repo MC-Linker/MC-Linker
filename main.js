@@ -17,6 +17,7 @@ const { getArgs, addPh, keys, ph, toTranslatedMessage, toTranslatedInteraction }
 const { prefix, token, topggToken, ownerId } = require('./config.json');
 const MCLinker = require('./structures/MCLinker');
 const AutocompleteCommand = require('./structures/AutocompleteCommand');
+const PluginProtocol = require('./structures/PluginProtocol');
 
 const client = new MCLinker();
 
@@ -67,10 +68,10 @@ client.on('guildDelete', async guild => {
 
 client.on('messageCreate', async message => {
     const server = client.serverConnections.cache.get(message.guildId);
-    if(server && !message.content.startsWith(prefix)) {
+    if(server?.protocol instanceof PluginProtocol && !message.content.startsWith(prefix)) {
         let content = message.cleanContent;
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
-        server?.protocol?.chat(content);
+        server.protocol.chat(content);
     }
 
     message = toTranslatedMessage(message);

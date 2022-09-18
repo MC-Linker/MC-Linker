@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const {
+    MessagePayload,
     InteractionReplyOptions,
+    WebhookEditMessageOptions,
     ReplyMessageOptions,
     Message,
     InteractionResponse,
@@ -35,14 +37,14 @@ function addTranslatedResponses(interaction) {
 
 /**
  * @callback TypeReplyTl - Reply to an interaction with a translation key.
- * @param {InteractionReplyOptions|ReplyMessageOptions} key - The translation key to reply with.
+ * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Message|InteractionResponse}
  */
 
 /**
  * @callback TypeReplyOptions - Reply to an interaction with options.
- * @param {InteractionReplyOptions|ReplyMessageOptions} options - The options to reply with.
+ * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} options - The options to reply with.
  * @returns {Message|InteractionResponse}
  */
 
@@ -343,7 +345,7 @@ function addPh(key, ...placeholders) {
 /**
  * Reply to an interaction with a translation key.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {InteractionReplyOptions|ReplyMessageOptions} key - The translation key to reply with.
+ * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Message|InteractionResponse|void}
  */
@@ -384,7 +386,7 @@ function replyTl(interaction, key, ...placeholders) {
 /**
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {InteractionReplyOptions|ReplyMessageOptions} options - The options to reply with.
+ * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} options - The options to reply with.
  * @returns {Message|InteractionResponse|void}
  */
 function replyOptions(interaction, options) {
