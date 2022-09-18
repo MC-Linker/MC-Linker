@@ -1,5 +1,29 @@
 const Discord = require('discord.js');
-const { InteractionReplyOptions, ReplyMessageOptions, Message, InteractionResponse, Channel, BaseInteraction, User, Guild, ApplicationCommand, BaseClient } = require('discord.js');
+const {
+    InteractionReplyOptions,
+    ReplyMessageOptions,
+    Message,
+    InteractionResponse,
+    Channel,
+    BaseInteraction,
+    User,
+    Guild,
+    ApplicationCommand,
+    Client,
+    CommandInteraction,
+    EmbedBuilder,
+    ActionRowBuilder,
+    ApplicationCommandBuilder,
+    ButtonBuilder,
+    SelectMenuBuilder,
+    TextInputBuilder,
+    APIButtonComponent,
+    APISelectMenuComponent,
+    APITextInputComponent,
+    APIEmbed,
+    APIActionRowComponent,
+    APIApplicationCommand,
+} = require('discord.js');
 const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
@@ -138,7 +162,7 @@ ph.channel = function(channel) {
 
 /**
  * Placeholders for the client.
- * @param {BaseClient} client - The client to get placeholders for.
+ * @param {Client} client - The client to get placeholders for.
  * @returns {{}|{client_timestamp: `<t:${bigint}>`, client_username: string, client_avatar: string, client_tag: string, client_id: string}}
  */
 ph.client = function(client) {
@@ -219,7 +243,7 @@ ph.std = function(interaction) {
 /**
  * Placeholders for a command by name.
  * @param {string} commandName - The name of the command to get placeholders for.
- * @param {BaseClient} client - The client to get the command from.
+ * @param {Client} client - The client to get the command from.
  * @returns {Promise<{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}>}
  */
 ph.commandName = async function(commandName, client) {
@@ -234,7 +258,7 @@ ph.commandName = async function(commandName, client) {
 
 /**
  * Placeholders for all commands.
- * @param {BaseClient} client - The client to get the commands from.
+ * @param {Client} client - The client to get the commands from.
  * @returns {Promise<object>}
  */
 ph.allCommands = async function(client) {
@@ -321,7 +345,7 @@ function addPh(key, ...placeholders) {
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {InteractionReplyOptions|ReplyMessageOptions} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Message|InteractionResponse}
+ * @returns {Message|InteractionResponse|void}
  */
 function replyTl(interaction, key, ...placeholders) {
     //Log to console if interaction doesn't exist
@@ -361,7 +385,7 @@ function replyTl(interaction, key, ...placeholders) {
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {InteractionReplyOptions|ReplyMessageOptions} options - The options to reply with.
- * @returns {Message|InteractionResponse}
+ * @returns {Message|InteractionResponse|void}
  */
 function replyOptions(interaction, options) {
     if(!interaction) return;
@@ -370,7 +394,8 @@ function replyOptions(interaction, options) {
         console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { 'interaction': interaction }));
         try {
             return interaction.channel.send(options);
-        } catch(err) {
+        }
+        catch(err) {
             console.log(addPh(keys.api.messages.errors.could_not_reply_channel.console, ph.error(err), { 'interaction': interaction }));
         }
     }
@@ -390,6 +415,12 @@ function replyOptions(interaction, options) {
 }
 
 
+/**
+ * Get an embed builder from a language key.
+ * @param {APIEmbed|{embeds: APIEmbed[]}} key - The language key to get the embed from.
+ * @param {...object} placeholders - The placeholders to replace in the language key.
+ * @returns {EmbedBuilder|void}
+ */
 function getEmbed(key, ...placeholders) {
     if(!key) return console.error(keys.api.messages.errors.no_embed_key.console);
 
@@ -418,6 +449,12 @@ function getEmbed(key, ...placeholders) {
     return embed;
 }
 
+/**
+ * Get an action row builder from a language key.
+ * @param {APIActionRowComponent} key - The language key to get the action row from.
+ * @param {...object} placeholders - The placeholders to replace in the language key.
+ * @returns {ActionRowBuilder[]|void}
+ */
 function getActionRows(key, ...placeholders) {
     if(!key) return console.error(keys.api.messages.errors.no_component_key.console);
 
@@ -427,6 +464,20 @@ function getActionRows(key, ...placeholders) {
     return createActionRows(allComponents);
 }
 
+/**
+ * @typedef {ButtonBuilder|SelectMenuBuilder|TextInputBuilder} ComponentBuilder
+ */
+
+/**
+ * @typedef {APIButtonComponent|APISelectMenuComponent|APITextInputComponent} APIComponent
+ */
+
+/**
+ * Get a component builder from a language key.
+ * @param {APIComponent|{components: APIComponent[]}} key - The language key to get the component builder from.
+ * @param {...object} placeholders - The placeholders to replace in the language key.
+ * @returns {ComponentBuilder|void}
+ */
 function getComponent(key, ...placeholders) {
     //Get first component
     if(key.components) key = key.components[0];
@@ -471,7 +522,7 @@ function getComponent(key, ...placeholders) {
                 if(option.description) optionBuilder.setDescription(option.description);
                 if(option.emoji) optionBuilder.setEmoji(option.emoji);
 
-                componentBuilder.addOptions(option);
+                componentBuilder.addOptions(optionBuilder);
             }
 
             break;
@@ -497,6 +548,11 @@ function getComponent(key, ...placeholders) {
     return componentBuilder;
 }
 
+/**
+ * Get a command builder from a language key.
+ * @param {APIApplicationCommand} key - The language key to get the command builder from.
+ * @returns {ApplicationCommandBuilder|void}
+ */
 function getCommand(key) {
     if(!key) return console.error(keys.api.messages.errors.no_command_key.console);
     if(!key.name || !key.type) return console.error(keys.api.messages.errors.no_command_arguments.console);
@@ -532,7 +588,7 @@ function getCommand(key) {
 
             commandBuilder = new Discord.ContextMenuCommandBuilder()
                 .setName(key.name)
-                .setType(key.type)
+                .setType(Discord.ApplicationCommandType[key.type])
                 .setDMPermission(key.dm_permission);
 
             if(key.default_member_permissions) {
@@ -692,11 +748,16 @@ function addSlashCommandOption(builder, key) {
     }
 }
 
+/**
+ * Creates action rows from a list of components.
+ * @param {ComponentBuilder[]} components - The components to create action rows from.
+ * @returns {ActionRowBuilder[]}
+ */
 function createActionRows(components) {
     const actionRows = [];
     let currentRow = new Discord.ActionRowBuilder();
 
-    for(let i=0; i<components.length; i++) {
+    for(let i = 0; i < components.length; i++) {
         //1 for select menus, 5 for buttons
         const componentAmount = components[i].type === Discord.ComponentType.SelectMenu ? 1 : 5;
         if(i % componentAmount === 0 && i > 0) {
@@ -711,6 +772,12 @@ function createActionRows(components) {
     return actionRows.length === 0 ? [currentRow] : actionRows;
 }
 
+/**
+ * Gets a list of users from a string of mentions.
+ * @param {Client} client - The client to use.
+ * @param {string} mention - The string of mentions.
+ * @returns {User[]}
+ */
 function getUsersFromMention(client, mention) {
     if(typeof mention !== 'string') return [];
 
@@ -728,6 +795,12 @@ function getUsersFromMention(client, mention) {
     return userArray;
 }
 
+/**
+ * Gets an array of arguments from a CommandInteraction.
+ * @param {Client} client - The client to use.
+ * @param {CommandInteraction} interaction - The interaction to get the arguments from.
+ * @returns {string[]}
+ */
 function getArgs(client, interaction) {
     if(!(interaction instanceof Discord.CommandInteraction)) return [];
 

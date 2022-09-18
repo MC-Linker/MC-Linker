@@ -805,6 +805,7 @@
   "api.messages.errors.no_reply_arguments.console": "Could not reply: No message, key or placeholders specified",
 
   "api.messages.errors.could_not_reply.console": "Could not reply to interaction %error%\n%interaction%",
+  "api.messages.errors.could_not_reply_channel.console": "Could not send message to channel of interaction %error%\n%interaction%",
 
 
 

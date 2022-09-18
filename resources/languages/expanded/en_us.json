@@ -1751,6 +1751,9 @@
         },
         "could_not_reply": {
           "console": "Could not reply to interaction %error%\n%interaction%"
+        },
+        "could_not_reply_channel": {
+          "console": "Could not send message to channel of interaction %error%\n%interaction%"
         }
       }
     },
