@@ -30,22 +30,23 @@ class Advancements extends AutocompleteCommand {
 
     async execute(interaction, client, args) {
         let advancement = args[0].toLowerCase();
-        const uuid = await client.userConnections.uuidFromArgument(args[1]);
-        const server = client.serverConnections.cache.get(interaction.guildId);
 
+        const server = client.serverConnections.cache.get(interaction.guildId);
         if(!server) {
             return interaction.replyTl(keys.api.connections.server_not_connected);
         }
-        else if(!advancement) {
+        const user = await client.userConnections.connectionFromArgument(args[1], server);
+
+        if(!advancement) {
             return interaction.replyTl(keys.commands.advancements.warnings.no_advancement);
         }
-        else if(uuid.error === 'nullish') {
+        else if(user.error === 'nullish') {
             return interaction.replyTl(keys.commands.advancements.warnings.no_username);
         }
-        else if(uuid.error === 'cache') {
+        else if(user.error === 'cache') {
             return interaction.replyTl(keys.api.connections.user_not_connected);
         }
-        else if(uuid.error === 'fetch') {
+        else if(user.error === 'fetch') {
             return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid);
         }
 
@@ -70,9 +71,9 @@ class Advancements extends AutocompleteCommand {
             );
         }
 
-        const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, uuid.uuid), `./userdata/advancements/${uuid.uuid}.json`);
+        const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, user.uuid), `./userdata/advancements/${user.uuid}.json`);
         if(!amFile) {
-            return interaction.replyTl(keys.commands.advancements.errors.could_not_get_advancements);
+            return interaction.replyTl(keys.commands.advancements.errors.could_not_download);
         }
         const advancementData = JSON.parse(amFile.toString('utf-8'));
 
@@ -84,7 +85,7 @@ class Advancements extends AutocompleteCommand {
             keys.commands.advancements.success.base,
             ph.std(interaction), {
                 equals,
-                'username': uuid.username ?? uuid,
+                'username': user.username,
                 'advancement_title': advancementTitle,
                 'advancement_description': advancementDesc,
             },
@@ -151,7 +152,7 @@ class Advancements extends AutocompleteCommand {
 
             console.log(addPh(keys.commands.advancements.success.final.console, {
                 'advancement_title': advancementTitle,
-                'username': uuid.username ?? uuid,
+                'username': user.username ?? user,
             }));
 
             interaction.replyOptions({ embeds: [amEmbed] });
