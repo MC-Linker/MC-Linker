@@ -23,27 +23,29 @@ class UserConnectionManager extends ConnectionManager {
     cache;
 
     /**
-     * @typedef {object} UUIDResponse
+     * @typedef {object} ConnectionResponse
      * @property {?string} uuid - The uuid of the user.
+     * @property {?string} username - The username of the user.
      * @property {?'nullish'|?'fetch'|?'cache'} error - The error that occurred.
      */
 
     /**
      * Returns the uuid of a user from a mention/username.
      * @param {string} arg - The argument to get the uuid from.
-     * @returns {Promise<UUIDResponse>} - The uuid of the user, or undefined if no user was found.
+     * @param {ServerConnectionResolvable} server - The server to resolve the uuid from.
+     * @returns {Promise<ConnectionResponse>} - The uuid of the user, or undefined if no user was found.
      */
-    async uuidFromArgument(arg) {
-        if(!arg) return { error: 'nullish', uuid: undefined };
+    async connectionFromArgument(arg, server) {
+        if(!arg) return { error: 'nullish', uuid: null, username: null };
 
         let user = getUsersFromMention(this.client, arg);
-        const cacheUUID = this.cache.get(user?.id)?.uuid;
-        if(cacheUUID) return { uuid: cacheUUID, error: null };
+        const cacheConnection = this.cache.get(user[0]?.id);
+        if(cacheConnection) return { uuid: cacheConnection?.uuid, username: cacheConnection?.getUUID(server), error: null };
 
         const apiUUID = await fetchUUID(arg);
-        if(apiUUID) return { uuid: apiUUID, error: null };
+        if(apiUUID) return { uuid: apiUUID, username: arg, error: null };
 
-        return { error: !cacheUUID ? 'cache' : 'fetch', uuid: null };
+        return { error: !cacheConnection ? 'cache' : 'fetch', uuid: null, username: null };
     }
 }
 
