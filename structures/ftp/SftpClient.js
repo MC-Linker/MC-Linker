@@ -7,6 +7,9 @@ class SftpClient extends BaseClient {
     constructor(credentials) {
         super(credentials);
 
+        delete this.credentials.user;
+        delete this.credentials.ip;
+
         /**
          * The sftp client.
          * @type {import('ssh2-sftp-client')}

@@ -71,12 +71,12 @@
 
   "commands.eval.success.embeds.0.title": "Successfully Evaluated Command",
   "commands.eval.success.embeds.0.description": "%output%",
-  "commands.eval.success.embeds.0.color": "Green",
+  "commands.eval.success.embeds.0.color": "#70A02C",
   "commands.eval.success.console": "Successfully evaluated command",
 
   "commands.eval.errors.unknown_error.embeds.0.title": "Unknown Error",
   "commands.eval.errors.unknown_error.embeds.0.description": "%output_error%",
-  "commands.eval.errors.unknown_error.embeds.0.color": "Red",
+  "commands.eval.errors.unknown_error.embeds.0.color": "#70A02C",
   "commands.eval.errors.unknown_error.console": "Unknown error %error%",
 
 
@@ -168,6 +168,10 @@
   "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
 
   "commands.advancements.errors.could_not_autocomplete.console": "Could not respond to advancements autocomplete",
+
+  "commands.advancements.errors.could_not_download.embeds.0.title": "Could Not Download",
+  "commands.advancements.errors.could_not_download.embeds.0.description": "%emoji_error% Could not download advancement files. The user most likely never joined the server.",
+  "commands.advancements.errors.could_not_download.console": "Could not download advancements",
 
   "commands.advancements.success.base.embeds.0.title": "%username%",
   "commands.advancements.success.base.embeds.0.description": "%advancement_description%",

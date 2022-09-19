@@ -119,7 +119,7 @@
           {
             "title": "Successfully Evaluated Command",
             "description": "%output%",
-            "color": "Green"
+            "color": "#70A02C"
           }
         ],
         "console": "Successfully evaluated command"
@@ -130,7 +130,7 @@
             {
               "title": "Unknown Error",
               "description": "%output_error%",
-              "color": "Red"
+              "color": "#70A02C"
             }
           ],
           "console": "Unknown error %error%"
@@ -313,6 +313,15 @@
       "errors": {
         "could_not_autocomplete": {
           "console": "Could not respond to advancements autocomplete"
+        },
+        "could_not_download": {
+          "embeds": [
+            {
+              "title": "Could Not Download",
+              "description": "%emoji_error% Could not download advancement files. The user most likely never joined the server."
+            }
+          ],
+          "console": "Could not download advancements"
         }
       },
       "success": {

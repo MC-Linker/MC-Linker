@@ -6,8 +6,11 @@ class FtpClient extends BaseClient {
 
     constructor(credentials) {
         super(credentials);
-        this.credentials.user = credentials.username;
-        this.credentials.host = credentials.ip;
+        this.credentials.user ??= credentials.username;
+        this.credentials.host ??= credentials.ip;
+
+        delete this.credentials.ip;
+        delete this.credentials.username;
 
         /**
          * The ftp client.

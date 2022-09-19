@@ -4,8 +4,11 @@ class BaseClient {
      * @typedef {object} Credentials
      * @property {string} host - The ip the ftp server is listening on.
      * @property {number} port - The port the ftp server is listening on.
-     * @property {string} username - The username used to authenticate with ftp.
-     * @property {string} password - The password used to authenticate with ftp.
+     * @property {string?} username - The username used to authenticate with ftp or sftp.
+     * @property {string?} user - The username used to authenticate with ftp or sftp.
+     * @property {string} password - The password used to authenticate with ftp or sftp.
+     *
+     * @property {string?} ip - The ip the ftp server is listening on.
      */
 
     /**
@@ -17,7 +20,7 @@ class BaseClient {
     /**
      * Creates a new ftp or sftp instance.
      * @param {Credentials} credentials - The credentials for the connection.
-     * @returns {import("ftp") | import("ssh2-sftp-client")} - The ftp or sftp instance.
+     * @returns {import('ftp') | import('ssh2-sftp-client')} - The ftp or sftp instance.
      */
     constructor(credentials) {
 
