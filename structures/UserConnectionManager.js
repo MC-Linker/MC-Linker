@@ -35,7 +35,7 @@ class UserConnectionManager extends ConnectionManager {
      * @param {ServerConnectionResolvable} server - The server to resolve the uuid from.
      * @returns {Promise<ConnectionResponse>} - The uuid of the user, or undefined if no user was found.
      */
-    async connectionFromArgument(arg, server) {
+    async playerFromArgument(arg, server) {
         if(!arg) return { error: 'nullish', uuid: null, username: null };
 
         let user = getUsersFromMention(this.client, arg);
