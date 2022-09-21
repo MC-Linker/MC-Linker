@@ -28,14 +28,13 @@ class Advancements extends AutocompleteCommand {
             .catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete.console));
     }
 
-    async execute(interaction, client, args) {
-        let advancement = args[0].toLowerCase();
-
-        const server = client.serverConnections.cache.get(interaction.guildId);
+    async execute(interaction, client, args, server) {
         if(!server) {
             return interaction.replyTl(keys.api.connections.server_not_connected);
         }
-        const user = await client.userConnections.connectionFromArgument(args[1], server);
+
+        let advancement = args[0].toLowerCase();
+        const user = await client.userConnections.playerFromArgument(args[1], server);
 
         if(!advancement) {
             return interaction.replyTl(keys.commands.advancements.warnings.no_advancement);

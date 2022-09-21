@@ -5,6 +5,7 @@ const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
 const { keys, addPh, getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const Protocol = require('../../structures/Protocol');
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -78,22 +79,29 @@ class Inventory extends Command {
         super('inventory');
     }
 
-    async execute(interaction, client, args) {
-        const user = interaction.mentions.users.first() ?? args[0];
-        const showDetails = typeof args[1] === 'boolean' ? args[1] : args[1]?.toLowerCase() === 'true';
-        if(!user) {
-            interaction.replyTl(keys.commands.inventory.warnings.no_username);
-            return;
+    async execute(interaction, client, args, server) {
+        if(!server) {
+            return interaction.replyTl(keys.api.connections.server_not_connected);
         }
 
-        const uuid = await utils.getUUID(user, interaction.guildId, interaction);
-        if(!uuid) return;
+        const user = await client.userConnections.playerFromArgument(args[0], server);
+        /** @type {boolean} */
+        const showDetails = typeof args[1] === 'boolean' ? args[1] : args[1]?.toLowerCase() === 'true';
 
-        const worldPath = await utils.getWorldPath(interaction.guildId, interaction);
-        if(!worldPath) return;
+        if(user.error === 'nullish') {
+            return interaction.replyTl(keys.commands.inventory.warnings.no_username);
+        }
+        else if(user.error === 'cache') {
+            return interaction.replyTl(keys.api.connections.user_not_connected);
+        }
+        else if(user.error === 'fetch') {
+            return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid);
+        }
 
-        const nbtFile = await ftp.get(`${worldPath}/playerdata/${uuid}.dat`, `./userdata/playernbt/${uuid}.dat`, interaction.guildId, interaction);
-        if(!nbtFile) return;
+        const nbtFile = await server.protocol.get(Protocol.FilePath.PlayerData(server.path, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
+        if(!nbtFile) {
+            return interaction.replyTl(keys.commands.inventory.errors.could_not_download);
+        }
 
         let playerData;
         try {
@@ -125,7 +133,7 @@ class Inventory extends Command {
         );
 
         //Draw skin in inventory
-        const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuid}/body/10.5/10/json`);
+        const skinJson = await fetch(`https://minecraft-api.com/api/skins/${user.uuid}/body/10.5/10/json`);
         const { skin: skinBase64 } = await skinJson.json();
         const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
         ctx.drawImage(skinImg, 70, 20, 65, 131);
@@ -135,6 +143,7 @@ class Inventory extends Command {
             { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
         );
         const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(interaction), { username: user });
+        if(!invEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_command);
 
         /** @type {Discord.InteractionReplyOptions} */
         const replyOptions = {
@@ -161,6 +170,7 @@ class Inventory extends Command {
 
             if(button.user.id !== interaction.member.user.id) {
                 const notAuthorEmbed = getEmbed(keys.commands.inventory.warnings.not_author_button, ph.emojis());
+                if(!notAuthorEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_button);
                 await button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
                 return;
             }
@@ -188,12 +198,16 @@ class Inventory extends Command {
                     replyOptions.embeds = [invEmbed];
                     replyOptions.files = [invAttach];
                 }
+
                 await button.update(replyOptions);
                 return;
             }
 
             const index = parseInt(buttonId.split('_').pop());
+
+            /** @type {object} */
             let item = playerData.Inventory[index];
+
             //If item is a shulker, get item from shulker inventory
             if(buttonId.includes('_shulker_')) {
                 const shulkerIndex = parseInt(buttonId.split('_')[2]);
@@ -204,7 +218,6 @@ class Inventory extends Command {
             const slot = item.Slot;
             const itemStats = mcData.itemsByName[formattedId];
 
-            const username = user instanceof Discord.User ? await utils.getUsername(user.id) : user;
             const itemEmbed = getEmbed(
                 keys.commands.inventory.success.item,
                 {
@@ -213,14 +226,16 @@ class Inventory extends Command {
                     id: item.id,
                     count: item.Count,
                     max_count: itemStats?.stackSize ?? 64,
-                    username,
-                    avatar: `https://minotar.net/helm/${username}/64.png`,
+                    username: user.username,
+                    avatar: `https://minotar.net/helm/${user.username}/64.png`,
                 },
                 ph.emojis(),
             );
+            if(!itemEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_button);
             addInfo(itemEmbed, item.tag, itemStats);
 
-            if(item.tag?.BlockEntityTag?.Items) {
+            //If item is a shulker, render shulker inventory
+            if(item.tag?.BlockEntityTag?.Items && formattedId.endsWith('shulker_box')) {
                 //Increase slot numbers by 18 in inventory
                 const mappedInvItems = playerData.Inventory.map(item => {
                     if(armorSlotCoords[item.Slot]) return; //Exclude armor slots
