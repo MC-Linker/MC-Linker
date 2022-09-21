@@ -106,7 +106,7 @@ client.on('messageCreate', async message => {
 
         try {
             // noinspection JSUnresolvedFunction
-            await command.execute(message, client, args)
+            await command.execute(message, client, args, server)
                 .catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
         }
         catch(err) {
@@ -158,7 +158,7 @@ client.on('interactionCreate', async interaction => {
             }
 
             try {
-                await command.execute(interaction, client, args)
+                await command.execute(interaction, client, args, server)
                     .catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
             }
             catch(err) {
