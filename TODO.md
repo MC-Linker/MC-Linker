@@ -2,7 +2,7 @@
 
 + **Better logs (pino)**
 + **Add server class (fastify)**
-+ **Add class for tl interactions**
++ **More constructor properties for commands (requires server/user connection, ...)**
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user and server folder (only for connected users)
 + Create isometric block, item and entity renders in code
