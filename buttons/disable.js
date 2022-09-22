@@ -26,8 +26,8 @@ async function execute(interaction) {
     const helpEmbed = getEmbed(
         keys.commands.help.success.command,
         ph.std(interaction),
+        ph.commandName(command.name, interaction.client),
         {
-            'command_name': command.name.cap(),
             'command_long_description': command.long_description,
             'command_usage': command.usage,
             'command_example': command.example,

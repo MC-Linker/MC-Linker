@@ -1022,7 +1022,7 @@
   "data.advancements.type": "ChatInput",
   "data.advancements.long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
   "data.advancements.description": "Look up your and other member's minecraft advancements.",
-  "data.advancements.usage": "/advancements <advancement name or id> <@mention>/<username>",
+  "data.advancements.usage": "/advancements <advancement name or id> <@mention/username>",
   "data.advancements.example": "/advancements Diamonds! @Lianecx \n/advancements Bullseye Memer",
 
   "data.advancements.options.0.type": "String",
