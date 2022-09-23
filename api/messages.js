@@ -39,13 +39,13 @@ function addTranslatedResponses(interaction) {
  * @callback TypeReplyTl - Reply to an interaction with a translation key.
  * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Message|InteractionResponse}
+ * @returns {Promise<Message|InteractionResponse>}
  */
 
 /**
  * @callback TypeReplyOptions - Reply to an interaction with options.
  * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} options - The options to reply with.
- * @returns {Message|InteractionResponse}
+ * @returns {Promise<Message|InteractionResponse>}
  */
 
 /**
@@ -347,9 +347,9 @@ function addPh(key, ...placeholders) {
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Message|InteractionResponse|void}
+ * @returns {Promise<Message|InteractionResponse>|void}
  */
-function replyTl(interaction, key, ...placeholders) {
+async function replyTl(interaction, key, ...placeholders) {
     //Log to console if interaction doesn't exist
     // noinspection JSUnresolvedVariable
     if(key?.console && !interaction) return console.log(addPh(key.console, Object.assign({}, ...placeholders)));
@@ -380,18 +380,16 @@ function replyTl(interaction, key, ...placeholders) {
     if(key.console) console.log(addPh(key.console, placeholders));
 
     if(!key.embeds && !key.components && !key.files) return; //If only console don't reply
-    return replyOptions(interaction, options);
+    return await replyOptions(interaction, options);
 }
 
 /**
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} options - The options to reply with.
- * @returns {Message|InteractionResponse|void}
+ * @returns {Promise<Message|InteractionResponse>}
  */
-function replyOptions(interaction, options) {
-    if(!interaction) return;
-
+async function replyOptions(interaction, options) {
     function handleError(err) {
         console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { 'interaction': interaction }));
         try {
@@ -405,10 +403,10 @@ function replyOptions(interaction, options) {
     try {
         if(!interaction.isRepliable?.()) return interaction.channel?.send(options);
 
-        if(interaction instanceof Discord.Message) return interaction.reply(options).catch(handleError);
+        if(interaction instanceof Discord.Message) return await interaction.reply(options).catch(handleError);
         else if(interaction instanceof Discord.BaseInteraction) {
-            if(interaction.deferred) return interaction.editReply(options).catch(handleError);
-            else return interaction.reply(options).catch(handleError);
+            if(interaction.deferred) return await interaction.editReply(options).catch(handleError);
+            else return await interaction.reply(options).catch(handleError);
         }
     }
     catch(err) {
