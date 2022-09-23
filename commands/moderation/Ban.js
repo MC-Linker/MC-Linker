@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const { keys } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const PluginProtocol = require('../../structures/PluginProtocol');
 
 class Ban extends Command {
 
@@ -8,28 +9,42 @@ class Ban extends Command {
         super('ban');
     }
 
-    async execute(interaction, client, args) {
-        const user = interaction.mentions.users.first() ?? args[0];
+    async execute(interaction, client, args, server) {
+        if(!server) {
+            return interaction.replyTl(keys.api.connections.server_not_connected);
+        }
+        else if(!(server.protocol instanceof PluginProtocol)) {
+            return interaction.replyTl(keys.api.utils.errors.not_connected_with_plugin);
+        }
+
+        const user = await client.userConnections.playerFromArgument(args[0], server);
         args.shift(); // Shift user
         let reason = args[0] ? args.join(' ') : 'Banned by an operator.';
 
         if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.BanMembers)) {
-            interaction.replyTl(keys.commands.ban.warnings.no_permission);
+            await interaction.replyTl(keys.commands.ban.warnings.no_permission);
             return;
         }
-        else if(!user) {
-            interaction.replyTl(keys.commands.ban.warnings.no_username);
-            return;
+        else if(user.error === 'nullish') {
+            return interaction.replyTl(keys.commands.ban.warnings.no_username);
+        }
+        else if(user.error === 'cache') {
+            return interaction.replyTl(keys.api.connections.user_not_connected);
+        }
+        else if(user.error === 'fetch') {
+            return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid);
         }
 
-        const mcUsername = user.id ? await utils.getUsername(user.id, interaction) : user;
-        if(!mcUsername) return;
+        const resp = await server.protocol.execute(`ban ${user.username} ${reason}`);
+        if(!resp) {
+            await interaction.replyTl(keys.api.plugin.errors.no_response);
+        }
 
-        const resp = await plugin.execute(`ban ${mcUsername} ${reason}`, interaction.guildId, interaction);
-        if(!resp) return;
-
-        if(resp.status === 206) interaction.replyTl(keys.commands.ban.warnings.response_warning, { username: user, reason });
-        else interaction.replyTl(keys.commands.ban.success, { username: user, reason });
+        if(resp.status === 206) await interaction.replyTl(keys.commands.ban.warnings.response_warning, {
+            username: user,
+            reason,
+        });
+        else await interaction.replyTl(keys.commands.ban.success, { username: user, reason });
     }
 }
 
