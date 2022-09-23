@@ -28,12 +28,10 @@ class Stats extends AutocompleteCommand {
         const user = await client.userConnections.playerFromArgument(args[2], server);
 
         if(!category) {
-            interaction.replyTl(keys.commands.stats.warnings.no_category);
-            return;
+            return interaction.replyTl(keys.commands.stats.warnings.no_category);
         }
         else if(!stat) {
-            interaction.replyTl(keys.commands.stats.warnings.no_stat);
-            return;
+            return interaction.replyTl(keys.commands.stats.warnings.no_stat);
         }
         else if(user.error === 'nullish') {
             return interaction.replyTl(keys.commands.stats.warnings.no_username);
@@ -50,12 +48,10 @@ class Stats extends AutocompleteCommand {
         argPlaceholder.stat_name = statName[0]?.name ?? stat;
 
         if(server.settings.isDisabled('stats', category)) {
-            interaction.replyTl(keys.commands.stats.warnings.category_disabled, argPlaceholder);
-            return;
+            return interaction.replyTl(keys.commands.stats.warnings.category_disabled, argPlaceholder);
         }
         else if(server.settings.isDisabled('stats', stat)) {
-            interaction.replyTl(keys.commands.stats.warnings.stat_disabled, argPlaceholder);
-            return;
+            return interaction.replyTl(keys.commands.stats.warnings.stat_disabled, argPlaceholder);
         }
 
         const statFile = await server.protocol.get(Protocol.FilePath.Stats(server.path, user.uuid), `./userdata/stats/${user.uuid}.json`);
@@ -81,8 +77,7 @@ class Stats extends AutocompleteCommand {
             }
 
             if(!statMatch) {
-                interaction.replyTl(keys.commands.stats.warnings.no_match, argPlaceholder);
-                return;
+                return interaction.replyTl(keys.commands.stats.warnings.no_match, argPlaceholder);
             }
 
             let statMessage;
@@ -126,7 +121,7 @@ class Stats extends AutocompleteCommand {
             });
         }
         catch(err) {
-            interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.error(err));
+            await interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.error(err));
         }
     }
 }

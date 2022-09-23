@@ -109,8 +109,7 @@ class Inventory extends Command {
             playerData = nbt.simplify(playerData.parsed);
         }
         catch(err) {
-            interaction.replyTl(keys.commands.inventory.errors.could_not_parse, ph.error(err));
-            return;
+            return interaction.replyTl(keys.commands.inventory.errors.could_not_parse, ph.error(err));
         }
 
         //Convert slots to network slots

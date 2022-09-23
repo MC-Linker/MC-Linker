@@ -103,7 +103,10 @@ class Advancements extends AutocompleteCommand {
 
                 amEmbed = baseEmbed.addFields(addPh(
                     keys.commands.advancements.success.final.embeds[0].fields,
-                    { 'advancement_requirement': criteria.split(':').pop(), 'advancement_timestamp': time(new Date(date)) },
+                    {
+                        'advancement_requirement': criteria.split(':').pop(),
+                        'advancement_timestamp': time(new Date(date)),
+                    },
                 ));
 
                 if(!done) amEmbed.setFooter(keys.commands.advancements.success.not_done.embeds[0].footer);
@@ -154,10 +157,10 @@ class Advancements extends AutocompleteCommand {
                 'username': user.username ?? user,
             }));
 
-            interaction.replyOptions({ embeds: [amEmbed] });
+            await interaction.replyOptions({ embeds: [amEmbed] });
         }
         catch(err) {
-            interaction.replyTl(keys.commands.advancements.warnings.not_completed, { 'advancement_title': advancementTitle });
+            await interaction.replyTl(keys.commands.advancements.warnings.not_completed, { 'advancement_title': advancementTitle });
         }
     }
 }
