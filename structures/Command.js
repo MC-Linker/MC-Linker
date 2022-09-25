@@ -1,4 +1,6 @@
 const { CommandInteraction, Message } = require('discord.js');
+const ServerConnection = require('./ServerConnection');
+const MCLinker = require('./MCLinker');
 
 class Command {
 
