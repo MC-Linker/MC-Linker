@@ -368,7 +368,7 @@ async function fetchToPluginResponse(response) {
 
     return {
         status: response.status,
-        json: await response.json(),
+        data: await response.json(),
     };
 }
 

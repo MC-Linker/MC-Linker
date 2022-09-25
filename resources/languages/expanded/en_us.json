@@ -68,7 +68,7 @@
         "console": "Could not execute command %error%"
       },
       "could_not_autocomplete_command": {
-        "console": "Could not respond to command autocomplete"
+        "console": "Could not respond to command autocomplete %error%"
       }
     },
     "success": {
@@ -1935,8 +1935,8 @@
         "status_401": {
           "embeds": [
             {
-              "title": "Unknown Plugin Error",
-              "description": "%emoji_error% An unknown plugin error occurred."
+              "title": "Unknown Bot Error",
+              "description": "%emoji_error% An unknown bot error occurred."
             }
           ],
           "console": "Wrong authorization"
@@ -2126,6 +2126,37 @@
             }
           ],
           "console": "Not connected with plugin"
+        }
+      }
+    },
+    "connections": {
+      "errors": {
+        "server_not_connected": {
+          "embeds": [
+            {
+              "title": "Server Not Connected",
+              "description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first."
+            }
+          ],
+          "console": "Server not connected"
+        },
+        "user_not_connected": {
+          "embeds": [
+            {
+              "title": "User Not Connected",
+              "description": "%emoji_error% User did not use `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**."
+            }
+          ],
+          "console": "User not connected"
+        },
+        "server_not_connected_plugin": {
+          "embeds": [
+            {
+              "title": "Server Not Connected",
+              "description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first."
+            }
+          ],
+          "console": "Server not connected with plugin"
         }
       }
     }

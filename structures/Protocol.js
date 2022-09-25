@@ -9,23 +9,38 @@ const FilePath = {
      * Constructs the path to the user's advancements file.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @returns {string} - The path to the advancements file.
+     * @returns {`${string}/advancements/${string}.json`} - The path to the advancements file.
      */
     Advancements: (worldPath, uuid) => `${worldPath}/advancements/${uuid}.json`,
     /**
      * Constructs the path to the user's stats file.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @returns {string} - The path to the stats file.
+     * @returns {`${string}/stats/${string}.json`} - The path to the stats file.
      */
     Stats: (worldPath, uuid) => `${worldPath}/stats/${uuid}.json`,
     /**
      * Constructs the path to the user's playerdata folder.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @returns {string} - The path to the playerdata folder.
+     * @returns {`${string}/playerdata/${string}.dat`} - The path to the playerdata folder.
      */
     PlayerData: (worldPath, uuid) => `${worldPath}/playerdata/${uuid}.dat`,
+
+    /**
+     * Constructs the path to the world's level.dat file.
+     * @param {string} worldPath - The path to the world folder.
+     * @returns {`${string}/level.dat`} - The path to the world's level.dat file.
+     */
+    LevelDat: worldPath => `${worldPath}/level.dat`,
+
+    /**
+     * Constructs the path to the world's scoreboard.dat file.
+     * @param worldPath
+     * @returns {`${string}/data/scoreboard.dat`}
+     * @constructor
+     */
+    Scoreboards : worldPath => `${worldPath}/data/scoreboard.dat`,
 };
 
 class Protocol extends Base {

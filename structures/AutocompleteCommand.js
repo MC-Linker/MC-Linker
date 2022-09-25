@@ -1,6 +1,7 @@
 const { AutocompleteInteraction, CommandInteraction } = require('discord.js');
 const Command = require('./Command');
 const ServerConnection = require('./ServerConnection');
+const MCLinker = require('./MCLinker');
 
 class AutocompleteCommand extends Command {
 

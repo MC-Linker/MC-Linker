@@ -44,7 +44,7 @@
   "main.errors.could_not_execute_command.embeds.0.description": "%emoji_error% An unknown error occurred while executing this command. Please try again.",
   "main.errors.could_not_execute_command.console": "Could not execute command %error%",
 
-  "main.errors.could_not_autocomplete_command.console": "Could not respond to command autocomplete",
+  "main.errors.could_not_autocomplete_command.console": "Could not respond to command autocomplete %error%",
 
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers.",
 
@@ -885,8 +885,8 @@
   "api.plugin.errors.status_400.embeds.0.description": "%emoji_error% An unknown bot error occurred",
   "api.plugin.errors.status_400.console": "Unknown client error %error%",
 
-  "api.plugin.errors.status_401.embeds.0.title": "Unknown Plugin Error",
-  "api.plugin.errors.status_401.embeds.0.description": "%emoji_error% An unknown plugin error occurred.",
+  "api.plugin.errors.status_401.embeds.0.title": "Unknown Bot Error",
+  "api.plugin.errors.status_401.embeds.0.description": "%emoji_error% An unknown bot error occurred.",
   "api.plugin.errors.status_401.console": "Wrong authorization",
 
   "api.plugin.errors.status_404.embeds.0.title": "Could Not Download",
@@ -966,6 +966,20 @@
   "api.utils.errors.not_connected_with_plugin.embeds.0.title": "Server Not Connected",
   "api.utils.errors.not_connected_with_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
   "api.utils.errors.not_connected_with_plugin.console": "Not connected with plugin",
+
+
+
+  "api.connections.errors.server_not_connected.embeds.0.title": "Server Not Connected",
+  "api.connections.errors.server_not_connected.embeds.0.description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
+  "api.connections.errors.server_not_connected.console": "Server not connected",
+
+  "api.connections.errors.user_not_connected.embeds.0.title": "User Not Connected",
+  "api.connections.errors.user_not_connected.embeds.0.description": "%emoji_error% User did not use `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
+  "api.connections.errors.user_not_connected.console": "User not connected",
+
+  "api.connections.errors.server_not_connected_plugin.embeds.0.title": "Server Not Connected",
+  "api.connections.errors.server_not_connected_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
+  "api.connections.errors.server_not_connected_plugin.console": "Server not connected with plugin",
 
 
 
