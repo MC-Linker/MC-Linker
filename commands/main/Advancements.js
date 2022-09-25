@@ -30,7 +30,7 @@ class Advancements extends AutocompleteCommand {
 
     async execute(interaction, client, args, server) {
         if(!server) {
-            return interaction.replyTl(keys.api.connections.server_not_connected);
+            return interaction.replyTl(keys.api.connections.errors.server_not_connected);
         }
 
         let advancement = args[0].toLowerCase();
@@ -43,7 +43,7 @@ class Advancements extends AutocompleteCommand {
             return interaction.replyTl(keys.commands.advancements.warnings.no_username);
         }
         else if(user.error === 'cache') {
-            return interaction.replyTl(keys.api.connections.user_not_connected);
+            return interaction.replyTl(keys.api.connections.errors.user_not_connected);
         }
         else if(user.error === 'fetch') {
             return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid);

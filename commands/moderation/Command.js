@@ -5,6 +5,8 @@ const nbt = require('prismarine-nbt');
 const utils = require('../../api/utils');
 const mcData = require('minecraft-data')('1.19.2');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
+const PluginProtocol = require('../../structures/PluginProtocol');
+const Protocol = require('../../structures/Protocol');
 
 const commands = require('../../resources/data/commands.json');
 
@@ -65,9 +67,6 @@ class Command extends AutocompleteCommand {
                     }
                 }
 
-                formattedSuggestions.push(suggestion);
-
-
                 async function addPlaceholders(suggestion) {
                     if(suggestion.match(/%.+%/g)) {
                         //Replace arg[0-9] with corresponding value for placeholders
@@ -93,8 +92,9 @@ class Command extends AutocompleteCommand {
 
                         const placeholder = await getPlaceholder(
                             suggestion.replaceAll('%', ''), {
+                                client: client,
                                 user: interaction.user,
-                                guild: interaction.guild,
+                                server: client.serverConnections.cache.get(interaction.guild.id),
                                 focused: focused.value,
                                 commands: Object.keys(commands),
                                 commandSuggestions: filteredArguments,
@@ -111,6 +111,8 @@ class Command extends AutocompleteCommand {
                         //Add Placeholder
                         placeholders[suggestion.replaceAll('%', '')] = placeholder;
                     }
+
+                    formattedSuggestions.push(suggestion);
                 }
             }
             else return;
@@ -120,17 +122,22 @@ class Command extends AutocompleteCommand {
         interaction.respond(respondArray).catch(() => console.log(keys.commands.command.errors.could_not_autocomplete.console));
     }
 
-    async execute(interaction, client, args) {
+    async execute(interaction, client, args, server) {
+        if(!server) {
+            return interaction.reply(keys.api.connections.errors.server_not_connected);
+        }
+        else if(!(server.protocol instanceof PluginProtocol)) {
+            return interaction.replyTl(keys.api.connections.errors.server_not_connected_plugin);
+        }
+
         const command = args[0];
         args.shift(); //Shift commandName
 
         if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-            interaction.replyTl(keys.commands.command.warnings.no_permission);
-            return;
+            return interaction.replyTl(keys.commands.command.warnings.no_permission);
         }
         else if(!command) {
-            interaction.replyTl(keys.commands.command.warnings.no_command);
-            return;
+            return interaction.replyTl(keys.commands.command.warnings.no_command);
         }
 
         for(let i = 0; i < args.length; i++) {
@@ -141,26 +148,27 @@ class Command extends AutocompleteCommand {
             else user = getUsersFromMention(interaction.client, arg)?.[0];
             if(!user) continue;
 
-            const username = await utils.getUsername(user.id, interaction);
+            const username = client.userConnections.cache.get(user.id)?.username;
             if(!username) return;
 
             args[i] = arg.replace(arg, username);
         }
 
-        const resp = await plugin.execute(`${command} ${args.join(' ')}`, interaction.guildId, interaction);
+        const resp = await server.protocol.execute(`${command} ${args.join(' ')}`);
         if(!resp) return;
 
-        let respMessage = resp.status === 200 && resp.json.message ? resp.json.message : keys.api.plugin.warnings.no_response_message;
+        let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
 
         //Either '+' or '-' depending on color code
         let colorChar = '';
-        if(resp.json.color === 'c' || resp.status !== 200) colorChar = '- ';
-        else if(resp.json.color === 'a') colorChar = '+ ';
+        if(resp.data?.color === 'c' || resp.status !== 200) colorChar = '- ';
+        else if(resp.data?.color === 'a') colorChar = '+ ';
 
         //Wrap in discord code block for color and swag
-        respMessage = `\`\`\`diff\n${colorChar}${respMessage}\`\`\``;
+        respMessage = Discord.codeBlock('diff', `${colorChar}${respMessage}`);
 
-        interaction.replyTl(keys.commands.command.success, { 'response': respMessage });    }
+        return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
+    }
 }
 
 //Suggestion key:
@@ -188,6 +196,18 @@ function findSuggestionKey(suggestions, previousArgument, allOptions) {
     });
 }
 
+/**
+ * Gets the placeholder for the give command key.
+ * @param {string} key - The command key.
+ * @param {object} args - Additional arguments passed to this function.
+ * @param {MCLinker} args.client - The MCLinker client.
+ * @param {Discord.User} args.user - The Discord user who sent the command.
+ * @param {?ServerConnection} args.server - The server connection.
+ * @param {string} args.focused - The focused command autocomplete value.
+ * @param {string[]} args.commands - The list of commands.
+ * @param {string[]} args.commandSuggestions - The list of command suggestions.
+ * @returns {Promise<object|array>}
+ */
 async function getPlaceholder(key, args) {
     const colors = [
         'black',
@@ -208,6 +228,9 @@ async function getPlaceholder(key, args) {
         'white',
     ];
 
+    const userConn = args.client.userConnections.cache.get(args.user.id);
+    const server = args.server;
+
     let placeholder = {};
     switch(key) {
         case 'advancements':
@@ -225,8 +248,9 @@ async function getPlaceholder(key, args) {
                 '@e': '@e',
             };
 
-            let onlinePlayers = await plugin.getOnlinePlayers(args.guild.id) ?? [];
-            const username = await utils.getUsername(args.user.id);
+            let resp = await server?.protocol?.getOnlinePlayers?.();
+            const onlinePlayers = resp?.status === 200 ? resp.data : [];
+            const username = userConn?.username;
 
             onlinePlayers.forEach(player => placeholder[player] = player);
             if(username) {
@@ -281,7 +305,7 @@ async function getPlaceholder(key, args) {
             break;
         case 'disabled_datapacks':
         case 'enabled_datapacks':
-            const level = await getNBTFile(`level.dat`, `./serverdata/connections/${args.guild.id}/level.dat`);
+            const level = await getNBTFile(Protocol.FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
 
             let datapacks = level?.Data?.DataPacks;
             if(key === 'enabled_datapacks') placeholder = datapacks?.Enabled;
@@ -293,9 +317,9 @@ async function getPlaceholder(key, args) {
             break;
         case 'player_coordinates':
         case 'player_coordinates_xz':
-            const uuid = await utils.getUUID(args.user, args.guild);
+            const uuid = userConn?.uuid;
             if(!uuid) return {};
-            const playerData = await getNBTFile(`playerdata/${uuid}.dat`, `./userdata/playernbt/${uuid}.dat`);
+            const playerData = await getNBTFile(Protocol.FilePath.PlayerData(server?.path, uuid), `./userdata/playernbt/${uuid}.dat`);
 
             const [x, y, z] = playerData?.Pos;
             if(!x || !z || !y) return {};
@@ -674,12 +698,12 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'scoreboards':
-            const scoreboards = await getNBTFile(`data/scoreboard.dat`, `./serverdata/connections/${args.guild.id}/scoreboard.dat`);
+            const scoreboards = await getNBTFile(Protocol.FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
 
             placeholder = scoreboards?.data?.Objectives?.map(scoreboard => scoreboard.Name) ?? {};
             break;
         case 'bossbars':
-            const bossbars = await getNBTFile(`level.dat`, `./serverdata/connections/${args.guild.id}/level.dat`);
+            const bossbars = await getNBTFile(Protocol.FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
             if(!bossbars) return {};
 
             try {
@@ -3143,7 +3167,7 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'teams':
-            const teams = await getNBTFile(`data/scoreboard.dat`, `./serverdata/connections/${args.guild.id}/scoreboard.dat`);
+            const teams = await getNBTFile(Protocol.FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
 
             placeholder = teams?.data?.Teams?.map(team => team.Name) ?? {};
             break;
@@ -4441,14 +4465,13 @@ async function getPlaceholder(key, args) {
     }
 
     async function getNBTFile(getPath, putPath) {
-        const worldPath = await utils.getWorldPath(args.guild.id);
-        if(!worldPath) return {};
-        const nbtBuffer = await ftp.get(`${worldPath}/${getPath}`, putPath, args.guild.id);
+        if(!server) return {};
+
+        const nbtBuffer = await server.protocol.get(getPath, putPath);
         if(!nbtBuffer) return {};
 
         try {
             const nbtObject = await nbt.parse(nbtBuffer, 'big');
-
             return nbt.simplify(nbtObject.parsed);
         }
         catch(ignored) {
@@ -4457,18 +4480,18 @@ async function getPlaceholder(key, args) {
     }
 
     async function getFunctions() {
-        const worldPath = await utils.getWorldPath(args.guild.id);
+        const worldPath = server?.path;
         if(!worldPath) return [];
 
         let allFunctions = [];
 
-        const datapacks = await ftp.list(`${worldPath}/datapacks/`, args.guild.id);
+        const datapacks = await server.protocol.list(`${worldPath}/datapacks/`);
         if(!datapacks) return [];
 
         for(const datapack of datapacks) {
             if(!datapack.isDirectory) continue;
 
-            const namespaces = await ftp.list(`${worldPath}/datapacks/${datapack.name}/data/`, args.guild.id);
+            const namespaces = await server.protocol.list(`${worldPath}/datapacks/${datapack.name}/data/`);
             if(!namespaces) continue;
 
             for(const namespace of namespaces) {
@@ -4478,7 +4501,7 @@ async function getPlaceholder(key, args) {
         }
 
         async function listFunctions(datapack, namespace, path) {
-            const functions = await ftp.list(`${worldPath}/datapacks/${datapack}/data/${namespace}/functions/${path}`, args.guild.id);
+            const functions = await server.protocol.list(`${worldPath}/datapacks/${datapack}/data/${namespace}/functions/${path}`);
             if(!functions) return;
 
             for(const func of functions) {

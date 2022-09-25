@@ -11,7 +11,7 @@ class Ban extends Command {
 
     async execute(interaction, client, args, server) {
         if(!server) {
-            return interaction.replyTl(keys.api.connections.server_not_connected);
+            return interaction.replyTl(keys.api.connections.errors.server_not_connected);
         }
         else if(!(server.protocol instanceof PluginProtocol)) {
             return interaction.replyTl(keys.api.utils.errors.not_connected_with_plugin);
@@ -29,7 +29,7 @@ class Ban extends Command {
             return interaction.replyTl(keys.commands.ban.warnings.no_username);
         }
         else if(user.error === 'cache') {
-            return interaction.replyTl(keys.api.connections.user_not_connected);
+            return interaction.replyTl(keys.api.connections.errors.user_not_connected);
         }
         else if(user.error === 'fetch') {
             return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid);
@@ -37,14 +37,17 @@ class Ban extends Command {
 
         const resp = await server.protocol.execute(`ban ${user.username} ${reason}`);
         if(!resp) {
-            await interaction.replyTl(keys.api.plugin.errors.no_response);
+            return interaction.replyTl(keys.api.plugin.errors.no_response);
         }
-
-        if(resp.status === 206) await interaction.replyTl(keys.commands.ban.warnings.response_warning, {
-            username: user,
-            reason,
-        });
-        else await interaction.replyTl(keys.commands.ban.success, { username: user, reason });
+        else if(resp.status === 206) {
+            return interaction.replyTl(keys.commands.ban.warnings.response_warning, {
+                username: user,
+                reason,
+            });
+        }
+        else {
+            return interaction.replyTl(keys.commands.ban.success, { username: user, reason });
+        }
     }
 }
 
