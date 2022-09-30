@@ -251,8 +251,11 @@ ph.std = function(interaction) {
 ph.commandName = async function(commandName, client) {
     if(!(client instanceof Discord.Client)) return {};
 
-    let commands = await client.application.commands.fetch();
-    const command = commands.find(cmd => cmd.name === commandName);
+    let command = client.application.commands.cache.find(cmd => cmd.name === commandName);
+    if(!command) {
+        const commands = await client.application.commands.fetch();
+        command = commands.find(cmd => cmd.name === commandName);
+    }
     if(!command) return {};
 
     return this.command(command);
