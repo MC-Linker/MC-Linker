@@ -1,7 +1,7 @@
 const UserConnection = require('./UserConnection');
 const ConnectionManager = require('./ConnectionManager');
-const { getUsersFromMention } = require('../api/messages');
 const { fetchUUID } = require('../api/utils');
+const Discord = require('discord.js');
 
 class UserConnectionManager extends ConnectionManager {
 
@@ -23,29 +23,31 @@ class UserConnectionManager extends ConnectionManager {
     cache;
 
     /**
-     * @typedef {object} ConnectionResponse
+     * @typedef {object} UserResponse
      * @property {?string} uuid - The uuid of the user.
      * @property {?string} username - The username of the user.
      * @property {?'nullish'|?'fetch'|?'cache'} error - The error that occurred.
      */
 
     /**
-     * Returns the uuid of a user from a mention/username.
-     * @param {string} arg - The argument to get the uuid from.
-     * @param {ServerConnectionResolvable} server - The server to resolve the uuid from.
-     * @returns {Promise<ConnectionResponse>} - The uuid of the user, or undefined if no user was found.
+     * Returns the uuid and name of a user from a mention/username.
+     * @param {string} arg - The argument to get the uuid and name from.
+     * @param {ServerConnectionResolvable} server - The server to resolve the uuid and name from.
+     * @returns {Promise<UserResponse>} - The uuid and name of the user.
      */
-    async playerFromArgument(arg, server) {
+    async userFromArgument(arg, server) {
         if(!arg) return { error: 'nullish', uuid: null, username: null };
 
-        let user = getUsersFromMention(this.client, arg);
-        const cacheConnection = this.cache.get(user[0]?.id);
-        if(cacheConnection) return { uuid: cacheConnection?.uuid, username: cacheConnection?.getUUID(server), error: null };
+        const id = Discord.MessageMentions.UsersPattern.exec(arg)?.[1];
+        if(id) {
+            const cacheConnection = this.cache.get(id);
+            if(cacheConnection) return { uuid: cacheConnection.getUUID(server), username: cacheConnection.username, error: null };
+            return { error: 'cache', uuid: null, username: null };
+        }
 
         const apiUUID = await fetchUUID(arg);
         if(apiUUID) return { uuid: apiUUID, username: arg, error: null };
-
-        return { error: !cacheConnection ? 'cache' : 'fetch', uuid: null, username: null };
+        return { error: 'fetch', uuid: null, username: null };
     }
 }
 

@@ -2129,7 +2129,7 @@
         }
       }
     },
-    "connections": {
+    "command": {
       "errors": {
         "server_not_connected": {
           "embeds": [
@@ -2157,6 +2157,44 @@
             }
           ],
           "console": "Server not connected with plugin"
+        }
+      },
+      "warnings": {
+        "no_argument": {
+          "embeds": [
+            {
+              "title": "Missing required argument",
+              "description": "%emoji_warning% Please specify: `%argument%`"
+            }
+          ],
+          "console": "No permission"
+        },
+        "no_user": {
+          "embeds": [
+            {
+              "title": "No User Specified",
+              "description": "%emoji_warning% Please ping a user or specify a minecraft-username."
+            }
+          ],
+          "console": "No user specified"
+        },
+        "no_permission": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "%emoji_no_entry% This command can only be used with `%permission%` permission!"
+            }
+          ],
+          "console": "No permission"
+        },
+        "no_unknown_permission": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "%emoji_no_entry% You do not have permission to execute this command!"
+            }
+          ],
+          "console": "No permission"
         }
       }
     }

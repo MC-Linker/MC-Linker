@@ -142,7 +142,6 @@ client.on('interactionCreate', async interaction => {
         });
 
         const command = client.commands.get(interaction.commandName);
-        if(command?.defer) await interaction?.deferReply({ ephemeral: command.ephemeral });
 
         await interaction.replyTl(keys.commands.executed);
 
