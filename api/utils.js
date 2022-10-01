@@ -103,6 +103,15 @@ function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValu
     });
 }
 
+async function getSlashCommand(commandManager, name) {
+    let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
+    if(!slashCommand) {
+        const commands = await commandManager.fetch();
+        return commands.find(cmd => cmd.name === name);
+    }
+    return slashCommand;
+}
+
 async function fetchUUID(username) {
     try {
         let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
@@ -125,6 +134,7 @@ module.exports = {
     searchAllAdvancements,
     searchAdvancements,
     searchAllStats,
+    getSlashCommand,
     searchStats,
     fetchUUID,
 };

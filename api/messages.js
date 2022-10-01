@@ -26,6 +26,7 @@ const {
     APIActionRowComponent,
     APIApplicationCommand,
 } = require('discord.js');
+const { getSlashCommand} = require('./utils');
 const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
@@ -251,11 +252,7 @@ ph.std = function(interaction) {
 ph.commandName = async function(commandName, client) {
     if(!(client instanceof Discord.Client)) return {};
 
-    let command = client.application.commands.cache.find(cmd => cmd.name === commandName);
-    if(!command) {
-        const commands = await client.application.commands.fetch();
-        command = commands.find(cmd => cmd.name === commandName);
-    }
+    const command = await getSlashCommand(client.application.commands, commandName);
     if(!command) return {};
 
     return this.command(command);
