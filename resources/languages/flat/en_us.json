@@ -987,7 +987,7 @@
   "api.command.errors.server_not_connected_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
   "api.command.errors.server_not_connected_plugin.console": "Server not connected with plugin",
 
-  "api.command.warnings.no_argument.embeds.0.title": "Missing required argument",
+  "api.command.warnings.no_argument.embeds.0.title": "Missing Required Argument",
   "api.command.warnings.no_argument.embeds.0.description": "%emoji_warning% Please specify: `%argument%`",
   "api.command.warnings.no_argument.console": "No permission",
 

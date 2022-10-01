@@ -11,11 +11,10 @@ class AutocompleteCommand extends Command {
      * @param {MCLinker} client - The MCLinker client.
      * @param {any[]} args - The command arguments set by the user.
      * @param {?ServerConnection} server - The connection of the server the command was executed in.
-     * @returns {void|Promise<void>}
-     * @abstract
+     * @returns {Promise<?boolean>|?boolean}
      */
     execute(interaction, client, args, server) {
-        throw new Error('Not implemented');
+        return super.execute(interaction, client, args, server);
     }
 
     /**

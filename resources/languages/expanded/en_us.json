@@ -2163,7 +2163,7 @@
         "no_argument": {
           "embeds": [
             {
-              "title": "Missing required argument",
+              "title": "Missing Required Argument",
               "description": "%emoji_warning% Please specify: `%argument%`"
             }
           ],
