@@ -23,7 +23,12 @@ class Kick extends Command {
             return interaction.replyTl(keys.api.plugin.errors.no_response);
         }
 
-        if(resp.status === 206) return interaction.replyTl(keys.commands.kick.warnings.response_warning, { username: user, reason });
+        if(resp.status === 206) {
+            return interaction.replyTl(keys.commands.kick.warnings.response_warning, {
+                username: user,
+                reason,
+            });
+        }
         else return interaction.replyTl(keys.commands.kick.success, { username: user, reason });
     }
 }

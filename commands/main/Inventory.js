@@ -291,8 +291,7 @@ class Inventory extends Command {
 }
 
 
-async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {
-}) {
+async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
     const canvas = Canvas.createCanvas(352, 332);
     const ctx = canvas.getContext('2d');
     const background = await Canvas.loadImage(backgroundPath);
