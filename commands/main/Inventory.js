@@ -76,31 +76,21 @@ const armorSlotNames = {
 class Inventory extends Command {
 
     constructor() {
-        super('inventory');
+        super({
+            name: 'inventory',
+            requiresConnectedUser: 0,
+        });
     }
 
     async execute(interaction, client, args, server) {
-        if(!server) {
-            return interaction.replyTl(keys.api.connections.errors.server_not_connected);
-        }
+        if(!await super.execute(interaction, client, args, server)) return;
 
-        const user = await client.userConnections.playerFromArgument(args[0], server);
-        /** @type {boolean} */
-        const showDetails = typeof args[1] === 'boolean' ? args[1] : args[1]?.toLowerCase() === 'true';
-
-        if(user.error === 'nullish') {
-            return interaction.replyTl(keys.commands.inventory.warnings.no_username);
-        }
-        else if(user.error === 'cache') {
-            return interaction.replyTl(keys.api.connections.errors.user_not_connected);
-        }
-        else if(user.error === 'fetch') {
-            return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid);
-        }
+        const user = args[0];
+        const showDetails = args[1];
 
         const nbtFile = await server.protocol.get(Protocol.FilePath.PlayerData(server.path, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
         if(!nbtFile) {
-            return interaction.replyTl(keys.commands.inventory.errors.could_not_download);
+            return interaction.replyTl(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' });
         }
 
         let playerData;
@@ -128,7 +118,8 @@ class Inventory extends Command {
             './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-            showDetails ? pushInvButton.bind(null, itemButtons) : () => {}, //Push itemButtons if showDetails is set to true
+            showDetails ? pushInvButton.bind(null, itemButtons) : () => {
+            }, //Push itemButtons if showDetails is set to true
         );
 
         //Draw skin in inventory
@@ -141,7 +132,7 @@ class Inventory extends Command {
             invCanvas.toBuffer('image/png'),
             { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
         );
-        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(interaction), { username: user });
+        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(interaction), { username: user.username });
         if(!invEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_command);
 
         /** @type {Discord.InteractionReplyOptions} */
@@ -300,7 +291,8 @@ class Inventory extends Command {
 }
 
 
-async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
+async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {
+}) {
     const canvas = Canvas.createCanvas(352, 332);
     const ctx = canvas.getContext('2d');
     const background = await Canvas.loadImage(backgroundPath);

@@ -8,7 +8,10 @@ const Protocol = require('../../structures/Protocol');
 class Advancements extends AutocompleteCommand {
 
     constructor() {
-        super('advancements');
+        super({
+            name: 'advancements',
+            requiresConnectedUser: 1,
+        });
     }
 
     async autocomplete(interaction, client) {
@@ -29,33 +32,18 @@ class Advancements extends AutocompleteCommand {
     }
 
     async execute(interaction, client, args, server) {
-        if(!server) {
-            return interaction.replyTl(keys.api.connections.errors.server_not_connected);
-        }
+        if(!await super.execute(interaction, client, args, server)) return;
 
         let advancement = args[0].toLowerCase();
-        const user = await client.userConnections.playerFromArgument(args[1], server);
-
-        if(!advancement) {
-            return interaction.replyTl(keys.commands.advancements.warnings.no_advancement);
-        }
-        else if(user.error === 'nullish') {
-            return interaction.replyTl(keys.commands.advancements.warnings.no_username);
-        }
-        else if(user.error === 'cache') {
-            return interaction.replyTl(keys.api.connections.errors.user_not_connected);
-        }
-        else if(user.error === 'fetch') {
-            return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid);
-        }
+        const user = args[1];
 
         let matchingAdvancement;
         if(advancement.includes('.')) {
             //Allows for category.advancement (i.e. nether.root)
             const [category, id] = advancement.split('.');
-            matchingAdvancement = await utils.searchAdvancements(id, category, false, true, 1);
+            matchingAdvancement = utils.searchAdvancements(id, category, false, true, 1);
         }
-        else matchingAdvancement = await utils.searchAllAdvancements(advancement, true, true, 1);
+        else matchingAdvancement = utils.searchAllAdvancements(advancement, true, true, 1);
         matchingAdvancement = matchingAdvancement.shift();
 
         advancement = matchingAdvancement?.value ?? advancement;
@@ -72,7 +60,7 @@ class Advancements extends AutocompleteCommand {
 
         const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, user.uuid), `./userdata/advancements/${user.uuid}.json`);
         if(!amFile) {
-            return interaction.replyTl(keys.commands.advancements.errors.could_not_download);
+            return interaction.replyTl(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' });
         }
         const advancementData = JSON.parse(amFile.toString('utf-8'));
 

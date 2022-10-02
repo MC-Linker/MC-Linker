@@ -1,10 +1,8 @@
 const { CommandInteraction, Message, PermissionFlagsBits, ApplicationCommandPermissionType, ApplicationCommandOptionType } = require('discord.js');
 const { keys } = require('../api/messages');
 const PluginProtocol = require('./PluginProtocol');
-
-const ServerConnection = require('./ServerConnection');
-const MCLinker = require('./MCLinker');
 const { getSlashCommand } = require('../api/utils');
+const { ownerId } = require('../config.json');
 
 class Command {
 
@@ -13,11 +11,10 @@ class Command {
      * @property {string} name - The name of this command.
      * @property {boolean} [defer=true] - Indicates whether to defer this command.
      * @property {boolean} [ephemeral=false] - Indicates whether to defer this command as ephemeral.
-     * @property {array} [permissions=[]] - The permissions for this command.
      * @property {boolean} [requiresConnectedServer=true] - Indicates whether this command requires a connected server.
-     * @property {int} [requiresConnectedUser=null] - The user argument index that requires a connected user.\
+     * @property {int} [requiresConnectedUser=null] - The user argument index that requires a connected user.
      * @property {boolean} [requiresConnectedPlugin=false] - Indicates whether this command requires a connected plugin.
-     * @property {number} [arguments=0] - The amount of arguments this command requires.
+     * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
      */
 
     /**
@@ -33,12 +30,6 @@ class Command {
         this.name = options.name;
 
         /**
-         * The amount of arguments this command requires.
-         * @type {number}
-         */
-        this.arguments = options.arguments ?? 0;
-
-        /**
          * Indicates whether to defer this command.
          * @type {boolean}
          */
@@ -49,12 +40,6 @@ class Command {
          * @type {boolean}
          */
         this.ephemeral = options.ephemeral ?? false;
-
-        /**
-         * The permissions for this command.
-         * @type {array}
-         */
-        this.permissions = options.permissions ?? [];
 
         /**
          * Indicates whether this command requires a connected server.
@@ -73,6 +58,12 @@ class Command {
          * @type {boolean}
          */
         this.requiresConnectedPlugin = options.requiresConnectedPlugin ?? false;
+
+        /**
+         * Indicates whether this command is only available to the bot owner.
+         * @type {boolean}
+         */
+        this.ownerOnly = options.ownerOnly ?? false;
     }
 
     /**
@@ -86,7 +77,35 @@ class Command {
     async execute(interaction, client, args, server) {
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
-        if(this.requiresConnectedUser !== null) {
+        if(this.ownerOnly && interaction.user.id !== ownerId) {
+            return false;
+        }
+
+        if(this.requiresConnectedPlugin && !(server?.protocol instanceof PluginProtocol)) {
+            await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
+            return false;
+        }
+        if(this.requiresConnectedServer && !server) {
+            await interaction.replyTl(keys.api.command.errors.server_not_connected);
+            return false;
+        }
+
+        const slashCommand = await getSlashCommand(interaction.guild.commands, this.name);
+        const missingPermission = await canRunCommand(slashCommand);
+        if(missingPermission !== true) {
+            if(missingPermission) {
+                await interaction.replyTl(
+                    keys.api.command.warnings.no_permission,
+                    { permission: missingPermission },
+                );
+            }
+            else {
+                await interaction.replyTl(keys.api.command.warnings.no_unknown_permission);
+            }
+            return false;
+        }
+
+        if(this.requiresConnectedUser !== null && (this.requiresConnectedUser === 0 || args[this.requiresConnectedUser-1] !== undefined)) {
             const user = await client.userConnections.userFromArgument(args[this.requiresConnectedUser], server);
             if(user.error === 'nullish') {
                 await interaction.replyTl(keys.api.command.warnings.no_user);
@@ -100,51 +119,13 @@ class Command {
                 await interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username: args[this.requiresConnectedUser] });
                 return false;
             }
+
+            args[this.requiresConnectedUser] = user;
+            console.log(args)
         }
 
-        if(this.requiresConnectedPlugin && !(server?.protocol instanceof PluginProtocol)) {
-            await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
-            return false;
-        }
-        else if(this.requiresConnectedServer && !server) {
-            await interaction.replyTl(keys.api.command.errors.server_not_connected);
-            return false;
-        }
-
-        else if(this.permissions.length > 0) {
-            if(!await canRunCommand(this.name)) {
-                const permission = this.permissions.find(permission => !interaction.member.permissions.has(permission));
-                if(permission) {
-                    await interaction.replyTl(
-                        keys.api.command.warnings.no_permission,
-                        { permission: permission.replace(/([A-Z])/g, ' $1').trim() },
-                    );
-                }
-                else {
-                    await interaction.replyTl(keys.api.command.warnings.no_permission);
-                }
-                return false;
-            }
-        }
-
-        else if(args.length < this.arguments) {
-            const subcommandGroup = args[0];
-            const subcommand = args[1];
-
-            let optionName;
-            /** @type {ApplicationCommand} */
-            const command = await getSlashCommand(interaction.guild.commands, this.name);
-            //Find the command option in command.options
-            const subcommandGroupOption = command.options.find(option => option.name === subcommandGroup);
-            if(subcommandGroupOption?.type === ApplicationCommandOptionType.SubcommandGroup || subcommandGroupOption?.type === ApplicationCommandOptionType.Subcommand) {
-                const subcommandOption = subcommandGroupOption.options.find(option => option.name === subcommand);
-                if(subcommandOption?.type === ApplicationCommandOptionType.Subcommand) {
-                    optionName = subcommandOption?.options[args.length - 2].name;
-                }
-                else optionName = subcommandGroupOption.options[args.length - 1].name;
-            }
-            else optionName = command.options[args.length].name;
-
+        const optionName = await getMissingOptionName(args, slashCommand);
+        if(optionName) {
             await interaction.replyTl(
                 keys.api.command.warnings.no_argument,
                 { argument: optionName },
@@ -153,27 +134,58 @@ class Command {
             return false;
         }
 
+        //Parse boolean strings in arguments
+        for(let i = 0; i < args.length; i++) {
+            if(args[i] === 'true') args[i] = true;
+            else if(args[i] === 'false') args[i] = false;
+        }
+
         return true;
+
+        async function getMissingOptionName(args, command) {
+            const subcommandGroup = args[0];
+            const subcommand = args[1];
+
+            let option;
+            const subcommandGroupOption = command.options.find(option => option.name === subcommandGroup);
+            if(subcommandGroupOption?.type === ApplicationCommandOptionType.SubcommandGroup || subcommandGroupOption?.type === ApplicationCommandOptionType.Subcommand) {
+                const subcommandOption = subcommandGroupOption.options.find(option => option.name === subcommand);
+                if(subcommandOption?.type === ApplicationCommandOptionType.Subcommand) {
+                    option = subcommandOption?.options[args.length - 2];
+                }
+                else option = subcommandGroupOption.options[args.length - 1];
+            }
+            else {
+                const missingOption = command.options[args.length];
+                if(missingOption?.type === ApplicationCommandOptionType.SubcommandGroup || missingOption?.type === ApplicationCommandOptionType.Subcommand) {
+                    option = command.options;
+                }
+                else option = missingOption;
+            }
+
+            if(Array.isArray(option)) {
+                return new Intl.ListFormat('en', { type: 'disjunction', style: 'short' })
+                    .format(option.map(option => option.name));
+            }
+            else if(option?.required) return option.name;
+        }
 
         /**
          * Checks whether the user has permission to execute this slash command.
-         * @param {string} name - The name of the command.
-         * @returns {Promise<boolean>}
+         * @param {ApplicationCommand} command - The name of the command.
+         * @returns {Promise<boolean|string>} - Whether the user has permission to execute this command. If not, the missing default permission.
          */
-        async function canRunCommand(name) {
+        async function canRunCommand(command) {
             const memberPerms = interaction.member.permissionsIn(interaction.channel);
+
+            const memberPermissions = interaction.member.permissions?.toArray() ?? [];
+            const requiredPermissions = slashCommand.defaultMemberPermissions?.toArray() ?? [];
             if(memberPerms.has(PermissionFlagsBits.Administrator)) return true;
 
-            let slashCommand = interaction.guild.commands.cache.find(cmd => cmd.name === name);
-            if(!slashCommand) {
-                const commands = await interaction.guild.commands.fetch();
-                slashCommand = commands.find(cmd => cmd.name === name);
-            }
-
             const perms =
-                await interaction.guild.commands.permissions.fetch({ command: slashCommand.id }).catch(() => null)
+                await interaction.guild.commands.permissions.fetch({ command: command.id }).catch(() => null)
                 ?? await interaction.guild.commands.permissions.fetch({ command: client.user.id }).catch(() => null);
-            if(!perms) return memberPerms.has(slashCommand.defaultMemberPermissions);
+            if(!perms) return requiredPermissions.find(permission => !memberPermissions.includes(permission)) ?? true;
 
             let canRun = true;
             const everyone = perms

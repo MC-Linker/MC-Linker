@@ -989,19 +989,27 @@
 
   "api.command.warnings.no_argument.embeds.0.title": "Missing Required Argument",
   "api.command.warnings.no_argument.embeds.0.description": "%emoji_warning% Please specify: `%argument%`",
-  "api.command.warnings.no_argument.console": "No permission",
+  "api.command.warnings.no_argument.console": "Missing required argument",
 
   "api.command.warnings.no_user.embeds.0.title": "No User Specified",
   "api.command.warnings.no_user.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
   "api.command.warnings.no_user.console": "No user specified",
 
   "api.command.warnings.no_permission.embeds.0.title": "No Permission",
-  "api.command.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used with `%permission%` permission!",
+  "api.command.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used with the `%permission%` permission!",
   "api.command.warnings.no_permission.console": "No permission",
 
   "api.command.warnings.no_unknown_permission.embeds.0.title": "No Permission",
   "api.command.warnings.no_unknown_permission.embeds.0.description": "%emoji_no_entry% You do not have permission to execute this command!",
   "api.command.warnings.no_unknown_permission.console": "No permission",
+
+  "api.command.errors.could_not_download.embeds.0.title": "Could Not Download",
+  "api.command.errors.could_not_download.embeds.0.description": "%emoji_error% Could not download %category% files.",
+  "api.command.errors.could_not_download.console": "Could not download %category% files",
+
+  "api.command.errors.could_not_download_user_files.embeds.0.title": "Could Not Download",
+  "api.command.errors.could_not_download_user_files.embeds.0.description": "%emoji_error% Could not download %category% files. The user most likely never joined the server.",
+  "api.command.errors.could_not_download_user_files.console": "Could not download %category% files",
 
 
 

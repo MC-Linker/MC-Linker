@@ -9,12 +9,12 @@ console.log(
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
-const helpCommand = require('./src/help');
-const evalCommand = require('./src/eval');
+const Help = require('./src/Help'), helpCommand = new Help();
+const Eval = require('./src/Eval'), evalCommand = new Eval();
 const disableButton = require('./buttons/disable');
 const enableButton = require('./buttons/enable');
 const { getArgs, addPh, keys, ph, toTranslatedMessage, toTranslatedInteraction } = require('./api/messages');
-const { prefix, token, topggToken, ownerId } = require('./config.json');
+const { prefix, token, topggToken } = require('./config.json');
 const MCLinker = require('./structures/MCLinker');
 const AutocompleteCommand = require('./structures/AutocompleteCommand');
 const PluginProtocol = require('./structures/PluginProtocol');
@@ -87,11 +87,11 @@ client.on('messageCreate', async message => {
 
     if(commandName === 'help') {
         await message.replyTl(keys.commands.executed);
-        await helpCommand.execute(message, args);
+        await helpCommand.execute(message, client, args, server);
     }
-    else if(commandName === 'eval' && message.author.id === ownerId) {
+    else if(commandName === 'eval') {
         await message.replyTl(keys.commands.executed);
-        await evalCommand.execute(message, args);
+        await evalCommand.execute(message, client, args, server);
     }
     else {
         const command = client.commands.get(commandName);
@@ -145,18 +145,19 @@ client.on('interactionCreate', async interaction => {
 
         await interaction.replyTl(keys.commands.executed);
 
+        const server = client.serverConnections.cache.get(interaction.guildId);
         if(interaction.commandName === 'help') {
-            await helpCommand.execute(interaction, args);
+            await helpCommand.execute(interaction, client, args, server);
         }
         else {
             //Check if command disabled
-            const server = client.serverConnections.cache.get(interaction.guildId);
             if(server?.settings?.isDisabled('commands', interaction.commandName)) {
                 await interaction.replyTl(keys.main.warnings.disabled);
                 return;
             }
 
             try {
+                // noinspection JSUnresolvedFunction
                 await command.execute(interaction, client, args, server)
                     .catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
             }

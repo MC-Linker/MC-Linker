@@ -387,7 +387,7 @@ async function replyTl(interaction, key, ...placeholders) {
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} options - The options to reply with.
- * @returns {Promise<Message|InteractionResponse>}
+ * @returns {Promise<Message>}
  */
 async function replyOptions(interaction, options) {
     function handleError(err) {
@@ -401,10 +401,9 @@ async function replyOptions(interaction, options) {
     }
 
     try {
-        if(!interaction.isRepliable?.()) return interaction.channel?.send(options);
-
         if(interaction instanceof Discord.Message) return await interaction.reply(options).catch(handleError);
         else if(interaction instanceof Discord.BaseInteraction) {
+            if(!interaction.isRepliable()) return await interaction.message.reply(options).catch(handleError);
             if(interaction.deferred) return await interaction.editReply(options).catch(handleError);
             else return await interaction.reply(options).catch(handleError);
         }

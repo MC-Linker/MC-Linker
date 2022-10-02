@@ -5,7 +5,6 @@ const nbt = require('prismarine-nbt');
 const utils = require('../../api/utils');
 const mcData = require('minecraft-data')('1.19.2');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
-const PluginProtocol = require('../../structures/PluginProtocol');
 const Protocol = require('../../structures/Protocol');
 
 const commands = require('../../resources/data/commands.json');
@@ -13,7 +12,10 @@ const commands = require('../../resources/data/commands.json');
 class Command extends AutocompleteCommand {
 
     constructor() {
-        super('command');
+        super({
+            name: 'command',
+            requiresConnectedPlugin: true,
+        });
     }
 
     async autocomplete(interaction, client) {
@@ -123,22 +125,10 @@ class Command extends AutocompleteCommand {
     }
 
     async execute(interaction, client, args, server) {
-        if(!server) {
-            return interaction.reply(keys.api.connections.errors.server_not_connected);
-        }
-        else if(!(server.protocol instanceof PluginProtocol)) {
-            return interaction.replyTl(keys.api.connections.errors.server_not_connected_plugin);
-        }
+        if(!await super.execute(interaction, client, args, server)) return;
 
         const command = args[0];
         args.shift(); //Shift commandName
-
-        if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-            return interaction.replyTl(keys.commands.command.warnings.no_permission);
-        }
-        else if(!command) {
-            return interaction.replyTl(keys.commands.command.warnings.no_command);
-        }
 
         for(let i = 0; i < args.length; i++) {
             const arg = args[i];
@@ -155,7 +145,9 @@ class Command extends AutocompleteCommand {
         }
 
         const resp = await server.protocol.execute(`${command} ${args.join(' ')}`);
-        if(!resp) return;
+        if(!resp) {
+            return interaction.replyTl(keys.api.plugin.errors.no_response);
+        }
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
 
@@ -164,7 +156,7 @@ class Command extends AutocompleteCommand {
         if(resp.data?.color === 'c' || resp.status !== 200) colorChar = '- ';
         else if(resp.data?.color === 'a') colorChar = '+ ';
 
-        //Wrap in discord code block for color and swag
+        //Wrap in discord code block for color
         respMessage = Discord.codeBlock('diff', `${colorChar}${respMessage}`);
 
         return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
@@ -197,7 +189,7 @@ function findSuggestionKey(suggestions, previousArgument, allOptions) {
 }
 
 /**
- * Gets the placeholder for the give command key.
+ * Gets the placeholder for the given command key.
  * @param {string} key - The command key.
  * @param {object} args - Additional arguments passed to this function.
  * @param {MCLinker} args.client - The MCLinker client.
@@ -234,7 +226,7 @@ async function getPlaceholder(key, args) {
     let placeholder = {};
     switch(key) {
         case 'advancements':
-            const advancements = await utils.searchAllAdvancements(args.focused ?? '');
+            const advancements = utils.searchAllAdvancements(args.focused ?? '');
             //Combine to one object and map to name and category.value
             advancements.forEach(advancement =>
                 placeholder[advancement.name] = `minecraft:${advancement.category}/${advancement.value}`,

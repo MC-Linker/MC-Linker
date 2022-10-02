@@ -2157,6 +2157,24 @@
             }
           ],
           "console": "Server not connected with plugin"
+        },
+        "could_not_download": {
+          "embeds": [
+            {
+              "title": "Could Not Download",
+              "description": "%emoji_error% Could not download %category% files."
+            }
+          ],
+          "console": "Could not download %category% files"
+        },
+        "could_not_download_user_files": {
+          "embeds": [
+            {
+              "title": "Could Not Download",
+              "description": "%emoji_error% Could not download %category% files. The user most likely never joined the server."
+            }
+          ],
+          "console": "Could not download %category% files"
         }
       },
       "warnings": {
@@ -2167,7 +2185,7 @@
               "description": "%emoji_warning% Please specify: `%argument%`"
             }
           ],
-          "console": "No permission"
+          "console": "Missing required argument"
         },
         "no_user": {
           "embeds": [
@@ -2182,7 +2200,7 @@
           "embeds": [
             {
               "title": "No Permission",
-              "description": "%emoji_no_entry% This command can only be used with `%permission%` permission!"
+              "description": "%emoji_no_entry% This command can only be used with the `%permission%` permission!"
             }
           ],
           "console": "No permission"
