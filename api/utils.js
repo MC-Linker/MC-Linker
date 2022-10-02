@@ -4,7 +4,7 @@ const mcData = require('minecraft-data')('1.19.2');
 const advancementData = require('../resources/data/advancements.json');
 const customStats = require('../resources/data/stats_custom.json');
 
-async function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
+function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     const matchingCategory = advancementData.categories[category];
     if(!matchingCategory) return [];
 
@@ -26,11 +26,11 @@ async function searchAdvancements(searchString, category, shouldSearchNames = tr
     return matchingTitles;
 }
 
-async function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
+function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let matchingTitles = [];
 
     for(const category of Object.keys(advancementData.categories)) {
-        const matchingKeys = await searchAdvancements(searchString, category, shouldSearchNames, shouldSearchValues, maxLength);
+        const matchingKeys = searchAdvancements(searchString, category, shouldSearchNames, shouldSearchValues, maxLength);
         matchingKeys.forEach(key => matchingTitles.push(key));
     }
 
@@ -103,6 +103,9 @@ function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValu
     });
 }
 
+/**
+ * @returns {Promise<ApplicationCommand>}
+ */
 async function getSlashCommand(commandManager, name) {
     let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
     if(!slashCommand) {
