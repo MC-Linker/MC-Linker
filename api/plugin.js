@@ -32,7 +32,8 @@ async function loadExpress(client) {
         if(!conn && !alreadyWarnedServers.includes(guildId)) {
             try {
                 for(const channel of channels) {
-                    await client.channels.cache.get(channel.id)?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
+                    const discordChannel = await client.channels.fetch(channel);
+                    await discordChannel?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
                         .catch(() => {});
                 }
 
@@ -65,7 +66,7 @@ async function loadExpress(client) {
             });
         }
         else if(request.body.type === 'chat') {
-            const guild = client.guilds.cache.get(guildId);
+            const guild = await client.guilds.fetch(guildId);
 
             //Parse pings (@name)
             let mentions = message.match(/@(\S+)/g);
@@ -84,7 +85,7 @@ async function loadExpress(client) {
             catch(err) {}
 
             for(const channel of channels) {
-                const discordChannel = client.channels.cache.get(channel.id);
+                const discordChannel = await client.channels.fetch(channel.id);
 
                 if(!allWebhooks) {
                     discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
@@ -166,7 +167,8 @@ async function loadExpress(client) {
         //why not triple-catch (try/catch, .catch, optional chaining)
         try {
             for(const channel of channels) {
-                await client.channels.cache.get(channel.id)?.send({ embeds: [chatEmbed] })
+                const discordChannel = await client.channels.fetch(channel.id);
+                await discordChannel?.send({ embeds: [chatEmbed] })
                     .catch(() => {
                     });
             }

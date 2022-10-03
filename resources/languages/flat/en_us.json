@@ -44,6 +44,10 @@
   "main.errors.could_not_execute_command.embeds.0.description": "%emoji_error% An unknown error occurred while executing this command. Please try again.",
   "main.errors.could_not_execute_command.console": "Could not execute command %error%",
 
+  "main.errors.could_not_execute_button.embeds.0.title": "Unknown Error",
+  "main.errors.could_not_execute_button.embeds.0.description": "%emoji_error% An unknown error occurred while executing this button. Please try again.",
+  "main.errors.could_not_execute_button.console": "Could not execute button %error%",
+
   "main.errors.could_not_autocomplete_command.console": "Could not respond to command autocomplete %error%",
 
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers.",

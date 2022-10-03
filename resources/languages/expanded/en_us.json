@@ -67,6 +67,15 @@
         ],
         "console": "Could not execute command %error%"
       },
+      "could_not_execute_button": {
+        "embeds": [
+          {
+            "title": "Unknown Error",
+            "description": "%emoji_error% An unknown error occurred while executing this button. Please try again."
+          }
+        ],
+        "console": "Could not execute button %error%"
+      },
       "could_not_autocomplete_command": {
         "console": "Could not respond to command autocomplete %error%"
       }

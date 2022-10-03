@@ -775,9 +775,9 @@ function createActionRows(components) {
  * Gets a list of users from a string of mentions.
  * @param {Client} client - The client to use.
  * @param {string} mention - The string of mentions.
- * @returns {User[]}
+ * @returns {Promise<User[]>}
  */
-function getUsersFromMention(client, mention) {
+async function getUsersFromMention(client, mention) {
     if(typeof mention !== 'string') return [];
 
     const usersPattern = new RegExp(Discord.MessageMentions.UsersPattern.source, 'g');
@@ -788,7 +788,7 @@ function getUsersFromMention(client, mention) {
     for(let match of matches) {
         // match[0] = entire mention
         // match[1] = Id
-        userArray.push(client.users.cache.get(match[1]));
+        userArray.push(await client.users.fetch(match[1]));
     }
 
     return userArray;
@@ -810,8 +810,6 @@ function getArgs(client, interaction) {
             args.push(option.name);
             option.options.forEach(opt => addArgs(opt));
         }
-        else if(option.type === Discord.ApplicationCommandOptionType.String && option.name === 'user')
-            args.push(getUsersFromMention(client, option.value)?.[0] ?? option.value);
         else if(option.type === Discord.ApplicationCommandOptionType.Channel) args.push(option.channel);
         else if(option.type === Discord.ApplicationCommandOptionType.User) args.push(option.user);
         else if(option.type === Discord.ApplicationCommandOptionType.Role) args.push(option.role);

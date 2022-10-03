@@ -1,4 +1,11 @@
-const { CommandInteraction, Message, PermissionFlagsBits, ApplicationCommandPermissionType, ApplicationCommandOptionType } = require('discord.js');
+const {
+    CommandInteraction,
+    Message,
+    PermissionFlagsBits,
+    ApplicationCommandPermissionType,
+    ApplicationCommandOptionType,
+    MessageMentions,
+} = require('discord.js');
 const { keys } = require('../api/messages');
 const PluginProtocol = require('./PluginProtocol');
 const { getSlashCommand } = require('../api/utils');
@@ -105,7 +112,7 @@ class Command {
             return false;
         }
 
-        if(this.requiresConnectedUser !== null && (this.requiresConnectedUser === 0 || args[this.requiresConnectedUser-1] !== undefined)) {
+        if(this.requiresConnectedUser !== null && (this.requiresConnectedUser === 0 || args[this.requiresConnectedUser - 1] !== undefined)) {
             const user = await client.userConnections.userFromArgument(args[this.requiresConnectedUser], server);
             if(user.error === 'nullish') {
                 await interaction.replyTl(keys.api.command.warnings.no_user);
@@ -121,7 +128,6 @@ class Command {
             }
 
             args[this.requiresConnectedUser] = user;
-            console.log(args)
         }
 
         const optionName = await getMissingOptionName(args, slashCommand);
@@ -134,10 +140,15 @@ class Command {
             return false;
         }
 
-        //Parse boolean strings in arguments
+        //Parse booleans and channels in arguments
         for(let i = 0; i < args.length; i++) {
             if(args[i] === 'true') args[i] = true;
             else if(args[i] === 'false') args[i] = false;
+
+            else {
+                const channelId = MessageMentions.ChannelsPattern.exec(args[i]);
+                args[i] = channelId ? await client.channels.fetch(channelId[1]) : args[i];
+            }
         }
 
         return true;
