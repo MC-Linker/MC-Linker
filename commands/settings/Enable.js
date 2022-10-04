@@ -1,20 +1,24 @@
 const utils = require('../../api/utils');
-const Discord = require('discord.js');
 const { keys } = require('../../api/messages');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Enable extends AutocompleteCommand {
 
     constructor() {
-        super('enable');
+        super({
+            name: 'enable',
+        });
     }
 
 
     async autocomplete(interaction, client) {
+        const server = await client.serverConnections.cache.get(interaction.guildId);
+        if(!server) return;
+
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        const disabled = await settings.getDisabled(interaction.guildId, subcommand);
+        const disabled = server.settings.disabled[subcommand];
         const matchingDisabled = disabled.filter(disable => disable.includes(focused));
         if(matchingDisabled.length >= 25) matchingDisabled.length = 25;
 
@@ -43,40 +47,23 @@ class Enable extends AutocompleteCommand {
         interaction.respond(respondArray).catch(() => console.log(keys.commands.enable.errors.could_not_autocomplete));
     }
 
-    async execute(interaction, client, args) {
+    async execute(interaction, client, args, server) {
+        if(!await super.execute(interaction, client, args, server)) return;
+
         let type = args?.shift();
         let toEnable = args?.join(' ').toLowerCase();
         const argPlaceholder = { type, 'enable': toEnable };
-
-        if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-            interaction.replyTl(keys.commands.enable.warnings.no_permission);
-            return;
-        }
-        else if(!type) {
-            interaction.replyTl(keys.commands.enable.warnings.no_type);
-            return;
-        }
-        else if(!toEnable) {
-            interaction.replyTl(keys.commands.enable.warnings.no_enable);
-            return;
-        }
-        else if(type !== 'stats' && type !== 'advancements' && type !== 'commands') {
-            interaction.replyTl(keys.commands.enable.warnings.invalid_type);
-            return;
-        }
 
         let formattedToEnable;
         if(type === 'commands') {
             const command = keys.data[toEnable];
 
             if(!command) {
-                interaction.replyTl(keys.commands.enable.warnings.command_does_not_exist, argPlaceholder);
-                return;
+                return interaction.replyTl(keys.commands.enable.warnings.command_does_not_exist, argPlaceholder);
             }
 
             toEnable = command.name;
             formattedToEnable = toEnable.cap();
-
         }
         else if(type === 'advancements') {
             const matchingTitle = await utils.searchAllAdvancements(toEnable, true, true, 1);
@@ -87,15 +74,14 @@ class Enable extends AutocompleteCommand {
             formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
         }
 
-        if(!await settings.enable(interaction.guildId, type, toEnable)) {
-            interaction.replyTl(keys.commands.enable.warnings.already_enabled, {
+        if(!await server.settings.enable(type, toEnable)) {
+            return interaction.replyTl(keys.commands.enable.warnings.already_enabled, {
                 'type': type.cap(),
                 'enable': formattedToEnable,
             });
-            return;
         }
 
-        interaction.replyTl(keys.commands.enable.success, { type, 'enable': formattedToEnable });
+        return interaction.replyTl(keys.commands.enable.success, { type, 'enable': formattedToEnable });
     }
 }
 

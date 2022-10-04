@@ -1,238 +1,209 @@
-const fs = require('fs-extra');
 const dns = require('dns/promises');
-const Discord = require('discord.js');
+const crypto = require('crypto');
 const { pluginPort } = require('../../config.json');
-const { keys, ph, addPh, getEmbed } = require('../../api/messages');
+const { keys, ph, addPh } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const PluginProtocol = require('../../structures/PluginProtocol');
+const FtpProtocol = require('../../structures/FtpProtocol');
+const Protocol = require('../../structures/Protocol');
+const utils = require('../../api/utils');
 
 class Connect extends Command {
 
     constructor() {
-        super('connect');
+        super({
+            name: 'connect',
+            requiresConnectedServer: false,
+        });
     }
 
-    async execute(interaction, client, args) {
-        const method = args[0];
+    async execute(interaction, client, args, server) {
+        if(!await super.execute(interaction, client, args, server)) return;
 
-        if(!method) {
-            interaction.replyTl(keys.commands.connect.warnings.no_method);
-            return;
-        }
-        else if(method !== 'account' && !interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-            interaction.replyTl(keys.commands.connect.warnings.no_permission);
-            return;
-        }
+        const method = args[0];
 
         if(method === 'ftp') {
             const host = args[1];
-            let user = args[2];
+            let username = args[2];
             let password = args[3];
-            const port = args[4] ?? 21;
+            let port = args[4] ?? 21;
             let version = args[5]?.split('.')?.pop() ?? 19;
             let path = args[6];
 
-            version = parseInt(version);
+            if(typeof version !== 'number') version = parseInt(version);
+            if(typeof port !== 'number') port = parseInt(port);
 
-            if(!host || !user || !password || !port) {
-                interaction.replyTl(keys.commands.connect.warnings.no_credentials);
-                return;
+            if(isNaN(version)) {
+                return interaction.replyTl(keys.commands.connect.warnings.invalid_version);
             }
-            else if(isNaN(version)) {
-                interaction.replyTl(keys.commands.connect.warnings.no_version);
-                return;
-            }
-            else if(port <= 0 || port > 65536) {
-                interaction.replyTl(keys.commands.connect.warnings.invalid_port);
-                return;
+            else if(isNaN(port) || port <= 0 || port > 65536) {
+                return interaction.replyTl(keys.commands.connect.warnings.invalid_port);
             }
 
-            if(user === 'none') user = '';
+            if(username === 'none') username = '';
             if(password === 'none') password = '';
 
             //Send version warnings
             if(version <= 11 && version > 7) interaction.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.std(interaction)));
             else if(version <= 7) interaction.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.std(interaction)));
 
-            interaction.replyTl(keys.commands.connect.warnings.connecting);
+            await interaction.replyTl(keys.commands.connect.warnings.connecting);
+            await this._disconnectOldPlugin(interaction, server);
 
-            //Automatically disconnect from plugin
-            const ip = await utils.getIp(interaction.guildId);
-            if(ip) {
-                const disconnected = await plugin.disconnect(interaction.guildId, interaction.client);
-
-                if(!disconnected) {
-                    const embed = getEmbed(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { 'ip': ip });
-                    interaction.channel.send({ embeds: [embed] });
-                }
-                else {
-                    const embed = getEmbed(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { 'ip': ip });
-                    interaction.channel.send({ embeds: [embed] });
-                }
-            }
-
-            const protocol = await ftp.connect({ host, password, user, port });
-            if(!protocol) {
-                interaction.replyTl(keys.commands.connect.errors.could_not_connect_ftp);
-                return;
-            }
-
-            //Search for server path if not given
-            if(!path) {
-                interaction.replyTl(keys.commands.connect.warnings.searching_properties);
-                path = await ftp.find('server.properties', '', 2, { host, password, user, port, protocol });
-                if(!path) {
-                    interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
-                    return;
-                }
-            }
-
-            const serverProperties = await ftp.get(
-                `${path}/server.properties`,
-                `./serverdata/connections/${interaction.guildId}/server.properties`,
-                { host, user, password, port, protocol },
-            );
-            if(!serverProperties) {
-                interaction.replyTl(keys.commands.connect.errors.could_not_get_properties);
-                return;
-            }
-            const propertiesObject = Object.fromEntries(serverProperties.toString().split('\n').map(prop => prop.split('=')));
-
-            const ftpData = {
-                'host': host,
-                'user': user,
-                'password': password,
-                'port': port,
-                'online': propertiesObject['online-mode'] === 'true',
-                'path': `${path}/${propertiesObject['level-name']}`,
-                'version': version,
-                'protocol': protocol,
-            };
-
-            //Connected with either ftp or sftp
-            //Save connection
-            fs.outputJson(`./serverdata/connections/${interaction.guildId}/connection.json`, ftpData, { spaces: 2 }, async err => {
-                if(err) {
-                    interaction.replyTl(keys.commands.connect.errors.could_not_write_server_file);
-                    return;
-                }
-
-                interaction.replyTl(keys.commands.connect.success.ftp);
+            const ftpProtocol = new FtpProtocol(this.client, {
+                ip: host,
+                username,
+                password,
+                port,
+                sftp: false,
             });
 
+            const connectFtp = await ftpProtocol.connect();
+            if(!connectFtp) {
+                ftpProtocol.sftp = false;
+                const connectSftp = await ftpProtocol.connect();
+                if(!connectSftp) return interaction.replyTl(keys.commands.connect.errors.could_not_connect_ftp);
+            }
+            const protocol = ftpProtocol.sftp ? 'sftp' : 'ftp';
+            //Search for server path if not given
+            if(!path) {
+                await interaction.replyTl(keys.commands.connect.warnings.searching_properties);
+                path = await ftpProtocol.find('server.properties', '/', 2);
+                if(!path) {
+                    return interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
+                }
+            }
 
+            const serverProperties = await ftpProtocol.get(Protocol.FilePath.ServerProperties(path), `./serverdata/connections/${interaction.guildId}/server.properties`);
+            if(!serverProperties) {
+                return interaction.replyTl(keys.api.command.errors.could_not_download, { category: 'server configuration' });
+            }
+            const propertiesObject = Object.fromEntries(
+                serverProperties.toString('utf-8').split('\n')
+                    .map(prop => prop.split('='))
+            );
+
+            const onlineMode = propertiesObject['online-mode'];
+
+            const serverConnectionData = {
+                ip: host,
+                username,
+                password,
+                port,
+                online: onlineMode ? onlineMode === 'true' : false,
+                path: `${path}/${propertiesObject['level-name']}`,
+                version,
+                protocol,
+            };
+
+            if(server) await server.edit(serverConnectionData);
+            else await client.serverConnections.connect({
+                ...serverConnectionData,
+                id: interaction.guildId,
+            });
+
+            await interaction.replyTl(keys.commands.connect.success.ftp);
         }
         else if(method === 'plugin') {
             let ip = args[1]?.split(':').shift();
             const port = args[2] ?? pluginPort;
-
-            if(!ip) {
-                interaction.replyTl(keys.commands.connect.warnings.no_ip);
-                return;
-            }
 
             try {
                 //Lookup ip of dns
                 const { address } = await dns.lookup(ip, 4);
                 if(address) ip = address;
             }
-            catch(ignored) {
+            catch(ignored) {}
+
+            await this._disconnectOldPlugin(interaction, server);
+
+            const hash = crypto.randomBytes(32).toString('hex');
+            const pluginProtocol = new PluginProtocol(client, { ip, hash, port });
+
+            const verify = await pluginProtocol.verify();
+            if(!verify) {
+                return interaction.replyTl(keys.api.plugin.errors.no_response);
             }
 
-            const verify = await plugin.verify(`${ip}:${port}`, interaction);
-            if(!verify) return;
+            await interaction.replyTl(keys.commands.connect.warnings.check_dms);
 
-            interaction.replyTl(keys.commands.connect.warnings.check_dms);
-
-            const verifyEmbed = getEmbed(keys.commands.connect.warnings.verification, ph.std(interaction));
-
-            let dmChannel = await interaction.member.user.createDM();
+            let dmChannel = await interaction.user.createDM();
             try {
-                await dmChannel.send({ embeds: [verifyEmbed] });
+                await dmChannel.send(addPh(keys.commands.connect.warnings.verification, ph.std(interaction)));
             }
             catch(err) {
                 dmChannel = interaction.channel;
-                interaction.replyTl(keys.commands.connect.warnings.could_not_dm);
-                await dmChannel.send({ embeds: [verifyEmbed] });
+                await interaction.replyTl(keys.commands.connect.warnings.could_not_dm);
+                await dmChannel.send(addPh(keys.commands.connect.warnings.verification, ph.std(interaction)));
             }
 
             const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000 });
 
             if(!collector.first()) {
                 console.log(keys.commands.connect.warnings.no_reply_in_time.console);
-                const noReplyEmbed = getEmbed(keys.commands.connect.warnings.no_reply_in_time, ph.std(interaction));
-                dmChannel.send({ embeds: [noReplyEmbed] });
-                return;
+                return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.std(interaction)));
             }
 
-            const connectPlugin = await plugin.connect(`${ip}:${port}`, interaction.guildId, collector.first(), interaction);
-            if(!connectPlugin) {
-                const noConnectionEmbed = getEmbed(keys.commands.connect.errors.could_not_connect_plugin, ph.std(interaction));
-                dmChannel.send({ embeds: [noConnectionEmbed] });
-                return;
+            const resp = await pluginProtocol.connect(collector.first());
+            if(!resp) {
+                return dmChannel.send(addPh(keys.commands.connect.errors.could_not_connect_plugin, ph.std(interaction)));
+            }
+            else if(resp.status === 401) {
+                return dmChannel.send(addPh(keys.commands.connect.errors.incorrect_code, ph.std(interaction)));
             }
 
-            else if(connectPlugin === 401) {
-                const incorrectCodeEmbed = getEmbed(keys.commands.connect.errors.incorrect_code, ph.std(interaction));
-                dmChannel.send({ embeds: [incorrectCodeEmbed] });
-                return;
-            }
-            else {
-                const verificationEmbed = getEmbed(keys.commands.connect.success.verification, ph.std(interaction));
-                dmChannel.send({ embeds: [verificationEmbed] });
-            }
+            await dmChannel.send(addPh(keys.commands.connect.success.verification, ph.std(interaction)));
 
-            const pluginJson = {
-                'ip': connectPlugin.ip,
-                'version': connectPlugin.version.split('.')[1],
-                'path': decodeURIComponent(connectPlugin.path),
-                'hash': connectPlugin.hash,
-                'guild': connectPlugin.guild,
-                'online': connectPlugin.online,
-                'chat': false,
-                'protocol': 'plugin',
+            /** @type {ServerConnectionData} */
+            const serverConnectionData = {
+                id: interaction.guildId,
+                ip: resp.ip,
+                version: resp.version.split('.').pop(),
+                path: decodeURIComponent(resp.path),
+                hash: resp.hash,
+                online: resp.online,
+                chat: false,
+                channels: [],
+                protocol: 'plugin',
             };
 
-            fs.outputJson(`./serverdata/connections/${interaction.guildId}/connection.json`, pluginJson, { spaces: 2 }, err => {
-                if(err) {
-                    interaction.replyTl(keys.commands.connect.errors.could_not_write_server_file);
-                    return;
-                }
+            if(server) await server.edit(serverConnectionData);
+            else await client.serverConnections.connect(serverConnectionData);
 
-                interaction.replyTl(keys.commands.connect.success.plugin);
-            });
-
+            return interaction.replyTl(keys.commands.connect.success.plugin);
         }
         else if(method === 'account') {
-            const mcUsername = args[1];
+            const username = args[1];
 
-            if(!mcUsername) {
-                interaction.replyTl(keys.commands.connect.warnings.no_username);
-                return;
-            }
-            else if(interaction.mentions.users.size) {
-                interaction.replyTl(keys.commands.connect.warnings.user_pinged);
-                return;
+            if(interaction.mentions.users.size) {
+                return interaction.replyTl(keys.commands.connect.warnings.user_pinged);
             }
 
-            let uuidv4 = await utils.getUUID(mcUsername, interaction.guildId, interaction);
-            if(!uuidv4) return;
+            let uuid = await utils.fetchUUID(username);
+            if(!uuid) {
+                return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
+            }
 
-            const connectionJson = {
-                'id': uuidv4,
-                'name': mcUsername,
-            };
-
-            fs.outputJson(`./userdata/connections/${interaction.member.user.id}/connection.json`, connectionJson, { spaces: 2 }, err => {
-                if(err) {
-                    interaction.replyTl(keys.commands.connect.errors.could_not_write_user_file);
-                    return;
-                }
-
-                interaction.replyTl(keys.commands.connect.success.account, { 'username': mcUsername, 'uuid': uuidv4 });
+            await client.userConnections.connect({
+                id: interaction.user.id,
+                uuid,
+                username,
             });
+
+            await interaction.replyTl(keys.commands.connect.success.account, { username, uuid });
         }
-        else {
-            interaction.replyTl(keys.commands.connect.warnings.invalid_method);
+    }
+
+    async _disconnectOldPlugin(interaction, server) {
+        if(server?.protocol instanceof PluginProtocol) {
+            const resp = await server.protocol.disconnect();
+
+            if(!resp) {
+                await interaction.channel.send(addPh(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
+            }
+            else {
+                await interaction.channel.send(addPh(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
+            }
         }
     }
 }

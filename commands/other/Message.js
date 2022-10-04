@@ -22,7 +22,9 @@ class Message extends Command {
         const argPlaceholder = { username: user.username, 'message': chatMsg };
 
         const resp = await server.protocol.chatPrivate(chatMsg, user.username);
-        if(!resp) return;
+        if(!resp) {
+            return interaction.replyTl(keys.api.plugin.errors.no_response);
+        }
 
         if(resp.status === 206) return interaction.replyTl(keys.commands.message.warnings.response_warning, argPlaceholder, { 'response': resp.json.message });
         else return interaction.replyTl(keys.commands.message.success, argPlaceholder);

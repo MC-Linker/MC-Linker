@@ -1,42 +1,33 @@
 const Discord = require('discord.js');
-const fs = require('fs-extra');
 const { keys, addResponseMethods, getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
 const Command = require('../../structures/Command');
 
 class Chatchannel extends Command {
 
     constructor() {
-        super('chatchannel');
+        super({
+            name: 'chatchannel',
+            requiresConnectedPlugin: true,
+        });
     }
 
-    async execute(interaction, client, args) {
-        const method = args[0];
+    async execute(interaction, client, args, server) {
+        if(!await super.execute(interaction, client, args, server)) return;
 
-        if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-            interaction.replyTl(keys.commands.chatchannel.warnings.no_permission);
-            return;
-        }
-        else if(!method) {
-            interaction.replyTl(keys.commands.chatchannel.warnings.no_method);
-            return;
-        }
+        const method = args[0];
 
         //Add chatchannel
         if(method === 'add') {
-            let channel = interaction.mentions.channels?.first() ?? args[1];
-            const useWebhooks = typeof args[2] === 'boolean' ? args[2] : args[2]?.toLowerCase() === 'true';
+            let channel = args[1];
+            const useWebhooks = args[2];
 
-            if(!channel) {
-                interaction.replyTl(keys.commands.chatchannel.warnings.no_channel);
-                return;
-            }
-            else if(!channel.isTextBased()) {
-                interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
-                return;
+            if(!channel.isTextBased()) {
+                return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
             }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.success.choose);
 
+            //TODO change to awaitMessageComponent
             const collector = logChooserMsg.createMessageComponentCollector({
                 componentType: Discord.ComponentType.SelectMenu,
                 time: 30_000,
@@ -47,10 +38,9 @@ class Chatchannel extends Command {
 
                 menu = addResponseMethods(menu);
 
-                if(menu.user.id !== interaction.member.user.id) {
+                if(menu.user.id !== interaction.user.id) {
                     const notAuthorEmbed = getEmbed(keys.commands.chatchannel.warnings.not_author_select, ph.emojis());
-                    menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
-                    return;
+                    return menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
                 }
 
                 //Create webhook for channel
@@ -66,32 +56,22 @@ class Chatchannel extends Command {
                     });
                 }
 
-                const regChannel = await plugin.registerChannel(interaction.guildId, channel.id, menu.values, webhook?.id, interaction.client, menu);
-                if(!regChannel) {
+                const resp = await server.protocol.addChatChannel({
+                    id: channel.id,
+                    webhook: webhook?.id,
+                    types: menu.values,
+                });
+                if(!resp) {
                     webhook?.delete();
-                    return;
+                    return interaction.replyTl(keys.api.plugin.errors.no_response);
                 }
 
-                const pluginJson = {
-                    'ip': regChannel.ip,
-                    'version': regChannel.version.split('.')[1],
-                    'path': regChannel.path,
-                    'hash': regChannel.hash,
-                    'guild': regChannel.guild,
-                    'online': regChannel.online,
-                    'chat': true,
-                    'channels': regChannel.channels,
-                    'protocol': 'plugin',
-                };
-
-                fs.outputJson(`./serverdata/connections/${interaction.guild.id}/connection.json`, pluginJson, { spaces: 2 }, err => {
-                    if(err) {
-                        interaction.replyTl(keys.commands.chatchannel.errors.could_not_write_file);
-                        return;
-                    }
-
-                    menu.replyTl(keys.commands.chatchannel.success.add, ph.std(interaction));
+                await server.edit({
+                    chat: true,
+                    channels: resp.data.channels,
                 });
+
+                return interaction.replyTl(keys.commands.chatchannel.success.add);
             });
             collector.on('end', collected => {
                 if(!collected.size) interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
@@ -101,58 +81,38 @@ class Chatchannel extends Command {
         }
         //Remove chatchannel
         else if(method === 'remove') {
-            let channel = interaction.mentions.channels?.first() ?? args[1];
+            let channel = args[1];
 
-            if(!channel) {
-                interaction.replyTl(keys.commands.chatchannel.warnings.no_channel);
-                return;
-            }
-            else if(!channel.isTextBased()) {
-                interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
-                return;
+            if(!channel.isTextBased()) {
+                return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
             }
 
-            const ip = await utils.getIp(interaction.guild.id, interaction);
-            if(!ip) return;
-
-            const connection = await utils.getServerData(interaction.guild.id, interaction);
-            if(!connection) return;
-            const channelIndex = connection.channels?.findIndex(c => c.id === channel.id);
-
-            if(channelIndex === undefined || channelIndex === -1) {
-                interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
-                return;
-            }
-            else {
-                //Remove chatchannel from connection
-                connection.channels.splice(channelIndex, 1);
+            const channelIndex = server.channels.findIndex(c => c.id === channel.id);
+            if(channelIndex === -1) {
+                return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
             }
 
-            const unregChannel = await plugin.unregisterChannel(ip, interaction.guildId, channel.id, interaction.client, interaction);
-            if(!unregChannel) return;
+            const resp = await server.protocol.removeChatChannel(server.channels[channelIndex]);
+            if(!resp) {
+                return interaction.replyTl(keys.api.plugin.errors.no_response);
+            }
 
-            fs.outputJson(`./serverdata/connections/${interaction.guild.id}/connection.json`, connection, { spaces: 2 }, err => {
-                if(err) {
-                    interaction.replyTl(keys.commands.chatchannel.errors.could_not_write_file);
-                    return;
-                }
-
-                interaction.replyTl(keys.commands.chatchannel.success.remove);
+            await server.edit({
+                chat: resp.data.chat,
+                channels: resp.data.channels,
             });
+
+            return interaction.replyTl(keys.commands.chatchannel.success.remove);
         }
         else if(method === 'list') {
-            const connection = await utils.getServerData(interaction.guild.id, interaction);
-            if(!connection) return;
-
-            if(!connection.channels) {
-                interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
-                return;
+            if(!server.channels.length) {
+                return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
             }
 
             const listEmbeds = [];
             let channelButtons = [];
 
-            for(const channel of connection.channels) {
+            for(const channel of server.channels) {
                 const formattedTypes = channel.types.map(type => {
                     const options = keys.commands.chatchannel.success.choose.components[0].options;
                     return options.find(o => o.value === type).label;
@@ -163,13 +123,13 @@ class Chatchannel extends Command {
                     keys.commands.chatchannel.success.list,
                     ph.std(interaction),
                     {
-                        channel: interaction.client.channels.cache.get(channel.id),
+                        channel: await interaction.guild.channels.fetch(channel.id),
                         webhooks: channel.webhook ? keys.commands.chatchannel.success.enabled : keys.commands.chatchannel.success.disabled,
-                        'channel_types': formattedTypes,
+                        channel_types: formattedTypes,
                     },
                 );
 
-                const index = connection.channels.indexOf(channel);
+                const index = server.channels.indexOf(channel);
                 const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
                     index1: index + 1,
                     index: index,
@@ -191,16 +151,12 @@ class Chatchannel extends Command {
 
                 if(button.user.id !== interaction.member.user.id) {
                     const notAuthorEmbed = getEmbed(keys.commands.chatchannel.warnings.not_author_button, ph.emojis());
-                    button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
-                    return;
+                    return button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
                 }
 
                 const index = parseInt(button.customId.split('_').pop());
                 await button.update({ embeds: [listEmbeds[index]], components: channelButtons });
             });
-        }
-        else {
-            interaction.replyTl(keys.commands.chatchannel.warnings.invalid_method);
         }
     }
 }
