@@ -1258,6 +1258,15 @@
           ],
           "console": "No version specified"
         },
+        "invalid_version": {
+          "embeds": [
+            {
+              "title": "Invalid Version Specified",
+              "description": "%emoji_warning% Please specify a valid minor minecraft version without patch number (e.g. `1.19`)."
+            }
+          ],
+          "console": "Invalid version specified"
+        },
         "invalid_port": {
           "embeds": [
             {
@@ -2187,6 +2196,15 @@
         }
       },
       "warnings": {
+        "disabled": {
+          "embeds": [
+            {
+              "title": "Command Disabled",
+              "description": "%emoji_no_entry% Command **%interaction_name%** disabled!"
+            }
+          ],
+          "console": "Command disabled"
+        },
         "no_argument": {
           "embeds": [
             {

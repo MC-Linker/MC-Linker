@@ -603,6 +603,10 @@
   "commands.connect.warnings.no_version.embeds.0.description": "%emoji_warning% Please specify the minecraft version.",
   "commands.connect.warnings.no_version.console": "No version specified",
 
+  "commands.connect.warnings.invalid_version.embeds.0.title": "Invalid Version Specified",
+  "commands.connect.warnings.invalid_version.embeds.0.description": "%emoji_warning% Please specify a valid minor minecraft version without patch number (e.g. `1.19`).",
+  "commands.connect.warnings.invalid_version.console": "Invalid version specified",
+
   "commands.connect.warnings.invalid_port.embeds.0.title": "Invalid Port Specified",
   "commands.connect.warnings.invalid_port.embeds.0.description": "%emoji_warning% Please specify a port that is bigger than 0 and smaller than 65536.",
   "commands.connect.warnings.invalid_port.console": "Invalid port specified",
@@ -990,6 +994,10 @@
   "api.command.errors.server_not_connected_plugin.embeds.0.title": "Server Not Connected",
   "api.command.errors.server_not_connected_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
   "api.command.errors.server_not_connected_plugin.console": "Server not connected with plugin",
+
+  "api.command.warnings.disabled.embeds.0.title": "Command Disabled",
+  "api.command.warnings.disabled.embeds.0.description": "%emoji_no_entry% Command **%interaction_name%** disabled!",
+  "api.command.warnings.disabled.console": "Command disabled",
 
   "api.command.warnings.no_argument.embeds.0.title": "Missing Required Argument",
   "api.command.warnings.no_argument.embeds.0.description": "%emoji_warning% Please specify: `%argument%`",

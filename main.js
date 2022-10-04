@@ -75,6 +75,9 @@ client.on('messageCreate', async message => {
     }
 
     message = toTranslatedMessage(message);
+    //Make message compatible with slash commands
+    message.user = message.author;
+
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
     if(!message.content.startsWith(prefix) || message.author.bot) return;
@@ -98,12 +101,7 @@ client.on('messageCreate', async message => {
         if(!command) return;
 
         await message.replyTl(keys.commands.executed);
-
         const server = client.serverConnections.cache.get(message.guildId);
-        if(server?.settings?.isDisabled('commands', commandName)) {
-            await message.replyTl(keys.main.warnings.disabled);
-        }
-
         try {
             // noinspection JSUnresolvedFunction
             await command.execute(message, client, args, server)
@@ -123,7 +121,7 @@ client.on('interactionCreate', async interaction => {
 
     if(interaction.isChatInputCommand()) {
 
-        //Making interaction compatible with normal commands
+        //Making interaction compatible with prefix commands
         interaction.mentions = {
             users: new Discord.Collection(),
             roles: new Discord.Collection(),
@@ -150,12 +148,6 @@ client.on('interactionCreate', async interaction => {
             await helpCommand.execute(interaction, client, args, server);
         }
         else {
-            //Check if command disabled
-            if(server?.settings?.isDisabled('commands', interaction.commandName)) {
-                await interaction.replyTl(keys.main.warnings.disabled);
-                return;
-            }
-
             try {
                 // noinspection JSUnresolvedFunction
                 await command.execute(interaction, client, args, server)
