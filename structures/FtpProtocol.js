@@ -25,6 +25,14 @@ class FtpProtocol extends Protocol {
         this._patch(data);
     }
 
+    /**
+     * @inheritDoc
+     */
+    static async testConnection(data) {
+        const ftpClient = data.sftp ? new SftpClient(data) : new FtpClient(data);
+        return await ftpClient.connect();
+    }
+
     _patch(data) {
 
         /**
@@ -81,7 +89,8 @@ class FtpProtocol extends Protocol {
     async get(getPath, putPath) {
         if(await this.ftpClient.get(getPath, putPath)) {
             return await fs.readFile(putPath);
-        } else return null;
+        }
+        else return null;
     }
 
     /**
@@ -109,15 +118,6 @@ class FtpProtocol extends Protocol {
      */
     async find(name, start, maxDepth) {
         return await this.ftpClient.find(name, start, maxDepth);
-
-    }
-
-    /**
-     * @inheritDoc
-     */
-    static async testConnection(data) {
-        const ftpClient = data.sftp ? new SftpClient(data) : new FtpClient(data);
-        return await ftpClient.connect();
     }
 }
 

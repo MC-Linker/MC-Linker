@@ -35,7 +35,7 @@ class SettingsConnection extends Connection {
                 },
                 language: 'en_us',
                 id: dataOrId,
-            }
+            };
         }
 
         super(client, dataOrId, outputPath);
@@ -85,7 +85,7 @@ class SettingsConnection extends Connection {
      * Disables a command, advancement or stat.
      * @param {'commands'|'advancements'|'stats'} type - The type of the value to disable.
      * @param {string} value - The value to disable.
-     * @returns {Promise<SettingsConnection>} - The settings instance that has been edited.
+     * @returns {Promise<?SettingsConnection>} - The settings instance that has been edited.
      */
     async disable(type, value) {
         const currentValues = this.disabled[type];
@@ -142,7 +142,7 @@ class SettingsConnection extends Connection {
             disabled: this.disabled,
             language: this.language,
             id: this.id,
-        }
+        };
     }
 }
 

@@ -9,7 +9,7 @@ class ServerConnection extends Connection {
      * @typedef {object} ChatChannelData - The data for a chatchannel.
      * @property {string} id - The id of the channel.
      * @property {string[]} types - The enabled types of the chatchannel.
-     * @property {string} [webhook] - The related webhook of the chatchannel.
+     * @property {string} [webhook] - The webhook id of the chatchannel.
      */
 
     /**
@@ -146,7 +146,24 @@ class ServerConnection extends Connection {
             this.channels = data.channels;
         }
 
-        this.protocol._patch(data);
+        //Switch protocols if needed
+        if(this.protocol instanceof FtpProtocol && data.protocol === 'plugin') {
+            this.protocol = new PluginProtocol(this.client, {
+                ip: this.ip,
+                port: this.port,
+                hash: this.hash,
+            });
+        }
+        else if(this.protocol instanceof PluginProtocol && (data.protocol === 'ftp' || data.protocol === 'sftp')) {
+            this.protocol = new FtpProtocol(this.client, {
+                ip: this.ip,
+                port: this.port,
+                password: this.password,
+                username: this.username,
+                sftp: data.protocol === 'sftp',
+            });
+        }
+        else this.protocol._patch(data);
     }
 
     /**

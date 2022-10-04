@@ -40,7 +40,14 @@ const FilePath = {
      * @returns {`${string}/data/scoreboard.dat`}
      * @constructor
      */
-    Scoreboards : worldPath => `${worldPath}/data/scoreboard.dat`,
+    Scoreboards: worldPath => `${worldPath}/data/scoreboard.dat`,
+
+    /**
+     * Constructs the path to the server's server.properties file.
+     * @param {string} serverPath - The path to the server folder.
+     * @returns {`${string}/server.properties`} - The path to the server's server.properties file.
+     */
+    ServerProperties: serverPath => `${serverPath}/server.properties`,
 };
 
 class Protocol extends Base {
@@ -61,6 +68,16 @@ class Protocol extends Base {
      */
     constructor(client) {
         super(client);
+    }
+
+    /**
+     * Tests the connection to the server with the given credentials.
+     * @param {ProtocolData} data - The data to test the connection with.
+     * @returns {Promise<boolean>} - Whether the connection was successful.
+     * @abstract
+     */
+    static testConnection(data) {
+        throw new Error('Not implemented');
     }
 
     /**
@@ -97,16 +114,6 @@ class Protocol extends Base {
      * @abstract
      */
     async list(folder) {
-        throw new Error('Not implemented');
-    }
-
-    /**
-     * Tests the connection to the server with the given credentials.
-     * @param {ProtocolData} data - The data to test the connection with.
-     * @returns {Promise<boolean>} - Whether the connection was successful.
-     * @abstract
-     */
-    static testConnection(data) {
         throw new Error('Not implemented');
     }
 }

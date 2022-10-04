@@ -85,12 +85,15 @@ const PluginRoutes = {
      * Connects to the server.
      * @param {string} ip - The IP address of the server.
      * @param {number} guildId - The Id of the guild that tries to connect.
+     * @param {string} verifyCode - The verification code to use.
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
      */
-    Connect: (ip, guildId) => [
+    Connect: (ip, guildId, verifyCode) => [
         'POST',
         '/connect',
         { ip, guild: guildId },
+        {},
+        `Bearer ${verifyCode}`,
     ],
     /**
      * Disconnects from the server.
@@ -145,6 +148,7 @@ class PluginProtocol extends Protocol {
      * @property {string} 1 - The route to fetch from.
      * @property {object|ReadableStream} 2 - The body to send with the request.
      * @property {Object.<string, string>} 3 - The queries to send with the request.
+     * @property {string} 4 - The authorization headers to send with the request.
      */
 
     /**
@@ -164,6 +168,34 @@ class PluginProtocol extends Protocol {
         this._patch(data);
     }
 
+    static async _fetch(method, url, hash, body = {}, authorization = null) {
+        try {
+            authorization = `Bearer ${hash}`;
+            if(authorization) authorization += ` ${authorization}`;
+
+            return await fetch(url.toString(), {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authorization,
+                },
+                body: typeof body === 'object' ? JSON.stringify(body) : body,
+            });
+        }
+        catch(err) {
+            return null;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    static async testConnection(data) {
+        const url = `http://${data.ip}:${data.port}${PluginRoutes.Base()[1]}`;
+        const response = await PluginProtocol._fetch(PluginRoutes.Base()[0], url, data.hash);
+        if(response) return response.ok;
+        return false;
+    }
 
     _patch(data) {
 
@@ -187,11 +219,20 @@ class PluginProtocol extends Protocol {
     }
 
     /**
+     * Generates a verification code and displays it on the server.
+     * @returns {Promise<PluginResponse>} - The response from the plugin.
+     */
+    async verify() {
+        const response = await this.fetch(...PluginRoutes.Verify());
+        return await fetchToPluginResponse(response);
+    }
+
+    /**
      * @inheritDoc
      * @returns {Promise<?PluginResponse>} - The response from the plugin.
      */
-    async connect() {
-        const response = await this._fetch(...PluginRoutes.Connect(this.ip, this.id));
+    async connect(verifyCode) {
+        const response = await this._fetch(...PluginRoutes.Connect(this.ip, this.id, verifyCode));
         return await fetchToPluginResponse(response);
     }
 
@@ -215,7 +256,8 @@ class PluginProtocol extends Protocol {
         try {
             await response.body.pipeTo(fs.createWriteStream(putPath));
             return { status: response.status, data: await fs.readFile(putPath) };
-        } catch(err) {
+        }
+        catch(err) {
             return null;
         }
     }
@@ -228,7 +270,8 @@ class PluginProtocol extends Protocol {
         try {
             const response = await this._fetch(...PluginRoutes.PutFile(fs.createReadStream(getPath), putPath));
             return fetchToPluginResponse(response);
-        } catch(err) {
+        }
+        catch(err) {
             return null;
         }
     }
@@ -289,7 +332,7 @@ class PluginProtocol extends Protocol {
      * @returns {Promise<?PluginResponse>} - The response from the plugin.
      */
     async removeChatChannel(channel) {
-        const response = await this._fetch(...PluginRoutes.AddChannel(channel));
+        const response = await this._fetch(...PluginRoutes.RemoveChannel(channel));
         return fetchToPluginResponse(response);
     }
 
@@ -316,44 +359,20 @@ class PluginProtocol extends Protocol {
      * Fetches data from the plugin.
      * @param {string} method - The http method to use.
      * @param {string} route - The route to fetch from.
-     * @param {object|ReadStream} data - The data to send with the request.
-     * @param {Object.<string, string>} queries - The queries to send with the request.
+     * @param {object|ReadStream} [data={}] - The data to send with the request.
+     * @param {Object.<string, string>} [queries={}] - The queries to send with the request.
+     * @param {?string} [authorization=null] - Additional authorization headers to send with the request.
      * @returns {Promise<?Response>} - The response of the request.
      * @private
      */
-    async _fetch(method, route, data = {}, queries = {}) {
+    async _fetch(method, route, data = {}, queries = {}, authorization = null) {
         let url = new URL(`http://${this.ip}:${this.port}`);
         url.pathname = route;
         for(const key in queries) {
             url.searchParams.append(key, queries[key]);
         }
 
-        return await PluginProtocol._fetch(method, url, data, this.hash);
-    }
-
-    static async _fetch(method, url, hash, body = {}) {
-        try {
-            return await fetch(url.toString(), {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${hash}`,
-                },
-                body: typeof body === 'object' ? JSON.stringify(body) : body,
-            });
-        } catch(err) {
-            return null;
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    static async testConnection(data) {
-        const url = `http://${data.ip}:${data.port}${PluginRoutes.Base()[1]}`;
-        const response = await PluginProtocol._fetch(PluginRoutes.Base()[0], url, data.hash);
-        if(response) return response.ok;
-        return false;
+        return await PluginProtocol._fetch(method, url, data, this.hash, authorization);
     }
 
 }

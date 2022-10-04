@@ -121,7 +121,7 @@ async function loadExpress(client) {
 
                     const regChannel = await registerChannel(guildId, channel.id, channel.types, webhook.id, message.client, discordChannel);
                     if(!regChannel) {
-                        webhook.delete();
+                        await webhook.delete();
                         return;
                     }
 
