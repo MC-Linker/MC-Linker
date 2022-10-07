@@ -53,6 +53,7 @@
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers.",
 
   "main.success.command_load.console": "Successfully loaded command: %category%/%command%",
+  "main.success.button_load.console": "Successfully loaded button: %button%",
 
   "main.success.ping.embeds.0.title": "Hey, I'm %client_username%! :wave:",
   "main.success.ping.embeds.0.description": "I use slash commands. Type `/help` if you need more help to a specific command.",
@@ -980,6 +981,17 @@
   "api.utils.errors.not_connected_with_plugin.embeds.0.title": "Server Not Connected",
   "api.utils.errors.not_connected_with_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
   "api.utils.errors.not_connected_with_plugin.console": "Not connected with plugin",
+
+
+
+  "api.button.warnings.no_author.embeds.0.title": "No Permission",
+  "api.button.warnings.no_author.embeds.0.description": "%emoji_warning% Only the command sender can use this button.",
+
+
+
+  "api.button.warnings.no_permission.embeds.0.title": "No Permission",
+  "api.button.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This button can only be used with the `%permission%` permission!",
+  "api.button.warnings.no_permission.console": "No permission",
 
 
 
