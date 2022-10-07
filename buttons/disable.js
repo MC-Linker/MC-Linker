@@ -1,41 +1,34 @@
 const Discord = require('discord.js');
-const { keys, ph, getEmbed, getActionRows } = require('../api/messages');
+const { keys, ph, getActionRows } = require('../api/messages');
+const Button = require('../structures/Button');
+const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 
-async function execute(interaction) {
-    if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) {
-        interaction.replyTl(keys.buttons.disable.warnings.no_permission);
-        return;
+class Disable extends Button {
+
+    constructor() {
+        super({
+            permissions: new PermissionsBitField(Discord.PermissionFlagsBits.Administrator),
+            id: 'disable',
+        });
     }
 
-    const commandName = interaction.customId.split('_').pop();
+    async execute(interaction, client, server) {
+        const commandName = interaction.customId.split('_').pop();
 
-    //Disable command
-    const disabled = await settings.disable(interaction.guildId, 'commands', commandName);
-    if(disabled) {
-        interaction.replyTl(keys.buttons.disable.success.response, { 'command_name': commandName });
+        if(await server.settings.disable('commands', commandName)) {
+            await interaction.replyTl(keys.buttons.disable.success.response, { 'command_name': commandName });
+        }
+        else {
+            return interaction.replyTl(keys.buttons.disable.errors.could_not_disable, { 'command_name': commandName });
+        }
+
+        const enableRows = getActionRows(keys.commands.help.success.enable_button, { 'command_name': commandName }, ph.emojis());
+        const helpEmbed = EmbedBuilder.from(interaction.message.embeds[0])
+            .setDescription(keys.buttons.disable.success.help.embeds[0].description)
+            .setColor(Discord.Colors[keys.buttons.disable.success.help.embeds[0].color]);
+
+        return interaction.update({ embeds: [helpEmbed], components: enableRows });
     }
-    else {
-        interaction.replyTl(keys.buttons.disable.errors.could_not_disable, { 'command_name': commandName });
-        return;
-    }
-
-    const command = keys.data[commandName];
-
-    const enableRows = getActionRows(keys.commands.help.success.enable_button, { 'command_name': commandName }, ph.emojis());
-    // noinspection JSUnresolvedVariable
-    const helpEmbed = getEmbed(
-        keys.commands.help.success.command,
-        ph.std(interaction),
-        ph.commandName(command.name, interaction.client),
-        {
-            'command_long_description': command.long_description,
-            'command_usage': command.usage,
-            'command_example': command.example,
-        },
-    ).setDescription(keys.buttons.disable.success.help.embeds[0].description)
-        .setColor(keys.buttons.disable.success.help.embeds[0].color);
-
-    interaction.message.edit({ embeds: [helpEmbed], components: enableRows });
 }
 
-module.exports = { execute };
+module.exports = Disable;
