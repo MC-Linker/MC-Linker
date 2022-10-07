@@ -2,8 +2,9 @@
 
 + **Better logs (pino)**
 + **Add server class (fastify)**
-+ **More constructor properties for commands (requires server/user connection, ...)**
 + **Plugin response handling**
++ **Move `/connect account` to `/account`**
++ **Fix `/eval` and `/help`**
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user and server folder (only for connected users)
 + Create isometric block, item and entity renders in code
@@ -45,6 +46,6 @@
 
 # TODO PLUGIN
 + **Release plugins for lower versions, bungee and sponge on GitHub**
-+ `/dm` (dm discord user)
++ `/dm` (dm discord username)
 + `/discord` (customizable message)
 + Show replies to chat messages
