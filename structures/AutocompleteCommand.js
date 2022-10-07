@@ -10,6 +10,7 @@ class AutocompleteCommand extends Command {
      * @param {any[]} args - The command arguments set by the user.
      * @param {?ServerConnection} server - The connection of the server the command was executed in.
      * @returns {Promise<?boolean>|?boolean}
+     * @abstract
      */
     execute(interaction, client, args, server) {
         return super.execute(interaction, client, args, server);

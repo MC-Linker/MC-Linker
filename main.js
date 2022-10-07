@@ -9,10 +9,6 @@ console.log(
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
-const Help = require('./src/Help'), helpCommand = new Help();
-const Eval = require('./src/Eval'), evalCommand = new Eval();
-const disableButton = require('./buttons/disable');
-const enableButton = require('./buttons/enable');
 const { getArgs, addPh, keys, ph, toTranslatedMessage, toTranslatedInteraction } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const MCLinker = require('./structures/MCLinker');
@@ -78,7 +74,6 @@ client.on('messageCreate', async message => {
     //Make message compatible with slash commands
     message.user = message.author;
 
-
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
     if(!message.content.startsWith(prefix) || message.author.bot) return;
 
@@ -88,28 +83,17 @@ client.on('messageCreate', async message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    if(commandName === 'help') {
-        await message.replyTl(keys.commands.executed);
-        await helpCommand.execute(message, client, args, server);
-    }
-    else if(commandName === 'eval') {
-        await message.replyTl(keys.commands.executed);
-        await evalCommand.execute(message, client, args, server);
-    }
-    else {
-        const command = client.commands.get(commandName);
-        if(!command) return;
+    const command = client.commands.get(commandName);
+    if(!command) return;
 
-        await message.replyTl(keys.commands.executed);
-        const server = client.serverConnections.cache.get(message.guildId);
-        try {
-            // noinspection JSUnresolvedFunction
-            await command.execute(message, client, args, server)
-                .catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
-        }
-        catch(err) {
-            await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
-        }
+    await message.replyTl(keys.commands.executed);
+    try {
+        // noinspection JSUnresolvedFunction
+        await command.execute(message, client, args, server)
+            .catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
+    }
+    catch(err) {
+        await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
     }
 });
 
@@ -120,6 +104,7 @@ client.on('interactionCreate', async interaction => {
     if(!interaction.guildId) return interaction.replyTl(keys.main.warnings.not_in_guild);
 
     if(interaction.isChatInputCommand()) {
+        const command = client.commands.get(interaction.commandName);
 
         //Making interaction compatible with prefix commands
         interaction.mentions = {
@@ -139,31 +124,21 @@ client.on('interactionCreate', async interaction => {
             else if(arg instanceof Discord.Attachment) interaction.attachments.set(arg.id, arg);
         });
 
-        const command = client.commands.get(interaction.commandName);
-
-        await interaction.replyTl(keys.commands.executed);
-
         const server = client.serverConnections.cache.get(interaction.guildId);
-        if(interaction.commandName === 'help') {
-            await helpCommand.execute(interaction, client, args, server);
+        try {
+            // noinspection JSUnresolvedFunction
+            await command.execute(interaction, client, args, server)
+                .catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
         }
-        else {
-            try {
-                // noinspection JSUnresolvedFunction
-                await command.execute(interaction, client, args, server)
-                    .catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
-            }
-            catch(err) {
-                await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
-            }
+        catch(err) {
+            await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
         }
-
     }
     else if(interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
-        if(!command || !(command instanceof AutocompleteCommand)) return;
 
         try {
+            if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client)
                 .catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err))));
         }
@@ -172,15 +147,16 @@ client.on('interactionCreate', async interaction => {
         }
     }
     else if(interaction.isButton()) {
-        console.log(addPh(keys.buttons.clicked.console, { 'button_id': interaction.customId }, ph.std(interaction)));
+        const button = client.buttons.get(interaction.customId.split('_').shift());
+        await interaction.replyTl(keys.buttons.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
 
-        if(interaction.customId.startsWith('disable')) {
-            await interaction.deferReply({ ephemeral: true });
-            await disableButton.execute(interaction);
+        try {
+            if(!button) return;
+            await button.execute(interaction, client)
+                .catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err)));
         }
-        else if(interaction.customId.startsWith('enable')) {
-            await interaction.deferReply({ ephemeral: true });
-            await enableButton.execute(interaction);
+        catch(err) {
+            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err));
         }
     }
 });

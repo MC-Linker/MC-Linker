@@ -87,6 +87,9 @@
       "command_load": {
         "console": "Successfully loaded command: %category%/%command%"
       },
+      "button_load": {
+        "console": "Successfully loaded button: %button%"
+      },
       "ping": {
         "embeds": [
           {
@@ -2144,6 +2147,27 @@
             }
           ],
           "console": "Not connected with plugin"
+        }
+      }
+    },
+    "button": {
+      "warnings": {
+        "no_author": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "%emoji_warning% Only the command sender can use this button."
+            }
+          ]
+        },
+        "no_permission": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "%emoji_no_entry% This button can only be used with the `%permission%` permission!"
+            }
+          ],
+          "console": "No permission"
         }
       }
     },

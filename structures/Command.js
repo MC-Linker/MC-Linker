@@ -21,7 +21,7 @@ class Command {
      * Creates a new Command instance.
      * @param {CommandOptions} options - The options for this command.
      */
-    constructor(options = {}) {
+    constructor(options) {
 
         /**
          * The name of this command.
@@ -73,8 +73,11 @@ class Command {
      * @param {any[]} args - The command arguments set by the user.
      * @param {?ServerConnection} server - The connection of the server the command was executed in.
      * @returns {Promise<?boolean>|?boolean}
+     * @abstract
      */
     async execute(interaction, client, args, server) {
+        await interaction.replyTl(keys.commands.executed);
+
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
         if(this.ownerOnly) {
