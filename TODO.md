@@ -1,10 +1,9 @@
 # TODO BOT
 
-+ **Better logs (pino)**
 + **Add server class (fastify)**
 + **Plugin response handling**
 + **Move `/connect account` to `/account`**
-+ **Fix `/eval` and `/help`**
++ Better logs (pino)
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user and server folder (only for connected users)
 + Create isometric block, item and entity renders in code
