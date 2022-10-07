@@ -90,26 +90,31 @@ class ServerConnection extends Connection {
          * @type {string}
          * */
         this.id = data.id ?? this.id;
+
         /**
          * The ip of this server.
          * @type {string}
          * */
         this.ip = data.ip ?? this.ip;
+
         /**
          * The port of this server.
          * @type {number}
          * */
         this.port = data.port ?? this.port;
+
         /**
          * The minecraft version of this server.
          * @type {number}
          * */
         this.version = data.version ?? this.version;
+
         /**
          * The path to the world folder of this server.
          * @type {string}
          * */
         this.path = data.path ?? this.path;
+        
         /**
          * Whether online mode is enabled on this server.
          * @type {boolean}

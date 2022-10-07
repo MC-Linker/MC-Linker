@@ -3,6 +3,15 @@ const Connection = require('./Connection');
 
 class SettingsConnection extends Connection {
 
+    static defaultSettingsData = {
+        disabled: {
+            commands: [],
+            advancements: [],
+            stats: [],
+        },
+        language: 'en_us',
+    };
+
     /**
      * @typedef {object} DisableData - The data for disabled commands, advancements or stats.
      * @property {string[]} commands - The disabled commands.
@@ -11,16 +20,19 @@ class SettingsConnection extends Connection {
      */
 
     /**
-     * @typedef {object} SettingsData - The data for the settings.
+     * @typedef {object} SettingsConnectionData - The data for the settings.
      * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
      * @property {string} language - The language code id this server uses.
      * @property {string} id - The id of the server the settings are connected to.
      */
 
     /**
-     *
+     * @typedef {SettingsConnection|string} SettingsConnectionResolvable - Data that resolves to a SettingsConnection object.
+     */
+
+    /**
      * @param {MCLinker} client - The client to create the settings for.
-     * @param {SettingsData|string} dataOrId - The data for the settings or the id of the server the settings are connected to.
+     * @param {SettingsConnectionData|string} dataOrId - The data for the settings or the id of the server the settings are connected to.
      * @param outputPath - The path to write the settings to.
      * @returns {SettingsConnection} - A new SettingsConnection instance.
      */
@@ -28,12 +40,7 @@ class SettingsConnection extends Connection {
         if(typeof dataOrId === 'string') {
             //Default settings data
             dataOrId = {
-                disabled: {
-                    commands: [],
-                    advancements: [],
-                    stats: [],
-                },
-                language: 'en_us',
+                ...SettingsConnection.defaultSettingsData,
                 id: dataOrId,
             };
         }

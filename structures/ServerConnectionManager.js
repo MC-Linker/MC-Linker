@@ -1,6 +1,5 @@
 const ServerConnection = require('./ServerConnection');
 const ConnectionManager = require('./ConnectionManager');
-const fs = require('fs-extra');
 
 class ServerConnectionManager extends ConnectionManager {
 
@@ -11,7 +10,7 @@ class ServerConnectionManager extends ConnectionManager {
      * @returns {ServerConnectionManager} - A new ServerConnectionManager instance.
      */
     constructor(client, outputPath = './serverdata/connections') {
-        super(client, ServerConnection, outputPath);
+        super(client, ServerConnection, outputPath, 'connection.json');
         this.cache = super.cache;
     }
 
@@ -27,9 +26,12 @@ class ServerConnectionManager extends ConnectionManager {
     async _load() {
         await super._load();
 
+        //If settings connections are loaded, load the settings for each server.
+        if(!this.client.settingsConnections.cache.size) return;
+
         for(const connection of this.cache.values()) {
-            const settings = await fs.readFile(`${this.outputPath}/${connection.id}/settings.json`, 'utf8');
-            await connection.settings._patch(JSON.parse(settings));
+            const settings = this.client.settingsConnections.cache.get(connection.id);
+            if(settings) connection.settings = settings;
         }
     }
 }

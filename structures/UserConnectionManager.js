@@ -12,7 +12,7 @@ class UserConnectionManager extends ConnectionManager {
      * @returns {UserConnectionManager} - A new UserConnectionManager instance.
      */
     constructor(client, outputPath = './userdata/connections') {
-        super(client, UserConnection, outputPath);
+        super(client, UserConnection, outputPath, 'connection.json');
         this.cache = super.cache;
     }
 

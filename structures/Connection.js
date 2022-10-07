@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 class Connection extends Base {
 
     /**
-     * @typedef {UserConnectionData|ServerConnectionData|SettingsData} ConnectionData - The data for the connection.
+     * @typedef {UserConnectionData|ServerConnectionData|SettingsConnectionData} ConnectionData - The data for the connection.
      */
 
     /**
