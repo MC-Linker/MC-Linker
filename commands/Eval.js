@@ -40,7 +40,7 @@ class Eval extends Command {
 
         const command = args?.join(' ')?.replace(/^```(js|javascript)?|```$/g, '')?.trim();
         if(!command) {
-            return interaction.replyTl(keys.commands.eval.warnings.no_command);
+            return interaction.replyTl(keys.api.command.warnings.no_argument, { argument: 'command' });
         }
 
         const evalOut = new ConsoleOutput();

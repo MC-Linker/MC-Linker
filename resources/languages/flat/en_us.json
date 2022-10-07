@@ -52,7 +52,8 @@
 
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers.",
 
-  "main.success.command_load.console": "Successfully loaded command: %category%/%command%",
+  "main.success.command_load.console": "Successfully loaded command: %command%",
+  "main.success.command_load_category.console": "Successfully loaded command: %category%/%command%",
   "main.success.button_load.console": "Successfully loaded button: %button%",
 
   "main.success.ping.embeds.0.title": "Hey, I'm %client_username%! :wave:",

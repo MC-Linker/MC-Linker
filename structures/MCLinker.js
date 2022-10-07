@@ -5,6 +5,7 @@ const SettingsConnectionManager = require('./SettingsConnectionManager');
 const fs = require('fs-extra');
 const { keys, addPh } = require('../api/messages');
 const path = require('path');
+const Command = require('./Command');
 
 class MCLinker extends Discord.Client {
 
@@ -69,25 +70,40 @@ class MCLinker extends Discord.Client {
     }
 
     async _loadCommands() {
-        const commandCategories = await fs.readdir(this.commandPath);
+        const commands = await fs.readdir(this.commandPath);
+
+        const commandCategories = commands.filter(command => !command.endsWith('.js'));
+        const commandFiles = commands.filter(command => command.endsWith('.js'));
+        commandFiles.forEach(file => loadCommand.call(this, file));
+
         for(const category of commandCategories) {
-            const commandFiles = await fs.readdir(`${this.commandPath}/${category}`);
+            const commandFiles = (await fs.readdir(`${this.commandPath}/${category}`))
+                .filter(file => file.endsWith('.js'));
 
-            for(const file of commandFiles) {
-                // noinspection LocalVariableNamingConventionJS
-                const Command = require(path.resolve(`${this.commandPath}/${category}/${file}`));
-                if(Command.prototype instanceof Command) {
-                    const command = new Command();
+            for(const file of commandFiles) loadCommand.call(this, file, category);
+        }
 
-                    this.commands.set(command.name, command);
-                    console.log(addPh(keys.main.success.command_load.console, { command: command.name, category: category }));
-                }
+        function loadCommand(file, category = null) {
+            // noinspection LocalVariableNamingConventionJS
+            const CommandFile = category ?
+                require(path.resolve(`${this.commandPath}/${category}/${file}`)) :
+                require(path.resolve(`${this.commandPath}/${file}`));
+
+            if(CommandFile.prototype instanceof Command) {
+                const command = new CommandFile();
+
+                this.commands.set(command.name, command);
+                console.log(addPh(
+                    category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,
+                    { command: command.name, category: category }
+                ));
             }
         }
     }
 
     async _loadButtons() {
-        const buttonFiles = await fs.readdir(this.buttonPath);
+        const buttonFiles = (await fs.readdir(this.buttonPath))
+            .filter(file => file.endsWith('.js'));
 
         for(const file of buttonFiles) {
             // noinspection LocalVariableNamingConventionJS
