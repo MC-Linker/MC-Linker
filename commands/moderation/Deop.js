@@ -8,6 +8,7 @@ class Deop extends Command {
             name: 'deop',
             requiresConnectedPlugin: true,
             requiresConnectedUser: 0,
+            category: 'moderation',
         });
     }
 

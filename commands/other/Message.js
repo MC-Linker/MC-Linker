@@ -9,6 +9,7 @@ class Message extends Command {
             ephemeral: true,
             requiresConnectedPlugin: true,
             requiresConnectedUser: 0,
+            category: 'other',
         });
     }
 

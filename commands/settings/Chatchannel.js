@@ -8,6 +8,7 @@ class Chatchannel extends Command {
         super({
             name: 'chatchannel',
             requiresConnectedPlugin: true,
+            category: 'settings',
         });
     }
 

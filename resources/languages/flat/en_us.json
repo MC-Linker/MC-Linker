@@ -131,7 +131,7 @@
   "commands.help.success.command.embeds.0.color": "NotQuiteBlack",
 
   "commands.help.success.command.embeds.0.fields.0.name": "%command_mention%",
-  "commands.help.success.command.embeds.0.fields.0.value": "%command_long_description%\n\n**Usage**:\n%command_usage%\n\n**Example**:\n%command_example%",
+  "commands.help.success.command.embeds.0.fields.0.value": "%command_long_description%\n\n**Usage**:\n%command_usage%",
 
 
   "commands.help.success.disable_button.components.0.type": "Button",
@@ -768,8 +768,12 @@
   "commands.disconnect.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
   "commands.disconnect.warnings.no_permission.console": "No permission",
 
+  "commands.disconnect.warnings.not_connected_user.embeds.0.title": "Not Connected",
+  "commands.disconnect.warnings.not_connected_user.embeds.0.description": "%emoji_warning% Your account is not connected!",
+  "commands.disconnect.warnings.not_connected_user.console": "Account not connected",
+
   "commands.disconnect.warnings.invalid_method.embeds.0.title": "Invalid Method Specified",
-  "commands.disconnect.warnings.invalid_method.embeds.0.description": "%emoji_warning% You can only disconnect from `ftp`, `plugin` or `account`.",
+  "commands.disconnect.warnings.invalid_method.embeds.0.description": "%emoji_warning% You can only disconnect from `ftp` or `plugin`.",
   "commands.disconnect.warnings.invalid_method.console": "Invalid method specified",
 
   "commands.disconnect.warnings.invalid_protocol.embeds.0.title": "Invalid Method Specified",
@@ -1091,8 +1095,6 @@
   "data.advancements.type": "ChatInput",
   "data.advancements.long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
   "data.advancements.description": "Look up your and other member's minecraft advancements.",
-  "data.advancements.usage": "/advancements <advancement name or id> <@mention/username>",
-  "data.advancements.example": "/advancements Diamonds! @Lianecx \n/advancements Bullseye Memer",
 
   "data.advancements.options.0.type": "String",
   "data.advancements.options.0.name": "advancement",
@@ -1111,8 +1113,6 @@
   "data.inventory.type": "ChatInput",
   "data.inventory.long_description": "Get an image of the current player's inventory.",
   "data.inventory.description": "Get an image of the current player's inventory.",
-  "data.inventory.usage": "inventory <@mention/username>",
-  "data.inventory.example": "/inventory @Lianecx\n/inventory TheTerrain",
 
   "data.inventory.options.0.type": "String",
   "data.inventory.options.0.name": "user",
@@ -1130,8 +1130,6 @@
   "data.stats.type": "ChatInput",
   "data.stats.long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
   "data.stats.description": "Look at your and other member's minecraft server stats.",
-  "data.stats.usage": "/stats <stat-category **id**> <stat-item/block/entity **id**> <@mention>/<username>",
-  "data.stats.example": "/stats mined iron_ore @Lianecx\n/stats custom play_time BastiGHG\n/stats killed blaze ILoveCheese",
 
   "data.stats.options.0.type": "Subcommand",
   "data.stats.options.0.name": "custom",
@@ -1283,8 +1281,6 @@
   "data.ban.default_member_permissions": ["BanMembers"],
   "data.ban.long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
   "data.ban.description": "Ban a player from the minecraft server.",
-  "data.ban.usage": "/ban <@mention/username> [reason]",
-  "data.ban.example": "/ban @Lianecx\n/ban cheaterGuy CHEATING...",
 
   "data.ban.options.0.type": "String",
   "data.ban.options.0.name": "user",
@@ -1303,8 +1299,6 @@
   "data.command.default_member_permissions": ["Administrator"],
   "data.command.long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
   "data.command.description": "Execute any command on the minecraft-server.",
-  "data.command.usage": "/command <command-name> [arguments]",
-  "data.command.example": "/command gamemode creative Lianecx\n/command give Lianecx Golden Apple\n/command tp @a 0 0 0",
 
   "data.command.options.0.type": "String",
   "data.command.options.0.name": "command",
@@ -1329,8 +1323,6 @@
   "data.deop.default_member_permissions": ["Administrator"],
   "data.deop.long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
   "data.deop.description": "Deop players on the minecraft-server.",
-  "data.deop.usage": "/deop <@mention/username>",
-  "data.deop.example": "/deop @Lianecx\n/deop CoolGuy",
 
   "data.deop.options.0.type": "String",
   "data.deop.options.0.name": "user",
@@ -1343,8 +1335,6 @@
   "data.gamemode.default_member_permissions": ["Administrator"],
   "data.gamemode.long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
   "data.gamemode.description": "Change the gamemode of a player on the minecraft-server.",
-  "data.gamemode.usage": "/gamemode <@mention/username> <gamemode>",
-  "data.gamemode.example": "/gamemode @TheTerrain creative\n/gamemode MySelf adventure",
 
   "data.gamemode.options.0.type": "String",
   "data.gamemode.options.0.name": "user",
@@ -1371,8 +1361,6 @@
   "data.kick.default_member_permissions": ["KickMembers"],
   "data.kick.long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
   "data.kick.description": "Kick a player from the minecraft server.",
-  "data.kick.usage": "/kick <@mention/username> [reason]",
-  "data.kick.example": "/kick @Lianecx\n/kick player no_reason",
 
   "data.kick.options.0.type": "String",
   "data.kick.options.0.name": "user",
@@ -1391,8 +1379,6 @@
   "data.op.default_member_permissions": ["Administrator"],
   "data.op.long_description": "OP players on the **minecraft-server**. Can only be used by admins.",
   "data.op.description": "OP players on the minecraft-server.",
-  "data.op.usage": "/op <@mention/username>",
-  "data.op.example": "/op @Lianecx\n/op CoolGuy",
 
   "data.op.options.0.type": "String",
   "data.op.options.0.name": "user",
@@ -1406,8 +1392,6 @@
   "data.unban.default_member_permissions": ["BanMembers"],
   "data.unban.long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
   "data.unban.description": "Unban a banned player from the minecraft-server.",
-  "data.unban.usage": "/unban <@mention/username>",
-  "data.unban.example": "/unban @Lianecx\n/unban MrNotCheating",
 
   "data.unban.options.0.type": "String",
   "data.unban.options.0.name": "user",
@@ -1420,8 +1404,6 @@
   "data.message.type": "ChatInput",
   "data.message.long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).",
   "data.message.description": "Send private chat messages to members on the server.",
-  "data.message.usage": "/message <@mention/username> <message>",
-  "data.message.example": "/message @Lianecx Hey, its me!\n/message someGuy §6Golden message",
 
   "data.message.options.0.type": "String",
   "data.message.options.0.name": "user",
@@ -1435,13 +1417,31 @@
 
 
 
+  "data.account.name": "account",
+  "data.account.type": "ChatInput",
+  "data.account.long_description": "Connect or disconnect your minecraft java-edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
+  "data.account.description": "Connect your minecraft account with the bot.",
+
+  "data.account.options.0.type": "Subcommand",
+  "data.account.options.0.name": "connect",
+  "data.account.options.0.description": "Connect your minecraft-account.",
+
+  "data.account.options.0.options.0.type": "String",
+  "data.account.options.0.options.0.name": "username",
+  "data.account.options.0.options.0.description": "Set your java-edition username you want to connect with.",
+  "data.account.options.0.options.0.required": true,
+
+  "data.account.options.1.type": "Subcommand",
+  "data.account.options.1.name": "disconnect",
+  "data.account.options.1.description": "Disconnect your account.",
+
+
+
   "data.chatchannel.name": "chatchannel",
   "data.chatchannel.type": "ChatInput",
   "data.chatchannel.default_member_permissions": ["Administrator"],
   "data.chatchannel.long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
   "data.chatchannel.description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
-  "data.chatchannel.usage": "/chatchannel add/remove <channel> [useWebhooks]",
-  "data.chatchannel.example": "/chatchannel add #smp-chat",
 
 
   "data.chatchannel.options.0.type": "Subcommand",
@@ -1479,10 +1479,8 @@
   "data.connect.name": "connect",
   "data.connect.type": "ChatInput",
   "data.connect.default_member_permissions": ["Administrator"],
-  "data.connect.long_description": "Connect your minecraft java-edition server or account with your bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n-account\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
-  "data.connect.description": "Connect your minecraft server or account with the bot.",
-  "data.connect.usage": "/connect account <username>\n/connect plugin <ip> [port]\n/connect ftp <host> <username> <password> [port] [version]",
-  "data.connect.example": "/connect account Lianecx\n/connect plugin serverIp\n/connect ftp host username password",
+  "data.connect.long_description": "Connect your minecraft java-edition server with the bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
+  "data.connect.description": "Connect your minecraft server with the bot.",
 
 
   "data.connect.options.0.type": "Subcommand",
@@ -1553,24 +1551,12 @@
   "data.connect.options.1.options.1.required": false,
 
 
-  "data.connect.options.2.type": "Subcommand",
-  "data.connect.options.2.name": "account",
-  "data.connect.options.2.description": "Connect your Minecraft server using ftp/sftp/ftps.",
-
-  "data.connect.options.2.options.0.type": "String",
-  "data.connect.options.2.options.0.name": "username",
-  "data.connect.options.2.options.0.description": "Set your Minecraft java-edition username.",
-  "data.connect.options.2.options.0.required": true,
-
-
 
   "data.disable.name": "disable",
   "data.disable.type": "ChatInput",
   "data.disable.default_member_permissions": ["Administrator"],
-  "data.disable.long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in /help <command>.",
+  "data.disable.long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in `/help <command>`.",
   "data.disable.description": "Disable a specific command/stat/advancement.",
-  "data.disable.usage": "/disable (commands|stats|advancements) <command|stat|advancement>\n/disable list (commands|stats|advancements)",
-  "data.disable.example": "/disable commands txp\n/disable stats picked_up\n/disable advancements adventuring_time\n/disable list commands",
 
 
   "data.disable.options.0.type": "Subcommand",
@@ -1625,10 +1611,8 @@
   "data.disconnect.name": "disconnect",
   "data.disconnect.type": "ChatInput",
   "data.disconnect.default_member_permissions": ["Administrator"],
-  "data.disconnect.long_description": "Disconnect your minecraft java-edition server or minecraft java-edition account from the bot and delete all saved credentials. To connect again, use `/connect`.",
-  "data.disconnect.description": "Disconnect your minecraft server or minecraft account from the bot.",
-  "data.disconnect.usage": "/disconnect (ftp|plugin|user)",
-  "data.disconnect.example": "/disconnect ftp\n/disconnect account",
+  "data.disconnect.long_description": "Disconnect your minecraft java-edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
+  "data.disconnect.description": "Disconnect your minecraft server from the bot.",
 
   "data.disconnect.options.0.type": "Subcommand",
   "data.disconnect.options.0.name": "ftp",
@@ -1638,10 +1622,6 @@
   "data.disconnect.options.1.name": "plugin",
   "data.disconnect.options.1.description": "Disconnect from the minecraft-plugin.",
 
-  "data.disconnect.options.2.type": "Subcommand",
-  "data.disconnect.options.2.name": "account",
-  "data.disconnect.options.2.description": "Disconnect your minecraft-account.",
-
 
 
   "data.enable.name": "enable",
@@ -1649,8 +1629,6 @@
   "data.enable.default_member_permissions": ["Administrator"],
   "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in `/help <command>`.",
   "data.enable.description": "Enable a disabled command/stat/advancement (All enabled by default)",
-  "data.enable.usage": "/enable (commands|stats|advancements) <command|stat|advancement>",
-  "data.enable.example": "/enable commands txp\n/enable stats picked_up\n/enable advancements adventuring_time",
 
 
   "data.enable.options.0.type": "Subcommand",

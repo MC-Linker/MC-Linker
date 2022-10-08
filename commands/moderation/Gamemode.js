@@ -8,6 +8,7 @@ class Gamemode extends Command {
             name: 'gamemode',
             requiresConnectedPlugin: true,
             requiresConnectedUser: 0,
+            category: 'moderation',
         });
     }
 

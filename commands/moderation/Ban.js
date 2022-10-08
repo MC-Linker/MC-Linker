@@ -8,6 +8,7 @@ class Ban extends Command {
             name: 'ban',
             requiresConnectedPlugin: true,
             requiresConnectedUser: 0,
+            category: 'moderation',
         });
     }
 

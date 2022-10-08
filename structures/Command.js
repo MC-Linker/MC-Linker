@@ -15,6 +15,7 @@ class Command {
      * @property {int} [requiresConnectedUser=null] - The user argument index that requires a connected user.
      * @property {boolean} [requiresConnectedPlugin=false] - Indicates whether this command requires a connected plugin.
      * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
+     * @property {string} [category] - The category of this command.
      */
 
     /**
@@ -64,6 +65,12 @@ class Command {
          * @type {boolean}
          */
         this.ownerOnly = options.ownerOnly ?? false;
+
+        /**
+         * The category of this command.
+         * @type {?string}
+         */
+        this.category = options.category ?? null;
     }
 
     /**
@@ -161,11 +168,11 @@ class Command {
             let option;
             const subcommandGroupOption = command.options.find(option => option.name === subcommandGroup);
             if(subcommandGroupOption?.type === ApplicationCommandOptionType.SubcommandGroup || subcommandGroupOption?.type === ApplicationCommandOptionType.Subcommand) {
-                const subcommandOption = subcommandGroupOption.options.find(option => option.name === subcommand);
+                const subcommandOption = subcommandGroupOption?.options?.find(option => option.name === subcommand);
                 if(subcommandOption?.type === ApplicationCommandOptionType.Subcommand) {
-                    option = subcommandOption?.options[args.length - 2];
+                    option = subcommandOption?.options?.[args.length - 2];
                 }
-                else option = subcommandGroupOption.options[args.length - 1];
+                else option = subcommandGroupOption.options?.[args.length - 1];
             }
             else {
                 const missingOption = command.options[args.length];

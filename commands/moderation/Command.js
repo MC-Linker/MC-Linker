@@ -15,6 +15,7 @@ class Command extends AutocompleteCommand {
         super({
             name: 'command',
             requiresConnectedPlugin: true,
+            category: 'moderation',
         });
     }
 

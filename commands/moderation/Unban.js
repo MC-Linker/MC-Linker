@@ -8,6 +8,7 @@ class Unban extends Command {
             name: 'unban',
             requiresConnectedPlugin: true,
             requiresConnectedUser: 0,
+            category: 'moderation',
         });
     }
 

@@ -9,6 +9,7 @@ class Op extends Command {
             name: 'op',
             requiresConnectedPlugin: true,
             requiresConnectedUser: 0,
+            category: 'moderation',
         });
     }
 

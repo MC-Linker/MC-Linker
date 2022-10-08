@@ -8,6 +8,7 @@ class Disable extends AutocompleteCommand {
         super({
             name: 'disable',
             requiresConnectedServer: false,
+            category: 'settings',
         });
     }
 

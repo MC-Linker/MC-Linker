@@ -10,6 +10,7 @@ class Stats extends AutocompleteCommand {
         super({
             name: 'stats',
             requiresConnectedUser: 2,
+            category: 'main',
         });
     }
 

@@ -8,6 +8,7 @@ class Kick extends Command {
             name: 'kick',
             requiresConnectedPlugin: true,
             requiresConnectedUser: 0,
+            category: 'moderation',
         });
     }
 

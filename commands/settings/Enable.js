@@ -7,6 +7,7 @@ class Enable extends AutocompleteCommand {
     constructor() {
         super({
             name: 'enable',
+            category: 'settings',
         });
     }
 

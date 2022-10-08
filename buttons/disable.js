@@ -13,6 +13,8 @@ class Disable extends Button {
     }
 
     async execute(interaction, client, server) {
+        if(!await super.execute(interaction, client, server)) return;
+
         const commandName = interaction.customId.split('_').pop();
 
         if(await server.settings.disable('commands', commandName)) {

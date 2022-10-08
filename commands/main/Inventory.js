@@ -79,6 +79,7 @@ class Inventory extends Command {
         super({
             name: 'inventory',
             requiresConnectedUser: 0,
+            category: 'main',
         });
     }
 

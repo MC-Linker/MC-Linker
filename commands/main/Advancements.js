@@ -11,6 +11,7 @@ class Advancements extends AutocompleteCommand {
         super({
             name: 'advancements',
             requiresConnectedUser: 1,
+            category: 'main',
         });
     }
 
