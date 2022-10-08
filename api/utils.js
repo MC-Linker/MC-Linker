@@ -1,9 +1,35 @@
+const { GuildApplicationCommandManager } = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
 
 const advancementData = require('../resources/data/advancements.json');
 const customStats = require('../resources/data/stats_custom.json');
 
+/**
+ * @typedef {object} AdvancementData
+ * @property {string} name - The name of the advancement.
+ * @property {string} value - The id of the advancement.
+ * @property {string} category - The category of the advancement.
+ * @property {string} description - The description of the advancement.
+ */
+
+/**
+ * @typedef {object} StatData
+ * @property {string} name - The name of the stat.
+ * @property {string} value - The id of the stat.
+ * @property {string} category - The category of the stat.
+ */
+
+
+/**
+ * Searches for matching advancements in the given category.
+ * @param {string} searchString - The advancement to search for.
+ * @param {'end'|'story'|'nether'|'adventure'|'husbandry'} category - The category to search in.
+ * @param {boolean} [shouldSearchNames=true] - Whether to search for matching names.
+ * @param {boolean} [shouldSearchValues=true] - Whether to search for matching values.
+ * @param {number} [maxLength=25] - The maximum amount of results to return.
+ * @returns {AdvancementData[]} - An array of matching advancements.
+ */
 function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     const matchingCategory = advancementData.categories[category];
     if(!matchingCategory) return [];
@@ -26,6 +52,14 @@ function searchAdvancements(searchString, category, shouldSearchNames = true, sh
     return matchingTitles;
 }
 
+/**
+ * Searches for matching advancements in all categories.
+ * @param {string} searchString - The advancement to search for.
+ * @param {boolean} [shouldSearchNames=true] - Whether to search for matching names.
+ * @param {boolean} [shouldSearchValues=true] - Whether to search for matching values.
+ * @param {number} [maxLength=25] - The maximum amount of results to return.
+ * @returns {AdvancementData[]}
+ */
 function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let matchingTitles = [];
 
@@ -39,6 +73,15 @@ function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSea
     return matchingTitles;
 }
 
+/**
+ * Searches for matching stats in the given category.
+ * @param {string} searchString - The stat to search for.
+ * @param {'mined'|'broken'|'crafted'|'used'|'picked_up'|'dropped'|'killed'|'killed_by'|'custom'} category - The category to search in.
+ * @param {boolean} [shouldSearchNames=true] - Whether to search for matching names.
+ * @param {boolean} [shouldSearchValues=true] - Whether to search for matching values.
+ * @param {number} [maxLength=25] - The maximum amount of results to return.
+ * @returns {StatData[]}
+ */
 function searchStats(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let dataList;
     let matchingStats = [];
@@ -59,8 +102,9 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
             return {
                 name: data.displayName,
                 value: data.name,
+                category,
             };
-        }); //Only include displayName and name
+        });
 
         matchingStats = [...new Set(matchingStats)]; //Remove duplicates
         if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
@@ -75,6 +119,12 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
             if(!match && shouldSearchValues) match = stat.value.includes(searchString.toLowerCase());
 
             return match;
+        }).map(stat => {
+            return {
+                name: stat.name,
+                value: stat.value,
+                category,
+            };
         });
         matchingStats = [...new Set(matchingStats)]; //Remove duplicates
         if(matchingStats.length >= maxLength) matchingStats.length = maxLength; //Reduce length
@@ -84,27 +134,35 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
     else return [];
 }
 
+/**
+ * Searches for matching stats in all categories.
+ * @param {string} searchString - The stat to search for.
+ * @param {boolean} [shouldSearchNames=true] - Whether to search for matching names.
+ * @param {boolean} [shouldSearchValues=true] - Whether to search for matching values.
+ * @param {number} [maxLength=25] - The maximum amount of results to return.
+ * @returns {StatData[]}
+ */
 function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
-    return new Promise(async resolve => {
-        let matchingStats = [];
+    let matchingStats = [];
 
-        //                        Blocks     Items   Entities   Custom
-        const statLists = ['mined', 'broken', 'killed', 'custom'];
+    //                        Blocks     Items   Entities   Custom
+    const statLists = ['mined', 'broken', 'killed', 'custom'];
 
-        for(const list of statLists) {
-            const matchingKeys = await searchStats(searchString, list, shouldSearchNames, shouldSearchValues, maxLength);
-            matchingKeys.forEach(key => matchingStats.push(key));
-            console.log(matchingStats);
-        }
+    for(const list of statLists) {
+        const matchingKeys = searchStats(searchString, list, shouldSearchNames, shouldSearchValues, maxLength);
+        matchingKeys.forEach(key => matchingStats.push(key));
+    }
 
-        matchingStats = [...new Set(matchingStats)]; //Remove duplicates
-        if(matchingStats.length >= maxLength) matchingStats.length = maxLength;
-        resolve(matchingStats);
-    });
+    matchingStats = [...new Set(matchingStats)]; //Remove duplicates
+    if(matchingStats.length >= maxLength) matchingStats.length = maxLength;
+    return matchingStats;
 }
 
 /**
- * @returns {Promise<ApplicationCommand>}
+ * Gets a slash command from the given manager by its name.
+ * @param {GuildApplicationCommandManager|ApplicationCommandManager} commandManager - The command manager to search in.
+ * @param {string} name - The name of the command to search for.
+ * @returns {Promise<ApplicationCommand>|ApplicationCommand}
  */
 async function getSlashCommand(commandManager, name) {
     let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
@@ -115,6 +173,11 @@ async function getSlashCommand(commandManager, name) {
     return slashCommand;
 }
 
+/**
+ * Fetches the uuid of the given username from the Mojang API.
+ * @param {string} username - The username to fetch the uuid for.
+ * @returns {Promise<?string>}
+ */
 async function fetchUUID(username) {
     try {
         let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
