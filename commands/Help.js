@@ -1,7 +1,8 @@
-const fs = require('fs-extra');
 const { discordLink } = require('../config.json');
 const { keys, ph, addPh, getEmbed, getActionRows } = require('../api/messages');
 const Command = require('../structures/Command');
+const { getSlashCommand } = require('../api/utils');
+const { ApplicationCommandOptionType, ApplicationCommandSubCommand, ApplicationCommand } = require('discord.js');
 
 class Help extends Command {
 
@@ -17,7 +18,7 @@ class Help extends Command {
 
         const commandName = args[0]?.toLowerCase();
 
-        if(!args[0]) {
+        if(!commandName || commandName === 'help') {
             return interaction.replyTl(
                 keys.commands.help.success.no_args,
                 { 'invite_link': discordLink },
@@ -27,42 +28,42 @@ class Help extends Command {
 
         let command = keys.data[commandName];
         if(!command) {
+            const commands = client.commands.filter(c => c.category === commandName);
+
             //Show command list of category
-            fs.readdir(`./commands/${commandName}`, async (err, commands) => {
-                if(err) {
-                    return interaction.replyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName });
-                }
+            if(!commands.size) {
+                return interaction.replyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName });
+            }
 
-                commands = commands.filter(command => command.endsWith('.js'));
-                const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
-                for(let commandFile of commands) {
-                    commandFile = commandFile.split('.').shift();
-                    command = keys.data[commandFile.toLowerCase()];
-
-                    helpEmbed.addFields(addPh(
-                        keys.commands.help.success.category.embeds[0].fields[0],
-                        await ph.commandName(command.name, interaction.client),
-                        { 'command_description': command.description },
-                    ));
-                }
+            const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
+            for(let command of commands.values()) {
+                command = keys.data[command.name];
 
                 helpEmbed.addFields(addPh(
-                    keys.commands.help.success.category.embeds[0].fields[1],
-                    { 'discord_link': discordLink },
+                    keys.commands.help.success.category.embeds[0].fields[0],
+                    await ph.commandName(command.name, interaction.client),
+                    { 'command_description': command.description },
                 ));
+            }
 
-                return interaction.replyOptions({ embeds: [helpEmbed] });
-            });
+            helpEmbed.addFields(addPh(
+                keys.commands.help.success.category.embeds[0].fields[1],
+                { 'discord_link': discordLink },
+            ));
+
+            return interaction.replyOptions({ embeds: [helpEmbed] });
         }
         else {
+            const slashCommand = await getSlashCommand(interaction.guild.commands, command.name);
+            const commandUsage = getCommandUsage(slashCommand);
+
             // noinspection JSUnresolvedVariable
             const helpEmbed = getEmbed(
                 keys.commands.help.success.command,
                 ph.std(interaction),
                 {
                     'command_long_description': command.long_description,
-                    'command_usage': command.usage,
-                    'command_example': command.example,
+                    'command_usage': commandUsage,
                 },
                 await ph.commandName(commandName, interaction.client),
             );
@@ -84,9 +85,31 @@ class Help extends Command {
 
                 return interaction.replyOptions({ embeds: [helpEmbed], components: disableRows });
             }
+
+            /**
+             * @param {ApplicationCommand|ApplicationCommandSubCommand} command
+             * @returns {string}
+             */
+            function getCommandUsage(command) {
+                let usage = [];
+
+                if(!command.options) usage.push(''); //No options
+                for(let option of command.options ?? []) {
+                    if(option.type === ApplicationCommandOptionType.Subcommand) {
+                        usage.push(`${getCommandUsage(option)}`);
+                    }
+                    else {
+                        if(!usage.length) usage.push('');
+                        usage[0] += option.required ? ` <${option.name}>` : ` [${option.name}]`;
+                    }
+                }
+
+                if(command instanceof ApplicationCommand) usage = usage.map(u => `/${command.name} ${u}`);
+                else usage = usage.map(u => `${command.name} ${u}`);
+                return usage.join('\n').trim();
+            }
         }
     }
-
 }
 
 module.exports = Help;
