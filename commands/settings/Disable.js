@@ -14,16 +14,13 @@ class Disable extends AutocompleteCommand {
 
     disabledCommands = ['enable', 'disable', 'help'];
 
-    async autocomplete(interaction, client) {
+    autocomplete(interaction, client) {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
         let matchingKeys;
         if(subcommand === 'advancements') matchingKeys = utils.searchAllAdvancements(focused);
         else if(subcommand === 'stats') matchingKeys = utils.searchAllStats(focused);
-
-        //Remove all description fields
-        matchingKeys.map(title => delete title.description);
 
         interaction.respond(matchingKeys).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete.console));
     }

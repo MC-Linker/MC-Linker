@@ -14,11 +14,11 @@ class Stats extends AutocompleteCommand {
         });
     }
 
-    async autocomplete(interaction, client) {
+    autocomplete(interaction, client) {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        const stats = await utils.searchStats(focused, subcommand);
+        const stats = utils.searchStats(focused, subcommand);
         interaction.respond(stats).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
     }
 

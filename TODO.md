@@ -2,7 +2,6 @@
 
 + **Add server class (fastify)**
 + **Plugin response handling**
-+ **Move `/connect account` to `/account`**
 + Better logs (pino)
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user and server folder (only for connected users)

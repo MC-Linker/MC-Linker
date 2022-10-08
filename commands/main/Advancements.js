@@ -15,10 +15,10 @@ class Advancements extends AutocompleteCommand {
         });
     }
 
-    async autocomplete(interaction, client) {
+    autocomplete(interaction, client) {
         const focused = interaction.options.getFocused().toLowerCase();
 
-        const matchingTitles = await utils.searchAllAdvancements(focused);
+        const matchingTitles = utils.searchAllAdvancements(focused);
 
         const respondArray = [];
         matchingTitles.forEach(title => {
