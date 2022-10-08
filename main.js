@@ -14,6 +14,7 @@ const { prefix, token, topggToken } = require('./config.json');
 const MCLinker = require('./structures/MCLinker');
 const AutocompleteCommand = require('./structures/AutocompleteCommand');
 const PluginProtocol = require('./structures/PluginProtocol');
+const BotAPI = require('./api/BotAPI');
 
 const client = new MCLinker();
 
@@ -43,11 +44,17 @@ client.once('ready', async () => {
         ph.client(client),
         { prefix, 'guild_count': client.guilds.cache.size },
     ));
+
+    //Set Activity
     client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
+    //Load all connections and commands
     await client.loadEverything();
 
-    // await plugin.loadExpress(client);
+    //Start API server
+    await new BotAPI(client).startServer();
+
+    //Register minecraft font
     Canvas.GlobalFonts.registerFromPath('./resources/fonts/Minecraft.ttf', 'Minecraft');
 });
 

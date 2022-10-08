@@ -4467,7 +4467,7 @@ async function getPlaceholder(key, args) {
             const nbtObject = await nbt.parse(nbtBuffer, 'big');
             return nbt.simplify(nbtObject.parsed);
         }
-        catch(ignored) {
+        catch(_) {
             return {};
         }
     }

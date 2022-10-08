@@ -113,7 +113,7 @@ class Connect extends Command {
                 const { address } = await dns.lookup(ip, 4);
                 if(address) ip = address;
             }
-            catch(ignored) {}
+            catch(_) {}
 
             await this._disconnectOldPlugin(interaction, server);
 
