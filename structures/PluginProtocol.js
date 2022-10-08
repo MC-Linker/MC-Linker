@@ -91,7 +91,7 @@ const PluginRoutes = {
     Connect: (ip, guildId, verifyCode) => [
         'POST',
         '/connect',
-        { ip, guild: guildId },
+        { ip, id: guildId },
         {},
         `Bearer ${verifyCode}`,
     ],

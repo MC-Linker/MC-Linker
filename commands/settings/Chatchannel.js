@@ -69,7 +69,7 @@ class Chatchannel extends Command {
 
                 await server.edit({
                     chat: true,
-                    channels: resp.data.channels,
+                    channels: resp.data,
                 });
 
                 return interaction.replyTl(keys.commands.chatchannel.success.add);
@@ -100,7 +100,7 @@ class Chatchannel extends Command {
 
             await server.edit({
                 chat: resp.data.chat,
-                channels: resp.data.channels,
+                channels: resp.data,
             });
 
             return interaction.replyTl(keys.commands.chatchannel.success.remove);
