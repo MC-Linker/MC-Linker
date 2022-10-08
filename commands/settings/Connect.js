@@ -6,7 +6,6 @@ const Command = require('../../structures/Command');
 const PluginProtocol = require('../../structures/PluginProtocol');
 const FtpProtocol = require('../../structures/FtpProtocol');
 const Protocol = require('../../structures/Protocol');
-const utils = require('../../api/utils');
 
 class Connect extends Command {
 
@@ -14,6 +13,7 @@ class Connect extends Command {
         super({
             name: 'connect',
             requiresConnectedServer: false,
+            category: 'settings',
         });
     }
 
@@ -171,26 +171,6 @@ class Connect extends Command {
             else await client.serverConnections.connect(serverConnectionData);
 
             return interaction.replyTl(keys.commands.connect.success.plugin);
-        }
-        else if(method === 'account') {
-            const username = args[1];
-
-            if(interaction.mentions.users.size) {
-                return interaction.replyTl(keys.commands.connect.warnings.user_pinged);
-            }
-
-            let uuid = await utils.fetchUUID(username);
-            if(!uuid) {
-                return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
-            }
-
-            await client.userConnections.connect({
-                id: interaction.user.id,
-                uuid,
-                username,
-            });
-
-            await interaction.replyTl(keys.commands.connect.success.account, { username, uuid });
         }
     }
 

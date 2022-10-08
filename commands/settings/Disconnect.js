@@ -7,6 +7,7 @@ class Disconnect extends Command {
     constructor() {
         super({
             name: 'disconnect',
+            category: 'settings',
         });
     }
 
@@ -18,7 +19,6 @@ class Disconnect extends Command {
 
         if(method === 'plugin' || method === 'ftp') {
             const protocol = server.protocol instanceof PluginProtocol ? 'plugin' : 'ftp';
-
             if(protocol !== method) {
                 return interaction.replyTl(keys.commands.disconnect.warnings.invalid_protocol, { method });
             }
@@ -32,7 +32,6 @@ class Disconnect extends Command {
 
             await client.serverConnections.disconnect(server);
         }
-        else await client.userConnections.disconnect(interaction.user.id);
 
         return interaction.replyTl(keys.commands.disconnect.success, { method });
     }
