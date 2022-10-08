@@ -24,7 +24,7 @@ process.on('unhandledRejection', async err => {
 
 /*
  * Converts the first letter of a string to uppercase.
- * @returns {String} The formatted string.
+ * @returns {String} - The formatted string.
  */
 String.prototype.cap = function() {
     return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
