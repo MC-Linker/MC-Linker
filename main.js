@@ -90,7 +90,7 @@ client.on('messageCreate', async message => {
     try {
         // noinspection JSUnresolvedFunction
         await command.execute(message, client, args, server)
-            .catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
+            ?.catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
     }
     catch(err) {
         await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
@@ -128,7 +128,7 @@ client.on('interactionCreate', async interaction => {
         try {
             // noinspection JSUnresolvedFunction
             await command.execute(interaction, client, args, server)
-                .catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
+                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
         }
         catch(err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
@@ -140,7 +140,7 @@ client.on('interactionCreate', async interaction => {
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client)
-                .catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err))));
+                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err))));
         }
         catch(err) {
             await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err)));
@@ -154,7 +154,7 @@ client.on('interactionCreate', async interaction => {
             if(!button) return;
             // noinspection JSUnresolvedFunction
             await button.execute(interaction, client)
-                .catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err)));
+                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err)));
         }
         catch(err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err));
