@@ -1,7 +1,6 @@
 # TODO BOT
 
-+ **Plugin response handling**
-+ **Add server.hasPluginProtocol()**
++ **Plugin status handling**
 + Better logs (pino)
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user and server folder (only for connected users)
