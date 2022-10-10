@@ -79,7 +79,7 @@ class Connect extends Command {
                 return interaction.replyTl(keys.api.command.errors.could_not_download, { category: 'server configuration' });
             }
             const propertiesObject = Object.fromEntries(
-                serverProperties.toString('utf-8').split('\n')
+                serverProperties.data.toString('utf-8').split('\n')
                     .map(prop => prop.split('='))
             );
 

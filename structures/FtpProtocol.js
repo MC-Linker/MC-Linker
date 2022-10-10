@@ -33,6 +33,12 @@ class FtpProtocol extends Protocol {
         return await ftpClient.connect();
     }
 
+    static dataToProtocolResponse(data) {
+        return {
+            data: data,
+        };
+    }
+
     _patch(data) {
 
         /**
@@ -76,37 +82,34 @@ class FtpProtocol extends Protocol {
 
     /**
      * @inheritDoc
-     * @returns {Promise<boolean>} - Whether the connection was successful.
+     * @returns {Promise<?ProtocolResponse>} - The response from the server.
      */
     async connect() {
-        return await this.ftpClient.connect();
+        return await this.ftpClient.connect() ? FtpProtocol.dataToProtocolResponse({ message: "Success" }) : null;
     }
 
     /**
      * @inheritDoc
-     * @returns {Promise<?Buffer>} - The file data.
      */
     async get(getPath, putPath) {
         if(await this.ftpClient.get(getPath, putPath)) {
-            return await fs.readFile(putPath);
+            return FtpProtocol.dataToProtocolResponse(await fs.readFile(putPath));
         }
         else return null;
     }
 
     /**
      * @inheritDoc
-     * @returns {Promise<FileData[]>} - The files in the given folder.
      */
     async list(folder) {
-        return await this.ftpClient.list(folder);
+        return FtpProtocol.dataToProtocolResponse(await this.ftpClient.list(folder));
     }
 
     /**
      * @inheritDoc
-     * @returns {Promise<boolean>} - Whether the file was successfully put.
      */
     async put(getPath, putPath) {
-        return await this.ftpClient.put(getPath, putPath);
+        return FtpProtocol.dataToProtocolResponse(await this.ftpClient.put(getPath, putPath));
     }
 
     /**
@@ -114,10 +117,10 @@ class FtpProtocol extends Protocol {
      * @param {string} name - The name of the file to search for.
      * @param {string} start - The folder to start searching in.
      * @param {number} maxDepth - The maximum depth to search.
-     * @returns {Promise<?string>} - The path to the file.
+     * @returns {Promise<?ProtocolResponse>} - The path to the file.
      */
     async find(name, start, maxDepth) {
-        return await this.ftpClient.find(name, start, maxDepth);
+        return FtpProtocol.dataToProtocolResponse(await this.ftpClient.find(name, start, maxDepth));
     }
 }
 

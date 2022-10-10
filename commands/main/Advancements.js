@@ -63,7 +63,7 @@ class Advancements extends AutocompleteCommand {
         if(!amFile) {
             return interaction.replyTl(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' });
         }
-        const advancementData = JSON.parse(amFile.toString('utf-8'));
+        const advancementData = JSON.parse(amFile.data.toString('utf-8'));
 
         const letters = [...advancementTitle];
         let equals = '';

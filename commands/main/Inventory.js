@@ -96,7 +96,7 @@ class Inventory extends Command {
 
         let playerData;
         try {
-            playerData = await nbt.parse(nbtFile, 'big');
+            playerData = await nbt.parse(nbtFile.data, 'big');
             playerData = nbt.simplify(playerData.parsed);
         }
         catch(err) {
@@ -292,6 +292,7 @@ class Inventory extends Command {
 }
 
 
+// noinspection JSUnusedLocalSymbols
 async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
     const canvas = Canvas.createCanvas(352, 332);
     const ctx = canvas.getContext('2d');

@@ -34,7 +34,7 @@ class Disable extends AutocompleteCommand {
             const toList = args?.join(' ').toLowerCase();
 
             const disabled = server?.settings?.disabled?.[toList] ?? [];
-            if(disabled.length === 0) {
+            if(!disabled.length) {
                 return interaction.replyTl(keys.commands.disable.success.nothing_disabled, { 'type': toList });
             }
 

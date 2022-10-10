@@ -45,7 +45,7 @@ class Stats extends AutocompleteCommand {
         if(!statFile) {
             return interaction.replyTl(keys.api.command.errors.could_not_download_user_files, { category: 'stats' });
         }
-        const statData = JSON.parse(statFile.toString('utf-8'));
+        const statData = JSON.parse(statFile.data.toString('utf-8'));
 
         try {
             let statMatch;

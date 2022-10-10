@@ -63,6 +63,12 @@ class Protocol extends Base {
      */
 
     /**
+     * @typedef {object} ProtocolResponse - The response from a protocol call.
+     * @property {any} data - The data of the response.
+     * @property {number} [status] - The http status code of the response (only for plugin protocols).
+     */
+
+    /**
      * Creates a new protocol.
      * @param {MCLinker} client - The client to create the protocol for.
      */
@@ -84,6 +90,7 @@ class Protocol extends Base {
      * Gets a file from the server.
      * @param {string} getPath - The remote path where the file is located.
      * @param {string} putPath - The local path where the file should be written.
+     * @returns {Promise<?ProtocolResponse>} - The response from the server.
      * @abstract
      */
     async get(getPath, putPath) {
@@ -94,6 +101,7 @@ class Protocol extends Base {
      * Puts a file onto the server.
      * @param {string} getPath - The local path where the file is located.
      * @param {string} putPath - The remote path where the file should be written.
+     * @returns {Promise<?ProtocolResponse>} - The response from the server.
      * @abstract
      */
     async put(getPath, putPath) {
@@ -101,16 +109,9 @@ class Protocol extends Base {
     }
 
     /**
-     * Connects to the server.
-     * @abstract
-     */
-    async connect() {
-        throw new Error('Not implemented');
-    }
-
-    /**
-     * Patches the protocol with the given data.
+     * Lists the files in a directory on the server.
      * @param {string} folder - The folder to list the files from.
+     * @returns {Promise<Omit<?ProtocolResponse, 'data'> & { data: FileData[] }>} - The files in the folder.
      * @abstract
      */
     async list(folder) {

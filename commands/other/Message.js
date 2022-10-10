@@ -27,7 +27,7 @@ class Message extends Command {
             return interaction.replyTl(keys.api.plugin.errors.no_response);
         }
 
-        if(resp.status === 206) return interaction.replyTl(keys.commands.message.warnings.response_warning, argPlaceholder, { 'response': resp.json.message });
+        if(resp.status === 206) return interaction.replyTl(keys.commands.message.warnings.response_warning, argPlaceholder, { response: resp.data.message });
         else return interaction.replyTl(keys.commands.message.success, argPlaceholder);
     }
 }

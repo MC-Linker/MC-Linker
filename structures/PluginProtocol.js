@@ -152,12 +152,6 @@ class PluginProtocol extends Protocol {
      */
 
     /**
-     * @typedef {object} PluginResponse
-     * @property {number} status - The status of the response.
-     * @property {object|Buffer} data - The data of the response.
-     */
-
-    /**
      * Creates a new protocol.
      * @param {MCLinker} client - The client to create the protocol for.
      * @param {PluginProtocolData} data - The data for the protocol.
@@ -220,38 +214,38 @@ class PluginProtocol extends Protocol {
 
     /**
      * Generates a verification code and displays it on the server.
-     * @returns {Promise<PluginResponse>} - The response from the plugin.
+     * @returns {Promise<ProtocolResponse>} - The response from the plugin.
      */
     async verify() {
         const response = await this.fetch(...PluginRoutes.Verify());
-        return await fetchToPluginResponse(response);
+        return await fetchToProtocolResponse(response);
     }
 
     /**
-     * @inheritDoc
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
+     * Tests the connection to the server with the given credentials.
+     * @param {string} verifyCode - The verification code to use.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async connect(verifyCode) {
         const response = await this._fetch(...PluginRoutes.Connect(this.ip, this.id, verifyCode));
-        return await fetchToPluginResponse(response);
+        return await fetchToProtocolResponse(response);
     }
 
     /**
      * Disconnects from the plugin.
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async disconnect() {
         const response = await this._fetch(...PluginRoutes.Disconnect());
-        return await fetchToPluginResponse(response);
+        return await fetchToProtocolResponse(response);
     }
 
     /**
      * @inheritDoc
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
      */
     async get(getPath, putPath) {
         const response = await this._fetch(...PluginRoutes.GetFile(getPath));
-        if(!response?.ok) return fetchToPluginResponse(response);
+        if(!response?.ok) return fetchToProtocolResponse(response);
 
         try {
             await response.body.pipeTo(fs.createWriteStream(putPath));
@@ -264,12 +258,11 @@ class PluginProtocol extends Protocol {
 
     /**
      * @inheritDoc
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
      */
     async put(getPath, putPath) {
         try {
             const response = await this._fetch(...PluginRoutes.PutFile(fs.createReadStream(getPath), putPath));
-            return fetchToPluginResponse(response);
+            return fetchToProtocolResponse(response);
         }
         catch(err) {
             return null;
@@ -278,12 +271,11 @@ class PluginProtocol extends Protocol {
 
     /**
      * @inheritDoc
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
      */
     async list(folder) {
         try {
             const response = await this._fetch(...PluginRoutes.ListFiles(folder));
-            return fetchToPluginResponse(response);
+            return fetchToProtocolResponse(response);
         }
         catch(err) {
             return null;
@@ -293,12 +285,12 @@ class PluginProtocol extends Protocol {
     /**
      * Sends a public chat message to the server.
      * @param {string} message - The message to send.
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async chat(message) {
         try {
             const response = await this._fetch(...PluginRoutes.Chat(message));
-            return fetchToPluginResponse(response);
+            return fetchToProtocolResponse(response);
         }
         catch(err) {
             return null;
@@ -309,50 +301,50 @@ class PluginProtocol extends Protocol {
      * Sends a private chat message to a player on the server.
      * @param {string} message - The message to send.
      * @param {string} username - The username of the player to send the message to.
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async chatPrivate(message, username) {
         const response = await this._fetch(...PluginRoutes.Chat(message, true, username));
-        return fetchToPluginResponse(response);
+        return fetchToProtocolResponse(response);
     }
 
     /**
      * Adds a chat channel to the server.
      * @param {ChatChannelData} channel - The chat channel to add.
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async addChatChannel(channel) {
         const response = await this._fetch(...PluginRoutes.AddChannel(channel));
-        return fetchToPluginResponse(response);
+        return fetchToProtocolResponse(response);
     }
 
     /**
      * Removes a chat channel from the server.
      * @param {ChatChannelData} channel - The chat channel to remove.
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeChatChannel(channel) {
         const response = await this._fetch(...PluginRoutes.RemoveChannel(channel));
-        return fetchToPluginResponse(response);
+        return fetchToProtocolResponse(response);
     }
 
     /**
      * Executes a command on the server.
      * @param {string} command - The command to execute.
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async execute(command) {
         const response = await this._fetch(...PluginRoutes.Command(command));
-        return fetchToPluginResponse(response);
+        return fetchToProtocolResponse(response);
     }
 
     /**
      * Gets a list of online players on the server.
-     * @returns {Promise<?PluginResponse>} - The response from the plugin.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async getOnlinePlayers() {
         const response = await this._fetch(...PluginRoutes.ListOnlinePlayers());
-        return fetchToPluginResponse(response);
+        return fetchToProtocolResponse(response);
     }
 
     /**
@@ -362,7 +354,7 @@ class PluginProtocol extends Protocol {
      * @param {object|ReadStream} [data={}] - The data to send with the request.
      * @param {Object.<string, string>} [queries={}] - The queries to send with the request.
      * @param {?string} [authorization=null] - Additional authorization headers to send with the request.
-     * @returns {Promise<?Response>} - The response of the request.
+     * @returns {Promise<?ProtocolResponse>} - The response of the request.
      * @private
      */
     async _fetch(method, route, data = {}, queries = {}, authorization = null) {
@@ -380,9 +372,9 @@ class PluginProtocol extends Protocol {
 /**
  * Converts a fetch response object to a plugin response object.
  * @param response - The fetch response object to convert.
- * @returns {Promise<?PluginResponse>} - The plugin response object.
+ * @returns {Promise<?ProtocolResponse>} - The plugin response object.
  */
-async function fetchToPluginResponse(response) {
+async function fetchToProtocolResponse(response) {
     if(!response) return null;
 
     return {
