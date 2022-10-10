@@ -3,7 +3,7 @@
 + **Plugin status handling**
 + Better logs (pino)
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
-+ Store data files in user and server folder (only for connected users)
++ Store data files in user folders (only for connected users)
 + Create isometric block, item and entity renders in code
 + DM command author when response fails to send
 + Extract the `/command` data to different files
@@ -27,8 +27,6 @@
 + `/plugins` (List and Upload option for plugins)
 + `/usercache` (List of users that joined the server)
 + `/op list` & `/ban list` & `/connect list` (lists of cool stuff)
-+ `/gamerule`
-+ `/seed`
 + `/restart` & `/stop` & `/start`
 + `/private on/off`
 + `/serverinfo` & `/userinfo` (buttons for more information i.e. ender chest and other nbt)
