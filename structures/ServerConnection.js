@@ -152,14 +152,14 @@ class ServerConnection extends Connection {
         }
 
         //Switch protocols if needed
-        if(this.protocol instanceof FtpProtocol && data.protocol === 'plugin') {
+        if(this.hasPluginProtocol() && data.protocol === 'plugin') {
             this.protocol = new PluginProtocol(this.client, {
                 ip: this.ip,
                 port: this.port,
                 hash: this.hash,
             });
         }
-        else if(this.protocol instanceof PluginProtocol && (data.protocol === 'ftp' || data.protocol === 'sftp')) {
+        else if(this.hasPluginProtocol() && (data.protocol === 'ftp' || data.protocol === 'sftp')) {
             this.protocol = new FtpProtocol(this.client, {
                 ip: this.ip,
                 port: this.port,
@@ -195,32 +195,40 @@ class ServerConnection extends Connection {
      * @inheritDoc
      */
     getData() {
-        if(this.protocol instanceof PluginProtocol) {
+        const baseData = {
+            id: this.id,
+            ip: this.ip,
+            port: this.port,
+            version: this.version,
+            path: this.path,
+        };
+
+        if(this.hasPluginProtocol()) {
             return {
-                id: this.id,
-                ip: this.ip,
-                port: this.port,
-                version: this.version,
-                path: this.path,
+                ...baseData,
                 hash: this.hash,
                 online: this.online,
                 channels: this.channels,
                 protocol: 'plugin',
             };
         }
-        else if(this.protocol instanceof FtpProtocol) {
+        else if(!this.hasPluginProtocol()) {
             return {
-                id: this.id,
-                ip: this.ip,
-                port: this.port,
-                version: this.version,
-                path: this.path,
+                ...baseData,
                 password: this.password,
                 username: this.username,
                 online: this.online,
                 protocol: this.protocol.sftp ? 'sftp' : 'ftp',
             };
         }
+    }
+
+    /**
+     * Checks whether this server is connected to a plugin.
+     * @returns {boolean}
+     */
+    hasPluginProtocol() {
+        return this.protocol instanceof PluginProtocol;
     }
 }
 

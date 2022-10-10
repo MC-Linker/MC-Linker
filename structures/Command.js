@@ -1,6 +1,5 @@
 const { CommandInteraction, Message, PermissionFlagsBits, ApplicationCommandPermissionType, ApplicationCommandOptionType, MessageMentions } = require('discord.js');
 const { keys, ph } = require('../api/messages');
-const PluginProtocol = require('./PluginProtocol');
 const { getSlashCommand } = require('../api/utils');
 const { ownerId } = require('../config.json');
 
@@ -96,7 +95,7 @@ class Command {
             return false;
         }
 
-        if(this.requiresConnectedPlugin && !(server?.protocol instanceof PluginProtocol)) {
+        if(this.requiresConnectedPlugin && !server?.hasPluginProtocol()) {
             await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             return false;
         }
