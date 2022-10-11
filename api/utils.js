@@ -1,4 +1,4 @@
-const { GuildApplicationCommandManager } = require('discord.js');
+const { GuildApplicationCommandManager, CommandInteraction, ApplicationCommandOptionType, User, MessageMentions } = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
 
@@ -196,6 +196,60 @@ function addHyphen(uuid) {
     return uuid.join('');
 }
 
+
+/**
+ * Gets an array of arguments from a CommandInteraction.
+ * @param {Client} client - The client to use.
+ * @param {CommandInteraction} interaction - The interaction to get the arguments from.
+ * @returns {string[]}
+ */
+export function getArgs(client, interaction) {
+    if(!(interaction instanceof CommandInteraction)) return [];
+
+    const args = [];
+
+    function addArgs(option) {
+        if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
+            args.push(option.name);
+            option.options.forEach(opt => addArgs(opt));
+        }
+        else if(option.type === ApplicationCommandOptionType.Channel) args.push(option.channel);
+        else if(option.type === ApplicationCommandOptionType.User) args.push(option.user);
+        else if(option.type === ApplicationCommandOptionType.Role) args.push(option.role);
+        else if(option.type === ApplicationCommandOptionType.Attachment) args.push(option.attachment);
+        else args.push(option.value);
+    }
+
+    interaction.options.data.forEach(option => addArgs(option));
+
+    return args;
+}
+
+/**
+ * Gets a list of users from a string of mentions.
+ * @param {Client} client - The client to use.
+ * @param {string} mention - The string of mentions.
+ * @returns {Promise<User[]>}
+ */
+export async function getUsersFromMention(client, mention) {
+    if(typeof mention !== 'string') return [];
+
+    const usersPattern = new RegExp(MessageMentions.UsersPattern.source, 'g');
+    const matches = mention.matchAll(usersPattern);
+    if(!matches) return [];
+
+    const userArray = [];
+    for(let match of matches) {
+        // match[0] = entire mention
+        // match[1] = Id
+        userArray.push(await client.users.fetch(match[1]));
+    }
+
+    return userArray;
+}
+
+
+
 module.exports = {
     searchAllAdvancements,
     searchAdvancements,
@@ -203,4 +257,6 @@ module.exports = {
     getSlashCommand,
     searchStats,
     fetchUUID,
+    getArgs,
+    getUsersFromMention,
 };

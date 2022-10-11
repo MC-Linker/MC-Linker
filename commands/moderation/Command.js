@@ -1,5 +1,6 @@
 // noinspection JSUnresolvedVariable
-const { keys, getUsersFromMention, addPh } = require('../../api/messages');
+const { keys, addPh } = require('../../api/messages');
+const { getUsersFromMention } = require('../../api/utils');
 const Discord = require('discord.js');
 const nbt = require('prismarine-nbt');
 const utils = require('../../api/utils');

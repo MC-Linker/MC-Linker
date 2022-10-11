@@ -9,7 +9,8 @@ console.log(
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
-const { getArgs, addPh, keys, ph, toTranslatedMessage, toTranslatedInteraction } = require('./api/messages');
+const { addPh, keys, ph, toTranslatedMessage, toTranslatedInteraction } = require('./api/messages');
+const { getArgs } = require('./api/utils');
 const { prefix, token, topggToken } = require('./config.json');
 const MCLinker = require('./structures/MCLinker');
 const AutocompleteCommand = require('./structures/AutocompleteCommand');
