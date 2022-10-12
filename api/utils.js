@@ -1,4 +1,7 @@
-const { GuildApplicationCommandManager, CommandInteraction, ApplicationCommandOptionType, User, MessageMentions } = require('discord.js');
+const PluginProtocol = require('../structures/PluginProtocol');
+const { keys } = require('./messages');
+
+const { GuildApplicationCommandManager, CommandInteraction, ApplicationCommandOptionType, User, MessageMentions, BaseInteraction } = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
 
@@ -199,28 +202,31 @@ function addHyphen(uuid) {
 
 /**
  * Gets an array of arguments from a CommandInteraction.
- * @param {Client} client - The client to use.
  * @param {CommandInteraction} interaction - The interaction to get the arguments from.
- * @returns {string[]}
+ * @returns {Promise<string[]>|string[]}
  */
-export function getArgs(client, interaction) {
+async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
+
+    const slashCommand = await interaction.guild.commands.fetch(interaction.commandId);
 
     const args = [];
 
-    function addArgs(option) {
+    function addArgs(allOptions, option, incrementIndex) {
+        const optIndex = allOptions.findIndex(opt => opt.name === option.name) + incrementIndex;
+
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
-            option.options.forEach(opt => addArgs(opt));
+            option.options.forEach(opt => addArgs(slashCommand.options[incrementIndex].options, opt, 1));
         }
-        else if(option.type === ApplicationCommandOptionType.Channel) args.push(option.channel);
-        else if(option.type === ApplicationCommandOptionType.User) args.push(option.user);
-        else if(option.type === ApplicationCommandOptionType.Role) args.push(option.role);
-        else if(option.type === ApplicationCommandOptionType.Attachment) args.push(option.attachment);
-        else args.push(option.value);
+        else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
+        else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;
+        else if(option.type === ApplicationCommandOptionType.Role) args[optIndex] = option.role;
+        else if(option.type === ApplicationCommandOptionType.Attachment) args[optIndex] = option.attachment;
+        else args[optIndex] = option.value;
     }
 
-    interaction.options.data.forEach(option => addArgs(option));
+    interaction.options.data.forEach(option => addArgs(slashCommand.options, option, 0));
 
     return args;
 }
@@ -231,7 +237,7 @@ export function getArgs(client, interaction) {
  * @param {string} mention - The string of mentions.
  * @returns {Promise<User[]>}
  */
-export async function getUsersFromMention(client, mention) {
+async function getUsersFromMention(client, mention) {
     if(typeof mention !== 'string') return [];
 
     const usersPattern = new RegExp(MessageMentions.UsersPattern.source, 'g');
@@ -248,6 +254,30 @@ export async function getUsersFromMention(client, mention) {
     return userArray;
 }
 
+
+/**
+ * Handles the response of a protocol call.
+ * @param {?ProtocolResponse} response - The response to handle.
+ * @param {Protocol} protocol - The protocol that was called.
+ * @param {BaseInteraction & TranslatedResponses} interaction - The interaction to respond to.
+ * @returns {Promise<boolean>}
+ */
+async function handleProtocolResponse(response, protocol, interaction) {
+    if(!response && protocol instanceof PluginProtocol) {
+        await interaction.replyTl(keys.api.plugin.errors.no_response);
+        return false;
+    }
+    else if(!response) {
+        await interaction.replyTl(keys.api.ftp.errors.could_not_connect);
+        return false;
+    }
+    else if(response.status <= 500 && response.status < 600) {
+        await interaction.replyTl(keys.api.plugin.errors.status_500);
+        return false;
+    }
+
+    return true;
+}
 
 
 module.exports = {

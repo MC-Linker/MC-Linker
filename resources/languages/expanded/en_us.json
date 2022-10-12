@@ -3052,7 +3052,7 @@
             {
               "type": "String",
               "name": "path",
-              "description": "Set the server-path (Format: /path/to/server).",
+              "description": "Set the world-path (Format: /path/to/world).",
               "required": false
             }
           ]
