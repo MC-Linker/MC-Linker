@@ -25,9 +25,6 @@
 
 
 
-  "main.warnings.undefined_guild_create.console": "Received undefined guild in guildCreate event: %guild%",
-  "main.warnings.undefined_guild_delete.console": "Received undefined guild in guildDelete event: %guild%",
-
   "main.warnings.disabled.embeds.0.title": "Command Disabled",
   "main.warnings.disabled.embeds.0.description": "%emoji_no_entry% Command **%interaction_name%** disabled!",
   "main.warnings.disabled.console": "Command disabled",
@@ -96,39 +93,27 @@
   "commands.help.success.base.embeds.0.author.icon_url": "%client_avatar%",
   "commands.help.success.base.embeds.0.color": "NotQuiteBlack",
 
-
-  "commands.help.success.no_args.embeds.0.title": "Help Menu",
-  "commands.help.success.no_args.embeds.0.author.name": "%client_username%",
-  "commands.help.success.no_args.embeds.0.author.icon_url": "%client_avatar%",
-  "commands.help.success.no_args.embeds.0.color": "NotQuiteBlack",
-
-  "commands.help.success.no_args.embeds.0.fields.0.name": "%emoji_main% Main %emoji_main%",
+  "commands.help.success.no_args.embeds.0.fields.0.name": "Main",
   "commands.help.success.no_args.embeds.0.fields.0.value": "Main commands such as %inventory_command_mention%, or %advancements_command_mention%.",
 
-  "commands.help.success.no_args.embeds.0.fields.1.name": "%emoji_moderation% Moderation %emoji_moderation%",
+  "commands.help.success.no_args.embeds.0.fields.1.name": "Moderation",
   "commands.help.success.no_args.embeds.0.fields.1.value": "Moderation commands such as %ban_command_mention% or %command_command_mention%.",
 
-  "commands.help.success.no_args.embeds.0.fields.2.name": "%emoji_other_1% Other %emoji_other_2%",
+  "commands.help.success.no_args.embeds.0.fields.2.name": "Other",
   "commands.help.success.no_args.embeds.0.fields.2.value": "Other commands such as %message_command_mention%.",
 
-  "commands.help.success.no_args.embeds.0.fields.3.name": "%emoji_settings% Settings %emoji_settings%",
+  "commands.help.success.no_args.embeds.0.fields.3.name": "Settings",
   "commands.help.success.no_args.embeds.0.fields.3.value": "Setup and settings such as %connect_command_mention% or %disable_command_mention%.",
 
   "commands.help.success.no_args.embeds.0.fields.4.name": "\u200B",
-  "commands.help.success.no_args.embeds.0.fields.4.value": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
+  "commands.help.success.no_args.embeds.0.fields.4.value": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)",
 
 
   "commands.help.success.category.embeds.0.fields.0.name": "%command_mention%",
   "commands.help.success.category.embeds.0.fields.0.value": "%command_description%",
 
   "commands.help.success.category.embeds.0.fields.1.name": "\u200B",
-  "commands.help.success.category.embeds.0.fields.1.value": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)",
-
-
-  "commands.help.success.command.embeds.0.title": "Help Menu",
-  "commands.help.success.command.embeds.0.author.name": "%client_username%",
-  "commands.help.success.command.embeds.0.author.icon_url": "%client_avatar%",
-  "commands.help.success.command.embeds.0.color": "NotQuiteBlack",
+  "commands.help.success.category.embeds.0.fields.1.value": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)",
 
   "commands.help.success.command.embeds.0.fields.0.name": "%command_mention%",
   "commands.help.success.command.embeds.0.fields.0.value": "%command_long_description%\n\n**Usage**:\n%command_usage%",

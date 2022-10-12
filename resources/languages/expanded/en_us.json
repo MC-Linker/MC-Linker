@@ -23,12 +23,6 @@
   },
   "main": {
     "warnings": {
-      "undefined_guild_create": {
-        "console": "Received undefined guild in guildCreate event: %guild%"
-      },
-      "undefined_guild_delete": {
-        "console": "Received undefined guild in guildDelete event: %guild%"
-      },
       "disabled": {
         "embeds": [
           {
@@ -180,32 +174,26 @@
         "no_args": {
           "embeds": [
             {
-              "title": "Help Menu",
-              "author": {
-                "name": "%client_username%",
-                "icon_url": "%client_avatar%"
-              },
-              "color": "NotQuiteBlack",
               "fields": [
                 {
-                  "name": "%emoji_main% Main %emoji_main%",
+                  "name": "Main",
                   "value": "Main commands such as %inventory_command_mention%, or %advancements_command_mention%."
                 },
                 {
-                  "name": "%emoji_moderation% Moderation %emoji_moderation%",
+                  "name": "Moderation",
                   "value": "Moderation commands such as %ban_command_mention% or %command_command_mention%."
                 },
                 {
-                  "name": "%emoji_other_1% Other %emoji_other_2%",
+                  "name": "Other",
                   "value": "Other commands such as %message_command_mention%."
                 },
                 {
-                  "name": "%emoji_settings% Settings %emoji_settings%",
+                  "name": "Settings",
                   "value": "Setup and settings such as %connect_command_mention% or %disable_command_mention%."
                 },
                 {
                   "name": "​",
-                  "value": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
+                  "value": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)"
                 }
               ]
             }
@@ -221,7 +209,7 @@
                 },
                 {
                   "name": "​",
-                  "value": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** => [Support Discord Server](%invite_link%)"
+                  "value": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)"
                 }
               ]
             }
@@ -230,12 +218,6 @@
         "command": {
           "embeds": [
             {
-              "title": "Help Menu",
-              "author": {
-                "name": "%client_username%",
-                "icon_url": "%client_avatar%"
-              },
-              "color": "NotQuiteBlack",
               "fields": [
                 {
                   "name": "%command_mention%",

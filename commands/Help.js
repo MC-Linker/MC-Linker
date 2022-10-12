@@ -20,12 +20,13 @@ class Help extends Command {
 
         const commandName = args[0]?.toLowerCase();
 
+        const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
         if(!commandName || commandName === 'help') {
-            return interaction.replyTl(
-                keys.commands.help.success.no_args,
+            helpEmbed.addFields(addPh(keys.commands.help.success.no_args.embeds[0].fields,
                 { 'invite_link': discordLink },
                 await ph.allCommands(interaction.client),
-            );
+            ));
+            return interaction.replyOptions({ embeds: [helpEmbed] });
         }
 
         let command = keys.data[commandName];
@@ -34,10 +35,9 @@ class Help extends Command {
 
             //Show command list of category
             if(!commands.size) {
-                return interaction.replyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName });
+                return interaction.replyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName.cap() });
             }
 
-            const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
             for(let command of commands.values()) {
                 command = keys.data[command.name];
 
@@ -50,7 +50,7 @@ class Help extends Command {
 
             helpEmbed.addFields(addPh(
                 keys.commands.help.success.category.embeds[0].fields[1],
-                { 'discord_link': discordLink },
+                { 'invite_link': discordLink },
             ));
 
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -60,17 +60,18 @@ class Help extends Command {
             const commandUsage = getCommandUsage(slashCommand);
 
             // noinspection JSUnresolvedVariable
-            const helpEmbed = getEmbed(
-                keys.commands.help.success.command,
+            helpEmbed.addFields(addPh(
+                keys.commands.help.success.command.embeds[0].fields,
                 ph.std(interaction),
                 {
                     'command_long_description': command.long_description,
                     'command_usage': commandUsage,
+                    'invite_link': discordLink,
                 },
                 await ph.commandName(commandName, interaction.client),
-            );
+            ));
 
-            if(!settings || settings.isDisabled('commands', command.name)) {
+            if(settings && settings.isDisabled('commands', command.name)) {
                 const enableRows = getActionRows(
                     keys.commands.help.success.enable_button,
                     { 'command_name': command.name }, ph.emojis(),
