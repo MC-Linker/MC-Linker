@@ -82,7 +82,7 @@ class Command {
      * @abstract
      */
     async execute(interaction, client, args, server) {
-        await interaction.replyTl(keys.commands.executed);
+        await interaction.replyTl(keys.commands.executed, ph.std(interaction), { args: args.join(' ') });
 
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
@@ -91,7 +91,7 @@ class Command {
         }
 
         if(server?.settings?.isDisabled('commands', this.name)) {
-            await interaction.replyTl(keys.api.command.warnings.disabled, ph.interaction(interaction));
+            await interaction.replyTl(keys.api.command.warnings.disabled, await ph.interaction(interaction));
             return false;
         }
 

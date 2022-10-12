@@ -94,7 +94,6 @@ client.on('messageCreate', async message => {
     const command = client.commands.get(commandName);
     if(!command) return;
 
-    await message.replyTl(keys.commands.executed);
     try {
         // noinspection JSUnresolvedFunction
         await command.execute(message, client, args, server)
@@ -123,7 +122,7 @@ client.on('interactionCreate', async interaction => {
         interaction.attachments = new Discord.Collection();
 
 
-        const args = getArgs(client, interaction);
+        const args = await getArgs(interaction);
         //Add mentions and attachments from args
         args.forEach(arg => {
             if(arg instanceof Discord.User) interaction.mentions.users.set(arg.id, arg);

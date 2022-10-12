@@ -25,7 +25,7 @@ const {
     APIActionRowComponent,
     APIApplicationCommand,
 } = require('discord.js');
-const { getSlashCommand, getArgs } = require('./utils');
+const { getSlashCommand } = require('./utils');
 const keys = require('../resources/languages/expanded/en_us.json');
 const { prefix } = require('../config.json');
 
@@ -126,14 +126,12 @@ ph.interaction = function(interaction) {
         return {
             'interaction_name': commandName,
             'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
-            'args': args.join(' '),
         };
     }
     else if(interaction instanceof Discord.CommandInteraction) {
         return {
             'interaction_name': interaction.commandName,
             'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
-            'args': getArgs(interaction.client, interaction).join(' '),
         };
     }
     else if(interaction instanceof Discord.ButtonInteraction) {
