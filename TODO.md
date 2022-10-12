@@ -1,6 +1,7 @@
 # TODO BOT
 
 + **Plugin status handling**
++ **Reduce language file**
 + Better logs (pino)
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user folders (only for connected users)
