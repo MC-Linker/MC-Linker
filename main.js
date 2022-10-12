@@ -155,7 +155,6 @@ client.on('interactionCreate', async interaction => {
     }
     else if(interaction.isButton()) {
         const button = client.buttons.get(interaction.customId.split('_').shift());
-        await interaction.replyTl(keys.buttons.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
 
         try {
             if(!button) return;

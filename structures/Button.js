@@ -1,5 +1,5 @@
 const { ButtonInteraction } = require('discord.js');
-const { keys } = require('../api/messages');
+const { keys, ph } = require('../api/messages');
 const { PermissionsBitField, User } = require('discord.js');
 
 class Button {
@@ -18,10 +18,35 @@ class Button {
      * @param {ButtonOptions} options - The options for this command.
      */
     constructor(options) {
+
+        /**
+         * The first part of the button's custom ID.
+         * @type {string}
+         */
         this.id = options.id;
+
+        /**
+         * The permissions required to use this button.
+         * @type {PermissionsBitField}
+         */
         this.permissions = options.permissions;
+
+        /**
+         * The author of this button that is allowed to use it.
+         * @type {User}
+         */
         this.author = options.author;
-        this.ephemeral = options.ephemeral ?? false;
+
+        /**
+         * Whether this button should be ephemeral.
+         * @type {boolean|boolean}
+         */
+        this.ephemeral = options.ephemeral ?? true;
+
+        /**
+         * Whether this button should be deferred.
+         * @type {boolean|boolean}
+         */
         this.defer = options.defer ?? true;
     }
 
@@ -34,6 +59,7 @@ class Button {
      * @abstract
      */
     async execute(interaction, client, server) {
+        await interaction.replyTl(keys.buttons.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
         if(this.defer) await interaction.deferReply({ ephemeral: this.ephemeral });
 
         if(this.permissions) {

@@ -16,6 +16,8 @@ class Help extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
+        const settings = client.settingsConnections.cache.get(interaction.guildId);
+
         const commandName = args[0]?.toLowerCase();
 
         if(!commandName || commandName === 'help') {
@@ -68,7 +70,7 @@ class Help extends Command {
                 await ph.commandName(commandName, interaction.client),
             );
 
-            if(server?.settings?.isDisabled('commands', command.name) ?? true) {
+            if(!settings || settings.isDisabled('commands', command.name)) {
                 const enableRows = getActionRows(
                     keys.commands.help.success.enable_button,
                     { 'command_name': command.name }, ph.emojis(),

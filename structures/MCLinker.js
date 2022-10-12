@@ -6,6 +6,7 @@ const fs = require('fs-extra');
 const { keys, addPh } = require('../api/messages');
 const path = require('path');
 const Command = require('./Command');
+const Button = require('./Button');
 
 class MCLinker extends Discord.Client {
 
@@ -107,9 +108,9 @@ class MCLinker extends Discord.Client {
 
         for(const file of buttonFiles) {
             // noinspection LocalVariableNamingConventionJS
-            const Button = require(path.resolve(`${this.buttonPath}/${file}`));
-            if(Button.prototype instanceof Button) {
-                const button = new Button();
+            const ButtonFile = require(path.resolve(`${this.buttonPath}/${file}`));
+            if(ButtonFile.prototype instanceof Button) {
+                const button = new ButtonFile();
 
                 this.buttons.set(button.id, button);
                 console.log(addPh(keys.main.success.button_load.console, { button: button.id }));

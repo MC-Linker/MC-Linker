@@ -165,7 +165,7 @@ function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValu
  * Gets a slash command from the given manager by its name.
  * @param {GuildApplicationCommandManager|ApplicationCommandManager} commandManager - The command manager to search in.
  * @param {string} name - The name of the command to search for.
- * @returns {Promise<ApplicationCommand>|ApplicationCommand}
+ * @returns {Promise<ApplicationCommand>}
  */
 async function getSlashCommand(commandManager, name) {
     let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
@@ -217,7 +217,7 @@ async function getArgs(interaction) {
 
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
-            option.options.forEach(opt => addArgs(slashCommand.options[incrementIndex].options, opt, 1));
+            option.options.forEach(opt => addArgs(slashCommand.options[optIndex].options, opt, 1));
         }
         else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
         else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;

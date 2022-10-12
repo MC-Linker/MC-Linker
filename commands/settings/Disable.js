@@ -28,12 +28,15 @@ class Disable extends AutocompleteCommand {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
+        let settings = server ? server.settings : client.settingsConnections.cache.get(interaction.guildId);
+        if(!settings) settings = await client.settingsConnections.connect(interaction.guildId);
+
         let type = args?.shift();
 
         if(type === 'list') {
             const toList = args?.join(' ').toLowerCase();
 
-            const disabled = server?.settings?.disabled?.[toList] ?? [];
+            const disabled = settings.disabled[toList];
             if(!disabled.length) {
                 return interaction.replyTl(keys.commands.disable.success.nothing_disabled, { 'type': toList });
             }
@@ -74,8 +77,7 @@ class Disable extends AutocompleteCommand {
             }
             if(type === 'commands') toDisable = formattedToDisable.toLowerCase();
 
-            //TODO connect server if not connected
-            if(!await server?.settings?.disable(type, toDisable)) {
+            if(!await settings.disable(type, toDisable)) {
                 return interaction.replyTl(keys.commands.disable.errors.could_not_disable, { type, 'disable': formattedToDisable });
             }
 

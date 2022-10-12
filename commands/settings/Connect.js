@@ -60,7 +60,7 @@ class Connect extends Command {
 
             const connectFtp = await ftpProtocol.connect();
             if(!connectFtp) {
-                ftpProtocol.sftp = false;
+                ftpProtocol.sftp = true;
                 const connectSftp = await ftpProtocol.connect();
                 if(!connectSftp) return interaction.replyTl(keys.commands.connect.errors.could_not_connect_ftp);
             }
@@ -75,7 +75,7 @@ class Connect extends Command {
             }
 
             const serverProperties = await ftpProtocol.get(Protocol.FilePath.ServerProperties(path), `./serverdata/connections/${interaction.guildId}/server.properties`);
-            if(!serverProperties) {
+            if(!serverProperties?.data) {
                 return interaction.replyTl(keys.api.command.errors.could_not_download, { category: 'server configuration' });
             }
             const propertiesObject = Object.fromEntries(

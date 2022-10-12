@@ -151,7 +151,6 @@ class Command {
         for(let i = 0; i < args.length; i++) {
             if(args[i] === 'true') args[i] = true;
             else if(args[i] === 'false') args[i] = false;
-
             else {
                 const channelId = MessageMentions.ChannelsPattern.exec(args[i]);
                 args[i] = channelId ? await client.channels.fetch(channelId[1]) : args[i];

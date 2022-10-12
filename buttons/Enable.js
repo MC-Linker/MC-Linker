@@ -17,19 +17,21 @@ class Enable extends Button {
 
         const commandName = interaction.customId.split('_').pop();
 
-        if(await server.settings.enable('commands', commandName)) {
-            await interaction.replyTl(keys.buttons.enable.success.response, { 'command_name': commandName });
+        const settings = client.settingsConnections.cache.get(interaction.guildId);
+
+        if(!settings?.isDisabled('commands', commandName)) {
+            return interaction.replyTl(keys.buttons.enable.errors.already_enabled, { 'command_name': commandName.cap() });
         }
-        else {
-            return interaction.replyTl(keys.buttons.enable.errors.already_enabled, { 'command_name': commandName });
-        }
+
+        await settings.enable('commands', commandName);
+        await interaction.replyTl(keys.buttons.enable.success.response, { 'command_name': commandName.cap() });
 
         const disableRows = getActionRows(keys.commands.help.success.disable_button, { 'command_name': commandName }, ph.emojis());
         const helpEmbed = EmbedBuilder.from(interaction.message.embeds[0])
             .setDescription(keys.buttons.enable.success.help.embeds[0].description)
-            .setColor(Discord.Colors[keys.commands.help.success.command.embeds[0].color]);
+            .setColor(Discord.Colors[keys.buttons.enable.success.help.embeds[0].color]);
 
-        return interaction.update({ embeds: [helpEmbed], components: disableRows });
+        return interaction.message.edit({ embeds: [helpEmbed], components: disableRows });
     }
 }
 

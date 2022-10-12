@@ -8,18 +8,19 @@ class Enable extends AutocompleteCommand {
         super({
             name: 'enable',
             category: 'settings',
+            requiresConnectedServer: false,
         });
     }
 
 
-    async autocomplete(interaction, client) {
-        const server = await client.serverConnections.cache.get(interaction.guildId);
-        if(!server) return;
+    autocomplete(interaction, client) {
+        const settings = client.settingsConnections.cache.get(interaction.guildId);
+        if(!settings) return;
 
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        const disabled = server.settings.disabled[subcommand];
+        const disabled = settings.disabled[subcommand];
         const matchingDisabled = disabled.filter(disable => disable.includes(focused));
         if(matchingDisabled.length >= 25) matchingDisabled.length = 25;
 
@@ -29,12 +30,12 @@ class Enable extends AutocompleteCommand {
             let formattedDisable;
 
             if(subcommand === 'advancements') {
-                const matchingTitle = await utils.searchAllAdvancements(disable, true, true, 1);
+                const matchingTitle = utils.searchAllAdvancements(disable, true, true, 1);
                 formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
 
             }
             else if(subcommand === 'stats') {
-                const matchingStat = await utils.searchAllStats(disable, true, true, 1);
+                const matchingStat = utils.searchAllStats(disable, true, true, 1);
                 formattedDisable = matchingStat.shift()?.name ?? disable.cap();
             }
             else formattedDisable = disable.cap();
@@ -50,6 +51,8 @@ class Enable extends AutocompleteCommand {
 
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
+
+        const settings = client.settingsConnections.cache.get(interaction.guildId);
 
         let type = args?.shift();
         let toEnable = args?.join(' ').toLowerCase();
@@ -67,7 +70,7 @@ class Enable extends AutocompleteCommand {
             formattedToEnable = toEnable.cap();
         }
         else if(type === 'advancements') {
-            const matchingTitle = await utils.searchAllAdvancements(toEnable, true, true, 1);
+            const matchingTitle = utils.searchAllAdvancements(toEnable, true, true, 1);
             formattedToEnable = matchingTitle.shift()?.name ?? toEnable.cap();
 
         }
@@ -75,13 +78,14 @@ class Enable extends AutocompleteCommand {
             formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
         }
 
-        if(!await server.settings.enable(type, toEnable)) {
+        if(!settings?.isDisabled(type, toEnable)) {
             return interaction.replyTl(keys.commands.enable.warnings.already_enabled, {
                 'type': type.cap(),
                 'enable': formattedToEnable,
             });
         }
 
+        await settings.enable(type, toEnable);
         return interaction.replyTl(keys.commands.enable.success, { type, 'enable': formattedToEnable });
     }
 }

@@ -1754,7 +1754,7 @@
               "description": "%emoji_warning% %type% **%enable%** is already enabled."
             }
           ],
-          "console": "Could not enable %enable%"
+          "console": "Already enabled %enable%"
         }
       },
       "errors": {
@@ -2094,7 +2094,7 @@
           "start": {
             "embeds": [
               {
-                "description": "%emoji_startup% **The server opened!**",
+                "description": "%emoji_startup% **%message%**",
                 "color": "Green",
                 "timestamp": "%timestamp_now%"
               }
@@ -2103,7 +2103,7 @@
           "close": {
             "embeds": [
               {
-                "description": "%emoji_shutdown% **The server has shutdown!**",
+                "description": "%emoji_shutdown% **%message%**",
                 "color": "Red",
                 "timestamp": "%timestamp_now%"
               }
@@ -3052,7 +3052,7 @@
             {
               "type": "String",
               "name": "path",
-              "description": "Set the world-path (Format: /path/to/world).",
+              "description": "Set the server-path (Format: /path/to/server).",
               "required": false
             }
           ]

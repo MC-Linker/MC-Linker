@@ -812,7 +812,7 @@
 
   "commands.enable.warnings.already_enabled.embeds.0.title": "Already Enabled",
   "commands.enable.warnings.already_enabled.embeds.0.description": "%emoji_warning% %type% **%enable%** is already enabled.",
-  "commands.enable.warnings.already_enabled.console": "Could not enable %enable%",
+  "commands.enable.warnings.already_enabled.console": "Already enabled %enable%",
 
   "commands.enable.errors.could_not_autocomplete.console": "Could not respond to enable autocomplete",
 

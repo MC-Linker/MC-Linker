@@ -76,7 +76,8 @@ for(const command of Object.values(keys.data)) {
 }
 
 //Push categories
-const commandFolders = fs.readdirSync('./commands/');
+const commandFolders = fs.readdirSync('./commands/')
+    .filter(file => fs.statSync(`./commands/${file}`).isDirectory());
 for(const folder of commandFolders) {
     helpChoices.push({ name: folder.cap(), value: folder });
     console.log(`Loaded category: ${folder}`);
