@@ -1,7 +1,7 @@
 const PluginProtocol = require('../structures/PluginProtocol');
 const { keys } = require('./messages');
 
-const { GuildApplicationCommandManager, CommandInteraction, ApplicationCommandOptionType, User, MessageMentions, BaseInteraction } = require('discord.js');
+const { GuildApplicationCommandManager, CommandInteraction, ApplicationCommandOptionType, User, MessageMentions, BaseInteraction, MessagePayload } = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
 
@@ -254,15 +254,25 @@ async function getUsersFromMention(client, mention) {
     return userArray;
 }
 
+/**
+ * The default responses to use for each status code.
+ * @type {{400: MessagePayload, 401: MessagePayload, 404: MessagePayload}}}
+ */
+const defaultStatusRespones = {
+    400: keys.api.plugin.errors.status_400,
+    401: keys.api.plugin.errors.status_401,
+    404: keys.api.plugin.errors.status_404,
+};
 
 /**
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
  * @param {BaseInteraction & TranslatedResponses} interaction - The interaction to respond to.
+ * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @returns {Promise<boolean>}
  */
-async function handleProtocolResponse(response, protocol, interaction) {
+async function handleProtocolResponse(response, protocol, interaction, statusResponses = defaultStatusRespones) {
     if(!response && protocol instanceof PluginProtocol) {
         await interaction.replyTl(keys.api.plugin.errors.no_response);
         return false;
@@ -274,6 +284,13 @@ async function handleProtocolResponse(response, protocol, interaction) {
     else if(response.status <= 500 && response.status < 600) {
         await interaction.replyTl(keys.api.plugin.errors.status_500);
         return false;
+    }
+    else {
+        const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
+        if(responseKey) {
+            await interaction.replyTl(responseKey);
+            return false;
+        }
     }
 
     return true;
@@ -289,4 +306,5 @@ module.exports = {
     fetchUUID,
     getArgs,
     getUsersFromMention,
+    handleProtocolResponse,
 };

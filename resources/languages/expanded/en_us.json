@@ -1007,7 +1007,8 @@
               "title": "Could Not Connect",
               "description": "%emoji_error% Could not connect to server with plugin."
             }
-          ]
+          ],
+          "console": "Could not connect with plugin."
         },
         "could_not_find_properties": {
           "embeds": [
@@ -1298,19 +1299,19 @@
           "embeds": [
             {
               "title": "Unknown Bot Error",
-              "description": "%emoji_error% An unknown bot error occurred"
+              "description": "%emoji_error% An unknown bot error occurred."
             }
           ],
-          "console": "Unknown client error %error%"
+          "console": "400: Unknown client error %error%"
         },
         "status_401": {
           "embeds": [
             {
               "title": "Unknown Bot Error",
-              "description": "%emoji_error% An unknown bot error occurred."
+              "description": "401: %emoji_error% An unknown bot error occurred."
             }
           ],
-          "console": "Wrong authorization"
+          "console": "Wrong authorization: 401"
         },
         "status_404": {
           "embeds": [
@@ -1319,7 +1320,7 @@
               "description": "%emoji_error% The user never joined the server."
             }
           ],
-          "console": "Invalid Path"
+          "console": "404: Unknown client error %error%"
         },
         "status_500": {
           "embeds": [
@@ -1328,7 +1329,7 @@
               "description": "%emoji_error% An unknown plugin error occurred."
             }
           ],
-          "console": "Unknown server error %error%"
+          "console": "500: Unknown server error %error%"
         }
       },
       "success": {
@@ -1452,6 +1453,19 @@
           "console": "Listening on %address%"
         },
         "root_response": "To invite the MC Linker, open this link: https://top.gg/bot/712759741528408064"
+      }
+    },
+    "ftp": {
+      "errors": {
+        "could_not_connect": {
+          "embeds": [
+            {
+              "title": "Could Not Connect",
+              "description": "%emoji_error% Could not connect to server with ftp. Please check if the ftp server is online."
+            }
+          ],
+          "console": "Could not connect with ftp, sftp or ftps."
+        }
       }
     },
     "utils": {

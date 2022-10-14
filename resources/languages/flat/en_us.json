@@ -483,6 +483,7 @@
 
   "commands.connect.errors.could_not_connect_plugin.embeds.0.title": "Could Not Connect",
   "commands.connect.errors.could_not_connect_plugin.embeds.0.description": "%emoji_error% Could not connect to server with plugin.",
+  "commands.connect.errors.could_not_connect_plugin.console": "Could not connect with plugin.",
 
   "commands.connect.errors.could_not_find_properties.embeds.0.title": "Could Not Find Server",
   "commands.connect.errors.could_not_find_properties.embeds.0.description": "%emoji_error% Could not find server folder. Please specify the server path manually.",
@@ -606,20 +607,20 @@
   "api.plugin.errors.could_not_add_webhook.console": "Could not re-add webhook",
 
   "api.plugin.errors.status_400.embeds.0.title": "Unknown Bot Error",
-  "api.plugin.errors.status_400.embeds.0.description": "%emoji_error% An unknown bot error occurred",
-  "api.plugin.errors.status_400.console": "Unknown client error %error%",
+  "api.plugin.errors.status_400.embeds.0.description": "%emoji_error% An unknown bot error occurred.",
+  "api.plugin.errors.status_400.console": "400: Unknown client error %error%",
 
   "api.plugin.errors.status_401.embeds.0.title": "Unknown Bot Error",
-  "api.plugin.errors.status_401.embeds.0.description": "%emoji_error% An unknown bot error occurred.",
-  "api.plugin.errors.status_401.console": "Wrong authorization",
+  "api.plugin.errors.status_401.embeds.0.description": "401: %emoji_error% An unknown bot error occurred.",
+  "api.plugin.errors.status_401.console": "Wrong authorization: 401",
 
   "api.plugin.errors.status_404.embeds.0.title": "Could Not Download",
   "api.plugin.errors.status_404.embeds.0.description": "%emoji_error% The user never joined the server.",
-  "api.plugin.errors.status_404.console": "Invalid Path",
+  "api.plugin.errors.status_404.console": "404: Unknown client error %error%",
 
   "api.plugin.errors.status_500.embeds.0.title": "Unknown Plugin Error",
   "api.plugin.errors.status_500.embeds.0.description": "%emoji_error% An unknown plugin error occurred.",
-  "api.plugin.errors.status_500.console": "Unknown server error %error%",
+  "api.plugin.errors.status_500.console": "500: Unknown server error %error%",
 
 
   "api.plugin.success.messages.chat.embeds.0.author.name": "%username%",
@@ -671,6 +672,12 @@
 
   "api.plugin.success.listening.console": "Listening on %address%",
   "api.plugin.success.root_response": "To invite the MC Linker, open this link: https://top.gg/bot/712759741528408064",
+
+
+
+  "api.ftp.errors.could_not_connect.embeds.0.title": "Could Not Connect",
+  "api.ftp.errors.could_not_connect.embeds.0.description": "%emoji_error% Could not connect to server with ftp. Please check if the ftp server is online.",
+  "api.ftp.errors.could_not_connect.console": "Could not connect with ftp, sftp or ftps.",
 
 
 
