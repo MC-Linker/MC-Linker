@@ -39,13 +39,13 @@
 
   "main.errors.could_not_execute_command.embeds.0.title": "Unknown Error",
   "main.errors.could_not_execute_command.embeds.0.description": "%emoji_error% An unknown error occurred while executing this command. Please try again.",
-  "main.errors.could_not_execute_command.console": "Could not execute command %error%",
+  "main.errors.could_not_execute_command.console": "Could not execute %interaction_name% command %error%",
 
   "main.errors.could_not_execute_button.embeds.0.title": "Unknown Error",
   "main.errors.could_not_execute_button.embeds.0.description": "%emoji_error% An unknown error occurred while executing this button. Please try again.",
-  "main.errors.could_not_execute_button.console": "Could not execute button %error%",
+  "main.errors.could_not_execute_button.console": "Could not execute %button% button %error%",
 
-  "main.errors.could_not_autocomplete_command.console": "Could not respond to command autocomplete %error%",
+  "main.errors.could_not_autocomplete_command.console": "Could not respond to %interaction_name% autocomplete %error%",
 
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers.",
 
@@ -61,10 +61,6 @@
   "main.success.guild_delete.console": "Left a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!",
 
   "main.success.disconnected.console": "Successfully deleted connection file of guild: %guild_name%",
-
-
-
-  "commands.executed.console": "%author_tag% executed /%interaction_name% %args% in %guild_name%",
 
 
 
@@ -138,14 +134,6 @@
 
   "commands.advancements.no_description_available": "No description available...",
 
-  "commands.advancements.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.advancements.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.advancements.warnings.no_username.console": "No username specified",
-
-  "commands.advancements.warnings.no_advancement.embeds.0.title": "No Advancement Specified",
-  "commands.advancements.warnings.no_advancement.embeds.0.description": "%emoji_warning% Please specify the advancement name or id.",
-  "commands.advancements.warnings.no_advancement.console": "No advancement specified",
-
   "commands.advancements.warnings.category_disabled.embeds.0.title": "Category Disabled",
   "commands.advancements.warnings.category_disabled.embeds.0.description": "%emoji_no_entry% Advancement category **%advancement_category%** disabled!",
   "commands.advancements.warnings.category_disabled.console": "Advancement category %advancement_category% disabled.",
@@ -157,12 +145,6 @@
   "commands.advancements.warnings.not_completed.embeds.0.title": "Advancement Not Completed",
   "commands.advancements.warnings.not_completed.embeds.0.description": "%emoji_warning% Advancement **%advancement_title%** not completed/unlocked or misspelled!",
   "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
-
-  "commands.advancements.errors.could_not_autocomplete.console": "Could not respond to advancements autocomplete",
-
-  "commands.advancements.errors.could_not_download.embeds.0.title": "Could Not Download",
-  "commands.advancements.errors.could_not_download.embeds.0.description": "%emoji_error% Could not download advancement files. The user most likely never joined the server.",
-  "commands.advancements.errors.could_not_download.console": "Could not download advancements",
 
   "commands.advancements.success.base.embeds.0.title": "%username%",
   "commands.advancements.success.base.embeds.0.description": "%advancement_description%",
@@ -183,13 +165,6 @@
   "commands.advancements.success.final.console": "Sent advancement %advancement_title% of %username%",
 
 
-
-  "commands.inventory.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.inventory.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.inventory.warnings.no_username.console": "No username specified",
-
-  "commands.inventory.warnings.not_author_button.embeds.0.title": "No Permission",
-  "commands.inventory.warnings.not_author_button.embeds.0.description": "%emoji_warning% Only the command sender can show item information.",
 
   "commands.inventory.errors.could_not_parse.embeds.0.title": "Could not Read Inventory",
   "commands.inventory.errors.could_not_parse.embeds.0.description": "%emoji_error% Could not read inventory.",
@@ -257,18 +232,6 @@
 
 
 
-  "commands.stats.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.stats.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.stats.warnings.no_username.console": "No username specified",
-
-  "commands.stats.warnings.no_category.embeds.0.title": "No Category Specified",
-  "commands.stats.warnings.no_category.embeds.0.description": "%emoji_warning% Please specify the stat category.\n(`custom`, `mined`, `broken`, `crafted`, `used`, `picked_up`, `dropped`, `killed`, `killed_by`)",
-  "commands.stats.warnings.no_category.console": "No category specified",
-
-  "commands.stats.warnings.no_stat.embeds.0.title": "No Stat Specified",
-  "commands.stats.warnings.no_stat.embeds.0.description": "%emoji_warning% Please specify the stat.",
-  "commands.stats.warnings.no_stat.console": "No stat specified",
-
   "commands.stats.warnings.category_disabled.embeds.0.title": "Category Disabled",
   "commands.stats.warnings.category_disabled.embeds.0.description": "%emoji_no_entry% Stat category **%stat_category%** disabled!",
   "commands.stats.warnings.category_disabled.console": "Stat category %stat_category% disabled.",
@@ -286,8 +249,6 @@
   "commands.stats.errors.could_not_parse.embeds.0.title": "Could Not Find Category",
   "commands.stats.errors.could_not_parse.embeds.0.description": "%emoji_error% %username% has never done anything in this category.",
   "commands.stats.errors.could_not_parse.console": "Error trying to parse stat json %error%",
-
-  "commands.stats.errors.could_not_autocomplete.console": "Could not respond to stats autocomplete",
 
   "commands.stats.success.stat_message.custom": "**%stat_name%**: **%stat_value%**",
   "commands.stats.success.stat_message.mined": "has mined **%stat_value% %stat_name%**",
@@ -308,14 +269,6 @@
 
 
 
-  "commands.ban.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.ban.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used with the `Ban Member` permission!",
-  "commands.ban.warnings.no_permission.console": "No ban permission",
-
-  "commands.ban.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.ban.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.ban.warnings.no_username.console": "No username specified",
-
   "commands.ban.warnings.response_warning.embeds.0.title": "Ban Player",
   "commands.ban.warnings.response_warning.embeds.0.description": "%emoji_warning% Banned player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.ban.warnings.response_warning.embeds.0.color": "Orange",
@@ -328,28 +281,11 @@
 
   "commands.command.warnings.could_not_find_placeholders.console": "Could not find placeholder value for %placeholder%",
 
-  "commands.command.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.command.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.command.warnings.no_permission.console": "No command permission",
-
-  "commands.command.warnings.no_command.embeds.0.title": "No Command Specified",
-  "commands.command.warnings.no_command.embeds.0.description": "%emoji_warning% Please specify a minecraft command-name.",
-  "commands.command.warnings.no_command.console": "No command specified",
-
-  "commands.command.errors.could_not_autocomplete.console": "Could not respond to command autocomplete",
-
   "commands.command.success.embeds.0.title": "Command Executed",
   "commands.command.success.embeds.0.description": "**Command Response:**\n\n%response%",
   "commands.command.success.embeds.0.color": "Blue",
 
 
-  "commands.deop.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.deop.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.deop.warnings.no_permission.console": "No deop permission",
-
-  "commands.deop.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.deop.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.deop.warnings.no_username.console": "No username specified",
 
   "commands.deop.warnings.response_warning.embeds.0.title": "Deop Player",
   "commands.deop.warnings.response_warning.embeds.0.description": "Deoped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
@@ -359,35 +295,17 @@
   "commands.deop.success.embeds.0.description": "%emoji_success% Successfully Deoped player **%username%**",
   "commands.deop.success.embeds.0.color": "Blue",
 
-  "commands.gamemode.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.gamemode.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.gamemode.warnings.no_permission.console": "No gamemode permission",
 
-  "commands.gamemode.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.gamemode.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.gamemode.warnings.no_username.console": "No username specified",
-
-  "commands.gamemode.warnings.no_gamemode.embeds.0.title": "No Gamemode Specified",
-  "commands.gamemode.warnings.no_gamemode.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.gamemode.warnings.no_gamemode.console": "No username specified",
 
   "commands.gamemode.warnings.response_warning.embeds.0.title": "Change Gamemode",
-  "commands.gamemode.warnings.response_warning.embeds.0.description": "%emoji_warning% Change gamemode: **%username%** -> **%gamemode%**\nCould not fetch response message! This commonly happens after using `/reload`.",
+  "commands.gamemode.warnings.response_warning.embeds.0.description": "%emoji_warning% Changed gamemode of **%username%** to **%gamemode%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.gamemode.warnings.response_warning.embeds.0.color": "Orange",
 
-  "commands.gamemode.success.embeds.0.title": "Ban Player",
+  "commands.gamemode.success.embeds.0.title": "Change Gamemode",
   "commands.gamemode.success.embeds.0.description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**",
   "commands.gamemode.success.embeds.0.color": "Orange",
 
 
-
-  "commands.kick.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.kick.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used with the `Kick Member` permission!",
-  "commands.kick.warnings.no_permission.console": "No kick permission",
-
-  "commands.kick.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.kick.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.kick.warnings.no_username.console": "No username specified",
 
   "commands.kick.warnings.response_warning.embeds.0.title": "Kick Player",
   "commands.kick.warnings.response_warning.embeds.0.description": "%emoji_warning% Kicked player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
@@ -399,14 +317,6 @@
 
 
 
-  "commands.op.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.op.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.op.warnings.no_permission.console": "No op permission",
-
-  "commands.op.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.op.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.op.warnings.no_username.console": "No username specified",
-
   "commands.op.warnings.response_warning.embeds.0.title": "OP Player",
   "commands.op.warnings.response_warning.embeds.0.description": "Oped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.op.warnings.response_warning.embeds.0.color": "Blue",
@@ -416,14 +326,6 @@
   "commands.op.success.embeds.0.color": "Blue",
 
 
-
-  "commands.unban.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.unban.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used with the `Ban Member` permission!",
-  "commands.unban.warnings.no_permission.console": "No ban permission",
-
-  "commands.unban.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.unban.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.unban.warnings.no_username.console": "No username specified",
 
   "commands.unban.warnings.response_warning.embeds.0.title": "Unban Player",
   "commands.unban.warnings.response_warning.embeds.0.description": "Unbanned player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
@@ -435,14 +337,6 @@
 
 
 
-  "commands.message.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.message.warnings.no_username.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
-  "commands.message.warnings.no_username.console": "No username specified",
-
-  "commands.message.warnings.no_message.embeds.0.title": "No Message Specified",
-  "commands.message.warnings.no_message.embeds.0.description": "%emoji_warning% Please specify the message you want to send.",
-  "commands.message.warnings.no_message.console": "No message specified",
-
   "commands.message.warnings.response_warning.embeds.0.title": "Send Message",
   "commands.message.warnings.response_warning.embeds.0.description": "Sent message to player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
   "commands.message.warnings.response_warning.embeds.0.color": "Blue",
@@ -452,22 +346,6 @@
   "commands.message.success.embeds.0.color": "Blue",
 
 
-
-  "commands.chatchannel.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.chatchannel.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.chatchannel.warnings.no_permission.console": "No admin permission",
-
-  "commands.chatchannel.warnings.no_method.embeds.0.title": "No Method Specified",
-  "commands.chatchannel.warnings.no_method.embeds.0.description": "%emoji_warning% Please specify a method (`add`, `remove` or `lidy`).",
-  "commands.chatchannel.warnings.no_method.console": "No method specified",
-
-  "commands.chatchannel.warnings.invalid_method.embeds.0.title": "Invalid Method Specified",
-  "commands.chatchannel.warnings.invalid_method.embeds.0.description": "%emoji_warning% You can only specify `add`, `remove` or `list`.",
-  "commands.chatchannel.warnings.invalid_method.console": "Invalid method specified",
-
-  "commands.chatchannel.warnings.no_channel.embeds.0.title": "No Channel Specified",
-  "commands.chatchannel.warnings.no_channel.embeds.0.description": "%emoji_warning% Please mention a channel.",
-  "commands.chatchannel.warnings.no_channel.console": "No channel specified",
 
   "commands.chatchannel.warnings.no_channels.embeds.0.title": "No Channels Added",
   "commands.chatchannel.warnings.no_channels.embeds.0.description": "%emoji_warning% There are no added channels.",
@@ -480,16 +358,6 @@
   "commands.chatchannel.warnings.channel_not_added.embeds.0.title": "Channel Not Added",
   "commands.chatchannel.warnings.channel_not_added.embeds.0.description": "%emoji_warning% The specified channel is not added.",
   "commands.chatchannel.warnings.channel_not_added.console": "Channel not added",
-
-  "commands.chatchannel.errors.could_not_write_file.embeds.0.title": "Could Not Save Channels",
-  "commands.chatchannel.errors.could_not_write_file.embeds.0.description": "%emoji_error% Could not save channels. Please try again.",
-  "commands.chatchannel.errors.could_not_write_file.console": "Could not write file",
-
-  "commands.chatchannel.warnings.not_author_select.embeds.0.title": "No Permission",
-  "commands.chatchannel.warnings.not_author_select.embeds.0.description": "%emoji_warning% Only the command sender can select message types.",
-
-  "commands.chatchannel.warnings.not_author_button.embeds.0.title": "No Permission",
-  "commands.chatchannel.warnings.not_author_button.embeds.0.description": "%emoji_warning% Only the command sender can choose a channel.",
 
   "commands.chatchannel.warnings.not_collected.embeds.0.title": "Select Message Types",
   "commands.chatchannel.warnings.not_collected.embeds.0.description": "Select all message types you want the bot to send. (Time ran out)",
@@ -574,45 +442,13 @@
 
 
 
-  "commands.connect.warnings.no_method.embeds.0.title": "No Method Specified",
-  "commands.connect.warnings.no_method.embeds.0.description": "%emoji_warning% Please specify a method (`plugin`, `account`, `ftp`).",
-  "commands.connect.warnings.no_method.console": "No method specified",
-
-  "commands.connect.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.connect.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.connect.warnings.no_permission.console": "No permission",
-
-  "commands.connect.warnings.no_credentials.embeds.0.title": "No Credentials Specified",
-  "commands.connect.warnings.no_credentials.embeds.0.description": "Please specify your ftp credentials! Use `/help connect` for more information!",
-  "commands.connect.warnings.no_credentials.console": "No credentials specified",
-
-  "commands.connect.warnings.no_version.embeds.0.title": "No Version Specified",
-  "commands.connect.warnings.no_version.embeds.0.description": "%emoji_warning% Please specify the minecraft version.",
-  "commands.connect.warnings.no_version.console": "No version specified",
-
   "commands.connect.warnings.invalid_version.embeds.0.title": "Invalid Version Specified",
-  "commands.connect.warnings.invalid_version.embeds.0.description": "%emoji_warning% Please specify a valid minor minecraft version without patch number (e.g. `1.19`).",
+  "commands.connect.warnings.invalid_version.embeds.0.description": "%emoji_warning% Please specify a valid minor minecraft version without patch number (e.g. `1.19`, `1.16`).",
   "commands.connect.warnings.invalid_version.console": "Invalid version specified",
 
   "commands.connect.warnings.invalid_port.embeds.0.title": "Invalid Port Specified",
   "commands.connect.warnings.invalid_port.embeds.0.description": "%emoji_warning% Please specify a port that is bigger than 0 and smaller than 65536.",
   "commands.connect.warnings.invalid_port.console": "Invalid port specified",
-
-  "commands.connect.warnings.no_ip.embeds.0.title": "No IP Specified",
-  "commands.connect.warnings.no_ip.embeds.0.description": "%emoji_warning% Please specify the server ip.",
-  "commands.connect.warnings.no_ip.console": "No IP specified",
-
-  "commands.connect.warnings.no_username.embeds.0.title": "No Username Specified",
-  "commands.connect.warnings.no_username.embeds.0.description": "%emoji_warning% Please specify your minecraft java-edition account name.",
-  "commands.connect.warnings.no_username.console": "No username specified",
-
-  "commands.connect.warnings.invalid_method.embeds.0.title": "Invalid Method Specified",
-  "commands.connect.warnings.invalid_method.embeds.0.description": "%emoji_warning% Method **%method%** is not a valid connection method.",
-  "commands.connect.warnings.invalid_method.console": "Invalid method specified",
-
-  "commands.connect.warnings.user_pinged.embeds.0.title": "No Username Specified",
-  "commands.connect.warnings.user_pinged.embeds.0.description": "%emoji_warning% Don't ping someone. Specify your **minecraft java-edition account name** instead.",
-  "commands.connect.warnings.user_pinged.console": "No username specified",
 
   "commands.connect.warnings.version_below_11.embeds.0.title": "Version Below 1.11",
   "commands.connect.warnings.version_below_11.embeds.0.description": "%emoji_warning% The advancement command might not work because advancements don't exist in your minecraft version yet.",
@@ -620,17 +456,11 @@
   "commands.connect.warnings.version_below_7.embeds.0.title": "Version Below 1.7",
   "commands.connect.warnings.version_below_7.embeds.0.description": "%emoji_warning% The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet.",
 
-  "commands.connect.warnings.not_completely_disconnected.embeds.0.title": "Not Completely Disconnected",
-  "commands.connect.warnings.not_completely_disconnected.embeds.0.description": "%emoji_warning% The plugin connection (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely.",
-
-  "commands.connect.warnings.automatically_disconnected.embeds.0.title": "Automatically Disconnected",
-  "commands.connect.warnings.automatically_disconnected.embeds.0.description": "%emoji_warning% Automatically disconnected from the plugin connection (**%ip%**) to ensure no complications happen.",
-
   "commands.connect.warnings.connecting.embeds.0.title": "Connecting...",
-  "commands.connect.warnings.connecting.embeds.0.description": "Connecting to ftp... (Can take up to one minute)",
+  "commands.connect.warnings.connecting.embeds.0.description": "Connecting to ftp...",
 
   "commands.connect.warnings.searching_properties.embeds.0.title": "Searching For Server...",
-  "commands.connect.warnings.searching_properties.embeds.0.description": "%emoji_success% Successfully connected with the ftp server. Searching server folder... (Can take up to one minute)",
+  "commands.connect.warnings.searching_properties.embeds.0.description": "%emoji_success% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)",
   "commands.connect.warnings.searching_properties.console": "Searching for server.properties...",
 
   "commands.connect.warnings.check_dms.embeds.0.title": "Check Your DMs",
@@ -662,14 +492,6 @@
   "commands.connect.errors.could_not_get_properties.embeds.0.description": "%emoji_error% Could not get server properties. Please try again.",
   "commands.connect.errors.could_not_get_properties.console": "Could not get server.properties",
 
-  "commands.connect.errors.could_not_write_server_file.embeds.0.title": "Could Not Save Credentials",
-  "commands.connect.errors.could_not_write_server_file.embeds.0.description": "%emoji_error% Could not save credentials. Please try again.",
-  "commands.connect.errors.could_not_write_server_file.console": "Error writing server file",
-
-  "commands.connect.errors.could_not_write_user_file.embeds.0.title": "Could Not Save Credentials",
-  "commands.connect.errors.could_not_write_user_file.embeds.0.description": "%emoji_error% Could not save credentials. Please try again.",
-  "commands.connect.errors.could_not_write_user_file.console": "Error writing user file",
-
   "commands.connect.errors.incorrect_code.embeds.0.title": "Verification Unsuccessful",
   "commands.connect.errors.incorrect_code.embeds.0.description": "%emoji_error% You didn't reply with the correct code.",
   "commands.connect.errors.incorrect_code.console": "Incorrect code",
@@ -682,49 +504,23 @@
   "commands.connect.success.plugin.embeds.0.description": "%emoji_success% Successfully connected to the plugin.",
   "commands.connect.success.plugin.console": "Successfully wrote plugin file",
 
-  "commands.connect.success.account.embeds.0.title": "Connected to Account",
-  "commands.connect.success.account.embeds.0.description": "%emoji_success% Successfully connected with username: **%username%** and UUID: **%uuid%**",
-  "commands.connect.success.account.console": "Successfully wrote user file",
-
   "commands.connect.success.verification.embeds.0.title": "Verification Successful",
   "commands.connect.success.verification.embeds.0.description": "%emoji_success% Successfully verified.",
   "commands.connect.success.verification.console": "Correct code",
 
 
 
-  "commands.disable.warnings.no_type.embeds.0.title": "No Category Specified",
-  "commands.disable.warnings.no_type.embeds.0.description": "%emoji_warning% Please specify the category you want to disable (`commands`, `stats`, `advancements`) or `list` if you want to list all disabled commands/stats/advancements.",
-  "commands.disable.warnings.no_type.console": "No type specified",
-
-  "commands.disable.warnings.no_list_type.embeds.0.title": "No Category Specified",
-  "commands.disable.warnings.no_list_type.embeds.0.description": "%emoji_warning% Please specify the category you want to list (`commands`, `stats`, `advancements`).",
-  "commands.disable.warnings.no_list_type.console": "No type specified",
-
-  "commands.disable.warnings.invalid_type.embeds.0.title": "Invalid Category Specified",
-  "commands.disable.warnings.invalid_type.embeds.0.description": "%emoji_warning% You can only specify `commands`, `stats` or `advancements`.",
-  "commands.disable.warnings.invalid_type.console": "Invalid type specified",
-
-  "commands.disable.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.disable.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.disable.warnings.no_permission.console": "No permission",
-
-  "commands.disable.warnings.no_disable.embeds.0.title": "No Disable Specified",
-  "commands.disable.warnings.no_disable.embeds.0.description": "%emoji_warning% Please specify the %type% you want to disable.",
-  "commands.disable.warnings.no_disable.console": "No disable specified",
-
   "commands.disable.warnings.command_does_not_exist.embeds.0.title": "Command Does Not Exist",
   "commands.disable.warnings.command_does_not_exist.embeds.0.description": "%emoji_warning% Command **%disable%** does not exist.",
   "commands.disable.warnings.command_does_not_exist.console": "Command does not exist",
 
   "commands.disable.warnings.disabled_command.embeds.0.title": "Disabled Command Specified",
-  "commands.disable.warnings.disabled_command.embeds.0.description": "%emoji_no_entry% You cannot disable this command **%disable%**.",
+  "commands.disable.warnings.disabled_command.embeds.0.description": "%emoji_no_entry% You cannot disable the command **%disable%**.",
   "commands.disable.warnings.disabled_command.console": "Disabled command specified",
 
   "commands.disable.errors.could_not_disable.embeds.0.title": "Could Not Disable",
   "commands.disable.errors.could_not_disable.embeds.0.description": "Could not disable %type% **%disable%**.",
   "commands.disable.errors.could_not_disable.console": "Could not disable %disable%",
-
-  "commands.disable.errors.could_not_autocomplete.console": "Could not respond to disable autocomplete",
 
   "commands.disable.success.nothing_disabled.embeds.0.title": "Nothing Disabled",
   "commands.disable.success.nothing_disabled.embeds.0.description": "%emoji_success% There are no disabled %type%.",
@@ -745,22 +541,6 @@
 
 
 
-  "commands.disconnect.warnings.no_method.embeds.0.title": "No Method Specified",
-  "commands.disconnect.warnings.no_method.embeds.0.description": "%emoji_warning% Please set the connection method (`ftp`, `plugin`, `user`).",
-  "commands.disconnect.warnings.no_method.console": "No method specified",
-
-  "commands.disconnect.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.disconnect.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.disconnect.warnings.no_permission.console": "No permission",
-
-  "commands.disconnect.warnings.not_connected_user.embeds.0.title": "Not Connected",
-  "commands.disconnect.warnings.not_connected_user.embeds.0.description": "%emoji_warning% Your account is not connected!",
-  "commands.disconnect.warnings.not_connected_user.console": "Account not connected",
-
-  "commands.disconnect.warnings.invalid_method.embeds.0.title": "Invalid Method Specified",
-  "commands.disconnect.warnings.invalid_method.embeds.0.description": "%emoji_warning% You can only disconnect from `ftp` or `plugin`.",
-  "commands.disconnect.warnings.invalid_method.console": "Invalid method specified",
-
   "commands.disconnect.warnings.invalid_protocol.embeds.0.title": "Invalid Method Specified",
   "commands.disconnect.warnings.invalid_protocol.embeds.0.description": "%emoji_warning% Your server is not connected with %method%",
   "commands.disconnect.warnings.invalid_protocol.console": "Invalid protocol specified",
@@ -775,22 +555,6 @@
 
 
 
-  "commands.enable.warnings.no_type.embeds.0.title": "No Type Specified",
-  "commands.enable.warnings.no_type.embeds.0.description": "%emoji_warning% Please specify the type you want to enable (`commands`, `stats, `advancements`).",
-  "commands.enable.warnings.no_type.console": "No type specified",
-
-  "commands.enable.warnings.no_enable.embeds.0.title": "No Enable Specified",
-  "commands.enable.warnings.no_enable.embeds.0.description": "%emoji_warning% Please specify the command, stat or advancement you want to enable.",
-  "commands.enable.warnings.no_enable.console": "No enable specified",
-
-  "commands.enable.warnings.invalid_type.embeds.0.title": "Invalid Type Specified",
-  "commands.enable.warnings.invalid_type.embeds.0.description": "%emoji_warning% You can only specify `commands`, `stats` or `advancements`.",
-  "commands.enable.warnings.invalid_type.console": "Invalid type specified",
-
-  "commands.enable.warnings.no_permission.embeds.0.title": "No Permission",
-  "commands.enable.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used by admins.",
-  "commands.enable.warnings.no_permission.console": "No permission",
-
   "commands.enable.warnings.command_does_not_exist.embeds.0.title": "Command Does Not Exist",
   "commands.enable.warnings.command_does_not_exist.embeds.0.description": "%emoji_warning% Command **%enable%** does not exist.",
   "commands.enable.warnings.command_does_not_exist.console": "Command does not exist",
@@ -798,8 +562,6 @@
   "commands.enable.warnings.already_enabled.embeds.0.title": "Already Enabled",
   "commands.enable.warnings.already_enabled.embeds.0.description": "%emoji_warning% %type% **%enable%** is already enabled.",
   "commands.enable.warnings.already_enabled.console": "Already enabled %enable%",
-
-  "commands.enable.errors.could_not_autocomplete.console": "Could not respond to enable autocomplete",
 
   "commands.enable.success.embeds.0.title": "Successfully Enabled",
   "commands.enable.success.embeds.0.description": "%emoji_success% Successfully enabled %type% **%enable%**.",
@@ -823,42 +585,11 @@
 
 
 
-  "api.ftp.errors.could_not_connect.embeds.0.title": "Could Not Connect",
-  "api.ftp.errors.could_not_connect.embeds.0.description": "%emoji_error% Could not connect to server.",
-  "api.ftp.errors.could_not_connect.console": "Could not connect to server with %protocol%",
-
-  "api.ftp.errors.could_not_get.embeds.0.title": "Could Not Download",
-  "api.ftp.errors.could_not_get.embeds.0.description": "%emoji_error% The user never joined the server.",
-  "api.ftp.errors.could_not_get.console": "Could not get file [%path%] %error%",
-
-  "api.ftp.errors.could_not_put.embeds.0.title": "Could Not Upload",
-  "api.ftp.errors.could_not_put.embeds.0.description": "%emoji_error% Could not upload file",
-  "api.ftp.errors.could_not_put.console": "Could not put file [%path%] %error%",
-
-  "api.ftp.errors.could_not_stream.embeds.0.title": "Could Not Download",
-  "api.ftp.errors.could_not_stream.embeds.0.description": "%emoji_error% Could not download files. Please try again.",
-  "api.ftp.errors.could_not_stream.console": "Could not stream file [%path%] %error%",
-
-  "api.ftp.success.get.console": "Got file [%path%]",
-  "api.ftp.success.put.console": "Put file [%path%]",
-  "api.ftp.success.connect.console": "Connected with %protocol%",
-  "api.ftp.success.find.console": "Found file %path%",
-
-
-
   "api.plugin.warnings.not_completely_disconnected.embeds.0.title": "Not Completely Disconnected",
   "api.plugin.warnings.not_completely_disconnected.embeds.0.description": "%emoji_warning% The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely.",
 
   "api.plugin.warnings.automatically_disconnected.embeds.0.title": "Automatically Disconnected",
   "api.plugin.warnings.automatically_disconnected.embeds.0.description": "%emoji_warning% Automatically disconnected from the old server (**%ip%**) to ensure no complications happen.",
-
-  "api.plugin.warnings.not_connected.embeds.0.title": "Not Connected",
-  "api.plugin.warnings.not_connected.embeds.0.description": "%emoji_warning% Your server is not connected with the plugin.",
-  "api.plugin.warnings.not_connected.console": "Not connected",
-
-  "api.plugin.warnings.channel_not_added.embeds.0.title": "Channel Not Added",
-  "api.plugin.warnings.channel_not_added.embeds.0.description": "%emoji_warning% The specified channel is not added.",
-  "api.plugin.warnings.channel_not_added.console": "Channel not added",
 
   "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
 
@@ -873,18 +604,6 @@
   "api.plugin.errors.could_not_add_webhook.embeds.0.title": "Could Not Add Webhook",
   "api.plugin.errors.could_not_add_webhook.embeds.0.description": "%emoji_error% The chatchannel webhook got deleted for an unknown reason and could not be re-added.",
   "api.plugin.errors.could_not_add_webhook.console": "Could not re-add webhook",
-
-  "api.plugin.errors.could_not_save_file.embeds.0.title": "Could Not Save Connection",
-  "api.plugin.errors.could_not_save_file.embeds.0.description": "%emoji_error% Could not download file. Please try again.",
-  "api.plugin.errors.could_not_save_file.console": "Could not save file [%path%] %error%",
-
-  "api.plugin.errors.could_not_update.embeds.0.title": "Could Not Save Connection",
-  "api.plugin.errors.could_not_update.embeds.0.description": "%emoji_error% Could not save connection. Please try again.",
-  "api.plugin.errors.could_not_update.console": "Could not update connection %error%",
-
-  "api.plugin.errors.could_not_stream.embeds.0.title": "Could Not Download",
-  "api.plugin.errors.could_not_stream.embeds.0.description": "%emoji_error% Could not download files. Please try again.",
-  "api.plugin.errors.could_not_stream.console": "Could not stream file [%path%] %error%",
 
   "api.plugin.errors.status_400.embeds.0.title": "Unknown Bot Error",
   "api.plugin.errors.status_400.embeds.0.description": "%emoji_error% An unknown bot error occurred",
@@ -950,40 +669,34 @@
   "api.plugin.success.messages.close.embeds.0.color": "Red",
   "api.plugin.success.messages.close.embeds.0.timestamp": "%timestamp_now%",
 
-
-  "api.plugin.success.get.console": "Got file [%path%]",
-  "api.plugin.success.put.console": "Put file [%path%]",
   "api.plugin.success.listening.console": "Listening on %address%",
   "api.plugin.success.root_response": "To invite the MC Linker, open this link: https://top.gg/bot/712759741528408064",
+
+
 
   "api.utils.errors.could_not_fetch_uuid.embeds.0.title": "Could Not Fetch UUID",
   "api.utils.errors.could_not_fetch_uuid.embeds.0.description": "%emoji_error% **%username%** is not a valid minecraft java edition account name.",
   "api.utils.errors.could_not_fetch_uuid.console": "Could not fetch uuid of %username%",
 
-  "api.utils.errors.could_not_read_server_file.embeds.0.title": "Server Not Connected",
-  "api.utils.errors.could_not_read_server_file.embeds.0.description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
-  "api.utils.errors.could_not_read_server_file.console": "Could not read server file",
-
-  "api.utils.errors.could_not_read_user_file.embeds.0.title": "User Not Connected",
-  "api.utils.errors.could_not_read_user_file.embeds.0.description": "%emoji_error% User did not use `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
-  "api.utils.errors.could_not_read_user_file.console": "Could not read user file",
-
-  "api.utils.errors.not_connected_with_plugin.embeds.0.title": "Server Not Connected",
-  "api.utils.errors.not_connected_with_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
-  "api.utils.errors.not_connected_with_plugin.console": "Not connected with plugin",
 
 
+  "api.button.clicked.console": "%author_tag% has clicked button %interaction_id% in %guild_name%",
 
   "api.button.warnings.no_author.embeds.0.title": "No Permission",
   "api.button.warnings.no_author.embeds.0.description": "%emoji_warning% Only the command sender can use this button.",
-
-
 
   "api.button.warnings.no_permission.embeds.0.title": "No Permission",
   "api.button.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This button can only be used with the `%permission%` permission!",
   "api.button.warnings.no_permission.console": "No permission",
 
 
+
+  "api.select_menu.warnings.no_author.embeds.0.title": "No Permission",
+  "api.select_menu.warnings.no_author.embeds.0.description": "%emoji_warning% Only the command sender can use this select menu.",
+
+
+
+  "api.command.executed.console": "%author_tag% executed /%interaction_name% %args% in %guild_name%",
 
   "api.command.errors.server_not_connected.embeds.0.title": "Server Not Connected",
   "api.command.errors.server_not_connected.embeds.0.description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
@@ -1027,18 +740,6 @@
 
 
 
-  "buttons.clicked.console": "%author_tag% has clicked button %interaction_id% in %guild_name%",
-
-
-
-  "buttons.disable.warnings.no_permission.embeds.0.title": "No Permission",
-  "buttons.disable.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This button can only be used by admins.",
-  "buttons.disable.warnings.no_permission.console": "No permission",
-
-  "buttons.disable.errors.could_not_disable.embeds.0.title": "Could Not Disable",
-  "buttons.disable.errors.could_not_disable.embeds.0.description": "%emoji_error% Could not disable command **%command_name%**. Please try again.",
-  "buttons.disable.errors.could_not_disable.console": "Could not disable command %command_name%",
-
   "buttons.disable.success.response.embeds.0.title": "Disabled Command",
   "buttons.disable.success.response.embeds.0.description": "%emoji_success% Successfully disabled command **%command_name%**.",
   "buttons.disable.success.response.console": "Disabled command %command_name%",
@@ -1047,10 +748,6 @@
   "buttons.disable.success.help.embeds.0.color": "DarkRed",
 
 
-
-  "buttons.enable.warnings.no_permission.embeds.0.title": "No Permission",
-  "buttons.enable.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This button can only be used by admins.",
-  "buttons.enable.warnings.no_permission.console": "No permission",
 
   "buttons.enable.errors.already_enabled.embeds.0.title": "Already Enabled",
   "buttons.enable.errors.already_enabled.embeds.0.description": "%emoji_warning% Command **%command_name%** is already enabled.",
@@ -1263,7 +960,7 @@
 
   "data.ban.name": "ban",
   "data.ban.type": "ChatInput",
-  "data.ban.default_member_permissions": ["BanMembers"],
+  "data.ban.default_member_permissions.0": "BanMembers",
   "data.ban.long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
   "data.ban.description": "Ban a player from the minecraft server.",
 
@@ -1281,7 +978,7 @@
 
   "data.command.name": "command",
   "data.command.type": "ChatInput",
-  "data.command.default_member_permissions": ["Administrator"],
+  "data.command.default_member_permissions.0": "Administrator",
   "data.command.long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
   "data.command.description": "Execute any command on the minecraft-server.",
 
@@ -1305,7 +1002,7 @@
 
   "data.deop.name": "deop",
   "data.deop.type": "ChatInput",
-  "data.deop.default_member_permissions": ["Administrator"],
+  "data.deop.default_member_permissions.0": "Administrator",
   "data.deop.long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
   "data.deop.description": "Deop players on the minecraft-server.",
 
@@ -1317,7 +1014,7 @@
 
   "data.gamemode.name": "gamemode",
   "data.gamemode.type": "ChatInput",
-  "data.gamemode.default_member_permissions": ["Administrator"],
+  "data.gamemode.default_member_permissions.0": "Administrator",
   "data.gamemode.long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
   "data.gamemode.description": "Change the gamemode of a player on the minecraft-server.",
 
@@ -1343,7 +1040,7 @@
 
   "data.kick.name": "kick",
   "data.kick.type": "ChatInput",
-  "data.kick.default_member_permissions": ["KickMembers"],
+  "data.kick.default_member_permissions.0": "KickMembers",
   "data.kick.long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
   "data.kick.description": "Kick a player from the minecraft server.",
 
@@ -1361,7 +1058,7 @@
 
   "data.op.name": "op",
   "data.op.type": "ChatInput",
-  "data.op.default_member_permissions": ["Administrator"],
+  "data.op.default_member_permissions.0": "Administrator",
   "data.op.long_description": "OP players on the **minecraft-server**. Can only be used by admins.",
   "data.op.description": "OP players on the minecraft-server.",
 
@@ -1374,7 +1071,7 @@
 
   "data.unban.name": "unban",
   "data.unban.type": "ChatInput",
-  "data.unban.default_member_permissions": ["BanMembers"],
+  "data.unban.default_member_permissions.0": "BanMembers",
   "data.unban.long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
   "data.unban.description": "Unban a banned player from the minecraft-server.",
 
@@ -1424,7 +1121,7 @@
 
   "data.chatchannel.name": "chatchannel",
   "data.chatchannel.type": "ChatInput",
-  "data.chatchannel.default_member_permissions": ["Administrator"],
+  "data.chatchannel.default_member_permissions.0": "Administrator",
   "data.chatchannel.long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
   "data.chatchannel.description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
 
@@ -1437,7 +1134,11 @@
   "data.chatchannel.options.0.options.0.name": "channel",
   "data.chatchannel.options.0.options.0.description": "Set the channel.",
   "data.chatchannel.options.0.options.0.required": true,
-  "data.chatchannel.options.0.options.0.channel_types": [0, 5, 10, 11, 12],
+  "data.chatchannel.options.0.options.0.channel_types.0": "GuildText",
+  "data.chatchannel.options.0.options.0.channel_types.1": "GuildAnnouncement",
+  "data.chatchannel.options.0.options.0.channel_types.2": "AnnouncementThread",
+  "data.chatchannel.options.0.options.0.channel_types.3": "PublicThread",
+  "data.chatchannel.options.0.options.0.channel_types.4": "PrivateThread",
 
   "data.chatchannel.options.0.options.1.type": "Boolean",
   "data.chatchannel.options.0.options.1.name": "webhooks",
@@ -1453,7 +1154,11 @@
   "data.chatchannel.options.1.options.0.name": "channel",
   "data.chatchannel.options.1.options.0.description": "Set the channel.",
   "data.chatchannel.options.1.options.0.required": true,
-  "data.chatchannel.options.1.options.0.channel_types": [0, 5, 10, 11, 12],
+  "data.chatchannel.options.1.options.0.channel_types.0": "GuildText",
+  "data.chatchannel.options.1.options.0.channel_types.1": "GuildAnnouncement",
+  "data.chatchannel.options.1.options.0.channel_types.2": "AnnouncementThread",
+  "data.chatchannel.options.1.options.0.channel_types.3": "PublicThread",
+  "data.chatchannel.options.1.options.0.channel_types.4": "PrivateThread",
 
   "data.chatchannel.options.2.type": "Subcommand",
   "data.chatchannel.options.2.name": "list",
@@ -1463,7 +1168,7 @@
 
   "data.connect.name": "connect",
   "data.connect.type": "ChatInput",
-  "data.connect.default_member_permissions": ["Administrator"],
+  "data.connect.default_member_permissions.0": "Administrator",
   "data.connect.long_description": "Connect your minecraft java-edition server with the bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
   "data.connect.description": "Connect your minecraft server with the bot.",
 
@@ -1539,7 +1244,7 @@
 
   "data.disable.name": "disable",
   "data.disable.type": "ChatInput",
-  "data.disable.default_member_permissions": ["Administrator"],
+  "data.disable.default_member_permissions.0": "Administrator",
   "data.disable.long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in `/help <command>`.",
   "data.disable.description": "Disable a specific command/stat/advancement.",
 
@@ -1595,7 +1300,7 @@
 
   "data.disconnect.name": "disconnect",
   "data.disconnect.type": "ChatInput",
-  "data.disconnect.default_member_permissions": ["Administrator"],
+  "data.disconnect.default_member_permissions.0.0": "Administrator",
   "data.disconnect.long_description": "Disconnect your minecraft java-edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
   "data.disconnect.description": "Disconnect your minecraft server from the bot.",
 
@@ -1611,7 +1316,7 @@
 
   "data.enable.name": "enable",
   "data.enable.type": "ChatInput",
-  "data.enable.default_member_permissions": ["Administrator"],
+  "data.enable.default_member_permissions.0": "Administrator",
   "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in `/help <command>`.",
   "data.enable.description": "Enable a disabled command/stat/advancement (All enabled by default)",
 

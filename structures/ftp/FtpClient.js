@@ -57,6 +57,10 @@ class FtpClient extends BaseClient {
                             this.client.on('close', () => resolve(true));
                             this.client.end();
                         });
+                        stream.on('pipe', () => {
+                            console.log('Something is piping into the writer.');
+                        });
+                        stream.on('error', () => resolve(false));
                         stream.pipe(fs.createWriteStream(destination));
                     });
                 });

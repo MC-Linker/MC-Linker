@@ -1,5 +1,5 @@
 const utils = require('../../api/utils');
-const { keys, getEmbed, addPh } = require('../../api/messages');
+const { keys, getEmbed, addPh, ph } = require('../../api/messages');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Disable extends AutocompleteCommand {
@@ -22,7 +22,8 @@ class Disable extends AutocompleteCommand {
         if(subcommand === 'advancements') matchingKeys = utils.searchAllAdvancements(focused);
         else if(subcommand === 'stats') matchingKeys = utils.searchAllStats(focused);
 
-        interaction.respond(matchingKeys).catch(() => console.log(keys.commands.disable.errors.could_not_autocomplete.console));
+        interaction.respond(matchingKeys)
+            .catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
     }
 
     async execute(interaction, client, args, server) {

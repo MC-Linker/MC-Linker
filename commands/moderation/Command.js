@@ -1,5 +1,5 @@
 // noinspection JSUnresolvedVariable
-const { keys, addPh } = require('../../api/messages');
+const { keys, addPh, ph } = require('../../api/messages');
 const { getUsersFromMention } = require('../../api/utils');
 const Discord = require('discord.js');
 const nbt = require('prismarine-nbt');
@@ -123,7 +123,7 @@ class Command extends AutocompleteCommand {
         }
 
         if(respondArray.length >= 25) respondArray.length = 25;
-        interaction.respond(respondArray).catch(() => console.log(keys.commands.command.errors.could_not_autocomplete.console));
+        interaction.respond(respondArray).catch(() => interaction.replyTl(keys.commands.command.errors.could_not_autocomplete, ph.command(interaction.command)));
     }
 
     async execute(interaction, client, args, server) {

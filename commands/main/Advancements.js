@@ -29,7 +29,7 @@ class Advancements extends AutocompleteCommand {
         });
 
         interaction.respond(respondArray)
-            .catch(() => console.log(keys.commands.advancements.errors.could_not_autocomplete.console));
+            .catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
     }
 
     async execute(interaction, client, args, server) {
@@ -78,7 +78,6 @@ class Advancements extends AutocompleteCommand {
                 'advancement_description': advancementDesc,
             },
         );
-        if(!baseEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_command);
 
         try {
             let amEmbed;

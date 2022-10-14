@@ -59,7 +59,7 @@ class Button {
      * @abstract
      */
     async execute(interaction, client, server) {
-        await interaction.replyTl(keys.buttons.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
+        await interaction.replyTl(keys.api.button.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
         if(this.defer) await interaction.deferReply({ ephemeral: this.ephemeral });
 
         if(this.permissions) {

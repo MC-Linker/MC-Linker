@@ -1,5 +1,5 @@
 const utils = require('../../api/utils');
-const { keys } = require('../../api/messages');
+const { keys, ph } = require('../../api/messages');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Enable extends AutocompleteCommand {
@@ -46,7 +46,8 @@ class Enable extends AutocompleteCommand {
             });
         }
 
-        interaction.respond(respondArray).catch(() => console.log(keys.commands.enable.errors.could_not_autocomplete));
+        interaction.respond(respondArray)
+            .catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
     }
 
     async execute(interaction, client, args, server) {

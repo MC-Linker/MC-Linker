@@ -82,8 +82,7 @@ class Command {
      * @abstract
      */
     async execute(interaction, client, args, server) {
-        await interaction.replyTl(keys.commands.executed, ph.std(interaction), { args: args.join(' ') });
-
+        await interaction.replyTl(keys.api.command.executed, ph.std(interaction), { args: args.join(' ') });
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
         if(this.ownerOnly) {

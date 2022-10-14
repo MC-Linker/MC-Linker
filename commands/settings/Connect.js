@@ -178,12 +178,8 @@ class Connect extends Command {
         if(server?.protocol instanceof PluginProtocol) {
             const resp = await server.protocol.disconnect();
 
-            if(!resp) {
-                await interaction.channel.send(addPh(keys.commands.connect.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
-            }
-            else {
-                await interaction.channel.send(addPh(keys.commands.connect.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
-            }
+            if(!resp) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
+            else await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
         }
     }
 }

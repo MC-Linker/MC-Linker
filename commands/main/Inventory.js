@@ -134,7 +134,6 @@ class Inventory extends Command {
             { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
         );
         const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(interaction), { username: user.username });
-        if(!invEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_command);
 
         /** @type {Discord.InteractionReplyOptions} */
         const replyOptions = {
@@ -160,8 +159,7 @@ class Inventory extends Command {
             if(!buttonId.startsWith('slot')) return;
 
             if(button.user.id !== interaction.member.user.id) {
-                const notAuthorEmbed = getEmbed(keys.commands.inventory.warnings.not_author_button, ph.emojis());
-                if(!notAuthorEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_button);
+                const notAuthorEmbed = getEmbed(keys.api.button.warnings.no_author, ph.emojis());
                 await button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
                 return;
             }
@@ -222,7 +220,6 @@ class Inventory extends Command {
                 },
                 ph.emojis(),
             );
-            if(!itemEmbed) return interaction.replyTl(keys.main.errors.could_not_execute_button);
             addInfo(itemEmbed, item.tag, itemStats);
 
             //If item is a shulker, render shulker inventory

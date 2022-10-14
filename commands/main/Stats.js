@@ -19,7 +19,7 @@ class Stats extends AutocompleteCommand {
         const focused = interaction.options.getFocused().toLowerCase();
 
         const stats = utils.searchStats(focused, subcommand);
-        interaction.respond(stats).catch(() => console.log(keys.commands.stats.errors.could_not_autocomplete));
+        interaction.respond(stats).catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
     }
 
     async execute(interaction, client, args, server) {
@@ -87,9 +87,6 @@ class Stats extends AutocompleteCommand {
                 ph.std(interaction),
                 argPlaceholder, { 'stat_message': statMessage, 'stat_value': stat },
             );
-            if(!statEmbed) {
-                return interaction.replyTl(keys.main.errors.could_not_execute_command);
-            }
 
             let imgType;
             if(category === 'killed' || category === 'killed_by') imgType = 'entities';

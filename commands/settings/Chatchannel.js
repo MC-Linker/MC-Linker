@@ -28,57 +28,56 @@ class Chatchannel extends Command {
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.success.choose);
 
-            //TODO change to awaitMessageComponent
-            const collector = logChooserMsg.createMessageComponentCollector({
-                componentType: Discord.ComponentType.SelectMenu,
-                time: 30_000,
-                max: 1,
-            });
-            collector.on('collect', async menu => {
+            let menu;
+            try {
+                menu = await logChooserMsg.awaitMessageComponent({
+                    componentType: Discord.ComponentType.SelectMenu,
+                    time: 30_000,
+                    max: 1,
+                });
+                await interaction.message.edit(keys.commands.chatchannel.warnings.already_responded);
                 if(menu.customId !== 'log') return;
 
                 menu = addResponseMethods(menu);
 
                 if(menu.user.id !== interaction.user.id) {
-                    const notAuthorEmbed = getEmbed(keys.commands.chatchannel.warnings.not_author_select, ph.emojis());
+                    const notAuthorEmbed = getEmbed(keys.api.select_menu.warnings.no_author, ph.emojis());
                     return menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
                 }
+            }
+            catch(_) {
+                return interaction.message.edit(keys.commands.chatchannel.warnings.not_collected);
+            }
 
-                //Create webhook for channel
-                let webhook;
-                if(useWebhooks && menu.values.includes('chat')) {
-                    if(channel.isThread()) webhook = await channel.parent.createWebhook({
-                        name: 'ChatChannel',
-                        reason: 'ChatChannel to Minecraft',
-                    });
-                    else webhook = await channel.createWebhook({
-                        name: 'ChatChannel',
-                        reason: 'ChatChannel to Minecraft',
-                    });
-                }
-
-                const resp = await server.protocol.addChatChannel({
-                    id: channel.id,
-                    webhook: webhook?.id,
-                    types: menu.values,
+            //Create webhook for channel
+            let webhook;
+            if(useWebhooks && menu.values.includes('chat')) {
+                if(channel.isThread()) webhook = await channel.parent.createWebhook({
+                    name: 'ChatChannel',
+                    reason: 'ChatChannel to Minecraft',
                 });
-                if(!resp) {
-                    webhook?.delete();
-                    return interaction.replyTl(keys.api.plugin.errors.no_response);
-                }
-
-                await server.edit({
-                    chat: true,
-                    channels: resp.data,
+                else webhook = await channel.createWebhook({
+                    name: 'ChatChannel',
+                    reason: 'ChatChannel to Minecraft',
                 });
+            }
 
-                return interaction.replyTl(keys.commands.chatchannel.success.add);
+            const resp = await server.protocol.addChatChannel({
+                id: channel.id,
+                webhook: webhook?.id,
+                types: menu.values,
             });
-            collector.on('end', collected => {
-                if(!collected.size) interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
-                else interaction.replyTl(keys.commands.chatchannel.warnings.already_responded);
+            if(!resp) {
+                webhook?.delete();
+                return interaction.replyTl(keys.api.plugin.errors.no_response);
+            }
+
+            await server.edit({
+                chat: true,
+                channels: resp.data,
             });
 
+            return interaction.replyTl(keys.commands.chatchannel.success.add);
         }
         //Remove chatchannel
         else if(method === 'remove') {
@@ -151,7 +150,7 @@ class Chatchannel extends Command {
                 if(!button.customId.startsWith('channel')) return;
 
                 if(button.user.id !== interaction.member.user.id) {
-                    const notAuthorEmbed = getEmbed(keys.commands.chatchannel.warnings.not_author_button, ph.emojis());
+                    const notAuthorEmbed = getEmbed(keys.api.button.warnings.no_author, ph.emojis());
                     return button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
                 }
 

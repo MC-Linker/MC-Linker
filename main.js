@@ -135,10 +135,10 @@ client.on('interactionCreate', async interaction => {
         try {
             // noinspection JSUnresolvedFunction
             await command.execute(interaction, client, args, server)
-                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
+                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.command(interaction.command)));
         }
         catch(err) {
-            await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
+            await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.command(interaction.command));
         }
     }
     else if(interaction.isAutocomplete()) {
@@ -147,23 +147,24 @@ client.on('interactionCreate', async interaction => {
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client)
-                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err))));
+                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.command(interaction.command))));
         }
         catch(err) {
-            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err)));
+            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.command(interaction.command)));
         }
     }
     else if(interaction.isButton()) {
-        const button = client.buttons.get(interaction.customId.split('_').shift());
+        const id = interaction.customId.split('_').shift();
+        const button = client.buttons.get(id);
 
         try {
             if(!button) return;
             // noinspection JSUnresolvedFunction
             await button.execute(interaction, client)
-                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err)));
+                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': id }));
         }
         catch(err) {
-            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err));
+            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': id });
         }
     }
 });

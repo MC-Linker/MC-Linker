@@ -344,7 +344,7 @@ function addPh(key, ...placeholders) {
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|ReplyMessageOptions} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Promise<Message|InteractionResponse>|void}
+ * @returns {Promise<?Message|?InteractionResponse>}
  */
 async function replyTl(interaction, key, ...placeholders) {
     //Log to console if interaction doesn't exist
@@ -415,7 +415,7 @@ async function replyOptions(interaction, options) {
  * Get an embed builder from a language key.
  * @param {APIEmbed|{embeds: APIEmbed[]}} key - The language key to get the embed from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
- * @returns {EmbedBuilder|void}
+ * @returns {?EmbedBuilder}
  */
 function getEmbed(key, ...placeholders) {
     if(!key) return console.error(keys.api.messages.errors.no_embed_key.console);
@@ -427,7 +427,7 @@ function getEmbed(key, ...placeholders) {
 
     const embed = new Discord.EmbedBuilder();
 
-    for(const field of key?.fields ?? []) {
+    for(const field of key.fields ?? []) {
         if(!field.name || !field.value) continue;
         embed.addFields({ name: field.name, value: field.value, inline: field.inline });
     }
@@ -449,7 +449,7 @@ function getEmbed(key, ...placeholders) {
  * Get an action row builder from a language key.
  * @param {APIActionRowComponent} key - The language key to get the action row from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
- * @returns {ActionRowBuilder[]|void}
+ * @returns {ActionRowBuilder[]}
  */
 function getActionRows(key, ...placeholders) {
     if(!key) return console.error(keys.api.messages.errors.no_component_key.console);
@@ -472,7 +472,7 @@ function getActionRows(key, ...placeholders) {
  * Get a component builder from a language key.
  * @param {APIComponent|{components: APIComponent[]}} key - The language key to get the component builder from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
- * @returns {ComponentBuilder|void}
+ * @returns {?ComponentBuilder}
  */
 function getComponent(key, ...placeholders) {
     //Get first component
@@ -507,7 +507,7 @@ function getComponent(key, ...placeholders) {
             if(key.max_values) componentBuilder.setMaxValues(key.max_values);
             if(key.placeholder) componentBuilder.setPlaceholder(key.placeholder);
 
-            for(const option of key?.options ?? []) {
+            for(const option of key.options ?? []) {
                 if(!option.label || !option.value) return;
 
                 const optionBuilder = new Discord.SelectMenuOptionBuilder()
@@ -547,7 +547,7 @@ function getComponent(key, ...placeholders) {
 /**
  * Get a command builder from a language key.
  * @param {APIApplicationCommand} key - The language key to get the command builder from.
- * @returns {ApplicationCommandBuilder|void}
+ * @returns {?ApplicationCommandBuilder}
  */
 function getCommand(key) {
     if(!key) return console.error(keys.api.messages.errors.no_command_key.console);
@@ -618,7 +618,7 @@ function addSlashCommandOption(builder, key) {
             if(key.max_length) optionBuilder.setMaxLength(key.max_length);
             if(key.min_length) optionBuilder.setMinLength(key.max_length);
 
-            for(const choice of key?.choices ?? []) {
+            for(const choice of key.choices ?? []) {
                 if(!choice.name || !choice.value) continue;
                 optionBuilder.addChoices(choice);
             }
@@ -645,7 +645,7 @@ function addSlashCommandOption(builder, key) {
             if(key.min_value) optionBuilder.setMinValue(key.min_value);
             if(key.max_value) optionBuilder.setMaxValue(key.max_value);
 
-            for(const choice of key?.choices ?? []) {
+            for(const choice of key.choices ?? []) {
                 if(!choice.name || !choice.value) continue;
                 optionBuilder.addChoices(choice);
             }
@@ -672,7 +672,7 @@ function addSlashCommandOption(builder, key) {
             if(key.min_value) optionBuilder.setMinValue(key.min_value);
             if(key.max_value) optionBuilder.setMaxValue(key.max_value);
 
-            for(const choice of key?.choices ?? []) {
+            for(const choice of key.choices ?? []) {
                 if(!choice.name || !choice.value) continue;
                 optionBuilder.addChoices(choice);
             }
@@ -686,7 +686,9 @@ function addSlashCommandOption(builder, key) {
                 .setDescription(key.description)
                 .setRequired(key.required ?? false);
 
-            if(key.channel_types) optionBuilder.addChannelTypes(...key.channel_types);
+            for(const channelType of key.channel_types ?? []) {
+                optionBuilder.addChannelTypes(Discord.ChannelType[channelType]);
+            }
 
             builder.addChannelOption(optionBuilder);
             break;
@@ -723,7 +725,7 @@ function addSlashCommandOption(builder, key) {
             optionBuilder.setName(key.name)
                 .setDescription(key.description);
 
-            for(const option of key?.options ?? []) {
+            for(const option of key.options ?? []) {
                 addSlashCommandOption(optionBuilder, option);
             }
 
@@ -735,7 +737,7 @@ function addSlashCommandOption(builder, key) {
             optionBuilder.setName(key.name)
                 .setDescription(key.description);
 
-            for(const option of key?.options ?? []) {
+            for(const option of key.options ?? []) {
                 addSlashCommandOption(optionBuilder, option);
             }
 
