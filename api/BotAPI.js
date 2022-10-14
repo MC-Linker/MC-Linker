@@ -28,8 +28,6 @@ class BotAPI {
 
     async startServer() {
         this.fastify.post('/chat', async (request, reply) => {
-            reply.send('Success');
-
             const player = request.body.player?.replaceAll(' ', '');
             const message = request.body.message;
             const channels = request.body.channels;
@@ -40,28 +38,13 @@ class BotAPI {
             const argPlaceholder = { ip, 'username': player, 'author_url': authorURL, message };
 
             /** @type {ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.protocol instanceof PluginProtocol);
+            const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.protocol instanceof PluginProtocol);
 
-            //If no connection on that ip and not already warned
-            if(!server && !this.alreadyWarnedServers.includes(guildId)) {
-                try {
-                    for(const channel of channels) {
-                        const discordChannel = await this.client.channels.fetch(channel);
-                        await discordChannel?.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), argPlaceholder))
-                            .catch(() => {
-                            });
-                    }
-
-                    this.alreadyWarnedServers.push(guildId);
-                    return;
-                }
-                catch(_) {
-                    return;
-                }
-            }
+            //If no connection on that guild
+            if(!server) return reply.status(403).send();
+            else reply.send({ message: 'Success' });
 
             let chatEmbed;
-
             if(type === 'advancement') {
                 let advancementTitle;
                 let advancementDesc;
