@@ -4,6 +4,12 @@ const ConnectionManager = require('./ConnectionManager');
 class ServerConnectionManager extends ConnectionManager {
 
     /**
+     * The server connection cache of this manager.
+     * @type {Map<string, ServerConnection>}
+     */
+    cache;
+
+    /**
      * Creates a new ServerConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {string} outputPath - The path to write server data to.
@@ -13,12 +19,6 @@ class ServerConnectionManager extends ConnectionManager {
         super(client, ServerConnection, outputPath, 'connection.json');
         this.cache = super.cache;
     }
-
-    /**
-     * The server connection cache of this manager.
-     * @type {Map<string, ServerConnection>}
-     */
-    cache;
 
     /**
      * @inheritDoc

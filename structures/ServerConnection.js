@@ -114,7 +114,7 @@ class ServerConnection extends Connection {
          * @type {string}
          * */
         this.path = data.path ?? this.path;
-        
+
         /**
          * Whether online mode is enabled on this server.
          * @type {boolean}

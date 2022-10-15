@@ -93,7 +93,7 @@ class Inventory extends Command {
         const nbtFile = await server.protocol.get(Protocol.FilePath.PlayerData(server.path, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
         if(!await utils.handleProtocolResponse(
             nbtFile, server.protocol, interaction, {
-                404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' })
+                404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' }),
             },
         )) return;
 

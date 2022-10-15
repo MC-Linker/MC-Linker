@@ -6,6 +6,12 @@ const Discord = require('discord.js');
 class UserConnectionManager extends ConnectionManager {
 
     /**
+     * The user connection cache of this manager.
+     * @type {Map<string, UserConnection>}
+     */
+    cache;
+
+    /**
      * Creates a new UserConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {string} outputPath - The path to write user data to.
@@ -15,12 +21,6 @@ class UserConnectionManager extends ConnectionManager {
         super(client, UserConnection, outputPath, 'connection.json');
         this.cache = super.cache;
     }
-
-    /**
-     * The user connection cache of this manager.
-     * @type {Map<string, UserConnection>}
-     */
-    cache;
 
     /**
      * @typedef {object} UserResponse
@@ -41,7 +41,11 @@ class UserConnectionManager extends ConnectionManager {
         const id = Discord.MessageMentions.UsersPattern.exec(arg)?.[1];
         if(id) {
             const cacheConnection = this.cache.get(id);
-            if(cacheConnection) return { uuid: cacheConnection.getUUID(server), username: cacheConnection.username, error: null };
+            if(cacheConnection) return {
+                uuid: cacheConnection.getUUID(server),
+                username: cacheConnection.username,
+                error: null,
+            };
             return { error: 'cache', uuid: null, username: null };
         }
 

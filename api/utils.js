@@ -1,7 +1,15 @@
 const PluginProtocol = require('../structures/PluginProtocol');
 const { keys } = require('./messages');
 
-const { GuildApplicationCommandManager, CommandInteraction, ApplicationCommandOptionType, User, MessageMentions, BaseInteraction, MessagePayload } = require('discord.js');
+const {
+    GuildApplicationCommandManager,
+    CommandInteraction,
+    ApplicationCommandOptionType,
+    User,
+    MessageMentions,
+    BaseInteraction,
+    MessagePayload,
+} = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
 

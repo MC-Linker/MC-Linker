@@ -64,7 +64,7 @@ client.on('guildCreate', guild => {
 });
 
 client.on('guildDelete', async guild => {
-    if (!client.isReady() || !guild.available) return; //Prevent server outages from deleting data
+    if(!client.isReady() || !guild.available) return; //Prevent server outages from deleting data
     console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
     await client.serverConnections.disconnect(guild.id);

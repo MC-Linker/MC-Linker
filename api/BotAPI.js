@@ -111,7 +111,11 @@ class BotAPI {
                         if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
                         else webhook = await discordChannel.createWebhook(options);
 
-                        const regChannel = await server.protocol.addChatChannel({ types: channel.types, webhook: webhook.id, id: guildId });
+                        const regChannel = await server.protocol.addChatChannel({
+                            types: channel.types,
+                            webhook: webhook.id,
+                            id: guildId,
+                        });
                         if(!regChannel) {
                             discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
                             await webhook.delete();
@@ -127,7 +131,10 @@ class BotAPI {
                         await webhook.edit({ name: player, avatar: authorURL });
                     }
 
-                    if(discordChannel.isThread()) await webhook.send({ threadId: discordChannel.id, content: argPlaceholder.message });
+                    if(discordChannel.isThread()) await webhook.send({
+                        threadId: discordChannel.id,
+                        content: argPlaceholder.message,
+                    });
                     else await webhook.send(argPlaceholder.message);
                 }
                 return;

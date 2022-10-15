@@ -4,6 +4,8 @@ const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Disable extends AutocompleteCommand {
 
+    disabledCommands = ['enable', 'disable', 'help'];
+
     constructor() {
         super({
             name: 'disable',
@@ -11,8 +13,6 @@ class Disable extends AutocompleteCommand {
             category: 'settings',
         });
     }
-
-    disabledCommands = ['enable', 'disable', 'help'];
 
     autocomplete(interaction, client) {
         const subcommand = interaction.options.getSubcommand();
@@ -79,7 +79,10 @@ class Disable extends AutocompleteCommand {
             if(type === 'commands') toDisable = formattedToDisable.toLowerCase();
 
             if(!await settings.disable(type, toDisable)) {
-                return interaction.replyTl(keys.commands.disable.errors.could_not_disable, { type, 'disable': formattedToDisable });
+                return interaction.replyTl(keys.commands.disable.errors.could_not_disable, {
+                    type,
+                    'disable': formattedToDisable,
+                });
             }
 
             return interaction.replyTl(keys.commands.disable.success.disabled, { type, 'disable': formattedToDisable });

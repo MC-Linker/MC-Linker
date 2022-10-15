@@ -96,7 +96,7 @@ class MCLinker extends Discord.Client {
                 this.commands.set(command.name, command);
                 console.log(addPh(
                     category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,
-                    { command: command.name, category: category }
+                    { command: command.name, category: category },
                 ));
             }
         }

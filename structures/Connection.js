@@ -32,7 +32,7 @@ class Connection extends Base {
             .then(() => true)
             .catch(() => false);
     }
-    
+
     /**
      * Deletes the data of the connection from the fs.
      * @returns {Promise<boolean>} - Whether the deletion was successful.

@@ -22,7 +22,8 @@ class SftpClient extends BaseClient {
             await this.client.connect(this.credentials);
             await this.client.end();
             return true;
-        } catch(_) {
+        }
+        catch(_) {
             return false;
         }
     }
@@ -33,7 +34,8 @@ class SftpClient extends BaseClient {
             const foundFile = await this._findFile(name, start, maxDepth);
             await this.client.end();
             return foundFile;
-        } catch(_) {
+        }
+        catch(_) {
             return undefined;
         }
     }
@@ -46,7 +48,8 @@ class SftpClient extends BaseClient {
             await this.client.get(source, destination);
             await this.client.end();
             return true;
-        } catch(_) {
+        }
+        catch(_) {
             return false;
         }
     }
@@ -57,8 +60,9 @@ class SftpClient extends BaseClient {
             const listing = await this.client.list(folder);
             await this.client.end();
 
-            return listing.map(item => { return { name: item.name, isDirectory: item.type === 'd' } });
-        } catch(_) {
+            return listing.map(item => { return { name: item.name, isDirectory: item.type === 'd' }; });
+        }
+        catch(_) {
             return [];
         }
     }
@@ -69,7 +73,8 @@ class SftpClient extends BaseClient {
             await this.client.put(source, destination);
             await this.client.end();
             return true;
-        } catch(_) {
+        }
+        catch(_) {
             return false;
         }
     }

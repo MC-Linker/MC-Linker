@@ -51,7 +51,7 @@ class FtpClient extends BaseClient {
                     if(err) return resolve(false);
 
                     this.client.get(source, (err, stream) => {
-                        if (err) return resolve(false);
+                        if(err) return resolve(false);
 
                         stream.once('close', () => {
                             this.client.on('close', () => resolve(true));
@@ -75,8 +75,13 @@ class FtpClient extends BaseClient {
         return new Promise(resolve => {
             this.client.on('ready', () => {
                 this.client.list(folder, (err, listing) => {
-                    if (err) return resolve(false);
-                    this.client.on('close', () => resolve(listing.map(item => { return { name: item.name, isDirectory: item.type === 'd' } })));
+                    if(err) return resolve(false);
+                    this.client.on('close', () => resolve(listing.map(item => {
+                        return {
+                            name: item.name,
+                            isDirectory: item.type === 'd',
+                        };
+                    })));
                     this.client.end();
                 });
             });
@@ -90,7 +95,7 @@ class FtpClient extends BaseClient {
         return new Promise(resolve => {
             this.client.on('ready', () => {
                 this.client.put(source, destination, err => {
-                    if (err) return resolve(false);
+                    if(err) return resolve(false);
                     this.client.on('close', () => resolve(true));
                     this.client.end();
                     resolve(true);
@@ -105,7 +110,7 @@ class FtpClient extends BaseClient {
     _findFile(name, path, maxDepth) {
         return new Promise(resolve => {
             this.client.list(path, (err, listing) => {
-                if (err) return resolve(undefined);
+                if(err) return resolve(undefined);
 
                 for(const item of listing) {
                     if(item.type !== 'd' && item.name === name) return path;

@@ -85,7 +85,7 @@ class FtpProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the server.
      */
     async connect() {
-        return await this.ftpClient.connect() ? FtpProtocol.dataToProtocolResponse({ message: "Success" }) : null;
+        return await this.ftpClient.connect() ? FtpProtocol.dataToProtocolResponse({ message: 'Success' }) : null;
     }
 
     /**

@@ -37,7 +37,7 @@ class BaseClient {
      * @abstract
      */
     connect() {
-        throw new Error("Not implemented.");
+        throw new Error('Not implemented.');
     }
 
     /**
@@ -48,7 +48,7 @@ class BaseClient {
      * @abstract
      */
     get(source, destination) {
-        throw new Error("Not implemented.");
+        throw new Error('Not implemented.');
     }
 
     /**
@@ -59,7 +59,7 @@ class BaseClient {
      * @abstract
      */
     put(source, destination) {
-        throw new Error("Not implemented.");
+        throw new Error('Not implemented.');
     }
 
     /**
@@ -69,7 +69,7 @@ class BaseClient {
      * @abstract
      */
     list(folder) {
-        throw new Error("Not implemented.");
+        throw new Error('Not implemented.');
     }
 
     /**
@@ -81,7 +81,7 @@ class BaseClient {
      * @abstract
      */
     find(name, start, maxDepth) {
-        throw new Error("Not implemented.");
+        throw new Error('Not implemented.');
     }
 
     /**
@@ -94,7 +94,7 @@ class BaseClient {
      * @private
      */
     _findFile(name, path, maxDepth) {
-        throw new Error("Not implemented.");
+        throw new Error('Not implemented.');
     }
 }
 

@@ -1,4 +1,11 @@
-const { CommandInteraction, Message, PermissionFlagsBits, ApplicationCommandPermissionType, ApplicationCommandOptionType, MessageMentions } = require('discord.js');
+const {
+    CommandInteraction,
+    Message,
+    PermissionFlagsBits,
+    ApplicationCommandPermissionType,
+    ApplicationCommandOptionType,
+    MessageMentions,
+} = require('discord.js');
 const { keys, ph } = require('../api/messages');
 const { getSlashCommand } = require('../api/utils');
 const { ownerId } = require('../config.json');
@@ -118,7 +125,7 @@ class Command {
             return false;
         }
 
-        if(this.requiresConnectedUser !== null && (this.requiresConnectedUser === 0 || args[this.requiresConnectedUser-1] !== undefined)) {
+        if(this.requiresConnectedUser !== null && (this.requiresConnectedUser === 0 || args[this.requiresConnectedUser - 1] !== undefined)) {
             const user = await client.userConnections.userFromArgument(args[this.requiresConnectedUser], server);
             if(user.error === 'nullish') {
                 await interaction.replyTl(keys.api.command.warnings.no_user);
