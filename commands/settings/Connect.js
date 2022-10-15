@@ -1,11 +1,12 @@
 const dns = require('dns/promises');
 const crypto = require('crypto');
 const { pluginPort } = require('../../config.json');
-const { keys, ph, addPh } = require('../../api/messages');
+const { keys, ph, addPh, toTranslatedMessage } = require('../../api/messages');
 const Command = require('../../structures/Command');
 const PluginProtocol = require('../../structures/PluginProtocol');
 const FtpProtocol = require('../../structures/FtpProtocol');
 const Protocol = require('../../structures/Protocol');
+const utils = require('../../api/utils');
 
 class Connect extends Command {
 
@@ -69,18 +70,19 @@ class Connect extends Command {
             if(!path) {
                 await interaction.replyTl(keys.commands.connect.warnings.searching_properties);
                 path = await ftpProtocol.find('server.properties', '/', 2);
-                if(!path) {
+                if(!path?.data) {
                     return interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
                 }
             }
 
             const serverProperties = await ftpProtocol.get(Protocol.FilePath.ServerProperties(path), `./serverdata/connections/${interaction.guildId}/server.properties`);
-            if(!serverProperties?.data) {
-                return interaction.replyTl(keys.api.command.errors.could_not_download, { category: 'server configuration' });
-            }
+            if(!await utils.handleProtocolResponse(serverProperties, server.protocol, interaction, {
+                404: keys.commands.connect.errors.could_not_get_properties,
+            })) return;
+
             const propertiesObject = Object.fromEntries(
                 serverProperties.data.toString('utf-8').split('\n')
-                    .map(prop => prop.split('='))
+                    .map(prop => prop.split('=')),
             );
 
             const onlineMode = propertiesObject['online-mode'];
@@ -113,7 +115,8 @@ class Connect extends Command {
                 const { address } = await dns.lookup(ip, 4);
                 if(address) ip = address;
             }
-            catch(_) {}
+            catch(_) {
+            }
 
             await this._disconnectOldPlugin(interaction, server);
 
@@ -121,9 +124,7 @@ class Connect extends Command {
             const pluginProtocol = new PluginProtocol(client, { ip, hash, port });
 
             const verify = await pluginProtocol.verify();
-            if(!verify) {
-                return interaction.replyTl(keys.api.plugin.errors.no_response);
-            }
+            if(!await utils.handleProtocolResponse(verify, server.protocol, interaction)) return;
 
             await interaction.replyTl(keys.commands.connect.warnings.check_dms);
 
@@ -138,32 +139,29 @@ class Connect extends Command {
             }
 
             const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000 });
-
-            if(!collector.first()) {
+            const message = collector.size !== 0 ? toTranslatedMessage(collector.first()) : null;
+            if(!message) {
                 console.log(keys.commands.connect.warnings.no_reply_in_time.console);
                 return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.std(interaction)));
             }
 
             const resp = await pluginProtocol.connect(collector.first());
-            if(!resp) {
-                return dmChannel.send(addPh(keys.commands.connect.errors.could_not_connect_plugin, ph.std(interaction)));
-            }
-            else if(resp.status === 401) {
-                return dmChannel.send(addPh(keys.commands.connect.errors.incorrect_code, ph.std(interaction)));
-            }
+            if(!await utils.handleProtocolResponse(verify, server.protocol, message, {
+                401: keys.commands.connect.errors.incorrect_code,
+            })) return;
 
-            await dmChannel.send(addPh(keys.commands.connect.success.verification, ph.std(interaction)));
+            await message.replyTl(keys.commands.connect.success.verification, ph.std(interaction));
 
             /** @type {ServerConnectionData} */
             const serverConnectionData = {
                 id: interaction.guildId,
-                ip: resp.ip,
-                version: resp.version.split('.').pop(),
+                ip: resp.data.ip.split(':').shift(),
+                port: resp.data.port.split(':').pop(),
+                version: parseInt(resp.data.version.split('.').pop()),
                 path: decodeURIComponent(resp.path),
-                hash: resp.hash,
-                online: resp.online,
+                hash: resp.data.hash,
+                online: resp.data.online,
                 chat: false,
-                channels: [],
                 protocol: 'plugin',
             };
 
@@ -176,9 +174,10 @@ class Connect extends Command {
 
     async _disconnectOldPlugin(interaction, server) {
         if(server?.protocol instanceof PluginProtocol) {
+            /** @type {?ProtocolResponse} */
             const resp = await server.protocol.disconnect();
 
-            if(!resp) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
+            if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
             else await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
         }
     }

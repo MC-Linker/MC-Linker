@@ -6,6 +6,7 @@ const mcData = require('minecraft-data')('1.19.2');
 const { keys, addPh, getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
 const Command = require('../../structures/Command');
 const Protocol = require('../../structures/Protocol');
+const utils = require('../../api/utils');
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -90,9 +91,11 @@ class Inventory extends Command {
         const showDetails = args[1];
 
         const nbtFile = await server.protocol.get(Protocol.FilePath.PlayerData(server.path, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
-        if(!nbtFile) {
-            return interaction.replyTl(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' });
-        }
+        if(!await utils.handleProtocolResponse(
+            nbtFile, server.protocol, interaction, {
+                404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' })
+            },
+        )) return;
 
         let playerData;
         try {

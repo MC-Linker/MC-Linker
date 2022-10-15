@@ -60,9 +60,11 @@ class Advancements extends AutocompleteCommand {
         }
 
         const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.path, user.uuid), `./userdata/advancements/${user.uuid}.json`);
-        if(!amFile) {
-            return interaction.replyTl(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' });
-        }
+        if(!await utils.handleProtocolResponse(
+            amFile, server.protocol, interaction, {
+                404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' })
+            },
+        )) return;
         const advancementData = JSON.parse(amFile.data.toString('utf-8'));
 
         const letters = [...advancementTitle];

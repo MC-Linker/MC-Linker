@@ -1022,11 +1022,11 @@
         "could_not_get_properties": {
           "embeds": [
             {
-              "title": "Could Not Get Server Properties",
-              "description": "%emoji_error% Could not get server properties. Please try again."
+              "title": "Could Not Download",
+              "description": "%emoji_error% Could not download server configuration. Please specify the server-path manually."
             }
           ],
-          "console": "Could not get server.properties"
+          "console": "Could not download server.properties"
         },
         "incorrect_code": {
           "embeds": [
@@ -1302,25 +1302,25 @@
               "description": "%emoji_error% An unknown bot error occurred."
             }
           ],
-          "console": "400: Unknown client error %error%"
+          "console": "400: Unknown client error, %error%"
         },
         "status_401": {
           "embeds": [
             {
               "title": "Unknown Bot Error",
-              "description": "401: %emoji_error% An unknown bot error occurred."
+              "description": "%emoji_error% An unknown bot error occurred."
             }
           ],
-          "console": "Wrong authorization: 401"
+          "console": "401: Wrong authorization"
         },
         "status_404": {
           "embeds": [
             {
-              "title": "Could Not Download",
-              "description": "%emoji_error% The user never joined the server."
+              "title": "Data Not Found",
+              "description": "%emoji_error% The requested data could not be found on the server."
             }
           ],
-          "console": "404: Unknown client error %error%"
+          "console": "404: Data could not be found, %error%"
         },
         "status_500": {
           "embeds": [
@@ -1329,7 +1329,7 @@
               "description": "%emoji_error% An unknown plugin error occurred."
             }
           ],
-          "console": "500: Unknown server error %error%"
+          "console": "500: Unknown server error, %error%"
         }
       },
       "success": {

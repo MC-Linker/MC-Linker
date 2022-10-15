@@ -1,5 +1,6 @@
 const { keys } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const utils = require('../../api/utils');
 
 // noinspection JSClassNamingConvention
 class Op extends Command {
@@ -19,9 +20,7 @@ class Op extends Command {
         const user = args[0];
 
         const resp = await server.protocol.execute(`op ${user.username}`);
-        if(!resp) {
-            return interaction.replyTl(keys.api.plugin.errors.no_response);
-        }
+        if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         if(resp.status === 206) return interaction.replyTl(keys.commands.op.warnings.response_warning, { username: user });
         else return interaction.replyTl(keys.commands.op.success, { username: user });

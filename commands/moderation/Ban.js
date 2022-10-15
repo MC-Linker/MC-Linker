@@ -1,5 +1,6 @@
 const { keys } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const utils = require('../../api/utils');
 
 class Ban extends Command {
 
@@ -20,10 +21,8 @@ class Ban extends Command {
         let reason = args[0] ? args.join(' ') : 'Banned by an operator.';
 
         const resp = await server.protocol.execute(`ban ${user.username} ${reason}`);
-        if(!resp) {
-            return interaction.replyTl(keys.api.plugin.errors.no_response);
-        }
-        else if(resp.status === 206) {
+        if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
+        if(resp.status === 206) {
             return interaction.replyTl(keys.commands.ban.warnings.response_warning, { username: user, reason });
         }
 

@@ -147,9 +147,7 @@ class Command extends AutocompleteCommand {
         }
 
         const resp = await server.protocol.execute(`${command} ${args.join(' ')}`);
-        if(!resp) {
-            return interaction.replyTl(keys.api.plugin.errors.no_response);
-        }
+        if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
 

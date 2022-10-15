@@ -1,5 +1,6 @@
 const { keys } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const utils = require('../../api/utils');
 
 class Gamemode extends Command {
 
@@ -19,9 +20,7 @@ class Gamemode extends Command {
         const gamemode = args[1];
 
         const resp = await server.protocol.execute(`gamemode ${gamemode} ${user.username}`);
-        if(!resp) {
-            return interaction.replyTl(keys.api.plugin.errors.no_response);
-        }
+        if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         if(resp.status === 206) {
             return interaction.replyTl(keys.commands.gamemode.warnings.response_warning, {

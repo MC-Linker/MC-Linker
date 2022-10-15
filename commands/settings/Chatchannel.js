@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const { keys, addResponseMethods, getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const utils = require('../../api/utils');
 
 class Chatchannel extends Command {
 
@@ -67,10 +68,7 @@ class Chatchannel extends Command {
                 webhook: webhook?.id,
                 types: menu.values,
             });
-            if(!resp) {
-                webhook?.delete();
-                return interaction.replyTl(keys.api.plugin.errors.no_response);
-            }
+            if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook?.delete();
 
             await server.edit({
                 chat: true,
@@ -93,9 +91,7 @@ class Chatchannel extends Command {
             }
 
             const resp = await server.protocol.removeChatChannel(server.channels[channelIndex]);
-            if(!resp) {
-                return interaction.replyTl(keys.api.plugin.errors.no_response);
-            }
+            if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
             await server.edit({
                 chat: resp.data.chat,

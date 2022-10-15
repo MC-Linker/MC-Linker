@@ -7,6 +7,7 @@ const mcData = require('minecraft-data')('1.19.2');
 
 const advancementData = require('../resources/data/advancements.json');
 const customStats = require('../resources/data/stats_custom.json');
+const FtpProtocol = require('../structures/FtpProtocol');
 
 /**
  * @typedef {object} AdvancementData
@@ -268,7 +269,7 @@ const defaultStatusRespones = {
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
- * @param {BaseInteraction & TranslatedResponses} interaction - The interaction to respond to.
+ * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @returns {Promise<boolean>}
  */
@@ -277,7 +278,7 @@ async function handleProtocolResponse(response, protocol, interaction, statusRes
         await interaction.replyTl(keys.api.plugin.errors.no_response);
         return false;
     }
-    else if(!response) {
+    else if(!response && protocol instanceof FtpProtocol) {
         await interaction.replyTl(keys.api.ftp.errors.could_not_connect);
         return false;
     }

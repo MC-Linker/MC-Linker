@@ -1,6 +1,7 @@
 const { keys } = require('../../api/messages');
 const Command = require('../../structures/Command');
 const PluginProtocol = require('../../structures/PluginProtocol');
+const utils = require('../../api/utils');
 
 class Disconnect extends Command {
 
@@ -17,22 +18,17 @@ class Disconnect extends Command {
 
         const method = args[0];
 
-        if(method === 'plugin' || method === 'ftp') {
-            const protocol = server.protocol instanceof PluginProtocol ? 'plugin' : 'ftp';
-            if(protocol !== method) {
-                return interaction.replyTl(keys.commands.disconnect.warnings.invalid_protocol, { method });
-            }
-
-            if(method === 'plugin') {
-                const disconnect = await server.protocol.disconnect();
-                if(!disconnect) {
-                    return interaction.replyTl(keys.api.plugin.errors.no_response);
-                }
-            }
-
-            await client.serverConnections.disconnect(server);
+        const protocol = server.protocol instanceof PluginProtocol ? 'plugin' : 'ftp';
+        if(protocol !== method) {
+            return interaction.replyTl(keys.commands.disconnect.warnings.invalid_protocol, { method });
         }
 
+        if(method === 'plugin') {
+            const disconnect = await server.protocol.disconnect();
+            if(!await utils.handleProtocolResponse(disconnect, server.protocol, interaction)) return;
+        }
+
+        await client.serverConnections.disconnect(server);
         return interaction.replyTl(keys.commands.disconnect.success, { method });
     }
 }

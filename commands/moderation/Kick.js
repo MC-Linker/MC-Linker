@@ -1,5 +1,6 @@
 const { keys } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const utils = require('../../api/utils');
 
 class Kick extends Command {
 
@@ -20,9 +21,7 @@ class Kick extends Command {
         let reason = args[0] ? args.join(' ') : 'Kicked by an operator.';
 
         const resp = await server.protocol.execute(`kick ${user.username} ${reason}`);
-        if(!resp) {
-            return interaction.replyTl(keys.api.plugin.errors.no_response);
-        }
+        if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         if(resp.status === 206) {
             return interaction.replyTl(keys.commands.kick.warnings.response_warning, {

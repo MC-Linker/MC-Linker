@@ -42,9 +42,11 @@ class Stats extends AutocompleteCommand {
         }
 
         const statFile = await server.protocol.get(Protocol.FilePath.Stats(server.path, user.uuid), `./userdata/stats/${user.uuid}.json`);
-        if(!statFile) {
-            return interaction.replyTl(keys.api.command.errors.could_not_download_user_files, { category: 'stats' });
-        }
+        if(!await utils.handleProtocolResponse(
+            statFile, server.protocol, interaction, {
+                404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'stats' })
+            },
+        )) return;
         const statData = JSON.parse(statFile.data.toString('utf-8'));
 
         try {

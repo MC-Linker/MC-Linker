@@ -1,5 +1,6 @@
 const { keys } = require('../../api/messages');
 const Command = require('../../structures/Command');
+const utils = require('../../api/utils');
 
 class Deop extends Command {
 
@@ -18,9 +19,7 @@ class Deop extends Command {
         const user = args[0];
 
         const resp = await server.protocol.execute(`deop ${user.username}`);
-        if(!resp) {
-            return interaction.replyTl(keys.api.plugin.errors.no_response);
-        }
+        if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         if(resp.status === 206) return interaction.replyTl(keys.commands.deop.warnings.response_warning, { username: user });
         return interaction.replyTl(keys.commands.deop.success, { username: user });
