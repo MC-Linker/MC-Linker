@@ -264,16 +264,6 @@ async function getUsersFromMention(client, mention) {
 }
 
 /**
- * The default responses to use for each status code.
- * @type {{400: MessagePayload, 401: MessagePayload, 404: MessagePayload}}}
- */
-const defaultStatusRespones = {
-    400: keys.api.plugin.errors.status_400,
-    401: keys.api.plugin.errors.status_401,
-    404: keys.api.plugin.errors.status_404,
-};
-
-/**
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
@@ -281,7 +271,13 @@ const defaultStatusRespones = {
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @returns {Promise<boolean>}
  */
-async function handleProtocolResponse(response, protocol, interaction, statusResponses = defaultStatusRespones) {
+async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
+    const defaultStatusRespones = {
+        400: keys.api.plugin.errors.status_400,
+        401: keys.api.plugin.errors.status_401,
+        404: keys.api.plugin.errors.status_404,
+    };
+
     if(!response && protocol instanceof PluginProtocol) {
         await interaction.replyTl(keys.api.plugin.errors.no_response);
         return false;
