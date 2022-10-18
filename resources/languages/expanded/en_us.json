@@ -736,6 +736,37 @@
         ]
       }
     },
+    "account": {
+      "warnings": {
+        "mention": {
+          "embeds": [
+            {
+              "title": "No Username Specified",
+              "description": "%emoji_warning% Don't ping someone. Specify your **minecraft java-edition account name** instead."
+            }
+          ],
+          "console": "No username specified"
+        },
+        "not_connected": {
+          "embeds": [
+            {
+              "title": "Account Not Connected",
+              "description": "%emoji_warning% Your minecraft account is not connected."
+            }
+          ],
+          "console": "Account not connected"
+        }
+      },
+      "success": {
+        "embeds": [
+          {
+            "title": "Connected to Account",
+            "description": "%emoji_success% Successfully connected with username: **%username%** and UUID: **%uuid%**"
+          }
+        ],
+        "console": "Successfully wrote user file"
+      }
+    },
     "chatchannel": {
       "warnings": {
         "no_channels": {
@@ -1158,17 +1189,6 @@
           "console": "Invalid protocol specified"
         }
       },
-      "errors": {
-        "could_not_remove_folder": {
-          "embeds": [
-            {
-              "title": "Could Not Disconnect",
-              "description": "%emoji_warning% You are not connected with %method%."
-            }
-          ],
-          "console": "Could not remove server folder"
-        }
-      },
       "success": {
         "embeds": [
           {
@@ -1535,7 +1555,7 @@
           "embeds": [
             {
               "title": "User Not Connected",
-              "description": "%emoji_error% User did not use `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**."
+              "description": "%emoji_error% User did not use `/account connect`! Instead of pinging someone you can also specify their **minecraft-username**."
             }
           ],
           "console": "User not connected"

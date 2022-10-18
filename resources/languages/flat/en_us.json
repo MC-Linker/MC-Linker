@@ -347,6 +347,20 @@
 
 
 
+  "commands.account.warnings.mention.embeds.0.title": "No Username Specified",
+  "commands.account.warnings.mention.embeds.0.description": "%emoji_warning% Don't ping someone. Specify your **minecraft java-edition account name** instead.",
+  "commands.account.warnings.mention.console": "No username specified",
+
+  "commands.account.warnings.not_connected.embeds.0.title": "Account Not Connected",
+  "commands.account.warnings.not_connected.embeds.0.description": "%emoji_warning% Your minecraft account is not connected.",
+  "commands.account.warnings.not_connected.console": "Account not connected",
+
+  "commands.account.success.embeds.0.title": "Connected to Account",
+  "commands.account.success.embeds.0.description": "%emoji_success% Successfully connected with username: **%username%** and UUID: **%uuid%**",
+  "commands.account.success.console": "Successfully wrote user file",
+
+
+
   "commands.chatchannel.warnings.no_channels.embeds.0.title": "No Channels Added",
   "commands.chatchannel.warnings.no_channels.embeds.0.description": "%emoji_warning% There are no added channels.",
   "commands.chatchannel.warnings.no_channels.console": "No channels added",
@@ -546,10 +560,6 @@
   "commands.disconnect.warnings.invalid_protocol.embeds.0.description": "%emoji_warning% Your server is not connected with %method%",
   "commands.disconnect.warnings.invalid_protocol.console": "Invalid protocol specified",
 
-  "commands.disconnect.errors.could_not_remove_folder.embeds.0.title": "Could Not Disconnect",
-  "commands.disconnect.errors.could_not_remove_folder.embeds.0.description": "%emoji_warning% You are not connected with %method%.",
-  "commands.disconnect.errors.could_not_remove_folder.console": "Could not remove server folder",
-
   "commands.disconnect.success.embeds.0.title": "Disconnected From %method_cap%",
   "commands.disconnect.success.embeds.0.description": "%emoji_success% The **%method%** connection was successfully disconnected.",
   "commands.disconnect.success.console": "Disconnected from %method%",
@@ -710,7 +720,7 @@
   "api.command.errors.server_not_connected.console": "Server not connected",
 
   "api.command.errors.user_not_connected.embeds.0.title": "User Not Connected",
-  "api.command.errors.user_not_connected.embeds.0.description": "%emoji_error% User did not use `/connect account`! Instead of pinging someone you can also specify their **minecraft-username**.",
+  "api.command.errors.user_not_connected.embeds.0.description": "%emoji_error% User did not use `/account connect`! Instead of pinging someone you can also specify their **minecraft-username**.",
   "api.command.errors.user_not_connected.console": "User not connected",
 
   "api.command.errors.server_not_connected_plugin.embeds.0.title": "Server Not Connected",

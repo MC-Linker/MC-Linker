@@ -21,7 +21,7 @@ class Account extends Command {
             const username = args[1];
 
             if(interaction.mentions.users.size) {
-                return interaction.replyTl(keys.commands.connect.warnings.user_pinged);
+                return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 
             let uuid = await utils.fetchUUID(username);
@@ -35,11 +35,11 @@ class Account extends Command {
                 username,
             });
 
-            await interaction.replyTl(keys.commands.connect.success.account, { username, uuid });
+            await interaction.replyTl(keys.commands.account.success, { username, uuid });
         }
         else if(subcommand === 'disconnect') {
             if(!client.userConnections.cache.has(interaction.user.id)) {
-                return interaction.replyTl(keys.commands.disconnect.warnings.not_connected_user);
+                return interaction.replyTl(keys.commands.account.warnings.not_connected);
             }
 
             await client.userConnections.disconnect(interaction.user.id);
