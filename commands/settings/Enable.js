@@ -1,5 +1,6 @@
 const utils = require('../../api/utils');
-const { keys, ph } = require('../../api/messages');
+const { ph } = require('../../api/messages');
+const { keys } = require('../../api/keys');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Enable extends AutocompleteCommand {

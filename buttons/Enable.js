@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
-const { keys, ph, getActionRows } = require('../api/messages');
+const { ph, getActionRows } = require('../api/messages');
+const { keys } = require('../api/keys');
 const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const Button = require('../structures/Button');
 

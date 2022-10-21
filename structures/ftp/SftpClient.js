@@ -6,6 +6,7 @@ class SftpClient extends BaseClient {
 
     constructor(credentials) {
         super(credentials);
+        this.credentials.host ??= credentials.ip;
 
         delete this.credentials.user;
         delete this.credentials.ip;
@@ -80,15 +81,18 @@ class SftpClient extends BaseClient {
     }
 
     async _findFile(name, path, maxDepth) {
-        if(path.split('/').length >= maxDepth++) return undefined;
+        return new Promise(async resolve => {
+            if(path.split('/').length - 1 >= maxDepth) return resolve(undefined);
+            const listing = await this.client.list(path);
+            const foundFile = listing.find(item => item.name === name && item.type === '-');
+            if(foundFile) return resolve(path);
 
-        const listing = await this.client.list(path);
-        for(const item of listing) {
-            if(item.type !== 'd' && item.name === name) return path;
-            else if(item.type === 'd') {
-                return await this._findFile(name, `${path}/${item.name}`, maxDepth);
+            for(const item of listing) {
+                if(item.type === 'd') {
+                    return resolve(await this._findFile(name, `${path}/${item.name}`, maxDepth));
+                }
             }
-        }
+        });
     }
 }
 

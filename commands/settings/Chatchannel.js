@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
-const { keys, addResponseMethods, getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
+const { getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
+const { addResponseMethods } = require('../../api/keys');
+const { keys } = require('../../api/keys');
 const Command = require('../../structures/Command');
 const utils = require('../../api/utils');
 

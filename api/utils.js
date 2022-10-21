@@ -1,6 +1,4 @@
 const PluginProtocol = require('../structures/PluginProtocol');
-const { keys } = require('./messages');
-
 const {
     GuildApplicationCommandManager,
     CommandInteraction,
@@ -12,10 +10,11 @@ const {
 } = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
+const FtpProtocol = require('../structures/FtpProtocol');
+const { keys } = require('./keys');
 
 const advancementData = require('../resources/data/advancements.json');
 const customStats = require('../resources/data/stats_custom.json');
-const FtpProtocol = require('../structures/FtpProtocol');
 
 /**
  * @typedef {object} AdvancementData

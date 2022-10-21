@@ -1,7 +1,8 @@
 const utils = require('../../api/utils');
 const mcData = require('minecraft-data')('1.19.2');
 const { time } = require('discord.js');
-const { keys, ph, addPh, getEmbed } = require('../../api/messages');
+const { ph, addPh, getEmbed } = require('../../api/messages');
+const { keys } = require('../../api/keys');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 const Protocol = require('../../structures/Protocol');
 

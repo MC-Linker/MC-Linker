@@ -9,7 +9,8 @@ console.log(
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
-const { addPh, keys, ph, toTranslatedMessage, toTranslatedInteraction } = require('./api/messages');
+const { keys, addTranslatedResponses } = require('./api/keys');
+const { addPh, ph } = require('./api/messages');
 const { getArgs } = require('./api/utils');
 const { prefix, token, topggToken } = require('./config.json');
 const MCLinker = require('./structures/MCLinker');
@@ -78,7 +79,7 @@ client.on('messageCreate', async message => {
         server.protocol.chat(content);
     }
 
-    message = toTranslatedMessage(message);
+    message = addTranslatedResponses(message);
     //Make message compatible with slash commands
     message.user = message.author;
 
@@ -105,7 +106,7 @@ client.on('messageCreate', async message => {
 });
 
 client.on('interactionCreate', async interaction => {
-    interaction = toTranslatedInteraction(interaction);
+    interaction = addTranslatedResponses(interaction);
 
     //check if in guild
     if(!interaction.guildId) return interaction.replyTl(keys.main.warnings.not_in_guild);

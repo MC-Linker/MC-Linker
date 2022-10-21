@@ -1,5 +1,6 @@
 const utils = require('../../api/utils');
-const { keys, getEmbed, addPh, ph } = require('../../api/messages');
+const { getEmbed, addPh, ph } = require('../../api/messages');
+const { keys } = require('../../api/keys');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 
 class Disable extends AutocompleteCommand {

@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const utils = require('../../api/utils');
-const { keys, ph, addPh, getEmbed } = require('../../api/messages');
+const { ph, addPh, getEmbed } = require('../../api/messages');
+const { keys } = require('../../api/keys');
 const AutocompleteCommand = require('../../structures/AutocompleteCommand');
 const Protocol = require('../../structures/Protocol');
 

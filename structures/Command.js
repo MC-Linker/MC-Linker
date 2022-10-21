@@ -6,7 +6,8 @@ const {
     ApplicationCommandOptionType,
     MessageMentions,
 } = require('discord.js');
-const { keys, ph } = require('../api/messages');
+const { ph } = require('../api/messages');
+const { keys } = require('../api/keys');
 const { getSlashCommand } = require('../api/utils');
 const { ownerId } = require('../config.json');
 

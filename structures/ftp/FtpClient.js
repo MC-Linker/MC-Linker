@@ -21,24 +21,29 @@ class FtpClient extends BaseClient {
 
     connect() {
         return new Promise(resolve => {
-            this.client.on('ready', () => {
-                this.client.on('close', () => resolve(true));
+            this.client.once('ready', () => {
+                this.client.once('close', () => resolve(true));
                 this.client.end();
             });
-            this.client.on('error', () => resolve(false));
+            this.client.once('error', () => resolve(false));
 
             this.client.connect(this.credentials);
+            setTimeout(() => {
+                resolve(false);
+                this.client.removeAllListeners();
+                this.client.end();
+            }, 10000);
         });
     }
 
     find(name, start, maxDepth) {
         return new Promise(resolve => {
-            this.client.on('ready', () => {
+            this.client.once('ready', () => {
                 const foundFile = this._findFile(name, start, maxDepth);
-                this.client.on('close', () => resolve(foundFile));
+                this.client.once('close', () => resolve(foundFile));
                 this.client.end();
             });
-            this.client.on('error', () => resolve(false));
+            this.client.once('error', () => resolve(false));
 
             this.client.connect(this.credentials);
         });
@@ -46,7 +51,7 @@ class FtpClient extends BaseClient {
 
     get(source, destination) {
         return new Promise(resolve => {
-            this.client.on('ready', () => {
+            this.client.once('ready', () => {
                 fs.ensureFile(destination, err => {
                     if(err) return resolve(false);
 
@@ -54,29 +59,30 @@ class FtpClient extends BaseClient {
                         if(err) return resolve(false);
 
                         stream.once('close', () => {
-                            this.client.on('close', () => resolve(true));
+                            this.client.once('close', () => resolve(true));
                             this.client.end();
                         });
-                        stream.on('pipe', () => {
-                            console.log('Something is piping into the writer.');
-                        });
-                        stream.on('error', () => resolve(false));
+                        stream.once('error', () => resolve(false));
                         stream.pipe(fs.createWriteStream(destination));
                     });
                 });
             });
-            this.client.on('error', () => resolve(false));
+            this.client.once('error', () => resolve(false));
 
-            this.client.connect(this.credentials);
+            console.log(`Downloading ${source} to ${destination}`);
+            this.client.connect({
+                ...this.credentials,
+                // debug: console.log,
+            });
         });
     }
 
     list(folder) {
         return new Promise(resolve => {
-            this.client.on('ready', () => {
+            this.client.once('ready', () => {
                 this.client.list(folder, (err, listing) => {
                     if(err) return resolve(false);
-                    this.client.on('close', () => resolve(listing.map(item => {
+                    this.client.once('close', () => resolve(listing.map(item => {
                         return {
                             name: item.name,
                             isDirectory: item.type === 'd',
@@ -85,7 +91,7 @@ class FtpClient extends BaseClient {
                     this.client.end();
                 });
             });
-            this.client.on('error', () => resolve(false));
+            this.client.once('error', () => resolve(false));
 
             this.client.connect(this.credentials);
         });
@@ -93,15 +99,15 @@ class FtpClient extends BaseClient {
 
     put(source, destination) {
         return new Promise(resolve => {
-            this.client.on('ready', () => {
+            this.client.once('ready', () => {
                 this.client.put(source, destination, err => {
                     if(err) return resolve(false);
-                    this.client.on('close', () => resolve(true));
+                    this.client.once('close', () => resolve(true));
                     this.client.end();
                     resolve(true);
                 });
             });
-            this.client.on('error', () => resolve(false));
+            this.client.once('error', () => resolve(false));
 
             this.client.connect(this.credentials);
         });
@@ -112,8 +118,11 @@ class FtpClient extends BaseClient {
             this.client.list(path, (err, listing) => {
                 if(err) return resolve(undefined);
 
+                const foundFile = listing.find(item => item.name === name && item.type === '-');
+                if(foundFile) return resolve(path);
+
                 for(const item of listing) {
-                    if(item.type !== 'd' && item.name === name) return path;
+                    if(item.type !== 'd' && item.name === name) return resolve(path);
                     else if(item.type === 'd') {
                         const foundFile = this._findFile(name, `${path}/${item.name}`, maxDepth);
                         if(foundFile) return resolve(foundFile);

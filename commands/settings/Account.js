@@ -1,5 +1,5 @@
 const Command = require('../../structures/Command');
-const { keys } = require('../../api/messages');
+const { keys } = require('../../api/keys');
 const utils = require('../../api/utils');
 
 class Account extends Command {

@@ -3,7 +3,8 @@
 const Discord = require('discord.js');
 const { Console } = require('console');
 const { Duplex } = require('stream');
-const { keys, ph } = require('../api/messages');
+const { ph } = require('../api/messages');
+const { keys } = require('../api/keys');
 const { token: botToken, topggToken } = require('../config.json');
 const Command = require('../structures/Command');
 

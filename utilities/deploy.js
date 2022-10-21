@@ -3,7 +3,8 @@
 const { Routes } = require('discord-api-types/v10');
 const { REST } = require('discord.js');
 const { token, clientId, guildId } = require('../config.json');
-const { keys, getCommand } = require('../api/messages');
+const { getCommand } = require('../api/messages');
+const { keys } = require('../api/keys');
 const fs = require('fs-extra');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');

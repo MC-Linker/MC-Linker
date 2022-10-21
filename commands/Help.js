@@ -1,5 +1,6 @@
 const { discordLink } = require('../config.json');
-const { keys, ph, addPh, getEmbed, getActionRows } = require('../api/messages');
+const { ph, addPh, getEmbed, getActionRows } = require('../api/messages');
+const { keys } = require('../api/keys');
 const Command = require('../structures/Command');
 const { getSlashCommand } = require('../api/utils');
 const { ApplicationCommandOptionType, ApplicationCommandSubCommand, ApplicationCommand } = require('discord.js');

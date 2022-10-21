@@ -1,5 +1,6 @@
 const { ButtonInteraction } = require('discord.js');
-const { keys, ph } = require('../api/messages');
+const { ph } = require('../api/messages');
+const { keys } = require('../api/keys');
 const { PermissionsBitField, User } = require('discord.js');
 
 class Button {

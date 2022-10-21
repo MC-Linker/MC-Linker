@@ -1,4 +1,4 @@
-const { keys } = require('../../api/messages');
+const { keys } = require('../../api/keys');
 const Command = require('../../structures/Command');
 const utils = require('../../api/utils');
 

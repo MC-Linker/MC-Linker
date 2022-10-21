@@ -2,15 +2,12 @@
 const Fastify = require('fastify');
 const { FastifyInstance } = require('fastify');
 const utils = require('./utils');
-const { keys, addPh, ph, getEmbed } = require('./messages');
+const { ph, getEmbed, addPh } = require('./messages');
+const { keys } = require('./keys');
 const { botPort, pluginVersion } = require('../config.json');
 const PluginProtocol = require('../structures/PluginProtocol');
 
 class BotAPI {
-
-    //TODO optimize
-    alreadyWarnedServers = []; //Only warn the same server once each restart
-
     constructor(client) {
 
         /**

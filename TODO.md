@@ -1,4 +1,5 @@
 # TODO BOT
++ **Write conversion script for connections**
 + Better logs (pino)
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Store data files in user folders (only for connected users)

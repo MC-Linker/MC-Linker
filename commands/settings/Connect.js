@@ -1,7 +1,8 @@
 const dns = require('dns/promises');
 const crypto = require('crypto');
 const { pluginPort } = require('../../config.json');
-const { keys, ph, addPh, toTranslatedMessage } = require('../../api/messages');
+const { ph, addPh } = require('../../api/messages');
+const { keys, addTranslatedResponses } = require('../../api/keys');
 const Command = require('../../structures/Command');
 const PluginProtocol = require('../../structures/PluginProtocol');
 const FtpProtocol = require('../../structures/FtpProtocol');
@@ -60,6 +61,7 @@ class Connect extends Command {
             });
 
             const connectFtp = await ftpProtocol.connect();
+            console.log(connectFtp);
             if(!connectFtp) {
                 ftpProtocol.sftp = true;
                 const connectSftp = await ftpProtocol.connect();
@@ -70,7 +72,8 @@ class Connect extends Command {
             if(!path) {
                 await interaction.replyTl(keys.commands.connect.warnings.searching_properties);
                 path = await ftpProtocol.find('server.properties', '/', 2);
-                if(!path?.data) {
+                path = path?.data;
+                if(!path) {
                     return interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
                 }
             }
@@ -139,7 +142,7 @@ class Connect extends Command {
             }
 
             const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000 });
-            const message = collector.size !== 0 ? toTranslatedMessage(collector.first()) : null;
+            const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
             if(!message) {
                 console.log(keys.commands.connect.warnings.no_reply_in_time.console);
                 return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.std(interaction)));
