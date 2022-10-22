@@ -9,9 +9,9 @@ console.log(
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
-const { keys, addTranslatedResponses } = require('./api/keys');
-const { addPh, ph } = require('./api/messages');
 const { getArgs } = require('./api/utils');
+const { keys } = require('./api/keys');
+const { addPh, ph, addTranslatedResponses } = require('./api/messages');
 const { prefix, token, topggToken } = require('./config.json');
 const MCLinker = require('./structures/MCLinker');
 const AutocompleteCommand = require('./structures/AutocompleteCommand');
@@ -20,8 +20,11 @@ const BotAPI = require('./api/BotAPI');
 
 const client = new MCLinker();
 
-//Handle rejected promises
+//Handle errors
 process.on('unhandledRejection', async err => {
+    console.log(addPh(keys.main.errors.unknown_rejection.console, ph.error(err)));
+});
+process.on('uncaughtException', async err => {
     console.log(addPh(keys.main.errors.unknown_rejection.console, ph.error(err)));
 });
 

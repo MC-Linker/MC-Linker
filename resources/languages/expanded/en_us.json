@@ -1178,17 +1178,6 @@
       }
     },
     "disconnect": {
-      "warnings": {
-        "invalid_protocol": {
-          "embeds": [
-            {
-              "title": "Invalid Method Specified",
-              "description": "%emoji_warning% Your server is not connected with %method%"
-            }
-          ],
-          "console": "Invalid protocol specified"
-        }
-      },
       "success": {
         "embeds": [
           {
@@ -1568,6 +1557,15 @@
             }
           ],
           "console": "Server not connected with plugin"
+        },
+        "server_not_connected_ftp": {
+          "embeds": [
+            {
+              "title": "Server Not Connected",
+              "description": "%emoji_error% Your server is not connected with ftp. Please use `/connect ftp` first."
+            }
+          ],
+          "console": "Server not connected with ftp"
         },
         "could_not_download": {
           "embeds": [

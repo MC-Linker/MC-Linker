@@ -556,10 +556,6 @@
 
 
 
-  "commands.disconnect.warnings.invalid_protocol.embeds.0.title": "Invalid Method Specified",
-  "commands.disconnect.warnings.invalid_protocol.embeds.0.description": "%emoji_warning% Your server is not connected with %method%",
-  "commands.disconnect.warnings.invalid_protocol.console": "Invalid protocol specified",
-
   "commands.disconnect.success.embeds.0.title": "Disconnected From %method_cap%",
   "commands.disconnect.success.embeds.0.description": "%emoji_success% The **%method%** connection was successfully disconnected.",
   "commands.disconnect.success.console": "Disconnected from %method%",
@@ -726,6 +722,10 @@
   "api.command.errors.server_not_connected_plugin.embeds.0.title": "Server Not Connected",
   "api.command.errors.server_not_connected_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
   "api.command.errors.server_not_connected_plugin.console": "Server not connected with plugin",
+
+    "api.command.errors.server_not_connected_ftp.embeds.0.title": "Server Not Connected",
+    "api.command.errors.server_not_connected_ftp.embeds.0.description": "%emoji_error% Your server is not connected with ftp. Please use `/connect ftp` first.",
+    "api.command.errors.server_not_connected_ftp.console": "Server not connected with ftp",
 
   "api.command.warnings.disabled.embeds.0.title": "Command Disabled",
   "api.command.warnings.disabled.embeds.0.description": "%emoji_no_entry% Command **%interaction_name%** disabled!",

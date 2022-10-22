@@ -1,8 +1,8 @@
 const dns = require('dns/promises');
 const crypto = require('crypto');
 const { pluginPort } = require('../../config.json');
-const { ph, addPh } = require('../../api/messages');
-const { keys, addTranslatedResponses } = require('../../api/keys');
+const { ph, addPh, addTranslatedResponses } = require('../../api/messages');
+const { keys } = require('../../api/keys');
 const Command = require('../../structures/Command');
 const PluginProtocol = require('../../structures/PluginProtocol');
 const FtpProtocol = require('../../structures/FtpProtocol');
@@ -61,7 +61,6 @@ class Connect extends Command {
             });
 
             const connectFtp = await ftpProtocol.connect();
-            console.log(connectFtp);
             if(!connectFtp) {
                 ftpProtocol.sftp = true;
                 const connectSftp = await ftpProtocol.connect();
@@ -79,7 +78,7 @@ class Connect extends Command {
             }
 
             const serverProperties = await ftpProtocol.get(Protocol.FilePath.ServerProperties(path), `./serverdata/connections/${interaction.guildId}/server.properties`);
-            if(!await utils.handleProtocolResponse(serverProperties, server.protocol, interaction, {
+            if(!await utils.handleProtocolResponse(serverProperties, ftpProtocol, interaction, {
                 404: keys.commands.connect.errors.could_not_get_properties,
             })) return;
 

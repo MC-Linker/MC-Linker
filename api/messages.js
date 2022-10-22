@@ -23,9 +23,21 @@ const {
     ComponentType,
     ComponentBuilder,
 } = require('discord.js');
-const { getSlashCommand } = require('./utils');
+const { fetchCommand } = require('./utils');
 const { prefix } = require('../config.json');
 const { keys } = require('./keys');
+
+/**
+ * Adds methods that allow to respond with a translation key.
+ * @template {BaseInteraction | Message} I
+ * @param {I} interaction
+ * @returns {I & TranslatedResponses}
+ */
+function addTranslatedResponses(interaction) {
+    interaction.replyTl = (key, ...placeholders) => replyTl(interaction, key, ...placeholders);
+    interaction.replyOptions = options => replyOptions(interaction, options);
+    return interaction;
+}
 
 /**
  * Default placeholders for discord.js structures.
@@ -202,7 +214,7 @@ const ph = {
     async commandName(commandName, client) {
         if(!(client instanceof Discord.Client)) return {};
 
-        const command = await getSlashCommand(client.application.commands, commandName);
+        const command = await fetchCommand(client.application.commands, commandName);
         if(!command) return {};
 
         return this.command(command);
@@ -739,4 +751,5 @@ module.exports = {
     getActionRows,
     getComponent,
     createActionRows,
+    addTranslatedResponses,
 };

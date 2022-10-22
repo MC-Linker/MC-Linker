@@ -32,7 +32,7 @@ class FtpClient extends BaseClient {
                 resolve(false);
                 this.client.removeAllListeners();
                 this.client.end();
-            }, 10000);
+            }, 15_000);
         });
     }
 

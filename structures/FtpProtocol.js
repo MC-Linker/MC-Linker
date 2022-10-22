@@ -80,6 +80,13 @@ class FtpProtocol extends Protocol {
         this.ftpClient = this.sftp ? new SftpClient(credentials) : new FtpClient(credentials);
     }
 
+    set sftp(bool) {
+        const credentials = { ip: this.ip, port: this.port, username: this.username, password: this.password };
+        //set the ftp client to the correct type if it is different
+        if(bool && !(this.ftpClient instanceof SftpClient)) this.ftpClient = new SftpClient(credentials);
+        else if(!bool && !(this.ftpClient instanceof FtpClient)) this.ftpClient = new FtpClient(credentials);
+    }
+
     /**
      * @inheritDoc
      * @returns {Promise<?ProtocolResponse>} - The response from the server.
