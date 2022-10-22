@@ -69,11 +69,7 @@ class FtpClient extends BaseClient {
             });
             this.client.once('error', () => resolve(false));
 
-            console.log(`Downloading ${source} to ${destination}`);
-            this.client.connect({
-                ...this.credentials,
-                // debug: console.log,
-            });
+            this.client.connect(this.credentials);
         });
     }
 
