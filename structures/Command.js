@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const { ph } = require('../api/messages');
 const { keys } = require('../api/keys');
-const { getSlashCommand } = require('../api/utils');
+const { fetchCommand } = require('../api/utils');
 const { ownerId } = require('../config.json');
 
 class Command {
@@ -111,7 +111,7 @@ class Command {
             return false;
         }
 
-        const slashCommand = await getSlashCommand(interaction.guild.commands, this.name);
+        const slashCommand = await fetchCommand(interaction.guild.commands, this.name);
         const missingPermission = await canRunCommand(slashCommand);
         if(missingPermission !== true) {
             if(missingPermission) {

@@ -170,12 +170,12 @@ function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValu
 }
 
 /**
- * Gets a slash command from the given manager by its name.
+ * Fetches a slash command from the given manager by its name.
  * @param {GuildApplicationCommandManager|ApplicationCommandManager} commandManager - The command manager to search in.
  * @param {string} name - The name of the command to search for.
  * @returns {Promise<ApplicationCommand>}
  */
-async function getSlashCommand(commandManager, name) {
+async function fetchCommand(commandManager, name) {
     let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
     if(!slashCommand) {
         const commands = await commandManager.fetch();
@@ -305,7 +305,7 @@ module.exports = {
     searchAllAdvancements,
     searchAdvancements,
     searchAllStats,
-    getSlashCommand,
+    fetchCommand,
     searchStats,
     fetchUUID,
     getArgs,

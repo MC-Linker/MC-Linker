@@ -19,8 +19,11 @@ class Disconnect extends Command {
         const method = args[0];
 
         const protocol = server.protocol instanceof PluginProtocol ? 'plugin' : 'ftp';
-        if(protocol !== method) {
-            return interaction.replyTl(keys.commands.disconnect.warnings.invalid_protocol, { method });
+        if(protocol === 'plugin' && method === 'ftp') {
+            return interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
+        }
+        else if(protocol === 'ftp' && method === 'plugin') {
+            return interaction.replyTl(keys.api.command.errors.server_not_connected_ftp);
         }
 
         if(method === 'plugin') {
@@ -29,7 +32,7 @@ class Disconnect extends Command {
         }
 
         await client.serverConnections.disconnect(server);
-        return interaction.replyTl(keys.commands.disconnect.success, { method });
+        return interaction.replyTl(keys.commands.disconnect.success, { method, method_cap: method.cap() });
     }
 }
 

@@ -2,7 +2,7 @@ const { discordLink } = require('../config.json');
 const { ph, addPh, getEmbed, getActionRows } = require('../api/messages');
 const { keys } = require('../api/keys');
 const Command = require('../structures/Command');
-const { getSlashCommand } = require('../api/utils');
+const { fetchCommand } = require('../api/utils');
 const { ApplicationCommandOptionType, ApplicationCommandSubCommand, ApplicationCommand } = require('discord.js');
 
 class Help extends Command {
@@ -57,7 +57,7 @@ class Help extends Command {
             return interaction.replyOptions({ embeds: [helpEmbed] });
         }
         else {
-            const slashCommand = await getSlashCommand(interaction.guild.commands, command.name);
+            const slashCommand = await fetchCommand(interaction.guild.commands, command.name);
             const commandUsage = getCommandUsage(slashCommand);
 
             // noinspection JSUnresolvedVariable
