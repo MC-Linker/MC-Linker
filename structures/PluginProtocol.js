@@ -34,7 +34,7 @@ const PluginRoutes = {
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
      */
     GetFile: path => [
-        'POST',
+        'GET',
         '/file/get',
         {},
         { path },
@@ -64,7 +64,7 @@ const PluginRoutes = {
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
      */
     Command: cmd => [
-        'POST',
+        'GET',
         '/command',
         {},
         { cmd },
@@ -128,6 +128,7 @@ const PluginRoutes = {
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
      */
     ListOnlinePlayers: () => [
+        'GET',
         '/players',
     ],
 };
