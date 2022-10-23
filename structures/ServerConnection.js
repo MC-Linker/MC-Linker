@@ -1,4 +1,3 @@
-const SettingsConnection = require('./SettingsConnection');
 const Connection = require('./Connection');
 const PluginProtocol = require('./PluginProtocol');
 const FtpProtocol = require('./FtpProtocol');
@@ -50,17 +49,20 @@ class ServerConnection extends Connection {
      * @param {MCLinker} client - The client to create the server-connection for.
      * @param {ServerConnectionData} data - The data for the server-connection.
      * @param {string} outputPath - The path to write the server-connection to.
-     * @param {string} outputFile - The file to write the server-connection to.
+     * @param {string} [outputFile='connection.json'] - The file to write the server-connection to.
      * @returns {ServerConnection} - A new ServerConnection instance.
      */
-    constructor(client, data, outputPath, outputFile) {
+    constructor(client, data, outputPath, outputFile = 'connection.json') {
         super(client, data, outputPath, outputFile);
 
         /**
          * The settings for this server.
          * @type {SettingsConnection}
          */
-        this.settings = new SettingsConnection(client, data.id, outputPath);
+        this.settings = client.settingsConnections._add(data.id, true, {
+            id: data.id,
+            extras: [client.settingsConnections.outputPath],
+        });
 
         /**
          * The ftp or plugin protocol for this server.
@@ -173,22 +175,9 @@ class ServerConnection extends Connection {
         else this.protocol._patch(data);
     }
 
-    /**
-     * @inheritDoc
-     */
     async _output() {
         if(await super._output()) {
             return await this.settings._output();
-        }
-        else return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    async _delete() {
-        if(await super._delete()) {
-            return await this.settings._delete();
         }
         else return false;
     }

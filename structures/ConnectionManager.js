@@ -4,6 +4,12 @@ const fs = require('fs-extra');
 class ConnectionManager extends CachedManager {
 
     /**
+     * The server connection cache of this manager.
+     * @type {Collection<string, SettingsConnection>}
+     */
+    cache;
+
+    /**
      * Creates a new ConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {ServerConnection|UserConnection|SettingsConnection} holds - The type of connection the manager holds.
@@ -25,6 +31,12 @@ class ConnectionManager extends CachedManager {
          * @type {string}
          */
         this.outputFile = outputFile;
+
+        /**
+         * The server connection cache of this manager.
+         * @type {Collection<string, SettingsConnection>}
+         */
+        this.cache = super.cache;
     }
 
     /**

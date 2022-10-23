@@ -1,6 +1,7 @@
 const Command = require('../../structures/Command');
 const { keys } = require('../../api/keys');
 const utils = require('../../api/utils');
+const Discord = require('discord.js');
 
 class Account extends Command {
 
@@ -20,7 +21,7 @@ class Account extends Command {
         if(subcommand === 'connect') {
             const username = args[1];
 
-            if(interaction.mentions.users.size) {
+            if(username.match(Discord.MessageMentions.UsersPattern)) {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 

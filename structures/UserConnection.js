@@ -17,9 +17,10 @@ class UserConnection extends Connection {
      * @param {MCLinker} client - The client to create the user connection for.
      * @param {UserConnectionData} data - The data for the user connection.
      * @param {string} outputPath - The path to write the user connection to.
+     * @param {string} [outputFile='connection.json'] - The file to write the user connection to.
      * @returns {UserConnection} - A new UserConnection instance.
      */
-    constructor(client, data, outputPath, outputFile) {
+    constructor(client, data, outputPath, outputFile = 'connection.json') {
         super(client, data, outputPath, outputFile);
         this._patch(data);
     }

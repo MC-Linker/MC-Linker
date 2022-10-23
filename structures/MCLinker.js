@@ -12,6 +12,36 @@ const Button = require('./Button');
 class MCLinker extends Discord.Client {
 
     /**
+     * The user-connection manager for the bot.
+     * @type {UserConnectionManager}
+     */
+    userConnections;
+
+    /**
+     * The server-connection manager for the bot.
+     * @type {ServerConnectionManager}
+     */
+    serverConnections;
+
+    /**
+     * The settings-connection manager for the bot.
+     * @type {SettingsConnectionManager}
+     */
+    settingsConnections;
+
+    /**
+     * A collection of all commands in this bot.
+     * @type {Map<string, Command>}
+     */
+    commands = new Discord.Collection();
+
+    /**
+     * A collection of all buttons in this bot.
+     * @type {Collection<string, Button>}
+     */
+    buttons = new Discord.Collection();
+
+    /**
      * Creates a new MCLinker client instance.
      * @param {string} commandPath - The path to the commands folder.
      * @param {string} buttonPath - The path to the buttons folder.

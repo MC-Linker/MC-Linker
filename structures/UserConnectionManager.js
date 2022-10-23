@@ -6,12 +6,6 @@ const Discord = require('discord.js');
 class UserConnectionManager extends ConnectionManager {
 
     /**
-     * The user connection cache of this manager.
-     * @type {Map<string, UserConnection>}
-     */
-    cache;
-
-    /**
      * Creates a new UserConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {string} outputPath - The path to write user data to.
@@ -19,7 +13,6 @@ class UserConnectionManager extends ConnectionManager {
      */
     constructor(client, outputPath = './userdata/connections') {
         super(client, UserConnection, outputPath, 'connection.json');
-        this.cache = super.cache;
     }
 
     /**

@@ -1,4 +1,3 @@
-const fs = require('fs-extra');
 const Connection = require('./Connection');
 
 class SettingsConnection extends Connection {
@@ -33,10 +32,11 @@ class SettingsConnection extends Connection {
     /**
      * @param {MCLinker} client - The client to create the settings for.
      * @param {SettingsConnectionData|string} dataOrId - The data for the settings or the id of the server the settings are connected to.
-     * @param outputPath - The path to write the settings to.
+     * @param {string} outputPath - The path to write the settings to.
+     * @param {string} [outputFile='settings.json'] - The name of the file to write the settings to.
      * @returns {SettingsConnection} - A new SettingsConnection instance.
      */
-    constructor(client, dataOrId, outputPath, outputFile) {
+    constructor(client, dataOrId, outputPath, outputFile = 'settings.json') {
         if(typeof dataOrId === 'string') {
             //Default settings data
             dataOrId = {
@@ -44,13 +44,19 @@ class SettingsConnection extends Connection {
                 id: dataOrId,
             };
         }
-
         super(client, dataOrId, outputPath, outputFile);
 
         this._patch(dataOrId);
     }
 
     _patch(data) {
+        if(typeof data === 'string') {
+            //Default settings data
+            data = {
+                ...SettingsConnection.defaultSettingsData,
+                id: data,
+            };
+        }
 
         /**
          * The id of the server the settings are connected to.
