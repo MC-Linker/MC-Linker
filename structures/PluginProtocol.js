@@ -101,7 +101,7 @@ const PluginRoutes = {
      */
     Disconnect: () => [
         'GET',
-        '/connect',
+        '/disconnect',
     ],
     /**
      * Adds a chatchannel to the server.
