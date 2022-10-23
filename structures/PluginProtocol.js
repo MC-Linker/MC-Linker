@@ -187,7 +187,7 @@ class PluginProtocol extends Protocol {
                 body: Object.keys(body ?? {}).length === 0 ? null : JSON.stringify(body),
             });
         }
-        catch(err) {
+        catch(_) {
             return null;
         }
     }
@@ -260,16 +260,24 @@ class PluginProtocol extends Protocol {
      * @inheritDoc
      */
     async get(getPath, putPath) {
-        const response = await this._fetch(...PluginRoutes.GetFile(getPath));
-        if(!response?.ok) return fetchToProtocolResponse(response);
+        //Wrap in promise
+        return new Promise(async resolve => {
+            const response = await this._fetch(...PluginRoutes.GetFile(getPath));
+            if(!response?.ok) return resolve(fetchToProtocolResponse(response));
 
-        try {
-            await response.body.pipeTo(fs.createWriteStream(putPath));
-            return { status: response.status, data: await fs.readFile(putPath) };
-        }
-        catch(err) {
-            return null;
-        }
+            try {
+                await fs.ensureFile(putPath);
+                await response.body.pipe(fs.createWriteStream(putPath));
+                response.body.on('end', async () => resolve({
+                    status: response.status,
+                    data: await fs.readFile(putPath),
+                }));
+                response.body.on('error', () => resolve(null));
+            }
+            catch(_) {
+                resolve(null);
+            }
+        });
     }
 
     /**
