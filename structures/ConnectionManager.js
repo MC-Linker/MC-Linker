@@ -34,8 +34,8 @@ class ConnectionManager extends CachedManager {
      */
     async connect(data) {
         /** @type {?Connection} */
-        const connection = this._add(data, true, { extras: [this.outputPath] });
-        if(connection && await connection.output()) return connection;
+        const connection = this._add(data, true, { extras: [this.outputPath, this.outputFile] });
+        if(connection && await connection._output()) return connection;
         else {
             this.cache.delete(this.resolveId(connection));
             return null;

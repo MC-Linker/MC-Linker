@@ -11,9 +11,10 @@ class Connection extends Base {
      * @param {MCLinker} client - The client to create the connection for.
      * @param {ConnectionData} data - The data for the connection.
      * @param {string} outputPath - The path to write the connection to.
+     * @param {string} outputFile - The name of the file to write the connection data to.
      * @returns {Connection} - A new Connection instance.
      */
-    constructor(client, data, outputPath) {
+    constructor(client, data, outputPath, outputFile) {
         super(client);
 
         /**
@@ -21,15 +22,21 @@ class Connection extends Base {
          * @type {string}
          */
         this.outputPath = `${outputPath}/${data.id}`;
+
+        /**
+         * The file name of the connection.
+         * @type {string}
+         */
+        this.outputFile = outputFile;
     }
 
     /**
      * Writes the data of the connection to the fs.
      * @returns {Promise<boolean>} - Whether the data was correctly written to the fs.
      */
-    async output() {
+    async _output() {
         const data = this.getData();
-        return await fs.outputJson(`${this.outputPath}/connection.json`, data, { spaces: 2 })
+        return await fs.outputJson(`${this.outputPath}/${this.outputFile}`, data, { spaces: 2 })
             .then(() => true)
             .catch(() => false);
     }
@@ -39,7 +46,7 @@ class Connection extends Base {
      * @returns {Promise<boolean>} - Whether the deletion was successful.
      */
     async _delete() {
-        return await fs.rm(`${this.outputPath}/connection.json`)
+        return await fs.rm(`${this.outputPath}/${this.outputFile}`)
             .then(() => true)
             .catch(() => false);
     }
@@ -51,7 +58,7 @@ class Connection extends Base {
      */
     async edit(data) {
         this._patch(data);
-        if(await this.output()) return this;
+        if(await this._output()) return this;
         else return null;
     }
 

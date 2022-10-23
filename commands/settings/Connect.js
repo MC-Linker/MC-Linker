@@ -159,7 +159,6 @@ class Connect extends Command {
 
             await message.replyTl(keys.commands.connect.success.verification, ph.std(interaction));
 
-            console.log(resp.data);
             /** @type {ServerConnectionData} */
             const serverConnectionData = {
                 id: interaction.guildId,

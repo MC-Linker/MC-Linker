@@ -36,7 +36,7 @@ class SettingsConnection extends Connection {
      * @param outputPath - The path to write the settings to.
      * @returns {SettingsConnection} - A new SettingsConnection instance.
      */
-    constructor(client, dataOrId, outputPath) {
+    constructor(client, dataOrId, outputPath, outputFile) {
         if(typeof dataOrId === 'string') {
             //Default settings data
             dataOrId = {
@@ -45,7 +45,7 @@ class SettingsConnection extends Connection {
             };
         }
 
-        super(client, dataOrId, outputPath);
+        super(client, dataOrId, outputPath, outputFile);
 
         this._patch(dataOrId);
     }
@@ -121,24 +121,6 @@ class SettingsConnection extends Connection {
      */
     isDisabled(type, value) {
         return this.disabled[type].includes(value);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    async output() {
-        return await fs.outputJson(`${this.outputPath}/settings.json`, this.getData(), { spaces: 2 })
-            .then(() => true)
-            .catch(() => false);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    async _delete() {
-        return await fs.rm(`${this.outputPath}/settings.json`)
-            .then(() => true)
-            .catch(() => false);
     }
 
     /**

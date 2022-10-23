@@ -9,6 +9,7 @@ const {
     MessagePayload,
 } = require('discord.js');
 const fetch = require('node-fetch');
+const crypto = require('crypto');
 const mcData = require('minecraft-data')('1.19.2');
 const FtpProtocol = require('../structures/FtpProtocol');
 const { keys } = require('./keys');

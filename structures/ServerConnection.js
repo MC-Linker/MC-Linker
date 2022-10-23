@@ -50,10 +50,11 @@ class ServerConnection extends Connection {
      * @param {MCLinker} client - The client to create the server-connection for.
      * @param {ServerConnectionData} data - The data for the server-connection.
      * @param {string} outputPath - The path to write the server-connection to.
+     * @param {string} outputFile - The file to write the server-connection to.
      * @returns {ServerConnection} - A new ServerConnection instance.
      */
-    constructor(client, data, outputPath) {
-        super(client, data, outputPath);
+    constructor(client, data, outputPath, outputFile) {
+        super(client, data, outputPath, outputFile);
 
         /**
          * The settings for this server.
@@ -175,9 +176,9 @@ class ServerConnection extends Connection {
     /**
      * @inheritDoc
      */
-    async output() {
-        if(await super.output()) {
-            return await this.settings.output();
+    async _output() {
+        if(await super._output()) {
+            return await this.settings._output();
         }
         else return false;
     }

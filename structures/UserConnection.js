@@ -19,8 +19,8 @@ class UserConnection extends Connection {
      * @param {string} outputPath - The path to write the user connection to.
      * @returns {UserConnection} - A new UserConnection instance.
      */
-    constructor(client, data, outputPath) {
-        super(client, data, outputPath);
+    constructor(client, data, outputPath, outputFile) {
+        super(client, data, outputPath, outputFile);
         this._patch(data);
     }
 
