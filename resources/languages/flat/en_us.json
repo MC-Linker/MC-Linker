@@ -614,7 +614,7 @@
 
   "api.plugin.errors.status_400.embeds.0.title": "Unknown Bot Error",
   "api.plugin.errors.status_400.embeds.0.description": "%emoji_error% An unknown bot error occurred.",
-  "api.plugin.errors.status_400.console": "400: Unknown client error, %error%",
+  "api.plugin.errors.status_400.console": "400: Unknown client error, %data%",
 
   "api.plugin.errors.status_401.embeds.0.title": "Unknown Bot Error",
   "api.plugin.errors.status_401.embeds.0.description": "%emoji_error% An unknown bot error occurred.",
@@ -622,11 +622,11 @@
 
   "api.plugin.errors.status_404.embeds.0.title": "Data Not Found",
   "api.plugin.errors.status_404.embeds.0.description": "%emoji_error% The requested data could not be found on the server.",
-  "api.plugin.errors.status_404.console": "404: Data could not be found, %error%",
+  "api.plugin.errors.status_404.console": "404: Data could not be found, %data%",
 
   "api.plugin.errors.status_500.embeds.0.title": "Unknown Plugin Error",
   "api.plugin.errors.status_500.embeds.0.description": "%emoji_error% An unknown plugin error occurred.",
-  "api.plugin.errors.status_500.console": "500: Unknown server error, %error%",
+  "api.plugin.errors.status_500.console": "500: Unknown server error, %data%",
 
 
   "api.plugin.success.messages.chat.embeds.0.author.name": "%username%",

@@ -21,7 +21,6 @@ class ServerConnection extends Connection {
      * @property {string} path - The path to the world folder of the server.
      * @property {string} hash - The connection hash used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
-     * @property {boolean} chat - Whether there are connected chatchannels.
      * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
      * @property {'plugin'} protocol - The protocol used to connect to the server.
      */
@@ -68,6 +67,7 @@ class ServerConnection extends Connection {
          */
         this.protocol = data.protocol === 'plugin' ?
             new PluginProtocol(client, {
+                id: data.id,
                 ip: data.ip,
                 port: data.port,
                 hash: data.hash,
@@ -154,6 +154,7 @@ class ServerConnection extends Connection {
         //Switch protocols if needed
         if(this.hasPluginProtocol() && data.protocol === 'plugin') {
             this.protocol = new PluginProtocol(this.client, {
+                id: data.id,
                 ip: this.ip,
                 port: this.port,
                 hash: this.hash,
@@ -208,7 +209,7 @@ class ServerConnection extends Connection {
                 ...baseData,
                 hash: this.hash,
                 online: this.online,
-                channels: this.channels,
+                channels: this.channels ?? [],
                 protocol: 'plugin',
             };
         }

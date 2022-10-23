@@ -20,10 +20,10 @@ class Disconnect extends Command {
 
         const protocol = server.protocol instanceof PluginProtocol ? 'plugin' : 'ftp';
         if(protocol === 'plugin' && method === 'ftp') {
-            return interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
+            return interaction.replyTl(keys.api.command.errors.server_not_connected_ftp);
         }
         else if(protocol === 'ftp' && method === 'plugin') {
-            return interaction.replyTl(keys.api.command.errors.server_not_connected_ftp);
+            return interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
         }
 
         if(method === 'plugin') {

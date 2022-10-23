@@ -1311,7 +1311,7 @@
               "description": "%emoji_error% An unknown bot error occurred."
             }
           ],
-          "console": "400: Unknown client error, %error%"
+          "console": "400: Unknown client error, %data%"
         },
         "status_401": {
           "embeds": [
@@ -1329,7 +1329,7 @@
               "description": "%emoji_error% The requested data could not be found on the server."
             }
           ],
-          "console": "404: Data could not be found, %error%"
+          "console": "404: Data could not be found, %data%"
         },
         "status_500": {
           "embeds": [
@@ -1338,7 +1338,7 @@
               "description": "%emoji_error% An unknown plugin error occurred."
             }
           ],
-          "console": "500: Unknown server error, %error%"
+          "console": "500: Unknown server error, %data%"
         }
       },
       "success": {

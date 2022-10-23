@@ -28,7 +28,9 @@ class Connection extends Base {
      * @returns {Promise<boolean>} - Whether the data was correctly written to the fs.
      */
     async output() {
-        return await fs.outputJson(`${this.outputPath}/connection.json`, this.getData(), { spaces: 2 })
+        const data = this.getData();
+        console.log(data);
+        return await fs.outputJson(`${this.outputPath}/connection.json`, data, { spaces: 2 })
             .then(() => true)
             .catch(() => false);
     }
@@ -50,6 +52,7 @@ class Connection extends Base {
      */
     async edit(data) {
         this._patch(data);
+        console.log(data, this);
         if(await this.output()) return this;
         else return null;
     }

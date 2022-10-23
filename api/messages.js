@@ -195,7 +195,7 @@ const ph = {
         if(!(interaction instanceof Discord.BaseInteraction) && !(interaction instanceof Discord.Message)) return {};
 
         return Object.assign(
-            this.author(interaction.member.user),
+            this.author(interaction.member?.user ?? interaction.user),
             this.guild(interaction.guild),
             this.interaction(interaction),
             this.channel(interaction.channel),
@@ -391,7 +391,10 @@ async function replyOptions(interaction, options) {
  * @returns {?EmbedBuilder}
  */
 function getEmbed(key, ...placeholders) {
-    if(!key) return console.error(keys.api.messages.errors.no_embed_key.console);
+    if(!key) {
+        console.error(keys.api.messages.errors.no_embed_key.console);
+        return null;
+    }
 
     //Get first embed
     if(key.embeds) key = key.embeds[0];
@@ -402,12 +405,12 @@ function getEmbed(key, ...placeholders) {
 
     for(const field of key.fields ?? []) {
         if(!field.name || !field.value) continue;
-        embed.addFields({ name: field.name, value: field.value, inline: field.inline });
+        embed.addFields({ name: field.name, value: field.value, inline: field.inline ?? false });
     }
 
     if(key.title) embed.setTitle(key.title);
     if(key.description) embed.setDescription(key.description);
-    if(key.color) embed.setColor(key.color);
+    if(key.color) embed.setColor(Discord.Colors[key.color]);
     if(key.author?.name) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
     if(key.thumbnail) embed.setThumbnail(key.thumbnail);

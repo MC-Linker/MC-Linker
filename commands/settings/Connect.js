@@ -1,7 +1,7 @@
 const dns = require('dns/promises');
 const crypto = require('crypto');
 const { pluginPort } = require('../../config.json');
-const { ph, addPh, addTranslatedResponses } = require('../../api/messages');
+const { ph, addPh, addTranslatedResponses, getEmbed } = require('../../api/messages');
 const { keys } = require('../../api/keys');
 const Command = require('../../structures/Command');
 const PluginProtocol = require('../../structures/PluginProtocol');
@@ -23,7 +23,6 @@ class Connect extends Command {
         if(!await super.execute(interaction, client, args, server)) return;
 
         const method = args[0];
-
         if(method === 'ftp') {
             const host = args[1];
             let username = args[2];
@@ -117,30 +116,33 @@ class Connect extends Command {
                 const { address } = await dns.lookup(ip, 4);
                 if(address) ip = address;
             }
-            catch(_) {
-            }
+            catch(_) {}
 
             await this._disconnectOldPlugin(interaction, server);
 
             const hash = crypto.randomBytes(32).toString('hex');
-            const pluginProtocol = new PluginProtocol(client, { ip, hash, port });
+            const pluginProtocol = new PluginProtocol(client, { ip, hash, port, id: interaction.guildId });
 
             const verify = await pluginProtocol.verify();
-            if(!await utils.handleProtocolResponse(verify, server.protocol, interaction)) return;
+            if(!await utils.handleProtocolResponse(verify, pluginProtocol, interaction)) return;
 
             await interaction.replyTl(keys.commands.connect.warnings.check_dms);
 
             let dmChannel = await interaction.user.createDM();
             try {
-                await dmChannel.send(addPh(keys.commands.connect.warnings.verification, ph.std(interaction)));
+                await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.std(interaction))] });
             }
             catch(err) {
                 dmChannel = interaction.channel;
                 await interaction.replyTl(keys.commands.connect.warnings.could_not_dm);
-                await dmChannel.send(addPh(keys.commands.connect.warnings.verification, ph.std(interaction)));
+                await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.std(interaction))] });
             }
 
-            const collector = await dmChannel.awaitMessages({ maxProcessed: 1, time: 180_000 });
+            const collector = await dmChannel.awaitMessages({
+                max: 1,
+                time: 180_000,
+                filter: message => message.author.id === interaction.user.id,
+            });
             const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
             if(!message) {
                 console.log(keys.commands.connect.warnings.no_reply_in_time.console);
@@ -148,22 +150,25 @@ class Connect extends Command {
             }
 
             const resp = await pluginProtocol.connect(collector.first());
-            if(!await utils.handleProtocolResponse(verify, server.protocol, message, {
+            if(!await utils.handleProtocolResponse(resp, pluginProtocol, interaction, {
                 401: keys.commands.connect.errors.incorrect_code,
-            })) return;
+            })) {
+                await message.replyTl(keys.commands.connect.errors.incorrect_code);
+                return;
+            }
 
             await message.replyTl(keys.commands.connect.success.verification, ph.std(interaction));
 
+            console.log(resp.data);
             /** @type {ServerConnectionData} */
             const serverConnectionData = {
                 id: interaction.guildId,
                 ip: resp.data.ip.split(':').shift(),
-                port: resp.data.port.split(':').pop(),
-                version: parseInt(resp.data.version.split('.').pop()),
-                path: decodeURIComponent(resp.path),
+                port: resp.data.ip.split(':').pop(),
+                version: parseInt(resp.data.version.split('.')[1]),
+                path: decodeURIComponent(resp.data.path),
                 hash: resp.data.hash,
                 online: resp.data.online,
-                chat: false,
                 protocol: 'plugin',
             };
 

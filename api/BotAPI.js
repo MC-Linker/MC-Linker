@@ -120,7 +120,7 @@ class BotAPI {
                         }
 
 
-                        await server.edit({ channels: regChannel.data.channels, chat: true });
+                        await server.edit({ channels: regChannel.data.channels });
                     }
 
                     //Edit webhook if name doesnt match

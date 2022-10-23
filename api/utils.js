@@ -262,6 +262,12 @@ async function getUsersFromMention(client, mention) {
     return userArray;
 }
 
+const defaultStatusRespones = {
+    400: keys.api.plugin.errors.status_400,
+    401: keys.api.plugin.errors.status_401,
+    404: keys.api.plugin.errors.status_404,
+};
+
 /**
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
@@ -271,33 +277,40 @@ async function getUsersFromMention(client, mention) {
  * @returns {Promise<boolean>}
  */
 async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
-    const defaultStatusRespones = {
-        400: keys.api.plugin.errors.status_400,
-        401: keys.api.plugin.errors.status_401,
-        404: keys.api.plugin.errors.status_404,
-    };
+    const placeholders = { data: JSON.stringify(response?.data ?? '') };
 
     if(!response && protocol instanceof PluginProtocol) {
-        await interaction.replyTl(keys.api.plugin.errors.no_response);
+        await interaction.replyTl(keys.api.plugin.errors.no_response, placeholders);
         return false;
     }
     else if(!response && protocol instanceof FtpProtocol) {
-        await interaction.replyTl(keys.api.ftp.errors.could_not_connect);
+        await interaction.replyTl(keys.api.ftp.errors.could_not_connect, placeholders);
         return false;
     }
-    else if(response.status <= 500 && response.status < 600) {
-        await interaction.replyTl(keys.api.plugin.errors.status_500);
+    else if(response.status >= 500 && response.status < 600) {
+        await interaction.replyTl(keys.api.plugin.errors.status_500, placeholders);
         return false;
     }
     else {
         const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
         if(responseKey) {
-            await interaction.replyTl(responseKey);
+            await interaction.replyTl(responseKey, placeholders);
             return false;
         }
     }
 
     return true;
+}
+
+function createUUIDv3(username) {
+    const hash = crypto.createHash('md5');
+    hash.update(`OfflinePlayer:${username}`);
+    let digest = hash.digest();
+
+    digest[6] = digest[6] & 0x0f | 0x30;  // set version to 3
+    digest[8] = digest[8] & 0x3f | 0x80;  // set to variant 2
+
+    return addHyphen(digest.toString('hex'));
 }
 
 
@@ -308,6 +321,7 @@ module.exports = {
     fetchCommand,
     searchStats,
     fetchUUID,
+    createUUIDv3,
     getArgs,
     getUsersFromMention,
     handleProtocolResponse,

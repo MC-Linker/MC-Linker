@@ -93,7 +93,7 @@ const PluginRoutes = {
         '/connect',
         { ip, id: guildId },
         {},
-        `Bearer ${verifyCode}`,
+        `Basic ${verifyCode}`,
     ],
     /**
      * Disconnects from the server.
@@ -140,6 +140,7 @@ class PluginProtocol extends Protocol {
      * @property {string} ip - The ip the plugin is listening on.
      * @property {number} port - The port the plugin is listening on.
      * @property {string} hash - The hash used to authenticate with the plugin.
+     * @property {string} id - The guild id this protocol is for.
      */
 
     /**
@@ -162,18 +163,27 @@ class PluginProtocol extends Protocol {
         this._patch(data);
     }
 
-    static async _fetch(method, url, hash, body = {}, authorization = null) {
+    /**
+     * Fetches a url with the given data.
+     * @param {string} method - The http method to use.
+     * @param {URL} url - The url to fetch.
+     * @param {string} hash - The hash to use for authentication.
+     * @param {?object} [body={}] - The body to send with the request.
+     * @param {?string} [authorization=null] - Additional authorization headers to send with the request.
+     * @returns {Promise<null|Response>} - The response from the server.
+     * @private
+     */
+    static async fetch(method, url, hash, body = {}, authorization = null) {
         try {
-            authorization = `Bearer ${hash}`;
-            if(authorization) authorization += ` ${authorization}`;
+            let authorizationString = `Bearer ${hash}`;
+            if(authorization) authorizationString += `, ${authorization}`;
 
             return await fetch(url.toString(), {
-                method: method,
+                method,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': authorization,
+                    'Authorization': authorizationString,
                 },
-                body: typeof body === 'object' ? JSON.stringify(body) : body,
+                body: Object.keys(body ?? {}).length === 0 ? null : JSON.stringify(body),
             });
         }
         catch(err) {
@@ -185,13 +195,18 @@ class PluginProtocol extends Protocol {
      * @inheritDoc
      */
     static async testConnection(data) {
-        const url = `http://${data.ip}:${data.port}${PluginRoutes.Base()[1]}`;
-        const response = await PluginProtocol._fetch(PluginRoutes.Base()[0], url, data.hash);
+        const url = new URL(PluginRoutes.Base()[1], `http://${data.ip}:${data.port}`);
+        const response = await PluginProtocol.fetch(PluginRoutes.Base()[0], url, data.hash);
         if(response) return response.ok;
         return false;
     }
 
     _patch(data) {
+
+        /**
+         * The guild id this protocol is for.
+         */
+        this.id = data.id ?? this.id;
 
         /**
          * The ip the plugin is listening on.
@@ -217,7 +232,7 @@ class PluginProtocol extends Protocol {
      * @returns {Promise<ProtocolResponse>} - The response from the plugin.
      */
     async verify() {
-        const response = await this.fetch(...PluginRoutes.Verify());
+        const response = await this._fetch(...PluginRoutes.Verify());
         return await fetchToProtocolResponse(response);
     }
 
@@ -227,7 +242,7 @@ class PluginProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async connect(verifyCode) {
-        const response = await this._fetch(...PluginRoutes.Connect(this.ip, this.id, verifyCode));
+        const response = await this._fetch(...PluginRoutes.Connect(`${this.ip}:${this.port}`, this.id, verifyCode));
         return await fetchToProtocolResponse(response);
     }
 
@@ -351,27 +366,27 @@ class PluginProtocol extends Protocol {
      * Fetches data from the plugin.
      * @param {string} method - The http method to use.
      * @param {string} route - The route to fetch from.
-     * @param {object|ReadStream} [data={}] - The data to send with the request.
+     * @param {object|ReadStream} [body={}] - The data to send with the request.
      * @param {Object.<string, string>} [queries={}] - The queries to send with the request.
      * @param {?string} [authorization=null] - Additional authorization headers to send with the request.
-     * @returns {Promise<?ProtocolResponse>} - The response of the request.
+     * @returns {Promise<?Response>} - The response of the request.
      * @private
      */
-    async _fetch(method, route, data = {}, queries = {}, authorization = null) {
+    async _fetch(method, route, body = {}, queries = {}, authorization = null) {
         let url = new URL(`http://${this.ip}:${this.port}`);
         url.pathname = route;
         for(const key in queries) {
             url.searchParams.append(key, queries[key]);
         }
 
-        return await PluginProtocol._fetch(method, url, data, this.hash, authorization);
+        return await PluginProtocol.fetch(method, url, this.hash, body, authorization);
     }
 
 }
 
 /**
  * Converts a fetch response object to a plugin response object.
- * @param response - The fetch response object to convert.
+ * @param {Response} response - The fetch response object to convert.
  * @returns {Promise<?ProtocolResponse>} - The plugin response object.
  */
 async function fetchToProtocolResponse(response) {
