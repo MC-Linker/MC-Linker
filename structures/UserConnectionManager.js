@@ -1,6 +1,6 @@
 const UserConnection = require('./UserConnection');
 const ConnectionManager = require('./ConnectionManager');
-const { fetchUUID } = require('../api/utils');
+const { fetchUUID, createUUIDv3 } = require('../api/utils');
 const Discord = require('discord.js');
 
 class UserConnectionManager extends ConnectionManager {
@@ -42,7 +42,7 @@ class UserConnectionManager extends ConnectionManager {
             return { error: 'cache', uuid: null, username: null };
         }
 
-        const apiUUID = await fetchUUID(arg);
+        const apiUUID = this.client.serverConnections.resolve(server).online ? await fetchUUID(arg) : createUUIDv3(arg);
         if(apiUUID) return { uuid: apiUUID, username: arg, error: null };
         return { error: 'fetch', uuid: null, username: null };
     }

@@ -260,7 +260,6 @@ class PluginProtocol extends Protocol {
      * @inheritDoc
      */
     async get(getPath, putPath) {
-        //Wrap in promise
         return new Promise(async resolve => {
             const response = await this._fetch(...PluginRoutes.GetFile(getPath));
             if(!response?.ok) return resolve(fetchToProtocolResponse(response));
