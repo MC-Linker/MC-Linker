@@ -266,12 +266,14 @@ class PluginProtocol extends Protocol {
 
             try {
                 await fs.ensureFile(putPath);
-                await response.body.pipe(fs.createWriteStream(putPath));
-                response.body.on('end', async () => resolve({
+
+                const writeStream = fs.createWriteStream(putPath);
+                await response.body.pipe(writeStream);
+                writeStream.on('finish', async () => resolve({
                     status: response.status,
                     data: await fs.readFile(putPath),
                 }));
-                response.body.on('error', () => resolve(null));
+                writeStream.on('error', () => resolve(null));
             }
             catch(_) {
                 resolve(null);
