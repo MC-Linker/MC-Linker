@@ -66,7 +66,7 @@ class Command extends AutocompleteCommand {
                     }
                 }
                 else {
-                    for([k, v] of Object.entries(suggestions)) {
+                    for(const [k, v] of Object.entries(suggestions)) {
                         if(k?.toLowerCase()?.includes(focused.value.toLowerCase()) || v?.toLowerCase()?.includes(focused.value.toLowerCase()))
                             respondArray.push({ name: k, value: v });
                     }
@@ -124,7 +124,7 @@ class Command extends AutocompleteCommand {
         }
 
         if(respondArray.length >= 25) respondArray.length = 25;
-        interaction.respond(respondArray).catch(() => interaction.replyTl(keys.commands.command.errors.could_not_autocomplete, ph.command(interaction.command)));
+        interaction.respond(respondArray).catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
     }
 
     async execute(interaction, client, args, server) {
@@ -4461,10 +4461,10 @@ async function getPlaceholder(key, args) {
         if(!server) return {};
 
         const nbtBuffer = await server.protocol.get(getPath, putPath);
-        if(!nbtBuffer) return {};
+        if(nbtBuffer?.status !== 200) return {};
 
         try {
-            const nbtObject = await nbt.parse(nbtBuffer, 'big');
+            const nbtObject = await nbt.parse(nbtBuffer.data, 'big');
             return nbt.simplify(nbtObject.parsed);
         }
         catch(_) {
@@ -4479,15 +4479,15 @@ async function getPlaceholder(key, args) {
         let allFunctions = [];
 
         const datapacks = await server.protocol.list(`${worldPath}/datapacks/`);
-        if(!datapacks) return [];
+        if(datapacks?.status !== 200) return [];
 
-        for(const datapack of datapacks) {
+        for(const datapack of datapacks.data) {
             if(!datapack.isDirectory) continue;
 
             const namespaces = await server.protocol.list(`${worldPath}/datapacks/${datapack.name}/data/`);
-            if(!namespaces) continue;
+            if(namespaces?.status !== 200) continue;
 
-            for(const namespace of namespaces) {
+            for(const namespace of namespaces.data) {
                 if(!namespace.isDirectory) continue;
                 await listFunctions(datapack.name, namespace.name, '');
             }
@@ -4495,12 +4495,12 @@ async function getPlaceholder(key, args) {
 
         async function listFunctions(datapack, namespace, path) {
             const functions = await server.protocol.list(`${worldPath}/datapacks/${datapack}/data/${namespace}/functions/${path}`);
-            if(!functions) return;
+            if(functions?.status !== 200) return;
 
-            for(const func of functions) {
-                const funcPath = `${path}/${func.name}`.replace(/^\//, '');
+            for(const func of functions.data) {
+                const funcPath = `${path}/${func.name}`.replace(/^\/+/, '');
                 if(func.isDirectory) await listFunctions(datapack, namespace, funcPath);
-                else if(func.name.endsWith('.mcfunction')) allFunctions.push(funcPath.replaceAll('.mcfunction', ''));
+                else if(func.name.endsWith('.mcfunction')) allFunctions.push(`${namespace}:${funcPath.replaceAll('.mcfunction', '')}`);
             }
         }
 

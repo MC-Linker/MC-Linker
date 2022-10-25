@@ -14,7 +14,7 @@
       "": ["%advancements%"]
     },
     {
-      "arg1=only": ["%arg2_criteria%"]
+      "arg2=only": ["%arg2_criteria%"]
     }
   ],
   "attribute": [
