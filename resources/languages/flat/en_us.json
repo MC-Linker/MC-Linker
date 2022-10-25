@@ -269,12 +269,8 @@
 
 
 
-  "commands.ban.warnings.response_warning.embeds.0.title": "Ban Player",
-  "commands.ban.warnings.response_warning.embeds.0.description": "%emoji_warning% Banned player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.ban.warnings.response_warning.embeds.0.color": "Orange",
-
   "commands.ban.success.embeds.0.title": "Ban Player",
-  "commands.ban.success.embeds.0.description": "%emoji_success% Successfully banned player **%username%**: `%reason%`",
+  "commands.ban.success.embeds.0.description": "%emoji_success% Successfully banned player **%username%**: `%reason%`\n%warning%",
   "commands.ban.success.embeds.0.color": "Orange",
 
 
@@ -287,62 +283,38 @@
 
 
 
-  "commands.deop.warnings.response_warning.embeds.0.title": "Deop Player",
-  "commands.deop.warnings.response_warning.embeds.0.description": "Deoped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.deop.warnings.response_warning.embeds.0.color": "Blue",
-
   "commands.deop.success.embeds.0.title": "Deop Player",
-  "commands.deop.success.embeds.0.description": "%emoji_success% Successfully Deoped player **%username%**",
+  "commands.deop.success.embeds.0.description": "%emoji_success% Successfully Deoped player **%username%**\n%warning%",
   "commands.deop.success.embeds.0.color": "Blue",
 
 
 
-  "commands.gamemode.warnings.response_warning.embeds.0.title": "Change Gamemode",
-  "commands.gamemode.warnings.response_warning.embeds.0.description": "%emoji_warning% Changed gamemode of **%username%** to **%gamemode%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.gamemode.warnings.response_warning.embeds.0.color": "Orange",
-
   "commands.gamemode.success.embeds.0.title": "Change Gamemode",
-  "commands.gamemode.success.embeds.0.description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**",
+  "commands.gamemode.success.embeds.0.description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**\n%warning%",
   "commands.gamemode.success.embeds.0.color": "Orange",
 
 
 
-  "commands.kick.warnings.response_warning.embeds.0.title": "Kick Player",
-  "commands.kick.warnings.response_warning.embeds.0.description": "%emoji_warning% Kicked player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.kick.warnings.response_warning.embeds.0.color": "Orange",
-
   "commands.kick.success.embeds.0.title": "Kick Player",
-  "commands.kick.success.embeds.0.description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`",
+  "commands.kick.success.embeds.0.description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`\n%warning%",
   "commands.kick.success.embeds.0.color": "Orange",
 
 
 
-  "commands.op.warnings.response_warning.embeds.0.title": "OP Player",
-  "commands.op.warnings.response_warning.embeds.0.description": "Oped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.op.warnings.response_warning.embeds.0.color": "Blue",
-
   "commands.op.success.embeds.0.title": "OP Player",
-  "commands.op.success.embeds.0.description": "%emoji_success% Successfully oped player **%username%**",
+  "commands.op.success.embeds.0.description": "%emoji_success% Successfully oped player **%username%**\n%warning%",
   "commands.op.success.embeds.0.color": "Blue",
 
 
 
-  "commands.unban.warnings.response_warning.embeds.0.title": "Unban Player",
-  "commands.unban.warnings.response_warning.embeds.0.description": "Unbanned player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.unban.warnings.response_warning.embeds.0.color": "Blue",
-
   "commands.unban.success.embeds.0.title": "Unban Player",
-  "commands.unban.success.embeds.0.description": "%emoji_success% Successfully unbanned player **%username%**",
+  "commands.unban.success.embeds.0.description": "%emoji_success% Successfully unbanned player **%username%**\n%warning%",
   "commands.unban.success.embeds.0.color": "Blue",
 
 
 
-  "commands.message.warnings.response_warning.embeds.0.title": "Send Message",
-  "commands.message.warnings.response_warning.embeds.0.description": "Sent message to player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-  "commands.message.warnings.response_warning.embeds.0.color": "Blue",
-
   "commands.message.success.embeds.0.title": "Send Message",
-  "commands.message.success.embeds.0.description": "%emoji_success% Successfully sent message to player **%username%**",
+  "commands.message.success.embeds.0.description": "%emoji_success% Successfully sent message to player **%username%**\n%warning%",
   "commands.message.success.embeds.0.color": "Blue",
 
 
@@ -599,6 +571,7 @@
   "api.plugin.warnings.automatically_disconnected.embeds.0.description": "%emoji_warning% Automatically disconnected from the old server (**%ip%**) to ensure no complications happen.",
 
   "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
+  "api.plugin.warnings.no_response_message_short": "No response message! This commonly happens after using `/reload`.",
 
   "api.plugin.errors.no_response.embeds.0.title": "Plugin Does Not Respond",
   "api.plugin.errors.no_response.embeds.0.description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled.",

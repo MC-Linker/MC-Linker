@@ -21,8 +21,8 @@ class Unban extends Command {
         const resp = await server.protocol.execute(`pardon ${user.username}`);
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        if(resp.status === 206) return interaction.replyTl(keys.commands.unban.warnings.response_warning, { username: user });
-        else return interaction.replyTl(keys.commands.unban.success, { username: user });
+        const warning = resp.data.message === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        return interaction.replyTl(keys.commands.unban.success, { username: user.username, warning });
     }
 }
 

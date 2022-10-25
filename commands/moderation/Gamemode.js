@@ -22,13 +22,12 @@ class Gamemode extends Command {
         const resp = await server.protocol.execute(`gamemode ${gamemode} ${user.username}`);
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        if(resp.status === 206) {
-            return interaction.replyTl(keys.commands.gamemode.warnings.response_warning, {
-                username: user,
-                gamemode: gamemode.cap(),
-            });
-        }
-        else return interaction.replyTl(keys.commands.gamemode.success, { username: user, gamemode: gamemode.cap() });
+        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        return interaction.replyTl(keys.commands.gamemode.success, {
+            username: user.username,
+            gamemode: gamemode.cap(),
+            warning,
+        });
     }
 }
 

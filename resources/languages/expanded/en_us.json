@@ -567,22 +567,11 @@
       }
     },
     "ban": {
-      "warnings": {
-        "response_warning": {
-          "embeds": [
-            {
-              "title": "Ban Player",
-              "description": "%emoji_warning% Banned player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
-              "color": "Orange"
-            }
-          ]
-        }
-      },
       "success": {
         "embeds": [
           {
             "title": "Ban Player",
-            "description": "%emoji_success% Successfully banned player **%username%**: `%reason%`",
+            "description": "%emoji_success% Successfully banned player **%username%**: `%reason%`\n%warning%",
             "color": "Orange"
           }
         ]
@@ -605,132 +594,66 @@
       }
     },
     "deop": {
-      "warnings": {
-        "response_warning": {
-          "embeds": [
-            {
-              "title": "Deop Player",
-              "description": "Deoped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-              "color": "Blue"
-            }
-          ]
-        }
-      },
       "success": {
         "embeds": [
           {
             "title": "Deop Player",
-            "description": "%emoji_success% Successfully Deoped player **%username%**",
+            "description": "%emoji_success% Successfully Deoped player **%username%**\n%warning%",
             "color": "Blue"
           }
         ]
       }
     },
     "gamemode": {
-      "warnings": {
-        "response_warning": {
-          "embeds": [
-            {
-              "title": "Change Gamemode",
-              "description": "%emoji_warning% Changed gamemode of **%username%** to **%gamemode%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-              "color": "Orange"
-            }
-          ]
-        }
-      },
       "success": {
         "embeds": [
           {
             "title": "Change Gamemode",
-            "description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**",
+            "description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**\n%warning%",
             "color": "Orange"
           }
         ]
       }
     },
     "kick": {
-      "warnings": {
-        "response_warning": {
-          "embeds": [
-            {
-              "title": "Kick Player",
-              "description": "%emoji_warning% Kicked player **%username%**: `%reason%`\nCould not fetch response message! This commonly happens after using `/reload`.",
-              "color": "Orange"
-            }
-          ]
-        }
-      },
       "success": {
         "embeds": [
           {
             "title": "Kick Player",
-            "description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`",
+            "description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`\n%warning%",
             "color": "Orange"
           }
         ]
       }
     },
     "op": {
-      "warnings": {
-        "response_warning": {
-          "embeds": [
-            {
-              "title": "OP Player",
-              "description": "Oped player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-              "color": "Blue"
-            }
-          ]
-        }
-      },
       "success": {
         "embeds": [
           {
             "title": "OP Player",
-            "description": "%emoji_success% Successfully oped player **%username%**",
+            "description": "%emoji_success% Successfully oped player **%username%**\n%warning%",
             "color": "Blue"
           }
         ]
       }
     },
     "unban": {
-      "warnings": {
-        "response_warning": {
-          "embeds": [
-            {
-              "title": "Unban Player",
-              "description": "Unbanned player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-              "color": "Blue"
-            }
-          ]
-        }
-      },
       "success": {
         "embeds": [
           {
             "title": "Unban Player",
-            "description": "%emoji_success% Successfully unbanned player **%username%**",
+            "description": "%emoji_success% Successfully unbanned player **%username%**\n%warning%",
             "color": "Blue"
           }
         ]
       }
     },
     "message": {
-      "warnings": {
-        "response_warning": {
-          "embeds": [
-            {
-              "title": "Send Message",
-              "description": "Sent message to player **%username%**\nCould not fetch response message! This commonly happens after using `/reload`.",
-              "color": "Blue"
-            }
-          ]
-        }
-      },
       "success": {
         "embeds": [
           {
             "title": "Send Message",
-            "description": "%emoji_success% Successfully sent message to player **%username%**",
+            "description": "%emoji_success% Successfully sent message to player **%username%**\n%warning%",
             "color": "Blue"
           }
         ]
@@ -1274,7 +1197,8 @@
             }
           ]
         },
-        "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`."
+        "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
+        "no_response_message_short": "No response message! This commonly happens after using `/reload`."
       },
       "errors": {
         "no_response": {

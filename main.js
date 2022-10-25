@@ -101,10 +101,10 @@ client.on('messageCreate', async message => {
     try {
         // noinspection JSUnresolvedFunction
         await command.execute(message, client, args, server)
-            ?.catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err)));
+            ?.catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message)));
     }
     catch(err) {
-        await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
+        await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
     }
 });
 
@@ -139,10 +139,10 @@ client.on('interactionCreate', async interaction => {
         try {
             // noinspection JSUnresolvedFunction
             await command.execute(interaction, client, args, server)
-                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.command(interaction.command)));
+                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction)));
         }
         catch(err) {
-            await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.command(interaction.command));
+            await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction));
         }
     }
     else if(interaction.isAutocomplete()) {
@@ -151,10 +151,10 @@ client.on('interactionCreate', async interaction => {
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client)
-                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.command(interaction.command))));
+                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.interaction(interaction))));
         }
         catch(err) {
-            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.command(interaction.command)));
+            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.interaction(interaction)));
         }
     }
     else if(interaction.isButton()) {

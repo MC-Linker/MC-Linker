@@ -22,8 +22,8 @@ class Op extends Command {
         const resp = await server.protocol.execute(`op ${user.username}`);
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        if(resp.status === 206) return interaction.replyTl(keys.commands.op.warnings.response_warning, { username: user });
-        else return interaction.replyTl(keys.commands.op.success, { username: user });
+        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        return interaction.replyTl(keys.commands.op.success, { username: user.username, warning });
     }
 }
 

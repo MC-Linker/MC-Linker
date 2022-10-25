@@ -8,6 +8,7 @@ const { keys } = require('../../api/keys');
 const Command = require('../../structures/Command');
 const Protocol = require('../../structures/Protocol');
 const utils = require('../../api/utils');
+const { fetchUUID } = require('../../api/utils');
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -123,12 +124,12 @@ class Inventory extends Command {
             './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-            showDetails ? pushInvButton.bind(null, itemButtons) : () => {
-            }, //Push itemButtons if showDetails is set to true
+            showDetails ? pushInvButton.bind(null, itemButtons) : () => {}, //Push itemButtons if showDetails is set to true
         );
 
         //Draw skin in inventory
-        const skinJson = await fetch(`https://minecraft-api.com/api/skins/${user.uuid}/body/10.5/10/json`);
+        const skinUrl = `https://minecraft-api.com/api/skins/${server.online ? user.uuid : await fetchUUID(user.username)}/body/10.5/10/json`;
+        const skinJson = await fetch(skinUrl);
         const { skin: skinBase64 } = await skinJson.json();
         const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
         ctx.drawImage(skinImg, 70, 20, 65, 131);

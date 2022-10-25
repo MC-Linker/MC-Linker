@@ -22,11 +22,9 @@ class Ban extends Command {
 
         const resp = await server.protocol.execute(`ban ${user.username} ${reason}`);
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
-        if(resp.status === 206) {
-            return interaction.replyTl(keys.commands.ban.warnings.response_warning, { username: user, reason });
-        }
 
-        return interaction.replyTl(keys.commands.ban.success, { username: user, reason });
+        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        return interaction.replyTl(keys.commands.ban.success, { username: user.username, reason, warning });
     }
 }
 

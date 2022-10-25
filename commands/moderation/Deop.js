@@ -21,8 +21,8 @@ class Deop extends Command {
         const resp = await server.protocol.execute(`deop ${user.username}`);
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        if(resp.status === 206) return interaction.replyTl(keys.commands.deop.warnings.response_warning, { username: user });
-        return interaction.replyTl(keys.commands.deop.success, { username: user });
+        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        return interaction.replyTl(keys.commands.deop.success, { username: user.username, warning });
     }
 }
 

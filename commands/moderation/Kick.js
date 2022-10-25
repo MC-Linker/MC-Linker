@@ -23,13 +23,8 @@ class Kick extends Command {
         const resp = await server.protocol.execute(`kick ${user.username} ${reason}`);
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        if(resp.status === 206) {
-            return interaction.replyTl(keys.commands.kick.warnings.response_warning, {
-                username: user,
-                reason,
-            });
-        }
-        else return interaction.replyTl(keys.commands.kick.success, { username: user, reason });
+        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        return interaction.replyTl(keys.commands.kick.success, { username: user.username, reason, warning });
     }
 }
 
