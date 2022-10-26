@@ -76,10 +76,10 @@ client.on('guildDelete', async guild => {
 
 client.on('messageCreate', async message => {
     const server = client.serverConnections.cache.get(message.guildId);
-    if(server?.protocol instanceof PluginProtocol && !message.content.startsWith(prefix)) {
+    if(!message.author.bot && server?.protocol instanceof PluginProtocol && !message.content.startsWith(prefix)) {
         let content = message.cleanContent;
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
-        server.protocol.chat(content);
+        server.protocol.chat(content, message.author.username);
     }
 
     message = addTranslatedResponses(message);

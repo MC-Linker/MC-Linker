@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
-const { getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
-const { addResponseMethods } = require('../../api/keys');
+const { getEmbed, ph, getComponent, createActionRows, addTranslatedResponses } = require('../../api/messages');
 const { keys } = require('../../api/keys');
 const Command = require('../../structures/Command');
 const utils = require('../../api/utils');
@@ -38,18 +37,16 @@ class Chatchannel extends Command {
                     time: 30_000,
                     max: 1,
                 });
-                await interaction.message.edit(keys.commands.chatchannel.warnings.already_responded);
+                menu = addTranslatedResponses(menu);
+
                 if(menu.customId !== 'log') return;
-
-                menu = addResponseMethods(menu);
-
                 if(menu.user.id !== interaction.user.id) {
                     const notAuthorEmbed = getEmbed(keys.api.select_menu.warnings.no_author, ph.emojis());
                     return menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
                 }
             }
             catch(_) {
-                return interaction.message.edit(keys.commands.chatchannel.warnings.not_collected);
+                return interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
             }
 
             //Create webhook for channel
@@ -72,12 +69,11 @@ class Chatchannel extends Command {
             });
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook?.delete();
 
-            await server.edit({
-                chat: true,
-                channels: resp.data,
+            await server.edit({ channels: resp.data });
+            return menu.update({
+                embeds: [getEmbed(keys.commands.chatchannel.success.add, ph.emojis())],
+                components: [],
             });
-
-            return interaction.replyTl(keys.commands.chatchannel.success.add);
         }
         //Remove chatchannel
         else if(method === 'remove') {

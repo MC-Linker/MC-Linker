@@ -72,14 +72,15 @@ const PluginRoutes = {
     /**
      * Sends a chat message to the server or a user.
      * @param {string} msg - The message to send.
+     * @param {string} username - The user to send the message to.
      * @param {boolean=false} privateMode - Whether to send the message privately.
-     * @param {string=''} username - The user to send the message to.
+     * @param {string=''} target - The user who sent the message.
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
      */
-    Chat: (msg, privateMode = false, username = '') => [
+    Chat: (msg, username, privateMode = false, target = '') => [
         'POST',
         '/chat',
-        { msg, private: privateMode, username },
+        { msg, private: privateMode, target, username },
     ],
     /**
      * Connects to the server.
@@ -310,11 +311,12 @@ class PluginProtocol extends Protocol {
     /**
      * Sends a public chat message to the server.
      * @param {string} message - The message to send.
+     * @param {string} username - The user who sent the message.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async chat(message) {
+    async chat(message, username) {
         try {
-            const response = await this._fetch(...PluginRoutes.Chat(message));
+            const response = await this._fetch(...PluginRoutes.Chat(message, username));
             return fetchToProtocolResponse(response);
         }
         catch(err) {
@@ -325,11 +327,12 @@ class PluginProtocol extends Protocol {
     /**
      * Sends a private chat message to a player on the server.
      * @param {string} message - The message to send.
-     * @param {string} username - The username of the player to send the message to.
+     * @param {string} username - The user who sent the message.
+     * @param {string} target - The username of the player to send the message to.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async chatPrivate(message, username) {
-        const response = await this._fetch(...PluginRoutes.Chat(message, true, username));
+    async chatPrivate(message, username, target) {
+        const response = await this._fetch(...PluginRoutes.Chat(message, username, true, target));
         return fetchToProtocolResponse(response);
     }
 
