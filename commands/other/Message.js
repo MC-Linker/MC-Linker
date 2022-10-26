@@ -23,11 +23,11 @@ class Message extends Command {
         const chatMsg = args?.join(' ').replaceAll(`"`, `\\"`);
         const argPlaceholder = { username: user.username, 'message': chatMsg };
 
-        const resp = await server.protocol.chatPrivate(chatMsg, user.username);
+        const resp = await server.protocol.chatPrivate(chatMsg, interaction.member.nickname ?? interaction.member.user.username, user.username);
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        if(resp.status === 206) return interaction.replyTl(keys.commands.message.warnings.response_warning, argPlaceholder, { response: resp.data.message });
-        else return interaction.replyTl(keys.commands.message.success, argPlaceholder);
+        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        return interaction.replyTl(keys.commands.message.success, argPlaceholder, { warning });
     }
 }
 
