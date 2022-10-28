@@ -642,10 +642,11 @@
   "api.plugin.success.messages.block_command.embeds.0.description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
   "api.plugin.success.messages.block_command.embeds.0.color": "DarkGold",
 
-  "api.plugin.success.messages.start.embeds.0.description": "%emoji_startup% **%message%**",
+  "api.plugin.success.messages.start.embeds.0.description": "%emoji_startup% **The server has opened!**",
   "api.plugin.success.messages.start.embeds.0.color": "Green",
   "api.plugin.success.messages.start.embeds.0.timestamp": "%timestamp_now%",
-  "api.plugin.success.messages.close.embeds.0.description": "%emoji_shutdown% **%message%**",
+
+  "api.plugin.success.messages.close.embeds.0.description": "%emoji_shutdown% **The server has shutdown!**",
   "api.plugin.success.messages.close.embeds.0.color": "Red",
   "api.plugin.success.messages.close.embeds.0.timestamp": "%timestamp_now%",
 

@@ -5,7 +5,7 @@ class ConnectionManager extends CachedManager {
 
     /**
      * The server connection cache of this manager.
-     * @type {Collection<string, SettingsConnection>}
+     * @type {Collection<string, Connection>}
      */
     cache;
 

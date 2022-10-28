@@ -25,12 +25,8 @@ class BotAPI {
 
     async startServer() {
         this.fastify.post('/chat', async (request, reply) => {
+            const { message, channels, id: guildId, ip, type } = request.body;
             const player = request.body.player?.replaceAll(' ', '');
-            const message = request.body.message;
-            const channels = request.body.channels;
-            const guildId = request.body.guild;
-            const ip = request.body.ip;
-            const type = request.body.type;
             const authorURL = `https://minotar.net/helm/${player}/64.png`;
             const argPlaceholder = { ip, 'username': player, 'author_url': authorURL, message };
 

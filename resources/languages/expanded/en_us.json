@@ -1366,7 +1366,7 @@
           "start": {
             "embeds": [
               {
-                "description": "%emoji_startup% **%message%**",
+                "description": "%emoji_startup% **The server has opened!**",
                 "color": "Green",
                 "timestamp": "%timestamp_now%"
               }
@@ -1375,7 +1375,7 @@
           "close": {
             "embeds": [
               {
-                "description": "%emoji_shutdown% **%message%**",
+                "description": "%emoji_shutdown% **The server has shutdown!**",
                 "color": "Red",
                 "timestamp": "%timestamp_now%"
               }
