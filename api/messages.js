@@ -22,8 +22,8 @@ const {
     MessageReplyOptions,
     ComponentType,
     ComponentBuilder,
+    GuildApplicationCommandManager,
 } = require('discord.js');
-const { fetchCommand } = require('./utils');
 const { prefix } = require('../config.json');
 const { keys } = require('./keys');
 
@@ -744,10 +744,23 @@ function createActionRows(components) {
     return actionRows.length === 0 ? [currentRow] : actionRows;
 }
 
+/**
+ * Fetches a slash command from the given manager by its name.
+ * @param {GuildApplicationCommandManager|ApplicationCommandManager} commandManager - The command manager to search in.
+ * @param {string} name - The name of the command to search for.
+ * @returns {Promise<ApplicationCommand>}
+ */
+async function fetchCommand(commandManager, name) {
+    let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
+    if(!slashCommand) {
+        const commands = await commandManager.fetch();
+        return commands.find(cmd => cmd.name === name);
+    }
+    return slashCommand;
+}
+
 module.exports = {
     ph,
-    replyTl,
-    replyOptions,
     addPh,
     getEmbed,
     getCommand,
@@ -755,4 +768,5 @@ module.exports = {
     getComponent,
     createActionRows,
     addTranslatedResponses,
+    fetchCommand,
 };

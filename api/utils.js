@@ -1,6 +1,5 @@
 const PluginProtocol = require('../structures/PluginProtocol');
 const {
-    GuildApplicationCommandManager,
     CommandInteraction,
     ApplicationCommandOptionType,
     User,
@@ -173,21 +172,6 @@ function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValu
 }
 
 /**
- * Fetches a slash command from the given manager by its name.
- * @param {GuildApplicationCommandManager|ApplicationCommandManager} commandManager - The command manager to search in.
- * @param {string} name - The name of the command to search for.
- * @returns {Promise<ApplicationCommand>}
- */
-async function fetchCommand(commandManager, name) {
-    let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
-    if(!slashCommand) {
-        const commands = await commandManager.fetch();
-        return commands.find(cmd => cmd.name === name);
-    }
-    return slashCommand;
-}
-
-/**
  * Fetches the uuid of the given username from the Mojang API.
  * @param {string} username - The username to fetch the uuid for.
  * @returns {Promise<?string>}
@@ -355,7 +339,6 @@ module.exports = {
     searchAllAdvancements,
     searchAdvancements,
     searchAllStats,
-    fetchCommand,
     searchStats,
     fetchUUID,
     createUUIDv3,

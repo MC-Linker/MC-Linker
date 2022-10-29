@@ -2,7 +2,7 @@ const { discordLink } = require('../config.json');
 const { ph, addPh, getEmbed, getActionRows } = require('../api/messages');
 const { keys } = require('../api/keys');
 const Command = require('../structures/Command');
-const { fetchCommand } = require('../api/utils');
+const { fetchCommand } = require('../api/messages');
 const { ApplicationCommandOptionType, ApplicationCommandSubCommand, ApplicationCommand } = require('discord.js');
 
 class Help extends Command {

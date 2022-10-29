@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const { ph } = require('../api/messages');
 const { keys } = require('../api/keys');
-const { fetchCommand } = require('../api/utils');
+const { fetchCommand } = require('../api/messages');
 const { ownerId } = require('../config.json');
 
 class Command {
