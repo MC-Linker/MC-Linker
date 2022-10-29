@@ -155,13 +155,15 @@ class ServerConnection extends Connection {
         }
 
         //Switch protocols if needed
-        if(this.hasPluginProtocol() && data.protocol === 'plugin') {
+        if(!this.hasPluginProtocol() && data.protocol === 'plugin') {
             this.protocol = new PluginProtocol(this.client, {
                 id: data.id,
                 ip: this.ip,
                 port: this.port,
                 hash: this.hash,
             });
+            delete this.username;
+            delete this.password;
         }
         else if(this.hasPluginProtocol() && (data.protocol === 'ftp' || data.protocol === 'sftp')) {
             this.protocol = new FtpProtocol(this.client, {
@@ -171,6 +173,9 @@ class ServerConnection extends Connection {
                 username: this.username,
                 sftp: data.protocol === 'sftp',
             });
+
+            delete this.hash;
+            delete this.channels;
         }
         else this.protocol._patch(data);
     }
@@ -192,13 +197,13 @@ class ServerConnection extends Connection {
             port: this.port,
             version: this.version,
             path: this.path,
+            online: this.online,
         };
 
         if(this.hasPluginProtocol()) {
             return {
                 ...baseData,
                 hash: this.hash,
-                online: this.online,
                 channels: this.channels ?? [],
                 protocol: 'plugin',
             };
@@ -208,7 +213,6 @@ class ServerConnection extends Connection {
                 ...baseData,
                 password: this.password,
                 username: this.username,
-                online: this.online,
                 protocol: this.protocol.sftp ? 'sftp' : 'ftp',
             };
         }
