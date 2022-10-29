@@ -16,6 +16,8 @@ const { keys } = require('./keys');
 
 const advancementData = require('../resources/data/advancements.json');
 const customStats = require('../resources/data/stats_custom.json');
+const nbt = require('prismarine-nbt');
+const { ph } = require('./messages');
 
 /**
  * @typedef {object} AdvancementData
@@ -314,6 +316,40 @@ function createUUIDv3(username) {
     return addHyphen(digest.toString('hex'));
 }
 
+/**
+ * Creates a JS object from an nbt buffer.
+ * @param {Buffer} buffer - The nbt buffer to create the object from.
+ * @param {TranslatedResponses} interaction - The interaction to respond to.
+ * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
+ */
+async function nbtBufferToObject(buffer, interaction) {
+    try {
+        const object = await nbt.parse(buffer, 'big');
+        return nbt.simplify(object.parsed);
+    }
+    catch(err) {
+        await interaction.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        return undefined;
+    }
+}
+
+/**
+ * Creates a JS object from a properties string.
+ * @param {string} properties - The properties string to create the object from.
+ * @returns {object} - The created object.
+ */
+function parseProperties(properties) {
+    const parsedProperties = {};
+
+    for(const property of properties.split('\n')) {
+        const [name, value] = property.split('=');
+        if(!name || !value || name.startsWith('#')) continue;
+        parsedProperties[name.trim()] = value.trim();
+    }
+
+    return parsedProperties;
+}
+
 
 module.exports = {
     searchAllAdvancements,
@@ -326,4 +362,6 @@ module.exports = {
     getArgs,
     getUsersFromMention,
     handleProtocolResponse,
+    nbtBufferToObject,
+    parseProperties,
 };

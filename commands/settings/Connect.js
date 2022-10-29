@@ -29,7 +29,7 @@ class Connect extends Command {
             let password = args[3];
             let port = args[4] ?? 21;
             let version = args[5]?.split('.')?.pop() ?? 19;
-            let path = args[6];
+            let serverPath = args[6];
 
             if(typeof version !== 'number') version = parseInt(version);
             if(typeof port !== 'number') port = parseInt(port);
@@ -67,34 +67,31 @@ class Connect extends Command {
             }
             const protocol = ftpProtocol.sftp ? 'sftp' : 'ftp';
             //Search for server path if not given
-            if(!path) {
+            if(!serverPath) {
                 await interaction.replyTl(keys.commands.connect.warnings.searching_properties);
-                path = await ftpProtocol.find('server.properties', '/', 2);
-                path = path?.data;
-                if(!path) {
+                serverPath = await ftpProtocol.find('server.properties', '/', 2);
+                serverPath = serverPath?.data;
+                if(!serverPath) {
                     return interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
                 }
             }
 
-            const serverProperties = await ftpProtocol.get(Protocol.FilePath.ServerProperties(path), `./serverdata/connections/${interaction.guildId}/server.properties`);
+            const serverProperties = await ftpProtocol.get(Protocol.FilePath.ServerProperties(serverPath), `./serverdata/connections/${interaction.guildId}/server.properties`);
             if(!await utils.handleProtocolResponse(serverProperties, ftpProtocol, interaction, {
                 404: keys.commands.connect.errors.could_not_get_properties,
             })) return;
 
-            const propertiesObject = Object.fromEntries(
-                serverProperties.data.toString('utf-8').split('\n')
-                    .map(prop => prop.split('=')),
-            );
-
+            const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
             const onlineMode = propertiesObject['online-mode'];
 
+            const separator = serverPath.includes('/') ? '/' : '\\';
             const serverConnectionData = {
                 ip: host,
                 username,
                 password,
                 port,
                 online: onlineMode ? onlineMode === 'true' : false,
-                path: `${path}/${propertiesObject['level-name']}`,
+                path: `${serverPath}${separator}${propertiesObject['level-name']}`,
                 version,
                 protocol,
             };

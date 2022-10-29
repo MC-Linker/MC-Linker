@@ -344,15 +344,6 @@
     },
     "inventory": {
       "errors": {
-        "could_not_parse": {
-          "embeds": [
-            {
-              "title": "Could not Read Inventory",
-              "description": "%emoji_error% Could not read inventory."
-            }
-          ],
-          "console": "Error trying to parse player nbt %error%"
-        },
         "no_image": {
           "console": "Could not find item image %item_name%. Applying text..."
         }
@@ -1398,6 +1389,15 @@
             }
           ],
           "console": "Could not connect with ftp, sftp or ftps."
+        },
+        "could_not_parse": {
+          "embeds": [
+            {
+              "title": "Could not Read File",
+              "description": "%emoji_error% Could not read the NBT file. File may be corrupted."
+            }
+          ],
+          "console": "Could not read nbt file %error%"
         }
       }
     },

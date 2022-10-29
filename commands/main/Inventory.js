@@ -1,4 +1,3 @@
-const nbt = require('prismarine-nbt');
 const Canvas = require('@napi-rs/canvas');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
@@ -99,14 +98,8 @@ class Inventory extends Command {
             },
         )) return;
 
-        let playerData;
-        try {
-            playerData = await nbt.parse(nbtFile.data, 'big');
-            playerData = nbt.simplify(playerData.parsed);
-        }
-        catch(err) {
-            return interaction.replyTl(keys.commands.inventory.errors.could_not_parse, ph.error(err));
-        }
+        let playerData = await utils.nbtBufferToObject(nbtFile.data, interaction);
+        if(!playerData) return;
 
         //Convert slots to network slots
         playerData.Inventory = playerData.Inventory.map(item => {

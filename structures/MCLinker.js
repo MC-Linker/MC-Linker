@@ -31,7 +31,7 @@ class MCLinker extends Discord.Client {
 
     /**
      * A collection of all commands in this bot.
-     * @type {Map<string, Command>}
+     * @type {Collection<string, Command>}
      */
     commands = new Discord.Collection();
 
@@ -78,7 +78,7 @@ class MCLinker extends Discord.Client {
 
         /**
          * A collection of all commands in this bot.
-         * @type {Map<string, Command>}
+         * @type {Collection<string, Command>}
          */
         this.commands = new Discord.Collection();
 

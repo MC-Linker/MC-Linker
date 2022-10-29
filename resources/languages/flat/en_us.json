@@ -166,10 +166,6 @@
 
 
 
-  "commands.inventory.errors.could_not_parse.embeds.0.title": "Could not Read Inventory",
-  "commands.inventory.errors.could_not_parse.embeds.0.description": "%emoji_error% Could not read inventory.",
-  "commands.inventory.errors.could_not_parse.console": "Error trying to parse player nbt %error%",
-
   "commands.inventory.errors.no_image.console": "Could not find item image %item_name%. Applying text...",
 
   "commands.inventory.success.item_button.components.0.type": "Button",
@@ -658,6 +654,10 @@
   "api.ftp.errors.could_not_connect.embeds.0.title": "Could Not Connect",
   "api.ftp.errors.could_not_connect.embeds.0.description": "%emoji_error% Could not connect to server with ftp. Please check if the ftp server is online.",
   "api.ftp.errors.could_not_connect.console": "Could not connect with ftp, sftp or ftps.",
+
+  "api.ftp.errors.could_not_parse.embeds.0.title": "Could not Read File",
+  "api.ftp.errors.could_not_parse.embeds.0.description": "%emoji_error% Could not read the NBT file. File may be corrupted.",
+  "api.ftp.errors.could_not_parse.console": "Could not read nbt file %error%",
 
 
 
