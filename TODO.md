@@ -2,6 +2,7 @@
 + **Write conversion script for connections**
 + Better logs (pino)
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
++ Add RCON for ftp connections
 + Store data files in user folders (only for connected users)
 + Create isometric block, item and entity renders in code
 + DM command author when response fails to send
