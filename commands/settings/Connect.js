@@ -69,7 +69,7 @@ class Connect extends Command {
             //Search for server path if not given
             if(!serverPath) {
                 await interaction.replyTl(keys.commands.connect.warnings.searching_properties);
-                serverPath = await ftpProtocol.find('server.properties', '/', 2);
+                serverPath = await ftpProtocol.find('server.properties', '', 2);
                 serverPath = serverPath?.data;
                 if(!serverPath) {
                     return interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
