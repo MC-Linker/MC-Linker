@@ -524,13 +524,19 @@ function getComponent(key, ...placeholders) {
  * @returns {?SlashCommandBuilder}
  */
 function getCommand(key) {
-    if(!key) return console.error(keys.api.messages.errors.no_command_key.console);
-    if(!key.name || !key.type) return console.error(keys.api.messages.errors.no_command_arguments.console);
+    if(!key) {
+        console.error(keys.api.messages.errors.no_command_key.console);
+        return null;
+    }
+    if(!key.name || !key.type) {
+        console.error(keys.api.messages.errors.no_command_arguments.console);
+        return null;
+    }
 
     let commandBuilder;
     switch(Discord.ApplicationCommandType[key.type]) {
         case Discord.ApplicationCommandType.ChatInput:
-            if(!key.description) return;
+            if(!key.description) return null;
 
             commandBuilder = new Discord.SlashCommandBuilder()
                 .setName(key.name)
@@ -547,14 +553,14 @@ function getCommand(key) {
             }
 
 
-            for(const option of key.options) {
+            for(const option of key.options ?? []) {
                 addSlashCommandOption(commandBuilder, option);
             }
 
             break;
         case Discord.ApplicationCommandType.Message:
         case Discord.ApplicationCommandType.User:
-            if(!key.description) return;
+            if(!key.description) return null;
 
             commandBuilder = new Discord.ContextMenuCommandBuilder()
                 .setName(key.name)
