@@ -530,7 +530,7 @@
 
   "commands.disconnect.success.embeds.0.title": "Disconnected From %protocol_cap%",
   "commands.disconnect.success.embeds.0.description": "%emoji_success% The **%protocol%** connection was successfully disconnected.",
-  "commands.disconnect.success.console": "Disconnected from %method%",
+  "commands.disconnect.success.console": "Disconnected from %protocol%",
 
 
 

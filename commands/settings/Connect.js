@@ -28,7 +28,7 @@ class Connect extends Command {
             let username = args[2];
             let password = args[3];
             let port = args[4] ?? 21;
-            let version = args[5]?.split('.')?.pop() ?? 19;
+            let version = args[5]?.split('.')[1] ?? 19;
             let serverPath = args[6];
 
             if(typeof version !== 'number') version = parseInt(version);

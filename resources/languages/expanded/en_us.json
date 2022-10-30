@@ -1108,7 +1108,7 @@
             "description": "%emoji_success% The **%protocol%** connection was successfully disconnected."
           }
         ],
-        "console": "Disconnected from %method%"
+        "console": "Disconnected from %protocol%"
       }
     },
     "enable": {

@@ -386,13 +386,18 @@ class PluginProtocol extends Protocol {
      * @private
      */
     async _fetch(method, route, body = {}, queries = {}, authorization = null) {
-        let url = new URL(`http://${this.ip}:${this.port}`);
-        url.pathname = route;
-        for(const key in queries) {
-            url.searchParams.append(key, queries[key]);
-        }
+        try {
+            let url = new URL(`http://${this.ip}:${this.port}`);
+            url.pathname = route;
+            for(const key in queries) {
+                url.searchParams.append(key, queries[key]);
+            }
 
-        return await PluginProtocol.fetch(method, url, this.hash, body, authorization);
+            return await PluginProtocol.fetch(method, url, this.hash, body, authorization);
+        }
+        catch(_) {
+            return null;
+        }
     }
 
 }
