@@ -54,7 +54,7 @@
   "main.success.button_load.console": "Successfully loaded button: %button%",
 
   "main.success.ping.embeds.0.title": "Hey, I'm %client_username%! :wave:",
-  "main.success.ping.embeds.0.description": "I use slash commands. Type `/help` if you need more help to a specific command.",
+  "main.success.ping.embeds.0.description": "I use slash commands. Type `/help` if you need more help for a specific command.",
   "main.success.ping.embeds.0.color": "Blue",
 
   "main.success.guild_create.console": "Joined a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!",

@@ -91,7 +91,7 @@
         "embeds": [
           {
             "title": "Hey, I'm %client_username%! :wave:",
-            "description": "I use slash commands. Type `/help` if you need more help to a specific command.",
+            "description": "I use slash commands. Type `/help` if you need more help for a specific command.",
             "color": "Blue"
           }
         ]
