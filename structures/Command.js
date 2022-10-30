@@ -97,7 +97,8 @@ class Command {
             return interaction.user.id === ownerId;
         }
 
-        if(server?.settings?.isDisabled('commands', this.name)) {
+        const settings = await client.settingsConnections.cache.get(interaction.guildId);
+        if(settings?.isDisabled('commands', this.name)) {
             await interaction.replyTl(keys.api.command.warnings.disabled, await ph.interaction(interaction));
             return false;
         }
