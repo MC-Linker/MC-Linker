@@ -48,6 +48,14 @@ const FilePath = {
      * @returns {`${string}/server.properties`} - The path to the server's server.properties file.
      */
     ServerProperties: serverPath => `${serverPath}/server.properties`,
+
+    /**
+     * Constructs the path to the server's server-icon.png file.
+     * @param {string} serverPath - The path to the server folder.
+     * @returns {`${string}/server-icon.png`} - The path to the server's server-icon.png file.
+     * @constructor
+     */
+    ServerIcon: serverPath => `${serverPath}/server-icon.png`,
 };
 
 class Protocol extends Base {
