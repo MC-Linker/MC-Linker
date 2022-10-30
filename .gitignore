@@ -1,6 +1,5 @@
-serverdata
-userdata
-node_modules
-config.json
-corde.config.jsonC
+/serverdata
+/userdata
+/node_modules
 /.idea/
+config.json
