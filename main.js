@@ -71,6 +71,8 @@ client.on('guildDelete', async guild => {
     console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
     await client.serverConnections.disconnect(guild.id);
+    await client.settingsConnections.disconnect(guild.id);
+    await client.serverConnections.removeDataFolder(guild.id);
 });
 
 client.on('messageCreate', async message => {
