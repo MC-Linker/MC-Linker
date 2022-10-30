@@ -926,6 +926,15 @@
           ],
           "console": "No reply in time"
         },
+        "already_connected": {
+          "embeds": [
+            {
+              "title": "Plugin Already Connected",
+              "description": "%emoji_warning% This plugin is already connected to another server. Please disconnect it first."
+            }
+          ],
+          "console": "Plugin already connected"
+        },
         "verification": {
           "embeds": [
             {
@@ -1095,8 +1104,8 @@
       "success": {
         "embeds": [
           {
-            "title": "Disconnected From %method_cap%",
-            "description": "%emoji_success% The **%method%** connection was successfully disconnected."
+            "title": "Disconnected From %protocol_cap%",
+            "description": "%emoji_success% The **%protocol%** connection was successfully disconnected."
           }
         ],
         "console": "Disconnected from %method%"
@@ -2404,24 +2413,10 @@
       "name": "disconnect",
       "type": "ChatInput",
       "default_member_permissions": [
-        [
-          "Administrator"
-        ]
+        "Administrator"
       ],
       "long_description": "Disconnect your minecraft java-edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
-      "description": "Disconnect your minecraft server from the bot.",
-      "options": [
-        {
-          "type": "Subcommand",
-          "name": "ftp",
-          "description": "Disconnect from the minecraft-plugin."
-        },
-        {
-          "type": "Subcommand",
-          "name": "plugin",
-          "description": "Disconnect from the minecraft-plugin."
-        }
-      ]
+      "description": "Disconnect your minecraft server from the bot."
     },
     "enable": {
       "name": "enable",

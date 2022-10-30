@@ -1,5 +1,6 @@
 const ServerConnection = require('./ServerConnection');
 const ConnectionManager = require('./ConnectionManager');
+const fs = require('fs-extra');
 
 class ServerConnectionManager extends ConnectionManager {
 
@@ -25,6 +26,16 @@ class ServerConnectionManager extends ConnectionManager {
         for(const connection of this.cache.values()) {
             const settings = this.client.settingsConnections.cache.get(connection.id);
             if(settings) connection.settings = settings;
+        }
+    }
+
+    async removeDataFolder(guildId) {
+        try {
+            await fs.rm(`${this.outputPath}/${guildId}/`, { recursive: true });
+            return true;
+        }
+        catch(_) {
+            return false;
         }
     }
 }

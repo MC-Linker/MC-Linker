@@ -455,6 +455,10 @@
   "commands.connect.warnings.no_reply_in_time.embeds.0.description": "%emoji_warning% You didn't reply in time!",
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
 
+  "commands.connect.warnings.already_connected.embeds.0.title": "Plugin Already Connected",
+  "commands.connect.warnings.already_connected.embeds.0.description": "%emoji_warning% This plugin is already connected to another server. Please disconnect it first.",
+  "commands.connect.warnings.already_connected.console": "Plugin already connected",
+
   "commands.connect.warnings.verification.embeds.0.title": "Code Verification",
   "commands.connect.warnings.verification.embeds.0.description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
   "commands.connect.warnings.verification.embeds.0.color": "DarkGold",
@@ -524,8 +528,8 @@
 
 
 
-  "commands.disconnect.success.embeds.0.title": "Disconnected From %method_cap%",
-  "commands.disconnect.success.embeds.0.description": "%emoji_success% The **%method%** connection was successfully disconnected.",
+  "commands.disconnect.success.embeds.0.title": "Disconnected From %protocol_cap%",
+  "commands.disconnect.success.embeds.0.description": "%emoji_success% The **%protocol%** connection was successfully disconnected.",
   "commands.disconnect.success.console": "Disconnected from %method%",
 
 
@@ -1291,17 +1295,9 @@
 
   "data.disconnect.name": "disconnect",
   "data.disconnect.type": "ChatInput",
-  "data.disconnect.default_member_permissions.0.0": "Administrator",
+  "data.disconnect.default_member_permissions.0": "Administrator",
   "data.disconnect.long_description": "Disconnect your minecraft java-edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
   "data.disconnect.description": "Disconnect your minecraft server from the bot.",
-
-  "data.disconnect.options.0.type": "Subcommand",
-  "data.disconnect.options.0.name": "ftp",
-  "data.disconnect.options.0.description": "Disconnect from the minecraft-plugin.",
-
-  "data.disconnect.options.1.type": "Subcommand",
-  "data.disconnect.options.1.name": "plugin",
-  "data.disconnect.options.1.description": "Disconnect from the minecraft-plugin.",
 
 
 

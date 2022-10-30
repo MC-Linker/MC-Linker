@@ -121,7 +121,9 @@ class Connect extends Command {
             const pluginProtocol = new PluginProtocol(client, { ip, hash, port, id: interaction.guildId });
 
             const verify = await pluginProtocol.verify();
-            if(!await utils.handleProtocolResponse(verify, pluginProtocol, interaction)) return;
+            if(!await utils.handleProtocolResponse(verify, pluginProtocol, interaction, {
+                409: keys.commands.connect.warnings.already_connected,
+            })) return;
 
             await interaction.replyTl(keys.commands.connect.warnings.check_dms);
 
