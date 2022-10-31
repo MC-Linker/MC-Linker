@@ -31,7 +31,7 @@ for(const folder of serverFolders) {
         if(serverConnection.protocol === 'plugin') {
             /** @type {PluginServerConnectionData} */
             newServerConnection = {
-                id: serverConnection.guild ?? folder,
+                id: folder,
                 ip: serverConnection.ip.split(':')[0],
                 port: serverConnection.ip.split(':')[1],
                 hash: serverConnection.hash,
@@ -55,7 +55,7 @@ for(const folder of serverFolders) {
                 id: folder,
                 ip: serverConnection.host,
                 port: serverConnection.port,
-                username: serverConnection.username,
+                username: serverConnection.user,
                 password: serverConnection.password,
                 path: serverConnection.path,
                 version: serverConnection.version ?? 19,
