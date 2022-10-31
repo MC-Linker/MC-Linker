@@ -17,5 +17,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+# Build
+RUN tsc
+
 EXPOSE 3100
 CMD [ "node", "main.js" ]
