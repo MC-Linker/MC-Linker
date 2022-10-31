@@ -44,7 +44,7 @@ class Help extends Command {
 
                 helpEmbed.addFields(addPh(
                     keys.commands.help.success.category.embeds[0].fields[0],
-                    await ph.commandName(command.name, interaction.client),
+                    await ph.commandName(command.name, client),
                     { 'command_description': command.description },
                 ));
             }
@@ -57,7 +57,7 @@ class Help extends Command {
             return interaction.replyOptions({ embeds: [helpEmbed] });
         }
         else {
-            const slashCommand = await fetchCommand(interaction.guild.commands, command.name);
+            const slashCommand = await fetchCommand(client.application.commands, command.name);
             const commandUsage = getCommandUsage(slashCommand);
 
             // noinspection JSUnresolvedVariable
@@ -69,7 +69,7 @@ class Help extends Command {
                     'command_usage': commandUsage,
                     'invite_link': discordLink,
                 },
-                await ph.commandName(commandName, interaction.client),
+                await ph.commandName(commandName, client),
             ));
 
             if(settings && settings.isDisabled('commands', command.name)) {

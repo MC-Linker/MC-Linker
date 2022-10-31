@@ -112,7 +112,7 @@ class Command {
             return false;
         }
 
-        const slashCommand = await fetchCommand(interaction.guild.commands, this.name);
+        const slashCommand = await fetchCommand(client.application.commands, this.name);
         const missingPermission = await canRunCommand(slashCommand);
         if(missingPermission !== true) {
             if(missingPermission) {
