@@ -203,7 +203,7 @@ function addHyphen(uuid) {
 async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
-    const slashCommand = await interaction.guild.commands.fetch(interaction.commandId);
+    const slashCommand = await interaction.client.application.commands.fetch(interaction.commandId);
 
     const args = [];
 

@@ -138,7 +138,7 @@ class Command extends AutocompleteCommand {
 
             let user;
             if(arg === '@s') user = interaction.member.user;
-            else user = await getUsersFromMention(interaction.client, arg)?.[0];
+            else user = await getUsersFromMention(client, arg)?.[0];
             if(!user) continue;
 
             const username = client.userConnections.cache.get(user.id)?.username;
