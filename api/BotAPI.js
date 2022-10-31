@@ -25,13 +25,15 @@ class BotAPI {
 
     async startServer() {
         this.fastify.post('/chat', async (request, reply) => {
-            const { message, channels, id: guildId, ip, type } = request.body;
+            const { message, channels, id: guildId, type } = request.body;
             const player = request.body.player?.replaceAll(' ', '');
             const authorURL = `https://minotar.net/helm/${player}/64.png`;
             const argPlaceholder = { ip, 'username': player, 'author_url': authorURL, message };
 
+            const ip = request.body.ip.split(':')[0];
+            const port = request.body.ip.split(':')[1];
             /** @type {ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.protocol instanceof PluginProtocol);
+            const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.protocol instanceof PluginProtocol);
 
             //If no connection on that guild
             if(!server) return reply.status(403).send();
