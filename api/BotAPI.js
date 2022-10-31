@@ -25,10 +25,13 @@ class BotAPI {
 
     async startServer() {
         this.fastify.post('/chat', async (request, reply) => {
-            const { message, channels, id: guildId, type } = request.body;
+            const message = request.body.message;
+            const channels = request.body.channels;
+            const guildId = request.body.id;
+            const type = request.body.type;
             const player = request.body.player?.replaceAll(' ', '');
             const authorURL = `https://minotar.net/helm/${player}/64.png`;
-            const argPlaceholder = { ip, 'username': player, 'author_url': authorURL, message };
+            const argPlaceholder = { ip: request.body.ip, 'username': player, 'author_url': authorURL, message };
 
             const ip = request.body.ip.split(':')[0];
             const port = request.body.ip.split(':')[1];
