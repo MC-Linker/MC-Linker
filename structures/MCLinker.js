@@ -155,10 +155,15 @@ class MCLinker extends Discord.Client {
      */
     async loadEverything() {
         await this.serverConnections._load();
+        console.log('Loaded all server connections.');
         await this.userConnections._load();
+        console.log('Loaded all user connections.');
         await this.settingsConnections._load();
+        console.log('Loaded all settings connections.');
         await this._loadCommands();
+        console.log('Loaded all commands.');
         await this._loadButtons();
+        console.log('Loaded all buttons.');
     }
 }
 
