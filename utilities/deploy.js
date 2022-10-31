@@ -1,9 +1,9 @@
 //noinspection JSUnresolvedVariable
 
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v10');
+const { REST, Routes } = require('discord.js');
 const { token, clientId, guildId } = require('../config.json');
-const { keys, getCommand } = require('../api/messages');
+const { getCommand } = require('../api/messages');
+const { keys } = require('../api/keys');
 const fs = require('fs-extra');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
@@ -76,7 +76,8 @@ for(const command of Object.values(keys.data)) {
 }
 
 //Push categories
-const commandFolders = fs.readdirSync('./commands/');
+const commandFolders = fs.readdirSync('./commands/')
+    .filter(file => fs.statSync(`./commands/${file}`).isDirectory());
 for(const folder of commandFolders) {
     helpChoices.push({ name: folder.cap(), value: folder });
     console.log(`Loaded category: ${folder}`);

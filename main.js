@@ -6,35 +6,30 @@ console.log(
     'Loading...',   // Second argument (%s)
 );
 
-const fs = require('fs-extra');
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
 const Canvas = require('@napi-rs/canvas');
-const plugin = require('./api/plugin');
-const helpCommand = require('./src/help');
-const evalCommand = require('./src/eval');
-const disableButton = require('./src/disableButton');
-const enableButton = require('./src/enableButton');
-const settings = require('./api/settings');
-const { getArgs, addResponseMethods, addPh, keys, ph } = require('./api/messages');
-const { prefix, token, topggToken, ownerId } = require('./config.json');
-const client = new Discord.Client({
-    intents: [
-        Discord.GatewayIntentBits.GuildMessages,
-        Discord.GatewayIntentBits.Guilds,
-        Discord.GatewayIntentBits.DirectMessages,
-        Discord.GatewayIntentBits.MessageContent,
-    ],
-});
+const { getArgs } = require('./api/utils');
+const { keys } = require('./api/keys');
+const { addPh, ph, addTranslatedResponses } = require('./api/messages');
+const { prefix, token, topggToken } = require('./config.json');
+const MCLinker = require('./structures/MCLinker');
+const AutocompleteCommand = require('./structures/AutocompleteCommand');
+const BotAPI = require('./api/BotAPI');
 
-//Handle rejected promises
+const client = new MCLinker();
+
+//Handle errors
 process.on('unhandledRejection', async err => {
+    console.log(addPh(keys.main.errors.unknown_rejection.console, ph.error(err)));
+});
+process.on('uncaughtException', async err => {
     console.log(addPh(keys.main.errors.unknown_rejection.console, ph.error(err)));
 });
 
 /*
  * Converts the first letter of a string to uppercase.
- * @returns {String} The formatted string.
+ * @returns {String} - The formatted string.
  */
 String.prototype.cap = function() {
     return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
@@ -53,94 +48,78 @@ client.once('ready', async () => {
         ph.client(client),
         { prefix, 'guild_count': client.guilds.cache.size },
     ));
+
+    //Set Activity
     client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
-    await plugin.loadExpress(client);
+    //Load all connections and commands
+    await client.loadEverything();
 
+    //Start API server
+    await new BotAPI(client).startServer();
+
+    //Register minecraft font
     Canvas.GlobalFonts.registerFromPath('./resources/fonts/Minecraft.ttf', 'Minecraft');
 });
 
 client.on('guildCreate', guild => {
-    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_create.console, { guild }));
     console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 });
 
 client.on('guildDelete', async guild => {
-    if(guild?.name === undefined) return console.log(addPh(keys.main.warnings.undefined_guild_delete.console, { guild }));
+    if(!client.isReady() || !guild.available) return; //Prevent server outages from deleting data
     console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
-    await plugin.disconnect(guild.id, guild.client);
-
-    //Delete connection folder
-    fs.remove(`./serverdata/connections/${guild.id}`, err => {
-        if(err) console.log(addPh(keys.main.errors.no_connection_file.console, ph.guild(guild)));
-        else console.log(addPh(keys.main.success.disconnected.console, ph.guild(guild)));
-    });
+    await client.serverConnections.disconnect(guild.id);
+    await client.settingsConnections.disconnect(guild.id);
+    await client.serverConnections.removeDataFolder(guild.id);
 });
 
-client.commands = new Discord.Collection();
-const commandFolders = fs.readdirSync('./commands/');
-for(const folder of commandFolders) {
-    const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(command => command.endsWith('.js'));
-    for(const file of commandFiles) {
-        const command = require(`./commands/${folder}/${file}`);
-        client.commands.set(file.replace('.js', ''), command);
-    }
-}
-
-
 client.on('messageCreate', async message => {
-    if(!message.content.startsWith(prefix)) plugin.chat(message);
+    /** @type {ServerConnection} */
+    const server = client.serverConnections.cache.get(message.guildId);
+    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(prefix)) {
+        let content = message.cleanContent;
+        message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
+        server.protocol.chat(content, message.member.nickname ?? message.author.username);
+    }
 
-    message = addResponseMethods(message);
+    message = addTranslatedResponses(message);
+    //Make message compatible with slash commands
+    message.user = message.author;
 
-    if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.respond(keys.main.success.ping);
+    if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
     if(!message.content.startsWith(prefix) || message.author.bot) return;
 
     //check if in guild
-    if(!message.inGuild()) return message.respond(keys.main.warnings.not_in_guild);
+    if(!message.inGuild()) return message.replyTl(keys.main.warnings.not_in_guild);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    if(commandName === 'help') {
-        await message.respond(keys.commands.executed);
-        await helpCommand.execute(message, args);
+    const command = client.commands.get(commandName);
+    if(!command) return;
+
+    try {
+        // noinspection JSUnresolvedFunction
+        await command.execute(message, client, args, server)
+            ?.catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message)));
     }
-    else if(commandName === 'eval' && message.author.id === ownerId) {
-        await message.respond(keys.commands.executed);
-        await evalCommand.execute(message, args);
-    }
-    else {
-        const command = client.commands.get(commandName);
-        if(!command) return;
-
-        await message.respond(keys.commands.executed);
-
-        if(await settings.isDisabled(message.guildId, 'commands', commandName)) {
-            await message.respond(keys.main.warnings.disabled);
-        }
-
-        try {
-            // noinspection JSUnresolvedFunction
-            await command?.execute?.(message, args)
-                .catch(err => message.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
-        }
-        catch(err) {
-            await message.respond(keys.main.errors.could_not_execute_command, ph.error(err));
-        }
+    catch(err) {
+        await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
     }
 });
 
 client.on('interactionCreate', async interaction => {
-    interaction = addResponseMethods(interaction);
+    interaction = addTranslatedResponses(interaction);
 
     //check if in guild
-    if(!interaction.guildId) return interaction.respond(keys.main.warnings.not_in_guild);
+    if(!interaction.guildId) return interaction.replyTl(keys.main.warnings.not_in_guild);
 
-    if(interaction.isCommand()) {
+    if(interaction.isChatInputCommand()) {
+        const command = client.commands.get(interaction.commandName);
 
-        //Making interaction compatible with normal commands
+        //Making interaction compatible with prefix commands
         interaction.mentions = {
             users: new Discord.Collection(),
             roles: new Discord.Collection(),
@@ -149,7 +128,7 @@ client.on('interactionCreate', async interaction => {
         interaction.attachments = new Discord.Collection();
 
 
-        const args = getArgs(client, interaction);
+        const args = await getArgs(interaction);
         //Add mentions and attachments from args
         args.forEach(arg => {
             if(arg instanceof Discord.User) interaction.mentions.users.set(arg.id, arg);
@@ -158,60 +137,42 @@ client.on('interactionCreate', async interaction => {
             else if(arg instanceof Discord.Attachment) interaction.attachments.set(arg.id, arg);
         });
 
-        if(interaction.commandName === 'message') await interaction?.deferReply({ ephemeral: true });
-        else await interaction?.deferReply();
-
-        await interaction.respond(keys.commands.executed);
-
-        if(interaction.commandName === 'help') {
-            await helpCommand.execute(interaction, args);
+        const server = client.serverConnections.cache.get(interaction.guildId);
+        try {
+            // noinspection JSUnresolvedFunction
+            await command.execute(interaction, client, args, server)
+                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction)));
         }
-        else {
-            const command = client.commands.get(interaction.commandName);
-
-            //Check if command disabled
-            if(await settings.isDisabled(interaction.guildId, 'commands', interaction.commandName)) {
-                await interaction.respond(keys.main.warnings.disabled);
-                return;
-            }
-
-            try {
-                await command?.execute?.(interaction, args)
-                    .catch(err => interaction.respond(keys.main.errors.could_not_execute_command, ph.error(err)));
-            }
-            catch(err) {
-                await interaction.respond(keys.main.errors.could_not_execute_command, ph.error(err));
-            }
+        catch(err) {
+            await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction));
         }
-
     }
     else if(interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
-        if(!command) return;
 
         try {
-            await command?.autocomplete?.(interaction)
-                .catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err))));
+            if(!command || !(command instanceof AutocompleteCommand)) return;
+            await command.autocomplete(interaction, client)
+                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.interaction(interaction))));
         }
         catch(err) {
-            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err)));
+            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.interaction(interaction)));
         }
     }
     else if(interaction.isButton()) {
-        console.log(addPh(keys.buttons.clicked.console, { 'button_id': interaction.customId }, ph.std(interaction)));
+        const id = interaction.customId.split('_').shift();
+        const button = client.buttons.get(id);
 
-        if(interaction.customId.startsWith('disable')) {
-            await interaction.deferReply({ ephemeral: true });
-            await disableButton.execute(interaction);
+        try {
+            if(!button) return;
+            // noinspection JSUnresolvedFunction
+            await button.execute(interaction, client)
+                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': id }));
         }
-        else if(interaction.customId.startsWith('enable')) {
-            await interaction.deferReply({ ephemeral: true });
-            await enableButton.execute(interaction);
+        catch(err) {
+            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': id });
         }
     }
 });
 
-const login = () => client.login(token);
-login();
-
-module.exports = { login, client };
+client.login(token);

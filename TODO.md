@@ -1,12 +1,11 @@
 # TODO BOT
-
-+ **Add more utility methods for guilds (.connect, .disconnect, .createFolder, ...) and OOP**
-+ Better logs (multilevel, more information)
++ **Write conversion script for connections**
++ **Remove subcommands of `/disconnect`**
++ Better logs (pino)
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
-+ Store data files in user and server folder (only for connected users)
++ Add RCON for ftp connections
++ Store data files in user folders (only for connected users)
 + Create isometric block, item and entity renders in code
-+ **Cache user and server data for better performance**
-+ **Add JSDoc**
 + DM command author when response fails to send
 + Extract the `/command` data to different files
 + Support for floodgate (bedrock) uuids
@@ -29,8 +28,6 @@
 + `/plugins` (List and Upload option for plugins)
 + `/usercache` (List of users that joined the server)
 + `/op list` & `/ban list` & `/connect list` (lists of cool stuff)
-+ `/gamerule`
-+ `/seed`
 + `/restart` & `/stop` & `/start`
 + `/private on/off`
 + `/serverinfo` & `/userinfo` (buttons for more information i.e. ender chest and other nbt)
@@ -45,6 +42,7 @@
 
 # TODO PLUGIN
 + **Release plugins for lower versions, bungee and sponge on GitHub**
-+ `/dm` (dm discord user)
++ `/dm` (dm discord username)
 + `/discord` (customizable message)
 + Show replies to chat messages
++ **Dont allow connection to server if already connected**

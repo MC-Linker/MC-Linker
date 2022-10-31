@@ -18,7 +18,7 @@ Our bot also stores server connection files in JSON format that are tied to your
 Plugin connections include the IP the server is running on, the Minecraft version and the path to the Minecraft world folder.
 FTP connections do not include the IP but rather the FTP credentials needed to communicate with the server.
 
-This data is provided voluntarily with the command `/connect` and can be removed by the user at any time. User and server connection files are stored locally on the bot’s server.
+This data is provided voluntarily with the commands `/connect` as well as `/account` and can be removed by the user at any time. User and server connection files are stored locally on the bot’s server.
 <br><br>**Commands:**<br>
 Any command executed through our Bot is logged in the console temporarily. This includes the command name, command arguments, the tag of the user who executed the command, as well as the name of the server in which it was executed.
 These logs will always be deleted within a week or after a restart of the bot.

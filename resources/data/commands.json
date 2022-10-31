@@ -14,7 +14,7 @@
       "": ["%advancements%"]
     },
     {
-      "arg1=only": ["%arg2_criteria%"]
+      "arg2=only": ["%arg2_criteria%"]
     }
   ],
   "attribute": [
@@ -438,10 +438,10 @@
   ],
   "gamemode": [
     {
-      "any": ["creative", "spectator", "survival", "adventure"]
+      "": ["creative", "spectator", "survival", "adventure"]
     },
     {
-      "any": ["%target_selectors%"]
+      "": ["%target_selectors%"]
     }
   ],
   "gamerule": [

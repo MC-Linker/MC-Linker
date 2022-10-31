@@ -2,15 +2,13 @@ The following Terms of Service (“TOS”) govern your use of the `Minecraft SMP
 The Minecraft SMP Bot may also offer services or features that have their own terms of use or rules, and to the extent any portion of those special terms conflict with these TOS, the special terms will govern for that specific portion.
 Using the Minecraft SMP Bot is at-will and can be terminated at any time by either us or you for any reason. By using the Bot, you agree to be bound by these TOS. If you do not agree to be bound, you are not authorized to use the Bot. These TOS are a legal contract between you and the Bot and govern your access to and use of the Bot. We reserve the right to modify these TOS at any time without prior notice. You should visit this Site from time to time to review the current TOS. By using the Bot subsequent to any modification of these TOS, you agree to be bound by such modification(s).
 The Minecraft SMP Bot is not affiliated with Minecraft, Mojang or any game developers of Minecraft.
-OT
+
 # Minecraft SMP Bot
 The purpose of the Minecraft SMP Bot is to provide a simple way to connect your Discord server to a Minecraft server.
 The information supplied by the Minecraft SMP Bot is provided for entertainment and informational purposes only. You agree that you will only use the Bot, or data/information provided by it, for its intended purposes, and not for other commercial ventures without first seeking approval from us.
 
 # Privacy Policy
 Our Privacy Policy, which also governs your use of the Bot, can be found [here](https://github.com/MC-Linker/MC-Linker/blob/main/PRIVACY.md). Please review our Privacy Policy for information on how we collect, use and share information about our users.
-
-
 
 # LICENSE
 We hereby grant you a revocable and nonexclusive right and license to use the Bot in a manner that is consistent with the other terms in these TOS and the Bot’s intended purposes. We reserve the right to terminate this License for any or no reason and at any time without notice to you, including, but not limited to, for breach of any term contained in these TOS.
