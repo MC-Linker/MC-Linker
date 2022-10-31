@@ -3,8 +3,7 @@
         "module": "commonjs",
         "target": "es6",
         "sourceMap": true,
+        "skipLibCheck": true,
     },
-    "exclude": [
-        "node_modules"
-    ]
+    "files": ["api/keys.ts"]
 }
