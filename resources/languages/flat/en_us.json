@@ -315,6 +315,8 @@
 
 
 
+  "commands.serverinfo.warnings.unknown_server_name": "*Unknown*",
+
   "commands.serverinfo.success.embeds.0.title": "Server Information",
   "commands.serverinfo.success.embeds.0.thumbnail": "attachment://server-icon.png",
   "commands.serverinfo.success.embeds.0.image": "attachment://server-list.png",

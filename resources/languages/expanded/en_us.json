@@ -651,6 +651,9 @@
       }
     },
     "serverinfo": {
+      "warnings": {
+        "unknown_server_name": "*Unknown*"
+      },
       "success": {
         "embeds": [
           {
