@@ -650,6 +650,17 @@
         ]
       }
     },
+    "serverinfo": {
+      "success": {
+        "embeds": [
+          {
+            "title": "Server Info",
+            "description": "Server Info for **%server_name%**",
+            "thumbnail": "attachment://server-icon.png"
+          }
+        ]
+      }
+    },
     "account": {
       "warnings": {
         "mention": {

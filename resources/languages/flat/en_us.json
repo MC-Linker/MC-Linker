@@ -315,6 +315,12 @@
 
 
 
+  "commands.serverinfo.success.embeds.0.title": "Server Info",
+  "commands.serverinfo.success.embeds.0.description": "Server Info for **%server_name%**",
+  "commands.serverinfo.success.embeds.0.thumbnail": "attachment://server-icon.png",
+
+
+
   "commands.account.warnings.mention.embeds.0.title": "No Username Specified",
   "commands.account.warnings.mention.embeds.0.description": "%emoji_warning% Don't ping someone. Specify your **minecraft java-edition account name** instead.",
   "commands.account.warnings.mention.console": "No username specified",
