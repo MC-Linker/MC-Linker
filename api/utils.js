@@ -203,7 +203,9 @@ function addHyphen(uuid) {
 async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
-    const slashCommand = await interaction.client.application.commands.fetch(interaction.commandId);
+    // Use guild commands if bot is not public (test-bot)
+    const commandManager = interaction.client.application.botPublic ? interaction.client.application.commands : interaction.guild.commands;
+    const slashCommand = await commandManager.fetch(interaction.commandId);
 
     const args = [];
 
@@ -261,7 +263,7 @@ const defaultStatusRespones = {
  * @param {Protocol} protocol - The protocol that was called.
  * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} - Whether the response was successful.
  */
 async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
     const placeholders = { data: JSON.stringify(response?.data ?? '') };
@@ -286,6 +288,21 @@ async function handleProtocolResponse(response, protocol, interaction, statusRes
         }
     }
 
+    return true;
+}
+
+/**
+ * Handles multiple responses of protocol calls.
+ * @param {?ProtocolResponse[]} responses - The responses to handle.
+ * @param {Protocol} protocol - The protocol that was called.
+ * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
+ * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
+ * @returns {Promise<boolean>} - Whether all responses were successful.
+ */
+async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}) {
+    for(const response of responses) {
+        if(!await handleProtocolResponse(response, protocol, interaction, statusResponses)) return false;
+    }
     return true;
 }
 
@@ -345,6 +362,7 @@ module.exports = {
     getArgs,
     getUsersFromMention,
     handleProtocolResponse,
+    handleProtocolResponses,
     nbtBufferToObject,
     parseProperties,
 };
