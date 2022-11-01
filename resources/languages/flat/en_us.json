@@ -701,9 +701,9 @@
   "api.command.errors.server_not_connected_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
   "api.command.errors.server_not_connected_plugin.console": "Server not connected with plugin",
 
-    "api.command.errors.server_not_connected_ftp.embeds.0.title": "Server Not Connected",
-    "api.command.errors.server_not_connected_ftp.embeds.0.description": "%emoji_error% Your server is not connected with ftp. Please use `/connect ftp` first.",
-    "api.command.errors.server_not_connected_ftp.console": "Server not connected with ftp",
+  "api.command.errors.server_not_connected_ftp.embeds.0.title": "Server Not Connected",
+  "api.command.errors.server_not_connected_ftp.embeds.0.description": "%emoji_error% Your server is not connected with ftp. Please use `/connect ftp` first.",
+  "api.command.errors.server_not_connected_ftp.console": "Server not connected with ftp",
 
   "api.command.warnings.disabled.embeds.0.title": "Command Disabled",
   "api.command.warnings.disabled.embeds.0.description": "%emoji_no_entry% Command **%interaction_name%** disabled!",
@@ -1091,6 +1091,13 @@
   "data.message.options.1.name": "message",
   "data.message.options.1.description": "Set the (private) message you want to send to the user.",
   "data.message.options.1.required": true,
+
+
+
+  "data.serverinfo.name": "serverinfo",
+  "data.serverinfo.type": "ChatInput",
+  "data.serverinfo.long_description": "View information about the connected **minecraft server**.",
+  "data.serverinfo.description": "View information about the connected minecraft server.",
 
 
 

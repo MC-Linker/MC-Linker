@@ -2105,6 +2105,12 @@
         }
       ]
     },
+    "serverinfo": {
+      "name": "serverinfo",
+      "type": "ChatInput",
+      "long_description": "View information about the connected **minecraft server**.",
+      "description": "View information about the connected minecraft server."
+    },
     "account": {
       "name": "account",
       "type": "ChatInput",
