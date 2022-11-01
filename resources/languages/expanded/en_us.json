@@ -654,9 +654,35 @@
       "success": {
         "embeds": [
           {
-            "title": "Server Info",
-            "description": "Server Info for **%server_name%**",
-            "thumbnail": "attachment://server-icon.png"
+            "title": "Server Information",
+            "thumbnail": "attachment://server-icon.png",
+            "image": "attachment://server-list.png",
+            "color": "#729e34",
+            "fields": [
+              {
+                "name": "Name",
+                "value": "%server_name%",
+                "inline": true
+              },
+              {
+                "name": "MOTD",
+                "value": "%motd%",
+                "inline": true
+              },
+              {
+                "name": "Players",
+                "value": "%online_players%/%max_players%",
+                "inline": true
+              },
+              {
+                "name": "Version",
+                "value": "%version%",
+                "inline": true
+              }
+            ],
+            "footer": {
+              "text": "Server IP: %ip%"
+            }
           }
         ]
       }

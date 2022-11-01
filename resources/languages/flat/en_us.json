@@ -315,9 +315,28 @@
 
 
 
-  "commands.serverinfo.success.embeds.0.title": "Server Info",
-  "commands.serverinfo.success.embeds.0.description": "Server Info for **%server_name%**",
+  "commands.serverinfo.success.embeds.0.title": "Server Information",
   "commands.serverinfo.success.embeds.0.thumbnail": "attachment://server-icon.png",
+  "commands.serverinfo.success.embeds.0.image": "attachment://server-list.png",
+  "commands.serverinfo.success.embeds.0.color": "#729e34",
+
+  "commands.serverinfo.success.embeds.0.fields.0.name": "Name",
+  "commands.serverinfo.success.embeds.0.fields.0.value": "%server_name%",
+  "commands.serverinfo.success.embeds.0.fields.0.inline": true,
+
+  "commands.serverinfo.success.embeds.0.fields.1.name": "MOTD",
+  "commands.serverinfo.success.embeds.0.fields.1.value": "%motd%",
+  "commands.serverinfo.success.embeds.0.fields.1.inline": true,
+
+  "commands.serverinfo.success.embeds.0.fields.2.name": "Players",
+  "commands.serverinfo.success.embeds.0.fields.2.value": "%online_players%/%max_players%",
+  "commands.serverinfo.success.embeds.0.fields.2.inline": true,
+
+  "commands.serverinfo.success.embeds.0.fields.3.name": "Version",
+  "commands.serverinfo.success.embeds.0.fields.3.value": "%version%",
+  "commands.serverinfo.success.embeds.0.fields.3.inline": true,
+
+  "commands.serverinfo.success.embeds.0.footer.text": "Server IP: %ip%",
 
 
 
