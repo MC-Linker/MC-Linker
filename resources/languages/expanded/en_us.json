@@ -655,39 +655,129 @@
         "unknown_server_name": "*Unknown*"
       },
       "success": {
-        "embeds": [
-          {
-            "title": "Server Information",
-            "thumbnail": "attachment://server-icon.png",
-            "image": "attachment://server-list.png",
-            "color": "#729e34",
-            "fields": [
-              {
-                "name": "Name",
-                "value": "%server_name%",
-                "inline": true
-              },
-              {
-                "name": "MOTD",
-                "value": "%motd%",
-                "inline": true
-              },
-              {
-                "name": "Players",
-                "value": "%online_players%/%max_players%",
-                "inline": true
-              },
-              {
-                "name": "Version",
-                "value": "%version%",
-                "inline": true
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "general": {
+          "embeds": [
+            {
+              "title": "Server Information",
+              "thumbnail": "attachment://server-icon.png",
+              "image": "attachment://server-list.png",
+              "color": "#729e34",
+              "fields": [
+                {
+                  "name": "Name",
+                  "value": "%server_name%",
+                  "inline": true
+                },
+                {
+                  "name": "MOTD",
+                  "value": "%motd%",
+                  "inline": true
+                },
+                {
+                  "name": "Players",
+                  "value": "%online_players%/%max_players%",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Server IP: %ip% (%version%)"
               }
-            ],
-            "footer": {
-              "text": "Server IP: %ip%"
             }
-          }
-        ]
+          ]
+        },
+        "world": {
+          "embeds": [
+            {
+              "title": "World Information",
+              "color": "#729e34",
+              "fields": [
+                {
+                  "name": "Spawn Coordinates",
+                  "value": "Players will spawn at `%spawn_x%, %spawn_y%, %spawn_z%` in world: `%spawn_world%`"
+                },
+                {
+                  "name": "Allow End/Nether",
+                  "value": "End: `%allow_end%`\nNether: `%allow_nether%`"
+                },
+                {
+                  "name": "Difficulty",
+                  "value": "%difficulty% (Hardcore: %enable_hardcore%)",
+                  "inline": true
+                },
+                {
+                  "name": "World Type",
+                  "value": "%world_type%",
+                  "inline": true
+                },
+                {
+                  "name": "Gamerules",
+                  "value": "%gamerules%"
+                }
+              ]
+            }
+          ]
+        },
+        "admin": {
+          "embeds": [
+            {
+              "title": "Admin Information",
+              "color": "#729e34",
+              "fields": [
+                {
+                  "name": "Plugin List",
+                  "value": "%plugins%"
+                },
+                {
+                  "name": "Datapacks",
+                  "value": "%datapacks%"
+                },
+                {
+                  "name": "Mods",
+                  "value": "%mods%"
+                },
+                {
+                  "name": "Whitelisted Users",
+                  "value": "%whitelisted_users%",
+                  "inline": true
+                },
+                {
+                  "name": "Banned Users",
+                  "value": "%banned_users%",
+                  "inline": true
+                },
+                {
+                  "name": "Operators",
+                  "value": "%operators%",
+                  "inline": true
+                },
+                {
+                  "name": "Whitelist",
+                  "value": "%enable_whitelist%"
+                }
+              ]
+            }
+          ]
+        },
+        "general_button": {
+          "label": "General Information",
+          "type": "Button",
+          "style": "Secondary",
+          "custom_id": "serverinfo_general"
+        },
+        "world_button": {
+          "label": "World Information",
+          "type": "Button",
+          "style": "Secondary",
+          "custom_id": "serverinfo_world"
+        },
+        "admin_button": {
+          "label": "Admin Information",
+          "type": "Button",
+          "style": "Danger",
+          "custom_id": "serverinfo_admin"
+        }
       }
     },
     "account": {
@@ -1200,6 +1290,9 @@
         },
         "no_reply_arguments": {
           "console": "Could not reply: No message, key or placeholders specified"
+        },
+        "no_reply_key": {
+          "console": "Could not get reply options: No key specified"
         },
         "could_not_reply": {
           "console": "Could not reply to interaction %error%\n%interaction%"

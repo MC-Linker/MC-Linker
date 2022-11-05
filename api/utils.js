@@ -352,6 +352,99 @@ function parseProperties(properties) {
 }
 
 
+const colorCodes = {
+    0: '#000',
+    1: '#00A',
+    2: '#0A0',
+    3: '#0AA',
+    4: '#A00',
+    5: '#A0A',
+    6: '#FA0',
+    7: '#AAA',
+    8: '#555',
+    9: '#55F',
+    a: '#5F5',
+    b: '#5FF',
+    c: '#F55',
+    d: '#F5F',
+    e: '#FF5',
+    f: '#FFF',
+};
+
+const formattingCodes = {
+    l: 'bold',
+    m: 'strikethrough',
+    n: 'underline',
+    o: 'italic',
+    r: 'reset',
+};
+
+/**
+ * Parses a string with minecraft color codes and formatting and draws it on a canvas.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context to draw on.
+ * @param {string} text - The text to draw.
+ * @param {number} x - The x position to start drawing at.
+ * @param {number} y - The y position to start drawing at.
+ * @param {boolean} [shadow=true] - Whether to draw a text shadow.
+ */
+function drawMinecraftText(ctx, text, x, y, shadow = true) {
+    for(const word of text.split(' ')) {
+
+        const colorCodeRegex = /§([0-9a-fk-or])/gi;
+        const matches = word.matchAll(colorCodeRegex);
+        for(const match of Array.from(matches).reverse()) {
+            const [_, color] = match;
+
+            if(colorCodes[color.toLowerCase()]) {
+                ctx.fillStyle = colorCodes[color.toLowerCase()];
+                break;
+            }
+            else if(formattingCodes[color.toLowerCase()]) {
+                ctx.font = `${color === 'l' ? 'bold ' : ''}${color === 'o' ? 'italic ' : ''}${ctx.font}`;
+            }
+        }
+
+        const matchedWord = word.replace(colorCodeRegex, '') + ' ';
+        if(shadow) {
+            ctx.save();
+            ctx.fillStyle = '#000';
+            ctx.fillText(matchedWord, x + 4, y + 4);
+            ctx.restore();
+        }
+        ctx.fillText(matchedWord, x, y);
+
+        x += ctx.measureText(matchedWord).width;
+    }
+}
+
+/**
+ * Divide an entire phrase in an array of phrases, all with the max pixel length given.
+ * The words are initially separated by the space char.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context to draw on.
+ * @param {string} text - The text to draw.
+ * @param {number} maxWidth - The max width of the text.
+ * @returns {string[]} - The divided phrases.
+ */
+function wrapText(ctx, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = words[0];
+
+    for(let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(`${currentLine} ${word}`).width;
+        if(width < maxWidth) {
+            currentLine += ' ' + word;
+        }
+        else {
+            lines.push(currentLine);
+            currentLine = word;
+        }
+    }
+    lines.push(currentLine);
+    return lines;
+}
+
 module.exports = {
     searchAllAdvancements,
     searchAdvancements,
@@ -365,4 +458,6 @@ module.exports = {
     handleProtocolResponses,
     nbtBufferToObject,
     parseProperties,
+    drawMinecraftText,
+    wrapText,
 };
