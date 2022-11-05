@@ -21,7 +21,7 @@ class Button {
     constructor(options) {
 
         /**
-         * The first part of the button's custom ID.
+         * The (first part of the) button's custom ID.
          * @type {string}
          */
         this.id = options.id;

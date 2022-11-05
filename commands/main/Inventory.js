@@ -306,14 +306,15 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
         try {
             //Draw image
             const itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
-            ctx.drawImage(itemImg, 0, 0, 80, 80, x, y, 32, 32);
+            ctx.drawImage(itemImg, x, y, 32, 32);
         }
         catch(err) {
             //Draw name
             console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
-            ctx.font = '6px Minecraft';
+            ctx.font = '8px Minecraft';
             ctx.fillStyle = '#000';
-            ctx.fillText(itemId, x, y + 16);
+            const lines = utils.wrapText(ctx, mcData.itemsByName[itemId].displayName, 32);
+            lines.forEach((line, i) => ctx.fillText(line, x, y + 8 + i * 8));
         }
 
         //Draw count
@@ -499,7 +500,7 @@ function romanNumber(number) {
     return romanNumerals[number - 1] ?? number;
 }
 
-//https://gist.github.com/ddevault/459a1691c3dd751db160
+// https://gist.github.com/ddevault/459a1691c3dd751db160
 function dataSlotToNetworkSlot(index) {
     if(index === 100)
         index = 8;
