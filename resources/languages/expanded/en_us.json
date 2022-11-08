@@ -182,7 +182,7 @@
                 },
                 {
                   "name": "Other",
-                  "value": "Other commands such as %message_command_mention%."
+                  "value": "Other commands such as %message_command_mention% or %serverinfo_command_mention%."
                 },
                 {
                   "name": "Settings",
@@ -652,11 +652,17 @@
     },
     "serverinfo": {
       "warnings": {
-        "unknown_server_name": "*Unknown*"
+        "unknown": "*Unknown*"
       },
       "success": {
         "enabled": "Enabled",
         "disabled": "Disabled",
+        "difficulty": [
+          "Peaceful",
+          "Easy",
+          "Normal",
+          "Hard"
+        ],
         "general": {
           "embeds": [
             {
@@ -687,6 +693,30 @@
             }
           ]
         },
+        "hardcore_enabled": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Difficulty",
+                  "value": "%difficulty% (Hardcore Enabled)"
+                }
+              ]
+            }
+          ]
+        },
+        "hardcore_disabled": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Difficulty",
+                  "value": "%difficulty%"
+                }
+              ]
+            }
+          ]
+        },
         "world": {
           "embeds": [
             {
@@ -703,7 +733,7 @@
                 },
                 {
                   "name": "Difficulty",
-                  "value": "%difficulty% (Hardcore: %enable_hardcore%)",
+                  "value": "%difficulty%",
                   "inline": true
                 },
                 {
@@ -713,7 +743,8 @@
                 },
                 {
                   "name": "Gamerules",
-                  "value": "%gamerules%"
+                  "value": "%gamerules%",
+                  "inline": false
                 }
               ]
             }
@@ -726,16 +757,19 @@
               "color": "#729e34",
               "fields": [
                 {
-                  "name": "Plugin List",
-                  "value": "%plugins%"
+                  "name": "Plugins",
+                  "value": "%plugins%",
+                  "inline": true
                 },
                 {
                   "name": "Datapacks",
-                  "value": "%datapacks%"
+                  "value": "%datapacks%",
+                  "inline": true
                 },
                 {
                   "name": "Mods",
-                  "value": "%mods%"
+                  "value": "%mods%",
+                  "inline": true
                 },
                 {
                   "name": "Whitelisted Users",
@@ -748,13 +782,24 @@
                   "inline": true
                 },
                 {
+                  "name": "Banned IPs",
+                  "value": "%banned_ips%",
+                  "inline": true
+                },
+                {
                   "name": "Operators",
                   "value": "%operators%",
                   "inline": true
                 },
                 {
                   "name": "Whitelist",
-                  "value": "%enable_whitelist%"
+                  "value": "%enable_whitelist%",
+                  "inline": true
+                },
+                {
+                  "name": "Seed",
+                  "value": "%seed%",
+                  "inline": true
                 }
               ]
             }

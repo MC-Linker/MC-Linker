@@ -34,8 +34,10 @@ class FtpProtocol extends Protocol {
     }
 
     static dataToProtocolResponse(data) {
+        if(!data) return null;
         return {
             data: data,
+            status: 200, //Add http 200 status code to response
         };
     }
 

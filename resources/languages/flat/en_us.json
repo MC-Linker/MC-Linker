@@ -96,7 +96,7 @@
   "commands.help.success.no_args.embeds.0.fields.1.value": "Moderation commands such as %ban_command_mention% or %command_command_mention%.",
 
   "commands.help.success.no_args.embeds.0.fields.2.name": "Other",
-  "commands.help.success.no_args.embeds.0.fields.2.value": "Other commands such as %message_command_mention%.",
+  "commands.help.success.no_args.embeds.0.fields.2.value": "Other commands such as %message_command_mention% or %serverinfo_command_mention%.",
 
   "commands.help.success.no_args.embeds.0.fields.3.name": "Settings",
   "commands.help.success.no_args.embeds.0.fields.3.value": "Setup and settings such as %connect_command_mention% or %disable_command_mention%.",
@@ -315,10 +315,15 @@
 
 
 
-  "commands.serverinfo.warnings.unknown_server_name": "*Unknown*",
+  "commands.serverinfo.warnings.unknown": "*Unknown*",
 
   "commands.serverinfo.success.enabled": "Enabled",
   "commands.serverinfo.success.disabled": "Disabled",
+
+  "commands.serverinfo.success.difficulty.0": "Peaceful",
+  "commands.serverinfo.success.difficulty.1": "Easy",
+  "commands.serverinfo.success.difficulty.2": "Normal",
+  "commands.serverinfo.success.difficulty.3": "Hard",
 
   "commands.serverinfo.success.general.embeds.0.title": "Server Information",
   "commands.serverinfo.success.general.embeds.0.thumbnail": "attachment://server-icon.png",
@@ -340,6 +345,12 @@
   "commands.serverinfo.success.general.embeds.0.footer.text": "Server IP: %ip% (%version%)",
 
 
+  "commands.serverinfo.success.hardcore_enabled.embeds.0.fields.0.name": "Difficulty",
+  "commands.serverinfo.success.hardcore_enabled.embeds.0.fields.0.value": "%difficulty% (Hardcore Enabled)",
+
+    "commands.serverinfo.success.hardcore_disabled.embeds.0.fields.0.name": "Difficulty",
+      "commands.serverinfo.success.hardcore_disabled.embeds.0.fields.0.value": "%difficulty%",
+
   "commands.serverinfo.success.world.embeds.0.title": "World Information",
   "commands.serverinfo.success.world.embeds.0.color": "#729e34",
 
@@ -350,7 +361,7 @@
   "commands.serverinfo.success.world.embeds.0.fields.1.value": "End: `%allow_end%`\nNether: `%allow_nether%`",
 
   "commands.serverinfo.success.world.embeds.0.fields.2.name": "Difficulty",
-  "commands.serverinfo.success.world.embeds.0.fields.2.value": "%difficulty% (Hardcore: %enable_hardcore%)",
+  "commands.serverinfo.success.world.embeds.0.fields.2.value": "%difficulty%",
   "commands.serverinfo.success.world.embeds.0.fields.2.inline": true,
 
   "commands.serverinfo.success.world.embeds.0.fields.3.name": "World Type",
@@ -359,19 +370,23 @@
 
   "commands.serverinfo.success.world.embeds.0.fields.4.name": "Gamerules",
   "commands.serverinfo.success.world.embeds.0.fields.4.value": "%gamerules%",
+  "commands.serverinfo.success.world.embeds.0.fields.4.inline": false,
 
 
   "commands.serverinfo.success.admin.embeds.0.title": "Admin Information",
   "commands.serverinfo.success.admin.embeds.0.color": "#729e34",
 
-  "commands.serverinfo.success.admin.embeds.0.fields.0.name": "Plugin List",
+  "commands.serverinfo.success.admin.embeds.0.fields.0.name": "Plugins",
   "commands.serverinfo.success.admin.embeds.0.fields.0.value": "%plugins%",
+  "commands.serverinfo.success.admin.embeds.0.fields.0.inline": true,
 
   "commands.serverinfo.success.admin.embeds.0.fields.1.name": "Datapacks",
   "commands.serverinfo.success.admin.embeds.0.fields.1.value": "%datapacks%",
+  "commands.serverinfo.success.admin.embeds.0.fields.1.inline": true,
 
   "commands.serverinfo.success.admin.embeds.0.fields.2.name": "Mods",
   "commands.serverinfo.success.admin.embeds.0.fields.2.value": "%mods%",
+  "commands.serverinfo.success.admin.embeds.0.fields.2.inline": true,
 
   "commands.serverinfo.success.admin.embeds.0.fields.3.name": "Whitelisted Users",
   "commands.serverinfo.success.admin.embeds.0.fields.3.value": "%whitelisted_users%",
@@ -381,12 +396,23 @@
   "commands.serverinfo.success.admin.embeds.0.fields.4.value": "%banned_users%",
   "commands.serverinfo.success.admin.embeds.0.fields.4.inline": true,
 
-  "commands.serverinfo.success.admin.embeds.0.fields.5.name": "Operators",
-  "commands.serverinfo.success.admin.embeds.0.fields.5.value": "%operators%",
+  "commands.serverinfo.success.admin.embeds.0.fields.5.name": "Banned IPs",
+  "commands.serverinfo.success.admin.embeds.0.fields.5.value": "%banned_ips%",
   "commands.serverinfo.success.admin.embeds.0.fields.5.inline": true,
 
-  "commands.serverinfo.success.admin.embeds.0.fields.6.name": "Whitelist",
-  "commands.serverinfo.success.admin.embeds.0.fields.6.value": "%enable_whitelist%",
+  "commands.serverinfo.success.admin.embeds.0.fields.6.name": "Operators",
+  "commands.serverinfo.success.admin.embeds.0.fields.6.value": "%operators%",
+  "commands.serverinfo.success.admin.embeds.0.fields.6.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.7.name": "Whitelist",
+  "commands.serverinfo.success.admin.embeds.0.fields.7.value": "%enable_whitelist%",
+  "commands.serverinfo.success.admin.embeds.0.fields.7.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.8.name": "Seed",
+  "commands.serverinfo.success.admin.embeds.0.fields.8.value": "%seed%",
+  "commands.serverinfo.success.admin.embeds.0.fields.8.inline": true,
+
+
 
   "commands.serverinfo.success.general_button.label": "General Information",
   "commands.serverinfo.success.general_button.type": "Button",
@@ -394,7 +420,7 @@
   "commands.serverinfo.success.general_button.custom_id": "serverinfo_general",
 
   "commands.serverinfo.success.world_button.label": "World Information",
-    "commands.serverinfo.success.world_button.type": "Button",
+  "commands.serverinfo.success.world_button.type": "Button",
   "commands.serverinfo.success.world_button.style": "Secondary",
   "commands.serverinfo.success.world_button.custom_id": "serverinfo_world",
 
