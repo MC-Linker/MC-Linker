@@ -16,6 +16,7 @@ class DefaultButton extends Button {
     }
 
     async execute(interaction, client, server) {
+        if(!await super.execute(interaction, client, server)) return;
         return await this.handler(interaction, client, server);
     }
 }

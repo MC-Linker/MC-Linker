@@ -74,7 +74,7 @@ class Button {
 
         if(this.author) {
             if(this.author.id !== interaction.user.id) {
-                await interaction.replyTl(keys.api.button.warnings.no_author);
+                await interaction.replyTl({ ...keys.api.button.warnings.no_author, ephemeral: true });
                 return false;
             }
         }
