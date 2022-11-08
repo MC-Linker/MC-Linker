@@ -1,0 +1,260 @@
+[
+  {
+    "name": "announceAdvancements",
+    "description": "Whether advancements should be announced in chat",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "blockExplosionDropDecay",
+    "description": "Whether block loot is dropped by all blocks (true) or randomly (false) depending on how far the block is from the center of the explosion",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "commandBlockOutput",
+    "description": "Whether command blocks should notify admins when they perform commands",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "disableElytraMovementCheck",
+    "description": "Whether the server should skip checking player speed when the player is wearing elytra. Often helps with jittering due to lag in multiplayer.",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "disableRaids",
+    "description": "Whether raids are disabled.",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "doDaylightCycle",
+    "description": "Whether the daylight cycle and moon phases progress",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doEntityDrops",
+    "description": "Whether entities that are not mobs should have drops",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doFireTick",
+    "description": "Whether fire should spread and naturally extinguish",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doImmediateRespawn",
+    "description": "Players respawn immediately without showing the death screen",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "doInsomnia",
+    "description": "Whether phantoms can spawn in the nighttime",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doLimitedCrafting",
+    "description": "Whether players can craft only those recipes that they have unlocked",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "doMobLoot",
+    "description": "Whether mobs should drop items and experience orbs",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doMobSpawning",
+    "description": "Whether mobs should naturally spawn. Does not affect monster spawners.",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doPatrolSpawning",
+    "description": "Whether patrols can spawn",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doTileDrops",
+    "description": "Whether blocks should have drops",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doTraderSpawning",
+    "description": "Whether wandering traders can spawn",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doWardenSpawning",
+    "description": "Whether wardens can spawn",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "doWeatherCycle",
+    "description": "Whether the weather can change naturally. The /weather command can still change weather.",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "drowningDamage",
+    "description": "Whether the player should take damage when drowning",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "fallDamage",
+    "description": "Whether the player should take fall damage",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "fireDamage",
+    "description": "Whether the player should take damage in fire, lava, campfires, or on magma blocks.",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "forgiveDeadPlayers",
+    "description": "Makes angered neutral mobs stop being angry when the targeted player dies nearby",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "freezeDamage",
+    "description": "Whether the player should take damage when inside powder snow",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "globalSoundEvents",
+    "description": "Whether sound events are heard by all players regardless of location",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "keepInventory",
+    "description": "Whether the player should keep items and experience in their inventory after death",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "lavaSourceConversion",
+    "description": "Whether new sources of lava are allowed to form",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "logAdminCommands",
+    "description": "Whether to log admin commands to server log",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "maxCommandChainLength",
+    "description": "The maximum length of a chain of commands that can be executed during one tick. Applies to command blocks and functions.",
+    "default": 65536,
+    "type": "int"
+  },
+  {
+    "name": "maxEntityCramming",
+    "description": "The maximum number of pushable entities a mob or player can push, before taking 6 suffocation damage per half-second.  Setting to 0 or lower disables the rule.  Damage affects survival-mode or adventure-mode players, and all mobs but bats. Pushable entities include non-spectator-mode players, any mob except bats, as well as boats and minecarts.",
+    "default": 24,
+    "type": "int"
+  },
+  {
+    "name": "mobExplosionDropDecay",
+    "description": "Whether mob loot is dropped by all mobs (true) or randomly (false) depending on how far the mob is from the center of the explosion",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "mobGriefing",
+    "description": "Whether creepers, zombies, endermen, ghasts, withers, ender dragons, rabbits, sheep, villagers, silverfish, snow golems, and end crystals should be able to change blocks, and whether mobs can pick up items. When mobGriefing is disabled, piglins do not pick up gold ingots, but a player can still barter with them by using the item on the mob. Similarly, villagers do not pick up food items but can still breed until they run out of any food already in their inventory. This also affects the capability of zombie-like creatures like zombified piglins and drowned to pathfind to turtle eggs.",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "naturalRegeneration",
+    "description": "Whether the player can regenerate health naturally if their hunger is full enough (doesn't affect external healing, such as golden apples, the Regeneration effect, etc.)",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "playersSleepingPercentage",
+    "description": "What percentage of players must sleep to skip the night.",
+    "default": 100,
+    "type": "int"
+  },
+  {
+    "name": "randomTickSpeed",
+    "description": "How often a random block tick occurs (such as plant growth, leaf decay, etc.) per chunk section per game tick. 0 and negative values disables random ticks, higher numbers increase random ticks. Setting to a high integer results in high speeds of decay and growth. Numbers over 4096 make plant growth or leaf decay instantaneous.",
+    "default": 3,
+    "type": "int"
+  },
+  {
+    "name": "reducedDebugInfo",
+    "description": "Whether the debug screen shows all or reduced information; and whether the effects of F3+B (entity hitboxes) and F3+G (chunk boundaries) are shown.",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "sendCommandFeedback",
+    "description": "Whether the feedback from commands executed by a player should show up in chat. Also affects the default behavior of whether command blocks store their output text",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "showDeathMessages",
+    "description": "Whether death messages are put into chat when a player dies. Also affects whether a message is sent to the pet's owner when the pet dies.",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "snowAccumulationHeight",
+    "description": "The maximum number of snow layers that can be accumulated on each block",
+    "default": 1,
+    "type": "int"
+  },
+  {
+    "name": "spawnRadius",
+    "description": "The number of blocks outward from the world spawn coordinates that a player spawns in when first joining a server or when dying without a personal spawnpoint. Has no effect on servers where the default game mode is adventure.",
+    "default": 10,
+    "type": "int"
+  },
+  {
+    "name": "spectatorsGenerateChunks",
+    "description": "Whether players in spectator mode can generate chunks",
+    "default": true,
+    "type": "bool"
+  },
+  {
+    "name": "tntExplosionDropDecay",
+    "description": "Whether block loot is dropped by all blocks (true) or randomly (false) depending on how far the block is from the center of the explosion",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "universalAnger",
+    "description": "Makes angered neutral mobs attack any nearby player, not just the player that angered them. Works best if forgiveDeadPlayers is disabled.",
+    "default": false,
+    "type": "bool"
+  },
+  {
+    "name": "waterSourceConversion",
+    "description": "Whether new sources of water are allowed to form",
+    "default": true,
+    "type": "bool"
+  }
+]
