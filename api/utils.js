@@ -345,7 +345,14 @@ function parseProperties(properties) {
     for(const property of properties.split('\n')) {
         const [name, value] = property.split('=');
         if(!name || !value || name.startsWith('#')) continue;
-        parsedProperties[name.trim()] = value.trim();
+        const trimmedValue = value.trim();
+        const trimmedName = name.trim();
+
+        //Parse booleans and numbers
+        if(trimmedValue === 'true') parsedProperties[trimmedName] = true;
+        else if(trimmedValue === 'false') parsedProperties[trimmedName] = false;
+        else if(!isNaN(Number(trimmedValue))) parsedProperties[trimmedName] = Number(trimmedValue);
+        else parsedProperties[trimmedName] = trimmedValue;
     }
 
     return parsedProperties;
