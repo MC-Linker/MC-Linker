@@ -66,7 +66,10 @@ class Pagination {
      */
     async start() {
         /** @type {ButtonBuilder[]} */
-        const { button: startingButton, page: startingPage } = Object.values(this.pages).find(page => page.startPage);
+        const {
+            button: startingButton,
+            page: startingPage,
+        } = Object.values(this.pages).find(page => page.startPage) ?? Object.values(this.pages)[0];
         const buttons = Object.values(this.pages).map(page => page.button);
         if(!startingPage) return;
 
