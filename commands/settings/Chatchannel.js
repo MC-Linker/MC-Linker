@@ -3,6 +3,7 @@ const { getEmbed, ph, getComponent, createActionRows, addTranslatedResponses } =
 const { keys } = require('../../api/keys');
 const Command = require('../../structures/Command');
 const utils = require('../../api/utils');
+const Pagination = require('../../structures/helpers/Pagination');
 
 class Chatchannel extends Command {
 
@@ -132,25 +133,18 @@ class Chatchannel extends Command {
                 listEmbeds.push(channelEmbed);
                 channelButtons.push(channelButton);
             }
-            channelButtons = createActionRows(channelButtons);
 
-            const listMessage = await interaction.replyOptions({ embeds: [listEmbeds[0]], components: channelButtons });
-
-            const collector = listMessage.createMessageComponentCollector({
-                componentType: Discord.ComponentType.Button,
-                time: 120_000,
-            });
-            collector.on('collect', async button => {
-                if(!button.customId.startsWith('channel')) return;
-
-                if(button.user.id !== interaction.member.user.id) {
-                    const notAuthorEmbed = getEmbed(keys.api.button.warnings.no_author, ph.emojis());
-                    return button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
-                }
-
-                const index = parseInt(button.customId.split('_').pop());
-                await button.update({ embeds: [listEmbeds[index]], components: channelButtons });
-            });
+            /** @type {PaginationPages} */
+            const pages = {};
+            for(let i = 0; i < listEmbeds.length; i++) {
+                const button = channelButtons[i];
+                pages[button.data.custom_id] = {
+                    page: { embeds: [listEmbeds[i]] },
+                    button: button,
+                };
+            }
+            const pagination = new Pagination(client, interaction, pages);
+            return pagination.start();
         }
     }
 }
