@@ -117,12 +117,12 @@ class ServerInfo extends Command {
             })
             .map(([key, value]) => `${key}: ${value}`);
 
-        operators = operators?.data ? JSON.parse(operators.data.toString('utf-8')) : null;
-        whitelistedUsers = whitelistedUsers?.data ? JSON.parse(whitelistedUsers.data.toString('utf-8')) : null;
-        bannedUsers = bannedUsers?.data ? JSON.parse(bannedUsers.data.toString('utf-8')) : null;
-        bannedIps = bannedIps?.data ? JSON.parse(bannedIps.data.toString('utf-8')) : null;
-        plugins = plugins?.data ? plugins.data.filter(file => !file.isDirectory).map(plugin => plugin.name.replace('.jar', '')) : [];
-        mods = mods?.data ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
+        operators = operators?.status === 200 ? JSON.parse(operators.data.toString('utf-8')) : null;
+        whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString('utf-8')) : null;
+        bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString('utf-8')) : null;
+        bannedIps = bannedIps?.status === 200 ? JSON.parse(bannedIps.data.toString('utf-8')) : null;
+        plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory).map(plugin => plugin.name.replace('.jar', '')) : [];
+        mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
         const datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').cap()) ?? [];
 
         const worldEmbed = getEmbed(keys.commands.serverinfo.success.world, {

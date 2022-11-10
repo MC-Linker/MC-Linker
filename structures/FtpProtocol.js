@@ -33,12 +33,15 @@ class FtpProtocol extends Protocol {
         return await ftpClient.connect();
     }
 
-    static dataToProtocolResponse(data) {
+    static dataToProtocolResponse(data, status = 200) {
+        if(data instanceof Error) {
+            if(data.message.toLowerCase().includes('no such file')) status = 404;
+            else return null;
+            return { status, data: { message: data.message } };
+        }
+
         if(!data) return null;
-        return {
-            data: data,
-            status: 200, //Add http 200 status code to response
-        };
+        return { data, status };
     }
 
     _patch(data) {
@@ -94,31 +97,51 @@ class FtpProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the server.
      */
     async connect() {
-        return await this.ftpClient.connect() ? FtpProtocol.dataToProtocolResponse({ message: 'Success' }) : null;
+        try {
+            await this.ftpClient.connect();
+            FtpProtocol.dataToProtocolResponse({ message: 'Success' });
+        }
+        catch(e) {
+            return FtpProtocol.dataToProtocolResponse(e);
+        }
     }
 
     /**
      * @inheritDoc
      */
     async get(getPath, putPath) {
-        if(await this.ftpClient.get(getPath, putPath)) {
+        try {
+            await this.ftpClient.get(getPath, putPath);
             return FtpProtocol.dataToProtocolResponse(await fs.readFile(putPath));
         }
-        else return null;
+        catch(e) {
+            return FtpProtocol.dataToProtocolResponse(e);
+        }
     }
 
     /**
      * @inheritDoc
      */
     async list(folder) {
-        return FtpProtocol.dataToProtocolResponse(await this.ftpClient.list(folder));
+        try {
+            const list = await this.ftpClient.list(folder);
+            return FtpProtocol.dataToProtocolResponse(list);
+        }
+        catch(e) {
+            return FtpProtocol.dataToProtocolResponse(e);
+        }
     }
 
     /**
      * @inheritDoc
      */
     async put(getPath, putPath) {
-        return FtpProtocol.dataToProtocolResponse(await this.ftpClient.put(getPath, putPath));
+        try {
+            return FtpProtocol.dataToProtocolResponse(await this.ftpClient.put(getPath, putPath));
+        }
+        catch(e) {
+            return FtpProtocol.dataToProtocolResponse(e);
+        }
     }
 
     /**
@@ -129,9 +152,13 @@ class FtpProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The path to the file.
      */
     async find(name, start, maxDepth) {
-        return FtpProtocol.dataToProtocolResponse(await this.ftpClient.find(name, start, maxDepth));
+        try {
+            return FtpProtocol.dataToProtocolResponse(await this.ftpClient.find(name, start, maxDepth));
+        }
+        catch(e) {
+            return FtpProtocol.dataToProtocolResponse(e);
+        }
     }
 }
-
 
 module.exports = FtpProtocol;
