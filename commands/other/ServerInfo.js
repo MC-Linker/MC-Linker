@@ -73,25 +73,20 @@ class ServerInfo extends Command {
         ctx.fillStyle = '#fff';
 
         //Draw server name
-        this.drawShadowText(ctx, serverName, 128, 32);
+        this.drawShadowText(ctx, serverName, 132, 32);
 
+        ctx.fillStyle = '#AAA';
         //Draw motd
-        ctx.textAlign = 'center';
-        if(motd.length === 1) {
-            //Put first line on second line if only one line
-            motd[1] = motd[0];
-            motd[0] = '';
-        }
         ctx.save();
-        utils.drawMinecraftText(ctx, motd[0], listCanvas.width / 2 - 32, 70);
-        utils.drawMinecraftText(ctx, motd[1], listCanvas.width / 2 - 32, 102);
+        utils.drawMinecraftText(ctx, motd[0], 132, 70);
+        if(motd[1]) utils.drawMinecraftText(ctx, motd[1], 132, 102);
         ctx.restore();
 
         //Draw online players
         ctx.textAlign = 'right';
         const playerText = `${onlinePlayers}/${propertiesObject['max-players']}`;
         const textMeasure = ctx.measureText(playerText);
-        this.drawShadowText(ctx, playerText, listCanvas.width - 8 - textMeasure.width, 32);
+        this.drawShadowText(ctx, playerText, listCanvas.width - 4 - textMeasure.width, 32);
 
         const iconAttachment = new Discord.AttachmentBuilder(iconBuffer, {
             name: 'server-icon.png',
@@ -138,7 +133,7 @@ class ServerInfo extends Command {
             allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
             allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
             difficulty,
-            world_type: propertiesObject['level-type']?.cap() ?? keys.commands.serverinfo.warnings.unknown,
+            world_type: propertiesObject['level-type']?.replace(/minecraft\\?:/, '').cap() ?? keys.commands.serverinfo.warnings.unknown,
             gamerules: filteredGamerules.join('\n'),
         });
         if(propertiesObject['hardcore']) { //TODO better way to edit language embeds
@@ -206,9 +201,10 @@ class ServerInfo extends Command {
     }
 
     drawShadowText(ctx, text, x, y) {
+        ctx.save();
         ctx.fillStyle = '#000';
         ctx.fillText(text, x + 4, y + 4);
-        ctx.fillStyle = '#fff';
+        ctx.restore();
         ctx.fillText(text, x, y);
     }
 }
