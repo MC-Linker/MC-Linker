@@ -347,6 +347,7 @@ function parseProperties(properties) {
         if(!name || !value || name.startsWith('#')) continue;
         const trimmedValue = value.trim();
         const trimmedName = name.trim();
+        if(trimmedName === '' || trimmedValue === '') continue;
 
         //Parse booleans and numbers
         if(trimmedValue === 'true') parsedProperties[trimmedName] = true;
@@ -377,14 +378,7 @@ const colorCodes = {
     e: '#FF5',
     f: '#FFF',
 };
-
-const formattingCodes = {
-    l: 'bold',
-    m: 'strikethrough',
-    n: 'underline',
-    o: 'italic',
-    r: 'reset',
-};
+const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k'];
 
 /**
  * Parses a string with minecraft color codes and formatting and draws it on a canvas.
@@ -395,23 +389,36 @@ const formattingCodes = {
  * @param {boolean} [shadow=true] - Whether to draw a text shadow.
  */
 function drawMinecraftText(ctx, text, x, y, shadow = true) {
-    for(const word of text.split(' ')) {
+    //Push formatting codes to next words if they at the end of word without space
+    //Example: §l§o§cHello§r§l§o§c World -> §l§o§cHello §r§l§o§cWorld
+    text = text.replace(/((?:§[0-9a-fk-or])+)\s/gi, ' $1');
 
+    for(const word of text.split(/\s/)) {
         const colorCodeRegex = /§([0-9a-fk-or])/gi;
         const matches = word.matchAll(colorCodeRegex);
-        for(const match of Array.from(matches).reverse()) {
+        let matchedWord = word.replace(colorCodeRegex, '') + ' '; //Replace color codes
+        for(const match of matches) {
             const [_, color] = match;
 
             if(colorCodes[color.toLowerCase()]) {
                 ctx.fillStyle = colorCodes[color.toLowerCase()];
-                break;
             }
-            else if(formattingCodes[color.toLowerCase()]) {
-                ctx.font = `${color === 'l' ? 'bold ' : ''}${color === 'o' ? 'italic ' : ''}${ctx.font}`;
+            else if(formattingCodes.includes(color.toLowerCase())) {
+                //Bold and italic
+                if(color === 'l' || color === 'o') ctx.font = `${color === 'l' ? 'bold ' : ''}${color === 'o' ? 'italic ' : ''}${ctx.font}`;
+                else if(color === 'm') { //Strikethrough
+                    ctx.fillRect(x, y - 4, ctx.measureText(matchedWord).width, 4);
+                }
+                else if(color === 'n') { // Underline
+                    ctx.fillRect(x, y + 4, ctx.measureText(matchedWord).width, 4);
+                }
+                //Obfuscated
+                else if(color === 'k') matchedWord = '?'.repeat(matchedWord.length);
+                //Reset
+                else if(color === 'r') ctx.fillStyle = '#AAA';
             }
         }
 
-        const matchedWord = word.replace(colorCodeRegex, '') + ' ';
         if(shadow) {
             ctx.save();
             ctx.fillStyle = '#000';
