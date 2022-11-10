@@ -391,12 +391,14 @@ const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k'];
 function drawMinecraftText(ctx, text, x, y, shadow = true) {
     //Push formatting codes to next words if they at the end of word without space
     //Example: §l§o§cHello§r§l§o§c World -> §l§o§cHello §r§l§o§cWorld
-    text = text.replace(/((?:§[0-9a-fk-or])+)\s/gi, ' $1');
+    text = text.replace(/((?:§[0-9a-fk-or])+)\s+/gi, ' $1');
 
     for(const word of text.split(/\s/)) {
         const colorCodeRegex = /§([0-9a-fk-or])/gi;
         const matches = word.matchAll(colorCodeRegex);
         let matchedWord = word.replace(colorCodeRegex, '') + ' '; //Replace color codes
+
+        let strikethrough = false; //Strikethrough line should be drawn after the text itself is drawn
         for(const match of matches) {
             const [_, color] = match;
 
@@ -407,13 +409,15 @@ function drawMinecraftText(ctx, text, x, y, shadow = true) {
                 //Bold and italic
                 if(color === 'l' || color === 'o') ctx.font = `${color === 'l' ? 'bold ' : ''}${color === 'o' ? 'italic ' : ''}${ctx.font}`;
                 else if(color === 'm') { //Strikethrough
-                    ctx.fillRect(x, y - 4, ctx.measureText(matchedWord).width, 4);
+                    strikethrough = true;
                 }
                 else if(color === 'n') { // Underline
                     ctx.fillRect(x, y + 4, ctx.measureText(matchedWord).width, 4);
                 }
                 //Obfuscated
-                else if(color === 'k') matchedWord = '?'.repeat(matchedWord.length);
+                else if(color === 'k') {
+                    matchedWord = '?'.repeat(matchedWord.length);
+                }
                 //Reset
                 else if(color === 'r') ctx.fillStyle = '#AAA';
             }
@@ -426,6 +430,10 @@ function drawMinecraftText(ctx, text, x, y, shadow = true) {
             ctx.restore();
         }
         ctx.fillText(matchedWord, x, y);
+
+        if(strikethrough) {
+            ctx.fillRect(x, y - 8, ctx.measureText(matchedWord).width, 4);
+        }
 
         x += ctx.measureText(matchedWord).width;
     }
