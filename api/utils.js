@@ -312,7 +312,7 @@ function createUUIDv3(username) {
     let digest = hash.digest();
 
     digest[6] = digest[6] & 0x0f | 0x30;  // set version to 3
-    digest[8] = digest[8] & 0x3f | 0x80;  // set to variant 2
+    digest[8] = digest[8] & 0x3f | 0x80;  // set variant to 2
 
     return addHyphen(digest.toString('hex'));
 }
