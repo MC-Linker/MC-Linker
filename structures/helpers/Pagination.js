@@ -28,6 +28,12 @@ class Pagination {
      */
 
     /**
+     * The last page that was sent in this pagination
+     * @type {PaginationPage}
+     */
+    lastPage;
+
+    /**
      * @param {MCLinker} client - The client of this pagination
      * @param {(Message|BaseInteraction) & TranslatedResponses} interaction - The interaction to create the pagination for
      * @param {PaginationPages} pages - An object of pages that will be used for the pagination
@@ -54,6 +60,12 @@ class Pagination {
         this.pages = pages;
 
         /**
+         * A map of button instances that are used in this pagination
+         * @type {Map<string, DefaultButton>}
+         */
+        this.buttons = new Map();
+
+        /**
          * The options for this pagination
          * @type {PaginationOptions}
          */
@@ -75,22 +87,23 @@ class Pagination {
 
         //Map custom ids of buttons to default button instances
         /** @type {Collection<string, DefaultButton>} */
-        const buttonInstances = new Map();
         buttons.forEach(button => {
-            buttonInstances.set(button.data.custom_id, new DefaultButton({
+            this.buttons.set(button.data.custom_id, new DefaultButton({
                 id: button.data.custom_id,
                 author: this.interaction.user,
                 defer: false,
                 ...Object.values(this.pages).find(page => page.button.data.custom_id === button.data.custom_id)?.buttonOptions,
             }, this.handleButton.bind(this)));
         });
-
         //Remove starting button
         buttons.splice(buttons.indexOf(startingButton), 1);
 
+        //Set last page
+        this.lastPage = { button: startingButton, page: startingPage };
+
         const allComponents = [];
-        startingPage.components?.forEach(component => allComponents.push(...component.components));
         allComponents.push(...buttons);
+        startingPage.components?.forEach(component => allComponents.push(...component.components));
 
         const oldComponents = startingPage.components ?? []; //Save old components
         //Send starting message
@@ -103,7 +116,7 @@ class Pagination {
             componentType: ComponentType.Button,
             time: this.options.timeout ?? 120_000,
         });
-        collector.on('collect', interaction => buttonInstances.get(interaction.customId).execute(interaction, this.client, null));
+        collector.on('collect', interaction => this.buttons.get(interaction.customId).execute(interaction, this.client, null));
         collector.on('end', () => {
             //Disable all components in current message
             const components = message.components.map(row => {
@@ -122,10 +135,23 @@ class Pagination {
 
         //Edit message with new page
         const allComponents = [];
-        page.components?.forEach(component => allComponents.push(...component.components));
-        Object.values(this.pages).forEach(page => {
-            if(page.button.data.custom_id !== interaction.customId) allComponents.push(page.button);
+        //Push all page buttons of the current page
+        interaction.message.components?.forEach(row => {
+            row = ActionRowBuilder.from(row);
+            row.components.forEach(b => {
+                if(this.buttons.has(b.data.custom_id)) allComponents.push(b);
+            });
         });
+
+        //Replace current page button with requested page button
+        const requestedPageButton = allComponents.findIndex(b => b.data.custom_id === interaction.customId);
+        allComponents.splice(requestedPageButton, 1, this.lastPage.button);
+
+        //Set last page
+        this.lastPage = this.pages[interaction.customId];
+
+        //Push all page buttons of the requested page
+        page.components?.forEach(component => allComponents.push(...component.components));
 
         const oldComponents = page.components ?? []; //Save old components
         page.components = utils.createActionRows(allComponents);
