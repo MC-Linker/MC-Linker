@@ -99,7 +99,7 @@ class FtpProtocol extends Protocol {
     async connect() {
         try {
             await this.ftpClient.connect();
-            FtpProtocol.dataToProtocolResponse({ message: 'Success' });
+            return FtpProtocol.dataToProtocolResponse({ message: 'Success' });
         }
         catch(e) {
             return FtpProtocol.dataToProtocolResponse(e);
