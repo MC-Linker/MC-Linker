@@ -113,7 +113,7 @@ class Protocol extends Base {
     /**
      * @typedef {object} ProtocolResponse - The response from a protocol call.
      * @property {any} data - The data of the response.
-     * @property {number} [status] - The http status code of the response (only for plugin protocols).
+     * @property {number} status - The http status code of the response.
      */
 
     /**
