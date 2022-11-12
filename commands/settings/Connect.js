@@ -81,15 +81,13 @@ class Connect extends Command {
             })) return;
 
             const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
-            const onlineMode = propertiesObject['online-mode'];
-
             const separator = serverPath.includes('/') ? '/' : '\\';
             const serverConnectionData = {
                 ip: host,
                 username,
                 password,
                 port,
-                online: onlineMode ? onlineMode === 'true' : false,
+                online: propertiesObject['online-mode'],
                 path: `${serverPath}${separator}${propertiesObject['level-name']}`,
                 version,
                 protocol,

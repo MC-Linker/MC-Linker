@@ -364,13 +364,9 @@
   "commands.serverinfo.success.world.embeds.0.fields.2.value": "%difficulty%",
   "commands.serverinfo.success.world.embeds.0.fields.2.inline": true,
 
-  "commands.serverinfo.success.world.embeds.0.fields.3.name": "World Type",
-  "commands.serverinfo.success.world.embeds.0.fields.3.value": "%world_type%",
-  "commands.serverinfo.success.world.embeds.0.fields.3.inline": true,
-
-  "commands.serverinfo.success.world.embeds.0.fields.4.name": "Gamerules",
-  "commands.serverinfo.success.world.embeds.0.fields.4.value": "%gamerules%",
-  "commands.serverinfo.success.world.embeds.0.fields.4.inline": false,
+  "commands.serverinfo.success.world.embeds.0.fields.3.name": "Gamerules",
+  "commands.serverinfo.success.world.embeds.0.fields.3.value": "%gamerules%",
+  "commands.serverinfo.success.world.embeds.0.fields.3.inline": false,
 
 
   "commands.serverinfo.success.admin.embeds.0.title": "Admin Information",
@@ -416,7 +412,7 @@
 
   "commands.serverinfo.success.general_button.label": "General Information",
   "commands.serverinfo.success.general_button.type": "Button",
-  "commands.serverinfo.success.general_button.style": "Secondary",
+  "commands.serverinfo.success.general_button.style": "Primary",
   "commands.serverinfo.success.general_button.custom_id": "serverinfo_general",
 
   "commands.serverinfo.success.world_button.label": "World Information",

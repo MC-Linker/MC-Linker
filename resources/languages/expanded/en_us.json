@@ -737,11 +737,6 @@
                   "inline": true
                 },
                 {
-                  "name": "World Type",
-                  "value": "%world_type%",
-                  "inline": true
-                },
-                {
                   "name": "Gamerules",
                   "value": "%gamerules%",
                   "inline": false
@@ -808,7 +803,7 @@
         "general_button": {
           "label": "General Information",
           "type": "Button",
-          "style": "Secondary",
+          "style": "Primary",
           "custom_id": "serverinfo_general"
         },
         "world_button": {
