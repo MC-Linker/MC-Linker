@@ -133,7 +133,6 @@ class ServerInfo extends Command {
             allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
             allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
             difficulty,
-            world_type: propertiesObject['level-type']?.replace(/minecraft\\?:/, '').cap() ?? keys.commands.serverinfo.warnings.unknown,
             gamerules: filteredGamerules.join('\n'),
         });
         if(propertiesObject['hardcore']) { //TODO better way to edit language embeds
