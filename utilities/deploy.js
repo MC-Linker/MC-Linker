@@ -98,10 +98,13 @@ const rest = new REST({ version: '10' }).setToken(token);
     try {
         if(deployGuild) {
             console.log('Started deploying application guild (/) commands.');
-            await rest.put(
-                Routes.applicationGuildCommands(clientId, guildId),
-                { body: commands },
-            );
+
+            for(const guild of Array.isArray(guildId) ? guildId : [guildId]) {
+                await rest.put(
+                    Routes.applicationGuildCommands(clientId, guild),
+                    { body: commands },
+                );
+            }
         }
         if(deployGlobal) {
             console.log('Started deploying application global (/) commands.');
@@ -113,10 +116,12 @@ const rest = new REST({ version: '10' }).setToken(token);
 
         if(deleteGuild) {
             console.log('Started deleting application guild (/) commands.');
-            const resp = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
+            for(const guild of Array.isArray(guildId) ? guildId : [guildId]) {
+                const resp = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
 
-            for(const command of resp) {
-                await rest.delete(`${Routes.applicationGuildCommands(clientId, guildId)}/${command.id}`);
+                for(const command of resp) {
+                    await rest.delete(`${Routes.applicationGuildCommand(clientId, guild, command.id)}`);
+                }
             }
         }
         if(deleteGlobal) {

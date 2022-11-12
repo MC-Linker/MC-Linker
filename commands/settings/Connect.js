@@ -1,4 +1,3 @@
-const dns = require('dns/promises');
 const crypto = require('crypto');
 const { pluginPort } = require('../../config.json');
 const { ph, addPh, addTranslatedResponses, getEmbed } = require('../../api/messages');
@@ -82,15 +81,13 @@ class Connect extends Command {
             })) return;
 
             const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
-            const onlineMode = propertiesObject['online-mode'];
-
             const separator = serverPath.includes('/') ? '/' : '\\';
             const serverConnectionData = {
                 ip: host,
                 username,
                 password,
                 port,
-                online: onlineMode ? onlineMode === 'true' : false,
+                online: propertiesObject['online-mode'],
                 path: `${serverPath}${separator}${propertiesObject['level-name']}`,
                 version,
                 protocol,
@@ -107,13 +104,6 @@ class Connect extends Command {
         else if(method === 'plugin') {
             let ip = args[1]?.split(':').shift();
             const port = args[2] ?? pluginPort;
-
-            try {
-                //Lookup ip of dns
-                const { address } = await dns.lookup(ip, 4);
-                if(address) ip = address;
-            }
-            catch(_) {}
 
             await this._disconnectOldPlugin(interaction, server);
 

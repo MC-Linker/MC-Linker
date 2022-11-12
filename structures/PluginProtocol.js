@@ -52,11 +52,14 @@ const PluginRoutes = {
     ],
     /**
      * Generates a verification code and displays it on the server.
+     * @param {string} id - The guild id that is requesting the code.
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
      */
-    Verify: () => [
+    Verify: id => [
         'GET',
         '/verify',
+        {},
+        { id },
     ],
     /**
      * Executes a command on the server.
@@ -234,7 +237,7 @@ class PluginProtocol extends Protocol {
      * @returns {Promise<ProtocolResponse>} - The response from the plugin.
      */
     async verify() {
-        const response = await this._fetch(...PluginRoutes.Verify());
+        const response = await this._fetch(...PluginRoutes.Verify(this.id));
         return await fetchToProtocolResponse(response);
     }
 

@@ -19,65 +19,40 @@ class SftpClient extends BaseClient {
     }
 
     async connect() {
-        try {
             await this.client.connect(this.credentials);
             await this.client.end();
             return true;
-        }
-        catch(_) {
-            return false;
-        }
     }
 
     async find(name, start, maxDepth) {
-        try {
-            await this.client.connect(this.credentials);
-            const foundFile = await this._findFile(name, start, maxDepth);
-            await this.client.end();
-            return foundFile;
-        }
-        catch(_) {
-            return undefined;
-        }
+        await this.client.connect(this.credentials);
+        const foundFile = await this._findFile(name, start, maxDepth);
+        await this.client.end();
+        return foundFile;
     }
 
     async get(source, destination) {
-        try {
-            await fs.ensureFile(destination);
+        await fs.ensureFile(destination);
 
-            await this.client.connect(this.credentials);
-            await this.client.get(source, destination);
-            await this.client.end();
-            return true;
-        }
-        catch(_) {
-            return false;
-        }
+        await this.client.connect(this.credentials);
+        await this.client.get(source, destination);
+        await this.client.end();
+        return true;
     }
 
     async list(folder) {
-        try {
-            await this.client.connect(this.credentials);
-            const listing = await this.client.list(folder);
-            await this.client.end();
+        await this.client.connect(this.credentials);
+        const listing = await this.client.list(folder);
+        await this.client.end();
 
-            return listing.map(item => { return { name: item.name, isDirectory: item.type === 'd' }; });
-        }
-        catch(_) {
-            return [];
-        }
+        return listing.map(item => { return { name: item.name, isDirectory: item.type === 'd' }; });
     }
 
     async put(source, destination) {
-        try {
-            await this.client.connect(this.credentials);
-            await this.client.put(source, destination);
-            await this.client.end();
-            return true;
-        }
-        catch(_) {
-            return false;
-        }
+        await this.client.connect(this.credentials);
+        await this.client.put(source, destination);
+        await this.client.end();
+        return true;
     }
 
     async _findFile(name, path, maxDepth) {

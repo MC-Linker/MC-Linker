@@ -96,7 +96,7 @@
   "commands.help.success.no_args.embeds.0.fields.1.value": "Moderation commands such as %ban_command_mention% or %command_command_mention%.",
 
   "commands.help.success.no_args.embeds.0.fields.2.name": "Other",
-  "commands.help.success.no_args.embeds.0.fields.2.value": "Other commands such as %message_command_mention%.",
+  "commands.help.success.no_args.embeds.0.fields.2.value": "Other commands such as %message_command_mention% or %serverinfo_command_mention%.",
 
   "commands.help.success.no_args.embeds.0.fields.3.name": "Settings",
   "commands.help.success.no_args.embeds.0.fields.3.value": "Setup and settings such as %connect_command_mention% or %disable_command_mention%.",
@@ -312,6 +312,118 @@
   "commands.message.success.embeds.0.title": "Send Message",
   "commands.message.success.embeds.0.description": "%emoji_success% Successfully sent message to player **%username%**\n%warning%",
   "commands.message.success.embeds.0.color": "Blue",
+
+
+
+  "commands.serverinfo.warnings.unknown": "*Unknown*",
+
+  "commands.serverinfo.success.enabled": "Enabled",
+  "commands.serverinfo.success.disabled": "Disabled",
+
+  "commands.serverinfo.success.difficulty.0": "Peaceful",
+  "commands.serverinfo.success.difficulty.1": "Easy",
+  "commands.serverinfo.success.difficulty.2": "Normal",
+  "commands.serverinfo.success.difficulty.3": "Hard",
+
+  "commands.serverinfo.success.general.embeds.0.title": "Server Information",
+  "commands.serverinfo.success.general.embeds.0.thumbnail": "attachment://server-icon.png",
+  "commands.serverinfo.success.general.embeds.0.image": "attachment://server-list.png",
+  "commands.serverinfo.success.general.embeds.0.color": "#729e34",
+
+  "commands.serverinfo.success.general.embeds.0.fields.0.name": "Name",
+  "commands.serverinfo.success.general.embeds.0.fields.0.value": "%server_name%",
+  "commands.serverinfo.success.general.embeds.0.fields.0.inline": true,
+
+  "commands.serverinfo.success.general.embeds.0.fields.1.name": "MOTD",
+  "commands.serverinfo.success.general.embeds.0.fields.1.value": "%motd%",
+  "commands.serverinfo.success.general.embeds.0.fields.1.inline": true,
+
+  "commands.serverinfo.success.general.embeds.0.fields.2.name": "Players",
+  "commands.serverinfo.success.general.embeds.0.fields.2.value": "%online_players%/%max_players%",
+  "commands.serverinfo.success.general.embeds.0.fields.2.inline": true,
+
+  "commands.serverinfo.success.general.embeds.0.footer.text": "Server IP: %ip% (%version%)",
+
+
+  "commands.serverinfo.success.hardcore_enabled.embeds.0.fields.0.name": "Difficulty",
+  "commands.serverinfo.success.hardcore_enabled.embeds.0.fields.0.value": "%difficulty% (Hardcore Enabled)",
+
+    "commands.serverinfo.success.hardcore_disabled.embeds.0.fields.0.name": "Difficulty",
+      "commands.serverinfo.success.hardcore_disabled.embeds.0.fields.0.value": "%difficulty%",
+
+  "commands.serverinfo.success.world.embeds.0.title": "World Information",
+  "commands.serverinfo.success.world.embeds.0.color": "#729e34",
+
+  "commands.serverinfo.success.world.embeds.0.fields.0.name": "Spawn Coordinates",
+  "commands.serverinfo.success.world.embeds.0.fields.0.value": "Players will spawn at `%spawn_x%, %spawn_y%, %spawn_z%` in world: `%spawn_world%`",
+
+  "commands.serverinfo.success.world.embeds.0.fields.1.name": "Allow End/Nether",
+  "commands.serverinfo.success.world.embeds.0.fields.1.value": "End: `%allow_end%`\nNether: `%allow_nether%`",
+
+  "commands.serverinfo.success.world.embeds.0.fields.2.name": "Difficulty",
+  "commands.serverinfo.success.world.embeds.0.fields.2.value": "%difficulty%",
+  "commands.serverinfo.success.world.embeds.0.fields.2.inline": true,
+
+  "commands.serverinfo.success.world.embeds.0.fields.3.name": "Gamerules",
+  "commands.serverinfo.success.world.embeds.0.fields.3.value": "%gamerules%",
+  "commands.serverinfo.success.world.embeds.0.fields.3.inline": false,
+
+
+  "commands.serverinfo.success.admin.embeds.0.title": "Admin Information",
+  "commands.serverinfo.success.admin.embeds.0.color": "#729e34",
+
+  "commands.serverinfo.success.admin.embeds.0.fields.0.name": "Plugins",
+  "commands.serverinfo.success.admin.embeds.0.fields.0.value": "%plugins%",
+  "commands.serverinfo.success.admin.embeds.0.fields.0.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.1.name": "Datapacks",
+  "commands.serverinfo.success.admin.embeds.0.fields.1.value": "%datapacks%",
+  "commands.serverinfo.success.admin.embeds.0.fields.1.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.2.name": "Mods",
+  "commands.serverinfo.success.admin.embeds.0.fields.2.value": "%mods%",
+  "commands.serverinfo.success.admin.embeds.0.fields.2.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.3.name": "Whitelisted Users",
+  "commands.serverinfo.success.admin.embeds.0.fields.3.value": "%whitelisted_users%",
+  "commands.serverinfo.success.admin.embeds.0.fields.3.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.4.name": "Banned Users",
+  "commands.serverinfo.success.admin.embeds.0.fields.4.value": "%banned_users%",
+  "commands.serverinfo.success.admin.embeds.0.fields.4.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.5.name": "Banned IPs",
+  "commands.serverinfo.success.admin.embeds.0.fields.5.value": "%banned_ips%",
+  "commands.serverinfo.success.admin.embeds.0.fields.5.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.6.name": "Operators",
+  "commands.serverinfo.success.admin.embeds.0.fields.6.value": "%operators%",
+  "commands.serverinfo.success.admin.embeds.0.fields.6.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.7.name": "Whitelist",
+  "commands.serverinfo.success.admin.embeds.0.fields.7.value": "%enable_whitelist%",
+  "commands.serverinfo.success.admin.embeds.0.fields.7.inline": true,
+
+  "commands.serverinfo.success.admin.embeds.0.fields.8.name": "Seed",
+  "commands.serverinfo.success.admin.embeds.0.fields.8.value": "%seed%",
+  "commands.serverinfo.success.admin.embeds.0.fields.8.inline": true,
+
+
+
+  "commands.serverinfo.success.general_button.label": "General Information",
+  "commands.serverinfo.success.general_button.type": "Button",
+  "commands.serverinfo.success.general_button.style": "Primary",
+  "commands.serverinfo.success.general_button.custom_id": "serverinfo_general",
+
+  "commands.serverinfo.success.world_button.label": "World Information",
+  "commands.serverinfo.success.world_button.type": "Button",
+  "commands.serverinfo.success.world_button.style": "Secondary",
+  "commands.serverinfo.success.world_button.custom_id": "serverinfo_world",
+
+  "commands.serverinfo.success.admin_button.label": "Admin Information",
+    "commands.serverinfo.success.admin_button.type": "Button",
+  "commands.serverinfo.success.admin_button.style": "Danger",
+  "commands.serverinfo.success.admin_button.custom_id": "serverinfo_admin",
 
 
 
@@ -553,6 +665,7 @@
   "api.messages.errors.no_embed_key.console": "Could not get embed: No key specified",
   "api.messages.errors.no_component_key.console": "Could not get component: No key specified",
   "api.messages.errors.no_reply_arguments.console": "Could not reply: No message, key or placeholders specified",
+  "api.messages.errors.no_reply_key.console": "Could not get reply options: No key specified",
 
   "api.messages.errors.could_not_reply.console": "Could not reply to interaction %error%\n%interaction%",
   "api.messages.errors.could_not_reply_channel.console": "Could not send message to channel of interaction %error%\n%interaction%",
@@ -701,9 +814,9 @@
   "api.command.errors.server_not_connected_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
   "api.command.errors.server_not_connected_plugin.console": "Server not connected with plugin",
 
-    "api.command.errors.server_not_connected_ftp.embeds.0.title": "Server Not Connected",
-    "api.command.errors.server_not_connected_ftp.embeds.0.description": "%emoji_error% Your server is not connected with ftp. Please use `/connect ftp` first.",
-    "api.command.errors.server_not_connected_ftp.console": "Server not connected with ftp",
+  "api.command.errors.server_not_connected_ftp.embeds.0.title": "Server Not Connected",
+  "api.command.errors.server_not_connected_ftp.embeds.0.description": "%emoji_error% Your server is not connected with ftp. Please use `/connect ftp` first.",
+  "api.command.errors.server_not_connected_ftp.console": "Server not connected with ftp",
 
   "api.command.warnings.disabled.embeds.0.title": "Command Disabled",
   "api.command.warnings.disabled.embeds.0.description": "%emoji_no_entry% Command **%interaction_name%** disabled!",
@@ -1091,6 +1204,13 @@
   "data.message.options.1.name": "message",
   "data.message.options.1.description": "Set the (private) message you want to send to the user.",
   "data.message.options.1.required": true,
+
+
+
+  "data.serverinfo.name": "serverinfo",
+  "data.serverinfo.type": "ChatInput",
+  "data.serverinfo.long_description": "View information about the connected **minecraft server**.",
+  "data.serverinfo.description": "View information about the connected minecraft server.",
 
 
 

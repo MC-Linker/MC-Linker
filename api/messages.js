@@ -326,24 +326,9 @@ async function replyTl(interaction, key, ...placeholders) {
         return null;
     }
 
-    placeholders = Object.assign(
-        ph.std(interaction),
-        ...placeholders,
-    );
+    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
 
-    const options = {
-        embeds: [],
-        components: [],
-    };
-
-    for(let embed of key?.embeds ?? []) {
-        embed = getEmbed(embed, placeholders);
-        if(embed) options.embeds.push(embed); //Add embeds to message options
-    }
-
-    if(key.components) {
-        options.components = getActionRows(key, placeholders); //Add components message options
-    }
+    const options = getReplyOptions(key, placeholders);
 
     //Reply to interaction
     // noinspection JSUnresolvedVariable
@@ -357,7 +342,7 @@ async function replyTl(interaction, key, ...placeholders) {
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|MessageReplyOptions} options - The options to reply with.
- * @returns {Promise<Message>}
+ * @returns {Promise<Message>|Message}
  */
 async function replyOptions(interaction, options) {
     function handleError(err) {
@@ -410,7 +395,7 @@ function getEmbed(key, ...placeholders) {
 
     if(key.title) embed.setTitle(key.title);
     if(key.description) embed.setDescription(key.description);
-    if(key.color) embed.setColor(Discord.Colors[key.color]);
+    if(key.color) embed.setColor(Discord.Colors[key.color] ?? key.color);
     if(key.author?.name) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
     if(key.thumbnail) embed.setThumbnail(key.thumbnail);
@@ -422,7 +407,7 @@ function getEmbed(key, ...placeholders) {
 }
 
 /**
- * Get an action row builder from a language key.
+ * Get action row builders from a language key.
  * @param {APIActionRowComponent} key - The language key to get the action row from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
  * @returns {ActionRowBuilder[]}
@@ -516,6 +501,25 @@ function getComponent(key, ...placeholders) {
     }
 
     return componentBuilder;
+}
+
+/**
+ * Get discord reply options from a language key.
+ * @param {Discord.MessageReplyOptions|Discord.InteractionReplyOptions} key - The language key to get the reply options from.
+ * @param {object} placeholders - The placeholders to replace in the language key.
+ * @returns {Discord.MessageReplyOptions|Discord.InteractionReplyOptions}
+ */
+function getReplyOptions(key, ...placeholders) {
+    if(!key) {
+        console.error(keys.api.messages.errors.no_reply_key.console);
+        return;
+    }
+
+    const options = { ...key };
+    if(key.embeds) options.embeds = key.embeds.map(embed => getEmbed(embed, ...placeholders));
+    if(key.components) options.components = getActionRows(key, ...placeholders);
+
+    return options;
 }
 
 /**
@@ -732,6 +736,8 @@ function addSlashCommandOption(builder, key) {
  * @returns {ActionRowBuilder[]}
  */
 function createActionRows(components) {
+    if(!components || components.length === 0) return [];
+
     const actionRows = [];
     let currentRow = new Discord.ActionRowBuilder();
 
@@ -772,6 +778,7 @@ module.exports = {
     getCommand,
     getActionRows,
     getComponent,
+    getReplyOptions,
     createActionRows,
     addTranslatedResponses,
     fetchCommand,
