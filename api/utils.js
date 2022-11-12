@@ -386,56 +386,57 @@ const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k'];
  * @param {string} text - The text to draw.
  * @param {number} x - The x position to start drawing at.
  * @param {number} y - The y position to start drawing at.
- * @param {boolean} [shadow=true] - Whether to draw a text shadow.
  */
-function drawMinecraftText(ctx, text, x, y, shadow = true) {
-    //Push formatting codes to next words if they at the end of word without space
-    //Example: §l§o§cHello§r§l§o§c World -> §l§o§cHello §r§l§o§cWorld
-    text = text.replace(/((?:§[0-9a-fk-or])+)\s+/gi, ' $1');
+function drawMinecraftText(ctx, text, x, y) {
+    let strikethrough = false;
+    let underline = false;
+    let obfuscated = false;
+    for(let i = 0; i < text.length; i++) {
+        let char = text.charAt(i);
 
-    for(const word of text.split(/\s/)) {
-        const colorCodeRegex = /§([0-9a-fk-or])/gi;
-        const matches = word.matchAll(colorCodeRegex);
-        let matchedWord = word.replace(colorCodeRegex, '') + ' '; //Replace color codes
-
-        let strikethrough = false; //Strikethrough line should be drawn after the text itself is drawn
-        for(const match of matches) {
+        const colorCodeRegex = /§([0-9a-fk-or])/i;
+        const match = (char + text.charAt(i + 1)).match(colorCodeRegex);
+        if(match) {
             const [_, color] = match;
 
             if(colorCodes[color.toLowerCase()]) {
                 ctx.fillStyle = colorCodes[color.toLowerCase()];
+                //Color codes reset formatting
+                strikethrough = false;
+                underline = false;
+                obfuscated = false;
             }
             else if(formattingCodes.includes(color.toLowerCase())) {
                 //Bold and italic
                 if(color === 'l' || color === 'o') ctx.font = `${color === 'l' ? 'bold ' : ''}${color === 'o' ? 'italic ' : ''}${ctx.font}`;
-                else if(color === 'm') { //Strikethrough
+                else if(color === 'm') {
                     strikethrough = true;
+                    underline = false;
                 }
-                else if(color === 'n') { // Underline
-                    ctx.fillRect(x, y + 4, ctx.measureText(matchedWord).width, 4);
+                else if(color === 'n') {
+                    underline = true;
+                    strikethrough = false;
                 }
-                //Obfuscated
-                else if(color === 'k') {
-                    matchedWord = '?'.repeat(matchedWord.length);
-                }
+                else if(color === 'k') obfuscated = true;
                 //Reset
                 else if(color === 'r') ctx.fillStyle = '#AAA';
             }
+
+            i++; //Skip next char
+            continue;
         }
 
-        if(shadow) {
-            ctx.save();
-            ctx.fillStyle = '#000';
-            ctx.fillText(matchedWord, x + 4, y + 4);
-            ctx.restore();
-        }
-        ctx.fillText(matchedWord, x, y);
+        if(obfuscated && char !== ' ') char = '?';
+        ctx.fillText(char, x, y);
 
         if(strikethrough) {
-            ctx.fillRect(x, y - 8, ctx.measureText(matchedWord).width, 4);
+            ctx.fillRect(x, y - 8, ctx.measureText(char).width, 4);
+        }
+        if(underline) {
+            ctx.fillRect(x, y + 4, ctx.measureText(char).width, 4);
         }
 
-        x += ctx.measureText(matchedWord).width;
+        x += ctx.measureText(char).width;
     }
 }
 

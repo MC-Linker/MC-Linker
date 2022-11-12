@@ -52,11 +52,7 @@ class ServerInfo extends Command {
         const serverIp = propertiesObject['server-ip'] ?? server.protocol.ip;
         const serverName = propertiesObject['server-name'] ?? serverIp;
 
-        const motd = propertiesObject['motd']
-            .replace(/\\u00A7/gi, '\u00A7')
-            .replace('\\n', '\n')
-            .split('\n');
-
+        const motd = JSON.parse(`"${propertiesObject['motd']}"`).split('\n');
         const listCanvas = Canvas.createCanvas(869, 128);
         const ctx = listCanvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
@@ -73,20 +69,21 @@ class ServerInfo extends Command {
         ctx.fillStyle = '#fff';
 
         //Draw server name
-        this.drawShadowText(ctx, serverName, 132, 32);
+        ctx.fillText(serverName, 134, 32);
 
         ctx.fillStyle = '#AAA';
+
         //Draw motd
         ctx.save();
-        utils.drawMinecraftText(ctx, motd[0], 132, 70);
-        if(motd[1]) utils.drawMinecraftText(ctx, motd[1], 132, 102);
+        utils.drawMinecraftText(ctx, motd[0], 134, 70);
+        if(motd[1]) utils.drawMinecraftText(ctx, motd[1], 134, 102);
         ctx.restore();
 
         //Draw online players
         ctx.textAlign = 'right';
         const playerText = `${onlinePlayers}/${propertiesObject['max-players']}`;
         const textMeasure = ctx.measureText(playerText);
-        this.drawShadowText(ctx, playerText, listCanvas.width - 4 - textMeasure.width, 32);
+        ctx.fillText(playerText, listCanvas.width - 4 - textMeasure.width, 32);
 
         const iconAttachment = new Discord.AttachmentBuilder(iconBuffer, {
             name: 'server-icon.png',
@@ -123,7 +120,7 @@ class ServerInfo extends Command {
         bannedIps = bannedIps?.status === 200 ? JSON.parse(bannedIps.data.toString('utf-8')) : null;
         plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory).map(plugin => plugin.name.replace('.jar', '')) : [];
         mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
-        const datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').cap()) ?? [];
+        const datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').cap()) ?? [];
 
         const worldEmbed = getEmbed(keys.commands.serverinfo.success.world, {
             spawn_x: datObject.Data.SpawnX,
@@ -197,14 +194,6 @@ class ServerInfo extends Command {
 
         const pagination = new Pagination(client, interaction, pages);
         return pagination.start();
-    }
-
-    drawShadowText(ctx, text, x, y) {
-        ctx.save();
-        ctx.fillStyle = '#000';
-        ctx.fillText(text, x + 4, y + 4);
-        ctx.restore();
-        ctx.fillText(text, x, y);
     }
 }
 
