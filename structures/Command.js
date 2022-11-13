@@ -2,6 +2,7 @@ const {
     CommandInteraction,
     Message,
     PermissionFlagsBits,
+    ApplicationCommand,
     ApplicationCommandPermissionType,
     ApplicationCommandOptionType,
     MessageMentions,
@@ -113,11 +114,11 @@ class Command {
         }
 
         // Use guild commands if bot is not public (test-bot)
-        const commandManager = interaction.client.application.botPublic ? interaction.client.application.commands : interaction.guild.commands;
+        const commandManager = client.user.verified ? client.application.commands : interaction.guild.commands;
         const slashCommand = await fetchCommand(commandManager, this.name);
         const missingPermission = await canRunCommand(slashCommand);
         if(missingPermission !== true) {
-            if(missingPermission) {
+            if(typeof missingPermission === 'string') {
                 await interaction.replyTl(
                     keys.api.command.warnings.no_permission,
                     { permission: missingPermission },
@@ -206,7 +207,7 @@ class Command {
             const memberPerms = interaction.member.permissionsIn(interaction.channel);
 
             const memberPermissions = interaction.member.permissions?.toArray() ?? [];
-            const requiredPermissions = slashCommand.defaultMemberPermissions?.toArray() ?? [];
+            const requiredPermissions = command.defaultMemberPermissions?.toArray() ?? [];
             if(memberPerms.has(PermissionFlagsBits.Administrator)) return true;
 
             const perms =
