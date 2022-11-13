@@ -19,38 +19,33 @@ class SftpClient extends BaseClient {
     }
 
     async connect() {
-            await this.client.connect(this.credentials);
-            await this.client.end();
-            return true;
+        await this.client.connect(this.credentials);
+        return true;
     }
 
     async find(name, start, maxDepth) {
-        await this.client.connect(this.credentials);
-        const foundFile = await this._findFile(name, start, maxDepth);
-        await this.client.end();
-        return foundFile;
+        return await this._findFile(name, start, maxDepth);
     }
 
     async get(source, destination) {
         await fs.ensureFile(destination);
-
-        await this.client.connect(this.credentials);
         await this.client.get(source, destination);
-        await this.client.end();
         return true;
     }
 
     async list(folder) {
-        await this.client.connect(this.credentials);
         const listing = await this.client.list(folder);
-        await this.client.end();
-
-        return listing.map(item => { return { name: item.name, isDirectory: item.type === 'd' }; });
+        return listing.map(item => {
+            return { name: item.name, isDirectory: item.type === 'd' };
+        });
     }
 
     async put(source, destination) {
-        await this.client.connect(this.credentials);
         await this.client.put(source, destination);
+        return true;
+    }
+
+    async disconnect() {
         await this.client.end();
         return true;
     }
