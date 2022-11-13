@@ -2,6 +2,7 @@ const UserConnection = require('./UserConnection');
 const ConnectionManager = require('./ConnectionManager');
 const { fetchUUID, createUUIDv3 } = require('../api/utils');
 const Discord = require('discord.js');
+const fs = require('fs-extra');
 
 class UserConnectionManager extends ConnectionManager {
 
@@ -22,8 +23,10 @@ class UserConnectionManager extends ConnectionManager {
      * @property {?'nullish'|?'fetch'|?'cache'} error - The error that occurred.
      */
 
+    usageFile = './serverdata/monitoring/user_connections.json';
+
     /**
-     * Returns the uuid and name of a user from a mention/username.
+     * Returns the uuid and name of a minecraft user from a mention/username.
      * @param {string} arg - The argument to get the uuid and name from.
      * @param {ServerConnectionResolvable} server - The server to resolve the uuid and name from.
      * @returns {Promise<UserResponse>} - The uuid and name of the user.
@@ -34,17 +37,38 @@ class UserConnectionManager extends ConnectionManager {
         const id = Discord.MessageMentions.UsersPattern.exec(arg)?.[1];
         if(id) {
             const cacheConnection = this.cache.get(id);
-            if(cacheConnection) return {
-                uuid: cacheConnection.getUUID(server),
-                username: cacheConnection.username,
-                error: null,
-            };
+            if(cacheConnection) {
+                this.incrementUsage(cacheConnection);
+                return {
+                    uuid: cacheConnection.getUUID(server),
+                    username: cacheConnection.username,
+                    error: null,
+                };
+            }
             return { error: 'cache', uuid: null, username: null };
         }
 
-        const apiUUID = this.client.serverConnections.resolve(server).online ? await fetchUUID(arg) : createUUIDv3(arg);
+        server = this.client.serverConnections.resolve(server);
+        const apiUUID = server?.online === undefined || server.online ? await fetchUUID(arg) : createUUIDv3(arg);
         if(apiUUID) return { uuid: apiUUID, username: arg, error: null };
         return { error: 'fetch', uuid: null, username: null };
+    }
+
+    async incrementUsage(connection) {
+        await fs.ensureFile(this.usageFile);
+        let usage;
+        try {
+            usage = await fs.readJSON(this.usageFile);
+        }
+        catch {
+            usage = [];
+        }
+        if(!usage) return;
+
+        const existing = usage.find(u => u.id === connection.id);
+        if(existing) existing.count++;
+        else usage.push({ id: connection.id, uuid: connection.uuid, count: 1 });
+        await fs.writeJson(this.usageFile, usage, { spaces: 2 });
     }
 }
 

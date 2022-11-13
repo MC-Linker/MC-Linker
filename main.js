@@ -160,17 +160,17 @@ client.on('interactionCreate', async interaction => {
         }
     }
     else if(interaction.isButton()) {
-        const id = interaction.customId.split('_').shift();
-        const button = client.buttons.get(id);
+        let button = client.buttons.get(interaction.customId);
+        if(!button) button = client.buttons.find(b => b.id.startsWith(interaction.customId));
 
         try {
             if(!button) return;
             // noinspection JSUnresolvedFunction
             await button.execute(interaction, client)
-                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': id }));
+                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId }));
         }
         catch(err) {
-            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': id });
+            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId });
         }
     }
 });

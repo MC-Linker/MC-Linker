@@ -38,7 +38,6 @@ const FilePath = {
      * Constructs the path to the world's scoreboard.dat file.
      * @param worldPath
      * @returns {`${string}/data/scoreboard.dat`}
-     * @constructor
      */
     Scoreboards: worldPath => `${worldPath}/data/scoreboard.dat`,
 
@@ -53,9 +52,50 @@ const FilePath = {
      * Constructs the path to the server's server-icon.png file.
      * @param {string} serverPath - The path to the server folder.
      * @returns {`${string}/server-icon.png`} - The path to the server's server-icon.png file.
-     * @constructor
      */
     ServerIcon: serverPath => `${serverPath}/server-icon.png`,
+
+    /**
+     * Constructs the path to the server's whitelist.json file.
+     * @param {string} serverPath - The path to the server folder.
+     * @returns {`${string}/whitelist.json`} - The path to the server's whitelist.json file.
+     */
+    Whitelist: serverPath => `${serverPath}/whitelist.json`,
+
+    /**
+     * Constructs the path to the server's ops.json file.
+     * @param {string} serverPath - The path to the server folder.
+     * @returns {`${string}/ops.json`} - The path to the server's ops.json file.
+     */
+    Operators: serverPath => `${serverPath}/ops.json`,
+
+    /**
+     * Constructs the path to the server's banned-players.json file.
+     * @param {string} serverPath - The path to the server folder.
+     * @returns {`${string}/banned-players.json`} - The path to the server's banned-players.json file.
+     */
+    BannedPlayers: serverPath => `${serverPath}/banned-players.json`,
+
+    /**
+     * Constructs the path to the server's banned-ips.json file.
+     * @param {string} serverPath - The path to the server folder.
+     * @returns {`${string}/banned-ips.json`} - The path to the server's banned-ips.json file.
+     */
+    BannedIPs: serverPath => `${serverPath}/banned-ips.json`,
+
+    /**
+     * Constructs the path to the server's plugins folder.
+     * @param {string} serverPath - The path to the server folder.
+     * @returns {`${string}/plugins`} - The path to the server's plugins folder.
+     */
+    Plugins: serverPath => `${serverPath}/plugins`,
+
+    /**
+     * Constructs the path to the server's mods folder.
+     * @param {string} serverPath - The path to the server folder.
+     * @returns {`${string}/mods`} - The path to the server's mods folder.
+     */
+    Mods: serverPath => `${serverPath}/mods`,
 };
 
 class Protocol extends Base {
@@ -73,7 +113,7 @@ class Protocol extends Base {
     /**
      * @typedef {object} ProtocolResponse - The response from a protocol call.
      * @property {any} data - The data of the response.
-     * @property {number} [status] - The http status code of the response (only for plugin protocols).
+     * @property {number} status - The http status code of the response.
      */
 
     /**

@@ -203,7 +203,9 @@ function addHyphen(uuid) {
 async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
-    const slashCommand = await interaction.client.application.commands.fetch(interaction.commandId);
+    // Use guild commands if bot is not public (test-bot)
+    const commandManager = interaction.client.user.verified ? interaction.client.application.commands : interaction.guild.commands;
+    const slashCommand = await commandManager.fetch(interaction.commandId);
 
     const args = [];
 
@@ -261,7 +263,7 @@ const defaultStatusRespones = {
  * @param {Protocol} protocol - The protocol that was called.
  * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} - Whether the response was successful.
  */
 async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
     const placeholders = { data: JSON.stringify(response?.data ?? '') };
@@ -289,13 +291,28 @@ async function handleProtocolResponse(response, protocol, interaction, statusRes
     return true;
 }
 
+/**
+ * Handles multiple responses of protocol calls.
+ * @param {?ProtocolResponse[]} responses - The responses to handle.
+ * @param {Protocol} protocol - The protocol that was called.
+ * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
+ * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
+ * @returns {Promise<boolean>} - Whether all responses were successful.
+ */
+async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}) {
+    for(const response of responses) {
+        if(!await handleProtocolResponse(response, protocol, interaction, statusResponses)) return false;
+    }
+    return true;
+}
+
 function createUUIDv3(username) {
     const hash = crypto.createHash('md5');
     hash.update(`OfflinePlayer:${username}`);
     let digest = hash.digest();
 
     digest[6] = digest[6] & 0x0f | 0x30;  // set version to 3
-    digest[8] = digest[8] & 0x3f | 0x80;  // set to variant 2
+    digest[8] = digest[8] & 0x3f | 0x80;  // set variant to 2
 
     return addHyphen(digest.toString('hex'));
 }
@@ -328,12 +345,128 @@ function parseProperties(properties) {
     for(const property of properties.split('\n')) {
         const [name, value] = property.split('=');
         if(!name || !value || name.startsWith('#')) continue;
-        parsedProperties[name.trim()] = value.trim();
+        const trimmedValue = value.trim();
+        const trimmedName = name.trim();
+        if(trimmedName === '' || trimmedValue === '') continue;
+
+        //Parse booleans and numbers
+        if(trimmedValue === 'true') parsedProperties[trimmedName] = true;
+        else if(trimmedValue === 'false') parsedProperties[trimmedName] = false;
+        else if(!isNaN(Number(trimmedValue))) parsedProperties[trimmedName] = Number(trimmedValue);
+        else parsedProperties[trimmedName] = trimmedValue;
     }
 
     return parsedProperties;
 }
 
+
+const colorCodes = {
+    0: '#000',
+    1: '#00A',
+    2: '#0A0',
+    3: '#0AA',
+    4: '#A00',
+    5: '#A0A',
+    6: '#FA0',
+    7: '#AAA',
+    8: '#555',
+    9: '#55F',
+    a: '#5F5',
+    b: '#5FF',
+    c: '#F55',
+    d: '#F5F',
+    e: '#FF5',
+    f: '#FFF',
+};
+const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k'];
+
+/**
+ * Parses a string with minecraft color codes and formatting and draws it on a canvas.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context to draw on.
+ * @param {string} text - The text to draw.
+ * @param {number} x - The x position to start drawing at.
+ * @param {number} y - The y position to start drawing at.
+ */
+function drawMinecraftText(ctx, text, x, y) {
+    let strikethrough = false;
+    let underline = false;
+    let obfuscated = false;
+    for(let i = 0; i < text.length; i++) {
+        let char = text.charAt(i);
+
+        const colorCodeRegex = /§([0-9a-fk-or])/i;
+        const match = (char + text.charAt(i + 1)).match(colorCodeRegex);
+        if(match) {
+            const [_, color] = match;
+
+            if(colorCodes[color.toLowerCase()]) {
+                ctx.fillStyle = colorCodes[color.toLowerCase()];
+                //Color codes reset formatting
+                strikethrough = false;
+                underline = false;
+                obfuscated = false;
+            }
+            else if(formattingCodes.includes(color.toLowerCase())) {
+                //Bold and italic
+                if(color === 'l' || color === 'o') ctx.font = `${color === 'l' ? 'bold ' : ''}${color === 'o' ? 'italic ' : ''}${ctx.font}`;
+                else if(color === 'm') {
+                    strikethrough = true;
+                    underline = false;
+                }
+                else if(color === 'n') {
+                    underline = true;
+                    strikethrough = false;
+                }
+                else if(color === 'k') obfuscated = true;
+                //Reset
+                else if(color === 'r') ctx.fillStyle = '#AAA';
+            }
+
+            i++; //Skip next char
+            continue;
+        }
+
+        if(obfuscated && char !== ' ') char = '?';
+        ctx.fillText(char, x, y);
+
+        if(strikethrough) {
+            ctx.fillRect(x, y - 8, ctx.measureText(char).width, 4);
+        }
+        if(underline) {
+            ctx.fillRect(x, y + 4, ctx.measureText(char).width, 4);
+        }
+
+        x += ctx.measureText(char).width;
+    }
+}
+
+/**
+ * Divide an entire phrase in an array of phrases, all with the max pixel length given.
+ * The words are initially separated by the space char.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context to draw on.
+ * @param {string} text - The text to draw.
+ * @param {number} maxWidth - The max width of the text.
+ * @returns {string[]} - The divided phrases.
+ */
+function wrapText(ctx, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = words[0];
+
+    for(let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(`${currentLine} ${word}`).width;
+        if(width < maxWidth) {
+            currentLine += ' ' + word;
+        }
+        else {
+            lines.push(currentLine);
+            currentLine = word;
+        }
+    }
+    lines.push(currentLine);
+    return lines;
+}
 
 module.exports = {
     searchAllAdvancements,
@@ -345,6 +478,9 @@ module.exports = {
     getArgs,
     getUsersFromMention,
     handleProtocolResponse,
+    handleProtocolResponses,
     nbtBufferToObject,
     parseProperties,
+    drawMinecraftText,
+    wrapText,
 };
