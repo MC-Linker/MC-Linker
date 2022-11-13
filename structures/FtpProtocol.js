@@ -99,6 +99,7 @@ class FtpProtocol extends Protocol {
     async connect() {
         try {
             await this.ftpClient.connect();
+            await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse({ message: 'Success' });
         }
         catch(e) {
@@ -111,7 +112,9 @@ class FtpProtocol extends Protocol {
      */
     async get(getPath, putPath) {
         try {
+            await this.ftpClient.connect();
             await this.ftpClient.get(getPath, putPath);
+            await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(await fs.readFile(putPath));
         }
         catch(e) {
@@ -124,7 +127,9 @@ class FtpProtocol extends Protocol {
      */
     async list(folder) {
         try {
+            await this.ftpClient.connect();
             const list = await this.ftpClient.list(folder);
+            await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(list);
         }
         catch(e) {
@@ -137,7 +142,10 @@ class FtpProtocol extends Protocol {
      */
     async put(getPath, putPath) {
         try {
-            return FtpProtocol.dataToProtocolResponse(await this.ftpClient.put(getPath, putPath));
+            await this.ftpClient.connect();
+            await this.ftpClient.put(getPath, putPath);
+            await this.ftpClient.disconnect();
+            return FtpProtocol.dataToProtocolResponse({ message: 'Success' });
         }
         catch(e) {
             return FtpProtocol.dataToProtocolResponse(e);
@@ -153,7 +161,10 @@ class FtpProtocol extends Protocol {
      */
     async find(name, start, maxDepth) {
         try {
-            return FtpProtocol.dataToProtocolResponse(await this.ftpClient.find(name, start, maxDepth));
+            await this.ftpClient.connect();
+            const foundFile = await this.ftpClient.find(name, start, maxDepth);
+            await this.ftpClient.disconnect();
+            return FtpProtocol.dataToProtocolResponse(foundFile);
         }
         catch(e) {
             return FtpProtocol.dataToProtocolResponse(e);

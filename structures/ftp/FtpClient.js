@@ -1,4 +1,4 @@
-const Ftp = require('ftp');
+const Ftp = require('promise-ftp');
 const BaseClient = require('./BaseClient');
 const fs = require('fs-extra');
 
@@ -14,117 +14,61 @@ class FtpClient extends BaseClient {
 
         /**
          * The ftp client.
-         * @type {import('ftp')}
+         * @type {import('promise-ftp')}
          */
         this.client = new Ftp();
     }
 
-    connect() {
-        return new Promise((resolve, reject) => {
-            this.client.once('ready', () => {
-                this.client.once('close', () => resolve(true));
-                this.client.end();
-            });
-            this.client.once('error', reject);
+    async connect() {
+        await this.client.connect(this.credentials);
+        return true;
+    }
 
-            this.client.connect(this.credentials);
-            setTimeout(() => {
-                resolve(false);
-                this.client.removeAllListeners();
-                this.client.end();
-            }, 15_000);
+    async find(name, start, maxDepth) {
+        return await this._findFile(name, start, maxDepth);
+    }
+
+    async get(source, destination) {
+        return new Promise(async (resolve, reject) => {
+            await fs.ensureFile(destination);
+            const stream = await this.client.get(source, destination);
+
+            stream.once('close', () => resolve(true));
+            stream.once('error', reject);
+            stream.pipe(fs.createWriteStream(destination));
         });
     }
 
-    find(name, start, maxDepth) {
-        return new Promise((resolve, reject) => {
-            this.client.once('ready', () => {
-                const foundFile = this._findFile(name, start, maxDepth);
-                this.client.once('close', () => resolve(foundFile));
-                this.client.end();
-            });
-            this.client.once('error', reject);
-
-            this.client.connect(this.credentials);
+    async list(folder) {
+        const listing = await this.client.list(folder);
+        return listing.map(item => {
+            return { name: item.name, isDirectory: item.type === 'd' };
         });
     }
 
-    get(source, destination) {
-        return new Promise((resolve, reject) => {
-            this.client.once('ready', () => {
-                fs.ensureFile(destination, err => {
-                    if(err) return reject(err);
-
-                    this.client.get(source, (err, stream) => {
-                        if(err) return reject(err);
-
-                        stream.once('close', () => {
-                            this.client.once('close', () => resolve(true));
-                            this.client.end();
-                        });
-                        stream.once('error', reject);
-                        stream.pipe(fs.createWriteStream(destination));
-                    });
-                });
-            });
-            this.client.once('error', err => { throw err });
-
-            this.client.connect(this.credentials);
-        });
+    async put(source, destination) {
+        await this.client.put(source, destination);
+        return true;
     }
 
-    list(folder) {
-        return new Promise((resolve, reject) => {
-            this.client.once('ready', () => {
-                this.client.list(folder, (err, listing) => {
-                    if(err) return reject(err);
-                    this.client.once('close', () => resolve(listing.map(item => {
-                        return {
-                            name: item.name,
-                            isDirectory: item.type === 'd',
-                        };
-                    })));
-                    this.client.end();
-                });
-            });
-            this.client.once('error', reject);
-
-            this.client.connect(this.credentials);
-        });
-    }
-
-    put(source, destination) {
-        return new Promise((resolve, reject) => {
-            this.client.once('ready', () => {
-                this.client.put(source, destination, err => {
-                    if(err) return reject(err);
-                    this.client.once('close', () => resolve(true));
-                    this.client.end();
-                    resolve(true);
-                });
-            });
-            this.client.once('error', reject);
-
-            this.client.connect(this.credentials);
-        });
+    async disconnect() {
+        await this.client.end();
+        return true;
     }
 
     _findFile(name, path, maxDepth) {
-        return new Promise(resolve => {
-            this.client.list(path, (err, listing) => {
-                if(err) return resolve(undefined);
+        return new Promise(async resolve => {
+            const listing = await this.client.list(path);
+            const foundFile = listing.find(item => item.name === name && item.type === '-');
+            if(foundFile) return resolve(path);
 
-                const foundFile = listing.find(item => item.name === name && item.type === '-');
-                if(foundFile) return resolve(path);
-
-                for(const item of listing) {
-                    if(item.type !== 'd' && item.name === name) return resolve(path);
-                    else if(item.type === 'd') {
-                        const foundFile = this._findFile(name, `${path}/${item.name}`, maxDepth);
-                        if(foundFile) return resolve(foundFile);
-                    }
+            for(const item of listing) {
+                if(item.type === 'd') {
+                    const foundFile = this._findFile(name, `${path}/${item.name}`, maxDepth);
+                    if(foundFile) return resolve(foundFile);
                 }
-            });
+            }
+            resolve(null);
         });
     }
 }
