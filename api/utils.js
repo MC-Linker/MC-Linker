@@ -204,7 +204,7 @@ async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
     // Use guild commands if bot is not public (test-bot)
-    const commandManager = interaction.client.user.verified ? interaction.client.application.commands : interaction.guild.commands;
+    const commandManager = interaction.client.user.id === '712759741528408064' ? interaction.client.application.commands : interaction.guild.commands;
     const slashCommand = await commandManager.fetch(interaction.commandId);
 
     const args = [];

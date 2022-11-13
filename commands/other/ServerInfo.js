@@ -8,6 +8,7 @@ const { addPh, getComponent, getReplyOptions, getEmbed } = require('../../api/me
 const Canvas = require('@napi-rs/canvas');
 const fs = require('fs-extra');
 const Pagination = require('../../structures/helpers/Pagination');
+const { unraw } = require('unraw');
 
 const gamerules = require('../../resources/data/gamerules.json');
 
@@ -52,7 +53,13 @@ class ServerInfo extends Command {
         const serverIp = propertiesObject['server-ip'] ?? server.protocol.ip;
         const serverName = propertiesObject['server-name'] ?? serverIp;
 
-        const motd = JSON.parse(`"${propertiesObject['motd']}"`).split('\n');
+        let motd;
+        try {
+            motd = unraw(propertiesObject['motd']).split('\n');
+        }
+        catch(e) {
+            motd = propertiesObject['motd'].split('\n');
+        }
         const listCanvas = Canvas.createCanvas(869, 128);
         const ctx = listCanvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
