@@ -8,6 +8,7 @@ const { addPh, getComponent, getReplyOptions, getEmbed } = require('../../api/me
 const Canvas = require('@napi-rs/canvas');
 const fs = require('fs-extra');
 const Pagination = require('../../structures/helpers/Pagination');
+const { unraw } = require('unraw');
 
 const gamerules = require('../../resources/data/gamerules.json');
 
@@ -34,12 +35,23 @@ class ServerInfo extends Command {
         })) return;
 
         let serverIcon = await server.protocol.get(Protocol.FilePath.ServerIcon(serverPath), `./serverdata/connections/${server.id}/server-icon.png`);
-        let operators = await server.protocol.get(Protocol.FilePath.Operators(serverPath), `./serverdata/connections/${server.id}/ops.json`);
-        let whitelistedUsers = await server.protocol.get(Protocol.FilePath.Whitelist(serverPath), `./serverdata/connections/${server.id}/whitelist.json`);
-        let bannedUsers = await server.protocol.get(Protocol.FilePath.BannedPlayers(serverPath), `./serverdata/connections/${server.id}/banned-players.json`);
-        let bannedIps = await server.protocol.get(Protocol.FilePath.BannedIPs(serverPath), `./serverdata/connections/${server.id}/banned-ips.json`);
-        let plugins = await server.protocol.list(Protocol.FilePath.Plugins(serverPath));
-        let mods = await server.protocol.list(Protocol.FilePath.Mods(serverPath));
+
+        let operators = [];
+        let whitelistedUsers = [];
+        let bannedUsers = [];
+        let bannedIPs = [];
+        let plugins = [];
+        let mods = [];
+        let datapacks = [];
+        const isAdmin = interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator);
+        if(isAdmin) {
+            operators = await server.protocol.get(Protocol.FilePath.Operators(serverPath), `./serverdata/connections/${server.id}/ops.json`);
+            whitelistedUsers = await server.protocol.get(Protocol.FilePath.Whitelist(serverPath), `./serverdata/connections/${server.id}/whitelist.json`);
+            bannedUsers = await server.protocol.get(Protocol.FilePath.BannedPlayers(serverPath), `./serverdata/connections/${server.id}/banned-players.json`);
+            bannedIPs = await server.protocol.get(Protocol.FilePath.BannedIPs(serverPath), `./serverdata/connections/${server.id}/banned-ips.json`);
+            plugins = await server.protocol.list(Protocol.FilePath.Plugins(serverPath));
+            mods = await server.protocol.list(Protocol.FilePath.Mods(serverPath));
+        }
 
         const datObject = await utils.nbtBufferToObject(levelDat.data, interaction);
         if(!datObject) return;
@@ -52,7 +64,13 @@ class ServerInfo extends Command {
         const serverIp = propertiesObject['server-ip'] ?? server.protocol.ip;
         const serverName = propertiesObject['server-name'] ?? serverIp;
 
-        const motd = JSON.parse(`"${propertiesObject['motd']}"`).split('\n');
+        let motd;
+        try {
+            motd = unraw(propertiesObject['motd']).split('\n');
+        }
+        catch(e) {
+            motd = propertiesObject['motd'].split('\n');
+        }
         const listCanvas = Canvas.createCanvas(869, 128);
         const ctx = listCanvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
@@ -114,13 +132,16 @@ class ServerInfo extends Command {
             })
             .map(([key, value]) => `${key}: ${value}`);
 
-        operators = operators?.status === 200 ? JSON.parse(operators.data.toString('utf-8')) : null;
-        whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString('utf-8')) : null;
-        bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString('utf-8')) : null;
-        bannedIps = bannedIps?.status === 200 ? JSON.parse(bannedIps.data.toString('utf-8')) : null;
-        plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory).map(plugin => plugin.name.replace('.jar', '')) : [];
-        mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
-        const datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').cap()) ?? [];
+        if(isAdmin) {
+            operators = operators?.status === 200 ? JSON.parse(operators.data.toString('utf-8')) : null;
+            whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString('utf-8')) : null;
+            bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString('utf-8')) : null;
+            bannedIPs = bannedIPs?.status === 200 ? JSON.parse(bannedIPs.data.toString('utf-8')) : null;
+            plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory).map(plugin => plugin.name.replace('.jar', '')) : [];
+            mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
+
+            datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').cap()) ?? [];
+        }
 
         const worldEmbed = getEmbed(keys.commands.serverinfo.success.world, {
             spawn_x: datObject.Data.SpawnX,
@@ -135,35 +156,6 @@ class ServerInfo extends Command {
         if(propertiesObject['hardcore']) { //TODO better way to edit language embeds
             worldEmbed.data.fields[2] = addPh(keys.commands.serverinfo.success.hardcore_enabled.embeds[0].fields[0], { difficulty });
         }
-
-        const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
-            enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
-            seed: datObject.Data.WorldGenSettings.seed,
-        });
-        const newFields = [];
-        if(plugins.length > 0) {
-            newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[0], { plugins: plugins.join('\n') }));
-        }
-        if(datapacks.length > 0) {
-            newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[1], { datapacks: datapacks.join('\n') }));
-        }
-        if(mods.length > 0) {
-            newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[2], { mods: mods.join('\n') }));
-        }
-        if(whitelistedUsers) {
-            newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[3], { whitelisted_users: whitelistedUsers.length }));
-        }
-        if(bannedUsers) {
-            newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[4], { banned_users: bannedUsers.length }));
-        }
-        if(bannedIps) {
-            newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[5], { banned_ips: bannedIps.length }));
-        }
-        if(operators) {
-            newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[6], { operators: operators.length }));
-        }
-        newFields.push(adminEmbed.data.fields[7], adminEmbed.data.fields[8]); //Push seed and whitelist fields
-        adminEmbed.setFields(...newFields);
 
         /** @type {PaginationPages} */
         const pages = {
@@ -183,14 +175,32 @@ class ServerInfo extends Command {
                 button: getComponent(keys.commands.serverinfo.success.world_button),
                 page: { embeds: [worldEmbed] },
             },
-            serverinfo_admin: {
+        };
+
+        if(isAdmin) {
+            const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
+                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
+                seed: datObject.Data.WorldGenSettings.seed,
+            });
+            const newFields = [];
+            if(plugins.length > 0) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[0], { plugins: plugins.join('\n') }));
+            if(datapacks.length > 0) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[1], { datapacks: datapacks.join('\n') }));
+            if(mods.length > 0) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[2], { mods: mods.join('\n') }));
+            if(whitelistedUsers) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[3], { whitelisted_users: whitelistedUsers.length }));
+            if(bannedUsers) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[4], { banned_users: bannedUsers.length }));
+            if(bannedIPs) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[5], { banned_ips: bannedIPs.length }));
+            if(operators) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[6], { operators: operators.length }));
+            newFields.push(adminEmbed.data.fields[7], adminEmbed.data.fields[8]); //Push seed and whitelist fields
+            adminEmbed.setFields(...newFields);
+
+            pages['serverinfo_admin'] = {
                 button: getComponent(keys.commands.serverinfo.success.admin_button),
                 page: { embeds: [adminEmbed] },
                 buttonOptions: {
                     permissions: new Discord.PermissionsBitField(Discord.PermissionFlagsBits.Administrator),
                 },
-            },
-        };
+            };
+        }
 
         const pagination = new Pagination(client, interaction, pages);
         return pagination.start();

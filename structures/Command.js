@@ -114,7 +114,7 @@ class Command {
         }
 
         // Use guild commands if bot is not public (test-bot)
-        const commandManager = client.user.verified ? client.application.commands : interaction.guild.commands;
+        const commandManager = client.user.id === '712759741528408064' ? client.application.commands : interaction.guild.commands;
         const slashCommand = await fetchCommand(commandManager, this.name);
         const missingPermission = await canRunCommand(slashCommand);
         if(missingPermission !== true) {
