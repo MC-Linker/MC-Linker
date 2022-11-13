@@ -23,7 +23,7 @@ class ServerInfo extends Command {
 
 
     async execute(interaction, client, args, server) {
-        if(!super.execute(interaction, client, args, server)) return;
+        if(!await super.execute(interaction, client, args, server)) return;
 
         const serverPath = path.dirname(server.path); //TODO add serverpath property to connections
         let serverProperties = await server.protocol.get(Protocol.FilePath.ServerProperties(serverPath), `./serverdata/connections/${server.id}/server.properties`);
