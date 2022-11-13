@@ -25,7 +25,7 @@ class Help extends Command {
         if(!commandName || commandName === 'help') {
             helpEmbed.addFields(addPh(keys.commands.help.success.no_args.embeds[0].fields,
                 { 'invite_link': discordLink },
-                await ph.allCommands(interaction.client),
+                await ph.allCommands(client),
             ));
             return interaction.replyOptions({ embeds: [helpEmbed] });
         }
