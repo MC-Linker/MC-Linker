@@ -9,93 +9,156 @@ const FilePath = {
      * Constructs the path to the user's advancements file.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @returns {`${string}/advancements/${string}.json`} - The path to the advancements file.
+     * @param {?string} [userId=null] - The user's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/advancements/${string}.json`} - The path to the advancements file.
      */
-    Advancements: (worldPath, uuid) => `${worldPath}/advancements/${uuid}.json`,
+    Advancements: (worldPath, uuid, userId = null) => {
+        const advancementPath = `${worldPath}/advancements/${uuid}.json`;
+        return userId ? [advancementPath, `./userdata/connections/${userId}/advancements.json`] : `${worldPath}/advancements/${uuid}.json`;
+    },
     /**
      * Constructs the path to the user's stats file.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @returns {`${string}/stats/${string}.json`} - The path to the stats file.
+     * @param {?string} [userId=null] - The user's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/stats/${string}.json`} - The path to the stats file.
      */
-    Stats: (worldPath, uuid) => `${worldPath}/stats/${uuid}.json`,
+    Stats: (worldPath, uuid, userId) => {
+        const statPath = `${worldPath}/stats/${uuid}.json`;
+        return userId ? [statPath, `./userdata/connections/${userId}/stats.json`] : `${worldPath}/stats/${uuid}.json`;
+    },
     /**
      * Constructs the path to the user's playerdata folder.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @returns {`${string}/playerdata/${string}.dat`} - The path to the playerdata folder.
+     * @param {?string} [userId=null] - The user's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/playerdata/${string}.dat`} - The path to the playerdata folder.
      */
-    PlayerData: (worldPath, uuid) => `${worldPath}/playerdata/${uuid}.dat`,
+    PlayerData: (worldPath, uuid, userId) => {
+        const playerdataPath = `${worldPath}/playerdata/${uuid}.dat`;
+        return userId ? [playerdataPath, `./userdata/connections/${userId}/playerdata.dat`] : `${worldPath}/playerdata/${uuid}.dat`;
+    },
 
     /**
      * Constructs the path to the world's level.dat file.
      * @param {string} worldPath - The path to the world folder.
-     * @returns {`${string}/level.dat`} - The path to the world's level.dat file.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/level.dat`} - The path to the world's level.dat file.
      */
-    LevelDat: worldPath => `${worldPath}/level.dat`,
+    LevelDat: (worldPath, serverId) => {
+        const leveldatPath = `${worldPath}/level.dat`;
+        return serverId ? [leveldatPath, `./serverdata/connections/${serverId}/level.dat`] : `${worldPath}/level.dat`;
+    },
 
     /**
      * Constructs the path to the world's scoreboard.dat file.
-     * @param worldPath
-     * @returns {`${string}/data/scoreboard.dat`}
+     * @param {string} worldPath - The path to the world folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/data/scoreboard.dat`}
      */
-    Scoreboards: worldPath => `${worldPath}/data/scoreboard.dat`,
+    Scoreboards: (worldPath, serverId) => {
+        const scoreboardsPath = `${worldPath}/data/scoreboard.dat`;
+        return serverId ? [scoreboardsPath, `./serverdata/connections/${serverId}/scoreboard.dat`] : `${worldPath}/data/scoreboard.dat`;
+    },
 
     /**
      * Constructs the path to the server's server.properties file.
      * @param {string} serverPath - The path to the server folder.
-     * @returns {`${string}/server.properties`} - The path to the server's server.properties file.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/server.properties`} - The path to the server's server.properties file.
      */
-    ServerProperties: serverPath => `${serverPath}/server.properties`,
+    ServerProperties: (serverPath, serverId) => {
+        const serverPropertiesPath = `${serverPath}/server.properties`;
+        return serverId ? [serverPropertiesPath, `./serverdata/connections/${serverId}/server.properties`] : `${serverPath}/server.properties`;
+    },
 
     /**
      * Constructs the path to the server's server-icon.png file.
      * @param {string} serverPath - The path to the server folder.
-     * @returns {`${string}/server-icon.png`} - The path to the server's server-icon.png file.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/server-icon.png`} - The path to the server's server-icon.png file.
      */
-    ServerIcon: serverPath => `${serverPath}/server-icon.png`,
+    ServerIcon: (serverPath, serverId) => {
+        const servericonPath = `${serverPath}/server-icon.png`;
+        return serverId ? [servericonPath, `./serverdata/connections/${serverId}/server-icon.png`] : `${serverPath}/server-icon.png`;
+    },
 
     /**
      * Constructs the path to the server's whitelist.json file.
      * @param {string} serverPath - The path to the server folder.
-     * @returns {`${string}/whitelist.json`} - The path to the server's whitelist.json file.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/whitelist.json`} - The path to the server's whitelist.json file.
      */
-    Whitelist: serverPath => `${serverPath}/whitelist.json`,
+    Whitelist: (serverPath, serverId) => {
+        const whitelistPath = `${serverPath}/whitelist.json`;
+        return serverId ? [whitelistPath, `./serverdata/connections/${serverId}/whitelist.json`] : `${serverPath}/whitelist.json`;
+    },
 
     /**
      * Constructs the path to the server's ops.json file.
      * @param {string} serverPath - The path to the server folder.
-     * @returns {`${string}/ops.json`} - The path to the server's ops.json file.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/ops.json`} - The path to the server's ops.json file.
      */
-    Operators: serverPath => `${serverPath}/ops.json`,
+    Operators: (serverPath, serverId) => {
+        const operatorsPath = `${serverPath}/ops.json`;
+        return serverId ? [operatorsPath, `./serverdata/connections/${serverId}/ops.json`] : `${serverPath}/ops.json`;
+    },
 
     /**
      * Constructs the path to the server's banned-players.json file.
      * @param {string} serverPath - The path to the server folder.
-     * @returns {`${string}/banned-players.json`} - The path to the server's banned-players.json file.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/banned-players.json`} - The path to the server's banned-players.json file.
      */
-    BannedPlayers: serverPath => `${serverPath}/banned-players.json`,
+    BannedPlayers: (serverPath, serverId) => {
+        const bannedplayersPath = `${serverPath}/banned-players.json`;
+        return serverId ? [bannedplayersPath, `./serverdata/connections/${serverId}/banned-players.json`] : `${serverPath}/banned-players.json`;
+    },
 
     /**
      * Constructs the path to the server's banned-ips.json file.
      * @param {string} serverPath - The path to the server folder.
-     * @returns {`${string}/banned-ips.json`} - The path to the server's banned-ips.json file.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/banned-ips.json`} - The path to the server's banned-ips.json file.
      */
-    BannedIPs: serverPath => `${serverPath}/banned-ips.json`,
+    BannedIPs: (serverPath, serverId) => {
+        const bannedIpsPath = `${serverPath}/banned-ips.json`;
+        return serverId ? [bannedIpsPath, `./serverdata/connections/${serverId}/banned-ips.json`] : `${serverPath}/banned-ips.json`;
+    },
 
     /**
      * Constructs the path to the server's plugins folder.
      * @param {string} serverPath - The path to the server folder.
-     * @returns {`${string}/plugins`} - The path to the server's plugins folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/plugins`} - The path to the server's plugins folder.
      */
-    Plugins: serverPath => `${serverPath}/plugins`,
+    Plugins: (serverPath, serverId) => {
+        const pluginsPath = `${serverPath}/plugins`;
+        return serverId ? [pluginsPath, `./serverdata/connections/${serverId}/plugins`] : `${serverPath}/plugins`;
+    },
 
     /**
      * Constructs the path to the server's mods folder.
      * @param {string} serverPath - The path to the server folder.
-     * @returns {`${string}/mods`} - The path to the server's mods folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/mods`} - The path to the server's mods folder.
      */
-    Mods: serverPath => `${serverPath}/mods`,
+    Mods: (serverPath, serverId) => {
+        const modsPath = `${serverPath}/mods`;
+        return serverId ? [modsPath, `./serverdata/connections/${serverId}/mods`] : `${serverPath}/mods`;
+    },
+
+    /**
+     * Constructs the path to the server's datapacks folder.
+     * @param {string} worldPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/datapacks`} - The path to the server's datapacks folder.
+     */
+    DataPacks: (worldPath, serverId) => {
+        const datapacksPath = `${worldPath}/datapacks`;
+        return serverId ? [datapacksPath, `./serverdata/connections/${serverId}/datapacks`] : `${worldPath}/datapacks`;
+    },
 };
 
 class Protocol extends Base {
@@ -164,6 +227,22 @@ class Protocol extends Base {
      */
     async list(folder) {
         throw new Error('Not implemented');
+    }
+
+    /**
+     * Starts a batch protocol interaction with the server allowing multiple requests to be sent at once.
+     * @returns {Promise<ProtocolResponse>}
+     */
+    async startBatch() {
+        return { data: null, status: 200 };
+    }
+
+    /**
+     * Ends a batch protocol interaction with the server.
+     * @returns {Promise<ProtocolResponse>}
+     */
+    async endBatch() {
+        return { data: null, status: 200 };
     }
 }
 

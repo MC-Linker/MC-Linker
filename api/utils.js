@@ -280,7 +280,7 @@ async function handleProtocolResponse(response, protocol, interaction, statusRes
         await interaction.replyTl(keys.api.plugin.errors.status_500, placeholders);
         return false;
     }
-    else {
+    else if(response.status !== 200) {
         const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
         if(responseKey) {
             await interaction.replyTl(responseKey, placeholders);

@@ -4478,13 +4478,13 @@ async function getPlaceholder(key, args) {
 
         let allFunctions = [];
 
-        const datapacks = await server.protocol.list(`${worldPath}/datapacks/`);
+        const datapacks = await server.protocol.list(Protocol.FilePath.DataPacks(worldPath));
         if(datapacks?.status !== 200) return [];
 
         for(const datapack of datapacks.data) {
             if(!datapack.isDirectory) continue;
 
-            const namespaces = await server.protocol.list(`${worldPath}/datapacks/${datapack.name}/data/`);
+            const namespaces = await server.protocol.list(`${Protocol.FilePath.DataPacks(worldPath)}/${datapack.name}/data/`);
             if(namespaces?.status !== 200) continue;
 
             for(const namespace of namespaces.data) {
@@ -4494,7 +4494,7 @@ async function getPlaceholder(key, args) {
         }
 
         async function listFunctions(datapack, namespace, path) {
-            const functions = await server.protocol.list(`${worldPath}/datapacks/${datapack}/data/${namespace}/functions/${path}`);
+            const functions = await server.protocol.list(`${Protocol.FilePath.DataPacks(worldPath)}/${datapack}/data/${namespace}/functions/${path}`);
             if(functions?.status !== 200) return;
 
             for(const func of functions.data) {
