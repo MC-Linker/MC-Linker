@@ -75,20 +75,22 @@ class Connect extends Command {
                 }
             }
 
-            const serverProperties = await ftpProtocol.get(Protocol.FilePath.ServerProperties(serverPath), `./serverdata/connections/${interaction.guildId}/server.properties`);
+            const serverProperties = await ftpProtocol.get(...Protocol.FilePath.ServerProperties(serverPath, interaction.guildId));
             if(!await utils.handleProtocolResponse(serverProperties, ftpProtocol, interaction, {
                 404: keys.commands.connect.errors.could_not_get_properties,
             })) return;
 
             const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
             const separator = serverPath.includes('/') ? '/' : '\\';
+            /** @type {ServerConnectionData} */
             const serverConnectionData = {
                 ip: host,
                 username,
                 password,
                 port,
                 online: propertiesObject['online-mode'],
-                path: `${serverPath}${separator}${propertiesObject['level-name']}`,
+                path: serverPath,
+                worldPath: `${serverPath}${separator}${propertiesObject['level-name']}`,
                 version,
                 protocol,
             };
@@ -148,20 +150,24 @@ class Connect extends Command {
 
             await message.replyTl(keys.commands.connect.success.verification, ph.std(interaction));
 
-            /** @type {ServerConnectionData} */
+            /** @type {PluginServerConnectionData} */
             const serverConnectionData = {
-                id: interaction.guildId,
                 ip: resp.data.ip.split(':').shift(),
                 port: resp.data.ip.split(':').pop(),
                 version: parseInt(resp.data.version.split('.')[1]),
                 path: decodeURIComponent(resp.data.path),
+                worldPath: decodeURIComponent(resp.data.worldPath),
                 hash: resp.data.hash,
                 online: resp.data.online,
                 protocol: 'plugin',
+                channels: [],
             };
 
             if(server) await server.edit(serverConnectionData);
-            else await client.serverConnections.connect(serverConnectionData);
+            else await client.serverConnections.connect({
+                ...serverConnectionData,
+                id: interaction.guildId,
+            });
 
             return interaction.replyTl(keys.commands.connect.success.plugin);
         }

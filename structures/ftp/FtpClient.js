@@ -31,7 +31,7 @@ class FtpClient extends BaseClient {
     async get(source, destination) {
         return new Promise(async (resolve, reject) => {
             await fs.ensureFile(destination);
-            const stream = await this.client.get(source, destination);
+            const stream = await this.client.get(source);
 
             stream.once('close', () => resolve(true));
             stream.once('error', reject);
