@@ -4,7 +4,7 @@ const Protocol = require('../../structures/Protocol');
 const Discord = require('discord.js');
 const utils = require('../../api/utils');
 const { addPh, getComponent, getReplyOptions, getEmbed } = require('../../api/messages');
-const Canvas = require('@napi-rs/canvas');
+const Canvas = require('skia-canvas');
 const fs = require('fs-extra');
 const Pagination = require('../../structures/helpers/Pagination');
 const { unraw } = require('unraw');
@@ -81,7 +81,7 @@ class ServerInfo extends Command {
         catch(e) {
             motd = propertiesObject['motd'].split('\n');
         }
-        const listCanvas = Canvas.createCanvas(869, 128);
+        const listCanvas = new Canvas.Canvas(869, 128);
         const ctx = listCanvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
 

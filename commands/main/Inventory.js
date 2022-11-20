@@ -1,4 +1,4 @@
-const Canvas = require('@napi-rs/canvas');
+const Canvas = require('skia-canvas');
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const mcData = require('minecraft-data')('1.19.2');
@@ -289,7 +289,7 @@ class Inventory extends Command {
 
 // noinspection JSUnusedLocalSymbols
 async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
-    const canvas = Canvas.createCanvas(352, 332);
+    const canvas = new Canvas.Canvas(352, 332);
     const ctx = canvas.getContext('2d');
     const background = await Canvas.loadImage(backgroundPath);
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);

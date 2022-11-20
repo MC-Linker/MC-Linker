@@ -8,7 +8,7 @@ console.log(
 
 const Discord = require('discord.js');
 const { AutoPoster } = require('topgg-autoposter');
-const Canvas = require('@napi-rs/canvas');
+const Canvas = require('skia-canvas');
 const { getArgs } = require('./api/utils');
 const { keys } = require('./api/keys');
 const { addPh, ph, addTranslatedResponses } = require('./api/messages');
@@ -59,7 +59,7 @@ client.once('ready', async () => {
     await new BotAPI(client).startServer();
 
     //Register minecraft font
-    Canvas.GlobalFonts.registerFromPath('./resources/fonts/Minecraft.ttf', 'Minecraft');
+    Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
 });
 
 client.on('guildCreate', guild => {
