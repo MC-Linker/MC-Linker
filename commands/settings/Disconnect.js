@@ -1,9 +1,9 @@
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const PluginProtocol = require('../../structures/PluginProtocol');
-const utils = require('../../api/utils');
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import PluginProtocol from '../../structures/PluginProtocol.js';
+import utils from '../../api/utils.js';
 
-class Disconnect extends Command {
+export default class Disconnect extends Command {
 
     constructor() {
         super({
@@ -26,5 +26,3 @@ class Disconnect extends Command {
         return interaction.replyTl(keys.commands.disconnect.success, { protocol, protocol_cap: protocol.cap() });
     }
 }
-
-module.exports = Disconnect;

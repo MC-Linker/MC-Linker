@@ -1,8 +1,8 @@
-const Ftp = require('promise-ftp');
-const BaseClient = require('./BaseClient');
-const fs = require('fs-extra');
+import Ftp from 'promise-ftp';
+import BaseClient from './BaseClient.js';
+import fs from 'fs-extra';
 
-class FtpClient extends BaseClient {
+export default class FtpClient extends BaseClient {
 
     constructor(credentials) {
         super(credentials);
@@ -72,5 +72,3 @@ class FtpClient extends BaseClient {
         });
     }
 }
-
-module.exports = FtpClient;

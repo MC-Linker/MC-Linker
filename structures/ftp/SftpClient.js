@@ -1,8 +1,8 @@
-const Sftp = require('ssh2-sftp-client');
-const BaseClient = require('./BaseClient');
-const fs = require('fs-extra');
+import Sftp from 'ssh2-sftp-client';
+import BaseClient from './BaseClient.js';
+import fs from 'fs-extra';
 
-class SftpClient extends BaseClient {
+export default class SftpClient extends BaseClient {
 
     constructor(credentials) {
         super(credentials);
@@ -65,5 +65,3 @@ class SftpClient extends BaseClient {
         });
     }
 }
-
-module.exports = SftpClient;

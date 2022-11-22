@@ -1,18 +1,17 @@
-const {
+import Discord, {
+    ApplicationCommand,
+    ApplicationCommandOptionType,
+    ApplicationCommandPermissionType,
     CommandInteraction,
     Message,
-    PermissionFlagsBits,
-    ApplicationCommand,
-    ApplicationCommandPermissionType,
-    ApplicationCommandOptionType,
     MessageMentions,
-} = require('discord.js');
-const { ph } = require('../api/messages');
-const { keys } = require('../api/keys');
-const { fetchCommand } = require('../api/messages');
-const { ownerId } = require('../config.json');
+    PermissionFlagsBits,
+} from 'discord.js';
+import { fetchCommand, ph } from '../api/messages.js';
+import keys from '../api/keys.js';
+import config from '../config.json' assert { type: 'json' };
 
-class Command {
+export default class Command {
 
     /**
      * @typedef {object} CommandOptions
@@ -95,7 +94,7 @@ class Command {
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
         if(this.ownerOnly) {
-            return interaction.user.id === ownerId;
+            return interaction.user.id === config.ownerId;
         }
 
         const settings = await client.settingsConnections.cache.get(interaction.guildId);
@@ -113,8 +112,9 @@ class Command {
             return false;
         }
 
-        // Use guild commands if bot is not public (test-bot)
-        const commandManager = client.user.id === '712759741528408064' ? client.application.commands : interaction.guild.commands;
+        // Use guild commands if bot is not verified (test-bot)
+        const commandManager = client.user.flags.has(Discord.UserFlags.VerifiedBot)
+            ? client.application.commands : interaction.guild.commands;
         const slashCommand = await fetchCommand(commandManager, this.name);
         const missingPermission = await canRunCommand(slashCommand);
         if(missingPermission !== true) {
@@ -243,5 +243,3 @@ class Command {
         }
     }
 }
-
-module.exports = Command;

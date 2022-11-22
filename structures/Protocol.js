@@ -1,10 +1,10 @@
-const { Base } = require('discord.js');
+import { Base } from 'discord.js';
 
 /**
  * Paths to minecraft server files.
  * @type {object}
  */
-const FilePath = {
+export const FilePath = {
     /**
      * Constructs the path to the user's advancements file.
      * @param {string} worldPath - The path to the world folder.
@@ -161,7 +161,7 @@ const FilePath = {
     },
 };
 
-class Protocol extends Base {
+export default class Protocol extends Base {
 
     /**
      * @typedef {PluginProtocolData|FtpProtocolData} ProtocolData - The data for a protocol.
@@ -245,6 +245,3 @@ class Protocol extends Base {
         return { data: null, status: 200 };
     }
 }
-
-module.exports = Protocol;
-module.exports.FilePath = FilePath;

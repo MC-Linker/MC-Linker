@@ -1,6 +1,6 @@
-const Connection = require('./Connection');
+import Connection from './Connection.js';
 
-class SettingsConnection extends Connection {
+export default class SettingsConnection extends Connection {
 
     static defaultSettingsData = {
         disabled: {
@@ -140,5 +140,3 @@ class SettingsConnection extends Connection {
         };
     }
 }
-
-module.exports = SettingsConnection;

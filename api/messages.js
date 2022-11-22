@@ -1,31 +1,21 @@
-const { AnyComponent } = require('discord.js');
-
-const Discord = require('discord.js');
-const {
-    MessagePayload,
-    InteractionReplyOptions,
-    WebhookEditMessageOptions,
-    Message,
-    InteractionResponse,
-    Channel,
-    BaseInteraction,
-    User,
-    Guild,
-    ApplicationCommand,
-    Client,
-    EmbedBuilder,
+import Discord, {
     ActionRowBuilder,
-    APIEmbed,
-    APIActionRowComponent,
-    APIApplicationCommand,
-    SlashCommandBuilder,
-    MessageReplyOptions,
-    ComponentType,
+    ApplicationCommand,
+    BaseInteraction,
+    Client,
     ComponentBuilder,
+    ComponentType,
+    EmbedBuilder,
+    Guild,
     GuildApplicationCommandManager,
-} = require('discord.js');
-const { prefix } = require('../config.json');
-const { keys } = require('./keys');
+    InteractionResponse,
+    Message,
+    MessagePayload,
+    SlashCommandBuilder,
+    User,
+} from 'discord.js';
+import config from '../config.json' assert { type: 'json' };
+import keys from './keys.js';
 
 /**
  * Adds methods that allow to respond with a translation key.
@@ -33,7 +23,7 @@ const { keys } = require('./keys');
  * @param {I} interaction
  * @returns {I & TranslatedResponses}
  */
-function addTranslatedResponses(interaction) {
+export function addTranslatedResponses(interaction) {
     interaction.replyTl = (key, ...placeholders) => replyTl(interaction, key, ...placeholders);
     interaction.replyOptions = options => replyOptions(interaction, options);
     return interaction;
@@ -43,7 +33,7 @@ function addTranslatedResponses(interaction) {
  * Default placeholders for discord.js structures.
  * @type {object}
  */
-const ph = {
+export const ph = {
 
     /**
      * Placeholders for an author.
@@ -85,7 +75,7 @@ const ph = {
      */
     interaction(interaction) {
         if(interaction instanceof Discord.Message) {
-            const args = interaction.content.slice(prefix.length).trim().split(/ +/);
+            const args = interaction.content.slice(config.prefix.length).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
 
             return {
@@ -111,7 +101,7 @@ const ph = {
 
     /**
      * Placeholders for a channel.
-     * @param {Channel} channel - The channel to get placeholders for.
+     * @param {Discord.Channel} channel - The channel to get placeholders for.
      * @returns {{}|{channel_name: string, channel_timestamp: `<t:${bigint}>`, channel_description: string, channel_id: string}}
      */
     channel(channel) {
@@ -248,7 +238,7 @@ const ph = {
  * @param {...object} placeholders - The placeholders to add.
  * @returns {K}
  */
-function addPh(key, ...placeholders) {
+export function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
     if(typeof key === 'string') {
@@ -309,11 +299,11 @@ function addPh(key, ...placeholders) {
 /**
  * Reply to an interaction with a translation key.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|MessageReplyOptions} key - The translation key to reply with.
+ * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.WebhookEditMessageOptions|Discord.MessageReplyOptions} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Promise<?Message|?InteractionResponse>}
  */
-async function replyTl(interaction, key, ...placeholders) {
+export async function replyTl(interaction, key, ...placeholders) {
     // Log to console if interaction doesn't exist
     // noinspection JSUnresolvedVariable
     if(key?.console && !interaction) {
@@ -335,16 +325,16 @@ async function replyTl(interaction, key, ...placeholders) {
     if(key.console) console.log(addPh(key.console, placeholders));
 
     if(!key.embeds && !key.components && !key.files) return null; //If only console don't reply
-    return await replyOptions(interaction, options);
+    return replyOptions(interaction, options);
 }
 
 /**
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {string|MessagePayload|InteractionReplyOptions|WebhookEditMessageOptions|MessageReplyOptions} options - The options to reply with.
+ * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.WebhookEditMessageOptions|Discord.MessageReplyOptions} options - The options to reply with.
  * @returns {Promise<Message>|Message}
  */
-async function replyOptions(interaction, options) {
+export async function replyOptions(interaction, options) {
     function handleError(err) {
         console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { 'interaction': interaction }));
         try {
@@ -371,11 +361,11 @@ async function replyOptions(interaction, options) {
 
 /**
  * Get an embed builder from a language key.
- * @param {APIEmbed|{embeds: APIEmbed[]}} key - The language key to get the embed from.
+ * @param {Discord.APIEmbed|{embeds: Discord.APIEmbed[]}} key - The language key to get the embed from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
  * @returns {?EmbedBuilder}
  */
-function getEmbed(key, ...placeholders) {
+export function getEmbed(key, ...placeholders) {
     if(!key) {
         console.error(keys.api.messages.errors.no_embed_key.console);
         return null;
@@ -408,11 +398,11 @@ function getEmbed(key, ...placeholders) {
 
 /**
  * Get action row builders from a language key.
- * @param {APIActionRowComponent} key - The language key to get the action row from.
+ * @param {Discord.APIActionRowComponent} key - The language key to get the action row from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
  * @returns {ActionRowBuilder[]}
  */
-function getActionRows(key, ...placeholders) {
+export function getActionRows(key, ...placeholders) {
     if(!key) {
         console.error(keys.api.messages.errors.no_component_key.console);
         return [];
@@ -426,12 +416,12 @@ function getActionRows(key, ...placeholders) {
 
 /**
  * Get a component builder from a language key.
- * @param {AnyComponent|{components: AnyComponent[]}} key - The language key to get the component builder from.
+ * @param {Discord.AnyComponent|{components: Discord.AnyComponent[]}} key - The language key to get the component builder from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
  * @returns {?ComponentBuilder}
  */
-function getComponent(key, ...placeholders) {
-    /** @type {AnyComponent} */
+export function getComponent(key, ...placeholders) {
+    /** @type {Discord.AnyComponent} */
     let component = key;
 
     //Get first component
@@ -509,7 +499,7 @@ function getComponent(key, ...placeholders) {
  * @param {object} placeholders - The placeholders to replace in the language key.
  * @returns {Discord.MessageReplyOptions|Discord.InteractionReplyOptions}
  */
-function getReplyOptions(key, ...placeholders) {
+export function getReplyOptions(key, ...placeholders) {
     if(!key) {
         console.error(keys.api.messages.errors.no_reply_key.console);
         return;
@@ -524,10 +514,10 @@ function getReplyOptions(key, ...placeholders) {
 
 /**
  * Get a command builder from a language key.
- * @param {APIApplicationCommand} key - The language key to get the command builder from.
+ * @param {Discord.APIApplicationCommand} key - The language key to get the command builder from.
  * @returns {?SlashCommandBuilder}
  */
-function getCommand(key) {
+export function getCommand(key) {
     if(!key) {
         console.error(keys.api.messages.errors.no_command_key.console);
         return null;
@@ -735,7 +725,7 @@ function addSlashCommandOption(builder, key) {
  * @param {ComponentBuilder[]} components - The components to create action rows from.
  * @returns {ActionRowBuilder[]}
  */
-function createActionRows(components) {
+export function createActionRows(components) {
     if(!components || components.length === 0) return [];
 
     const actionRows = [];
@@ -762,7 +752,7 @@ function createActionRows(components) {
  * @param {string} name - The name of the command to search for.
  * @returns {Promise<ApplicationCommand>}
  */
-async function fetchCommand(commandManager, name) {
+export async function fetchCommand(commandManager, name) {
     let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
     if(!slashCommand) {
         const commands = await commandManager.fetch();
@@ -770,16 +760,3 @@ async function fetchCommand(commandManager, name) {
     }
     return slashCommand;
 }
-
-module.exports = {
-    ph,
-    addPh,
-    getEmbed,
-    getCommand,
-    getActionRows,
-    getComponent,
-    getReplyOptions,
-    createActionRows,
-    addTranslatedResponses,
-    fetchCommand,
-};

@@ -1,11 +1,11 @@
-const Discord = require('discord.js');
-const { getEmbed, ph, getComponent, addTranslatedResponses } = require('../../api/messages');
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const utils = require('../../api/utils');
-const Pagination = require('../../structures/helpers/Pagination');
+import Discord from 'discord.js';
+import { addTranslatedResponses, getComponent, getEmbed, ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import utils from '../../api/utils.js';
+import Pagination from '../../structures/helpers/Pagination.js';
 
-class Chatchannel extends Command {
+export default class Chatchannel extends Command {
 
     constructor() {
         super({
@@ -148,5 +148,3 @@ class Chatchannel extends Command {
         }
     }
 }
-
-module.exports = Chatchannel;

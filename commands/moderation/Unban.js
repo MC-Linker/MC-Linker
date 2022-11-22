@@ -1,8 +1,8 @@
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const utils = require('../../api/utils');
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import utils from '../../api/utils.js';
 
-class Unban extends Command {
+export default class Unban extends Command {
 
     constructor() {
         super({
@@ -25,5 +25,3 @@ class Unban extends Command {
         return interaction.replyTl(keys.commands.unban.success, { username: user.username, warning });
     }
 }
-
-module.exports = Unban;

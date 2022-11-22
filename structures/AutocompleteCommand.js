@@ -1,7 +1,7 @@
-const { AutocompleteInteraction, CommandInteraction } = require('discord.js');
-const Command = require('./Command');
+import { AutocompleteInteraction, CommandInteraction } from 'discord.js';
+import Command from './Command.js';
 
-class AutocompleteCommand extends Command {
+export default class AutocompleteCommand extends Command {
 
     /**
      * @inheritDoc
@@ -28,5 +28,3 @@ class AutocompleteCommand extends Command {
     }
 
 }
-
-module.exports = AutocompleteCommand;

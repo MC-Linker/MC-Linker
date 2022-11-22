@@ -1,7 +1,7 @@
-const { createUUIDv3 } = require('../api/utils');
-const Connection = require('./Connection');
+import { createUUIDv3 } from '../api/utils.js';
+import Connection from './Connection.js';
 
-class UserConnection extends Connection {
+export default class UserConnection extends Connection {
     /**
      * @typedef {object} UserConnectionData - The data for a user connection.
      * @property {string} id - The id of the user.
@@ -65,5 +65,3 @@ class UserConnection extends Connection {
         };
     }
 }
-
-module.exports = UserConnection;

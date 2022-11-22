@@ -1,12 +1,9 @@
-const {
-    ButtonBuilder,
-    BaseMessageOptions,
-    BaseInteraction, ComponentType, ActionRowBuilder,
-} = require('discord.js');
-const utils = require('../../api/messages');
-const DefaultButton = require('../DefaultButton');
+import { ActionRowBuilder, BaseInteraction, ButtonBuilder, ComponentType } from 'discord.js';
+import utils from '../../api/utils.js';
+import DefaultButton from '../DefaultButton.js';
+import { createActionRows } from '../../api/messages.js';
 
-class Pagination {
+export default class Pagination {
 
     /**
      * @typedef {Object} PaginationOptions
@@ -18,7 +15,7 @@ class Pagination {
     /**
      * @typedef  {Object} PaginationPage
      * @property {ButtonBuilder} button - The button that points to this page
-     * @property {BaseMessageOptions} page - The page to send
+     * @property {Discord.BaseMessageOptions} page - The page to send
      * @property {boolean} [startPage=false] - Whether this is the starting page
      * @property {ButtonOptions} [buttonOptions] - Additional options that will be passed to the constructor of the button
      */
@@ -107,7 +104,7 @@ class Pagination {
 
         const oldComponents = startingPage.components ?? []; //Save old components
         //Send starting message
-        startingPage.components = utils.createActionRows(allComponents);
+        startingPage.components = createActionRows(allComponents);
         const message = await this.interaction.replyOptions(startingPage);
         startingPage.components = oldComponents; //Reset components
 
@@ -160,5 +157,3 @@ class Pagination {
         page.components = oldComponents; //Reset components
     }
 }
-
-module.exports = Pagination;

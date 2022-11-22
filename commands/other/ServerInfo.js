@@ -1,18 +1,16 @@
-const Command = require('../../structures/Command');
-const { keys } = require('../../api/keys');
-const Protocol = require('../../structures/Protocol');
-const Discord = require('discord.js');
-const utils = require('../../api/utils');
-const { addPh, getComponent, getReplyOptions, getEmbed } = require('../../api/messages');
-const Canvas = require('skia-canvas');
-const fs = require('fs-extra');
-const Pagination = require('../../structures/helpers/Pagination');
-const { unraw } = require('unraw');
+import Command from '../../structures/Command.js';
+import keys from '../../api/keys.js';
+import { FilePath } from '../../structures/Protocol.js';
+import Discord from 'discord.js';
+import utils from '../../api/utils.js';
+import { addPh, getComponent, getEmbed, getReplyOptions } from '../../api/messages.js';
+import gamerules from '../../resources/data/gamerules.json' assert { type: 'json' };
+import { unraw } from 'unraw';
+import Pagination from '../../structures/helpers/Pagination.js';
+import fs from 'fs-extra';
+import Canvas from 'skia-canvas';
 
-const gamerules = require('../../resources/data/gamerules.json');
-
-
-class ServerInfo extends Command {
+export default class ServerInfo extends Command {
 
     constructor() {
         super({
@@ -28,8 +26,8 @@ class ServerInfo extends Command {
         const batch = await server.protocol.startBatch();
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
 
-        let serverProperties = await server.protocol.get(...Protocol.FilePath.ServerProperties(server.path, server.id));
-        let levelDat = await server.protocol.get(...Protocol.FilePath.LevelDat(server.worldPath, server.id));
+        let serverProperties = await server.protocol.get(...FilePath.ServerProperties(server.path, server.id));
+        let levelDat = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
             404: addPh(keys.api.command.errors.could_not_download, { category: 'server-info' }),
         })) return await server.protocol.endBatch();
@@ -38,7 +36,7 @@ class ServerInfo extends Command {
         if(!datObject) return await server.protocol.endBatch();
         const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
 
-        let serverIcon = await server.protocol.get(...Protocol.FilePath.ServerIcon(server.path, server.id));
+        let serverIcon = await server.protocol.get(...FilePath.ServerIcon(server.path, server.id));
 
         let operators = [];
         let whitelistedUsers = [];
@@ -49,12 +47,12 @@ class ServerInfo extends Command {
         let datapacks = [];
         const isAdmin = interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator);
         if(isAdmin) {
-            operators = await server.protocol.get(...Protocol.FilePath.Operators(server.path, server.id));
-            whitelistedUsers = await server.protocol.get(...Protocol.FilePath.Whitelist(server.path, server.id));
-            bannedUsers = await server.protocol.get(...Protocol.FilePath.BannedPlayers(server.path, server.id));
-            bannedIPs = await server.protocol.get(...Protocol.FilePath.BannedIPs(server.path, server.id));
-            plugins = await server.protocol.list(Protocol.FilePath.Plugins(server.path));
-            mods = await server.protocol.list(Protocol.FilePath.Mods(server.path));
+            operators = await server.protocol.get(...FilePath.Operators(server.path, server.id));
+            whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.path, server.id));
+            bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.path, server.id));
+            bannedIPs = await server.protocol.get(...FilePath.BannedIPs(server.path, server.id));
+            plugins = await server.protocol.list(FilePath.Plugins(server.path));
+            mods = await server.protocol.list(FilePath.Mods(server.path));
 
             operators = operators?.status === 200 ? JSON.parse(operators.data.toString('utf-8')) : null;
             whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString('utf-8')) : null;
@@ -205,5 +203,3 @@ class ServerInfo extends Command {
         return pagination.start();
     }
 }
-
-module.exports = ServerInfo;

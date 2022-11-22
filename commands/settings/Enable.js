@@ -1,9 +1,9 @@
-const utils = require('../../api/utils');
-const { ph } = require('../../api/messages');
-const { keys } = require('../../api/keys');
-const AutocompleteCommand = require('../../structures/AutocompleteCommand');
+import utils from '../../api/utils.js';
+import { ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
+import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 
-class Enable extends AutocompleteCommand {
+export default class Enable extends AutocompleteCommand {
 
     constructor() {
         super({
@@ -91,5 +91,3 @@ class Enable extends AutocompleteCommand {
         return interaction.replyTl(keys.commands.enable.success, { type, 'enable': formattedToEnable });
     }
 }
-
-module.exports = Enable;
