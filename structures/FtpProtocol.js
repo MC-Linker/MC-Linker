@@ -1,9 +1,9 @@
-const Protocol = require('./Protocol');
-const FtpClient = require('./ftp/FtpClient');
-const SftpClient = require('./ftp/SftpClient');
-const fs = require('fs-extra');
+import Protocol from './Protocol.js';
+import FtpClient from './ftp/FtpClient.js';
+import SftpClient from './ftp/SftpClient.js';
+import fs from 'fs-extra';
 
-class FtpProtocol extends Protocol {
+export default class FtpProtocol extends Protocol {
 
     /**
      * @typedef {object} FtpProtocolData
@@ -204,5 +204,3 @@ class FtpProtocol extends Protocol {
         }
     }
 }
-
-module.exports = FtpProtocol;

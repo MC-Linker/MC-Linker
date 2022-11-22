@@ -1,10 +1,10 @@
-const UserConnection = require('./UserConnection');
-const ConnectionManager = require('./ConnectionManager');
-const { fetchUUID, createUUIDv3 } = require('../api/utils');
-const Discord = require('discord.js');
-const fs = require('fs-extra');
+import UserConnection from './UserConnection.js';
+import ConnectionManager from './ConnectionManager.js';
+import { createUUIDv3, fetchUUID } from '../api/utils.js';
+import Discord from 'discord.js';
+import fs from 'fs-extra';
 
-class UserConnectionManager extends ConnectionManager {
+export default class UserConnectionManager extends ConnectionManager {
 
     /**
      * Creates a new UserConnectionManager instance.
@@ -71,5 +71,3 @@ class UserConnectionManager extends ConnectionManager {
         await fs.writeJson(this.usageFile, usage, { spaces: 2 });
     }
 }
-
-module.exports = UserConnectionManager;

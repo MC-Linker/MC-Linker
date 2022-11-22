@@ -1,9 +1,9 @@
-const Command = require('../../structures/Command');
-const { keys } = require('../../api/keys');
-const utils = require('../../api/utils');
-const Discord = require('discord.js');
+import Command from '../../structures/Command.js';
+import keys from '../../api/keys.js';
+import utils from '../../api/utils.js';
+import Discord from 'discord.js';
 
-class Account extends Command {
+export default class Account extends Command {
 
     constructor() {
         super({
@@ -48,5 +48,3 @@ class Account extends Command {
         }
     }
 }
-
-module.exports = Account;

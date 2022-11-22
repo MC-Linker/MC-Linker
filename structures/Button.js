@@ -1,9 +1,8 @@
-const { ButtonInteraction } = require('discord.js');
-const { ph } = require('../api/messages');
-const { keys } = require('../api/keys');
-const { PermissionsBitField, User } = require('discord.js');
+import { ButtonInteraction, PermissionsBitField, User } from 'discord.js';
+import { ph } from '../api/messages.js';
+import keys from '../api/keys.js';
 
-class Button {
+export default class Button {
 
     /**
      * @typedef {Object} ButtonOptions
@@ -85,5 +84,3 @@ class Button {
         return true;
     }
 }
-
-module.exports = Button;

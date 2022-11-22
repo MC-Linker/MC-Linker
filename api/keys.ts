@@ -6,12 +6,14 @@ import {
     MessageReplyOptions,
     WebhookEditMessageOptions,
 } from 'discord.js';
+import keysFile from '../resources/languages/expanded/en_us.json' assert { type: 'json' };
 
-const keysFile = require('../resources/languages/expanded/en_us.json');
-export const keys = keysFile;
+const keys = keysFile;
 
 export interface TranslatedResponses {
     replyTl(key: string, ...placeholders: Object[]): Promise<Message | InteractionResponse>,
 
     replyOptions(options: string | MessagePayload | InteractionReplyOptions | WebhookEditMessageOptions | MessageReplyOptions): Promise<Message | InteractionResponse>,
 }
+
+export default keys;

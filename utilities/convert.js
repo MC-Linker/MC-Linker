@@ -1,6 +1,6 @@
 // Converts old server- and user data to the new format.
-const fs = require('fs-extra');
-const path = require('path');
+import fs from 'fs-extra';
+import path from 'path';
 
 const serverFolders = fs.readdirSync('./serverdata/connections');
 for(const folder of serverFolders) {

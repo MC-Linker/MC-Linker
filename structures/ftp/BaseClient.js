@@ -1,4 +1,4 @@
-class BaseClient {
+export default class BaseClient {
 
     /**
      * @typedef {object} Credentials
@@ -97,5 +97,3 @@ class BaseClient {
         throw new Error('Not implemented.');
     }
 }
-
-module.exports = BaseClient;

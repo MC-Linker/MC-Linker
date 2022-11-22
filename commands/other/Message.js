@@ -1,8 +1,8 @@
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const utils = require('../../api/utils');
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import utils from '../../api/utils.js';
 
-class Message extends Command {
+export default class Message extends Command {
 
     constructor() {
         super({
@@ -30,5 +30,3 @@ class Message extends Command {
         return interaction.replyTl(keys.commands.message.success, argPlaceholder, { warning });
     }
 }
-
-module.exports = Message;

@@ -1,9 +1,9 @@
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const utils = require('../../api/utils');
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import utils from '../../api/utils.js';
 
 // noinspection JSClassNamingConvention
-class Op extends Command {
+export default class Op extends Command {
 
     constructor() {
         super({
@@ -26,7 +26,3 @@ class Op extends Command {
         return interaction.replyTl(keys.commands.op.success, { username: user.username, warning });
     }
 }
-
-module.exports = Op;
-
-

@@ -1,7 +1,6 @@
-const Protocol = require('./Protocol');
-const fs = require('fs-extra');
-const fetch = require('node-fetch');
-
+import Protocol from './Protocol.js';
+import fs from 'fs-extra';
+import fetch from 'node-fetch';
 
 /**
  * API routes for the plugin protocol
@@ -138,7 +137,7 @@ const PluginRoutes = {
 };
 
 
-class PluginProtocol extends Protocol {
+export default class PluginProtocol extends Protocol {
 
     /**
      * @typedef {object} PluginProtocolData
@@ -418,5 +417,3 @@ async function fetchToProtocolResponse(response) {
         data: await response.json(),
     };
 }
-
-module.exports = PluginProtocol;

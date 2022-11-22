@@ -1,15 +1,15 @@
-const Discord = require('discord.js');
-const ServerConnectionManager = require('./ServerConnectionManager');
-const UserConnectionManager = require('./UserConnectionManager');
-const SettingsConnectionManager = require('./SettingsConnectionManager');
-const fs = require('fs-extra');
-const { addPh } = require('../api/messages');
-const { keys } = require('../api/keys');
-const path = require('path');
-const Command = require('./Command');
-const Button = require('./Button');
+import Discord from 'discord.js';
+import ServerConnectionManager from './ServerConnectionManager.js';
+import UserConnectionManager from './UserConnectionManager.js';
+import SettingsConnectionManager from './SettingsConnectionManager.js';
+import fs from 'fs-extra';
+import { addPh } from '../api/messages.js';
+import keys from '../api/keys.js';
+import path from 'path';
+import Command from './Command.js';
+import Button from './Button.js';
 
-class MCLinker extends Discord.Client {
+export default class MCLinker extends Discord.Client {
 
     /**
      * The user-connection manager for the bot.
@@ -112,16 +112,16 @@ class MCLinker extends Discord.Client {
             const commandFiles = (await fs.readdir(`${this.commandPath}/${category}`))
                 .filter(file => file.endsWith('.js'));
 
-            for(const file of commandFiles) loadCommand.call(this, file, category);
+            for(const file of commandFiles) await loadCommand.call(this, file, category);
         }
 
-        function loadCommand(file, category = null) {
+        async function loadCommand(file, category = null) {
             // noinspection LocalVariableNamingConventionJS
-            const CommandFile = category ?
-                require(path.resolve(`${this.commandPath}/${category}/${file}`)) :
-                require(path.resolve(`${this.commandPath}/${file}`));
+            const { default: CommandFile } = category ?
+                await import(`file://${path.resolve(`${this.commandPath}/${category}/${file}`)}`) :
+                await import(`file://${path.resolve(`${this.commandPath}/${file}`)}`);
 
-            if(CommandFile.prototype instanceof Command) {
+            if(CommandFile?.prototype instanceof Command) {
                 const command = new CommandFile();
 
                 this.commands.set(command.name, command);
@@ -139,7 +139,7 @@ class MCLinker extends Discord.Client {
 
         for(const file of buttonFiles) {
             // noinspection LocalVariableNamingConventionJS
-            const ButtonFile = require(path.resolve(`${this.buttonPath}/${file}`));
+            const ButtonFile = await import(`file://${path.resolve(`${this.buttonPath}/${file}`)}`);
             if(ButtonFile.prototype instanceof Button) {
                 const button = new ButtonFile();
 
@@ -166,5 +166,3 @@ class MCLinker extends Discord.Client {
         console.log('Loaded all buttons.');
     }
 }
-
-module.exports = MCLinker;

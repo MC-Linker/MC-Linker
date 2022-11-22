@@ -1,11 +1,10 @@
-const { discordLink } = require('../config.json');
-const { ph, addPh, getEmbed, getActionRows } = require('../api/messages');
-const { keys } = require('../api/keys');
-const Command = require('../structures/Command');
-const { fetchCommand } = require('../api/messages');
-const { ApplicationCommandOptionType, ApplicationCommandSubCommand, ApplicationCommand } = require('discord.js');
+import config from '../config.json' assert { type: 'json' };
+import { addPh, fetchCommand, getActionRows, getEmbed, ph } from '../api/messages.js';
+import keys from '../api/keys.js';
+import Command from '../structures/Command.js';
+import Discord, { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
 
-class Help extends Command {
+export default class Help extends Command {
 
     constructor() {
         super({
@@ -24,13 +23,13 @@ class Help extends Command {
         const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
         if(!commandName || commandName === 'help') {
             helpEmbed.addFields(addPh(keys.commands.help.success.no_args.embeds[0].fields,
-                { 'invite_link': discordLink },
+                { 'invite_link': config.discordLink },
                 await ph.allCommands(client),
             ));
             return interaction.replyOptions({ embeds: [helpEmbed] });
         }
 
-        let command = keys.data[commandName];
+        const command = keys.data[commandName];
         if(!command) {
             const commands = client.commands.filter(c => c.category === commandName);
 
@@ -51,13 +50,15 @@ class Help extends Command {
 
             helpEmbed.addFields(addPh(
                 keys.commands.help.success.category.embeds[0].fields[1],
-                { 'invite_link': discordLink },
+                { 'invite_link': config.discordLink },
             ));
 
             return interaction.replyOptions({ embeds: [helpEmbed] });
         }
         else {
-            const slashCommand = await fetchCommand(client.application.commands, command.name);
+            const commandManager = client.user.flags.has(Discord.UserFlags.VerifiedBot)
+                ? client.application.commands : interaction.guild.commands;
+            const slashCommand = await fetchCommand(commandManager, command.name);
             const commandUsage = getCommandUsage(slashCommand);
 
             // noinspection JSUnresolvedVariable
@@ -67,7 +68,7 @@ class Help extends Command {
                 {
                     'command_long_description': command.long_description,
                     'command_usage': commandUsage,
-                    'invite_link': discordLink,
+                    'invite_link': config.discordLink,
                 },
                 await ph.commandName(commandName, client),
             ));
@@ -91,7 +92,7 @@ class Help extends Command {
             }
 
             /**
-             * @param {ApplicationCommand|ApplicationCommandSubCommand} command
+             * @param {ApplicationCommand|Discord.ApplicationCommandSubCommand} command
              * @returns {string}
              */
             function getCommandUsage(command) {
@@ -115,5 +116,3 @@ class Help extends Command {
         }
     }
 }
-
-module.exports = Help;

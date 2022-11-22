@@ -1,13 +1,14 @@
-const Canvas = require('skia-canvas');
-const Discord = require('discord.js');
-const fetch = require('node-fetch');
-const mcData = require('minecraft-data')('1.19.2');
-const { addPh, getEmbed, ph, getComponent, createActionRows } = require('../../api/messages');
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const Protocol = require('../../structures/Protocol');
-const utils = require('../../api/utils');
-const { fetchUUID } = require('../../api/utils');
+import Canvas from 'skia-canvas';
+import Discord from 'discord.js';
+import fetch from 'node-fetch';
+import minecraft_data from 'minecraft-data';
+import { addPh, createActionRows, getComponent, getEmbed, ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import { FilePath } from '../../structures/Protocol.js';
+import utils, { fetchUUID } from '../../api/utils.js';
+
+const mcData = minecraft_data('1.19.2');
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -75,7 +76,7 @@ const armorSlotNames = {
     45: keys.commands.inventory.slots.offhand,
 };
 
-class Inventory extends Command {
+export default class Inventory extends Command {
 
     constructor() {
         super({
@@ -90,15 +91,14 @@ class Inventory extends Command {
 
         const user = args[0];
         const showDetails = args[1];
-
-        const nbtFile = await server.protocol.get(Protocol.FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
+        const nbtFile = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
         if(!await utils.handleProtocolResponse(
             nbtFile, server.protocol, interaction, {
                 404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' }),
             },
         )) return;
 
-        let playerData = await utils.nbtBufferToObject(nbtFile.data, interaction);
+        const playerData = await utils.nbtBufferToObject(nbtFile.data, interaction);
         if(!playerData) return;
 
         //Convert slots to network slots
@@ -518,5 +518,3 @@ function dataSlotToNetworkSlot(index) {
         index -= 79;
     return index;
 }
-
-module.exports = Inventory;

@@ -1,12 +1,14 @@
-const utils = require('../../api/utils');
-const mcData = require('minecraft-data')('1.19.2');
-const { time } = require('discord.js');
-const { ph, addPh, getEmbed } = require('../../api/messages');
-const { keys } = require('../../api/keys');
-const AutocompleteCommand = require('../../structures/AutocompleteCommand');
-const Protocol = require('../../structures/Protocol');
+import utils from '../../api/utils.js';
+import minecraft_data from 'minecraft-data';
+import { time } from 'discord.js';
+import { addPh, getEmbed, ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
+import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
+import { FilePath } from '../../structures/Protocol.js';
 
-class Advancements extends AutocompleteCommand {
+const mcData = minecraft_data('1.19.2');
+
+export default class Advancements extends AutocompleteCommand {
 
     constructor() {
         super({
@@ -60,7 +62,7 @@ class Advancements extends AutocompleteCommand {
             );
         }
 
-        const amFile = await server.protocol.get(Protocol.FilePath.Advancements(server.worldPath, user.uuid), `./userdata/advancements/${user.uuid}.json`);
+        const amFile = await server.protocol.get(FilePath.Advancements(server.worldPath, user.uuid), `./userdata/advancements/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(
             amFile, server.protocol, interaction, {
                 404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' }),
@@ -155,5 +157,3 @@ class Advancements extends AutocompleteCommand {
         }
     }
 }
-
-module.exports = Advancements;

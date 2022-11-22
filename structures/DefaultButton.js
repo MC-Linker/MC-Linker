@@ -1,6 +1,6 @@
-const Button = require('./Button');
+import Button from './Button.js';
 
-class DefaultButton extends Button {
+export default class DefaultButton extends Button {
 
     /**
      * @param {ButtonOptions} options - The options for this button
@@ -20,5 +20,3 @@ class DefaultButton extends Button {
         return await this.handler(interaction, client, server);
     }
 }
-
-module.exports = DefaultButton;

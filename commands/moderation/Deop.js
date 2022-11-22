@@ -1,8 +1,8 @@
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const utils = require('../../api/utils');
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import utils from '../../api/utils.js';
 
-class Deop extends Command {
+export default class Deop extends Command {
 
     constructor() {
         super({
@@ -25,5 +25,3 @@ class Deop extends Command {
         return interaction.replyTl(keys.commands.deop.success, { username: user.username, warning });
     }
 }
-
-module.exports = Deop;

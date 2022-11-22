@@ -1,8 +1,8 @@
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const utils = require('../../api/utils');
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import utils from '../../api/utils.js';
 
-class Gamemode extends Command {
+export default class Gamemode extends Command {
 
     constructor() {
         super({
@@ -30,5 +30,3 @@ class Gamemode extends Command {
         });
     }
 }
-
-module.exports = Gamemode;

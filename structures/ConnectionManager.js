@@ -1,7 +1,7 @@
-const { CachedManager } = require('discord.js');
-const fs = require('fs-extra');
+import { CachedManager } from 'discord.js';
+import fs from 'fs-extra';
 
-class ConnectionManager extends CachedManager {
+export default class ConnectionManager extends CachedManager {
 
     /**
      * The server connection cache of this manager.
@@ -85,5 +85,3 @@ class ConnectionManager extends CachedManager {
         }
     }
 }
-
-module.exports = ConnectionManager;

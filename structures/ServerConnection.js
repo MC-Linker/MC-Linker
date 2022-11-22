@@ -1,8 +1,8 @@
-const Connection = require('./Connection');
-const PluginProtocol = require('./PluginProtocol');
-const FtpProtocol = require('./FtpProtocol');
+import Connection from './Connection.js';
+import PluginProtocol from './PluginProtocol.js';
+import FtpProtocol from './FtpProtocol.js';
 
-class ServerConnection extends Connection {
+export default class ServerConnection extends Connection {
 
     /**
      * @typedef {object} ChatChannelData - The data for a chatchannel.
@@ -235,5 +235,3 @@ class ServerConnection extends Connection {
         return this.protocol instanceof PluginProtocol;
     }
 }
-
-module.exports = ServerConnection;

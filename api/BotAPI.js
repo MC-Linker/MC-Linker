@@ -1,13 +1,12 @@
 // noinspection HttpUrlsUsage
-const Fastify = require('fastify');
-const { FastifyInstance } = require('fastify');
-const utils = require('./utils');
-const { ph, getEmbed, addPh } = require('./messages');
-const { keys } = require('./keys');
-const { botPort, pluginVersion } = require('../config.json');
-const PluginProtocol = require('../structures/PluginProtocol');
+import Fastify from 'fastify';
+import utils from './utils.js';
+import { addPh, getEmbed, ph } from './messages.js';
+import keys from './keys.js';
+import config from '../config.json' assert { type: 'json' };
+import PluginProtocol from '../structures/PluginProtocol.js';
 
-class BotAPI {
+export default class BotAPI {
     constructor(client) {
 
         /**
@@ -18,7 +17,7 @@ class BotAPI {
 
         /**
          * The fastify instance for the api.
-         * @type {FastifyInstance}
+         * @type {import('fastify').FastifyInstance}
          */
         this.fastify = Fastify();
     }
@@ -152,16 +151,14 @@ class BotAPI {
         });
 
         //Returns latest version
-        this.fastify.get('/version', () => pluginVersion);
+        this.fastify.get('/version', () => config.pluginVersion);
         //Root endpoint
         this.fastify.get('/', () => keys.api.plugin.success.root_response);
 
-        this.fastify.listen({ port: botPort, host: '0.0.0.0' }, (err, address) => {
+        this.fastify.listen({ port: config.botPort, host: '0.0.0.0' }, (err, address) => {
             if(err) throw err;
             console.log(addPh(keys.api.plugin.success.listening.console, { address }));
         });
         return this.fastify;
     }
 }
-
-module.exports = BotAPI;

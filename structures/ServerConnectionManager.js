@@ -1,8 +1,8 @@
-const ServerConnection = require('./ServerConnection');
-const ConnectionManager = require('./ConnectionManager');
-const fs = require('fs-extra');
+import ServerConnection from './ServerConnection.js';
+import ConnectionManager from './ConnectionManager.js';
+import fs from 'fs-extra';
 
-class ServerConnectionManager extends ConnectionManager {
+export default class ServerConnectionManager extends ConnectionManager {
 
     /**
      * Creates a new ServerConnectionManager instance.
@@ -39,5 +39,3 @@ class ServerConnectionManager extends ConnectionManager {
         }
     }
 }
-
-module.exports = ServerConnectionManager;
