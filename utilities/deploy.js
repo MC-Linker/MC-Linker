@@ -2,7 +2,7 @@
 import { REST, Routes } from 'discord.js';
 import { clientId, guildId, token } from '../config.json' assert { type: 'json' };
 import { getCommand } from '../api/messages.js';
-import keys from '../api/keys.js';
+import keys from '../api/keys';
 import fs from 'fs-extra';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';

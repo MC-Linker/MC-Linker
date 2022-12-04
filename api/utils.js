@@ -11,7 +11,7 @@ import fetch from 'node-fetch';
 import crypto from 'crypto';
 import minecraft_data from 'minecraft-data';
 import FtpProtocol from '../structures/FtpProtocol.js';
-import keys from './keys.js';
+import keys from './keys';
 import advancementData from '../resources/data/advancements.json' assert { type: 'json' };
 import customStats from '../resources/data/stats_custom.json' assert { type: 'json' };
 import nbt from 'prismarine-nbt';

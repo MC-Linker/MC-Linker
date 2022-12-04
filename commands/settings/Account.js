@@ -1,5 +1,5 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
+import keys from '../../api/keys';
 import utils from '../../api/utils.js';
 import Discord from 'discord.js';
 

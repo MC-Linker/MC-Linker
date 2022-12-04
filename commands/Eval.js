@@ -3,7 +3,7 @@ import Discord from 'discord.js';
 import { Console } from 'console';
 import { Duplex } from 'stream';
 import { ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import keys from '../api/keys';
 import config from '../config.json' assert { type: 'json' };
 import Command from '../structures/Command.js';
 

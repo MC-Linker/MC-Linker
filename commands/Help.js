@@ -1,6 +1,6 @@
 import config from '../config.json' assert { type: 'json' };
 import { addPh, fetchCommand, getActionRows, getEmbed, ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import keys from '../api/keys';
 import Command from '../structures/Command.js';
 import Discord, { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
 

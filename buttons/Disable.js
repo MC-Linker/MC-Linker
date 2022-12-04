@@ -1,6 +1,6 @@
 import Discord, { EmbedBuilder, PermissionsBitField } from 'discord.js';
 import { getActionRows, ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import keys from '../api/keys';
 import Button from '../structures/Button.js';
 
 export default class Disable extends Button {

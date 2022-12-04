@@ -2,7 +2,7 @@ import utils from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import { time } from 'discord.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import keys from '../../api/keys';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
 

@@ -1,12 +1,13 @@
 // noinspection JSUnresolvedVariable
 import { addPh, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import keys from '../../api/keys';
 import utils, { getUsersFromMention } from '../../api/utils.js';
 import Discord from 'discord.js';
 import nbt from 'prismarine-nbt';
 import minecraft_data from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };
+import { FilePath } from '../../structures/Protocol.js';
 
 const mcData = minecraft_data('1.19.2');
 
@@ -297,7 +298,7 @@ async function getPlaceholder(key, args) {
             break;
         case 'disabled_datapacks':
         case 'enabled_datapacks':
-            const level = await getNBTFile(FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
+            const level = await getNBTFile(...FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
 
             let datapacks = level?.Data?.DataPacks;
             if(key === 'enabled_datapacks') placeholder = datapacks?.Enabled;
@@ -311,7 +312,7 @@ async function getPlaceholder(key, args) {
         case 'player_coordinates_xz':
             const uuid = userConn?.uuid;
             if(!uuid) return {};
-            const playerData = await getNBTFile(FilePath.PlayerData(server?.path, uuid), `./userdata/playernbt/${uuid}.dat`);
+            const playerData = await getNBTFile(...FilePath.PlayerData(server?.path, uuid), `./userdata/playernbt/${uuid}.dat`);
 
             const [x, y, z] = playerData?.Pos;
             if(!x || !z || !y) return {};
@@ -690,12 +691,12 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'scoreboards':
-            const scoreboards = await getNBTFile(FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
+            const scoreboards = await getNBTFile(...FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
 
             placeholder = scoreboards?.data?.Objectives?.map(scoreboard => scoreboard.Name) ?? {};
             break;
         case 'bossbars':
-            const bossbars = await getNBTFile(FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
+            const bossbars = await getNBTFile(...FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
             if(!bossbars) return {};
 
             try {
@@ -3159,7 +3160,7 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'teams':
-            const teams = await getNBTFile(FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
+            const teams = await getNBTFile(...FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
 
             placeholder = teams?.data?.Teams?.map(team => team.Name) ?? {};
             break;

@@ -1,5 +1,5 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
+import keys from '../../api/keys';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
 import utils from '../../api/utils.js';
@@ -26,8 +26,8 @@ export default class ServerInfo extends Command {
         const batch = await server.protocol.startBatch();
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
 
-        let serverProperties = await server.protocol.get(...FilePath.ServerProperties(server.path, server.id));
-        let levelDat = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
+        const serverProperties = await server.protocol.get(...FilePath.ServerProperties(server.path, server.id));
+        const levelDat = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
             404: addPh(keys.api.command.errors.could_not_download, { category: 'server-info' }),
         })) return await server.protocol.endBatch();
@@ -36,7 +36,8 @@ export default class ServerInfo extends Command {
         if(!datObject) return await server.protocol.endBatch();
         const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
 
-        let serverIcon = await server.protocol.get(...FilePath.ServerIcon(server.path, server.id));
+        const serverIcon = await server.protocol.get(...FilePath.ServerIcon(server.path, server.id));
+        s;
 
         let operators = [];
         let whitelistedUsers = [];

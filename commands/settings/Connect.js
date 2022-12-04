@@ -1,10 +1,11 @@
 import crypto from 'crypto';
 import config from '../../config.json' assert { type: 'json' };
 import { addPh, addTranslatedResponses, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import keys from '../../api/keys';
 import Command from '../../structures/Command.js';
 import PluginProtocol from '../../structures/PluginProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
+import { FilePath } from '../../structures/Protocol.js';
 import utils from '../../api/utils.js';
 
 export default class Connect extends Command {
@@ -81,7 +82,7 @@ export default class Connect extends Command {
 
             const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
             const separator = serverPath.includes('/') ? '/' : '\\';
-            /** @type {ServerConnectionData} */
+            /** @type {FtpServerConnectionData} */
             const serverConnectionData = {
                 ip: host,
                 username,
@@ -103,7 +104,7 @@ export default class Connect extends Command {
             await interaction.replyTl(keys.commands.connect.success.ftp);
         }
         else if(method === 'plugin') {
-            let ip = args[1]?.split(':').shift();
+            const ip = args[1]?.split(':').shift();
             const port = args[2] ?? config.pluginPort;
 
             await this._disconnectOldPlugin(interaction, server);

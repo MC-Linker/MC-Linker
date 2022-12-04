@@ -1,6 +1,6 @@
 import utils from '../../api/utils.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import keys from '../../api/keys';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 
 export default class Disable extends AutocompleteCommand {
