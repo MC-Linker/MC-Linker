@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import { addTranslatedResponses, getComponent, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys';
+import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import utils from '../../api/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';

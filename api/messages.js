@@ -15,7 +15,7 @@ import Discord, {
     User,
 } from 'discord.js';
 import config from '../config.json' assert { type: 'json' };
-import keys from './keys';
+import keys from './keys.js';
 
 /**
  * Adds methods that allow to respond with a translation key.

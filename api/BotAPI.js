@@ -2,7 +2,7 @@
 import Fastify from 'fastify';
 import utils from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
-import keys from './keys';
+import keys from './keys.js';
 import config from '../config.json' assert { type: 'json' };
 import PluginProtocol from '../structures/PluginProtocol.js';
 

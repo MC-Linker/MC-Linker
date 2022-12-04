@@ -1,4 +1,4 @@
-import keys from '../../api/keys';
+import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import utils from '../../api/utils.js';
 

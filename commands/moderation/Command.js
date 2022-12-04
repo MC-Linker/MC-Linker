@@ -1,6 +1,6 @@
 // noinspection JSUnresolvedVariable
 import { addPh, ph } from '../../api/messages.js';
-import keys from '../../api/keys';
+import keys from '../../api/keys.js';
 import utils, { getUsersFromMention } from '../../api/utils.js';
 import Discord from 'discord.js';
 import nbt from 'prismarine-nbt';

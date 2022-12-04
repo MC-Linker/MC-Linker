@@ -3,7 +3,7 @@ import Discord from 'discord.js';
 import fetch from 'node-fetch';
 import minecraft_data from 'minecraft-data';
 import { addPh, createActionRows, getComponent, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys';
+import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import { FilePath } from '../../structures/Protocol.js';
 import utils, { fetchUUID } from '../../api/utils.js';

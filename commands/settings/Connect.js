@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import config from '../../config.json' assert { type: 'json' };
 import { addPh, addTranslatedResponses, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys';
+import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import PluginProtocol from '../../structures/PluginProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';

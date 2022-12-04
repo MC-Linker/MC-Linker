@@ -8,7 +8,7 @@ import Discord, {
     PermissionFlagsBits,
 } from 'discord.js';
 import { fetchCommand, ph } from '../api/messages.js';
-import keys from '../api/keys';
+import keys from '../api/keys.js';
 import config from '../config.json' assert { type: 'json' };
 
 export default class Command {

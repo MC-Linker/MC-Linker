@@ -4,7 +4,7 @@ import UserConnectionManager from './UserConnectionManager.js';
 import SettingsConnectionManager from './SettingsConnectionManager.js';
 import fs from 'fs-extra';
 import { addPh } from '../api/messages.js';
-import keys from '../api/keys';
+import keys from '../api/keys.js';
 import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';

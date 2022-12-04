@@ -10,7 +10,7 @@ import Discord from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
 import { getArgs } from './api/utils.js';
-import keys from './api/keys';
+import keys from './api/keys.js';
 import { addPh, addTranslatedResponses, ph } from './api/messages.js';
 import config from './config.json' assert { type: 'json' };
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
