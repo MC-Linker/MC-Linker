@@ -13,8 +13,11 @@
   "bugs": {
     "url": "https://github.com/MC-Linker/MC-Linker/issues"
   },
-  "type": "module",
   "homepage": "https://github.com/MC-Linker/MC-Linker#readme",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "discord.js": "^14.3.0",
     "fastify": "^4.5.3",
@@ -33,6 +36,7 @@
   },
   "devDependencies": {
     "lodash": "^4.17.21",
+    "typescript": "^4.9.3",
     "yargs": "^17.6.2"
   }
 }
