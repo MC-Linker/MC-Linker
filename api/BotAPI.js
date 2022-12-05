@@ -111,7 +111,7 @@ export default class BotAPI {
                         const regChannel = await server.protocol.addChatChannel({
                             types: channel.types,
                             webhook: webhook.id,
-                            id: guildId,
+                            id: channel.id,
                         });
                         if(!regChannel) {
                             discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });

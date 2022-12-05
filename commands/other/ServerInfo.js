@@ -19,7 +19,6 @@ export default class ServerInfo extends Command {
         });
     }
 
-
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
@@ -37,7 +36,6 @@ export default class ServerInfo extends Command {
         const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
 
         const serverIcon = await server.protocol.get(...FilePath.ServerIcon(server.path, server.id));
-        s;
 
         let operators = [];
         let whitelistedUsers = [];
@@ -116,7 +114,7 @@ export default class ServerInfo extends Command {
             name: 'server-icon.png',
             description: 'Server Icon',
         });
-        const serverListAttachment = new Discord.AttachmentBuilder(listCanvas.toBuffer('image/png'), {
+        const serverListAttachment = new Discord.AttachmentBuilder(await listCanvas.toBuffer('image/png'), {
             name: 'server-list.png',
             description: 'Server List',
         });

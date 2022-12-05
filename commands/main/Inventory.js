@@ -128,11 +128,12 @@ export default class Inventory extends Command {
         ctx.drawImage(skinImg, 70, 20, 65, 131);
 
         const invAttach = new Discord.AttachmentBuilder(
-            invCanvas.toBuffer('image/png'),
+            await invCanvas.toBuffer('image/png'),
             { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
         );
         const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(interaction), { username: user.username });
 
+        //@TODO implement pagination
         /** @type {Discord.InteractionReplyOptions} */
         const replyOptions = {
             files: [invAttach],
@@ -261,7 +262,7 @@ export default class Inventory extends Command {
                     );
 
                     const shulkerAttach = new Discord.AttachmentBuilder(
-                        shulkerImage.toBuffer('image/png'),
+                        await shulkerImage.toBuffer('image/png'),
                         { name: `Shulker_Contents.png`, description: keys.commands.inventory.shulker_description },
                     );
 
