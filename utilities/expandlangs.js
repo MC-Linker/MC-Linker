@@ -10,7 +10,7 @@ function convertKeys() {
         const keys = fs.readJsonSync(`../resources/languages/flat/${lang}`, 'utf-8');
 
         const converted = {};
-        for([key, value] of Object.entries(keys)) {
+        for(const [key, value] of Object.entries(keys)) {
             _.set(converted, key, value);
         }
 

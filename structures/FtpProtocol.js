@@ -123,6 +123,7 @@ export default class FtpProtocol extends Protocol {
             return FtpProtocol.dataToProtocolResponse(await fs.readFile(putPath));
         }
         catch(e) {
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(e);
         }
     }
@@ -138,6 +139,7 @@ export default class FtpProtocol extends Protocol {
             return FtpProtocol.dataToProtocolResponse(list);
         }
         catch(e) {
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(e);
         }
     }
@@ -153,6 +155,7 @@ export default class FtpProtocol extends Protocol {
             return FtpProtocol.dataToProtocolResponse({});
         }
         catch(e) {
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(e);
         }
     }
@@ -172,6 +175,7 @@ export default class FtpProtocol extends Protocol {
             return FtpProtocol.dataToProtocolResponse(foundFile);
         }
         catch(e) {
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(e);
         }
     }

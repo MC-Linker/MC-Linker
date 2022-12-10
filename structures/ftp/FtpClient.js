@@ -30,12 +30,17 @@ export default class FtpClient extends BaseClient {
 
     async get(source, destination) {
         return new Promise(async (resolve, reject) => {
-            await fs.ensureFile(destination);
-            const stream = await this.client.get(source);
+            try {
+                await fs.ensureFile(destination);
+                const stream = await this.client.get(source);
 
-            stream.once('close', () => resolve(true));
-            stream.once('error', reject);
-            stream.pipe(fs.createWriteStream(destination));
+                stream.once('close', () => resolve(true));
+                stream.once('error', reject);
+                stream.pipe(fs.createWriteStream(destination));
+            }
+            catch(err) {
+                reject(err);
+            }
         });
     }
 

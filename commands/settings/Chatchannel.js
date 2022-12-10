@@ -100,7 +100,7 @@ export default class Chatchannel extends Command {
             return interaction.replyTl(keys.commands.chatchannel.success.remove);
         }
         else if(method === 'list') {
-            if(!server.channels.length) {
+            if(!server?.channels?.length) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
             }
 
