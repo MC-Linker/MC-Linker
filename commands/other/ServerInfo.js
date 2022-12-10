@@ -114,7 +114,7 @@ export default class ServerInfo extends Command {
             name: 'server-icon.png',
             description: 'Server Icon',
         });
-        const serverListAttachment = new Discord.AttachmentBuilder(await listCanvas.toBuffer('image/png'), {
+        const serverListAttachment = new Discord.AttachmentBuilder(await listCanvas.toBuffer('png'), {
             name: 'server-list.png',
             description: 'Server List',
         });
@@ -169,7 +169,7 @@ export default class ServerInfo extends Command {
             },
             serverinfo_world: {
                 button: getComponent(keys.commands.serverinfo.success.world_button),
-                page: { embeds: [worldEmbed] },
+                page: { embeds: [worldEmbed], files: [] },
             },
         };
 
@@ -191,7 +191,7 @@ export default class ServerInfo extends Command {
 
             pages['serverinfo_admin'] = {
                 button: getComponent(keys.commands.serverinfo.success.admin_button),
-                page: { embeds: [adminEmbed] },
+                page: { embeds: [adminEmbed], files: [] },
                 buttonOptions: {
                     permissions: new Discord.PermissionsBitField(Discord.PermissionFlagsBits.Administrator),
                 },

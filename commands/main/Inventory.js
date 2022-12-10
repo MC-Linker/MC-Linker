@@ -2,11 +2,12 @@ import Canvas from 'skia-canvas';
 import Discord from 'discord.js';
 import fetch from 'node-fetch';
 import minecraft_data from 'minecraft-data';
-import { addPh, createActionRows, getComponent, getEmbed, ph } from '../../api/messages.js';
+import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import { FilePath } from '../../structures/Protocol.js';
 import utils, { fetchUUID } from '../../api/utils.js';
+import Pagination from '../../structures/helpers/Pagination.js';
 
 const mcData = minecraft_data('1.19.2');
 
@@ -92,8 +93,7 @@ export default class Inventory extends Command {
         const user = args[0];
         const showDetails = args[1];
         const nbtFile = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
-        if(!await utils.handleProtocolResponse(
-            nbtFile, server.protocol, interaction, {
+        if(!await utils.handleProtocolResponse(nbtFile, server.protocol, interaction, {
                 404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' }),
             },
         )) return;
@@ -105,7 +105,7 @@ export default class Inventory extends Command {
         playerData.Inventory = playerData.Inventory.map(item => {
             return {
                 ...item,
-                Slot: dataSlotToNetworkSlot(item.Slot),
+                Slot: this.dataSlotToNetworkSlot(item.Slot),
             };
         });
 
@@ -117,7 +117,7 @@ export default class Inventory extends Command {
             './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-            showDetails ? pushInvButton.bind(null, itemButtons) : () => {}, //Push itemButtons if showDetails is set to true
+            showDetails ? this.pushInvButton.bind(null, itemButtons, Infinity) : () => {}, //Push itemButtons if showDetails is set to true
         );
 
         //Draw skin in inventory
@@ -127,166 +127,295 @@ export default class Inventory extends Command {
         const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
         ctx.drawImage(skinImg, 70, 20, 65, 131);
 
+
         const invAttach = new Discord.AttachmentBuilder(
             await invCanvas.toBuffer('image/png'),
             { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
         );
-        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.std(interaction), { username: user.username });
+        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.emojis(), { username: user.username });
+        // Send without buttons if showDetails is false
+        if(!showDetails) return await interaction.replyOptions({ files: [invAttach], embeds: [invEmbed] });
 
-        //@TODO implement pagination
-        /** @type {Discord.InteractionReplyOptions} */
-        const replyOptions = {
-            files: [invAttach],
-            embeds: [invEmbed],
-            components: getComponentOption(
-                itemButtons,
-                getComponent(keys.commands.inventory.success.next_button, { id: 'slot_next' }),
-            ),
+        const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach);
+        const pagination = new Pagination(client, interaction, paginationPages, {
+            showSelectedButton: true,
+            showStartPageOnce: true,
+        });
+        await pagination.start();
+    }
+
+
+    addInfo(embed, tag, itemStats) {
+        let addedInfo = false;
+
+        //Add durability info
+        if(tag?.Damage && itemStats?.maxDurability) {
+            embed.addFields(addPh(
+                keys.commands.inventory.success.item_durability.embeds[0].fields,
+                {
+                    durability: itemStats.maxDurability - tag.Damage,
+                    max_durability: itemStats.maxDurability,
+                },
+            ));
+
+            addedInfo = true;
+        }
+
+        //Add lore info
+        if(tag?.display?.Lore) {
+            embed.addFields(addPh(
+                keys.commands.inventory.success.item_lore.embeds[0].fields,
+                { lore_json: tag.display.Lore, lore: JSON.parse(tag.display.Lore).text },
+            ));
+
+            addedInfo = true;
+        }
+
+        //Add custom name info
+        if(tag?.display?.Name) {
+            embed.addFields(addPh(
+                keys.commands.inventory.success.item_custom_name.embeds[0].fields,
+                { custom_name_json: tag.display.Name, custom_name: JSON.parse(tag.display.Name).text },
+            ));
+
+            addedInfo = true;
+        }
+
+        //Add enchantments info
+        if(tag?.Enchantments || tag?.StoredEnchantments) {
+            const allEnchantments = tag?.Enchantments ?? tag.StoredEnchantments;
+            const formattedEnchantments = allEnchantments.map(ench => {
+                return `- ${mcData.enchantmentsByName[ench.id.split(':').pop()]?.displayName ?? ench.id} ${this.romanNumber(ench.lvl)}`;
+            }).join('\n');
+
+            embed.addFields(addPh(
+                keys.commands.inventory.success.item_enchantments.embeds[0].fields,
+                { enchantments: formattedEnchantments },
+            ));
+
+            addedInfo = true;
+        }
+
+        if(tag?.Potion) {
+            const effectByPotionName = {
+                'fire_resistance': `- ${mcData.effectsByName['FireResistance'].displayName} (3:00)`,
+                'long_fire_resistance': `- ${mcData.effectsByName['FireResistance'].displayName} (8:00)`,
+                'healing': `- ${mcData.effectsByName['InstantHealth'].displayName}`,
+                'strong_healing': `- ${mcData.effectsByName['InstantHealth'].displayName} II`,
+                'slow_falling': `- ${mcData.effectsByName['SlowFalling'].displayName} (1:30)`,
+                'long_slow_falling': `- ${mcData.effectsByName['SlowFalling'].displayName} (4:00)`,
+                'night_vision': `- ${mcData.effectsByName['NightVision'].displayName} (3:00)`,
+                'long_night_vision': `- ${mcData.effectsByName['NightVision'].displayName} (8:00)`,
+                'regeneration': `- ${mcData.effectsByName['Regeneration'].displayName} (0:45)`,
+                'long_regeneration': `- ${mcData.effectsByName['Regeneration'].displayName} (1:30)`,
+                'strong_regeneration': `- ${mcData.effectsByName['Regeneration'].displayName} II (0:22)`,
+                'swiftness': `- ${mcData.effectsByName['Speed'].displayName} (3:00)`,
+                'long_swiftness': `- ${mcData.effectsByName['Speed'].displayName} (8:00)`,
+                'strong_swiftness': `- ${mcData.effectsByName['Speed'].displayName} II (1:30)`,
+                'leaping': `- ${mcData.effectsByName['JumpBoost'].displayName} (3:00)`,
+                'long_leaping': `- ${mcData.effectsByName['JumpBoost'].displayName} (8:00)`,
+                'strong_leaping': `- ${mcData.effectsByName['JumpBoost'].displayName} II (1:30)`,
+                'strength': `- ${mcData.effectsByName['Strength'].displayName} (3:00)`,
+                'long_strength': `- ${mcData.effectsByName['Strength'].displayName} (8:00)`,
+                'strong_strength': `- ${mcData.effectsByName['Strength'].displayName} II (1:30)`,
+                'invisibility': `- ${mcData.effectsByName['Invisibility'].displayName} (3:00)`,
+                'long_invisibility': `- ${mcData.effectsByName['Invisibility'].displayName} (8:00)`,
+                'water_breathing': `- ${mcData.effectsByName['WaterBreathing'].displayName} (3:00)`,
+                'long_water_breathing': `- ${mcData.effectsByName['WaterBreathing'].displayName} (8:00)`,
+                'slowness': `- ${mcData.effectsByName['Slowness'].displayName} (3:00)`,
+                'long_slowness': `- ${mcData.effectsByName['Slowness'].displayName} (4:00)`,
+                'strong_slowness': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:20)`,
+                'harming': `- ${mcData.effectsByName['InstantDamage'].displayName}`,
+                'strong_harming': `- ${mcData.effectsByName['InstantDamage'].displayName} II`,
+                'weakness': `- ${mcData.effectsByName['Weakness'].displayName} (1:30)`,
+                'long_weakness': `- ${mcData.effectsByName['Weakness'].displayName} (4:00)`,
+                'poison': `- ${mcData.effectsByName['Poison'].displayName} (0:30)`,
+                'long_poison': `- ${mcData.effectsByName['Poison'].displayName} (1:30)`,
+                'strong_poison': `- ${mcData.effectsByName['Poison'].displayName} II (0:21)`,
+                'turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:20)`,
+                'strong_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} VI (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} IV (0:20)`,
+                'long_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:40)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:40)`,
+                'mundane': `- No Effects (Mundane)`,
+                'thick': `- No Effects (Thick)`,
+                'awkward': `- No Effects (Awkward)`,
+                'water': `- No Effects (Water)`,
+            };
+            
+            const formattedEffects = effectByPotionName[tag?.Potion?.split(':').pop()];
+            embed.addFields(addPh(
+                keys.commands.inventory.success.item_potion.embeds[0].fields,
+                { effects: formattedEffects },
+            ));
+
+            addedInfo = true;
+        }
+
+        return addedInfo;
+    }
+
+    pushInvButton(buttons, maxSlot, item, index) {
+        if(item.Slot > maxSlot) return;
+
+        //Push button for each item in the inventory
+        const itemId = item.id.split(':').pop();
+        const slot = item.Slot;
+        buttons.push(getComponent(
+            keys.commands.inventory.success.item_button,
+            {
+                slot: armorSlotNames[slot] ?? `#${slot}`,
+                index: item.parentIndex ? `${item.parentIndex}_${index}` : index,
+                name: mcData.itemsByName[itemId]?.displayName ?? itemId,
+            },
+        ));
+    }
+
+    /**
+     * Constructs pagination pages for the specified inventory and buttons
+     * @param {Discord.ButtonBuilder[]} inventoryButtons - The buttons to use for each item in the inventory
+     * @param {Object} inventory - The inventory nbt data to use
+     * @param {string} username - The username of the player
+     * @param {Discord.EmbedBuilder} embed - The embed to use for each of the pages
+     * @param {Discord.AttachmentBuilder} attach - The attachment to use for each of the pages
+     * @returns {Promise<PaginationPages>}
+     */
+    async getInventoryPages(inventoryButtons, inventory, username, embed, attach) {
+        /** @type {PaginationPages} */
+        const paginationPages = {};
+
+        for(const button of inventoryButtons) {
+            const buttonId = button.data.custom_id;
+
+            const index = parseInt(buttonId.match(/\d+/g)[0]); //Match first number in button id
+
+            /** @type {object} */
+            let item = inventory[index];
+            let indexOfIndex = 0; //Index of the item index in the buttonId
+
+            //If parent item is a shulker, get item from shulker inventory
+            const indexes = buttonId.split('_').slice(2);
+            for(const i of indexes) {
+                item = item.tag.BlockEntityTag.Items[i];
+                indexOfIndex++;
+            }
+
+            const formattedId = item.id.split(':').pop();
+            const slot = item.Slot;
+            const itemStats = mcData.itemsByName[formattedId];
+
+            const itemEmbed = getEmbed(
+                keys.commands.inventory.success.item,
+                {
+                    slot_name: armorSlotNames[slot] ?? addPh(keys.commands.inventory.slots.default, { slot }),
+                    name: itemStats?.displayName ?? formattedId,
+                    id: item.id,
+                    count: item.Count,
+                    max_count: itemStats?.stackSize ?? 64,
+                    username: username,
+                    avatar: `https://minotar.net/helm/${username}/64.png`,
+                },
+                ph.emojis(),
+            );
+            const isSpecialItem = this.addInfo(itemEmbed, item.tag, itemStats);
+
+            //If item is a shulker, render shulker inventory
+            if(item.tag?.BlockEntityTag?.Items && formattedId.endsWith('shulker_box')) {
+                //Increase slot numbers by 18 in inventory
+                const mappedInvItems = inventory.map(item => {
+                    if(armorSlotCoords[item.Slot]) return; //Exclude armor slots
+                    return {
+                        ...item,
+                        Slot: item.Slot + 18,
+                    };
+                }).filter(i => i); //Remove undefined items
+
+                //Add parentIndex to shulker items to add in customId on buttons
+                const mappedShulkerItems = item.tag.BlockEntityTag.Items.map(childItem => {
+                    return {
+                        ...childItem,
+                        parentIndex: buttonId.split(/slot_?/).pop(),
+                    };
+                });
+
+                //Shulker Items + Inventory
+                const allItems = mappedShulkerItems.concat(mappedInvItems);
+
+                const shulkerButtons = []; //Clear previous buttons
+                const { canvas: shulkerImage } = await renderContainer(
+                    './resources/images/containers/shulker_blank.png',
+                    allItems,
+                    shulkerSlotCoords,
+                    this.pushInvButton.bind(null, shulkerButtons, 26),
+                );
+
+                const shulkerAttach = new Discord.AttachmentBuilder(
+                    await shulkerImage.toBuffer('png'),
+                    { name: `Shulker_Contents.png`, description: keys.commands.inventory.shulker_description },
+                );
+                const shulkerEmbed = getEmbed(keys.commands.inventory.success.final_shulker, ph.emojis(), { username });
+
+                paginationPages[buttonId] = {
+                    button,
+                    pages: {
+                        ...await this.getInventoryPages(
+                            shulkerButtons,
+                            inventory,
+                            username,
+                            shulkerEmbed,
+                            shulkerAttach,
+                        ),
+                    },
+                };
+
+                //Push shulkerItemEmbed to first page
+                if(isSpecialItem) paginationPages[buttonId].pages['slot_start'].page.embeds.push(itemEmbed);
+            }
+            //Only add page for items that have special info
+            else if(isSpecialItem) {
+                paginationPages[buttonId] = {
+                    button,
+                    page: {
+                        embeds: [embed, itemEmbed],
+                    },
+                };
+            }
+        }
+        paginationPages['slot_start'] = {
+            startPage: true,
+            page: {
+                embeds: [embed],
+                files: [attach],
+            },
         };
 
-        const invMessage = await interaction.replyOptions(replyOptions);
+        return paginationPages;
+    }
 
-        //Create component collector for slot buttons
-        const collector = invMessage.createMessageComponentCollector({
-            componentType: Discord.ComponentType.Button,
-            time: 120_000,
-        });
+    romanNumber(number) {
+        //Enchantments don't show level 1
+        if(number === 1) return '';
 
-        let shulkerButtons = [];
-        collector.on(
-            'collect',
-            /** @param {Discord.ButtonInteraction} button */
-            async button => {
-                const buttonId = button.customId;
-                if(!buttonId.startsWith('slot')) return;
+        //Convert integers to roman numbers
+        const romanNumerals = ['I', 'II', 'III', 'IV', 'V'];
+        return romanNumerals[number - 1] ?? number;
+    }
 
-                if(button.user.id !== interaction.member.user.id) {
-                    const notAuthorEmbed = getEmbed(keys.api.button.warnings.no_author, ph.emojis());
-                    await button.reply({ embeds: [notAuthorEmbed], ephemeral: true });
-                    return;
-                }
-                if(buttonId === 'slot_next' || buttonId === 'slot_next_shulker') {
-                    const backButton = getComponent(
-                        keys.commands.inventory.success.back_button,
-                        { id: buttonId === 'slot_next' ? 'slot_back' : 'slot_back_shulker' },
-                    );
-                    const replyButtons = buttonId === 'slot_next' ? itemButtons.slice(24) : shulkerButtons.slice(24);
-                    replyButtons.push(backButton);
-                    await button.update({ components: createActionRows(replyButtons) });
-                    return;
-                }
-                else if(buttonId === 'slot_back' || buttonId === 'slot_back_shulker') {
-                    const replyComponents = getComponentOption(
-                        buttonId === 'slot_back' ? itemButtons : shulkerButtons,
-                        getComponent(keys.commands.inventory.success.next_button, { id: buttonId === 'slot_back' ? 'slot_next' : 'slot_next_shulker' }),
-                    );
-
-                    const replyOptions = { components: replyComponents };
-
-                    //When going back from shulker to inventory, reset image
-                    if(buttonId === 'slot_back' && button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
-                        invEmbed.setImage('attachment://Inventory_Player.png');
-                        replyOptions.embeds = [invEmbed];
-                        replyOptions.files = [invAttach];
-                    }
-
-                    await button.update(replyOptions);
-                    return;
-                }
-
-                const index = parseInt(buttonId.split('_').pop());
-
-                /** @type {object} */
-                let item = playerData.Inventory[index];
-
-                //If item is a shulker, get item from shulker inventory
-                if(buttonId.includes('_shulker_')) {
-                    const shulkerIndex = parseInt(buttonId.split('_')[2]);
-                    item = item.tag.BlockEntityTag.Items[shulkerIndex];
-                }
-
-                const formattedId = item.id.split(':').pop();
-                const slot = item.Slot;
-                const itemStats = mcData.itemsByName[formattedId];
-
-                const itemEmbed = getEmbed(
-                    keys.commands.inventory.success.item,
-                    {
-                        slot_name: armorSlotNames[slot] ?? addPh(keys.commands.inventory.slots.default, { slot }),
-                        name: itemStats?.displayName ?? formattedId,
-                        id: item.id,
-                        count: item.Count,
-                        max_count: itemStats?.stackSize ?? 64,
-                        username: user.username,
-                        avatar: `https://minotar.net/helm/${user.username}/64.png`,
-                    },
-                    ph.emojis(),
-                );
-                addInfo(itemEmbed, item.tag, itemStats);
-
-                //If item is a shulker, render shulker inventory
-                if(item.tag?.BlockEntityTag?.Items && formattedId.endsWith('shulker_box')) {
-                    //Increase slot numbers by 18 in inventory
-                    const mappedInvItems = playerData.Inventory.map(item => {
-                        if(armorSlotCoords[item.Slot]) return; //Exclude armor slots
-                        return {
-                            ...item,
-                            Slot: item.Slot + 18,
-                        };
-                    }).filter(i => i); //Remove undefined items
-
-                    //Add parentIndex to shulker items to add in customId on buttons
-                    const mappedShulkerItems = item.tag.BlockEntityTag.Items.map(item => {
-                        return {
-                            ...item,
-                            parentIndex: index,
-                        };
-                    });
-
-                    //Shulker Items + Inventory
-                    const allItems = mappedShulkerItems.concat(mappedInvItems);
-
-                    shulkerButtons = []; //Clear previous buttons
-                    const { canvas: shulkerImage } = await renderContainer(
-                        './resources/images/containers/shulker_blank.png',
-                        allItems,
-                        shulkerSlotCoords,
-                        pushShulkerButton.bind(null, shulkerButtons),
-                    );
-
-                    //Push to 24th slot if more than 25 items to make sure both back and next buttons are sent
-                    shulkerButtons.splice(
-                        shulkerButtons.length > 25 ? 23 : 24,
-                        0,
-                        getComponent(keys.commands.inventory.success.back_button, { id: 'slot_back' }),
-                    );
-
-                    const shulkerAttach = new Discord.AttachmentBuilder(
-                        await shulkerImage.toBuffer('image/png'),
-                        { name: `Shulker_Contents.png`, description: keys.commands.inventory.shulker_description },
-                    );
-
-                    invEmbed.setImage('attachment://Shulker_Contents.png');
-                    await button.update({
-                        embeds: [invEmbed],
-                        files: [shulkerAttach],
-                        components: getComponentOption(
-                            shulkerButtons,
-                            getComponent(keys.commands.inventory.success.next_button, { id: 'slot_next_shulker' }),
-                        ),
-                    });
-                }
-                else if(buttonId.includes('_shulker_')) {
-                    await button.update({ embeds: [invEmbed, itemEmbed] });
-                }
-                else if(button.message.embeds[0]?.image.url.endsWith('Shulker_Contents.png')) {
-                    invEmbed.setImage('attachment://Inventory_Player.png');
-                    await button.update(replyOptions);
-                }
-                else {
-                    await button.update({ embeds: [invEmbed, itemEmbed] });
-                }
-            });
+    // https://gist.github.com/ddevault/459a1691c3dd751db160
+    dataSlotToNetworkSlot(index) {
+        if(index === 100)
+            index = 8;
+        else if(index === 101)
+            index = 7;
+        else if(index === 102)
+            index = 6;
+        else if(index === 103)
+            index = 5;
+        else if(index === -106)
+            index = 45;
+        else if(index <= 8)
+            index += 36;
+        else if(index >= 80 && index <= 83)
+            index -= 79;
+        return index;
     }
 }
 
@@ -322,11 +451,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
         }
 
         //Draw count
-        if(count > 1) {
-            ctx.font = '14px Minecraft';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(count.toString(), x, y + 32);
-        }
+        if(count > 1) utils.drawMinecraftNumber(ctx, count, x, y + 16);
 
         const maxDurability = mcData.itemsByName[itemId]?.maxDurability;
         if(damage && maxDurability) {
@@ -362,163 +487,4 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
     }
 
     return { canvas, ctx };
-}
-
-function addInfo(embed, tag, itemStats) {
-    //Add durability info
-    if(tag?.Damage && itemStats?.maxDurability) {
-        embed.addFields(addPh(
-            keys.commands.inventory.success.item_durability.embeds[0].fields,
-            {
-                durability: itemStats.maxDurability - tag.Damage,
-                max_durability: itemStats.maxDurability,
-            },
-        ));
-    }
-
-    //Add lore info
-    if(tag?.display?.Lore) {
-        embed.addFields(addPh(
-            keys.commands.inventory.success.item_lore.embeds[0].fields,
-            { lore: tag.display.Lore },
-        ));
-    }
-
-    //Add custom name info
-    if(tag?.display?.Name) {
-        embed.addFields(addPh(
-            keys.commands.inventory.success.item_custom_name.embeds[0].fields,
-            { custom_name_json: tag.display.Name, custom_name: JSON.parse(tag.display.Name).text },
-        ));
-    }
-
-    //Add enchantments info
-    if(tag?.Enchantments || tag?.StoredEnchantments) {
-        const allEnchantments = tag?.Enchantments ?? tag.StoredEnchantments;
-        const formattedEnchantments = allEnchantments.map(ench => {
-            return `- ${mcData.enchantmentsByName[ench.id.split(':').pop()]?.displayName ?? ench.id} ${romanNumber(ench.lvl)}`;
-        }).join('\n');
-
-        embed.addFields(addPh(
-            keys.commands.inventory.success.item_enchantments.embeds[0].fields,
-            { enchantments: formattedEnchantments },
-        ));
-    }
-
-    if(tag?.Potion) {
-        const effectByPotionName = {
-            'fire_resistance': `- ${mcData.effectsByName['FireResistance'].displayName} (3:00)`,
-            'long_fire_resistance': `- ${mcData.effectsByName['FireResistance'].displayName} (8:00)`,
-            'healing': `- ${mcData.effectsByName['InstantHealth'].displayName}`,
-            'strong_healing': `- ${mcData.effectsByName['InstantHealth'].displayName} II`,
-            'slow_falling': `- ${mcData.effectsByName['SlowFalling'].displayName} (1:30)`,
-            'long_slow_falling': `- ${mcData.effectsByName['SlowFalling'].displayName} (4:00)`,
-            'night_vision': `- ${mcData.effectsByName['NightVision'].displayName} (3:00)`,
-            'long_night_vision': `- ${mcData.effectsByName['NightVision'].displayName} (8:00)`,
-            'regeneration': `- ${mcData.effectsByName['Regeneration'].displayName} (0:45)`,
-            'long_regeneration': `- ${mcData.effectsByName['Regeneration'].displayName} (1:30)`,
-            'strong_regeneration': `- ${mcData.effectsByName['Regeneration'].displayName} II (0:22)`,
-            'swiftness': `- ${mcData.effectsByName['Speed'].displayName} (3:00)`,
-            'long_swiftness': `- ${mcData.effectsByName['Speed'].displayName} (8:00)`,
-            'strong_swiftness': `- ${mcData.effectsByName['Speed'].displayName} II (1:30)`,
-            'leaping': `- ${mcData.effectsByName['JumpBoost'].displayName} (3:00)`,
-            'long_leaping': `- ${mcData.effectsByName['JumpBoost'].displayName} (8:00)`,
-            'strong_leaping': `- ${mcData.effectsByName['JumpBoost'].displayName} II (1:30)`,
-            'strength': `- ${mcData.effectsByName['Strength'].displayName} (3:00)`,
-            'long_strength': `- ${mcData.effectsByName['Strength'].displayName} (8:00)`,
-            'strong_strength': `- ${mcData.effectsByName['Strength'].displayName} II (1:30)`,
-            'invisibility': `- ${mcData.effectsByName['Invisibility'].displayName} (3:00)`,
-            'long_invisibility': `- ${mcData.effectsByName['Invisibility'].displayName} (8:00)`,
-            'water_breathing': `- ${mcData.effectsByName['WaterBreathing'].displayName} (3:00)`,
-            'long_water_breathing': `- ${mcData.effectsByName['WaterBreathing'].displayName} (8:00)`,
-            'slowness': `- ${mcData.effectsByName['Slowness'].displayName} (3:00)`,
-            'long_slowness': `- ${mcData.effectsByName['Slowness'].displayName} (4:00)`,
-            'strong_slowness': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:20)`,
-            'harming': `- ${mcData.effectsByName['InstantDamage'].displayName}`,
-            'strong_harming': `- ${mcData.effectsByName['InstantDamage'].displayName} II`,
-            'weakness': `- ${mcData.effectsByName['Weakness'].displayName} (1:30)`,
-            'long_weakness': `- ${mcData.effectsByName['Weakness'].displayName} (4:00)`,
-            'poison': `- ${mcData.effectsByName['Poison'].displayName} (0:30)`,
-            'long_poison': `- ${mcData.effectsByName['Poison'].displayName} (1:30)`,
-            'strong_poison': `- ${mcData.effectsByName['Poison'].displayName} II (0:21)`,
-            'turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:20)`,
-            'strong_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} VI (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} IV (0:20)`,
-            'long_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:40)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:40)`,
-        };
-
-        const formattedEffects = effectByPotionName[tag?.Potion?.split(':').pop()];
-        embed.addFields(addPh(
-            keys.commands.inventory.success.item_potion.embeds[0].fields,
-            { effects: formattedEffects },
-        ));
-    }
-}
-
-function pushInvButton(buttons, item, index) {
-    //Push button for each item in the inventory
-    const itemId = item.id.split(':').pop();
-    const slot = item.Slot;
-    buttons.push(getComponent(
-        keys.commands.inventory.success.item_button,
-        {
-            slot: armorSlotNames[slot] ?? `#${slot}`,
-            index,
-            name: mcData.itemsByName[itemId]?.displayName ?? itemId,
-        },
-    ));
-}
-
-function pushShulkerButton(buttons, item, index) {
-    //Push button for each item in the shulker
-    const itemId = item.id.split(':').pop();
-    if(item.Slot > 26) return; //Only push shulker items
-
-    buttons.push(getComponent(
-        keys.commands.inventory.success.item_button,
-        {
-            slot: `#${item.Slot}`,
-            index: `shulker_${index}_${item.parentIndex}`,
-            name: mcData.itemsByName[itemId]?.displayName ?? itemId,
-        },
-    ));
-}
-
-function getComponentOption(allButtons, nextButton) {
-    if(allButtons.length === 0) return [];
-
-    //Replace last button with next button if more than 25 items
-    if(allButtons.length > 25) {
-        const replyButtons = allButtons.slice(0, 24);
-        replyButtons.push(nextButton);
-        return createActionRows(replyButtons);
-    }
-    else return createActionRows(allButtons.slice(0, 25));
-}
-
-function romanNumber(number) {
-    //Enchantments don't show level 1
-    if(number === 1) return '';
-
-    //Convert integers to roman numbers
-    const romanNumerals = ['I', 'II', 'III', 'IV', 'V'];
-    return romanNumerals[number - 1] ?? number;
-}
-
-// https://gist.github.com/ddevault/459a1691c3dd751db160
-function dataSlotToNetworkSlot(index) {
-    if(index === 100)
-        index = 8;
-    else if(index === 101)
-        index = 7;
-    else if(index === 102)
-        index = 6;
-    else if(index === 103)
-        index = 5;
-    else if(index === -106)
-        index = 45;
-    else if(index <= 8)
-        index += 36;
-    else if(index >= 80 && index <= 83)
-        index -= 79;
-    return index;
 }
