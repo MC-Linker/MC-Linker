@@ -5,8 +5,7 @@ import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
 
-export class Stats extends AutocompleteCommand {
-
+export default class Stats extends AutocompleteCommand {
     constructor() {
         super({
             name: 'stats',
