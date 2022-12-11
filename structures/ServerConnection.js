@@ -185,7 +185,7 @@ export default class ServerConnection extends Connection {
             delete this.hash;
             delete this.channels;
         }
-        else this.protocol._patch(data);
+        else this.protocol._patch({ ...data, sftp: data.protocol === 'sftp' });
     }
 
     async _output() {

@@ -19,8 +19,16 @@ export default class SftpClient extends BaseClient {
     }
 
     async connect() {
-        await this.client.connect(this.credentials);
-        return true;
+        return new Promise(async (resolve, reject) => {
+            const timeout = setTimeout(() => {
+                this.client.end();
+                reject(new Error('Connection timed out.'));
+            }, 10000);
+
+            await this.client.connect(this.credentials);
+            clearTimeout(timeout);
+            resolve(true);
+        });
     }
 
     async find(name, start, maxDepth) {
@@ -53,6 +61,7 @@ export default class SftpClient extends BaseClient {
     async _findFile(name, path, maxDepth) {
         return new Promise(async resolve => {
             if(path.split('/').length - 1 >= maxDepth) return resolve(undefined);
+
             const listing = await this.client.list(path);
             const foundFile = listing.find(item => item.name === name && item.type === '-');
             if(foundFile) return resolve(path);
@@ -62,6 +71,7 @@ export default class SftpClient extends BaseClient {
                     return resolve(await this._findFile(name, `${path}/${item.name}`, maxDepth));
                 }
             }
+            resolve(undefined);
         });
     }
 }

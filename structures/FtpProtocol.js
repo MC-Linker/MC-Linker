@@ -15,6 +15,12 @@ export default class FtpProtocol extends Protocol {
      */
 
     /**
+     * The client used to connect to the ftp server.
+     * @type {FtpClient|SftpClient}
+     */
+    ftpClient;
+
+    /**
      * Creates a new protocol.
      * @param {MCLinker} client - The client to create the protocol for.
      * @param {FtpProtocolData} data - The data for the protocol.
@@ -33,15 +39,8 @@ export default class FtpProtocol extends Protocol {
         return await ftpClient.connect();
     }
 
-    static dataToProtocolResponse(data, status = 200) {
-        if(data instanceof Error) {
-            if(data.message.toLowerCase().includes('no such file')) status = 404;
-            else return null;
-            return { status, data: { message: data.message } };
-        }
-
-        if(!data) return null;
-        return { data, status };
+    get sftp() {
+        return this.ftpClient instanceof SftpClient;
     }
 
     _patch(data) {
@@ -76,14 +75,6 @@ export default class FtpProtocol extends Protocol {
          */
         this.sftp = data.sftp ?? this.sftp;
 
-        const credentials = { ip: this.ip, port: this.port, username: this.username, password: this.password };
-
-        /**
-         * The client used to connect to the ftp server.
-         * @type {FtpClient|SftpClient}
-         */
-        this.ftpClient = this.sftp ? new SftpClient(credentials) : new FtpClient(credentials);
-
         /**
          * Indicates whether batch mode is currently enabled.
          */
@@ -95,6 +86,17 @@ export default class FtpProtocol extends Protocol {
         //set the ftp client to the correct type if it is different
         if(bool && !(this.ftpClient instanceof SftpClient)) this.ftpClient = new SftpClient(credentials);
         else if(!bool && !(this.ftpClient instanceof FtpClient)) this.ftpClient = new FtpClient(credentials);
+    }
+
+    static dataToProtocolResponse(data, status = 200) {
+        if(data instanceof Error) {
+            if(data.message.toLowerCase().includes('no such file')) status = 404;
+            else return null;
+            return { status, data: { message: data.message } };
+        }
+
+        if(data === null || data === undefined || data === false) return null;
+        return { data, status };
     }
 
     /**
