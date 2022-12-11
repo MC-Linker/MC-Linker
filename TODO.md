@@ -1,5 +1,6 @@
 # TODO BOT
 + Better logs (pino)
++ Exclude commands from chatchannel
 + Get online player's inventories from the plugin (maybe `/data get`) instead of file (faster updates)
 + Add RCON for ftp connections
 + Store data files in user folders (only for connected users)
@@ -43,4 +44,3 @@
 + `/dm` (dm discord username)
 + `/discord` (customizable message)
 + Show replies to chat messages
-+ **Dont allow connection to server if already connected**
