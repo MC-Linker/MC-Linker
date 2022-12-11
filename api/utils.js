@@ -17,6 +17,7 @@ import customStats from '../resources/data/stats_custom.json' assert { type: 'js
 import nbt from 'prismarine-nbt';
 import { ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
+import emoji from 'emojione';
 
 const mcData = minecraft_data('1.19.2');
 
@@ -502,6 +503,19 @@ export function wrapText(ctx, text, maxWidth) {
     return lines;
 }
 
+/**
+ * Converts custom discord emojis and unicode emojis to their string representation.
+ * @example
+ * // returns "Hello :smile:"
+ * convertEmojisToString('Hello 😀');
+ * @param {string} message - The message to clean
+ * @returns {string} - The cleaned message.
+ */
+export function cleanEmojis(message) {
+    const cleanedMessage = emoji.toShort(message);
+    return cleanedMessage.replace(/<a?(:[a-zA-Z0-9_]+:)[0-9]+>/g, '$1');
+}
+
 export default {
     searchAllAdvancements,
     searchAdvancements,
@@ -518,4 +532,5 @@ export default {
     drawMinecraftText,
     drawMinecraftNumber,
     wrapText,
+    cleanEmojis,
 };

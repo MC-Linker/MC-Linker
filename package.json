@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "discord.js": "^14.3.0",
+    "emojione": "^4.5.0",
     "fastify": "^4.5.3",
     "fs-extra": "^11.1.0",
     "gl": "^6.0.1",

@@ -9,7 +9,7 @@ console.log(
 import Discord from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
-import { getArgs } from './api/utils.js';
+import { cleanEmojis, getArgs } from './api/utils.js';
 import keys from './api/keys.js';
 import { addPh, addTranslatedResponses, ph } from './api/messages.js';
 import config from './config.json' assert { type: 'json' };
@@ -80,6 +80,7 @@ client.on('messageCreate', async message => {
     const server = client.serverConnections.cache.get(message.guildId);
     if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(config.prefix)) {
         let content = message.cleanContent;
+        content = cleanEmojis(content);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
         server.protocol.chat(content, message.member.nickname ?? message.author.username);
     }

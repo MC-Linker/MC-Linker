@@ -20,7 +20,7 @@ export default class Message extends Command {
 
         const user = args[0];
         args.shift(); //Remove username from args
-        const chatMsg = args?.join(' ').replaceAll(`"`, `\\"`);
+        const chatMsg = utils.cleanEmojis(args?.join(' ').replaceAll(`"`, `\\"`));
         const argPlaceholder = { username: user.username, 'message': chatMsg };
 
         const resp = await server.protocol.chatPrivate(chatMsg, interaction.member.nickname ?? interaction.member.user.username, user.username);
