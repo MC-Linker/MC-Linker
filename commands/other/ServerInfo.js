@@ -68,8 +68,7 @@ export default class ServerInfo extends Command {
         if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;
         else onlinePlayers = onlinePlayers.data.length;
 
-        const serverIp = propertiesObject['server-ip'] ?? server.protocol.ip;
-        const serverName = propertiesObject['server-name'] ?? serverIp;
+        const serverName = propertiesObject['server-name'] ?? server.protocol.ip;
 
         let motd;
         try {
@@ -162,7 +161,7 @@ export default class ServerInfo extends Command {
                     motd: motd.join('\n'),
                     max_players: propertiesObject['max-players'],
                     online_players: onlinePlayers,
-                    ip: serverIp,
+                    ip: server.protocol.ip,
                     version: datObject.Data.Version.Name,
                 }),
                 startPage: true,

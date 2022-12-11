@@ -70,7 +70,7 @@ export default class Connect extends Command {
                 await interaction.replyTl(keys.commands.connect.warnings.searching_properties);
                 serverPath = await ftpProtocol.find('server.properties', '', 3);
                 serverPath = serverPath?.data;
-                if(!serverPath) {
+                if(typeof serverPath !== 'string') {
                     return interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
                 }
             }
@@ -81,7 +81,9 @@ export default class Connect extends Command {
             })) return;
 
             const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
-            const separator = serverPath.includes('/') ? '/' : '\\';
+            let separator = serverPath.includes('\\') ? '\\' : '/';
+            console.log(separator, serverPath, propertiesObject['level-name']);
+            if(serverPath.endsWith(separator) || propertiesObject['level-name'].startsWith(separator)) separator = '';
             /** @type {FtpServerConnectionData} */
             const serverConnectionData = {
                 ip: host,

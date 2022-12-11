@@ -39,7 +39,7 @@ export default class BotAPI {
 
             //If no connection on that guild
             if(!server) return reply.status(403).send();
-            else reply.send({ message: 'Success' });
+            else reply.send({});
 
             let chatEmbed;
             if(type === 'advancement') {

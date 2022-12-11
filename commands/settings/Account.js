@@ -25,7 +25,7 @@ export default class Account extends Command {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 
-            let uuid = await utils.fetchUUID(username);
+            const uuid = await utils.fetchUUID(username);
             if(!uuid) {
                 return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
             }
@@ -44,7 +44,10 @@ export default class Account extends Command {
             }
 
             await client.userConnections.disconnect(interaction.user.id);
-            await interaction.replyTl(keys.commands.disconnect.success, { method: 'account', method_cap: 'Account' });
+            await interaction.replyTl(keys.commands.disconnect.success, {
+                protocol: 'account',
+                protocol_cap: 'Account',
+            });
         }
     }
 }
