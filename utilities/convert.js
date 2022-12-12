@@ -5,6 +5,10 @@ import path from 'path';
 const serverFolders = fs.readdirSync('./serverdata/connections');
 for(const folder of serverFolders) {
     console.group(`Converting server ${folder}...`);
+    if(!fs.existsSync(`./serverdata/connections/${folder}/connection.json`)) {
+        console.log('No connection.json found, skipping.');
+        continue;
+    }
     const connection = fs.readJsonSync(`./serverdata/connections/${folder}/connection.json`);
     const newConnection = { ...connection };
 
