@@ -1,7 +1,7 @@
-const { Base } = require('discord.js');
-const fs = require('fs-extra');
+import { Base } from 'discord.js';
+import fs from 'fs-extra';
 
-class Connection extends Base {
+export default class Connection extends Base {
 
     /**
      * @typedef {UserConnectionData|ServerConnectionData|SettingsConnectionData} ConnectionData - The data for the connection.
@@ -71,5 +71,3 @@ class Connection extends Base {
         throw new Error('Not implemented');
     }
 }
-
-module.exports = Connection;

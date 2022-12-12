@@ -6,16 +6,16 @@ console.log(
     'Loading...',   // Second argument (%s)
 );
 
-const Discord = require('discord.js');
-const { AutoPoster } = require('topgg-autoposter');
-const Canvas = require('@napi-rs/canvas');
-const { getArgs } = require('./api/utils');
-const { keys } = require('./api/keys');
-const { addPh, ph, addTranslatedResponses } = require('./api/messages');
-const { prefix, token, topggToken } = require('./config.json');
-const MCLinker = require('./structures/MCLinker');
-const AutocompleteCommand = require('./structures/AutocompleteCommand');
-const BotAPI = require('./api/BotAPI');
+import Discord from 'discord.js';
+import { AutoPoster } from 'topgg-autoposter';
+import Canvas from 'skia-canvas';
+import { cleanEmojis, getArgs } from './api/utils.js';
+import keys from './api/keys.js';
+import { addPh, addTranslatedResponses, ph } from './api/messages.js';
+import config from './config.json' assert { type: 'json' };
+import AutocompleteCommand from './structures/AutocompleteCommand.js';
+import MCLinker from './structures/MCLinker.js';
+import BotAPI from './api/BotAPI.js';
 
 const client = new MCLinker();
 
@@ -35,8 +35,8 @@ String.prototype.cap = function() {
     return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 
-if(topggToken) {
-    const poster = AutoPoster(topggToken, client);
+if(config.topggToken) {
+    const poster = AutoPoster(config.topggToken, client);
 
     poster.on('posted', () => {});
     poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
@@ -46,7 +46,7 @@ client.once('ready', async () => {
     console.log(addPh(
         keys.main.success.login.console,
         ph.client(client),
-        { prefix, 'guild_count': client.guilds.cache.size },
+        { prefix: config.prefix, 'guild_count': client.guilds.cache.size },
     ));
 
     //Set Activity
@@ -59,7 +59,7 @@ client.once('ready', async () => {
     await new BotAPI(client).startServer();
 
     //Register minecraft font
-    Canvas.GlobalFonts.registerFromPath('./resources/fonts/Minecraft.ttf', 'Minecraft');
+    Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
 });
 
 client.on('guildCreate', guild => {
@@ -78,8 +78,9 @@ client.on('guildDelete', async guild => {
 client.on('messageCreate', async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
-    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(prefix)) {
+    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(config.prefix)) {
         let content = message.cleanContent;
+        content = cleanEmojis(content);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
         server.protocol.chat(content, message.member.nickname ?? message.author.username);
     }
@@ -89,12 +90,12 @@ client.on('messageCreate', async message => {
     message.user = message.author;
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
-    if(!message.content.startsWith(prefix) || message.author.bot) return;
+    if(!message.content.startsWith(config.prefix) || message.author.bot) return;
 
     //check if in guild
     if(!message.inGuild()) return message.replyTl(keys.main.warnings.not_in_guild);
 
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const args = message.content.slice(config.prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName);
@@ -175,4 +176,4 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(token);
+client.login(config.token);

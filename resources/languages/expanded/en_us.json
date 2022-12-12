@@ -359,32 +359,21 @@
             }
           ]
         },
-        "next_button": {
-          "components": [
-            {
-              "type": "Button",
-              "style": "Secondary",
-              "custom_id": "%id%",
-              "label": "Next"
-            }
-          ]
-        },
-        "back_button": {
-          "components": [
-            {
-              "type": "Button",
-              "style": "Secondary",
-              "custom_id": "%id%",
-              "label": "Back"
-            }
-          ]
-        },
         "final": {
           "embeds": [
             {
               "title": "Player Inventory",
               "description": "%emoji_success% Here's the inventory of **%username%**:\n",
               "image": "attachment://Inventory_Player.png"
+            }
+          ]
+        },
+        "final_shulker": {
+          "embeds": [
+            {
+              "title": "Player Inventory",
+              "description": "%emoji_success% Here are the shulker contents of **%username%**:\n",
+              "image": "attachment://Shulker_Contents.png"
             }
           ]
         },
@@ -422,7 +411,7 @@
               "fields": [
                 {
                   "name": "Lore",
-                  "value": "%lore%",
+                  "value": "**%lore%**\n%lore_json%",
                   "inline": true
                 }
               ]
@@ -1617,6 +1606,38 @@
             }
           ],
           "console": "No permission"
+        }
+      },
+      "success": {
+        "next_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "%id%",
+              "label": "Next"
+            }
+          ]
+        },
+        "back_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "%id%",
+              "label": "Back"
+            }
+          ]
+        },
+        "exit_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "%id%",
+              "label": "Exit"
+            }
+          ]
         }
       }
     },

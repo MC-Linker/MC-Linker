@@ -1,7 +1,7 @@
-const SettingsConnection = require('./SettingsConnection');
-const ConnectionManager = require('./ConnectionManager');
+import SettingsConnection from './SettingsConnection.js';
+import ConnectionManager from './ConnectionManager.js';
 
-class SettingsConnectionManager extends ConnectionManager {
+export default class SettingsConnectionManager extends ConnectionManager {
 
     /**
      * Creates a new ServerConnectionManager instance.
@@ -28,5 +28,3 @@ class SettingsConnectionManager extends ConnectionManager {
         }
     }
 }
-
-module.exports = SettingsConnectionManager;

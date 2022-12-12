@@ -1,22 +1,25 @@
-const PluginProtocol = require('../structures/PluginProtocol');
-const {
-    CommandInteraction,
+import PluginProtocol from '../structures/PluginProtocol.js';
+import Discord, {
     ApplicationCommandOptionType,
-    User,
-    MessageMentions,
     BaseInteraction,
+    CommandInteraction,
+    MessageMentions,
     MessagePayload,
-} = require('discord.js');
-const fetch = require('node-fetch');
-const crypto = require('crypto');
-const mcData = require('minecraft-data')('1.19.2');
-const FtpProtocol = require('../structures/FtpProtocol');
-const { keys } = require('./keys');
+    User,
+} from 'discord.js';
+import fetch from 'node-fetch';
+import crypto from 'crypto';
+import minecraft_data from 'minecraft-data';
+import FtpProtocol from '../structures/FtpProtocol.js';
+import keys from './keys.js';
+import advancementData from '../resources/data/advancements.json' assert { type: 'json' };
+import customStats from '../resources/data/stats_custom.json' assert { type: 'json' };
+import nbt from 'prismarine-nbt';
+import { ph } from './messages.js';
+import { Canvas, loadImage } from 'skia-canvas';
+import emoji from 'emojione';
 
-const advancementData = require('../resources/data/advancements.json');
-const customStats = require('../resources/data/stats_custom.json');
-const nbt = require('prismarine-nbt');
-const { ph } = require('./messages');
+const mcData = minecraft_data('1.19.2');
 
 /**
  * @typedef {object} AdvancementData
@@ -43,7 +46,7 @@ const { ph } = require('./messages');
  * @param {number} [maxLength=25] - The maximum amount of results to return.
  * @returns {AdvancementData[]} - An array of matching advancements.
  */
-function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
+export function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     const matchingCategory = advancementData.categories[category];
     if(!matchingCategory) return [];
 
@@ -73,7 +76,7 @@ function searchAdvancements(searchString, category, shouldSearchNames = true, sh
  * @param {number} [maxLength=25] - The maximum amount of results to return.
  * @returns {AdvancementData[]}
  */
-function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
+export function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let matchingTitles = [];
 
     for(const category of Object.keys(advancementData.categories)) {
@@ -95,7 +98,7 @@ function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSea
  * @param {number} [maxLength=25] - The maximum amount of results to return.
  * @returns {StatData[]}
  */
-function searchStats(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
+export function searchStats(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let dataList;
     let matchingStats = [];
 
@@ -155,7 +158,7 @@ function searchStats(searchString, category, shouldSearchNames = true, shouldSea
  * @param {number} [maxLength=25] - The maximum amount of results to return.
  * @returns {StatData[]}
  */
-function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
+export function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let matchingStats = [];
 
     //                        Blocks     Items   Entities   Custom
@@ -176,7 +179,7 @@ function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValu
  * @param {string} username - The username to fetch the uuid for.
  * @returns {Promise<?string>}
  */
-async function fetchUUID(username) {
+export async function fetchUUID(username) {
     try {
         let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
             .then(data => data.json());
@@ -200,11 +203,12 @@ function addHyphen(uuid) {
  * @param {CommandInteraction} interaction - The interaction to get the arguments from.
  * @returns {Promise<string[]>|string[]}
  */
-async function getArgs(interaction) {
+export async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
-    // Use guild commands if bot is not public (test-bot)
-    const commandManager = interaction.client.user.id === '712759741528408064' ? interaction.client.application.commands : interaction.guild.commands;
+    // Use guild commands if not verified bot (test-bot)
+    const commandManager = interaction.client.user.flags.has(Discord.UserFlags.VerifiedBot)
+        ? interaction.client.application.commands : interaction.guild.commands;
     const slashCommand = await commandManager.fetch(interaction.commandId);
 
     const args = [];
@@ -234,7 +238,7 @@ async function getArgs(interaction) {
  * @param {string} mention - The string of mentions.
  * @returns {Promise<User[]>}
  */
-async function getUsersFromMention(client, mention) {
+export async function getUsersFromMention(client, mention) {
     if(typeof mention !== 'string') return [];
 
     const usersPattern = new RegExp(MessageMentions.UsersPattern.source, 'g');
@@ -265,7 +269,7 @@ const defaultStatusRespones = {
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @returns {Promise<boolean>} - Whether the response was successful.
  */
-async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
+export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
     const placeholders = { data: JSON.stringify(response?.data ?? '') };
 
     if(!response && protocol instanceof PluginProtocol) {
@@ -280,7 +284,7 @@ async function handleProtocolResponse(response, protocol, interaction, statusRes
         await interaction.replyTl(keys.api.plugin.errors.status_500, placeholders);
         return false;
     }
-    else {
+    else if(response.status !== 200) {
         const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
         if(responseKey) {
             await interaction.replyTl(responseKey, placeholders);
@@ -299,14 +303,14 @@ async function handleProtocolResponse(response, protocol, interaction, statusRes
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @returns {Promise<boolean>} - Whether all responses were successful.
  */
-async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}) {
+export async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}) {
     for(const response of responses) {
         if(!await handleProtocolResponse(response, protocol, interaction, statusResponses)) return false;
     }
     return true;
 }
 
-function createUUIDv3(username) {
+export function createUUIDv3(username) {
     const hash = crypto.createHash('md5');
     hash.update(`OfflinePlayer:${username}`);
     let digest = hash.digest();
@@ -323,7 +327,7 @@ function createUUIDv3(username) {
  * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
  */
-async function nbtBufferToObject(buffer, interaction) {
+export async function nbtBufferToObject(buffer, interaction) {
     try {
         const object = await nbt.parse(buffer, 'big');
         return nbt.simplify(object.parsed);
@@ -339,7 +343,7 @@ async function nbtBufferToObject(buffer, interaction) {
  * @param {string} properties - The properties string to create the object from.
  * @returns {object} - The created object.
  */
-function parseProperties(properties) {
+export function parseProperties(properties) {
     const parsedProperties = {};
 
     for(const property of properties.split('\n')) {
@@ -387,7 +391,7 @@ const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k'];
  * @param {number} x - The x position to start drawing at.
  * @param {number} y - The y position to start drawing at.
  */
-function drawMinecraftText(ctx, text, x, y) {
+export function drawMinecraftText(ctx, text, x, y) {
     let strikethrough = false;
     let underline = false;
     let obfuscated = false;
@@ -440,6 +444,37 @@ function drawMinecraftText(ctx, text, x, y) {
     }
 }
 
+const mcNumbers = await loadImage('./resources/images/misc/numbers.png');
+
+/**
+ * Draws a minecraft number on a canvas.
+ * @param {CanvasRenderingContext2D} context - The canvas context to draw on.
+ * @param {int|string} num - The number to draw.
+ * @param {int} x - The x position to start drawing at.
+ * @param {int} y - The y position to start drawing at.
+ */
+export function drawMinecraftNumber(context, num, x = 0, y = 0) {
+    num = num.toString();
+    const canvas = new Canvas(12 * num.length);
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+
+    for(let i = 0; i < num.length; i++) {
+        ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * 12 + 2, 2, 10, 14);
+    }
+
+    ctx.globalCompositeOperation = 'source-in';
+    ctx.fillStyle = '#3E3E3E';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.globalCompositeOperation = 'source-over';
+    for(let i = 0; i < num.length; i++) {
+        ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * 12, 0, 10, 14);
+    }
+
+    context.drawImage(canvas, x, y);
+}
+
 /**
  * Divide an entire phrase in an array of phrases, all with the max pixel length given.
  * The words are initially separated by the space char.
@@ -448,7 +483,7 @@ function drawMinecraftText(ctx, text, x, y) {
  * @param {number} maxWidth - The max width of the text.
  * @returns {string[]} - The divided phrases.
  */
-function wrapText(ctx, text, maxWidth) {
+export function wrapText(ctx, text, maxWidth) {
     const words = text.split(' ');
     const lines = [];
     let currentLine = words[0];
@@ -468,7 +503,20 @@ function wrapText(ctx, text, maxWidth) {
     return lines;
 }
 
-module.exports = {
+/**
+ * Converts custom discord emojis and unicode emojis to their string representation.
+ * @example
+ * // returns "Hello :smile:"
+ * convertEmojisToString('Hello 😀');
+ * @param {string} message - The message to clean
+ * @returns {string} - The cleaned message.
+ */
+export function cleanEmojis(message) {
+    const cleanedMessage = emoji.toShort(message);
+    return cleanedMessage.replace(/<a?(:[a-zA-Z0-9_]+:)[0-9]+>/g, '$1');
+}
+
+export default {
     searchAllAdvancements,
     searchAdvancements,
     searchAllStats,
@@ -482,5 +530,7 @@ module.exports = {
     nbtBufferToObject,
     parseProperties,
     drawMinecraftText,
+    drawMinecraftNumber,
     wrapText,
+    cleanEmojis,
 };

@@ -1,12 +1,11 @@
-const fs = require('fs-extra');
-const utils = require('../../api/utils');
-const { ph, addPh, getEmbed } = require('../../api/messages');
-const { keys } = require('../../api/keys');
-const AutocompleteCommand = require('../../structures/AutocompleteCommand');
-const Protocol = require('../../structures/Protocol');
+import fs from 'fs-extra';
+import utils from '../../api/utils.js';
+import { addPh, getEmbed, ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
+import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
+import { FilePath } from '../../structures/Protocol.js';
 
-class Stats extends AutocompleteCommand {
-
+export default class Stats extends AutocompleteCommand {
     constructor() {
         super({
             name: 'stats',
@@ -42,7 +41,7 @@ class Stats extends AutocompleteCommand {
             return interaction.replyTl(keys.commands.stats.warnings.stat_disabled, argPlaceholder);
         }
 
-        const statFile = await server.protocol.get(Protocol.FilePath.Stats(server.path, user.uuid), `./userdata/stats/${user.uuid}.json`);
+        const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/stats/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(
             statFile, server.protocol, interaction, {
                 404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'stats' }),
@@ -112,5 +111,3 @@ class Stats extends AutocompleteCommand {
         }
     }
 }
-
-module.exports = Stats;

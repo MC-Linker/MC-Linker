@@ -10,14 +10,13 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
-RUN npm ci \
-    && npm install -g typescript
+RUN npm ci
 
 # Bundle app source
 COPY . .
 
 # Build
-RUN tsc
+RUN npm run build
 
 EXPOSE 3100
 CMD [ "node", "main.js" ]

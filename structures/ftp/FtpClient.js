@@ -1,8 +1,8 @@
-const Ftp = require('promise-ftp');
-const BaseClient = require('./BaseClient');
-const fs = require('fs-extra');
+import Ftp from 'promise-ftp';
+import BaseClient from './BaseClient.js';
+import fs from 'fs-extra';
 
-class FtpClient extends BaseClient {
+export default class FtpClient extends BaseClient {
 
     constructor(credentials) {
         super(credentials);
@@ -19,9 +19,17 @@ class FtpClient extends BaseClient {
         this.client = new Ftp();
     }
 
-    async connect() {
-        await this.client.connect(this.credentials);
-        return true;
+    connect() {
+        return new Promise(async (resolve, reject) => {
+            const timeout = setTimeout(() => {
+                this.client.end();
+                reject(new Error('Connection timed out.'));
+            }, 10000);
+
+            await this.client.connect(this.credentials);
+            clearTimeout(timeout);
+            resolve(true);
+        });
     }
 
     async find(name, start, maxDepth) {
@@ -30,12 +38,17 @@ class FtpClient extends BaseClient {
 
     async get(source, destination) {
         return new Promise(async (resolve, reject) => {
-            await fs.ensureFile(destination);
-            const stream = await this.client.get(source, destination);
+            try {
+                await fs.ensureFile(destination);
+                const stream = await this.client.get(source);
 
-            stream.once('close', () => resolve(true));
-            stream.once('error', reject);
-            stream.pipe(fs.createWriteStream(destination));
+                stream.once('close', () => resolve(true));
+                stream.once('error', reject);
+                stream.pipe(fs.createWriteStream(destination));
+            }
+            catch(err) {
+                reject(err);
+            }
         });
     }
 
@@ -58,6 +71,8 @@ class FtpClient extends BaseClient {
 
     _findFile(name, path, maxDepth) {
         return new Promise(async resolve => {
+            if(path.split('/').length - 1 >= maxDepth) return resolve(undefined);
+
             const listing = await this.client.list(path);
             const foundFile = listing.find(item => item.name === name && item.type === '-');
             if(foundFile) return resolve(path);
@@ -68,9 +83,7 @@ class FtpClient extends BaseClient {
                     if(foundFile) return resolve(foundFile);
                 }
             }
-            resolve(null);
+            resolve(undefined);
         });
     }
 }
-
-module.exports = FtpClient;

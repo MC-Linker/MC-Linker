@@ -6,9 +6,9 @@ import {
     MessageReplyOptions,
     WebhookEditMessageOptions,
 } from 'discord.js';
+import keys from '../resources/languages/expanded/en_us.json' assert { type: 'json' };
 
-const keysFile = require('../resources/languages/expanded/en_us.json');
-export const keys = keysFile;
+export default keys;
 
 export interface TranslatedResponses {
     replyTl(key: string, ...placeholders: Object[]): Promise<Message | InteractionResponse>,
