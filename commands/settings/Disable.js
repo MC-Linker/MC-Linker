@@ -1,9 +1,9 @@
-const utils = require('../../api/utils');
-const { getEmbed, addPh, ph } = require('../../api/messages');
-const { keys } = require('../../api/keys');
-const AutocompleteCommand = require('../../structures/AutocompleteCommand');
+import utils from '../../api/utils.js';
+import { addPh, getEmbed, ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
+import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 
-class Disable extends AutocompleteCommand {
+export default class Disable extends AutocompleteCommand {
 
     disabledCommands = ['enable', 'disable', 'help'];
 
@@ -108,5 +108,3 @@ class Disable extends AutocompleteCommand {
         }
     }
 }
-
-module.exports = Disable;

@@ -1,10 +1,9 @@
-const Discord = require('discord.js');
-const { ph, getActionRows } = require('../api/messages');
-const { keys } = require('../api/keys');
-const Button = require('../structures/Button');
-const { PermissionsBitField, EmbedBuilder } = require('discord.js');
+import Discord, { EmbedBuilder, PermissionsBitField } from 'discord.js';
+import { getActionRows, ph } from '../api/messages.js';
+import keys from '../api/keys.js';
+import Button from '../structures/Button.js';
 
-class Disable extends Button {
+export default class Disable extends Button {
 
     constructor() {
         super({
@@ -36,5 +35,3 @@ class Disable extends Button {
         return interaction.message.edit({ embeds: [helpEmbed], components: enableRows });
     }
 }
-
-module.exports = Disable;

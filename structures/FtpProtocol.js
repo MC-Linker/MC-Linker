@@ -1,9 +1,9 @@
-const Protocol = require('./Protocol');
-const FtpClient = require('./ftp/FtpClient');
-const SftpClient = require('./ftp/SftpClient');
-const fs = require('fs-extra');
+import Protocol from './Protocol.js';
+import FtpClient from './ftp/FtpClient.js';
+import SftpClient from './ftp/SftpClient.js';
+import fs from 'fs-extra';
 
-class FtpProtocol extends Protocol {
+export default class FtpProtocol extends Protocol {
 
     /**
      * @typedef {object} FtpProtocolData
@@ -13,6 +13,12 @@ class FtpProtocol extends Protocol {
      * @property {string} password - The password used to authenticate with ftp.
      * @property {boolean} sftp - Whether to use sftp or ftp.
      */
+
+    /**
+     * The client used to connect to the ftp server.
+     * @type {FtpClient|SftpClient}
+     */
+    ftpClient;
 
     /**
      * Creates a new protocol.
@@ -33,15 +39,8 @@ class FtpProtocol extends Protocol {
         return await ftpClient.connect();
     }
 
-    static dataToProtocolResponse(data, status = 200) {
-        if(data instanceof Error) {
-            if(data.message.toLowerCase().includes('no such file')) status = 404;
-            else return null;
-            return { status, data: { message: data.message } };
-        }
-
-        if(!data) return null;
-        return { data, status };
+    get sftp() {
+        return this.ftpClient instanceof SftpClient;
     }
 
     _patch(data) {
@@ -76,13 +75,10 @@ class FtpProtocol extends Protocol {
          */
         this.sftp = data.sftp ?? this.sftp;
 
-        const credentials = { ip: this.ip, port: this.port, username: this.username, password: this.password };
-
         /**
-         * The client used to connect to the ftp server.
-         * @type {FtpClient|SftpClient}
+         * Indicates whether batch mode is currently enabled.
          */
-        this.ftpClient = this.sftp ? new SftpClient(credentials) : new FtpClient(credentials);
+        this.batchMode = false;
     }
 
     set sftp(bool) {
@@ -90,6 +86,17 @@ class FtpProtocol extends Protocol {
         //set the ftp client to the correct type if it is different
         if(bool && !(this.ftpClient instanceof SftpClient)) this.ftpClient = new SftpClient(credentials);
         else if(!bool && !(this.ftpClient instanceof FtpClient)) this.ftpClient = new FtpClient(credentials);
+    }
+
+    static dataToProtocolResponse(data, status = 200) {
+        if(data instanceof Error) {
+            if(data.message.toLowerCase().includes('no such file')) status = 404;
+            else return null;
+            return { status, data: { message: data.message } };
+        }
+
+        if(data === null || data === undefined || data === false) return null;
+        return { data, status };
     }
 
     /**
@@ -100,7 +107,7 @@ class FtpProtocol extends Protocol {
         try {
             await this.ftpClient.connect();
             await this.ftpClient.disconnect();
-            return FtpProtocol.dataToProtocolResponse({ message: 'Success' });
+            return FtpProtocol.dataToProtocolResponse({});
         }
         catch(e) {
             return FtpProtocol.dataToProtocolResponse(e);
@@ -112,12 +119,13 @@ class FtpProtocol extends Protocol {
      */
     async get(getPath, putPath) {
         try {
-            await this.ftpClient.connect();
+            if(!this.batchMode) await this.ftpClient.connect();
             await this.ftpClient.get(getPath, putPath);
-            await this.ftpClient.disconnect();
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(await fs.readFile(putPath));
         }
         catch(e) {
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(e);
         }
     }
@@ -127,12 +135,13 @@ class FtpProtocol extends Protocol {
      */
     async list(folder) {
         try {
-            await this.ftpClient.connect();
+            if(!this.batchMode) await this.ftpClient.connect();
             const list = await this.ftpClient.list(folder);
-            await this.ftpClient.disconnect();
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(list);
         }
         catch(e) {
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(e);
         }
     }
@@ -142,12 +151,13 @@ class FtpProtocol extends Protocol {
      */
     async put(getPath, putPath) {
         try {
-            await this.ftpClient.connect();
+            if(!this.batchMode) await this.ftpClient.connect();
             await this.ftpClient.put(getPath, putPath);
-            await this.ftpClient.disconnect();
-            return FtpProtocol.dataToProtocolResponse({ message: 'Success' });
+            if(!this.batchMode) await this.ftpClient.disconnect();
+            return FtpProtocol.dataToProtocolResponse({});
         }
         catch(e) {
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(e);
         }
     }
@@ -161,15 +171,42 @@ class FtpProtocol extends Protocol {
      */
     async find(name, start, maxDepth) {
         try {
-            await this.ftpClient.connect();
+            if(!this.batchMode) await this.ftpClient.connect();
             const foundFile = await this.ftpClient.find(name, start, maxDepth);
-            await this.ftpClient.disconnect();
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(foundFile);
         }
         catch(e) {
+            if(!this.batchMode) await this.ftpClient.disconnect();
             return FtpProtocol.dataToProtocolResponse(e);
         }
     }
-}
 
-module.exports = FtpProtocol;
+    /**
+     * @inheritDoc
+     */
+    async startBatch() {
+        try {
+            await this.ftpClient.connect();
+            this.batchMode = true;
+            return FtpProtocol.dataToProtocolResponse({});
+        }
+        catch(e) {
+            FtpProtocol.dataToProtocolResponse(e);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    async endBatch() {
+        try {
+            await this.ftpClient.disconnect();
+            this.batchMode = false;
+            return FtpProtocol.dataToProtocolResponse({});
+        }
+        catch(e) {
+            FtpProtocol.dataToProtocolResponse(e);
+        }
+    }
+}

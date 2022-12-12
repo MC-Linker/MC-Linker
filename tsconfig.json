@@ -1,9 +1,11 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es6",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "target": "ES2020",
         "sourceMap": true,
-        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
     },
     "files": ["api/keys.ts"]
 }

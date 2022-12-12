@@ -1,12 +1,11 @@
 //noinspection JSUnresolvedVariable
-
-const { REST, Routes } = require('discord.js');
-const { token, clientId, guildId } = require('../config.json');
-const { getCommand } = require('../api/messages');
-const { keys } = require('../api/keys');
-const fs = require('fs-extra');
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
+import { REST, Routes } from 'discord.js';
+import { clientId, guildId, token } from '../config.json' assert { type: 'json' };
+import { getCommand } from '../api/messages.js';
+import keys from '../api/keys.js';
+import fs from 'fs-extra';
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
 
 /*
  * Converts the first letter of a string to uppercase.

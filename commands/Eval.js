@@ -1,12 +1,11 @@
 // noinspection JSVoidFunctionReturnValueUsed
-
-const Discord = require('discord.js');
-const { Console } = require('console');
-const { Duplex } = require('stream');
-const { ph } = require('../api/messages');
-const { keys } = require('../api/keys');
-const { token: botToken, topggToken } = require('../config.json');
-const Command = require('../structures/Command');
+import Discord from 'discord.js';
+import { Console } from 'console';
+import { Duplex } from 'stream';
+import { ph } from '../api/messages.js';
+import keys from '../api/keys.js';
+import config from '../config.json' assert { type: 'json' };
+import Command from '../structures/Command.js';
 
 // noinspection FunctionNamingConventionJS
 class ConsoleOutput extends Duplex {
@@ -26,7 +25,7 @@ class ConsoleOutput extends Duplex {
 
 const maxCharLength = 4086;
 
-class Eval extends Command {
+export default class Eval extends Command {
 
     constructor() {
         super({
@@ -60,7 +59,7 @@ class Eval extends Command {
 
                         console2.log(arg);
 
-                        if(i > 0) out = out.slice(0, -1) + ' ' + evalOut2._read();
+                        if(i > 0) out = `${out.slice(0, -1)} ${evalOut2._read()}`;
                         else out += evalOut2._read();
                     }
                 },
@@ -68,21 +67,21 @@ class Eval extends Command {
 
             outputConsole.log(
                 await eval(`(async () => {
-                try {
-                    ${command.includes('return') || command.includes('console.log') ? command : `return ${command}`};
-                }
-                catch(err) {
-                    return err;
-                }
-            })()`),
+                    try {
+                        ${command.includes('return') || command.includes('console.log') ? command : `return ${command}`};
+                    }
+                    catch(err) {
+                        return err;
+                    }
+                })()`),
             );
 
             //Auto-add return if no console.log or return present
             if(command.includes('return') || !command.includes('console.log')) out += evalOut._read();
 
             //Redact tokens
-            const tokenArray = topggToken ? [botToken, topggToken] : [botToken];
-            for(const token of [botToken, tokenArray]) {
+            const tokenArray = config.topggToken ? [config.token, config.topggToken] : [config.token];
+            for(const token of tokenArray) {
                 out = out.replace(new RegExp(token, 'g'), 'TOKEN_REDACTED');
             }
 
@@ -99,7 +98,4 @@ class Eval extends Command {
             return interaction.replyTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, maxCharLength)) }, ph.error(err));
         }
     }
-
 }
-
-module.exports = Eval;

@@ -1,17 +1,17 @@
 // noinspection JSUnresolvedVariable
-const { addPh, ph } = require('../../api/messages');
-const { keys } = require('../../api/keys');
-const { getUsersFromMention } = require('../../api/utils');
-const Discord = require('discord.js');
-const nbt = require('prismarine-nbt');
-const utils = require('../../api/utils');
-const mcData = require('minecraft-data')('1.19.2');
-const AutocompleteCommand = require('../../structures/AutocompleteCommand');
-const Protocol = require('../../structures/Protocol');
+import { addPh, ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
+import utils, { getUsersFromMention } from '../../api/utils.js';
+import Discord from 'discord.js';
+import nbt from 'prismarine-nbt';
+import minecraft_data from 'minecraft-data';
+import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
+import commands from '../../resources/data/commands.json' assert { type: 'json' };
+import { FilePath } from '../../structures/Protocol.js';
 
-const commands = require('../../resources/data/commands.json');
+const mcData = minecraft_data('1.19.2');
 
-class Command extends AutocompleteCommand {
+export default class Command extends AutocompleteCommand {
 
     constructor() {
         super({
@@ -298,7 +298,7 @@ async function getPlaceholder(key, args) {
             break;
         case 'disabled_datapacks':
         case 'enabled_datapacks':
-            const level = await getNBTFile(Protocol.FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
+            const level = await getNBTFile(...FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
 
             let datapacks = level?.Data?.DataPacks;
             if(key === 'enabled_datapacks') placeholder = datapacks?.Enabled;
@@ -312,7 +312,7 @@ async function getPlaceholder(key, args) {
         case 'player_coordinates_xz':
             const uuid = userConn?.uuid;
             if(!uuid) return {};
-            const playerData = await getNBTFile(Protocol.FilePath.PlayerData(server?.path, uuid), `./userdata/playernbt/${uuid}.dat`);
+            const playerData = await getNBTFile(...FilePath.PlayerData(server?.path, uuid), `./userdata/playernbt/${uuid}.dat`);
 
             const [x, y, z] = playerData?.Pos;
             if(!x || !z || !y) return {};
@@ -691,12 +691,12 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'scoreboards':
-            const scoreboards = await getNBTFile(Protocol.FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
+            const scoreboards = await getNBTFile(...FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
 
             placeholder = scoreboards?.data?.Objectives?.map(scoreboard => scoreboard.Name) ?? {};
             break;
         case 'bossbars':
-            const bossbars = await getNBTFile(Protocol.FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
+            const bossbars = await getNBTFile(...FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
             if(!bossbars) return {};
 
             try {
@@ -3160,7 +3160,7 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'teams':
-            const teams = await getNBTFile(Protocol.FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
+            const teams = await getNBTFile(...FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
 
             placeholder = teams?.data?.Teams?.map(team => team.Name) ?? {};
             break;
@@ -4478,13 +4478,13 @@ async function getPlaceholder(key, args) {
 
         let allFunctions = [];
 
-        const datapacks = await server.protocol.list(`${worldPath}/datapacks/`);
+        const datapacks = await server.protocol.list(FilePath.DataPacks(worldPath));
         if(datapacks?.status !== 200) return [];
 
         for(const datapack of datapacks.data) {
             if(!datapack.isDirectory) continue;
 
-            const namespaces = await server.protocol.list(`${worldPath}/datapacks/${datapack.name}/data/`);
+            const namespaces = await server.protocol.list(`${FilePath.DataPacks(worldPath)}/${datapack.name}/data/`);
             if(namespaces?.status !== 200) continue;
 
             for(const namespace of namespaces.data) {
@@ -4494,7 +4494,7 @@ async function getPlaceholder(key, args) {
         }
 
         async function listFunctions(datapack, namespace, path) {
-            const functions = await server.protocol.list(`${worldPath}/datapacks/${datapack}/data/${namespace}/functions/${path}`);
+            const functions = await server.protocol.list(`${FilePath.DataPacks(worldPath)}/${datapack}/data/${namespace}/functions/${path}`);
             if(functions?.status !== 200) return;
 
             for(const func of functions.data) {
@@ -4507,5 +4507,3 @@ async function getPlaceholder(key, args) {
         return allFunctions;
     }
 }
-
-module.exports = Command;

@@ -1,8 +1,8 @@
-const Connection = require('./Connection');
-const PluginProtocol = require('./PluginProtocol');
-const FtpProtocol = require('./FtpProtocol');
+import Connection from './Connection.js';
+import PluginProtocol from './PluginProtocol.js';
+import FtpProtocol from './FtpProtocol.js';
 
-class ServerConnection extends Connection {
+export default class ServerConnection extends Connection {
 
     /**
      * @typedef {object} ChatChannelData - The data for a chatchannel.
@@ -17,7 +17,8 @@ class ServerConnection extends Connection {
      * @property {string} ip - The ip of the server.
      * @property {number} port - The port used to connect to the server plugin.
      * @property {number} version - The minor minecraft version of the server.
-     * @property {string} path - The path to the world folder of the server.
+     * @property {string} worldPath - The path to the world folder of the server.
+     * @property {string} path - The path to the server folder of the server.
      * @property {string} hash - The connection hash used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
@@ -32,7 +33,8 @@ class ServerConnection extends Connection {
      * @property {string} password - The ftp password used to connect to the server.
      * @property {number} port - The ftp port used to connect to the server.
      * @property {number} version - The minor minecraft version of the server.
-     * @property {string} path - The path to the world folder of the server.
+     * @property {string} worldPath - The path to the world folder of the server.
+     * @property {string} path - The path to the server folder of the server.
      * @property {boolean} online - Whether the server-connection has online mode enabled or not.
      * @property {'ftp'|'sftp'} protocol - The protocol used to connect to the server.
      */
@@ -116,6 +118,12 @@ class ServerConnection extends Connection {
          * The path to the world folder of this server.
          * @type {string}
          * */
+        this.worldPath = data.worldPath ?? this.worldPath;
+
+        /**
+         * The path to the server folder of this server.
+         * @type {string}
+         */
         this.path = data.path ?? this.path;
 
         /**
@@ -177,7 +185,7 @@ class ServerConnection extends Connection {
             delete this.hash;
             delete this.channels;
         }
-        else this.protocol._patch(data);
+        else this.protocol._patch({ ...data, sftp: data.protocol === 'sftp' });
     }
 
     async _output() {
@@ -197,6 +205,7 @@ class ServerConnection extends Connection {
             port: this.port,
             version: this.version,
             path: this.path,
+            worldPath: this.worldPath,
             online: this.online,
         };
 
@@ -226,5 +235,3 @@ class ServerConnection extends Connection {
         return this.protocol instanceof PluginProtocol;
     }
 }
-
-module.exports = ServerConnection;

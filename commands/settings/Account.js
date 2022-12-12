@@ -1,9 +1,9 @@
-const Command = require('../../structures/Command');
-const { keys } = require('../../api/keys');
-const utils = require('../../api/utils');
-const Discord = require('discord.js');
+import Command from '../../structures/Command.js';
+import keys from '../../api/keys.js';
+import utils from '../../api/utils.js';
+import Discord from 'discord.js';
 
-class Account extends Command {
+export default class Account extends Command {
 
     constructor() {
         super({
@@ -25,7 +25,7 @@ class Account extends Command {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 
-            let uuid = await utils.fetchUUID(username);
+            const uuid = await utils.fetchUUID(username);
             if(!uuid) {
                 return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
             }
@@ -44,9 +44,10 @@ class Account extends Command {
             }
 
             await client.userConnections.disconnect(interaction.user.id);
-            await interaction.replyTl(keys.commands.disconnect.success, { method: 'account', method_cap: 'Account' });
+            await interaction.replyTl(keys.commands.disconnect.success, {
+                protocol: 'account',
+                protocol_cap: 'Account',
+            });
         }
     }
 }
-
-module.exports = Account;

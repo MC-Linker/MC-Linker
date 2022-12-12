@@ -1,14 +1,14 @@
-const crypto = require('crypto');
-const { pluginPort } = require('../../config.json');
-const { ph, addPh, addTranslatedResponses, getEmbed } = require('../../api/messages');
-const { keys } = require('../../api/keys');
-const Command = require('../../structures/Command');
-const PluginProtocol = require('../../structures/PluginProtocol');
-const FtpProtocol = require('../../structures/FtpProtocol');
-const Protocol = require('../../structures/Protocol');
-const utils = require('../../api/utils');
+import crypto from 'crypto';
+import config from '../../config.json' assert { type: 'json' };
+import { addPh, addTranslatedResponses, getEmbed, ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
+import Command from '../../structures/Command.js';
+import PluginProtocol from '../../structures/PluginProtocol.js';
+import FtpProtocol from '../../structures/FtpProtocol.js';
+import { FilePath } from '../../structures/Protocol.js';
+import utils from '../../api/utils.js';
 
-class Connect extends Command {
+export default class Connect extends Command {
 
     constructor() {
         super({
@@ -68,27 +68,31 @@ class Connect extends Command {
             //Search for server path if not given
             if(!serverPath) {
                 await interaction.replyTl(keys.commands.connect.warnings.searching_properties);
-                serverPath = await ftpProtocol.find('server.properties', '', 2);
+                serverPath = await ftpProtocol.find('server.properties', '', 3);
                 serverPath = serverPath?.data;
-                if(!serverPath) {
+                if(typeof serverPath !== 'string') {
                     return interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
                 }
             }
 
-            const serverProperties = await ftpProtocol.get(Protocol.FilePath.ServerProperties(serverPath), `./serverdata/connections/${interaction.guildId}/server.properties`);
+            const serverProperties = await ftpProtocol.get(...FilePath.ServerProperties(serverPath, interaction.guildId));
             if(!await utils.handleProtocolResponse(serverProperties, ftpProtocol, interaction, {
                 404: keys.commands.connect.errors.could_not_get_properties,
             })) return;
 
             const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
-            const separator = serverPath.includes('/') ? '/' : '\\';
+            let separator = serverPath.includes('\\') ? '\\' : '/';
+            console.log(separator, serverPath, propertiesObject['level-name']);
+            if(serverPath.endsWith(separator) || propertiesObject['level-name'].startsWith(separator)) separator = '';
+            /** @type {FtpServerConnectionData} */
             const serverConnectionData = {
                 ip: host,
                 username,
                 password,
                 port,
                 online: propertiesObject['online-mode'],
-                path: `${serverPath}${separator}${propertiesObject['level-name']}`,
+                path: serverPath,
+                worldPath: `${serverPath}${separator}${propertiesObject['level-name']}`,
                 version,
                 protocol,
             };
@@ -102,8 +106,8 @@ class Connect extends Command {
             await interaction.replyTl(keys.commands.connect.success.ftp);
         }
         else if(method === 'plugin') {
-            let ip = args[1]?.split(':').shift();
-            const port = args[2] ?? pluginPort;
+            const ip = args[1]?.split(':').shift();
+            const port = args[2] ?? config.pluginPort;
 
             await this._disconnectOldPlugin(interaction, server);
 
@@ -148,20 +152,24 @@ class Connect extends Command {
 
             await message.replyTl(keys.commands.connect.success.verification, ph.std(interaction));
 
-            /** @type {ServerConnectionData} */
+            /** @type {PluginServerConnectionData} */
             const serverConnectionData = {
-                id: interaction.guildId,
                 ip: resp.data.ip.split(':').shift(),
                 port: resp.data.ip.split(':').pop(),
                 version: parseInt(resp.data.version.split('.')[1]),
                 path: decodeURIComponent(resp.data.path),
+                worldPath: decodeURIComponent(resp.data.worldPath),
                 hash: resp.data.hash,
                 online: resp.data.online,
                 protocol: 'plugin',
+                channels: [],
             };
 
             if(server) await server.edit(serverConnectionData);
-            else await client.serverConnections.connect(serverConnectionData);
+            else await client.serverConnections.connect({
+                ...serverConnectionData,
+                id: interaction.guildId,
+            });
 
             return interaction.replyTl(keys.commands.connect.success.plugin);
         }
@@ -177,5 +185,3 @@ class Connect extends Command {
         }
     }
 }
-
-module.exports = Connect;
