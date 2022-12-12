@@ -1,7 +1,8 @@
 # To Build Run: docker build . -t Lianecx/mc-linker
 
-# FROM node:lts
-FROM node:18-slim
+FROM node:lts
+#FROM node:18-slim
+
 # Create app directory
 WORKDIR /usr/src/app
 
