@@ -5,6 +5,8 @@ import Button from '../structures/Button.js';
 
 export default class Disable extends Button {
 
+    disabledCommands = ['enable', 'disable', 'help'];
+
     constructor() {
         super({
             permissions: new PermissionsBitField(Discord.PermissionFlagsBits.Administrator),
@@ -15,10 +17,15 @@ export default class Disable extends Button {
     async execute(interaction, client, server) {
         if(!await super.execute(interaction, client, server)) return;
 
+        const commandName = interaction.customId.split('_').pop();
+
+        if(this.disabledCommands.includes(commandName)) {
+            return interaction.replyTl(keys.commands.disable.warnings.disabled_command, { disable: commandName });
+        }
+
         let settings = server ? server.settings : client.settingsConnections.cache.get(interaction.guildId);
         if(!settings) settings = await client.settingsConnections.connect(interaction.guildId);
 
-        const commandName = interaction.customId.split('_').pop();
 
         if(await settings.disable('commands', commandName)) {
             await interaction.replyTl(keys.buttons.disable.success.response, { 'command_name': commandName.cap() });

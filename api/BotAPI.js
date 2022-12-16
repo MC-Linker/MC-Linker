@@ -41,6 +41,13 @@ export default class BotAPI {
             if(!server) return reply.status(403).send();
             else reply.send({});
 
+            //Check whether command is blocked
+            const cmdWithoutSlash = message.replace(/^\//, '');
+            if(
+                ['player_command', 'console_command', 'block_command'].includes(type) &&
+                server.settings.disabled['chat-commands']?.some(cmd => cmdWithoutSlash.startsWith(cmd))
+            ) return;
+
             let chatEmbed;
             if(type === 'advancement') {
                 let advancementTitle;

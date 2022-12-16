@@ -63,6 +63,14 @@ export default class Connection extends Base {
     }
 
     /**
+     * Saves the connection to the fs.
+     * @returns {Promise<boolean>} - Whether the connection was saved successfully.
+     */
+    async save() {
+        return await this._output();
+    }
+
+    /**
      * Returns the writable data of the connection.
      * @returns {ConnectionData} - The writable data of the connection.
      * @abstract

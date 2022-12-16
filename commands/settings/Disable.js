@@ -2,6 +2,9 @@ import utils from '../../api/utils.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
+import commands from '../../resources/data/commands.json' assert { type: 'json' };
+
+const commandNames = Object.keys(commands);
 
 export default class Disable extends AutocompleteCommand {
 
@@ -19,9 +22,21 @@ export default class Disable extends AutocompleteCommand {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        let matchingKeys;
+        let matchingKeys = [];
         if(subcommand === 'advancements') matchingKeys = utils.searchAllAdvancements(focused);
         else if(subcommand === 'stats') matchingKeys = utils.searchAllStats(focused);
+        else if(subcommand === 'chat-commands') {
+            for(const name of commandNames) {
+                if(!name.includes(focused)) continue;
+
+                matchingKeys.push({
+                    name,
+                    value: name,
+                });
+            }
+
+            if(matchingKeys.length >= 25) matchingKeys.length = 25;
+        }
 
         interaction.respond(matchingKeys)
             .catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
@@ -30,54 +45,49 @@ export default class Disable extends AutocompleteCommand {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        let settings = server ? server.settings : client.settingsConnections.cache.get(interaction.guildId);
-        if(!settings) settings = await client.settingsConnections.connect(interaction.guildId);
-
-        let type = args?.shift();
+        const settings = await client.settingsConnections.getOrConnect(interaction.guildId);
+        const type = args?.shift();
 
         if(type === 'list') {
             const toList = args?.join(' ').toLowerCase();
 
             const disabled = settings.disabled[toList];
-            if(!disabled.length) {
+            if(!disabled?.length) {
                 return interaction.replyTl(keys.commands.disable.success.nothing_disabled, { 'type': toList });
             }
 
-            const listEmbed = getEmbed(keys.commands.disable.success.list.base, { 'type': toList.cap() });
+            const listEmbed = getEmbed(keys.commands.disable.success.list.base, { 'type': toList.cap() }, ph.emojis());
 
-            let counter = 1;
             let listString = '';
             for(let i = 0; i < disabled.length; i++) {
                 let disable = disabled[i];
 
                 disable = getFormattedName(toList, disable);
 
-                listString += `${addPh(keys.commands.disable.success.list.final.embeds[0].fields[0].name, { disable })}\n`;
+                listString += `${addPh(keys.commands.disable.success.list.entry, { disable })}\n`;
 
                 //New field for every 25 items
-                if(counter % 25 || i === disabled.length - 1) {
-                    listEmbed.addFields(addPh(keys.commands.disable.success.list.final.embeds[0].fields[0], { disable: listString }));
+                if((i + 1) % 25 === 0 || i === disabled.length - 1) {
+                    listEmbed.addFields(addPh(keys.commands.disable.success.list.final.embeds[0].fields[0], { list: listString }));
                     listString = '';
                 }
-
-                counter++;
             }
 
             return interaction.replyOptions({ embeds: [listEmbed] });
         }
         else {
             let toDisable = args?.join(' ').toLowerCase();
-            const argPlaceholder = { 'disable': toDisable, type };
+            const argPlaceholder = { disable: toDisable, type };
 
-            if(type === 'commands' && this.disabledCommands.includes(toDisable)) {
+            if(type === 'bot-commands' && this.disabledCommands.includes(toDisable)) {
                 return interaction.replyTl(keys.commands.disable.warnings.disabled_command, argPlaceholder);
             }
 
-            let formattedToDisable = getFormattedName(type, toDisable);
+            const formattedToDisable = getFormattedName(type, toDisable);
             if(!formattedToDisable) {
                 return interaction.replyTl(keys.commands.disable.warnings.command_does_not_exist, argPlaceholder);
             }
-            if(type === 'commands') toDisable = formattedToDisable.toLowerCase();
+            if(type === 'bot-commands') toDisable = formattedToDisable.toLowerCase();
 
             if(!await settings.disable(type, toDisable)) {
                 return interaction.replyTl(keys.commands.disable.errors.could_not_disable, {
@@ -90,7 +100,7 @@ export default class Disable extends AutocompleteCommand {
         }
 
         function getFormattedName(type, name) {
-            if(type === 'commands') {
+            if(type === 'bot-commands') {
                 const command = client.commands.get(name);
                 if(!command) return;
 
@@ -104,7 +114,8 @@ export default class Disable extends AutocompleteCommand {
                 const matchingStat = utils.searchAllStats(name, true, true, 1);
                 return matchingStat?.shift()?.name ?? name;
             }
-            else return name.split('_').map(word => word.cap()).join(' ');
+
+            return name;
         }
     }
 }

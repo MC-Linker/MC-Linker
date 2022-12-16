@@ -2,27 +2,30 @@ import Connection from './Connection.js';
 
 export default class SettingsConnection extends Connection {
 
+    /** @type {Omit<SettingsConnectionData, 'id'>} */
     static defaultSettingsData = {
         disabled: {
-            commands: [],
+            'bot-commands': [],
             advancements: [],
             stats: [],
+            'chat-commands': [],
         },
         language: 'en_us',
     };
 
     /**
      * @typedef {object} DisableData - The data for disabled commands, advancements or stats.
-     * @property {string[]} commands - The disabled commands.
+     * @property {string[]} bot-commands - The disabled bot-commands.
      * @property {string[]} advancements - The disabled advancements.
      * @property {string[]} stats - The disabled stats.
+     * @property {string[]} chat-commands - The disabled chatchannel-commands.
      */
 
     /**
      * @typedef {object} SettingsConnectionData - The data for the settings.
      * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
      * @property {string} language - The language code id this server uses.
-     * @property {string} id - The id of the server the settings are connected to.
+     * @property {string} id - The id of the server the settings are connected to.''
      */
 
     /**
@@ -74,16 +77,12 @@ export default class SettingsConnection extends Connection {
          * The data for disabled commands, advancements or stats.
          * @type {DisableData}
          */
-        this.disabled ??= {
-            commands: [],
-            advancements: [],
-            stats: [],
-        };
+        this.disabled ??= SettingsConnection.defaultSettingsData.disabled;
 
         //Loop over data.disabled and assign commands, advancements and stats to this.disabled
         if('disabled' in data) {
-            if('commands' in data.disabled) {
-                this.disabled.commands = data.disabled.commands;
+            if('bot-commands' in data.disabled) {
+                this.disabled['bot-commands'] = data.disabled['bot-commands'];
             }
             if('advancements' in data.disabled) {
                 this.disabled.advancements = data.disabled.advancements;
@@ -91,24 +90,30 @@ export default class SettingsConnection extends Connection {
             if('stats' in data.disabled) {
                 this.disabled.stats = data.disabled.stats;
             }
+            if('chat-commands' in data.disabled) {
+                this.disabled['chat-commands'] = data.disabled['chat-commands'];
+            }
         }
     }
 
     /**
      * Disables a command, advancement or stat.
-     * @param {'commands'|'advancements'|'stats'} type - The type of the value to disable.
+     * @param {'bot-commands'|'advancements'|'stats'|'chat-commands'} type - The type of the value to disable.
      * @param {string} value - The value to disable.
      * @returns {Promise<?SettingsConnection>} - The settings instance that has been edited.
      */
     async disable(type, value) {
         const currentValues = this.disabled[type];
-        currentValues.push(value);
-        return await this.edit({ [type]: [currentValues] });
+        if(!currentValues.includes(value)) {
+            currentValues.push(value);
+            return await this.edit({ [type]: [currentValues] });
+        }
+        return this;
     }
 
     /**
      * Enables a command, advancement or stat.
-     * @param {'commands'|'advancements'|'stats'} type - The type of the value to enable.
+     * @param {'bot-commands'|'advancements'|'stats'|'chat-commands'} type - The type of the value to enable.
      * @param {string} value - The value to enable.
      * @returns {Promise<SettingsConnection>}
      */
@@ -121,7 +126,7 @@ export default class SettingsConnection extends Connection {
 
     /**
      * Checks whether a command, advancement or stat is disabled.
-     * @param {'commands'|'advancements'|'stats'} type - The type of the value to check.
+     * @param {'bot-commands'|'advancements'|'stats'|'chat-commands'} type - The type of the value to check.
      * @param {string} value - The value to check.
      * @returns {boolean}
      */
