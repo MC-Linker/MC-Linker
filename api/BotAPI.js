@@ -42,10 +42,10 @@ export default class BotAPI {
             else reply.send({});
 
             //Check whether command is blocked
-            const cmdWithoutSlash = message.replace(/^\//, '');
+            const commandName = message.replace(/^\//, '').split(/\s+/)[0];
             if(
                 ['player_command', 'console_command', 'block_command'].includes(type) &&
-                server.settings.disabled['chat-commands']?.some(cmd => cmdWithoutSlash.startsWith(cmd))
+                server.settings.disabled['chat-commands']?.some(cmd => cmd === commandName)
             ) return;
 
             let chatEmbed;
