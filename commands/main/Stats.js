@@ -107,7 +107,7 @@ export default class Stats extends AutocompleteCommand {
             });
         }
         catch(err) {
-            await interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder, ph.error(err));
+            await interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
     }
 }

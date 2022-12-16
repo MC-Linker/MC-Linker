@@ -513,7 +513,7 @@
               "description": "%emoji_error% %username% has never done anything in this category."
             }
           ],
-          "console": "Error trying to parse stat json %error%"
+          "console": "Error trying to parse stat json"
         }
       },
       "success": {
