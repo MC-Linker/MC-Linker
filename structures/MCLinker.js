@@ -139,8 +139,8 @@ export default class MCLinker extends Discord.Client {
 
         for(const file of buttonFiles) {
             // noinspection LocalVariableNamingConventionJS
-            const ButtonFile = await import(`file://${path.resolve(`${this.buttonPath}/${file}`)}`);
-            if(ButtonFile.prototype instanceof Button) {
+            const { default: ButtonFile } = await import(`file://${path.resolve(`${this.buttonPath}/${file}`)}`);
+            if(ButtonFile?.prototype instanceof Button) {
                 const button = new ButtonFile();
 
                 this.buttons.set(button.id, button);

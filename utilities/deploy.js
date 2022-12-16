@@ -1,6 +1,6 @@
 //noinspection JSUnresolvedVariable
 import { REST, Routes } from 'discord.js';
-import { clientId, guildId, token } from '../config.json' assert { type: 'json' };
+import config from '../config.json' assert { type: 'json' };
 import { getCommand } from '../api/messages.js';
 import keys from '../api/keys.js';
 import fs from 'fs-extra';
@@ -91,16 +91,16 @@ commands.push(helpBuilder.toJSON());
 
 
 // noinspection JSCheckFunctionSignatures,JSClosureCompilerSyntax
-const rest = new REST({ version: '10' }).setToken(token);
+const rest = new REST({ version: '10' }).setToken(config.token);
 
 (async () => {
     try {
         if(deployGuild) {
             console.log('Started deploying application guild (/) commands.');
 
-            for(const guild of Array.isArray(guildId) ? guildId : [guildId]) {
+            for(const guild of Array.isArray(config.guildId) ? config.guildId : [config.guildId]) {
                 await rest.put(
-                    Routes.applicationGuildCommands(clientId, guild),
+                    Routes.applicationGuildCommands(config.clientId, guild),
                     { body: commands },
                 );
             }
@@ -108,27 +108,27 @@ const rest = new REST({ version: '10' }).setToken(token);
         if(deployGlobal) {
             console.log('Started deploying application global (/) commands.');
             await rest.put(
-                Routes.applicationCommands(clientId),
+                Routes.applicationCommands(config.clientId),
                 { body: commands },
             );
         }
 
         if(deleteGuild) {
             console.log('Started deleting application guild (/) commands.');
-            for(const guild of Array.isArray(guildId) ? guildId : [guildId]) {
-                const resp = await rest.get(Routes.applicationGuildCommands(clientId, guildId));
+            for(const guild of Array.isArray(config.guildId) ? config.guildId : [config.guildId]) {
+                const resp = await rest.get(Routes.applicationGuildCommands(config.clientId, config.guildId));
 
                 for(const command of resp) {
-                    await rest.delete(`${Routes.applicationGuildCommand(clientId, guild, command.id)}`);
+                    await rest.delete(`${Routes.applicationGuildCommand(config.clientId, guild, command.id)}`);
                 }
             }
         }
         if(deleteGlobal) {
             console.log('Started deleting application global (/) commands.');
-            const resp = await rest.get(Routes.applicationCommands(clientId));
+            const resp = await rest.get(Routes.applicationCommands(config.clientId));
 
             for(const command of resp) {
-                await rest.delete(`${Routes.applicationCommands(clientId)}/${command.id}`);
+                await rest.delete(`${Routes.applicationCommands(config.clientId)}/${command.id}`);
             }
         }
 

@@ -95,7 +95,7 @@ client.on('messageCreate', async message => {
     //check if in guild
     if(!message.inGuild()) return message.replyTl(keys.main.warnings.not_in_guild);
 
-    const args = message.content.slice(config.prefix.length).trim().split(/ +/);
+    const args = message.content.slice(config.prefix.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName);
@@ -162,7 +162,7 @@ client.on('interactionCreate', async interaction => {
     }
     else if(interaction.isButton()) {
         let button = client.buttons.get(interaction.customId);
-        if(!button) button = client.buttons.find(b => b.id.startsWith(interaction.customId));
+        if(!button) button = client.buttons.find(b => interaction.customId.startsWith(b.id));
 
         try {
             if(!button) return;

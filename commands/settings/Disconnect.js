@@ -12,7 +12,6 @@ export default class Disconnect extends Command {
         });
     }
 
-
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 

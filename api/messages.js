@@ -199,12 +199,16 @@ export const ph = {
      * Placeholders for a command by name.
      * @param {string} commandName - The name of the command to get placeholders for.
      * @param {Client} client - The client to get the command from.
+     * @param {Guild} guild - The guild to get the command from (for non-production).
      * @returns {Promise<{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}>}
      */
-    async commandName(commandName, client) {
+    async commandName(commandName, client, guild) {
         if(!(client instanceof Discord.Client)) return {};
 
-        const command = await fetchCommand(client.application.commands, commandName);
+        // Use guild commands if not verified bot (test-bot)
+        const commandManager = client.user.flags.has(Discord.UserFlags.VerifiedBot)
+            ? client.application.commands : guild.commands;
+        const command = await fetchCommand(commandManager, commandName);
         if(!command) return {};
 
         return this.command(command);
