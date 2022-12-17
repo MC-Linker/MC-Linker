@@ -12,11 +12,11 @@ for(const folder of serverFolders) {
     const connection = fs.readJsonSync(`./serverdata/connections/${folder}/settings.json`);
     const newConnection = { ...connection };
 
-    console.log('Old Disable:', connection.disabled);
+    console.log('Old Disabled:', connection.disabled);
     newConnection.disabled = {
-        'bot-commands': connection.commands,
-        'stats': connection.stats,
-        'advancements': connection.advancements,
+        'bot-commands': connection.disabled.commands,
+        'stats': connection.disabled.stats,
+        'advancements': connection.disabled.advancements,
         'chat-commands': [],
     };
     console.log('New Disabled:', newConnection.disabled);
