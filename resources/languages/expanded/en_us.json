@@ -513,7 +513,7 @@
               "description": "%emoji_error% %username% has never done anything in this category."
             }
           ],
-          "console": "Error trying to parse stat json %error%"
+          "console": "Error trying to parse stat json"
         }
       },
       "success": {
@@ -1207,7 +1207,7 @@
           "embeds": [
             {
               "title": "Could Not Disable",
-              "description": "Could not disable %type% **%disable%**."
+              "description": "%emoji_error% Could not disable %type% **%disable%**."
             }
           ],
           "console": "Could not disable %disable%"
@@ -1238,18 +1238,19 @@
             "embeds": [
               {
                 "title": "Disable List",
-                "description": "%type%",
-                "color": "Red"
+                "description": "%emoji_success% Here's a list of all disabled **%type%**:",
+                "color": "Green"
               }
             ]
           },
+          "entry": "- `%disable%`",
           "final": {
             "embeds": [
               {
                 "fields": [
                   {
-                    "name": "%disable%",
-                    "value": "​",
+                    "name": "​",
+                    "value": "%list%",
                     "inline": true
                   }
                 ]
@@ -2536,13 +2537,13 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Disable a specific command/stat/advancement. List of disabled commands/stats/advancements with `/disable list`.\n Command-disabling is also possible through buttons in `/help <command>`.",
+      "long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.\nBot-commands can also be disabled through buttons in `/help <command>`.",
       "description": "Disable a specific command/stat/advancement.",
       "options": [
         {
           "type": "Subcommand",
-          "name": "commands",
-          "description": "Disable a command",
+          "name": "bot-commands",
+          "description": "Disable a bot-command preventing it from being used.",
           "options": [
             {
               "type": "String",
@@ -2582,8 +2583,22 @@
         },
         {
           "type": "Subcommand",
+          "name": "chat-commands",
+          "description": "Disable a command preventing it from being sent in any chatchannel.",
+          "options": [
+            {
+              "type": "String",
+              "name": "command",
+              "description": "Set the command you want to disable",
+              "required": true,
+              "autocomplete": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
           "name": "list",
-          "description": "Get a list of all disabled stats/advancements/commands",
+          "description": "Get a list of all disabled commands/stats/advancements",
           "options": [
             {
               "type": "String",
@@ -2592,15 +2607,19 @@
               "required": true,
               "choices": [
                 {
-                  "name": "commands",
-                  "value": "commands"
+                  "name": "Bot Commands",
+                  "value": "bot-commands"
                 },
                 {
-                  "name": "advancements",
+                  "name": "Chat Commands",
+                  "value": "chat-commands"
+                },
+                {
+                  "name": "Advancements",
                   "value": "advancements"
                 },
                 {
-                  "name": "stats",
+                  "name": "Stats",
                   "value": "stats"
                 }
               ]
@@ -2624,13 +2643,13 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Command-enabling is also possible through buttons in `/help <command>`.",
+      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Bot-Commands can also be enabled through buttons in `/help <command>`.",
       "description": "Enable a disabled command/stat/advancement (All enabled by default)",
       "options": [
         {
           "type": "Subcommand",
-          "name": "commands",
-          "description": "Enable a disabled command",
+          "name": "bot-commands",
+          "description": "Enable a disabled bot-command allowing it to be used again.",
           "options": [
             {
               "type": "String",
@@ -2664,6 +2683,20 @@
               "type": "String",
               "name": "advancement",
               "description": "Set the advancement you want to enable",
+              "required": true,
+              "autocomplete": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "chat-commands",
+          "description": "Enable a disabled chat-command allowing it to be sent again.",
+          "options": [
+            {
+              "type": "String",
+              "name": "command",
+              "description": "Set the command you want to enable",
               "required": true,
               "autocomplete": true
             }

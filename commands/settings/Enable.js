@@ -13,7 +13,6 @@ export default class Enable extends AutocompleteCommand {
         });
     }
 
-
     autocomplete(interaction, client) {
         const settings = client.settingsConnections.cache.get(interaction.guildId);
         if(!settings) return;
@@ -28,8 +27,8 @@ export default class Enable extends AutocompleteCommand {
         const respondArray = [];
         for(let disable of matchingDisabled) {
             disable = disable.replaceAll(`${interaction.guildId}_`, '');
-            let formattedDisable;
 
+            let formattedDisable;
             if(subcommand === 'advancements') {
                 const matchingTitle = utils.searchAllAdvancements(disable, true, true, 1);
                 formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
@@ -39,7 +38,8 @@ export default class Enable extends AutocompleteCommand {
                 const matchingStat = utils.searchAllStats(disable, true, true, 1);
                 formattedDisable = matchingStat.shift()?.name ?? disable.cap();
             }
-            else formattedDisable = disable.cap();
+            else if(subcommand === 'bot-commands') formattedDisable = disable.cap();
+            else formattedDisable = disable;
 
             respondArray.push({
                 name: formattedDisable,
@@ -54,14 +54,17 @@ export default class Enable extends AutocompleteCommand {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const settings = client.settingsConnections.cache.get(interaction.guildId);
-
-        let type = args?.shift();
+        const type = args?.shift();
         let toEnable = args?.join(' ').toLowerCase();
         const argPlaceholder = { type, 'enable': toEnable };
 
+        const settings = client.settingsConnections.cache.get(interaction.guildId);
+        if(!settings) {
+            return interaction.replyTl(keys.commands.enable.warnings.already_enabled, argPlaceholder);
+        }
+
         let formattedToEnable;
-        if(type === 'commands') {
+        if(type === 'bot-commands') {
             const command = keys.data[toEnable];
 
             if(!command) {
@@ -79,6 +82,7 @@ export default class Enable extends AutocompleteCommand {
         else if(type === 'stats') {
             formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
         }
+        else formattedToEnable = toEnable;
 
         if(!settings?.isDisabled(type, toEnable)) {
             return interaction.replyTl(keys.commands.enable.warnings.already_enabled, {

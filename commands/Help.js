@@ -43,7 +43,7 @@ export default class Help extends Command {
 
                 helpEmbed.addFields(addPh(
                     keys.commands.help.success.category.embeds[0].fields[0],
-                    await ph.commandName(command.name, client),
+                    await ph.commandName(command.name, client, interaction.guild),
                     { 'command_description': command.description },
                 ));
             }
@@ -70,7 +70,7 @@ export default class Help extends Command {
                     'command_usage': commandUsage,
                     'invite_link': config.discordLink,
                 },
-                await ph.commandName(commandName, client),
+                await ph.commandName(commandName, client, interaction.guild),
             ));
 
             if(settings && settings.isDisabled('commands', command.name)) {
