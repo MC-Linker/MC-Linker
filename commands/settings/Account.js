@@ -2,6 +2,8 @@ import Command from '../../structures/Command.js';
 import keys from '../../api/keys.js';
 import utils from '../../api/utils.js';
 import Discord from 'discord.js';
+import crypto from 'crypto';
+import { ph } from '../../api/messages.js';
 
 export default class Account extends Command {
 
@@ -20,6 +22,10 @@ export default class Account extends Command {
         if(subcommand === 'connect') {
             const username = args[1];
 
+            if(!server?.hasPluginProtocol()) {
+                return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
+            }
+
             if(username.match(Discord.MessageMentions.UsersPattern)) {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
@@ -29,13 +35,31 @@ export default class Account extends Command {
                 return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
             }
 
-            await client.userConnections.connect({
-                id: interaction.user.id,
-                uuid,
-                username,
-            });
+            const code = crypto.randomBytes(5).toString('hex');
+            console.log(code);
 
-            await interaction.replyTl(keys.commands.account.success, { username, uuid });
+            const verifyResponse = await server.protocol.verifyUser(code, uuid);
+            if(!await utils.handleProtocolResponse(verifyResponse, server.protocol, interaction)) return;
+
+            await interaction.replyTl(keys.commands.account.success.verify_info, { code }, ph.emojis());
+
+            const timeout = setTimeout(async () => {
+                await interaction.replyTl(keys.commands.account.errors.verify_timeout);
+            }, 180_000);
+
+            client.api.on('/verify/response', async body => {
+                if(body.uuid !== uuid || body.code !== code) return;
+
+                clearTimeout(timeout);
+
+                await client.userConnections.connect({
+                    id: interaction.user.id,
+                    uuid,
+                    username,
+                });
+
+                await interaction.replyTl(keys.commands.account.success.verified, ph.emojis());
+            });
         }
         else if(subcommand === 'disconnect') {
             if(!client.userConnections.cache.has(interaction.user.id)) {
