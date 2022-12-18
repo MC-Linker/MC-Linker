@@ -36,8 +36,7 @@ export default class Account extends Command {
                 return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
             }
 
-            const code = crypto.randomBytes(5).toString('hex');
-            console.log(code);
+            const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
 
             const verifyResponse = await server.protocol.verifyUser(code, uuid);
             if(!await utils.handleProtocolResponse(verifyResponse, server.protocol, interaction)) return;
