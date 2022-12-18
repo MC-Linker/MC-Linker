@@ -5,9 +5,13 @@ import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import config from '../config.json' assert { type: 'json' };
 import PluginProtocol from '../structures/PluginProtocol.js';
+import { EventEmitter } from 'node:events';
 
-export default class BotAPI {
+export default class BotAPI extends EventEmitter {
+
     constructor(client) {
+        super();
+        super.setMaxListeners(0); // Set unlimited listeners
 
         /**
          * The client this api is for.
@@ -20,6 +24,11 @@ export default class BotAPI {
          * @type {import('fastify').FastifyInstance}
          */
         this.fastify = Fastify();
+
+        this.fastify.addHook('onRequest', (request, reply, done) => {
+            this.emit(request.routerPath, request, reply);
+            done();
+        });
     }
 
     async startServer() {
@@ -157,6 +166,10 @@ export default class BotAPI {
             catch(_) {}
         });
 
+        this.fastify.post('/verify/response', (req, res) => {
+
+        });
+
         //Returns latest version
         this.fastify.get('/version', () => config.pluginVersion);
         //Root endpoint
@@ -166,6 +179,7 @@ export default class BotAPI {
             if(err) throw err;
             console.log(addPh(keys.api.plugin.success.listening.console, { address }));
         });
+
         return this.fastify;
     }
 }

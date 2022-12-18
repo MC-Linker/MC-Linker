@@ -8,6 +8,7 @@ import keys from '../api/keys.js';
 import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';
+import BotAPI from '../api/BotAPI.js';
 
 export default class MCLinker extends Discord.Client {
 
@@ -57,6 +58,12 @@ export default class MCLinker extends Discord.Client {
         ],
     }) {
         super(options);
+
+        /**
+         * The API instance of the bot.
+         * @type {BotAPI}
+         */
+        this.api = new BotAPI(this);
 
         /**
          * The server-connection manager for the bot.
