@@ -39,6 +39,29 @@ const PluginRoutes = {
         { path },
     ],
     /**
+     * Generates a verification code and displays it on the server.
+     * @param {string} id - The guild id that is requesting the code.
+     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     */
+    VerifyGuild: id => [
+        'GET',
+        '/verify/guild',
+        {},
+        { id },
+    ],
+    /**
+     * Sends a verification request to the server. Users can verify using `/verify <code>`.
+     * @param {string} code - The verification code to send to the server.
+     * @param {string} uuid - The uuid of the user that is verifying.
+     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     */
+    VerifyUser: (code, uuid) => [
+        'GET',
+        '/verify/user',
+        {},
+        { code, uuid },
+    ],
+    /**
      * Lists the files in a folder on the server.
      * @param {string} folder - The folder to list.
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
@@ -48,17 +71,6 @@ const PluginRoutes = {
         '/file/list',
         {},
         { folder },
-    ],
-    /**
-     * Generates a verification code and displays it on the server.
-     * @param {string} id - The guild id that is requesting the code.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
-     */
-    Verify: id => [
-        'GET',
-        '/verify',
-        {},
-        { id },
     ],
     /**
      * Executes a command on the server.
@@ -235,9 +247,18 @@ export default class PluginProtocol extends Protocol {
      * Generates a verification code and displays it on the server.
      * @returns {Promise<ProtocolResponse>} - The response from the plugin.
      */
-    async verify() {
-        const response = await this._fetch(...PluginRoutes.Verify(this.id));
+    async verifyGuild() {
+        const response = await this._fetch(...PluginRoutes.VerifyGuild(this.id));
         return await fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Sends a verification request to the server. Users can verify using `/verify <code>`.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async verifyUser(code, uuid) {
+        const response = await this._fetch(...PluginRoutes.VerifyUser(code, uuid));
+        return fetchToProtocolResponse(response);
     }
 
     /**
@@ -389,7 +410,7 @@ export default class PluginProtocol extends Protocol {
      */
     async _fetch(method, route, body = {}, queries = {}, authorization = null) {
         try {
-            let url = new URL(`http://${this.ip}:${this.port}`);
+            const url = new URL(`http://${this.ip}:${this.port}`);
             url.pathname = route;
             for(const key in queries) {
                 url.searchParams.append(key, queries[key]);
