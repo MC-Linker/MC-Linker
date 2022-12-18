@@ -429,10 +429,17 @@
   "commands.account.warnings.not_connected.embeds.0.description": "%emoji_warning% Your minecraft account is not connected.",
   "commands.account.warnings.not_connected.console": "Account not connected",
 
-  "commands.account.success.embeds.0.title": "Connected to Account",
-  "commands.account.success.embeds.0.description": "%emoji_success% Successfully connected with username: **%username%** and UUID: **%uuid%**",
-  "commands.account.success.console": "Successfully wrote user file",
+  "commands.account.warnings.verification_timeout.embeds.0.title": "Verification Timeout",
+  "commands.account.warnings.verification_timeout.embeds.0.description": "%emoji_warning% Account verification timed out. Please try again.",
+  "commands.account.warnings.verification_timeout.console": "Verification timed out",
 
+  "commands.account.success.verification_info.embeds.0.title": "Account Verification",
+  "commands.account.success.verification_info.embeds.0.description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and type `/verify <code>` in chat.\n\n**Verification Code:** `%code%`",
+  "commands.account.success.verification_info.embeds.0.color": "DarkGold",
+
+  "commands.account.success.verified.embeds.0.title": "Account Verified",
+  "commands.account.success.verified.embeds.0.description": "%emoji_success% Successfully verified your account.",
+  "commands.account.success.verified.embeds.0.console": "Account verified",
 
 
   "commands.chatchannel.warnings.no_channels.embeds.0.title": "No Channels Added",
@@ -598,8 +605,8 @@
   "commands.connect.success.plugin.console": "Successfully wrote plugin file",
 
   "commands.connect.success.verification.embeds.0.title": "Verification Successful",
-  "commands.connect.success.verification.embeds.0.description": "%emoji_success% Successfully verified.",
-  "commands.connect.success.verification.console": "Correct code",
+  "commands.connect.success.verification.embeds.0.description": "%emoji_success% Successfully verified your server.",
+  "commands.connect.success.verification.console": "Guild verified",
 
 
 

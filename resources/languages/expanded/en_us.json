@@ -828,16 +828,36 @@
             }
           ],
           "console": "Account not connected"
+        },
+        "verification_timeout": {
+          "embeds": [
+            {
+              "title": "Verification Timeout",
+              "description": "%emoji_warning% Account verification timed out. Please try again."
+            }
+          ],
+          "console": "Verification timed out"
         }
       },
       "success": {
-        "embeds": [
-          {
-            "title": "Connected to Account",
-            "description": "%emoji_success% Successfully connected with username: **%username%** and UUID: **%uuid%**"
-          }
-        ],
-        "console": "Successfully wrote user file"
+        "verification_info": {
+          "embeds": [
+            {
+              "title": "Account Verification",
+              "description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and type `/verify <code>` in chat.\n\n**Verification Code:** `%code%`",
+              "color": "DarkGold"
+            }
+          ]
+        },
+        "verified": {
+          "embeds": [
+            {
+              "title": "Account Verified",
+              "description": "%emoji_success% Successfully verified your account.",
+              "console": "Account verified"
+            }
+          ]
+        }
       }
     },
     "chatchannel": {
@@ -1174,10 +1194,10 @@
           "embeds": [
             {
               "title": "Verification Successful",
-              "description": "%emoji_success% Successfully verified."
+              "description": "%emoji_success% Successfully verified your server."
             }
           ],
-          "console": "Correct code"
+          "console": "Guild verified"
         }
       }
     },

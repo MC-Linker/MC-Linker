@@ -12,6 +12,7 @@ export default class Account extends Command {
             name: 'account',
             category: 'settings',
             requiresConnectedServer: false,
+            ephemeral: true,
         });
     }
 
@@ -41,10 +42,13 @@ export default class Account extends Command {
             const verifyResponse = await server.protocol.verifyUser(code, uuid);
             if(!await utils.handleProtocolResponse(verifyResponse, server.protocol, interaction)) return;
 
-            await interaction.replyTl(keys.commands.account.success.verify_info, { code }, ph.emojis());
+            await interaction.replyTl(keys.commands.account.success.verification_info, {
+                code,
+                ip: server.ip,
+            }, ph.emojis());
 
             const timeout = setTimeout(async () => {
-                await interaction.replyTl(keys.commands.account.errors.verify_timeout);
+                await interaction.replyTl(keys.commands.account.warnings.verification_timeout);
             }, 180_000);
 
             client.api.on('/verify/response', async body => {
