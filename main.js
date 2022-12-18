@@ -15,7 +15,6 @@ import { addPh, addTranslatedResponses, ph } from './api/messages.js';
 import config from './config.json' assert { type: 'json' };
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
-import BotAPI from './api/BotAPI.js';
 
 const client = new MCLinker();
 
@@ -56,7 +55,7 @@ client.once('ready', async () => {
     await client.loadEverything();
 
     //Start API server
-    await new BotAPI(client).startServer();
+    await client.api.startServer();
 
     //Register minecraft font
     Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');

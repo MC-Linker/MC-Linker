@@ -292,6 +292,7 @@ export default class PluginProtocol extends Protocol {
                 await fs.ensureFile(putPath);
 
                 const writeStream = fs.createWriteStream(putPath);
+                // noinspection JSUnresolvedFunction
                 await response.body.pipe(writeStream);
                 writeStream.on('finish', async () => resolve({
                     status: response.status,

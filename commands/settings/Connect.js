@@ -114,7 +114,7 @@ export default class Connect extends Command {
             const hash = crypto.randomBytes(32).toString('hex');
             const pluginProtocol = new PluginProtocol(client, { ip, hash, port, id: interaction.guildId });
 
-            const verify = await pluginProtocol.verify();
+            const verify = await pluginProtocol.verifyGuild();
             if(!await utils.handleProtocolResponse(verify, pluginProtocol, interaction, {
                 409: keys.commands.connect.warnings.already_connected,
             })) return;
