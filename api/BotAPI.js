@@ -25,8 +25,8 @@ export default class BotAPI extends EventEmitter {
          */
         this.fastify = Fastify();
 
-        this.fastify.addHook('onRequest', (request, reply, done) => {
-            this.emit(request.routerPath, request, reply);
+        this.fastify.addHook('preHandler', (request, reply, done) => {
+            this.emit(request.url, request, reply);
             done();
         });
     }

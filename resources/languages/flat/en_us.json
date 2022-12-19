@@ -434,7 +434,7 @@
   "commands.account.warnings.verification_timeout.console": "Verification timed out",
 
   "commands.account.success.verification_info.embeds.0.title": "Account Verification",
-  "commands.account.success.verification_info.embeds.0.description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and type `/verify <code>` in chat.\n\n**Verification Code:** `%code%`",
+  "commands.account.success.verification_info.embeds.0.description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and type `/verify %code%` in chat.\n**You have 3 minutes to run the command.**",
   "commands.account.success.verification_info.embeds.0.color": "DarkGold",
 
   "commands.account.success.verified.embeds.0.title": "Account Verified",

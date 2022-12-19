@@ -844,7 +844,7 @@
           "embeds": [
             {
               "title": "Account Verification",
-              "description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and type `/verify <code>` in chat.\n\n**Verification Code:** `%code%`",
+              "description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and type `/verify %code%` in chat.\n**You have 3 minutes to run the command.**",
               "color": "DarkGold"
             }
           ]

@@ -50,8 +50,9 @@ export default class Account extends Command {
                 await interaction.replyTl(keys.commands.account.warnings.verification_timeout);
             }, 180_000);
 
-            client.api.on('/verify/response', async body => {
-                if(body.uuid !== uuid || body.code !== code) return;
+            client.api.once('/verify/response', async (request, reply) => {
+                if(request.body.uuid !== uuid || request.body.code !== code) return;
+                reply.send({});
 
                 clearTimeout(timeout);
 
