@@ -56,6 +56,7 @@ export default class MCLinker extends Discord.Client {
             Discord.GatewayIntentBits.DirectMessages,
             Discord.GatewayIntentBits.MessageContent,
         ],
+        allowedMentions: { parse: ['users', 'roles'] }, // Disable @everyone and @here mentions
     }) {
         super(options);
 
