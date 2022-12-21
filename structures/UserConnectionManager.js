@@ -22,8 +22,6 @@ export default class UserConnectionManager extends ConnectionManager {
      * @property {?'nullish'|?'fetch'|?'cache'} error - The error that occurred.
      */
 
-    usageFile = './serverdata/monitoring/user_connections.json';
-
     /**
      * Returns the uuid and name of a minecraft user from a mention/username.
      * @param {string} arg - The argument to get the uuid and name from.

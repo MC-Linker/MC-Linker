@@ -12,19 +12,4 @@ export default class UserSettingsConnectionManager extends ConnectionManager {
     constructor(client, outputPath = './userdata/connections') {
         super(client, UserSettingsConnection, outputPath, 'settings.json');
     }
-
-    /**
-     * @inheritDoc
-     */
-    async _load() {
-        await super._load();
-
-        //If user connections are loaded, load the settings for each server.
-        if(!this.client.userConnections.cache.size) return;
-
-        for(const connection of this.cache.values()) {
-            const server = this.client.serverConnections.cache.get(connection.id);
-            if(server) server.settings = connection;
-        }
-    }
 }
