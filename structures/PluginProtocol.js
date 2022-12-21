@@ -1,5 +1,6 @@
 import Protocol from './Protocol.js';
 import fs from 'fs-extra';
+import { Readable } from 'stream';
 
 /**
  * API routes for the plugin protocol
@@ -284,15 +285,15 @@ export default class PluginProtocol extends Protocol {
      */
     async get(getPath, putPath) {
         return new Promise(async resolve => {
-            const response = await this._fetch(...PluginRoutes.GetFile(getPath));
-            if(!response?.ok) return resolve(fetchToProtocolResponse(response));
-
             try {
                 await fs.ensureFile(putPath);
 
+                const response = await this._fetch(...PluginRoutes.GetFile(getPath));
+                if(!response?.ok) return resolve(fetchToProtocolResponse(response));
+
+                console.log(response, getPath, putPath, response.body);
                 const writeStream = fs.createWriteStream(putPath);
-                // noinspection JSUnresolvedFunction
-                await response.body.pipe(writeStream);
+                await Readable.fromWeb(response.body).pipe(writeStream);
                 writeStream.on('finish', async () => resolve({
                     status: response.status,
                     data: await fs.readFile(putPath),
