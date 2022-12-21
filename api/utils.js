@@ -7,7 +7,6 @@ import Discord, {
     MessagePayload,
     User,
 } from 'discord.js';
-import fetch from 'node-fetch';
 import crypto from 'crypto';
 import minecraft_data from 'minecraft-data';
 import FtpProtocol from '../structures/FtpProtocol.js';
@@ -161,7 +160,7 @@ export function searchStats(searchString, category, shouldSearchNames = true, sh
 export function searchAllStats(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let matchingStats = [];
 
-    //                        Blocks     Items   Entities   Custom
+    //                 Blocks     Items   Entities   Custom
     const statLists = ['mined', 'broken', 'killed', 'custom'];
 
     for(const list of statLists) {
@@ -181,7 +180,7 @@ export function searchAllStats(searchString, shouldSearchNames = true, shouldSea
  */
 export async function fetchUUID(username) {
     try {
-        let data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
+        const data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
             .then(data => data.json());
 
         return addHyphen(data.id);

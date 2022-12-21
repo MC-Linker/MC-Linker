@@ -16,7 +16,7 @@ export default class Help extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const settings = client.settingsConnections.cache.get(interaction.guildId);
+        const settings = client.serverSettingsConnections.cache.get(interaction.guildId);
 
         const commandName = args[0]?.toLowerCase();
 

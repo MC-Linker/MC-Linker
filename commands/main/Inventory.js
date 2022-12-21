@@ -1,6 +1,5 @@
 import Canvas from 'skia-canvas';
 import Discord from 'discord.js';
-import fetch from 'node-fetch';
 import minecraft_data from 'minecraft-data';
 import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';

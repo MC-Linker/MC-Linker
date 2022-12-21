@@ -21,10 +21,10 @@ export default class ServerConnectionManager extends ConnectionManager {
         await super._load();
 
         //If settings connections are loaded, load the settings for each server.
-        if(!this.client.settingsConnections.cache.size) return;
+        if(!this.client.serverSettingsConnections.cache.size) return;
 
         for(const connection of this.cache.values()) {
-            const settings = this.client.settingsConnections.cache.get(connection.id);
+            const settings = this.client.serverSettingsConnections.cache.get(connection.id);
             if(settings) connection.settings = settings;
         }
     }

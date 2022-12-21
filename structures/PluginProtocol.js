@@ -1,6 +1,5 @@
 import Protocol from './Protocol.js';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
 
 /**
  * API routes for the plugin protocol
