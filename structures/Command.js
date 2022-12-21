@@ -97,7 +97,7 @@ export default class Command {
             return interaction.user.id === config.ownerId;
         }
 
-        const settings = await client.settingsConnections.cache.get(interaction.guildId);
+        const settings = await client.serverSettingsConnections.cache.get(interaction.guildId);
         if(settings?.isDisabled('bot-commands', this.name)) {
             await interaction.replyTl(keys.api.command.warnings.disabled, await ph.interaction(interaction));
             return false;

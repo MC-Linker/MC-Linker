@@ -1,11 +1,13 @@
 // noinspection HttpUrlsUsage
 import Fastify from 'fastify';
+import { getOAuthURL, getTokens, getUser } from './oauth.js';
 import utils from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import config from '../config.json' assert { type: 'json' };
 import PluginProtocol from '../structures/PluginProtocol.js';
 import { EventEmitter } from 'node:events';
+import fastifyCookie from '@fastify/cookie';
 
 export default class BotAPI extends EventEmitter {
 
@@ -24,6 +26,8 @@ export default class BotAPI extends EventEmitter {
          * @type {import('fastify').FastifyInstance}
          */
         this.fastify = Fastify();
+
+        this.fastify.register(fastifyCookie, { secret: config.cookieSecret });
 
         this.fastify.addHook('preHandler', (request, reply, done) => {
             this.emit(request.url, request, reply);
@@ -166,14 +170,59 @@ export default class BotAPI extends EventEmitter {
             catch(_) {}
         });
 
-        this.fastify.post('/verify/response', (req, res) => {
+        this.fastify.get('/linked-role', async (request, reply) => {
+            // Generate state
+            const { state, url } = getOAuthURL();
+            reply.setCookie('state', state, { maxAge: 1000 * 60 * 5, signed: true });
+            reply.redirect(url);
+        });
 
+        this.fastify.get('/linked-role/callback', async (request, reply) => {
+            const { code, state: discordState } = request.query;
+
+            //Check state
+            const clientState = reply.unsignCookie(request.cookies.state);
+            if(clientState.valid && clientState.value !== discordState) return reply.status(403).send();
+
+            //Get access and refresh token
+            const tokens = await getTokens(code);
+            if(!tokens) return reply.status(403).send();
+
+            //Get user
+            const user = await getUser(this.client, tokens.accessToken);
+            if(!user) return reply.status(403).send();
+
+            let settings = this.client.userSettingsConnections.cache.get(user.id);
+            if(settings) settings.edit({
+                tokens: {
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken,
+                    expires: tokens.expires,
+                },
+            });
+            else settings = await this.client.userSettingsConnections.connect({
+                id: user.id,
+                tokens: {
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken,
+                    expires: tokens.expires,
+                },
+            });
+
+            const userConnection = this.client.userConnections.cache.get(user.id);
+            await settings.updateRoleConnection(userConnection?.username, {
+                'connectedaccount': userConnection ? 1 : 0,
+            });
+
+            reply.send(`You have been authorized as ${user.tag}! You can now close this window and go back to Discord.`);
         });
 
         //Returns latest version
         this.fastify.get('/version', () => config.pluginVersion);
         //Root endpoint
-        this.fastify.get('/', () => keys.api.plugin.success.root_response);
+        this.fastify.get('/', (request, reply) => {
+            reply.redirect('https://mclinker.ml');
+        });
 
         this.fastify.listen({ port: config.botPort, host: '0.0.0.0' }, (err, address) => {
             if(err) throw err;

@@ -61,14 +61,24 @@ export default class Account extends Command {
                     uuid,
                     username,
                 });
+                const settings = client.userSettingsConnections.cache.get(interaction.user.id);
+                if(settings) await settings.updateRoleConnection(username, {
+                    'connectedaccount': 1,
+                });
 
                 await interaction.replyTl(keys.commands.account.success.verified, ph.emojis());
             });
         }
         else if(subcommand === 'disconnect') {
-            if(!client.userConnections.cache.has(interaction.user.id)) {
+            const connection = client.userConnections.cache.get(interaction.user.id);
+            if(!connection) {
                 return interaction.replyTl(keys.commands.account.warnings.not_connected);
             }
+
+            const settings = await client.userSettingsConnections.cache.get(interaction.user.id);
+            if(settings) await settings.updateRoleConnection(connection.username, {
+                'connectedaccount': 0,
+            });
 
             await client.userConnections.disconnect(interaction.user.id);
             await interaction.replyTl(keys.commands.disconnect.success, {
