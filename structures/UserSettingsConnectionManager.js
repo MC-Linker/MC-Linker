@@ -9,7 +9,7 @@ export default class UserSettingsConnectionManager extends ConnectionManager {
      * @param {string} outputPath - The path to write server data to.
      * @returns {UserSettingsConnectionManager} - A new UserSettingsConnectionManager instance.
      */
-    constructor(client, outputPath = './serverdata/connections') {
+    constructor(client, outputPath = './userdata/connections') {
         super(client, UserSettingsConnection, outputPath, 'settings.json');
     }
 
