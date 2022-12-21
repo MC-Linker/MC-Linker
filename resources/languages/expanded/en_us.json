@@ -1567,8 +1567,7 @@
         },
         "listening": {
           "console": "Listening on %address%"
-        },
-        "root_response": "To invite the MC Linker, open this link: https://top.gg/bot/712759741528408064"
+        }
       }
     },
     "ftp": {

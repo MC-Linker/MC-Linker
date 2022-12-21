@@ -767,7 +767,6 @@
   "api.plugin.success.messages.close.embeds.0.timestamp": "%timestamp_now%",
 
   "api.plugin.success.listening.console": "Listening on %address%",
-  "api.plugin.success.root_response": "To invite the MC Linker, open this link: https://top.gg/bot/712759741528408064",
 
 
 

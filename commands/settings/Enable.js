@@ -14,7 +14,7 @@ export default class Enable extends AutocompleteCommand {
     }
 
     autocomplete(interaction, client) {
-        const settings = client.settingsConnections.cache.get(interaction.guildId);
+        const settings = client.serverSettingsConnections.cache.get(interaction.guildId);
         if(!settings) return;
 
         const subcommand = interaction.options.getSubcommand();
@@ -58,7 +58,7 @@ export default class Enable extends AutocompleteCommand {
         let toEnable = args?.join(' ').toLowerCase();
         const argPlaceholder = { type, 'enable': toEnable };
 
-        const settings = client.settingsConnections.cache.get(interaction.guildId);
+        const settings = client.serverSettingsConnections.cache.get(interaction.guildId);
         if(!settings) {
             return interaction.replyTl(keys.commands.enable.warnings.already_enabled, argPlaceholder);
         }

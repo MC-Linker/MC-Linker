@@ -45,7 +45,7 @@ export default class Disable extends AutocompleteCommand {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const settings = await client.settingsConnections.getOrConnect(interaction.guildId);
+        const settings = await client.serverSettingsConnections.getOrConnect(interaction.guildId);
         const type = args?.shift();
 
         if(type === 'list') {
