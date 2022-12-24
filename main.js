@@ -78,10 +78,19 @@ client.on('messageCreate', async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
     if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(config.prefix)) {
-        let content = message.cleanContent;
-        content = cleanEmojis(content);
+        let content = cleanEmojis(message.cleanContent);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
-        server.protocol.chat(content, message.member.nickname ?? message.author.username);
+
+        //Fetch replied message if it exists
+        const repliedMessage = message.type === Discord.MessageType.Reply ? await message.fetchReference() : null;
+        let repliedContent = repliedMessage ? cleanEmojis(repliedMessage.cleanContent) : null;
+        //If repliedContent is empty, it's probably an attachment
+        if(repliedContent?.length === 0 && repliedMessage.attachments.size !== 0) {
+            const firstAttach = repliedMessage.attachments.first();
+            repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
+        }
+        const repliedUser = repliedMessage ? repliedMessage.member.nickname ?? message.author.username : null;
+        server.protocol.chat(content, message.member.nickname ?? message.author.username, repliedContent, repliedUser);
     }
 
     message = addTranslatedResponses(message);
