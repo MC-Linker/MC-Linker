@@ -2723,5 +2723,13 @@
         }
       ]
     }
+  },
+  "roles": {
+    "connectedaccount": {
+      "name": "Has Minecraft Account",
+      "type": 7,
+      "key": "connectedaccount",
+      "description": "Whether the user has connected their Minecraft account."
+    }
   }
 }

@@ -15,36 +15,82 @@ String.prototype.cap = function() {
     return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 
+const demandOneOf = (...options) => argv => {
+    const count = options.filter(option => argv[option]).length;
+    if(count < 1) {
+        throw new Error(`At least one of the arguments ${new Intl.ListFormat().format(options)} is required`);
+    }
+
+    return true;
+};
+
 let deployGuild = false;
 let deployGlobal = false;
+let deployRoles = false;
 let deleteGuild = false;
 let deleteGlobal = false;
+let deleteRoles = false;
 
-const argv = yargs(hideBin(process.argv))
-    .command(['deploy [location]', 'dep'], 'Deploys the slash commands in the specified location.')
-    .command(['delete [location]', 'del'], 'Deletes the slash commands from the specified location.')
-    .option('location', {
-        description: 'The location to deploy the commands to. Valid locations are: guild, global, all. If no location is specified, the commands will be deployed globally.',
-        type: 'string',
-        choices: ['guild', 'global', 'all'],
-        default: 'global',
-        global: true,
-        alias: ['loc', 'l'],
+await yargs(hideBin(process.argv))
+    .command({
+        command: 'deploy [locations]',
+        aliases: 'dep',
+        describe: 'Deploys the slash commands/linked roles in the specified location.',
+        builder: {
+            'guild': {
+                type: 'boolean',
+                alias: ['local', 'l'],
+                description: 'Deploy the slash commands to the guild specified in the config.',
+            },
+            'global': {
+                type: 'boolean',
+                alias: ['g'],
+                description: 'Deploy the slash commands to the global scope.',
+            },
+            'linked-roles': {
+                type: 'boolean',
+                alias: ['roles', 'r'],
+                description: 'Deploy the linked roles to the global scope.',
+            },
+        },
+        handler: argv => {
+            if(argv.guild) deployGuild = true;
+            if(argv.global) deployGlobal = true;
+            if(argv['linked-roles']) deployRoles = true;
+        },
     })
-    .strict()
+    .command({
+        command: 'delete [locations]',
+        aliases: 'del',
+        describe: 'Deletes the slash commands/linked roles from the specified location.',
+        builder: {
+            'guild': {
+                type: 'boolean',
+                alias: ['local', 'l'],
+                description: 'Delete the slash commands from the guild specified in the config.',
+            },
+            'global': {
+                type: 'boolean',
+                alias: ['g'],
+                description: 'Delete the slash commands from the global scope.',
+            },
+            'linked-roles': {
+                type: 'boolean',
+                alias: ['roles', 'r'],
+                description: 'Delete the linked roles from the global scope.',
+            },
+        },
+        handler: argv => {
+            if(argv.guild) deleteGuild = true;
+            if(argv.global) deleteGlobal = true;
+            if(argv['linked-roles']) deleteRoles = true;
+        },
+    })
+    .check(demandOneOf('guild', 'global', 'linked-roles'))
     .demandCommand()
+    .strict()
     .help()
-    .argv;
-
-if(argv._.includes('deploy') || argv._.includes('dep')) {
-    deployGuild = argv.location.includes('guild') || argv.location.includes('all');
-    deployGlobal = argv.location.includes('global') || argv.location.includes('all');
-}
-if(argv._.includes('delete') || argv._.includes('del')) {
-    deleteGuild = argv.location.includes('guild') || argv.location.includes('all');
-    deleteGlobal = argv.location.includes('global') || argv.location.includes('all');
-}
-
+    .parse();
 
 const excludedDisable = ['enable', 'disable', 'help'];
 const excludedHelp = ['help'];
@@ -56,41 +102,51 @@ const disableChoices = [];
 let disableBuilder;
 
 const commands = [];
+const linkedRoles = [];
 
-//Get Builders and push commands
-for(const command of Object.values(keys.data)) {
-    const builder = getCommand(command);
+if(deployGuild || deployGlobal) {
+    //Get Builders and push commands
+    for(const command of Object.values(keys.data)) {
+        const builder = getCommand(command);
 
-    if(builder.name === 'disable') disableBuilder = builder;
-    else if(builder.name === 'help') helpBuilder = builder;
-    else commands.push(builder.toJSON()); //Push all commands to `commands`
+        if(builder.name === 'disable') disableBuilder = builder;
+        else if(builder.name === 'help') helpBuilder = builder;
+        else commands.push(builder.toJSON()); //Push all commands to `commands`
+
+        //Push command choices
+        if(!excludedDisable.includes(builder.name))
+            disableChoices.push({ name: builder.name.cap(), value: builder.name });
+        if(!excludedHelp.includes(builder.name))
+            helpChoices.push({ name: builder.name.cap(), value: builder.name });
+
+        console.log(`Loaded command: ${builder.name}`);
+    }
+
+    //Push categories
+    const commandFolders = fs.readdirSync('./commands/')
+        .filter(file => fs.statSync(`./commands/${file}`).isDirectory());
+    for(const folder of commandFolders) {
+        helpChoices.push({ name: folder.cap(), value: folder });
+        console.log(`Loaded category: ${folder}`);
+    }
 
     //Push command choices
-    if(!excludedDisable.includes(builder.name))
-        disableChoices.push({ name: builder.name.cap(), value: builder.name });
-    if(!excludedHelp.includes(builder.name))
-        helpChoices.push({ name: builder.name.cap(), value: builder.name });
+    disableBuilder.options[0].options[0].choices = disableChoices; //Set command choices
+    helpBuilder.options[0].choices = helpChoices; //Set command and category choices
 
-    console.log(`Loaded command: ${builder.name}`);
+    commands.push(disableBuilder.toJSON());
+    commands.push(helpBuilder.toJSON());
+}
+if(deployRoles) {
+    //Get linked roles
+    for(const role of Object.values(keys.roles)) {
+        //TODO use builder
+
+        linkedRoles.push(role);
+        console.log(`Loaded linked role: ${role.key}`);
+    }
 }
 
-//Push categories
-const commandFolders = fs.readdirSync('./commands/')
-    .filter(file => fs.statSync(`./commands/${file}`).isDirectory());
-for(const folder of commandFolders) {
-    helpChoices.push({ name: folder.cap(), value: folder });
-    console.log(`Loaded category: ${folder}`);
-}
-
-//Push command choices
-disableBuilder.options[0].options[0].choices = disableChoices; //Set command choices
-helpBuilder.options[0].choices = helpChoices; //Set command and category choices
-
-commands.push(disableBuilder.toJSON());
-commands.push(helpBuilder.toJSON());
-
-
-// noinspection JSCheckFunctionSignatures,JSClosureCompilerSyntax
 const rest = new REST({ version: '10' }).setToken(config.token);
 
 (async () => {
@@ -104,6 +160,7 @@ const rest = new REST({ version: '10' }).setToken(config.token);
                     { body: commands },
                 );
             }
+            console.log('Successfully deployed application guild (/) commands.');
         }
         if(deployGlobal) {
             console.log('Started deploying application global (/) commands.');
@@ -111,30 +168,52 @@ const rest = new REST({ version: '10' }).setToken(config.token);
                 Routes.applicationCommands(config.clientId),
                 { body: commands },
             );
+            console.log('Successfully deployed application global (/) commands.');
         }
+
+        if(deployRoles) {
+            console.log('Started deploying application linked roles.');
+            await rest.put(
+                //TODO use types
+                `/applications/${config.clientId}/role-connections/metadata`,
+                { body: linkedRoles },
+            );
+            console.log('Successfully deployed application linked roles.');
+        }
+
 
         if(deleteGuild) {
             console.log('Started deleting application guild (/) commands.');
             for(const guild of Array.isArray(config.guildId) ? config.guildId : [config.guildId]) {
-                const resp = await rest.get(Routes.applicationGuildCommands(config.clientId, config.guildId));
+                const resp = await rest.get(Routes.applicationGuildCommands(config.clientId, guild));
 
                 for(const command of resp) {
-                    await rest.delete(`${Routes.applicationGuildCommand(config.clientId, guild, command.id)}`);
+                    await rest.delete(Routes.applicationGuildCommand(config.clientId, guild, command.id));
                 }
             }
+            console.log('Successfully deleted application guild (/) commands.');
         }
         if(deleteGlobal) {
             console.log('Started deleting application global (/) commands.');
             const resp = await rest.get(Routes.applicationCommands(config.clientId));
 
             for(const command of resp) {
-                await rest.delete(`${Routes.applicationCommands(config.clientId)}/${command.id}`);
+                await rest.delete(Routes.applicationCommand(config.clientId, command.id));
             }
+            console.log('Successfully deleted application global (/) commands.');
         }
 
-        console.log('Successfully refreshed application (/) commands.');
+        if(deleteRoles) {
+            console.log('Started deleting application linked roles.');
+            await rest.put(
+                //TODO use types
+                `/applications/${config.clientId}/role-connections/metadata`,
+                { body: {} }, //Put empty body to delete all linked roles
+            );
+            console.log('Successfully deleted application linked roles.');
+        }
     }
     catch(err) {
-        console.log('Could not refresh application (/) commands.', err);
+        console.log('Could not refresh application (/) commands or linked roles', err);
     }
 })();

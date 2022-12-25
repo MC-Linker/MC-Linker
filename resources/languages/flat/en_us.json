@@ -1497,5 +1497,12 @@
   "data.enable.options.3.options.0.name": "command",
   "data.enable.options.3.options.0.description": "Set the command you want to enable",
   "data.enable.options.3.options.0.required": true,
-  "data.enable.options.3.options.0.autocomplete": true
+  "data.enable.options.3.options.0.autocomplete": true,
+
+
+
+  "roles.connectedaccount.name": "Has Minecraft Account",
+  "roles.connectedaccount.type": 7,
+  "roles.connectedaccount.key": "connectedaccount",
+  "roles.connectedaccount.description": "Whether the user has connected their Minecraft account."
 }
