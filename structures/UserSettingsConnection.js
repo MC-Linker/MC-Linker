@@ -70,6 +70,7 @@ export default class UserSettingsConnection extends Connection {
         await this._refreshToken();
 
         try {
+            //TODO use client rest and use types
             const response = await fetch(`https://discord.com/api/v10/users/@me/applications/${config.clientId}/role-connection`, {
                 body: JSON.stringify({
                     platform_username: username,
@@ -107,6 +108,7 @@ export default class UserSettingsConnection extends Connection {
         }
 
         try {
+            //TODO use client rest
             const response = await fetch(`https://discord.com/api/${Discord.Routes.oauth2TokenExchange()}`, {
                 body: new URLSearchParams({
                     client_id: config.clientId,
