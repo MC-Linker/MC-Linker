@@ -1,12 +1,14 @@
 //noinspection JSUnresolvedVariable
+import dotenv from 'dotenv';
 import { REST, Routes } from 'discord.js';
-import config from '../config.json' assert { type: 'json' };
 import { getCommand } from '../api/messages.js';
 import keys from '../api/keys.js';
 import fs from 'fs-extra';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
+dotenv.config();
+console.log(process.env);
 /*
  * Converts the first letter of a string to uppercase.
  * @returns {String} The formatted string.
@@ -147,16 +149,16 @@ if(deployRoles) {
     }
 }
 
-const rest = new REST({ version: '10' }).setToken(config.token);
+const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
     try {
         if(deployGuild) {
             console.log('Started deploying application guild (/) commands.');
 
-            for(const guild of Array.isArray(config.guildId) ? config.guildId : [config.guildId]) {
+            for(const id of process.env.GUILD_ID.split(' ')) {
                 await rest.put(
-                    Routes.applicationGuildCommands(config.clientId, guild),
+                    Routes.applicationGuildCommands(process.env.CLIENT_ID, id),
                     { body: commands },
                 );
             }
@@ -165,7 +167,7 @@ const rest = new REST({ version: '10' }).setToken(config.token);
         if(deployGlobal) {
             console.log('Started deploying application global (/) commands.');
             await rest.put(
-                Routes.applicationCommands(config.clientId),
+                Routes.applicationCommands(process.env.CLIENT_ID),
                 { body: commands },
             );
             console.log('Successfully deployed application global (/) commands.');
@@ -175,7 +177,7 @@ const rest = new REST({ version: '10' }).setToken(config.token);
             console.log('Started deploying application linked roles.');
             await rest.put(
                 //TODO use types
-                `/applications/${config.clientId}/role-connections/metadata`,
+                `/applications/${process.env.CLIENT_ID}/role-connections/metadata`,
                 { body: linkedRoles },
             );
             console.log('Successfully deployed application linked roles.');
@@ -184,21 +186,21 @@ const rest = new REST({ version: '10' }).setToken(config.token);
 
         if(deleteGuild) {
             console.log('Started deleting application guild (/) commands.');
-            for(const guild of Array.isArray(config.guildId) ? config.guildId : [config.guildId]) {
-                const resp = await rest.get(Routes.applicationGuildCommands(config.clientId, guild));
+            for(const id of process.env.GUILD_ID.split(' ')) {
+                const resp = await rest.get(Routes.applicationGuildCommands(process.env.CLIENT_ID, id));
 
                 for(const command of resp) {
-                    await rest.delete(Routes.applicationGuildCommand(config.clientId, guild, command.id));
+                    await rest.delete(Routes.applicationGuildCommand(process.env.CLIENT_ID, id, command.id));
                 }
             }
             console.log('Successfully deleted application guild (/) commands.');
         }
         if(deleteGlobal) {
             console.log('Started deleting application global (/) commands.');
-            const resp = await rest.get(Routes.applicationCommands(config.clientId));
+            const resp = await rest.get(Routes.applicationCommands(process.env.CLIENT_ID));
 
             for(const command of resp) {
-                await rest.delete(Routes.applicationCommand(config.clientId, command.id));
+                await rest.delete(Routes.applicationCommand(process.env.CLIENT_ID, command.id));
             }
             console.log('Successfully deleted application global (/) commands.');
         }
@@ -207,7 +209,7 @@ const rest = new REST({ version: '10' }).setToken(config.token);
             console.log('Started deleting application linked roles.');
             await rest.put(
                 //TODO use types
-                `/applications/${config.clientId}/role-connections/metadata`,
+                `/applications/${process.env.CLIENT_ID}/role-connections/metadata`,
                 { body: {} }, //Put empty body to delete all linked roles
             );
             console.log('Successfully deleted application linked roles.');

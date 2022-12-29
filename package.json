@@ -21,6 +21,7 @@
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
     "discord.js": "^14.3.0",
+    "dotenv": "^16.0.3",
     "emojione": "^4.5.0",
     "fastify": "^4.5.3",
     "fs-extra": "^11.1.0",

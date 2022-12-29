@@ -4,7 +4,6 @@ import { getOAuthURL, getTokens, getUser } from './oauth.js';
 import utils from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
-import config from '../config.json' assert { type: 'json' };
 import PluginProtocol from '../structures/PluginProtocol.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
@@ -27,7 +26,7 @@ export default class BotAPI extends EventEmitter {
          */
         this.fastify = Fastify();
 
-        this.fastify.register(fastifyCookie, { secret: config.cookieSecret });
+        this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
         this.fastify.addHook('preHandler', (request, reply, done) => {
             this.emit(request.url, request, reply);
@@ -218,13 +217,13 @@ export default class BotAPI extends EventEmitter {
         });
 
         //Returns latest version
-        this.fastify.get('/version', () => config.pluginVersion);
+        this.fastify.get('/version', () => process.env.PLUGIN_VERSION);
         //Root endpoint
         this.fastify.get('/', (request, reply) => {
             reply.redirect('https://mclinker.ml');
         });
 
-        this.fastify.listen({ port: config.botPort, host: '0.0.0.0' }, (err, address) => {
+        this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
             if(err) throw err;
             console.log(addPh(keys.api.plugin.success.listening.console, { address }));
         });

@@ -5,7 +5,7 @@ services:
     container_name: mc-linker
     restart: on-failure
     ports:
-      - "3100:3100"
+      - "${BOT_PORT}:${BOT_PORT}"
     volumes:
       - type: bind
         source: ./serverdata

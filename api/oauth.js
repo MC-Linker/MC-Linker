@@ -1,4 +1,3 @@
-import config from '../config.json' assert { type: 'json' };
 import Discord from 'discord.js';
 import crypto from 'crypto';
 
@@ -17,8 +16,8 @@ export function getOAuthURL() {
     const state = crypto.randomUUID();
 
     const url = new URL(`https://discord.com/api/${Discord.Routes.oauth2Authorization()}`);
-    url.searchParams.set('client_id', config.clientId);
-    url.searchParams.set('redirect_uri', config.linkedRolesRedirectURI);
+    url.searchParams.set('client_id', process.env.CLIENT_ID);
+    url.searchParams.set('redirect_uri', process.env.LINKED_ROLES_REDIRECT_URI);
     url.searchParams.set('response_type', 'code');
     url.searchParams.set('state', state);
     url.searchParams.set('scope', 'role_connections.write identify');
@@ -35,10 +34,10 @@ export async function getTokens(code) {
     try {
         const response = await fetch(`https://discord.com/api/${Discord.Routes.oauth2TokenExchange()}`, {
             body: new URLSearchParams({
-                client_id: config.clientId,
-                client_secret: config.clientSecret,
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET,
                 grant_type: 'authorization_code',
-                redirect_uri: config.linkedRolesRedirectURI,
+                redirect_uri: process.env.LINKED_ROLES_REDIRECT_URI,
                 code,
             }),
             method: 'POST',

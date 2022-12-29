@@ -6,16 +6,17 @@ console.log(
     'Loading...',   // Second argument (%s)
 );
 
+import dotenv from 'dotenv';
 import Discord from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
 import { cleanEmojis, getArgs } from './api/utils.js';
 import keys from './api/keys.js';
 import { addPh, addTranslatedResponses, ph } from './api/messages.js';
-import config from './config.json' assert { type: 'json' };
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
 
+dotenv.config();
 const client = new MCLinker();
 
 //Handle errors
@@ -34,8 +35,8 @@ String.prototype.cap = function() {
     return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 
-if(config.topggToken) {
-    const poster = AutoPoster(config.topggToken, client);
+if(process.env.TOPGG_TOKEN) {
+    const poster = AutoPoster(process.env.TOPGG_TOKEN, client);
 
     poster.on('posted', () => {});
     poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
@@ -45,7 +46,7 @@ client.once('ready', async () => {
     console.log(addPh(
         keys.main.success.login.console,
         ph.client(client),
-        { prefix: config.prefix, 'guild_count': client.guilds.cache.size },
+        { prefix: process.env.PREFIX, 'guild_count': client.guilds.cache.size },
     ));
 
     //Set Activity
@@ -77,7 +78,7 @@ client.on('guildDelete', async guild => {
 client.on('messageCreate', async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
-    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(config.prefix)) {
+    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(process.env.PREFIX)) {
         let content = cleanEmojis(message.cleanContent);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
 
@@ -98,12 +99,12 @@ client.on('messageCreate', async message => {
     message.user = message.author;
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
-    if(!message.content.startsWith(config.prefix) || message.author.bot) return;
+    if(!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
     //check if in guild
     if(!message.inGuild()) return message.replyTl(keys.main.warnings.not_in_guild);
 
-    const args = message.content.slice(config.prefix.length).trim().split(/\s+/);
+    const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName);
@@ -184,4 +185,4 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(config.token);
+client.login(process.env.TOKEN);

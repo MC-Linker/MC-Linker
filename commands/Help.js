@@ -1,4 +1,3 @@
-import config from '../config.json' assert { type: 'json' };
 import { addPh, fetchCommand, getActionRows, getEmbed, ph } from '../api/messages.js';
 import keys from '../api/keys.js';
 import Command from '../structures/Command.js';
@@ -23,7 +22,7 @@ export default class Help extends Command {
         const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
         if(!commandName || commandName === 'help') {
             helpEmbed.addFields(addPh(keys.commands.help.success.no_args.embeds[0].fields,
-                { 'invite_link': config.discordLink },
+                { 'invite_link': process.env.DISCORD_LINK },
                 await ph.allCommands(client),
             ));
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -50,7 +49,7 @@ export default class Help extends Command {
 
             helpEmbed.addFields(addPh(
                 keys.commands.help.success.category.embeds[0].fields[1],
-                { 'invite_link': config.discordLink },
+                { 'invite_link': process.env.DISCORD_LINK },
             ));
 
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -68,7 +67,7 @@ export default class Help extends Command {
                 {
                     'command_long_description': command.long_description,
                     'command_usage': commandUsage,
-                    'invite_link': config.discordLink,
+                    'invite_link': process.env.DISCORD_LINK,
                 },
                 await ph.commandName(commandName, client, interaction.guild),
             ));

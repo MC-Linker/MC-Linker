@@ -14,7 +14,6 @@ import Discord, {
     SlashCommandBuilder,
     User,
 } from 'discord.js';
-import config from '../config.json' assert { type: 'json' };
 import keys from './keys.js';
 
 /**
@@ -75,7 +74,7 @@ export const ph = {
      */
     interaction(interaction) {
         if(interaction instanceof Discord.Message) {
-            const args = interaction.content.slice(config.prefix.length).trim().split(/ +/);
+            const args = interaction.content.slice(process.env.PREFIX.length).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
 
             return {
