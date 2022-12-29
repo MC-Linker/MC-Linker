@@ -1,7 +1,7 @@
 version: '3.5'
 services:
-  mc-linker:
-    image: lianecx/mc-linker
+  ${SERVICE_NAME}:
+    image: lianecx/${SERVICE_NAME}
     container_name: mc-linker
     restart: on-failure
     ports:
