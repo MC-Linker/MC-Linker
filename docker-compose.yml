@@ -1,11 +1,11 @@
 version: '3.5'
 services:
   mc-linker:
-    image: lianecx/mc-linker
-    container_name: mc-linker
+    image: lianecx/${SERVICE_NAME}
+    container_name: ${SERVICE_NAME}
     restart: on-failure
     ports:
-      - "3100:3100"
+      - "${BOT_PORT}:${BOT_PORT}"
     volumes:
       - type: bind
         source: ./serverdata

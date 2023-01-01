@@ -294,7 +294,7 @@
       },
       {
         "name": "Caves & Cliffs",
-        "value": "sleep_in_bed",
+        "value": "fall_from_world_height",
         "description": "Free fall from the top of the world (build limit) to the bottom of the world and survive"
       },
       {

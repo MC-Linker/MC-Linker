@@ -6,17 +6,17 @@ console.log(
     'Loading...',   // Second argument (%s)
 );
 
+import dotenv from 'dotenv';
 import Discord from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
 import { cleanEmojis, getArgs } from './api/utils.js';
 import keys from './api/keys.js';
 import { addPh, addTranslatedResponses, ph } from './api/messages.js';
-import config from './config.json' assert { type: 'json' };
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
-import BotAPI from './api/BotAPI.js';
 
+dotenv.config();
 const client = new MCLinker();
 
 //Handle errors
@@ -35,8 +35,8 @@ String.prototype.cap = function() {
     return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 
-if(config.topggToken) {
-    const poster = AutoPoster(config.topggToken, client);
+if(process.env.TOPGG_TOKEN) {
+    const poster = AutoPoster(process.env.TOPGG_TOKEN, client);
 
     poster.on('posted', () => {});
     poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
@@ -46,7 +46,7 @@ client.once('ready', async () => {
     console.log(addPh(
         keys.main.success.login.console,
         ph.client(client),
-        { prefix: config.prefix, 'guild_count': client.guilds.cache.size },
+        { prefix: process.env.PREFIX, 'guild_count': client.guilds.cache.size },
     ));
 
     //Set Activity
@@ -56,7 +56,7 @@ client.once('ready', async () => {
     await client.loadEverything();
 
     //Start API server
-    await new BotAPI(client).startServer();
+    await client.api.startServer();
 
     //Register minecraft font
     Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
@@ -71,18 +71,27 @@ client.on('guildDelete', async guild => {
     console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
     await client.serverConnections.disconnect(guild.id);
-    await client.settingsConnections.disconnect(guild.id);
+    await client.serverSettingsConnections.disconnect(guild.id);
     await client.serverConnections.removeDataFolder(guild.id);
 });
 
 client.on('messageCreate', async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
-    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(config.prefix)) {
-        let content = message.cleanContent;
-        content = cleanEmojis(content);
+    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(process.env.PREFIX)) {
+        let content = cleanEmojis(message.cleanContent);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
-        server.protocol.chat(content, message.member.nickname ?? message.author.username);
+
+        //Fetch replied message if it exists
+        const repliedMessage = message.type === Discord.MessageType.Reply ? await message.fetchReference() : null;
+        let repliedContent = repliedMessage ? cleanEmojis(repliedMessage.cleanContent) : null;
+        //If repliedContent is empty, it's probably an attachment
+        if(repliedContent?.length === 0 && repliedMessage.attachments.size !== 0) {
+            const firstAttach = repliedMessage.attachments.first();
+            repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
+        }
+        const repliedUser = repliedMessage ? repliedMessage.member.nickname ?? message.author.username : null;
+        server.protocol.chat(content, message.member.nickname ?? message.author.username, repliedContent, repliedUser);
     }
 
     message = addTranslatedResponses(message);
@@ -90,12 +99,12 @@ client.on('messageCreate', async message => {
     message.user = message.author;
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
-    if(!message.content.startsWith(config.prefix) || message.author.bot) return;
+    if(!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
     //check if in guild
     if(!message.inGuild()) return message.replyTl(keys.main.warnings.not_in_guild);
 
-    const args = message.content.slice(config.prefix.length).trim().split(/\s+/);
+    const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName);
@@ -176,4 +185,4 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(config.token);
+client.login(process.env.TOKEN);

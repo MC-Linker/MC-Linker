@@ -59,11 +59,11 @@ export default class ServerConnection extends Connection {
 
         /**
          * The settings for this server.
-         * @type {SettingsConnection}
+         * @type {ServerSettingsConnection}
          */
-        this.settings = client.settingsConnections._add(data.id, true, {
+        this.settings = client.serverSettingsConnections._add(data.id, true, {
             id: data.id,
-            extras: [client.settingsConnections.outputPath],
+            extras: [client.serverSettingsConnections.outputPath],
         });
 
         /**

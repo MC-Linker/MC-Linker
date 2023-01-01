@@ -12,7 +12,7 @@ export default class ConnectionManager extends CachedManager {
     /**
      * Creates a new ConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
-     * @param {ServerConnection|UserConnection|SettingsConnection} holds - The type of connection the manager holds.
+     * @param {ServerConnection|UserConnection|ServerSettingsConnection|UserSettingsConnection} holds - The type of connection the manager holds.
      * @param {string} outputPath - The path to write server data to.
      * @param {string} outputFile - The name of the file to write the connection data to.
      * @returns {ConnectionManager} - A new ConnectionManager instance.
@@ -33,16 +33,16 @@ export default class ConnectionManager extends CachedManager {
         this.outputFile = outputFile;
 
         /**
-         * The server connection cache of this manager.
-         * @type {Collection<string, SettingsConnection>}
+         * The connection cache of this manager.
+         * @type {Collection<string, ServerConnection|UserConnection|ServerSettingsConnection|UserSettingsConnection>}
          */
         this.cache = super.cache;
     }
 
     /**
      * Adds a connection to the cache and writes the data to the file system.
-     * @param {ServerConnectionData|UserConnectionData|SettingsConnectionData} data - The data for the connection.
-     * @returns {Promise<?ServerConnection|?UserConnection|?SettingsConnection>} - The connection instance that has been created.
+     * @param {ServerConnectionData|UserConnectionData|ServerSettingsConnectionData|UserSettingsConnectionData} data - The data for the connection.
+     * @returns {Promise<?ServerConnection|?UserConnection|?ServerSettingsConnection|?UserSettingsConnection>} - The connection instance that has been created.
      */
     async connect(data) {
         /** @type {?Connection} */
@@ -56,7 +56,7 @@ export default class ConnectionManager extends CachedManager {
 
     /**
      * Removes a connection from the cache and deletes the data from the file system.
-     * @param {ServerConnectionResolvable|UserConnectionResolvable|SettingsConnectionResolvable} connection - The connection to disconnect.
+     * @param {ServerConnectionResolvable|UserConnectionResolvable|ServerSettingsConnectionResolvable|UserSettingsConnectionResolvable} connection - The connection to disconnect.
      * @returns {Promise<boolean>} - Whether the disconnection was successful.
      */
     async disconnect(connection) {

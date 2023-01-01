@@ -1,16 +1,16 @@
-import SettingsConnection from './SettingsConnection.js';
+import ServerSettingsConnection from './ServerSettingsConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 
-export default class SettingsConnectionManager extends ConnectionManager {
+export default class ServerSettingsConnectionManager extends ConnectionManager {
 
     /**
      * Creates a new ServerConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {string} outputPath - The path to write server data to.
-     * @returns {SettingsConnectionManager} - A new ServerConnectionManager instance.
+     * @returns {ServerSettingsConnectionManager} - A new ServerSettingsConnectionManager instance.
      */
     constructor(client, outputPath = './serverdata/connections') {
-        super(client, SettingsConnection, outputPath, 'settings.json');
+        super(client, ServerSettingsConnection, outputPath, 'settings.json');
     }
 
     /**
@@ -31,7 +31,7 @@ export default class SettingsConnectionManager extends ConnectionManager {
     /**
      * Gets a settings connection for the specified guild. If the guild does not have a settings connection, one will be created.
      * @param {string} guildId - The Id of the guild to get the settings connection for.
-     * @returns {Promise<?SettingsConnection>}
+     * @returns {Promise<?ServerSettingsConnection>}
      */
     async getOrConnect(guildId) {
         const connection = await this.cache.get(guildId);

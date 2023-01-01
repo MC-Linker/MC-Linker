@@ -1,4 +1,4 @@
-# To Build Run: docker build . -t Lianecx/mc-linker
+# To Build Run: docker build . -t lianecx/mc-linker
 
 FROM node:lts
 #FROM node:18-slim
@@ -19,5 +19,4 @@ COPY . .
 # Build
 RUN npm run build
 
-EXPOSE 3100
 CMD [ "node", "main.js" ]

@@ -1,8 +1,8 @@
 import Connection from './Connection.js';
 
-export default class SettingsConnection extends Connection {
+export default class ServerSettingsConnection extends Connection {
 
-    /** @type {Omit<SettingsConnectionData, 'id'>} */
+    /** @type {Omit<ServerSettingsConnectionData, 'id'>} */
     static defaultSettingsData = {
         disabled: {
             'bot-commands': [],
@@ -22,28 +22,28 @@ export default class SettingsConnection extends Connection {
      */
 
     /**
-     * @typedef {object} SettingsConnectionData - The data for the settings.
+     * @typedef {object} ServerSettingsConnectionData - The data for the server settings.
      * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
      * @property {string} language - The language code id this server uses.
      * @property {string} id - The id of the server the settings are connected to.''
      */
 
     /**
-     * @typedef {SettingsConnection|string} SettingsConnectionResolvable - Data that resolves to a SettingsConnection object.
+     * @typedef {ServerSettingsConnection|string} ServerSettingsConnectionResolvable - Data that resolves to a ServerSettingsConnection object.
      */
 
     /**
      * @param {MCLinker} client - The client to create the settings for.
-     * @param {SettingsConnectionData|string} dataOrId - The data for the settings or the id of the server the settings are connected to.
+     * @param {ServerSettingsConnectionData|string} dataOrId - The data for the settings or the id of the server the settings are connected to.
      * @param {string} outputPath - The path to write the settings to.
      * @param {string} [outputFile='settings.json'] - The name of the file to write the settings to.
-     * @returns {SettingsConnection} - A new SettingsConnection instance.
+     * @returns {ServerSettingsConnection} - A new ServerSettingsConnection instance.
      */
     constructor(client, dataOrId, outputPath, outputFile = 'settings.json') {
         if(typeof dataOrId === 'string') {
             //Default settings data
             dataOrId = {
-                ...SettingsConnection.defaultSettingsData,
+                ...ServerSettingsConnection.defaultSettingsData,
                 id: dataOrId,
             };
         }
@@ -56,7 +56,7 @@ export default class SettingsConnection extends Connection {
         if(typeof data === 'string') {
             //Default settings data
             data = {
-                ...SettingsConnection.defaultSettingsData,
+                ...ServerSettingsConnection.defaultSettingsData,
                 id: data,
             };
         }
@@ -64,7 +64,7 @@ export default class SettingsConnection extends Connection {
         /**
          * The id of the server the settings are connected to.
          * @type {string}
-         * */
+         */
         this.id = data.id ?? this.id;
 
         /**
@@ -77,7 +77,7 @@ export default class SettingsConnection extends Connection {
          * The data for disabled commands, advancements or stats.
          * @type {DisableData}
          */
-        this.disabled ??= SettingsConnection.defaultSettingsData.disabled;
+        this.disabled ??= ServerSettingsConnection.defaultSettingsData.disabled;
 
         //Loop over data.disabled and assign commands, advancements and stats to this.disabled
         if('disabled' in data) {
@@ -100,7 +100,7 @@ export default class SettingsConnection extends Connection {
      * Disables a command, advancement or stat.
      * @param {'bot-commands'|'advancements'|'stats'|'chat-commands'} type - The type of the value to disable.
      * @param {string} value - The value to disable.
-     * @returns {Promise<?SettingsConnection>} - The settings instance that has been edited.
+     * @returns {Promise<?ServerSettingsConnection>} - The settings instance that has been edited.
      */
     async disable(type, value) {
         const currentValues = this.disabled[type];
@@ -115,7 +115,7 @@ export default class SettingsConnection extends Connection {
      * Enables a command, advancement or stat.
      * @param {'bot-commands'|'advancements'|'stats'|'chat-commands'} type - The type of the value to enable.
      * @param {string} value - The value to enable.
-     * @returns {Promise<SettingsConnection>}
+     * @returns {Promise<ServerSettingsConnection>}
      */
     async enable(type, value) {
         const currentValues = this.disabled[type];

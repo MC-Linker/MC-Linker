@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 export default class Connection extends Base {
 
     /**
-     * @typedef {UserConnectionData|ServerConnectionData|SettingsConnectionData} ConnectionData - The data for the connection.
+     * @typedef {UserConnectionData|ServerConnectionData|ServerSettingsConnectionData|UserSettingsConnectionData} ConnectionData - The data for the connection.
      */
 
     /**
@@ -54,7 +54,7 @@ export default class Connection extends Base {
     /**
      * Edits the connection with the given data and writes it to the fs.
      * @param {Partial<ConnectionData>} data - The data to edit the connection with.
-     * @returns {Promise<?UserConnection|?ServerConnection|?SettingsConnection>} - The connection instance that has been edited.
+     * @returns {Promise<?UserConnection|?ServerConnection|?ServerSettingsConnection|?UserSettingsConnection>} - The connection instance that has been edited.
      */
     async edit(data) {
         this._patch(data);

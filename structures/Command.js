@@ -9,7 +9,6 @@ import Discord, {
 } from 'discord.js';
 import { fetchCommand, ph } from '../api/messages.js';
 import keys from '../api/keys.js';
-import config from '../config.json' assert { type: 'json' };
 
 export default class Command {
 
@@ -94,10 +93,10 @@ export default class Command {
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
         if(this.ownerOnly) {
-            return interaction.user.id === config.ownerId;
+            return interaction.user.id === process.env.OWNER_ID;
         }
 
-        const settings = await client.settingsConnections.cache.get(interaction.guildId);
+        const settings = await client.serverSettingsConnections.cache.get(interaction.guildId);
         if(settings?.isDisabled('bot-commands', this.name)) {
             await interaction.replyTl(keys.api.command.warnings.disabled, await ph.interaction(interaction));
             return false;

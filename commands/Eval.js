@@ -4,7 +4,6 @@ import { Console } from 'console';
 import { Duplex } from 'stream';
 import { ph } from '../api/messages.js';
 import keys from '../api/keys.js';
-import config from '../config.json' assert { type: 'json' };
 import Command from '../structures/Command.js';
 
 // noinspection FunctionNamingConventionJS
@@ -80,9 +79,10 @@ export default class Eval extends Command {
             if(command.includes('return') || !command.includes('console.log')) out += evalOut._read();
 
             //Redact tokens
-            const tokenArray = config.topggToken ? [config.token, config.topggToken] : [config.token];
-            for(const token of tokenArray) {
-                out = out.replace(new RegExp(token, 'g'), 'TOKEN_REDACTED');
+            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET];
+            if(process.env.TOPGG_TOKEN) tokens.push(process.env.TOPGG_TOKEN);
+            for(const token of tokens) {
+                out = out.replace(new RegExp(token, 'g'), 'REDACTED');
             }
 
             //If it's too long, send an attachment

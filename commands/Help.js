@@ -1,4 +1,3 @@
-import config from '../config.json' assert { type: 'json' };
 import { addPh, fetchCommand, getActionRows, getEmbed, ph } from '../api/messages.js';
 import keys from '../api/keys.js';
 import Command from '../structures/Command.js';
@@ -16,14 +15,14 @@ export default class Help extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const settings = client.settingsConnections.cache.get(interaction.guildId);
+        const settings = client.serverSettingsConnections.cache.get(interaction.guildId);
 
         const commandName = args[0]?.toLowerCase();
 
         const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
         if(!commandName || commandName === 'help') {
             helpEmbed.addFields(addPh(keys.commands.help.success.no_args.embeds[0].fields,
-                { 'invite_link': config.discordLink },
+                { 'invite_link': process.env.DISCORD_LINK },
                 await ph.allCommands(client),
             ));
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -50,7 +49,7 @@ export default class Help extends Command {
 
             helpEmbed.addFields(addPh(
                 keys.commands.help.success.category.embeds[0].fields[1],
-                { 'invite_link': config.discordLink },
+                { 'invite_link': process.env.DISCORD_LINK },
             ));
 
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -68,12 +67,12 @@ export default class Help extends Command {
                 {
                     'command_long_description': command.long_description,
                     'command_usage': commandUsage,
-                    'invite_link': config.discordLink,
+                    'invite_link': process.env.DISCORD_LINK,
                 },
                 await ph.commandName(commandName, client, interaction.guild),
             ));
 
-            if(settings && settings.isDisabled('commands', command.name)) {
+            if(settings && settings.isDisabled('bot-commands', command.name)) {
                 const enableRows = getActionRows(
                     keys.commands.help.success.enable_button,
                     { 'command_name': command.name }, ph.emojis(),

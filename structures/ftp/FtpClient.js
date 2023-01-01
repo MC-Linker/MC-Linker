@@ -1,4 +1,4 @@
-import Ftp from 'promise-ftp';
+import Ftp, { STATUSES } from 'promise-ftp';
 import BaseClient from './BaseClient.js';
 import fs from 'fs-extra';
 
@@ -22,7 +22,8 @@ export default class FtpClient extends BaseClient {
     connect() {
         return new Promise(async (resolve, reject) => {
             const timeout = setTimeout(() => {
-                this.client.end();
+                if(this.client.getConnectionStatus() !== STATUSES.NOT_YET_CONNECTED && this.client.getConnectionStatus() !== STATUSES.DISCONNECTED)
+                    this.client.end();
                 reject(new Error('Connection timed out.'));
             }, 10000);
 

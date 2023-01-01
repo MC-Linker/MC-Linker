@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import config from '../../config.json' assert { type: 'json' };
 import { addPh, addTranslatedResponses, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
@@ -107,14 +106,14 @@ export default class Connect extends Command {
         }
         else if(method === 'plugin') {
             const ip = args[1]?.split(':').shift();
-            const port = args[2] ?? config.pluginPort;
+            const port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
 
             await this._disconnectOldPlugin(interaction, server);
 
             const hash = crypto.randomBytes(32).toString('hex');
             const pluginProtocol = new PluginProtocol(client, { ip, hash, port, id: interaction.guildId });
 
-            const verify = await pluginProtocol.verify();
+            const verify = await pluginProtocol.verifyGuild();
             if(!await utils.handleProtocolResponse(verify, pluginProtocol, interaction, {
                 409: keys.commands.connect.warnings.already_connected,
             })) return;

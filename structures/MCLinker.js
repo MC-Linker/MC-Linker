@@ -1,13 +1,15 @@
 import Discord from 'discord.js';
 import ServerConnectionManager from './ServerConnectionManager.js';
 import UserConnectionManager from './UserConnectionManager.js';
-import SettingsConnectionManager from './SettingsConnectionManager.js';
+import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.js';
 import fs from 'fs-extra';
 import { addPh } from '../api/messages.js';
 import keys from '../api/keys.js';
 import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';
+import BotAPI from '../api/BotAPI.js';
+import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
 
 export default class MCLinker extends Discord.Client {
 
@@ -25,9 +27,9 @@ export default class MCLinker extends Discord.Client {
 
     /**
      * The settings-connection manager for the bot.
-     * @type {SettingsConnectionManager}
+     * @type {ServerSettingsConnectionManager}
      */
-    settingsConnections;
+    serverSettingsConnections;
 
     /**
      * A collection of all commands in this bot.
@@ -55,8 +57,16 @@ export default class MCLinker extends Discord.Client {
             Discord.GatewayIntentBits.DirectMessages,
             Discord.GatewayIntentBits.MessageContent,
         ],
+        // Disable @everyone and @here mentions
+        allowedMentions: { parse: [Discord.AllowedMentionsTypes.Role, Discord.AllowedMentionsTypes.User] },
     }) {
         super(options);
+
+        /**
+         * The API instance of the bot.
+         * @type {BotAPI}
+         */
+        this.api = new BotAPI(this);
 
         /**
          * The server-connection manager for the bot.
@@ -71,10 +81,16 @@ export default class MCLinker extends Discord.Client {
         this.userConnections = new UserConnectionManager(this);
 
         /**
-         * The settings-connection manager for the bot.
-         * @type {SettingsConnectionManager}
+         * The server-settings connection-manager for the bot.
+         * @type {ServerSettingsConnectionManager}
          */
-        this.settingsConnections = new SettingsConnectionManager(this);
+        this.serverSettingsConnections = new ServerSettingsConnectionManager(this);
+
+        /**
+         * The user-settings connection-manager for the bot.
+         * @type {UserSettingsConnectionManager}
+         */
+        this.userSettingsConnections = new UserSettingsConnectionManager(this);
 
         /**
          * A collection of all commands in this bot.
@@ -158,8 +174,10 @@ export default class MCLinker extends Discord.Client {
         console.log('Loaded all server connections.');
         await this.userConnections._load();
         console.log('Loaded all user connections.');
-        await this.settingsConnections._load();
-        console.log('Loaded all settings connections.');
+        await this.serverSettingsConnections._load();
+        console.log('Loaded all server-settings connections.');
+        await this.userSettingsConnections._load();
+        console.log('Loaded all user-settings connections.');
         await this._loadCommands();
         console.log('Loaded all commands.');
         await this._loadButtons();

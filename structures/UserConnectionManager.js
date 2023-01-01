@@ -2,7 +2,6 @@ import UserConnection from './UserConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 import { createUUIDv3, fetchUUID } from '../api/utils.js';
 import Discord from 'discord.js';
-import fs from 'fs-extra';
 
 export default class UserConnectionManager extends ConnectionManager {
 
@@ -23,8 +22,6 @@ export default class UserConnectionManager extends ConnectionManager {
      * @property {?'nullish'|?'fetch'|?'cache'} error - The error that occurred.
      */
 
-    usageFile = './serverdata/monitoring/user_connections.json';
-
     /**
      * Returns the uuid and name of a minecraft user from a mention/username.
      * @param {string} arg - The argument to get the uuid and name from.
@@ -38,7 +35,6 @@ export default class UserConnectionManager extends ConnectionManager {
         if(id) {
             const cacheConnection = this.cache.get(id);
             if(cacheConnection) {
-                this.incrementUsage(cacheConnection);
                 return {
                     uuid: cacheConnection.getUUID(server),
                     username: cacheConnection.username,
@@ -52,22 +48,5 @@ export default class UserConnectionManager extends ConnectionManager {
         const apiUUID = server?.online === undefined || server.online ? await fetchUUID(arg) : createUUIDv3(arg);
         if(apiUUID) return { uuid: apiUUID, username: arg, error: null };
         return { error: 'fetch', uuid: null, username: null };
-    }
-
-    async incrementUsage(connection) {
-        await fs.ensureFile(this.usageFile);
-        let usage;
-        try {
-            usage = await fs.readJSON(this.usageFile);
-        }
-        catch {
-            usage = [];
-        }
-        if(!usage) return;
-
-        const existing = usage.find(u => u.id === connection.id);
-        if(existing) existing.count++;
-        else usage.push({ id: connection.id, uuid: connection.uuid, count: 1 });
-        await fs.writeJson(this.usageFile, usage, { spaces: 2 });
     }
 }

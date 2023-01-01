@@ -14,7 +14,6 @@ import Discord, {
     SlashCommandBuilder,
     User,
 } from 'discord.js';
-import config from '../config.json' assert { type: 'json' };
 import keys from './keys.js';
 
 /**
@@ -75,7 +74,7 @@ export const ph = {
      */
     interaction(interaction) {
         if(interaction instanceof Discord.Message) {
-            const args = interaction.content.slice(config.prefix.length).trim().split(/ +/);
+            const args = interaction.content.slice(process.env.PREFIX.length).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
 
             return {
@@ -449,10 +448,10 @@ export function getComponent(key, ...placeholders) {
             if(component.label) componentBuilder.setLabel(component.label);
 
             break;
-        case Discord.ComponentType.SelectMenu:
+        case Discord.ComponentType.StringSelect:
             if(!component.options || !component.custom_id) return;
 
-            componentBuilder = new Discord.SelectMenuBuilder()
+            componentBuilder = new Discord.StringSelectMenuBuilder()
                 .setCustomId(component.custom_id)
                 .setDisabled(component.disabled ?? false);
 
@@ -463,7 +462,7 @@ export function getComponent(key, ...placeholders) {
             for(const option of component.options ?? []) {
                 if(!option.label || !option.value) return;
 
-                const optionBuilder = new Discord.SelectMenuOptionBuilder()
+                const optionBuilder = new Discord.StringSelectMenuOptionBuilder()
                     .setLabel(option.label)
                     .setValue(option.value)
                     .setDefault(option.default ?? false);
