@@ -141,7 +141,7 @@ export default class Connect extends Command {
                 return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.std(interaction)));
             }
 
-            const resp = await pluginProtocol.connect(collector.first());
+            const resp = await pluginProtocol.connect(collector.first().content);
             if(!await utils.handleProtocolResponse(resp, pluginProtocol, interaction, {
                 401: keys.commands.connect.errors.incorrect_code,
             })) {
@@ -158,7 +158,7 @@ export default class Connect extends Command {
                 version: parseInt(resp.data.version.split('.')[1]),
                 path: decodeURIComponent(resp.data.path),
                 worldPath: decodeURIComponent(resp.data.worldPath),
-                hash: resp.data.hash,
+                hash: resp.data.token,
                 online: resp.data.online,
                 protocol: 'plugin',
                 channels: [],

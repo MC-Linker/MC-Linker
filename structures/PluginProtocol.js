@@ -129,9 +129,8 @@ const PluginRoutes = {
     Connect: (ip, guildId, verifyCode) => [
         'POST',
         '/connect',
-        { ip, id: guildId },
+        { ip, id: guildId, code: verifyCode },
         {},
-        `Basic ${verifyCode}`,
     ],
     /**
      * Disconnects from the server.
