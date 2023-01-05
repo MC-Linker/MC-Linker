@@ -22,7 +22,7 @@ const PluginRoutes = {
      * @returns {PluginProtocolFetchData} - The data to send to the plugin.
      */
     PutFile: (fileStream, path) => [
-        'POST',
+        'PUT',
         '/file/put',
         fileStream,
         { path },
