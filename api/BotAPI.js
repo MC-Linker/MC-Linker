@@ -43,7 +43,9 @@ export default class BotAPI extends EventEmitter {
 
     async startServer() {
         this.fastify.post('/chat', (request, reply) => {
-            const { id: guildId, ip, port } = request.body;
+            const guildId = request.body.id;
+            const ip = request.body.ip.split(':')[0];
+            const port = request.body.ip.split(':')[1];
 
             /** @type {ServerConnection} */
             const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.protocol instanceof PluginProtocol);
@@ -118,7 +120,7 @@ export default class BotAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.on('connection', socket => {
-            console.log('Socket connected', socket);
+            console.log('Socket connected', socket.handshake.auth, socket);
 
             socket.on('chat', data => {
                 const { id: guildId, ip, port } = data;
@@ -138,7 +140,7 @@ export default class BotAPI extends EventEmitter {
     async _chat(data, server) {
         const { message, channels, id: guildId, type, player } = data;
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
-        const ip = request.body.ip.split(':')[0];
+        const ip = data.ip.split(':')[0];
 
         const argPlaceholder = { ip, username: player, author_url: authorURL, message };
 
