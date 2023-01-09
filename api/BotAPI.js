@@ -120,10 +120,10 @@ export default class BotAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.on('connection', socket => {
-            console.log('Socket connected', socket.handshake.auth, socket);
-
             socket.on('chat', data => {
-                const { id: guildId, ip, port } = data;
+                const guildId = request.body.id;
+                const ip = request.body.ip.split(':')[0];
+                const port = request.body.ip.split(':')[1];
 
                 /** @type {ServerConnection} */
                 const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.protocol instanceof PluginProtocol);
@@ -134,6 +134,7 @@ export default class BotAPI extends EventEmitter {
                 this._chat(data, server);
             });
         });
+
         return this.fastify;
     }
 

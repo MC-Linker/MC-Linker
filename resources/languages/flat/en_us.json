@@ -596,6 +596,10 @@
   "commands.connect.errors.incorrect_code.embeds.0.description": "%emoji_error% You didn't reply with the correct code.",
   "commands.connect.errors.incorrect_code.console": "Incorrect code",
 
+  "commands.connect.success.verification_info.embeds.0.title": "Server Verification",
+  "commands.connect.success.verification_info.embeds.0.description": "%emoji_red_success% To verify ownership of the server, please join your server and type `/linker connect %code%` in chat.\n**You have 3 minutes to run the command.**",
+  "commands.connect.success.verification_info.embeds.0.color": "DarkGold",
+
   "commands.connect.success.ftp.embeds.0.title": "Connected to Server",
   "commands.connect.success.ftp.embeds.0.description": "%emoji_success% Successfully connected to the ftp server.",
   "commands.connect.success.ftp.console": "Successfully wrote ftp file",
@@ -1371,6 +1375,11 @@
   "data.connect.options.1.options.1.name": "port",
   "data.connect.options.1.options.1.description": "Set the port of the plugin from the config.yml",
   "data.connect.options.1.options.1.required": false,
+
+
+  "data.connect.options.2.type": "Subcommand",
+  "data.connect.options.2.name": "websocket",
+  "data.connect.options.2.description": "Connect your Minecraft server using the Discord-Linker plugin.",
 
 
 

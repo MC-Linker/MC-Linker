@@ -1172,6 +1172,15 @@
         }
       },
       "success": {
+        "verification_info": {
+          "embeds": [
+            {
+              "title": "Server Verification",
+              "description": "%emoji_red_success% To verify ownership of the server, please join your server and type `/linker connect %code%` in chat.\n**You have 3 minutes to run the command.**",
+              "color": "DarkGold"
+            }
+          ]
+        },
         "ftp": {
           "embeds": [
             {
@@ -2547,6 +2556,11 @@
               "required": false
             }
           ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "websocket",
+          "description": "Connect your Minecraft server using the Discord-Linker plugin."
         }
       ]
     },
