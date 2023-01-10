@@ -1169,6 +1169,15 @@
             }
           ],
           "console": "Incorrect code"
+        },
+        "websocket_error": {
+          "embeds": [
+            {
+              "title": "Verification Unsuccessful",
+              "description": "%emoji_error% An unknown error occurred while connecting to the plugin."
+            }
+          ],
+          "console": "Unknown websocket connection error %error%"
         }
       },
       "success": {
@@ -1196,8 +1205,16 @@
               "title": "Connected to Server",
               "description": "%emoji_success% Successfully connected to the plugin."
             }
+          ]
+        },
+        "websocket": {
+          "embeds": [
+            {
+              "title": "Connected to Server",
+              "description": "%emoji_success% Successfully connected to the plugin."
+            }
           ],
-          "console": "Successfully wrote plugin file"
+          "console": "Successfully wrote websocket file"
         },
         "verification": {
           "embeds": [
@@ -1329,6 +1346,15 @@
           }
         ],
         "console": "Successfully enabled %type% %enable%"
+      }
+    }
+  },
+  "websocketcommands": {
+    "connect": {
+      "success": {
+        "plugin": {
+          "console": "Successfully wrote plugin file"
+        }
       }
     }
   },

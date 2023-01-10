@@ -8,6 +8,7 @@ import PluginProtocol from '../structures/PluginProtocol.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
+import Discord from 'discord.js';
 
 export default class BotAPI extends EventEmitter {
 
@@ -242,8 +243,12 @@ export default class BotAPI extends EventEmitter {
                 if(discordChannel.isThread()) await webhook.send({
                     threadId: discordChannel.id,
                     content: argPlaceholder.message,
+                    allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
                 });
-                else await webhook.send(argPlaceholder.message);
+                else await webhook.send({
+                    content: argPlaceholder.message,
+                    allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
+                });
             }
             return;
         }

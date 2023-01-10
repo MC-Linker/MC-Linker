@@ -596,6 +596,10 @@
   "commands.connect.errors.incorrect_code.embeds.0.description": "%emoji_error% You didn't reply with the correct code.",
   "commands.connect.errors.incorrect_code.console": "Incorrect code",
 
+  "commands.connect.errors.websocket_error.embeds.0.title": "Verification Unsuccessful",
+  "commands.connect.errors.websocket_error.embeds.0.description": "%emoji_error% An unknown error occurred while connecting to the plugin.",
+  "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error%",
+
   "commands.connect.success.verification_info.embeds.0.title": "Server Verification",
   "commands.connect.success.verification_info.embeds.0.description": "%emoji_red_success% To verify ownership of the server, please join your server and type `/linker connect %code%` in chat.\n**You have 3 minutes to run the command.**",
   "commands.connect.success.verification_info.embeds.0.color": "DarkGold",
@@ -606,7 +610,11 @@
 
   "commands.connect.success.plugin.embeds.0.title": "Connected to Server",
   "commands.connect.success.plugin.embeds.0.description": "%emoji_success% Successfully connected to the plugin.",
-  "commands.connect.success.plugin.console": "Successfully wrote plugin file",
+  "websocketcommands.connect.success.plugin.console": "Successfully wrote plugin file",
+
+  "commands.connect.success.websocket.embeds.0.title": "Connected to Server",
+  "commands.connect.success.websocket.embeds.0.description": "%emoji_success% Successfully connected to the plugin.",
+  "commands.connect.success.websocket.console": "Successfully wrote websocket file",
 
   "commands.connect.success.verification.embeds.0.title": "Verification Successful",
   "commands.connect.success.verification.embeds.0.description": "%emoji_success% Successfully verified your server.",
