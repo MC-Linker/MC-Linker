@@ -177,7 +177,7 @@ export default class PluginProtocol extends Protocol {
      * @typedef {object} PluginProtocolData
      * @property {string} ip - The ip the plugin is listening on.
      * @property {number} port - The port the plugin is listening on.
-     * @property {string} hash - The hash used to authenticate with the plugin.
+     * @property {string} token - The token used to authenticate with the plugin.
      * @property {string} id - The guild id this protocol is for.
      */
 
@@ -234,7 +234,7 @@ export default class PluginProtocol extends Protocol {
      */
     static async testConnection(data) {
         const url = new URL(PluginRoutes.Base()[1], `http://${data.ip}:${data.port}`);
-        const response = await PluginProtocol.fetch(PluginRoutes.Base()[0], url, data.hash);
+        const response = await PluginProtocol.fetch(PluginRoutes.Base()[0], url, data.token);
         if(response) return response.ok;
         return false;
     }
@@ -262,7 +262,7 @@ export default class PluginProtocol extends Protocol {
          * The hash used to authenticate with the plugin.
          * @type {string}
          */
-        this.hash = data.hash ?? this.hash;
+        this.token = data.token ?? this.token;
     }
 
     /**
@@ -441,7 +441,7 @@ export default class PluginProtocol extends Protocol {
                 url.searchParams.append(key, queries[key]);
             }
 
-            return await PluginProtocol.fetch(method, url, this.hash, body, authorization);
+            return await PluginProtocol.fetch(method, url, this.token, body, authorization);
         }
         catch(_) {
             return null;

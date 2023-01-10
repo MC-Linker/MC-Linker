@@ -118,12 +118,6 @@ export default class ServerInfo extends Command {
             description: 'Server List',
         });
 
-        /** @type {Discord.InteractionReplyOptions} */
-        const startingMessage = {
-            embeds: [keys.commands.serverinfo.success.general],
-            files: [iconAttachment, serverListAttachment],
-        };
-
         const difficulty = typeof propertiesObject['difficulty'] === 'number' ?
             keys.commands.serverinfo.difficulty[propertiesObject['difficulty']] :
             propertiesObject['difficulty'].cap();
@@ -152,6 +146,11 @@ export default class ServerInfo extends Command {
             worldEmbed.data.fields[2] = addPh(keys.commands.serverinfo.success.hardcore_enabled.embeds[0].fields[0], { difficulty });
         }
 
+        /** @type {Discord.InteractionReplyOptions} */
+        const startingMessage = {
+            embeds: [keys.commands.serverinfo.success.general],
+            files: [iconAttachment, serverListAttachment],
+        };
         /** @type {PaginationPages} */
         const pages = {
             serverinfo_general: {
