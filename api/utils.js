@@ -515,6 +515,12 @@ export function cleanEmojis(message) {
     return cleanedMessage.replace(/<a?(:[a-zA-Z0-9_]+:)[0-9]+>/g, '$1');
 }
 
+export function createHash(token) {
+    return crypto.createHash('sha256')
+        .update(token)
+        .digest('hex');
+}
+
 export default {
     searchAllAdvancements,
     searchAdvancements,
@@ -532,4 +538,5 @@ export default {
     drawMinecraftNumber,
     wrapText,
     cleanEmojis,
+    createHash,
 };

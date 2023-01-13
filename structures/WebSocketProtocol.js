@@ -6,8 +6,8 @@ export default class WebSocketProtocol extends Protocol {
     /**
      * @typedef {object} WebSocketProtocolData
      * @property {string} ip - The ip the websocket client is listening on.
-     * @property {number} port - The port the websocket client is listening on.
      * @property {string} id - The guild id this protocol is for.
+     * @property {import('socket.io').Socket} socket - The connected WebSocket of this protocol.
      */
 
     /**
@@ -45,6 +45,12 @@ export default class WebSocketProtocol extends Protocol {
          * @type {number}
          */
         this.port = data.port ?? this.port;
+
+        /**
+         * The connected WebSocket of this protocol.
+         * @type {?import('socket.io').Socket}
+         */
+        this.socket = data.socket ?? this.socket;
     }
 
     /**
@@ -54,6 +60,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the websocket client.
      */
     async verifyUser(code, uuid) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('verify', { code, uuid }, (err, response) => {
                 resolve(response);
@@ -74,6 +81,7 @@ export default class WebSocketProtocol extends Protocol {
      * @inheritDoc
      */
     async get(getPath, putPath) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             await fs.ensureFile(putPath);
 
@@ -93,6 +101,7 @@ export default class WebSocketProtocol extends Protocol {
      * @inheritDoc
      */
     async put(getPath, putPath) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('put-file', await fs.readFile(getPath), (err, response) => {
                 resolve(response);
@@ -104,6 +113,7 @@ export default class WebSocketProtocol extends Protocol {
      * @inheritDoc
      */
     async list(folder) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('list-file', { folder }, (err, response) => {
                 resolve(response);
@@ -120,6 +130,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async chat(message, username, replyMessage = null, replyUsername = null) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             const data = {
                 msg: message,
@@ -145,6 +156,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async chatPrivate(message, username, target) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             const data = { msg: message, username, target, private: true };
             this.socket.timeout(5000).emit('chat', data, (err, response) => {
@@ -159,6 +171,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async addChatChannel(channel) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('add-channel', channel, (err, response) => {
                 resolve(response);
@@ -172,6 +185,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeChatChannel(channel) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('remove-channel', channel, (err, response) => {
                 resolve(response);
@@ -185,6 +199,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async execute(command) {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('command', { command }, (err, response) => {
                 resolve(response);
@@ -197,10 +212,19 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async getOnlinePlayers() {
+        if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('list-players', (err, response) => {
                 resolve(response);
             });
         });
+    }
+
+    /**
+     * Updates the connected websocket client of this protocol.
+     * @param {import('socket.io').Socket} socket - The new socket to use.
+     */
+    updateSocket(socket) {
+        this.socket = socket;
     }
 }

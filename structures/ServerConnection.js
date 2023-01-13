@@ -51,6 +51,7 @@ export default class ServerConnection extends Connection {
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
+     * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
      */
 
     /**

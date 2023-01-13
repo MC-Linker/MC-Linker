@@ -121,18 +121,31 @@ export default class BotAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.on('connection', socket => {
+            const { id, ip, port } = socket.handshake.query;
+
+            //Await verification
+            if(this.client.commands.get('connect').wsVerification.has(id)) return;
+
+            /** @type {?ServerConnection} */
+            const server = this.client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasWebSocketProtocol());
+            if(!server || server.hash !== utils.createHash(server)) return socket.disconnect();
+
+            server.protocol.updateSocket(socket);
             socket.on('chat', data => {
                 const guildId = request.body.id;
                 const ip = request.body.ip.split(':')[0];
                 const port = request.body.ip.split(':')[1];
 
                 /** @type {ServerConnection} */
-                const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.protocol instanceof PluginProtocol);
+                const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.hasPluginProtocol());
 
                 //If no connection on that guild, disconnect socket
                 if(!server) socket.disconnect();
 
                 this._chat(data, server);
+            });
+            socket.on('disconnect', () => {
+                server.protocol.updateSocket(null);
             });
         });
 
@@ -175,7 +188,7 @@ export default class BotAPI extends EventEmitter {
             const guild = await this.client.guilds.fetch(guildId);
 
             //Parse pings (@name)
-            let mentions = message.match(/@(\S+)/g);
+            const mentions = message.match(/@(\S+)/g);
             for(const mention of mentions ?? []) {
                 const users = await guild.members.search({ query: mention.replace('@', '') });
                 argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);

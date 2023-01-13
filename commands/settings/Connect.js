@@ -6,14 +6,57 @@ import PluginProtocol from '../../structures/PluginProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
 import utils from '../../api/utils.js';
+import WebSocketProtocol from '../../structures/WebSocketProtocol.js';
+import client from '../../main.js';
 
 export default class Connect extends Command {
+
+    wsVerification = new Map();
 
     constructor() {
         super({
             name: 'connect',
             requiresConnectedServer: false,
             category: 'settings',
+        });
+
+        client.api.websocket.on('connection', async socket => {
+            const [userCode, id] = socket.handshake.auth.code.split(':');
+            const { serverCode, interaction, timeout, server } = this.wsVerification.get(id) ?? {};
+            try {
+                if(!serverCode || serverCode !== userCode) {
+                    await interaction.replyTl(keys.commands.connect.errors.incorrect_code);
+                    return socket.disconnect(true);
+                }
+
+                clearTimeout(timeout);
+                this.wsVerification.delete(id);
+
+                console.log(socket.handshake.query);
+
+                /** @type {WebSocketServerConnectionData} */
+                const serverConnectionData = {
+                    ip: socket.handshake.address,
+                    id: interaction.guildId,
+                    path: socket.handshake.query.path,
+                    channels: [],
+                    online: socket.handshake.query.online,
+                    version: socket.handshake.query.version,
+                    worldPath: socket.handshake.query.worldPath,
+                    protocol: 'websocket',
+                    hash: utils.createHash(socket.handshake.auth.token),
+                    socket,
+                };
+
+                if(server) await server.edit(serverConnectionData);
+                else await client.serverConnections.connect(serverConnectionData);
+
+                await interaction.replyTl(keys.commands.connect.success.websocket);
+            }
+            catch(err) {
+                await interaction.replyTl(keys.commands.connect.errors.websocket_error, ph.error(err));
+                socket.disconnect(true);
+            }
         });
     }
 
@@ -81,8 +124,8 @@ export default class Connect extends Command {
 
             const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
             let separator = serverPath.includes('\\') ? '\\' : '/';
-            console.log(separator, serverPath, propertiesObject['level-name']);
             if(serverPath.endsWith(separator) || propertiesObject['level-name'].startsWith(separator)) separator = '';
+
             /** @type {FtpServerConnectionData} */
             const serverConnectionData = {
                 ip: host,
@@ -94,13 +137,11 @@ export default class Connect extends Command {
                 worldPath: `${serverPath}${separator}${propertiesObject['level-name']}`,
                 version,
                 protocol,
+                id: interaction.guildId,
             };
 
             if(server) await server.edit(serverConnectionData);
-            else await client.serverConnections.connect({
-                ...serverConnectionData,
-                id: interaction.guildId,
-            });
+            else await client.serverConnections.connect(serverConnectionData);
 
             await interaction.replyTl(keys.commands.connect.success.ftp);
         }
@@ -110,8 +151,8 @@ export default class Connect extends Command {
 
             await this._disconnectOldPlugin(interaction, server);
 
-            const hash = crypto.randomBytes(32).toString('hex');
-            const pluginProtocol = new PluginProtocol(client, { ip, hash, port, id: interaction.guildId });
+            const token = crypto.randomBytes(32).toString('hex');
+            const pluginProtocol = new PluginProtocol(client, { ip, token, port, id: interaction.guildId });
 
             const verify = await pluginProtocol.verifyGuild();
             if(!await utils.handleProtocolResponse(verify, pluginProtocol, interaction, {
@@ -153,34 +194,51 @@ export default class Connect extends Command {
 
             /** @type {PluginServerConnectionData} */
             const serverConnectionData = {
-                ip: resp.data.ip.split(':').shift(),
-                port: resp.data.ip.split(':').pop(),
+                ip,
+                port,
                 version: parseInt(resp.data.version.split('.')[1]),
                 path: decodeURIComponent(resp.data.path),
                 worldPath: decodeURIComponent(resp.data.worldPath),
-                hash: resp.data.token,
+                token: resp.data.token,
                 online: resp.data.online,
                 protocol: 'plugin',
                 channels: [],
+                id: interaction.guildId,
             };
 
             if(server) await server.edit(serverConnectionData);
-            else await client.serverConnections.connect({
-                ...serverConnectionData,
-                id: interaction.guildId,
-            });
+            else await client.serverConnections.connect(serverConnectionData);
 
             return interaction.replyTl(keys.commands.connect.success.plugin);
+        }
+        else if(method === 'websocket') {
+            await this._disconnectOldPlugin(interaction, server);
+
+            const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
+            await interaction.replyTl(keys.commands.connect.success.verification_info, { code: `${code}:${interaction.guildId}` });
+
+            const timeout = setTimeout(async () => {
+                await interaction.replyTl(keys.commands.account.warnings.verification_timeout);
+            }, 180_000);
+
+            this.wsVerification.set(interaction.guildId, { code, interaction, timeout, server });
+            //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
         }
     }
 
     async _disconnectOldPlugin(interaction, server) {
-        if(server?.protocol instanceof PluginProtocol) {
-            /** @type {?ProtocolResponse} */
-            const resp = await server.protocol.disconnect();
+        /** @type {?ProtocolResponse} */
+        let resp;
 
-            if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
-            else await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
+        if(server?.protocol instanceof PluginProtocol) {
+            resp = await server.protocol.disconnect();
         }
+        else if(server?.protocol instanceof WebSocketProtocol) {
+            resp = server.protocol.disconnect();
+        }
+        else return;
+
+        if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
+        else await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
     }
 }

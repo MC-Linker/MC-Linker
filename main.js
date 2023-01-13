@@ -52,11 +52,11 @@ client.once('ready', async () => {
     //Set Activity
     client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
-    //Load all connections and commands
-    await client.loadEverything();
-
     //Start API server
     await client.api.startServer();
+
+    //Load all connections and commands
+    await client.loadEverything();
 
     //Register minecraft font
     Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
@@ -185,4 +185,6 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(process.env.TOKEN);
+await client.login(process.env.TOKEN);
+
+export default client;
