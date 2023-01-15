@@ -156,7 +156,6 @@ export default class BotAPI extends EventEmitter {
                          content: argPlaceholder.message,
                          allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
                      });
-                 }
                 }
                 return;
             }
