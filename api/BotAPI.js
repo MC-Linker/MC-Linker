@@ -148,10 +148,15 @@ export default class BotAPI extends EventEmitter {
                     }
 
                     if(discordChannel.isThread()) await webhook.send({
-                        threadId: discordChannel.id,
-                        content: argPlaceholder.message,
-                    });
-                    else await webhook.send(argPlaceholder.message);
+                         threadId: discordChannel.id,
+                         content: argPlaceholder.message,
+                         allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
+                     });
+                     else await webhook.send({
+                         content: argPlaceholder.message,
+                         allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
+                     });
+                 }
                 }
                 return;
             }
