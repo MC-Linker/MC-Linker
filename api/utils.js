@@ -17,6 +17,7 @@ import nbt from 'prismarine-nbt';
 import { ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
+import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 
 const mcData = minecraft_data('1.19.2');
 
@@ -271,7 +272,7 @@ const defaultStatusRespones = {
 export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
     const placeholders = { data: JSON.stringify(response?.data ?? '') };
 
-    if(!response && protocol instanceof PluginProtocol) {
+    if(!response && (protocol instanceof PluginProtocol || protocol instanceof WebSocketProtocol)) {
         await interaction.replyTl(keys.api.plugin.errors.no_response, placeholders);
         return false;
     }

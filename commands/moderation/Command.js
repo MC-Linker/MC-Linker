@@ -47,7 +47,7 @@ export default class Command extends AutocompleteCommand {
 
             const previousArgument = allOptions?.[focusedIndex - 1]?.value;
 
-            let filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
+            const filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
 
             const filteredSuggestions = suggestions?.[filteredKey] ?? suggestions?.[''];
             if(filteredSuggestions) {
@@ -124,7 +124,7 @@ export default class Command extends AutocompleteCommand {
         }
 
         if(respondArray.length >= 25) respondArray.length = 25;
-        interaction.respond(respondArray).catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
+        interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {
@@ -241,7 +241,7 @@ async function getPlaceholder(key, args) {
                 '@e': '@e',
             };
 
-            let resp = await server?.protocol?.getOnlinePlayers?.();
+            const resp = await server?.protocol?.getOnlinePlayers?.();
             const onlinePlayers = resp?.status === 200 ? resp.data : [];
             const username = userConn?.username;
 

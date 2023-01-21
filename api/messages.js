@@ -94,6 +94,12 @@ export const ph = {
                 'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
             };
         }
+        else if(interaction instanceof Discord.AutocompleteInteraction) {
+            return {
+                'interaction_name': interaction.commandName,
+                'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
+            };
+        }
 
         return {};
     },

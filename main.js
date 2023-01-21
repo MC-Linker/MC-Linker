@@ -163,10 +163,10 @@ client.on('interactionCreate', async interaction => {
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client)
-                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.interaction(interaction))));
+                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err))));
         }
         catch(err) {
-            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.interaction(interaction)));
+            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err)));
         }
     }
     else if(interaction.isButton()) {

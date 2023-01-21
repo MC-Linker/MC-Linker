@@ -102,7 +102,7 @@ export default class Command {
             return false;
         }
 
-        if(this.requiresConnectedPlugin && !server?.hasPluginProtocol()) {
+        if(this.requiresConnectedPlugin && !(server?.hasPluginProtocol() || server?.hasWebSocketProtocol())) {
             await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             return false;
         }

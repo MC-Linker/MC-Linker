@@ -2,6 +2,8 @@ import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import PluginProtocol from '../../structures/PluginProtocol.js';
 import utils from '../../api/utils.js';
+import WebSocketProtocol from '../../structures/WebSocketProtocol.js';
+import FtpProtocol from '../../structures/FtpProtocol.js';
 
 export default class Disconnect extends Command {
 
@@ -15,8 +17,12 @@ export default class Disconnect extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const protocol = server.protocol instanceof PluginProtocol ? 'plugin' : 'ftp';
-        if(protocol === 'plugin') {
+        let protocol;
+        if(server.protocol instanceof PluginProtocol) protocol = 'plugin';
+        else if(server.protocol instanceof WebSocketProtocol) protocol = 'websocket';
+        else if(server.protocol instanceof FtpProtocol) protocol = 'ftp';
+
+        if(protocol === 'plugin' || protocol === 'websocket') {
             const disconnect = await server.protocol.disconnect();
             if(!await utils.handleProtocolResponse(disconnect, server.protocol, interaction)) return;
         }

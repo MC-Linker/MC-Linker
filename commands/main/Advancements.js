@@ -32,7 +32,7 @@ export default class Advancements extends AutocompleteCommand {
         });
 
         interaction.respond(respondArray)
-            .catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
+            .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {

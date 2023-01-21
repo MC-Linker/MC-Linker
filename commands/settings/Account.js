@@ -23,7 +23,7 @@ export default class Account extends Command {
         if(subcommand === 'connect') {
             const username = args[1];
 
-            if(!server?.hasPluginProtocol()) {
+            if(!server?.hasPluginProtocol() && !server?.hasWebSocketProtocol()) {
                 return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             }
 
