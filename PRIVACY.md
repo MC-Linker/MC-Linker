@@ -1,6 +1,6 @@
-By using the Discord bot `MC Linker`, you agree that you have read and agreed to this policy.
+By using the Discord bot `Minecraft SMP Bot`, you agree that you have read and agreed to this policy.
 This is our Privacy Policy, which will describe the types of data collected, how it is used, how to opt out of data collection, and how to remove your data.
-The terms "we", "us", and "our" refer to the owner and moderators of `MC Linker`. The terms "bot" and "MC Linker" refer to the Discord bot itself.
+The terms "we", "us", and "our" refer to the owner and moderators of `Minecraft SMP Bot`. The terms "bot" and "Minecraft SMP Bot" refer to the Discord bot itself.
 We may update this Privacy Policy at any time. Any changes that are made will be made effective immediately. If you are a regular user of our bot, please make sure you are kept up to date with this Privacy Policy.
 
 
@@ -12,7 +12,7 @@ We respect the privacy of your information. This policy describes the types of i
 
 # THE INFORMATION WE COLLECT AND HOW WE COLLECT IT
 **Connections:**<br>
-The MC Linker collects and stores Minecraft usernames that you tie to your Discord account. This will only be personally identifiable if the username is personally identifiable. 
+The Minecraft SMP Bot collects and stores Minecraft usernames that you tie to your Discord account. This will only be personally identifiable if the username is personally identifiable. 
 Our bot also stores server connection files in JSON format that are tied to your Discord server.
 <br>Server connections can be of two types:
 Plugin connections include the IP the server is running on, the Minecraft version and the path to the Minecraft world folder.
@@ -30,7 +30,7 @@ Commands are logged to help track error messages and bot abuse. When an error oc
 # OPTING OUT
 How to opt out of having this data collected:
 <br>**Server owners/admins:**<br>
-To opt out of having any commands logged from your server, kick MC Linker from your Discord server.
+To opt out of having any commands logged from your server, kick Minecraft SMP Bot from your Discord server.
 <br>**Server members:**<br>
 To opt out of having your commands logged from a server using our bot, leave the Discord server.
 
@@ -41,10 +41,10 @@ User and Server connections can be removed by using the implemented commands `/d
 Command logs are generally deleted every week. If you still want to urgently remove command logs, please contact me through the contacts listed at the bottom of this policy, with the Command name and User Tag of the logs you would like to have removed.
 
 # THIRD-PARTY WEBSITES
-MC Linker may link to third-party websites. These websites are separate from our bot and will have their own privacy policies. Any data collected through these third-party websites is separate and unrelated to the bot.
+Minecraft SMP Bot may link to third-party websites. These websites are separate from our bot and will have their own privacy policies. Any data collected through these third-party websites is separate and unrelated to the bot.
 
 # CONTACT INFORMATION
 If you have any questions about this Privacy Policy, you can contact me:
 - By email: [benjecx@gmail.com](mailto:benjecx@gmail.com)
-- Support Discord Server: [MC Linker Support Server](https://discord.gg/rX36kZUGNK)
+- Support Discord Server: [Minecraft SMP Bot Support Server](https://discord.gg/rX36kZUGNK)
 - Discord DM: Lianecx#6444
