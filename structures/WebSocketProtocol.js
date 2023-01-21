@@ -41,12 +41,6 @@ export default class WebSocketProtocol extends Protocol {
         this.ip = data.ip ?? this.ip;
 
         /**
-         * The port the websocket client is listening on.
-         * @type {number}
-         */
-        this.port = data.port ?? this.port;
-
-        /**
          * The connected WebSocket of this protocol.
          * @type {?import('socket.io').Socket}
          */
@@ -54,26 +48,12 @@ export default class WebSocketProtocol extends Protocol {
     }
 
     /**
-     * Sends a verification request to the server. Users can verify using `/verify <code>`.
-     * @param {string} code - The verification code to send.
-     * @param {string} uuid - The uuid of the user that sent the request.
-     * @returns {Promise<?ProtocolResponse>} - The response from the websocket client.
-     */
-    async verifyUser(code, uuid) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('verify', { code, uuid }, (err, response) => {
-                resolve(response);
-            });
-        });
-    }
-
-    /**
      * Disconnects from the plugin.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async disconnect() {
-        await this.socket.disconnect();
+        if(!this.socket) return { status: 200 };
+        await this.socket.disconnect(true);
         return { status: 200 };
     }
 
@@ -86,11 +66,12 @@ export default class WebSocketProtocol extends Protocol {
             await fs.ensureFile(putPath);
 
             this.socket.timeout(5000).emit('get-file', { path: getPath }, async (err, response) => {
-                if(response?.status !== 200) return resolve(null);
+                if(err || !response) return resolve(null);
+                if(!(response instanceof Buffer)) return resolve({ status: JSON.parse(response).status });
 
-                await fs.writeFile(putPath, response.data);
+                await fs.writeFile(putPath, response);
                 resolve({
-                    status: response.status,
+                    status: 200,
                     data: await fs.readFile(putPath),
                 });
             });
@@ -104,7 +85,8 @@ export default class WebSocketProtocol extends Protocol {
         if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('put-file', await fs.readFile(getPath), (err, response) => {
-                resolve(response);
+                if(err) return resolve(null);
+                resolve(JSON.parse(response));
             });
         });
     }
@@ -116,7 +98,8 @@ export default class WebSocketProtocol extends Protocol {
         if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('list-file', { folder }, (err, response) => {
-                resolve(response);
+                if(err) return resolve(null);
+                resolve(JSON.parse(response));
             });
         });
     }
@@ -143,7 +126,8 @@ export default class WebSocketProtocol extends Protocol {
             }
 
             this.socket.timeout(5000).emit('chat', data, (err, response) => {
-                resolve(response);
+                if(err) return resolve(null);
+                resolve(JSON.parse(response));
             });
         });
     }
@@ -160,7 +144,8 @@ export default class WebSocketProtocol extends Protocol {
         return new Promise(async resolve => {
             const data = { msg: message, username, target, private: true };
             this.socket.timeout(5000).emit('chat', data, (err, response) => {
-                resolve(response);
+                if(err) return resolve(null);
+                resolve(JSON.parse(response));
             });
         });
     }
@@ -174,7 +159,8 @@ export default class WebSocketProtocol extends Protocol {
         if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('add-channel', channel, (err, response) => {
-                resolve(response);
+                if(err) return resolve(null);
+                resolve(JSON.parse(response));
             });
         });
     }
@@ -188,7 +174,8 @@ export default class WebSocketProtocol extends Protocol {
         if(!this.socket) return null;
         return new Promise(async resolve => {
             this.socket.timeout(5000).emit('remove-channel', channel, (err, response) => {
-                resolve(response);
+                if(err) return resolve(null);
+                resolve(JSON.parse(response));
             });
         });
     }
@@ -201,8 +188,9 @@ export default class WebSocketProtocol extends Protocol {
     async execute(command) {
         if(!this.socket) return null;
         return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('command', { command }, (err, response) => {
-                resolve(response);
+            this.socket.timeout(5000).emit('command', { cmd: encodeURIComponent(command) }, (err, response) => {
+                if(err) return resolve(null);
+                resolve(JSON.parse(response));
             });
         });
     }
@@ -214,7 +202,24 @@ export default class WebSocketProtocol extends Protocol {
     async getOnlinePlayers() {
         if(!this.socket) return null;
         return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('list-players', (err, response) => {
+            this.socket.timeout(5000).emit('list-players', {}, (err, response) => {
+                if(err) return resolve(null);
+                resolve(JSON.parse(response));
+            });
+        });
+    }
+
+    /**
+     * Sends a verification request to the server. Users can verify using `/verify <code>`.
+     * @param {string} code - The verification code to send.
+     * @param {string} uuid - The uuid of the user that sent the request.
+     * @returns {Promise<?ProtocolResponse>} - The response from the websocket client.
+     */
+    async verifyUser(code, uuid) {
+        if(!this.socket) return null;
+        return new Promise(async resolve => {
+            this.socket.timeout(5000).emit('verify-user', { code, uuid }, (err, response) => {
+                if(err) return resolve(null);
                 resolve(response);
             });
         });

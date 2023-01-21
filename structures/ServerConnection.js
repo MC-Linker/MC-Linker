@@ -286,6 +286,7 @@ export default class ServerConnection extends Connection {
             return {
                 ...baseData,
                 hash: this.hash,
+                channels: this.channels ?? [],
                 protocol: 'websocket',
             };
         }

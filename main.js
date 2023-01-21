@@ -78,6 +78,7 @@ client.on('guildDelete', async guild => {
 client.on('messageCreate', async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
+
     if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(process.env.PREFIX)) {
         let content = cleanEmojis(message.cleanContent);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);

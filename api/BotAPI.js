@@ -121,28 +121,30 @@ export default class BotAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.on('connection', socket => {
-            const { id, ip, port } = socket.handshake.query;
+            const [id] = socket.handshake.auth.code?.split(':') ?? [];
 
-            //Await verification
-            if(this.client.commands.get('connect').wsVerification.has(id)) return;
+            //Check if awaiting verification (will be handled by connect command)
+            if(this.client.commands.get('connect')?.wsVerification?.has(id)) return;
+
+            const token = socket.handshake.auth.token;
+            const hash = utils.createHash(token);
 
             /** @type {?ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasWebSocketProtocol());
-            if(!server || server.hash !== utils.createHash(server)) return socket.disconnect();
+            const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
+            if(!server) return socket.disconnect();
+
+            socket.emit('auth-success', {}); //Tell the client that the auth was successful
 
             server.protocol.updateSocket(socket);
             socket.on('chat', data => {
-                const guildId = request.body.id;
-                const ip = request.body.ip.split(':')[0];
-                const port = request.body.ip.split(':')[1];
-
-                /** @type {ServerConnection} */
-                const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.hasPluginProtocol());
+                //Update server variable to ensure it wasn't disconnected in the meantime
+                /** @type {?ServerConnection} */
+                const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
 
                 //If no connection on that guild, disconnect socket
                 if(!server) socket.disconnect();
 
-                this._chat(data, server);
+                this._chat(JSON.parse(data), server);
             });
             socket.on('disconnect', () => {
                 server.protocol.updateSocket(null);
@@ -152,19 +154,25 @@ export default class BotAPI extends EventEmitter {
         return this.fastify;
     }
 
+    /**
+     * Handles chat messages
+     * @param {Object} data - The chat data
+     * @param {ServerConnection} server - The server connection
+     * @returns {Promise<void>}
+     * @private
+     */
     async _chat(data, server) {
         const { message, channels, id: guildId, type, player } = data;
+        console.log(data);
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
-        const ip = data.ip.split(':')[0];
 
-        const argPlaceholder = { ip, username: player, author_url: authorURL, message };
+        const argPlaceholder = { username: player, author_url: authorURL, message };
 
         //Check whether command is blocked
-        const commandName = message.replace(/^\//, '').split(/\s+/)[0];
-        if(
-            ['player_command', 'console_command', 'block_command'].includes(type) &&
-            server.settings.disabled['chat-commands']?.some(cmd => cmd === commandName)
-        ) return;
+        if(['player_command', 'console_command', 'block_command'].includes(type)) {
+            const commandName = message.replace(/^\//, '').split(/\s+/)[0];
+            if(server.settings.isDisabled('chat-commands', commandName)) return;
+        }
 
         let chatEmbed;
         if(type === 'advancement') {
@@ -203,6 +211,8 @@ export default class BotAPI extends EventEmitter {
             catch(_) {}
 
             for(const channel of channels) {
+                if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
+
                 const discordChannel = await this.client.channels.fetch(channel.id);
                 if(!discordChannel) continue;
 
@@ -271,6 +281,9 @@ export default class BotAPI extends EventEmitter {
 
         try {
             for(const channel of channels) {
+                console.log(channel, server.channels.some(c => c.id === channel.id, chatEmbed));
+                if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
+
                 const discordChannel = await this.client.channels.fetch(channel.id);
                 await discordChannel?.send({ embeds: [chatEmbed] })
                     .catch(() => {});

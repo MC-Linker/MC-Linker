@@ -21,18 +21,16 @@ export default class Connect extends Command {
         });
 
         client.api.websocket.on('connection', async socket => {
-            const [userCode, id] = socket.handshake.auth.code.split(':');
-            const { serverCode, interaction, timeout, server } = this.wsVerification.get(id) ?? {};
+            const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
+            if(!this.wsVerification.has(id)) return;
+
+            const { code: serverCode, interaction, timeout, server } = this.wsVerification.get(id) ?? {};
             try {
-                if(!serverCode || serverCode !== userCode) {
-                    await interaction.replyTl(keys.commands.connect.errors.incorrect_code);
-                    return socket.disconnect(true);
-                }
+                if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
 
                 clearTimeout(timeout);
                 this.wsVerification.delete(id);
-
-                console.log(socket.handshake.query);
+                socket.emit('auth-success', {}); //Tell the client that the auth was successful
 
                 /** @type {WebSocketServerConnectionData} */
                 const serverConnectionData = {
@@ -215,10 +213,10 @@ export default class Connect extends Command {
             await this._disconnectOldPlugin(interaction, server);
 
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-            await interaction.replyTl(keys.commands.connect.success.verification_info, { code: `${code}:${interaction.guildId}` });
+            await interaction.replyTl(keys.commands.connect.success.verification_info, { code: `${interaction.guildId}:${code}` });
 
             const timeout = setTimeout(async () => {
-                await interaction.replyTl(keys.commands.account.warnings.verification_timeout);
+                await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
             }, 180_000);
 
             this.wsVerification.set(interaction.guildId, { code, interaction, timeout, server });
