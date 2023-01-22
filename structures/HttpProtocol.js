@@ -171,7 +171,7 @@ const PluginRoutes = {
 };
 
 
-export default class PluginProtocol extends Protocol {
+export default class HttpProtocol extends Protocol {
 
     /**
      * @typedef {object} PluginProtocolData
@@ -191,7 +191,7 @@ export default class PluginProtocol extends Protocol {
      */
 
     /**
-     * Creates a new protocol.
+     * Creates a new http protocol.
      * @param {MCLinker} client - The client to create the protocol for.
      * @param {PluginProtocolData} data - The data for the protocol.
      */
@@ -234,7 +234,7 @@ export default class PluginProtocol extends Protocol {
      */
     static async testConnection(data) {
         const url = new URL(PluginRoutes.Base()[1], `http://${data.ip}:${data.port}`);
-        const response = await PluginProtocol.fetch(PluginRoutes.Base()[0], url, data.token);
+        const response = await HttpProtocol.fetch(PluginRoutes.Base()[0], url, data.token);
         if(response) return response.ok;
         return false;
     }
@@ -441,7 +441,7 @@ export default class PluginProtocol extends Protocol {
                 url.searchParams.append(key, queries[key]);
             }
 
-            return await PluginProtocol.fetch(method, url, this.token, body, authorization);
+            return await HttpProtocol.fetch(method, url, this.token, body, authorization);
         }
         catch(_) {
             return null;

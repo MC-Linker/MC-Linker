@@ -1,5 +1,5 @@
 import Connection from './Connection.js';
-import PluginProtocol from './PluginProtocol.js';
+import HttpProtocol from './HttpProtocol.js';
 import FtpProtocol from './FtpProtocol.js';
 import WebSocketProtocol from './WebSocketProtocol.js';
 
@@ -85,9 +85,9 @@ export default class ServerConnection extends Connection {
         if(data.protocol === 'plugin') {
             /**
              * The plugin protocol for this server.
-             * @type {PluginProtocol}
+             * @type {HttpProtocol}
              */
-            this.protocol = new PluginProtocol(client, {
+            this.protocol = new HttpProtocol(client, {
                 id: data.id,
                 ip: data.ip,
                 port: data.port,
@@ -204,8 +204,8 @@ export default class ServerConnection extends Connection {
         }
 
         //Switch protocols if needed
-        if(!this.hasPluginProtocol() && data.protocol === 'plugin') {
-            this.protocol = new PluginProtocol(this.client, {
+        if(!this.hasHttpProtocol() && data.protocol === 'plugin') {
+            this.protocol = new HttpProtocol(this.client, {
                 id: data.id,
                 ip: this.ip,
                 port: this.port,
@@ -264,7 +264,7 @@ export default class ServerConnection extends Connection {
             online: this.online,
         };
 
-        if(this.hasPluginProtocol()) {
+        if(this.hasHttpProtocol()) {
             return {
                 ...baseData,
                 port: this.port,
@@ -293,11 +293,11 @@ export default class ServerConnection extends Connection {
     }
 
     /**
-     * Checks whether this server is connected to a plugin.
+     * Checks whether this server is connected with a http connection.
      * @returns {boolean}
      */
-    hasPluginProtocol() {
-        return this.protocol instanceof PluginProtocol;
+    hasHttpProtocol() {
+        return this.protocol instanceof HttpProtocol;
     }
 
     /**

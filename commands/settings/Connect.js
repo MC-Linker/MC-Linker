@@ -2,11 +2,10 @@ import crypto from 'crypto';
 import { addPh, addTranslatedResponses, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
-import PluginProtocol from '../../structures/PluginProtocol.js';
+import HttpProtocol from '../../structures/HttpProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
-import WebSocketProtocol from '../../structures/WebSocketProtocol.js';
 import client from '../../main.js';
 
 export default class Connect extends Command {
@@ -155,7 +154,7 @@ export default class Connect extends Command {
             await this._disconnectOldPlugin(interaction, server);
 
             const token = crypto.randomBytes(32).toString('hex');
-            const pluginProtocol = new PluginProtocol(client, { ip, token, port, id: interaction.guildId });
+            const pluginProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
 
             const verify = await pluginProtocol.verifyGuild();
             if(!await utils.handleProtocolResponse(verify, pluginProtocol, interaction, {
@@ -233,10 +232,10 @@ export default class Connect extends Command {
         /** @type {?ProtocolResponse} */
         let resp;
 
-        if(server?.protocol instanceof PluginProtocol) {
+        if(server?.hasHttpProtocol()) {
             resp = await server.protocol.disconnect();
         }
-        else if(server?.protocol instanceof WebSocketProtocol) {
+        else if(server?.hasWebSocketProtocol()) {
             resp = server.protocol.disconnect();
         }
         else return;

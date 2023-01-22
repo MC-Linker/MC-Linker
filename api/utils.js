@@ -1,4 +1,4 @@
-import PluginProtocol from '../structures/PluginProtocol.js';
+import HttpProtocol from '../structures/HttpProtocol.js';
 import Discord, {
     ApplicationCommandOptionType,
     BaseInteraction,
@@ -108,7 +108,7 @@ export function searchStats(searchString, category, shouldSearchNames = true, sh
 
     if(dataList) {
         matchingStats = dataList.filter(data => {
-            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
             let match = false;
             if(shouldSearchNames) match = data.displayName.toLowerCase().includes(searchString.toLowerCase());
             if(shouldSearchValues && !match) match = data.name.includes(searchString.toLowerCase());
@@ -129,7 +129,7 @@ export function searchStats(searchString, category, shouldSearchNames = true, sh
     }
     else if(category === 'custom') {
         matchingStats = customStats.stats.filter(stat => {
-            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
             let match = false;
             if(shouldSearchNames) match = stat.name.toLowerCase().includes(searchString.toLowerCase());
             if(!match && shouldSearchValues) match = stat.value.includes(searchString.toLowerCase());
@@ -272,7 +272,7 @@ const defaultStatusRespones = {
 export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
     const placeholders = { data: JSON.stringify(response?.data ?? '') };
 
-    if(!response && (protocol instanceof PluginProtocol || protocol instanceof WebSocketProtocol)) {
+    if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
         await interaction.replyTl(keys.api.plugin.errors.no_response, placeholders);
         return false;
     }

@@ -4,7 +4,6 @@ import { getOAuthURL, getTokens, getUser } from './oauth.js';
 import * as utils from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
-import PluginProtocol from '../structures/PluginProtocol.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
@@ -49,7 +48,7 @@ export default class BotAPI extends EventEmitter {
             const port = request.body.ip.split(':')[1];
 
             /** @type {ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.protocol instanceof PluginProtocol);
+            const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.hasHttpProtocol());
 
             //If no connection on that guild send disconnection status
             if(!server) return reply.status(403).send();
