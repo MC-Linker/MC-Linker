@@ -1,4 +1,4 @@
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import { time } from 'discord.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';

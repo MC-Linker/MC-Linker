@@ -1,4 +1,4 @@
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';

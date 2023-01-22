@@ -911,7 +911,7 @@
           "embeds": [
             {
               "title": "Select Message Types",
-              "description": "Select all message types you want the bot to send. (You have 30 seconds to select)"
+              "description": "Select all message types you want the bot to send. (You have 3 minutes to select)"
             }
           ],
           "components": [

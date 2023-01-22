@@ -462,7 +462,7 @@
 
 
   "commands.chatchannel.success.choose.embeds.0.title": "Select Message Types",
-  "commands.chatchannel.success.choose.embeds.0.description": "Select all message types you want the bot to send. (You have 30 seconds to select)",
+  "commands.chatchannel.success.choose.embeds.0.description": "Select all message types you want the bot to send. (You have 3 minutes to select)",
 
   "commands.chatchannel.success.choose.components.0.type": "SelectMenu",
   "commands.chatchannel.success.choose.components.0.custom_id": "log",

@@ -521,23 +521,3 @@ export function createHash(token) {
         .update(token)
         .digest('hex');
 }
-
-export default {
-    searchAllAdvancements,
-    searchAdvancements,
-    searchAllStats,
-    searchStats,
-    fetchUUID,
-    createUUIDv3,
-    getArgs,
-    getUsersFromMention,
-    handleProtocolResponse,
-    handleProtocolResponses,
-    nbtBufferToObject,
-    parseProperties,
-    drawMinecraftText,
-    drawMinecraftNumber,
-    wrapText,
-    cleanEmojis,
-    createHash,
-};

@@ -5,7 +5,7 @@ import Command from '../../structures/Command.js';
 import PluginProtocol from '../../structures/PluginProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import WebSocketProtocol from '../../structures/WebSocketProtocol.js';
 import client from '../../main.js';
 
@@ -27,6 +27,11 @@ export default class Connect extends Command {
             const { code: serverCode, interaction, timeout, server } = this.wsVerification.get(id) ?? {};
             try {
                 if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
+                //Prevent connection of a different guild to an already connected server
+                if(client.serverConnections.cache.some(s => s.ip === socket.handshake.address && s.id !== id)) {
+                    await interaction.replyTl(keys.commands.connect.warnings.already_connected);
+                    return socket.disconnect(true);
+                }
 
                 clearTimeout(timeout);
                 this.wsVerification.delete(id);

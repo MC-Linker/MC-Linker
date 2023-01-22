@@ -2,7 +2,7 @@ import Command from '../../structures/Command.js';
 import keys from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import { addPh, getComponent, getEmbed, getReplyOptions } from '../../api/messages.js';
 import gamerules from '../../resources/data/gamerules.json' assert { type: 'json' };
 import { unraw } from 'unraw';

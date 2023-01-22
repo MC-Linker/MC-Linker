@@ -1,7 +1,7 @@
 // noinspection JSUnresolvedVariable
 import { addPh, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
-import utils, { getUsersFromMention } from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import Discord from 'discord.js';
 import nbt from 'prismarine-nbt';
 import minecraft_data from 'minecraft-data';
@@ -138,7 +138,7 @@ export default class Command extends AutocompleteCommand {
 
             let user;
             if(arg === '@s') user = interaction.member.user;
-            else user = await getUsersFromMention(client, arg)?.[0];
+            else user = await utils.getUsersFromMention(client, arg)?.[0];
             if(!user) continue;
 
             const username = client.userConnections.cache.get(user.id)?.username;

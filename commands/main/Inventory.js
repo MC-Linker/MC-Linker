@@ -5,8 +5,8 @@ import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import { FilePath } from '../../structures/Protocol.js';
-import utils, { fetchUUID } from '../../api/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import * as utils from '../../api/utils.js';
 
 const mcData = minecraft_data('1.19.2');
 
@@ -120,7 +120,7 @@ export default class Inventory extends Command {
         );
 
         //Draw skin in inventory
-        const skinUrl = `https://minecraft-api.com/api/skins/${server.online ? user.uuid : await fetchUUID(user.username)}/body/10.5/10/json`;
+        const skinUrl = `https://minecraft-api.com/api/skins/${server.online ? user.uuid : await utils.fetchUUID(user.username)}/body/10.5/10/json`;
         const skinJson = await fetch(skinUrl);
         const { skin: skinBase64 } = await skinJson.json();
         const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);

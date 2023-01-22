@@ -1,7 +1,7 @@
 // noinspection HttpUrlsUsage
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from './oauth.js';
-import utils from './utils.js';
+import * as utils from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import PluginProtocol from '../structures/PluginProtocol.js';
@@ -163,7 +163,6 @@ export default class BotAPI extends EventEmitter {
      */
     async _chat(data, server) {
         const { message, channels, id: guildId, type, player } = data;
-        console.log(data);
         const authorURL = `https://minotar.net/helm/${player}/64.png`;
 
         const argPlaceholder = { username: player, author_url: authorURL, message };
@@ -281,7 +280,6 @@ export default class BotAPI extends EventEmitter {
 
         try {
             for(const channel of channels) {
-                console.log(channel, server.channels.some(c => c.id === channel.id, chatEmbed));
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
                 const discordChannel = await this.client.channels.fetch(channel.id);

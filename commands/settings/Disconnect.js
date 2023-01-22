@@ -1,7 +1,7 @@
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import PluginProtocol from '../../structures/PluginProtocol.js';
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import WebSocketProtocol from '../../structures/WebSocketProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
 
