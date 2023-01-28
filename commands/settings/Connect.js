@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { addPh, addTranslatedResponses, getEmbed, ph } from '../../api/messages.js';
+import { addPh, addTranslatedResponses, getEmbed, getModal, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
@@ -17,6 +17,7 @@ export default class Connect extends Command {
             name: 'connect',
             requiresConnectedServer: false,
             category: 'settings',
+            defer: false,
         });
 
         client.api.websocket.on('connection', async socket => {
@@ -50,7 +51,7 @@ export default class Connect extends Command {
                     socket,
                 };
 
-                if(server) await server.edit(serverConnectionData);
+                if(client.serverConnections.cache.has(id)) await server.edit(serverConnectionData);
                 else await client.serverConnections.connect(serverConnectionData);
 
                 await interaction.replyTl(keys.commands.connect.success.websocket);
@@ -67,6 +68,8 @@ export default class Connect extends Command {
 
         const method = args[0];
         if(method === 'ftp') {
+            await interaction.deferReply({ ephemeral: this.ephemeral });
+
             const host = args[1];
             let username = args[2];
             let password = args[3];
@@ -142,105 +145,118 @@ export default class Connect extends Command {
                 id: interaction.guildId,
             };
 
-            if(server) await server.edit(serverConnectionData);
+            if(client.serverConnections.cache.has(id)) await server.edit(serverConnectionData);
             else await client.serverConnections.connect(serverConnectionData);
 
             await interaction.replyTl(keys.commands.connect.success.ftp);
         }
         else if(method === 'plugin') {
-            const ip = args[1]?.split(':').shift();
-            const port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
+            const usesBackupMethod = args[1] ?? false;
+            if(usesBackupMethod) {
+                try {
+                    await interaction.showModal(getModal(keys.modals.connect_backup));
+                    let modal = await interaction.awaitModalSubmit({ time: 180_000 });
+                    await modal.deferReply();
+                    modal = addTranslatedResponses(modal);
 
-            await this._disconnectOldPlugin(interaction, server);
+                    const ip = modal.fields.getTextInputValue('ip').split(':').shift();
+                    let port = modal.fields.getTextInputValue('port');
+                    if(port === '') port = process.env.PLUGIN_PORT ?? 11111;
 
-            const token = crypto.randomBytes(32).toString('hex');
-            const pluginProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
+                    await this._disconnectOldPlugin(modal, server);
 
-            const verify = await pluginProtocol.verifyGuild();
-            if(!await utils.handleProtocolResponse(verify, pluginProtocol, interaction, {
-                409: keys.commands.connect.warnings.already_connected,
-            })) return;
+                    const token = crypto.randomBytes(32).toString('hex');
+                    const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
 
-            await interaction.replyTl(keys.commands.connect.warnings.check_dms);
+                    const verify = await httpProtocol.verifyGuild();
+                    if(!await utils.handleProtocolResponse(verify, httpProtocol, modal, {
+                        409: keys.commands.connect.warnings.already_connected,
+                    })) return;
 
-            let dmChannel = await interaction.user.createDM();
-            try {
-                await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.std(interaction))] });
+                    await modal.replyTl(keys.commands.connect.warnings.check_dms);
+
+                    let dmChannel = await interaction.user.createDM();
+                    try {
+                        await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.emojis())] });
+                    }
+                    catch(err) {
+                        dmChannel = modal.channel;
+                        await modal.replyTl(keys.commands.connect.warnings.could_not_dm);
+                        await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.emojis())] });
+                    }
+
+                    const collector = await dmChannel.awaitMessages({
+                        max: 1,
+                        time: 180_000,
+                        filter: message => message.author.id === interaction.user.id,
+                    });
+                    const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
+                    if(!message) {
+                        console.log(keys.commands.connect.warnings.no_reply_in_time.console);
+                        return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojis()));
+                    }
+
+                    const resp = await httpProtocol.connect(collector.first().content);
+                    if(!await utils.handleProtocolResponse(resp, httpProtocol, modal, {
+                        401: keys.commands.connect.errors.incorrect_code,
+                    })) {
+                        await message.replyTl(keys.commands.connect.errors.incorrect_code);
+                        return;
+                    }
+
+                    await message.replyTl(keys.commands.connect.success.verification);
+
+                    /** @type {HttpServerConnectionData} */
+                    const serverConnectionData = {
+                        ip,
+                        port,
+                        version: parseInt(resp.data.version.split('.')[1]),
+                        path: decodeURIComponent(resp.data.path),
+                        worldPath: decodeURIComponent(resp.data.worldPath),
+                        token: resp.data.token,
+                        online: resp.data.online,
+                        protocol: 'http',
+                        channels: [],
+                        id: interaction.guildId,
+                    };
+
+                    //If old connection was automatically disconnected, connect a new server connection otherwise edit the old one
+                    if(client.serverConnections.cache.has(interaction.guildId)) await server.edit(serverConnectionData);
+                    else await client.serverConnections.connect(serverConnectionData);
+
+                    return modal.replyTl(keys.commands.connect.success.plugin);
+                }
+                catch(_) {}
             }
-            catch(err) {
-                dmChannel = interaction.channel;
-                await interaction.replyTl(keys.commands.connect.warnings.could_not_dm);
-                await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.std(interaction))] });
+            else {
+                await interaction.deferReply({ ephemeral: this.ephemeral });
+                await this._disconnectOldPlugin(interaction, server);
+
+                const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
+                await interaction.replyTl(keys.commands.connect.success.verification_info, { code: `${interaction.guildId}:${code}` });
+
+                const timeout = setTimeout(async () => {
+                    await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
+                }, 180_000);
+
+                this.wsVerification.set(interaction.guildId, { code, interaction, timeout, server });
+                //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
             }
-
-            const collector = await dmChannel.awaitMessages({
-                max: 1,
-                time: 180_000,
-                filter: message => message.author.id === interaction.user.id,
-            });
-            const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
-            if(!message) {
-                console.log(keys.commands.connect.warnings.no_reply_in_time.console);
-                return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.std(interaction)));
-            }
-
-            const resp = await pluginProtocol.connect(collector.first().content);
-            if(!await utils.handleProtocolResponse(resp, pluginProtocol, interaction, {
-                401: keys.commands.connect.errors.incorrect_code,
-            })) {
-                await message.replyTl(keys.commands.connect.errors.incorrect_code);
-                return;
-            }
-
-            await message.replyTl(keys.commands.connect.success.verification, ph.std(interaction));
-
-            /** @type {PluginServerConnectionData} */
-            const serverConnectionData = {
-                ip,
-                port,
-                version: parseInt(resp.data.version.split('.')[1]),
-                path: decodeURIComponent(resp.data.path),
-                worldPath: decodeURIComponent(resp.data.worldPath),
-                token: resp.data.token,
-                online: resp.data.online,
-                protocol: 'plugin',
-                channels: [],
-                id: interaction.guildId,
-            };
-
-            if(server) await server.edit(serverConnectionData);
-            else await client.serverConnections.connect(serverConnectionData);
-
-            return interaction.replyTl(keys.commands.connect.success.plugin);
-        }
-        else if(method === 'websocket') {
-            await this._disconnectOldPlugin(interaction, server);
-
-            const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-            await interaction.replyTl(keys.commands.connect.success.verification_info, { code: `${interaction.guildId}:${code}` });
-
-            const timeout = setTimeout(async () => {
-                await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
-            }, 180_000);
-
-            this.wsVerification.set(interaction.guildId, { code, interaction, timeout, server });
-            //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
         }
     }
 
     async _disconnectOldPlugin(interaction, server) {
         /** @type {?ProtocolResponse} */
         let resp;
-
-        if(server?.hasHttpProtocol()) {
-            resp = await server.protocol.disconnect();
-        }
-        else if(server?.hasWebSocketProtocol()) {
-            resp = server.protocol.disconnect();
-        }
+        if(server?.hasHttpProtocol()) resp = await server.protocol.disconnect();
+        else if(server?.hasWebSocketProtocol()) resp = server.protocol.disconnect();
+        else if(server?.hasFtpProtocol()) return await client.serverConnections.disconnect(server);
         else return;
 
         if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
-        else await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
+        else {
+            await client.serverConnections.disconnect(server);
+            await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
+        }
     }
 }
