@@ -108,7 +108,7 @@ export default class BotAPI extends EventEmitter {
         this.fastify.get('/version', () => process.env.PLUGIN_VERSION);
         //Root endpoint
         this.fastify.get('/', (request, reply) => {
-            reply.redirect('https://mclinker.ml');
+            reply.redirect('https://mclinker.com');
         });
 
         this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
