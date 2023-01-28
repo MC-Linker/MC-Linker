@@ -13,7 +13,7 @@ export default class ServerConnection extends Connection {
      */
 
     /**
-     * @typedef {object} PluginServerConnectionData - The data for a server-connection established by the plugin.
+     * @typedef {object} HttpServerConnectionData - The data for a server-connection established by the plugin.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
      * @property {number} port - The port used to connect to the server plugin.
@@ -23,7 +23,7 @@ export default class ServerConnection extends Connection {
      * @property {string} token - The connection token used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
-     * @property {'plugin'} protocol - The protocol used to connect to the server.
+     * @property {'http'} protocol - The protocol used to connect to the server.
      */
 
     /**
@@ -55,7 +55,7 @@ export default class ServerConnection extends Connection {
      */
 
     /**
-     * @typedef {PluginServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData} ServerConnectionData - The data of the server.
+     * @typedef {HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData} ServerConnectionData - The data of the server.
      */
 
     /**
@@ -82,9 +82,9 @@ export default class ServerConnection extends Connection {
         });
 
         // Assign the protocol used to communicate with the server.
-        if(data.protocol === 'plugin') {
+        if(data.protocol === 'http') {
             /**
-             * The plugin protocol for this server.
+             * The http protocol for this server.
              * @type {HttpProtocol}
              */
             this.protocol = new HttpProtocol(client, {
@@ -183,7 +183,7 @@ export default class ServerConnection extends Connection {
         }
         if('token' in data) {
             /**
-             * The token used to connect to this server's plugin.
+             * The token used to authenticate the bot for http connections.
              * @type {string}
              * */
             this.token = data.token;
@@ -204,7 +204,7 @@ export default class ServerConnection extends Connection {
         }
 
         //Switch protocols if needed
-        if(!this.hasHttpProtocol() && data.protocol === 'plugin') {
+        if(!this.hasHttpProtocol() && data.protocol === 'http') {
             this.protocol = new HttpProtocol(this.client, {
                 id: data.id,
                 ip: this.ip,
@@ -268,9 +268,9 @@ export default class ServerConnection extends Connection {
             return {
                 ...baseData,
                 port: this.port,
-                hash: this.token,
+                token: this.token,
                 channels: this.channels ?? [],
-                protocol: 'plugin',
+                protocol: 'http',
             };
         }
         else if(this.hasFtpProtocol()) {

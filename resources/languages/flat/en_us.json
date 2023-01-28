@@ -565,7 +565,7 @@
   "commands.connect.warnings.could_not_dm.embeds.0.description": "%emoji_warning% Could not DM you. Verifying in the current channel...",
 
   "commands.connect.warnings.no_reply_in_time.embeds.0.title": "Verification Unsuccessful",
-  "commands.connect.warnings.no_reply_in_time.embeds.0.description": "%emoji_warning% You didn't reply in time!",
+  "commands.connect.warnings.no_reply_in_time.embeds.0.description": "%emoji_warning% You did not reply in time!",
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
 
   "commands.connect.warnings.already_connected.embeds.0.title": "Plugin Already Connected",
@@ -897,6 +897,26 @@
   "buttons.enable.success.help.embeds.0.description": "```diff\n+ [COMMAND ENABLED]```",
   "buttons.enable.success.help.embeds.0.color": "Green",
 
+
+
+  "modals.connect_backup.title": "Connection Details",
+  "modals.connect_backup.custom_id": "connect_backup",
+
+  "modals.connect_backup.components.0.type": "TextInput",
+  "modals.connect_backup.components.0.style": "Short",
+  "modals.connect_backup.components.0.custom_id": "ip",
+  "modals.connect_backup.components.0.label": "Your Server IP",
+  "modals.connect_backup.components.0.placeholder": "Example: play.mclinker.com",
+  "modals.connect_backup.components.0.required": true,
+
+  "modals.connect_backup.components.1.type": "TextInput",
+  "modals.connect_backup.components.1.style": "Short",
+  "modals.connect_backup.components.1.custom_id": "port",
+  "modals.connect_backup.components.1.label": "Plugin Port",
+  "modals.connect_backup.components.1.placeholder": "Example: 8652",
+  "modals.connect_backup.components.1.required": false,
+  "modals.connect_backup.components.1.min_length": 1,
+  "modals.connect_backup.components.1.max_length": 5,
 
 
   "data.help.name": "help",
@@ -1374,20 +1394,9 @@
   "data.connect.options.1.name": "plugin",
   "data.connect.options.1.description": "Connect your Minecraft server using the Discord-Linker plugin.",
 
-  "data.connect.options.1.options.0.type": "String",
-  "data.connect.options.1.options.0.name": "ip",
-  "data.connect.options.1.options.0.description": "Set the server-ip.",
-  "data.connect.options.1.options.0.required": true,
-
-  "data.connect.options.1.options.1.type": "String",
-  "data.connect.options.1.options.1.name": "port",
-  "data.connect.options.1.options.1.description": "Set the port of the plugin from the config.yml",
-  "data.connect.options.1.options.1.required": false,
-
-
-  "data.connect.options.2.type": "Subcommand",
-  "data.connect.options.2.name": "websocket",
-  "data.connect.options.2.description": "Connect your Minecraft server using the Discord-Linker plugin.",
+  "data.connect.options.1.options.0.type": "Boolean",
+  "data.connect.options.1.options.0.name": "use_backup_method",
+  "data.connect.options.1.options.0.description": "Use the backup method to connect to your server (requires an extra port for the plugin).",
 
 
 

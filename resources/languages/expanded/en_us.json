@@ -1100,7 +1100,7 @@
           "embeds": [
             {
               "title": "Verification Unsuccessful",
-              "description": "%emoji_warning% You didn't reply in time!"
+              "description": "%emoji_warning% You did not reply in time!"
             }
           ],
           "console": "No reply in time"
@@ -1872,6 +1872,32 @@
       }
     }
   },
+  "modals": {
+    "connect_backup": {
+      "title": "Connection Details",
+      "custom_id": "connect_backup",
+      "components": [
+        {
+          "type": "TextInput",
+          "style": "Short",
+          "custom_id": "ip",
+          "label": "Your Server IP",
+          "placeholder": "Example: play.mclinker.com",
+          "required": true
+        },
+        {
+          "type": "TextInput",
+          "style": "Short",
+          "custom_id": "port",
+          "label": "Plugin Port",
+          "placeholder": "Example: 8652",
+          "required": false,
+          "min_length": 1,
+          "max_length": 5
+        }
+      ]
+    }
+  },
   "data": {
     "help": {
       "name": "help",
@@ -2570,23 +2596,11 @@
           "description": "Connect your Minecraft server using the Discord-Linker plugin.",
           "options": [
             {
-              "type": "String",
-              "name": "ip",
-              "description": "Set the server-ip.",
-              "required": true
-            },
-            {
-              "type": "String",
-              "name": "port",
-              "description": "Set the port of the plugin from the config.yml",
-              "required": false
+              "type": "Boolean",
+              "name": "use_backup_method",
+              "description": "Use the backup method to connect to your server (requires an extra port for the plugin)."
             }
           ]
-        },
-        {
-          "type": "Subcommand",
-          "name": "websocket",
-          "description": "Connect your Minecraft server using the Discord-Linker plugin."
         }
       ]
     },

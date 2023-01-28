@@ -42,7 +42,7 @@ if(process.env.TOPGG_TOKEN) {
     poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
 }
 
-client.once('ready', async () => {
+client.once(Discord.Events.ClientReady, async () => {
     console.log(addPh(
         keys.main.success.login.console,
         ph.client(client),
@@ -62,11 +62,11 @@ client.once('ready', async () => {
     Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
 });
 
-client.on('guildCreate', guild => {
+client.on(Discord.Events.GuildCreate, guild => {
     console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 });
 
-client.on('guildDelete', async guild => {
+client.on(Discord.Events.GuildDelete, async guild => {
     if(!client.isReady() || !guild.available) return; //Prevent server outages from deleting data
     console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
@@ -75,7 +75,7 @@ client.on('guildDelete', async guild => {
     await client.serverConnections.removeDataFolder(guild.id);
 });
 
-client.on('messageCreate', async message => {
+client.on(Discord.Events.MessageCreate, async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
 
@@ -121,7 +121,7 @@ client.on('messageCreate', async message => {
     }
 });
 
-client.on('interactionCreate', async interaction => {
+client.on(Discord.Events.InteractionCreate, async interaction => {
     interaction = addTranslatedResponses(interaction);
 
     //check if in guild
