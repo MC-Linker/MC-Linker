@@ -61,6 +61,13 @@ export default class ServerInfo extends Command {
             mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
 
             datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').cap()) ?? [];
+
+            //Reduce plugins, mods and datapacks array so that it doesn't exceed max embed field value length
+            for(const array of [plugins, mods, datapacks]) {
+                while(array.join('\n').length > utils.MaxEmbedFieldValueLength) {
+                    array.pop();
+                }
+            }
         }
         await server.protocol.endBatch();
 

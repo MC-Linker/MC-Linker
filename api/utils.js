@@ -8,7 +8,7 @@ import {
     User,
 } from 'discord.js';
 import crypto from 'crypto';
-import minecraft_data from 'minecraft-data';
+import McData from 'minecraft-data';
 import FtpProtocol from '../structures/FtpProtocol.js';
 import keys from './keys.js';
 import advancementData from '../resources/data/advancements.json' assert { type: 'json' };
@@ -19,7 +19,9 @@ import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 
-const mcData = minecraft_data('1.19.2');
+const mcData = McData('1.19.2');
+
+export const MaxEmbedFieldValueLength = 1024;
 
 /**
  * @typedef {object} AdvancementData
