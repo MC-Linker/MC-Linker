@@ -221,10 +221,7 @@ export const ph = {
     async commandName(commandName, client, guild) {
         if(!(client instanceof Discord.Client)) return {};
 
-        // Use guild commands if not verified bot (test-bot)
-        const commandManager = client.user.flags.has(Discord.UserFlags.VerifiedBot)
-            ? client.application.commands : guild.commands;
-        const command = await fetchCommand(commandManager, commandName);
+        const command = await fetchCommand(client.application.commands, commandName);
         if(!command) return {};
 
         return this.command(command);

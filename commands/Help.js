@@ -1,7 +1,7 @@
 import { addPh, fetchCommand, getActionRows, getEmbed, ph } from '../api/messages.js';
 import keys from '../api/keys.js';
 import Command from '../structures/Command.js';
-import Discord, { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
+import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
 
 export default class Help extends Command {
 
@@ -55,9 +55,7 @@ export default class Help extends Command {
             return interaction.replyOptions({ embeds: [helpEmbed] });
         }
         else {
-            const commandManager = client.user.flags.has(Discord.UserFlags.VerifiedBot)
-                ? client.application.commands : interaction.guild.commands;
-            const slashCommand = await fetchCommand(commandManager, command.name);
+            const slashCommand = await fetchCommand(client.application.commands, command.name);
             const commandUsage = getCommandUsage(slashCommand);
 
             // noinspection JSUnresolvedVariable
