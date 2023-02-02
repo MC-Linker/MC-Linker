@@ -1,5 +1,5 @@
 import HttpProtocol from '../structures/HttpProtocol.js';
-import Discord, {
+import {
     ApplicationCommandOptionType,
     BaseInteraction,
     CommandInteraction,
@@ -206,11 +206,7 @@ function addHyphen(uuid) {
 export async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
-    // Use guild commands if not verified bot (test-bot)
-    const commandManager = interaction.client.user.flags.has(Discord.UserFlags.VerifiedBot)
-        ? interaction.client.application.commands : interaction.guild.commands;
-    const slashCommand = await commandManager.fetch(interaction.commandId);
-
+    const slashCommand = await interaction.client.application.commands.fetch(interaction.commandId);
     const args = [];
 
     function addArgs(allOptions, option, incrementIndex) {
