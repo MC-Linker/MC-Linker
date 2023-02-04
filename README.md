@@ -15,13 +15,11 @@ To use most of the commands you’ll have to connect your Minecraft **java-editi
 methods to connect:
 
 + Plugin
-	+ Download the "Discord Linker" plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/)
-	+ Add the plugin to your Minecraft server
+	+ Add the "Discord-Linker" plugin to your Minecraft server
+	  using [this link](https://www.spigotmc.org/resources/discord-linker.98749/)
 	+ Restart your Minecraft server or execute `/reload confirm` on your Minecraft server
-	+ Execute `/connect plugin <your server ip>` in Discord
-	+ Follow the instructions sent in DM
-	+ After connecting you can also execute `/chatchannel <channel>` in Discord if you want to connect the minecraft
-	  chat with Discord
+	+ Execute `/connect plugin` in Discord
+	+ Follow the instructions in the embed
 + FTP (no minecraft chat or commands)
 	+ Get the ftp credentials from your Minecraft server’s dashboard. Join
 	  the [Support Server](https://discord.gg/rX36kZUGNK) or ask your host's support team if you need help getting the
@@ -32,29 +30,15 @@ methods to connect:
 
 + `/help`: Detailed description and usage of every command
 + `/inventory`: Look in the inventory of any member
-+ `/chatchannel`: Set a channel in which the bot will send the minecraft chat (only for plugin)
-+ `/command`: Execute any minecraft command on your server (only for plugin)
-+ `/stats`: Look up minecraft stats of any member
-+ `/advancements`: Look up minecraft advancements of any member
++ `/chatchannel`: Set a channel in which the bot will send the minecraft chat
++ `/command`: Execute any Minecraft command on your server
++ `/stats`: Look up Minecraft stats of any member
++ `/advancements`: Look up Minecraft advancements of any member
 + `/account connect`: Connect your Discord Account with your Minecraft Account
-+ `/connect plugin` OR `/connect ftp`: Connect your Minecraft Server with the bot
-+ `/disable`: Disable specific commands, advancements, or stats
-+ `/ban`: Ban a player directly from the minecraft-server
-+ `/op`: OP a player on the minecraft-server
++ `/connect plugin` OR `/connect ftp`: Connect your Minecraft server with the bot
++ `/ban`: Ban a player directly from the Minecraft server
++ `/op`: OP a player on the Minecraft server
 
-# TROUBLESHOOTING
+### [Privacy Policy](https://mclinker.com/privacy)
 
-+ Unfortunately, **Aternos** and **Minehut** servers currently don't work because they do not support ftp or additional
-  ports for plugins
-+ If you receive the error: `Address already in use` in the server console follow the instructions of the next point
-+ If you receive the error: `Plugin does not respond` by the Discord bot although your server is online, follow these
-  steps:
-	+ Register or forward an additional port (if supported from your server host)
-	+ Execute `/linker port <port>` in Minecraft and make sure to specify the newly registered/forwarded port
-	+ Execute `/connect plugin <your server ip> <port>` in Discord with the same port number
-+ More help => [Support Server](https://discord.gg/rX36kZUGNK)
-
-### [Privacy Policy](https://github.com/Lianecx/Minecraft-SMP-Bot/blob/main/PRIVACY.md)
-
-### [Terms of Service](https://github.com/Lianecx/Minecraft-SMP-Bot/blob/main/TERMS.md)
-
+### [Terms of Service](https://mclinker.com/tos)

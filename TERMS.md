@@ -8,7 +8,8 @@ The purpose of the Minecraft SMP Bot is to provide a simple way to connect your 
 The information supplied by the Minecraft SMP Bot is provided for entertainment and informational purposes only. You agree that you will only use the Bot, or data/information provided by it, for its intended purposes, and not for other commercial ventures without first seeking approval from us.
 
 # Privacy Policy
-Our Privacy Policy, which also governs your use of the Bot, can be found [here](https://github.com/MC-Linker/MC-Linker/blob/main/PRIVACY.md). Please review our Privacy Policy for information on how we collect, use and share information about our users.
+Our Privacy Policy, which also governs your use of the Bot, can be found [here](https://mclinker.com/privacy). Please
+review our Privacy Policy for information on how we collect, use and share information about our users.
 
 # LICENSE
 We hereby grant you a revocable and nonexclusive right and license to use the Bot in a manner that is consistent with the other terms in these TOS and the Bot’s intended purposes. We reserve the right to terminate this License for any or no reason and at any time without notice to you, including, but not limited to, for breach of any term contained in these TOS.
