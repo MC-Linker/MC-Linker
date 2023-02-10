@@ -1,6 +1,6 @@
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 
 // noinspection JSClassNamingConvention
 export default class Op extends Command {

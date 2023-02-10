@@ -11,10 +11,21 @@ import Discord, {
     InteractionResponse,
     Message,
     MessagePayload,
+    ModalBuilder,
     SlashCommandBuilder,
     User,
 } from 'discord.js';
 import keys from './keys.js';
+
+const maxComponentsInActionRow = {
+    [ComponentType.Button]: 5,
+    [ComponentType.StringSelect]: 1,
+    [ComponentType.RoleSelect]: 1,
+    [ComponentType.ChannelSelect]: 1,
+    [ComponentType.UserSelect]: 1,
+    [ComponentType.MentionableSelect]: 1,
+    [ComponentType.TextInput]: 1,
+};
 
 /**
  * Adds methods that allow to respond with a translation key.
@@ -91,6 +102,12 @@ export const ph = {
         else if(interaction instanceof Discord.ButtonInteraction) {
             return {
                 'interaction_id': interaction.customId,
+                'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
+            };
+        }
+        else if(interaction instanceof Discord.AutocompleteInteraction) {
+            return {
+                'interaction_name': interaction.commandName,
                 'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
             };
         }
@@ -204,10 +221,7 @@ export const ph = {
     async commandName(commandName, client, guild) {
         if(!(client instanceof Discord.Client)) return {};
 
-        // Use guild commands if not verified bot (test-bot)
-        const commandManager = client.user.flags.has(Discord.UserFlags.VerifiedBot)
-            ? client.application.commands : guild.commands;
-        const command = await fetchCommand(commandManager, commandName);
+        const command = await fetchCommand(client.application.commands, commandName);
         if(!command) return {};
 
         return this.command(command);
@@ -481,7 +495,6 @@ export function getComponent(key, ...placeholders) {
                 .setStyle(Discord.TextInputStyle[component.style])
                 .setCustomId(component.custom_id)
                 .setLabel(component.label)
-                .setDisabled(component.disabled ?? false)
                 .setRequired(component.required ?? false);
 
             if(component.max_length) componentBuilder.setMaxLength(component.max_length);
@@ -577,6 +590,23 @@ export function getCommand(key) {
     }
 
     return commandBuilder;
+}
+
+/**
+ * Get a modal builder from a language key.
+ * @param {Discord.ModalData} key - The language key to get the modal builder from.
+ * @param {...object} placeholders - The placeholders to replace in the language key.
+ * @returns {?ModalBuilder}
+ */
+export function getModal(key, ...placeholders) {
+    key = addPh(key, ...placeholders);
+
+    const modalBuilder = new Discord.ModalBuilder()
+        .setTitle(key.title)
+        .setCustomId(key.custom_id);
+
+    modalBuilder.setComponents(getActionRows(key, ...placeholders));
+    return modalBuilder;
 }
 
 function addSlashCommandOption(builder, key) {
@@ -734,15 +764,16 @@ export function createActionRows(components) {
     const actionRows = [];
     let currentRow = new Discord.ActionRowBuilder();
 
-    for(let i = 0; i < components.length; i++) {
-        //1 for select menus, 5 for buttons
-        const componentAmount = components[i].data.type === Discord.ComponentType.SelectMenu ? 1 : 5;
-        if(i % componentAmount === 0 && i > 0) {
+    for(const component of components) {
+        const maxAmount = maxComponentsInActionRow[component.data.type];
+
+        //If the same component type is already in the row more than the max amount, create a new row.
+        if(currentRow.components.filter(c => c.data.type === component.data.type).length >= maxAmount) {
             actionRows.push(currentRow);
             currentRow = new Discord.ActionRowBuilder();
         }
 
-        currentRow.addComponents(components[i]);
+        currentRow.addComponents(component);
     }
     if(currentRow.components.length > 0) actionRows.push(currentRow);
 

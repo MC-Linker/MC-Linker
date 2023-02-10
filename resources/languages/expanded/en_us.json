@@ -844,7 +844,7 @@
           "embeds": [
             {
               "title": "Account Verification",
-              "description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and type `/verify %code%` in chat.\n**You have 3 minutes to run the command.**",
+              "description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
               "color": "DarkGold"
             }
           ]
@@ -911,7 +911,7 @@
           "embeds": [
             {
               "title": "Select Message Types",
-              "description": "Select all message types you want the bot to send. (You have 30 seconds to select)"
+              "description": "Select all message types you want the bot to send. (You have 3 minutes to select)"
             }
           ],
           "components": [
@@ -1100,7 +1100,7 @@
           "embeds": [
             {
               "title": "Verification Unsuccessful",
-              "description": "%emoji_warning% You didn't reply in time!"
+              "description": "%emoji_warning% You did not reply in time!"
             }
           ],
           "console": "No reply in time"
@@ -1169,9 +1169,27 @@
             }
           ],
           "console": "Incorrect code"
+        },
+        "websocket_error": {
+          "embeds": [
+            {
+              "title": "Verification Unsuccessful",
+              "description": "%emoji_error% An unknown error occurred while connecting to the plugin."
+            }
+          ],
+          "console": "Unknown websocket connection error %error%"
         }
       },
       "success": {
+        "verification_info": {
+          "embeds": [
+            {
+              "title": "Server Verification",
+              "description": "%emoji_red_success% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
+              "color": "DarkGold"
+            }
+          ]
+        },
         "ftp": {
           "embeds": [
             {
@@ -1187,8 +1205,16 @@
               "title": "Connected to Server",
               "description": "%emoji_success% Successfully connected to the plugin."
             }
+          ]
+        },
+        "websocket": {
+          "embeds": [
+            {
+              "title": "Connected to Server",
+              "description": "%emoji_success% Successfully connected to the plugin."
+            }
           ],
-          "console": "Successfully wrote plugin file"
+          "console": "Successfully wrote websocket file"
         },
         "verification": {
           "embeds": [
@@ -1320,6 +1346,15 @@
           }
         ],
         "console": "Successfully enabled %type% %enable%"
+      }
+    }
+  },
+  "websocketcommands": {
+    "connect": {
+      "success": {
+        "plugin": {
+          "console": "Successfully wrote plugin file"
+        }
       }
     }
   },
@@ -1835,6 +1870,32 @@
           ]
         }
       }
+    }
+  },
+  "modals": {
+    "connect_backup": {
+      "title": "Connection Details",
+      "custom_id": "connect_backup",
+      "components": [
+        {
+          "type": "TextInput",
+          "style": "Short",
+          "custom_id": "ip",
+          "label": "Your Server IP",
+          "placeholder": "Example: play.mclinker.com",
+          "required": true
+        },
+        {
+          "type": "TextInput",
+          "style": "Short",
+          "custom_id": "port",
+          "label": "Plugin Port",
+          "placeholder": "Example: 8652",
+          "required": false,
+          "min_length": 1,
+          "max_length": 5
+        }
+      ]
     }
   },
   "data": {
@@ -2535,16 +2596,9 @@
           "description": "Connect your Minecraft server using the Discord-Linker plugin.",
           "options": [
             {
-              "type": "String",
-              "name": "ip",
-              "description": "Set the server-ip.",
-              "required": true
-            },
-            {
-              "type": "String",
-              "name": "port",
-              "description": "Set the port of the plugin from the config.yml",
-              "required": false
+              "type": "Boolean",
+              "name": "use_backup_method",
+              "description": "Use the backup method to connect to your server (requires an extra port for the plugin)."
             }
           ]
         }

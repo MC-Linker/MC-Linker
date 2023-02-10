@@ -4,24 +4,21 @@ import fs from 'fs-extra';
 const serverFolders = fs.readdirSync('./serverdata/connections');
 for(const folder of serverFolders) {
     console.group(`Converting server ${folder}...`);
-    if(!fs.existsSync(`./serverdata/connections/${folder}/settings.json`)) {
-        console.log('No settings.json found, skipping.');
+    if(!fs.existsSync(`./serverdata/connections/${folder}/connection.json`)) {
+        console.log('No connection.json found, skipping.');
         console.groupEnd();
         continue;
     }
-    const connection = fs.readJsonSync(`./serverdata/connections/${folder}/settings.json`);
+    const connection = fs.readJsonSync(`./serverdata/connections/${folder}/connection.json`);
     const newConnection = { ...connection };
+    if(newConnection.protocol === 'plugin') {
+        newConnection.protocol = 'http';
+        newConnection.token = newConnection.hash;
+        delete newConnection.hash;
+        console.log('Converted plugin to http protocol.');
+    }
 
-    console.log('Old Disabled:', connection.disabled);
-    newConnection.disabled = {
-        'bot-commands': connection.disabled.commands,
-        'stats': connection.disabled.stats,
-        'advancements': connection.disabled.advancements,
-        'chat-commands': [],
-    };
-    console.log('New Disabled:', newConnection.disabled);
-
-    fs.writeJsonSync(`./serverdata/connections/${folder}/settings.json`, newConnection, { spaces: 2 });
-    console.log(`Converted server ${folder}!`);
+    fs.writeJsonSync(`./serverdata/connections/${folder}/connection.json`, newConnection, { spaces: 2 });
+    console.log(`Finished converting server ${folder}!`);
     console.groupEnd();
 }

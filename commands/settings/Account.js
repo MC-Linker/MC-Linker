@@ -1,6 +1,6 @@
 import Command from '../../structures/Command.js';
 import keys from '../../api/keys.js';
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
 import { ph } from '../../api/messages.js';
@@ -23,7 +23,7 @@ export default class Account extends Command {
         if(subcommand === 'connect') {
             const username = args[1];
 
-            if(!server?.hasPluginProtocol()) {
+            if(!server?.hasHttpProtocol() && !server?.hasWebSocketProtocol()) {
                 return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             }
 

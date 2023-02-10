@@ -1,5 +1,5 @@
-import PluginProtocol from '../structures/PluginProtocol.js';
-import Discord, {
+import HttpProtocol from '../structures/HttpProtocol.js';
+import {
     ApplicationCommandOptionType,
     BaseInteraction,
     CommandInteraction,
@@ -8,7 +8,7 @@ import Discord, {
     User,
 } from 'discord.js';
 import crypto from 'crypto';
-import minecraft_data from 'minecraft-data';
+import McData from 'minecraft-data';
 import FtpProtocol from '../structures/FtpProtocol.js';
 import keys from './keys.js';
 import advancementData from '../resources/data/advancements.json' assert { type: 'json' };
@@ -17,8 +17,11 @@ import nbt from 'prismarine-nbt';
 import { ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
+import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 
-const mcData = minecraft_data('1.19.2');
+const mcData = McData('1.19.2');
+
+export const MaxEmbedFieldValueLength = 1024;
 
 /**
  * @typedef {object} AdvancementData
@@ -107,7 +110,7 @@ export function searchStats(searchString, category, shouldSearchNames = true, sh
 
     if(dataList) {
         matchingStats = dataList.filter(data => {
-            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
             let match = false;
             if(shouldSearchNames) match = data.displayName.toLowerCase().includes(searchString.toLowerCase());
             if(shouldSearchValues && !match) match = data.name.includes(searchString.toLowerCase());
@@ -128,7 +131,7 @@ export function searchStats(searchString, category, shouldSearchNames = true, sh
     }
     else if(category === 'custom') {
         matchingStats = customStats.stats.filter(stat => {
-            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value or category.value
+            //Filter (if shouldSearchNames === true) for matching name and (if shouldSearchValues === true) for matching value
             let match = false;
             if(shouldSearchNames) match = stat.name.toLowerCase().includes(searchString.toLowerCase());
             if(!match && shouldSearchValues) match = stat.value.includes(searchString.toLowerCase());
@@ -205,11 +208,7 @@ function addHyphen(uuid) {
 export async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
-    // Use guild commands if not verified bot (test-bot)
-    const commandManager = interaction.client.user.flags.has(Discord.UserFlags.VerifiedBot)
-        ? interaction.client.application.commands : interaction.guild.commands;
-    const slashCommand = await commandManager.fetch(interaction.commandId);
-
+    const slashCommand = await interaction.client.application.commands.fetch(interaction.commandId);
     const args = [];
 
     function addArgs(allOptions, option, incrementIndex) {
@@ -271,7 +270,7 @@ const defaultStatusRespones = {
 export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
     const placeholders = { data: JSON.stringify(response?.data ?? '') };
 
-    if(!response && protocol instanceof PluginProtocol) {
+    if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
         await interaction.replyTl(keys.api.plugin.errors.no_response, placeholders);
         return false;
     }
@@ -515,21 +514,8 @@ export function cleanEmojis(message) {
     return cleanedMessage.replace(/<a?(:[a-zA-Z0-9_]+:)[0-9]+>/g, '$1');
 }
 
-export default {
-    searchAllAdvancements,
-    searchAdvancements,
-    searchAllStats,
-    searchStats,
-    fetchUUID,
-    createUUIDv3,
-    getArgs,
-    getUsersFromMention,
-    handleProtocolResponse,
-    handleProtocolResponses,
-    nbtBufferToObject,
-    parseProperties,
-    drawMinecraftText,
-    drawMinecraftNumber,
-    wrapText,
-    cleanEmojis,
-};
+export function createHash(token) {
+    return crypto.createHash('sha256')
+        .update(token)
+        .digest('hex');
+}

@@ -8,7 +8,6 @@ import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
 dotenv.config();
-console.log(process.env);
 /*
  * Converts the first letter of a string to uppercase.
  * @returns {String} The formatted string.

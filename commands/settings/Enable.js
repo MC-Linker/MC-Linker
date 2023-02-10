@@ -1,4 +1,4 @@
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import { ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
@@ -48,7 +48,7 @@ export default class Enable extends AutocompleteCommand {
         }
 
         interaction.respond(respondArray)
-            .catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
+            .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {

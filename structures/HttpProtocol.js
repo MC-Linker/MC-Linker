@@ -3,13 +3,13 @@ import fs from 'fs-extra';
 import { Readable } from 'stream';
 
 /**
- * API routes for the plugin protocol
+ * API routes for the http protocol
  * @type {object}
  */
 const PluginRoutes = {
     /**
      * Base URL
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     Base: () => [
         'GET',
@@ -19,10 +19,10 @@ const PluginRoutes = {
      * Uploads a file to the server.
      * @param {ReadStream} fileStream - The file to upload.
      * @param {string} path - The remote path to upload the file to.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     PutFile: (fileStream, path) => [
-        'POST',
+        'PUT',
         '/file/put',
         fileStream,
         { path },
@@ -30,7 +30,7 @@ const PluginRoutes = {
     /**
      * Downloads a file from the server.
      * @param {string} path - The remote path to download the file from.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     GetFile: path => [
         'GET',
@@ -41,7 +41,7 @@ const PluginRoutes = {
     /**
      * Generates a verification code and displays it on the server.
      * @param {string} id - The guild id that is requesting the code.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     VerifyGuild: id => [
         'GET',
@@ -53,7 +53,7 @@ const PluginRoutes = {
      * Sends a verification request to the server. Users can verify using `/verify <code>`.
      * @param {string} code - The verification code to send to the server.
      * @param {string} uuid - The uuid of the user that is verifying.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     VerifyUser: (code, uuid) => [
         'GET',
@@ -64,7 +64,7 @@ const PluginRoutes = {
     /**
      * Lists the files in a folder on the server.
      * @param {string} folder - The folder to list.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     ListFiles: folder => [
         'GET',
@@ -75,7 +75,7 @@ const PluginRoutes = {
     /**
      * Executes a command on the server.
      * @param {string} cmd - The command to execute.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     Command: cmd => [
         'GET',
@@ -87,7 +87,7 @@ const PluginRoutes = {
      * Sends a chat message to the server.
      * @param {string} msg - The message to send.
      * @param {string} username - The user to send the message to.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     Chat: (msg, username) => [
         'POST',
@@ -99,7 +99,7 @@ const PluginRoutes = {
      * @param {string} msg - The message to send.
      * @param {string} username - The user who sent the message.
      * @param {string} target - The user to send the message to.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     PrivateChat: (msg, username, target) => [
         'POST',
@@ -112,7 +112,7 @@ const PluginRoutes = {
      * @param {string} username - The user to send the message to.
      * @param {string} replyMsg - The message that was replied to.
      * @param {string} replyUsername - The user that sent the message that was replied to.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     ReplyChat: (msg, username, replyMsg, replyUsername) => [
         'POST',
@@ -124,18 +124,17 @@ const PluginRoutes = {
      * @param {string} ip - The IP address of the server.
      * @param {number} guildId - The Id of the guild that tries to connect.
      * @param {string} verifyCode - The verification code to use.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     Connect: (ip, guildId, verifyCode) => [
         'POST',
         '/connect',
-        { ip, id: guildId },
+        { ip, id: guildId, code: verifyCode },
         {},
-        `Basic ${verifyCode}`,
     ],
     /**
      * Disconnects from the server.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     Disconnect: () => [
         'GET',
@@ -144,7 +143,7 @@ const PluginRoutes = {
     /**
      * Adds a chatchannel to the server.
      * @param {ChatChannelData} channel - The chat channel to add.
-     * @returns {PluginProtocolFetchData}
+     * @returns {HttpProtocolFetchData}
      */
     AddChannel: channel => [
         'POST',
@@ -154,7 +153,7 @@ const PluginRoutes = {
     /**
      * Removes a chatchannel from the server.
      * @param {ChatChannelData} channel - The chat channel to remove.
-     * @returns {PluginProtocolFetchData}
+     * @returns {HttpProtocolFetchData}
      */
     RemoveChannel: channel => [
         'POST',
@@ -163,7 +162,7 @@ const PluginRoutes = {
     ],
     /**
      * Lists the online players on the server.
-     * @returns {PluginProtocolFetchData} - The data to send to the plugin.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     ListOnlinePlayers: () => [
         'GET',
@@ -172,18 +171,18 @@ const PluginRoutes = {
 };
 
 
-export default class PluginProtocol extends Protocol {
+export default class HttpProtocol extends Protocol {
 
     /**
-     * @typedef {object} PluginProtocolData
+     * @typedef {object} HttpProtocolData
      * @property {string} ip - The ip the plugin is listening on.
      * @property {number} port - The port the plugin is listening on.
-     * @property {string} hash - The hash used to authenticate with the plugin.
+     * @property {string} token - The token used to authenticate with the plugin.
      * @property {string} id - The guild id this protocol is for.
      */
 
     /**
-     * @typedef {array} PluginProtocolFetchData
+     * @typedef {array} HttpProtocolFetchData
      * @property {string} 0 - The http method to use.
      * @property {string} 1 - The route to fetch from.
      * @property {object|ReadableStream} 2 - The body to send with the request.
@@ -192,9 +191,9 @@ export default class PluginProtocol extends Protocol {
      */
 
     /**
-     * Creates a new protocol.
+     * Creates a new http protocol.
      * @param {MCLinker} client - The client to create the protocol for.
-     * @param {PluginProtocolData} data - The data for the protocol.
+     * @param {HttpProtocolData} data - The data for the protocol.
      */
     constructor(client, data) {
         super(client);
@@ -206,15 +205,15 @@ export default class PluginProtocol extends Protocol {
      * Fetches a url with the given data.
      * @param {string} method - The http method to use.
      * @param {URL} url - The url to fetch.
-     * @param {string} hash - The hash to use for authentication.
+     * @param {string} token - The token to use for authentication.
      * @param {?object} [body={}] - The body to send with the request.
      * @param {?string} [authorization=null] - Additional authorization headers to send with the request.
      * @returns {Promise<null|Response>} - The response from the server.
      * @private
      */
-    static async fetch(method, url, hash, body = {}, authorization = null) {
+    static async fetch(method, url, token, body = {}, authorization = null) {
         try {
-            let authorizationString = `Bearer ${hash}`;
+            let authorizationString = `Bearer ${token}`;
             if(authorization) authorizationString += `, ${authorization}`;
 
             return await fetch(url.toString(), {
@@ -235,7 +234,7 @@ export default class PluginProtocol extends Protocol {
      */
     static async testConnection(data) {
         const url = new URL(PluginRoutes.Base()[1], `http://${data.ip}:${data.port}`);
-        const response = await PluginProtocol.fetch(PluginRoutes.Base()[0], url, data.hash);
+        const response = await HttpProtocol.fetch(PluginRoutes.Base()[0], url, data.token);
         if(response) return response.ok;
         return false;
     }
@@ -263,7 +262,7 @@ export default class PluginProtocol extends Protocol {
          * The hash used to authenticate with the plugin.
          * @type {string}
          */
-        this.hash = data.hash ?? this.hash;
+        this.token = data.token ?? this.token;
     }
 
     /**
@@ -442,7 +441,7 @@ export default class PluginProtocol extends Protocol {
                 url.searchParams.append(key, queries[key]);
             }
 
-            return await PluginProtocol.fetch(method, url, this.hash, body, authorization);
+            return await HttpProtocol.fetch(method, url, this.token, body, authorization);
         }
         catch(_) {
             return null;

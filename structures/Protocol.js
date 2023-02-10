@@ -164,7 +164,7 @@ export const FilePath = {
 export default class Protocol extends Base {
 
     /**
-     * @typedef {PluginProtocolData|FtpProtocolData} ProtocolData - The data for a protocol.
+     * @typedef {HttpProtocolData|FtpProtocolData} ProtocolData - The data for a protocol.
      */
 
     /**

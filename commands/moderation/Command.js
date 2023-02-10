@@ -1,7 +1,7 @@
 // noinspection JSUnresolvedVariable
 import { addPh, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
-import utils, { getUsersFromMention } from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import Discord from 'discord.js';
 import nbt from 'prismarine-nbt';
 import minecraft_data from 'minecraft-data';
@@ -47,7 +47,7 @@ export default class Command extends AutocompleteCommand {
 
             const previousArgument = allOptions?.[focusedIndex - 1]?.value;
 
-            let filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
+            const filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
 
             const filteredSuggestions = suggestions?.[filteredKey] ?? suggestions?.[''];
             if(filteredSuggestions) {
@@ -124,7 +124,7 @@ export default class Command extends AutocompleteCommand {
         }
 
         if(respondArray.length >= 25) respondArray.length = 25;
-        interaction.respond(respondArray).catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
+        interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {
@@ -138,7 +138,7 @@ export default class Command extends AutocompleteCommand {
 
             let user;
             if(arg === '@s') user = interaction.member.user;
-            else user = await getUsersFromMention(client, arg)?.[0];
+            else user = await utils.getUsersFromMention(client, arg)?.[0];
             if(!user) continue;
 
             const username = client.userConnections.cache.get(user.id)?.username;
@@ -241,7 +241,7 @@ async function getPlaceholder(key, args) {
                 '@e': '@e',
             };
 
-            let resp = await server?.protocol?.getOnlinePlayers?.();
+            const resp = await server?.protocol?.getOnlinePlayers?.();
             const onlinePlayers = resp?.status === 200 ? resp.data : [];
             const username = userConn?.username;
 

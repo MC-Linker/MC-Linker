@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
@@ -19,7 +19,7 @@ export default class Stats extends AutocompleteCommand {
         const focused = interaction.options.getFocused().toLowerCase();
 
         const stats = utils.searchStats(focused, subcommand);
-        interaction.respond(stats).catch(() => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command)));
+        interaction.respond(stats).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {

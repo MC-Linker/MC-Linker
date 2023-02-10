@@ -42,7 +42,7 @@ if(process.env.TOPGG_TOKEN) {
     poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
 }
 
-client.once('ready', async () => {
+client.once(Discord.Events.ClientReady, async () => {
     console.log(addPh(
         keys.main.success.login.console,
         ph.client(client),
@@ -52,21 +52,21 @@ client.once('ready', async () => {
     //Set Activity
     client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
-    //Load all connections and commands
-    await client.loadEverything();
-
     //Start API server
     await client.api.startServer();
+
+    //Load all connections and commands
+    await client.loadEverything();
 
     //Register minecraft font
     Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
 });
 
-client.on('guildCreate', guild => {
+client.on(Discord.Events.GuildCreate, guild => {
     console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 });
 
-client.on('guildDelete', async guild => {
+client.on(Discord.Events.GuildDelete, async guild => {
     if(!client.isReady() || !guild.available) return; //Prevent server outages from deleting data
     console.log(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
 
@@ -75,9 +75,10 @@ client.on('guildDelete', async guild => {
     await client.serverConnections.removeDataFolder(guild.id);
 });
 
-client.on('messageCreate', async message => {
+client.on(Discord.Events.MessageCreate, async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
+
     if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(process.env.PREFIX)) {
         let content = cleanEmojis(message.cleanContent);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
@@ -120,7 +121,7 @@ client.on('messageCreate', async message => {
     }
 });
 
-client.on('interactionCreate', async interaction => {
+client.on(Discord.Events.InteractionCreate, async interaction => {
     interaction = addTranslatedResponses(interaction);
 
     //check if in guild
@@ -163,10 +164,10 @@ client.on('interactionCreate', async interaction => {
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client)
-                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.interaction(interaction))));
+                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err))));
         }
         catch(err) {
-            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.error(err), ph.interaction(interaction)));
+            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err)));
         }
     }
     else if(interaction.isButton()) {
@@ -185,4 +186,6 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(process.env.TOKEN);
+await client.login(process.env.TOKEN);
+
+export default client;

@@ -2,7 +2,7 @@ import Command from '../../structures/Command.js';
 import keys from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import { addPh, getComponent, getEmbed, getReplyOptions } from '../../api/messages.js';
 import gamerules from '../../resources/data/gamerules.json' assert { type: 'json' };
 import { unraw } from 'unraw';
@@ -61,10 +61,17 @@ export default class ServerInfo extends Command {
             mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
 
             datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').cap()) ?? [];
+
+            //Reduce plugins, mods and datapacks array so that it doesn't exceed max embed field value length
+            for(const array of [plugins, mods, datapacks]) {
+                while(array.join('\n').length > utils.MaxEmbedFieldValueLength) {
+                    array.pop();
+                }
+            }
         }
         await server.protocol.endBatch();
 
-        let onlinePlayers = server.hasPluginProtocol() ? await server.protocol.getOnlinePlayers() : null;
+        let onlinePlayers = server.hasHttpProtocol() ? await server.protocol.getOnlinePlayers() : null;
         if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;
         else onlinePlayers = onlinePlayers.data.length;
 
@@ -118,12 +125,6 @@ export default class ServerInfo extends Command {
             description: 'Server List',
         });
 
-        /** @type {Discord.InteractionReplyOptions} */
-        const startingMessage = {
-            embeds: [keys.commands.serverinfo.success.general],
-            files: [iconAttachment, serverListAttachment],
-        };
-
         const difficulty = typeof propertiesObject['difficulty'] === 'number' ?
             keys.commands.serverinfo.difficulty[propertiesObject['difficulty']] :
             propertiesObject['difficulty'].cap();
@@ -152,6 +153,11 @@ export default class ServerInfo extends Command {
             worldEmbed.data.fields[2] = addPh(keys.commands.serverinfo.success.hardcore_enabled.embeds[0].fields[0], { difficulty });
         }
 
+        /** @type {Discord.InteractionReplyOptions} */
+        const startingMessage = {
+            embeds: [keys.commands.serverinfo.success.general],
+            files: [iconAttachment, serverListAttachment],
+        };
         /** @type {PaginationPages} */
         const pages = {
             serverinfo_general: {

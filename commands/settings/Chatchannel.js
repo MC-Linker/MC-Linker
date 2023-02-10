@@ -2,7 +2,7 @@ import Discord from 'discord.js';
 import { addTranslatedResponses, getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
-import utils from '../../api/utils.js';
+import * as utils from '../../api/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 export default class Chatchannel extends Command {
@@ -22,7 +22,7 @@ export default class Chatchannel extends Command {
 
         //Add chatchannel
         if(method === 'add') {
-            let channel = args[1];
+            const channel = args[1];
             const useWebhooks = args[2];
 
             if(!channel.isTextBased()) {
@@ -35,7 +35,7 @@ export default class Chatchannel extends Command {
             try {
                 menu = await logChooserMsg.awaitMessageComponent({
                     componentType: Discord.ComponentType.SelectMenu,
-                    time: 30_000,
+                    time: 180_000,
                     max: 1,
                 });
                 menu = addTranslatedResponses(menu);

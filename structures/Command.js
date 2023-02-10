@@ -1,4 +1,4 @@
-import Discord, {
+import {
     ApplicationCommand,
     ApplicationCommandOptionType,
     ApplicationCommandPermissionType,
@@ -102,7 +102,7 @@ export default class Command {
             return false;
         }
 
-        if(this.requiresConnectedPlugin && !server?.hasPluginProtocol()) {
+        if(this.requiresConnectedPlugin && !(server?.hasHttpProtocol() || server?.hasWebSocketProtocol())) {
             await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             return false;
         }
@@ -111,10 +111,7 @@ export default class Command {
             return false;
         }
 
-        // Use guild commands if bot is not verified (test-bot)
-        const commandManager = client.user.flags.has(Discord.UserFlags.VerifiedBot)
-            ? client.application.commands : interaction.guild.commands;
-        const slashCommand = await fetchCommand(commandManager, this.name);
+        const slashCommand = await fetchCommand(client.application.commands, this.name);
         const missingPermission = await canRunCommand(slashCommand);
         if(missingPermission !== true) {
             if(typeof missingPermission === 'string') {
