@@ -54,6 +54,8 @@ export default class Connect extends Command {
                 if(client.serverConnections.cache.has(id)) await server.edit(serverConnectionData);
                 else await client.serverConnections.connect(serverConnectionData);
 
+                client.api.addListeners(socket, client.serverConnections.cache.get(id));
+
                 await interaction.replyTl(keys.commands.connect.success.websocket);
             }
             catch(err) {
