@@ -135,13 +135,13 @@ export default class BotAPI extends EventEmitter {
             socket.emit('auth-success', {}); //Tell the client that the auth was successful
 
             server.protocol.updateSocket(socket);
-            this.addListeners(socket, server);
+            this.addListeners(socket, server, hash);
         });
 
         return this.fastify;
     }
 
-    addListeners(socket, server) {
+    addListeners(socket, server, hash) {
         socket.on('chat', data => {
             //Update server variable to ensure it wasn't disconnected in the meantime
             /** @type {?ServerConnection} */

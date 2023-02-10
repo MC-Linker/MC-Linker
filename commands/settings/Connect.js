@@ -37,6 +37,7 @@ export default class Connect extends Command {
                 this.wsVerification.delete(id);
                 socket.emit('auth-success', {}); //Tell the client that the auth was successful
 
+                const hash = utils.createHash(socket.handshake.auth.token);
                 /** @type {WebSocketServerConnectionData} */
                 const serverConnectionData = {
                     ip: socket.handshake.address,
@@ -47,14 +48,14 @@ export default class Connect extends Command {
                     version: socket.handshake.query.version,
                     worldPath: socket.handshake.query.worldPath,
                     protocol: 'websocket',
-                    hash: utils.createHash(socket.handshake.auth.token),
+                    hash,
                     socket,
                 };
 
                 if(client.serverConnections.cache.has(id)) await server.edit(serverConnectionData);
                 else await client.serverConnections.connect(serverConnectionData);
 
-                client.api.addListeners(socket, client.serverConnections.cache.get(id));
+                client.api.addListeners(socket, client.serverConnections.cache.get(id), hash);
 
                 await interaction.replyTl(keys.commands.connect.success.websocket);
             }
