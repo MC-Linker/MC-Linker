@@ -135,22 +135,26 @@ export default class BotAPI extends EventEmitter {
             socket.emit('auth-success', {}); //Tell the client that the auth was successful
 
             server.protocol.updateSocket(socket);
-            socket.on('chat', data => {
-                //Update server variable to ensure it wasn't disconnected in the meantime
-                /** @type {?ServerConnection} */
-                const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
-
-                //If no connection on that guild, disconnect socket
-                if(!server) socket.disconnect();
-
-                this._chat(JSON.parse(data), server);
-            });
-            socket.on('disconnect', () => {
-                server.protocol.updateSocket(null);
-            });
+            this.addListeners(socket, server);
         });
 
         return this.fastify;
+    }
+
+    addListeners(socket, server) {
+        socket.on('chat', data => {
+            //Update server variable to ensure it wasn't disconnected in the meantime
+            /** @type {?ServerConnection} */
+            const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
+
+            //If no connection on that guild, disconnect socket
+            if(!server) socket.disconnect();
+
+            this._chat(JSON.parse(data), server);
+        });
+        socket.on('disconnect', () => {
+            server.protocol.updateSocket(null);
+        });
     }
 
     /**
