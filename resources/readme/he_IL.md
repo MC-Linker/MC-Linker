@@ -1,6 +1,6 @@
 [![Crowdin](https://badges.crowdin.net/minecraft-smp-bot/localized.svg)](https://crowdin.com/project/minecraft-smp-bot) [![Commit Activity](https://img.shields.io/github/commit-activity/m/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![Total Commits](https://badgen.net/github/commits/MC-Linker/MC-Linker/main)](https://github.com/MC-Linker/MC-Linker) [![Code Size](https://img.shields.io/github/languages/code-size/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![Repo Size](https://img.shields.io/github/repo-size/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-red)](https://github.com/MC-Linker/MC-Linker/blob/main/LICENSE.md)
 
-תראו סטטיסטיקות מיינקראפט, התקדמויות ואינוונטוריים בדיסקורד! Also includes moderation tools, minecraft commands, two-way chat and much more.
+ראו סטטיסטיקות מיינקראפט, התקדמויות ואינוונטוריים בדיסקורד! Also includes moderation tools, minecraft commands, two-way chat and much more.
 
 # Description
 
