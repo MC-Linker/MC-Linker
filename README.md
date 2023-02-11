@@ -14,7 +14,7 @@ many other helpful features.
 To use most of the commands you’ll have to connect your Minecraft **java-edition** server with the bot. There are two
 methods to connect:
 
-+ Plugin
++ Plugin (recommended)
 	+ Add the "Discord-Linker" plugin to your Minecraft server
 	  using [this link](https://www.spigotmc.org/resources/discord-linker.98749/)
 	+ Restart your Minecraft server or execute `/reload confirm` on your Minecraft server
