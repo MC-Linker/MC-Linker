@@ -3,13 +3,13 @@
 View minecraft stats, advancements and inventories in Discord! Also includes moderation tools, minecraft commands,
 two-way chat and much more.
 
-# Description
+## Description
 
 Moderate and connect your Minecraft server with Discord! This bot allows you to view minecraft stats, advancements, and
 even inventories of any member in Discord. Also supports a powerful two-way chat with Minecraft, command execution and
 many other helpful features.
 
-# Setup
+## Setup
 
 To use most of the commands you’ll have to connect your Minecraft **java-edition** server with the bot. There are two
 methods to connect:
@@ -26,7 +26,7 @@ methods to connect:
 	  credentials
 	+ Execute `/connect ftp` in Discord and enter your credentials
 
-# Important Commands
+## Important Commands
 
 + `/help`: Detailed description and usage of every command
 + `/inventory`: Look in the inventory of any member
