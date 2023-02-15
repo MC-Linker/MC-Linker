@@ -6,7 +6,7 @@ import HttpProtocol from '../../structures/HttpProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
-import client from '../../main.js';
+import client from '../../bot.js';
 
 export default class Connect extends Command {
 
