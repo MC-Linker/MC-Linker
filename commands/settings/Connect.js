@@ -20,50 +20,56 @@ export default class Connect extends Command {
             defer: false,
         });
 
-        client.api.websocket.on('connection', async socket => {
-            const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
-            if(!this.wsVerification.has(id)) return;
+        client.shard.broadcastEval(c => {
+            if(!c.shard.ids.includes(0)) return;
 
-            const { code: serverCode, interaction, timeout, server } = this.wsVerification.get(id) ?? {};
-            try {
-                if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
-                //Prevent connection of a different guild to an already connected server
-                if(client.serverConnections.cache.some(s => s.ip === socket.handshake.address && s.id !== id)) {
-                    await interaction.replyTl(keys.commands.connect.warnings.already_connected);
-                    return socket.disconnect(true);
+            c.api.websocket.on('connection', async socket => {
+                const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
+                if(!this.wsVerification.has(id)) return;
+
+                const { code: serverCode, interaction, timeout, server } = this.wsVerification.get(id) ?? {};
+                try {
+                    if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
+
+                    //Prevent connection of a different guild to an already connected server
+                    if(client.serverConnections.cache.some(s => s.ip === socket.handshake.address && s.id !== id)) {
+                        await interaction.replyTl(keys.commands.connect.warnings.already_connected);
+                        return socket.disconnect(true);
+                    }
+
+                    clearTimeout(timeout);
+                    this.wsVerification.delete(id);
+                    socket.emit('auth-success', {}); //Tell the client that the auth was successful
+
+                    const hash = utils.createHash(socket.handshake.auth.token);
+                    /** @type {WebSocketServerConnectionData} */
+                    const serverConnectionData = {
+                        ip: socket.handshake.address,
+                        id: interaction.guildId,
+                        path: socket.handshake.query.path,
+                        channels: [],
+                        online: socket.handshake.query.online,
+                        version: socket.handshake.query.version,
+                        worldPath: socket.handshake.query.worldPath,
+                        protocol: 'websocket',
+                        hash,
+                        socket,
+                    };
+
+                    if(client.serverConnections.cache.has(id)) await server.edit(serverConnectionData);
+                    else await client.serverConnections.connect(serverConnectionData);
+
+                    c.api.addListeners(socket, client.serverConnections.cache.get(id), hash);
+
+                    await interaction.replyTl(keys.commands.connect.success.websocket);
                 }
-
-                clearTimeout(timeout);
-                this.wsVerification.delete(id);
-                socket.emit('auth-success', {}); //Tell the client that the auth was successful
-
-                const hash = utils.createHash(socket.handshake.auth.token);
-                /** @type {WebSocketServerConnectionData} */
-                const serverConnectionData = {
-                    ip: socket.handshake.address,
-                    id: interaction.guildId,
-                    path: socket.handshake.query.path,
-                    channels: [],
-                    online: socket.handshake.query.online,
-                    version: socket.handshake.query.version,
-                    worldPath: socket.handshake.query.worldPath,
-                    protocol: 'websocket',
-                    hash,
-                    socket,
-                };
-
-                if(client.serverConnections.cache.has(id)) await server.edit(serverConnectionData);
-                else await client.serverConnections.connect(serverConnectionData);
-
-                client.api.addListeners(socket, client.serverConnections.cache.get(id), hash);
-
-                await interaction.replyTl(keys.commands.connect.success.websocket);
-            }
-            catch(err) {
-                await interaction.replyTl(keys.commands.connect.errors.websocket_error, ph.error(err));
-                socket.disconnect(true);
-            }
+                catch(err) {
+                    await interaction.replyTl(keys.commands.connect.errors.websocket_error, ph.error(err));
+                    socket.disconnect(true);
+                }
+            });
         });
+
     }
 
     async execute(interaction, client, args, server) {

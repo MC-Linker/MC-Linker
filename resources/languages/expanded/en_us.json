@@ -79,13 +79,13 @@
         "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers."
       },
       "command_load": {
-        "console": "Successfully loaded command: %command%"
+        "console": "[%shard%] Successfully loaded command: %command%"
       },
       "command_load_category": {
-        "console": "Successfully loaded command: %category%/%command%"
+        "console": "[%shard%] Successfully loaded command: %category%/%command%"
       },
       "button_load": {
-        "console": "Successfully loaded button: %button%"
+        "console": "[%shard%] Successfully loaded button: %button%"
       },
       "ping": {
         "embeds": [

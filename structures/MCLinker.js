@@ -143,7 +143,7 @@ export default class MCLinker extends Discord.Client {
                 this.commands.set(command.name, command);
                 console.log(addPh(
                     category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,
-                    { command: command.name, category: category },
+                    { command: command.name, category: category, shard: this.shard.ids[0] },
                 ));
             }
         }
@@ -160,7 +160,10 @@ export default class MCLinker extends Discord.Client {
                 const button = new ButtonFile();
 
                 this.buttons.set(button.id, button);
-                console.log(addPh(keys.main.success.button_load.console, { button: button.id }));
+                console.log(addPh(keys.main.success.button_load.console, {
+                    button: button.id,
+                    shard: this.shard.ids[0],
+                }));
             }
         }
     }
@@ -171,16 +174,16 @@ export default class MCLinker extends Discord.Client {
      */
     async loadEverything() {
         await this.serverConnections._load();
-        console.log('Loaded all server connections.');
+        console.log(`[${this.shard.ids[0]}] Loaded all server connections.`);
         await this.userConnections._load();
-        console.log('Loaded all user connections.');
+        console.log(`[${this.shard.ids[0]}] Loaded all user connections.`);
         await this.serverSettingsConnections._load();
-        console.log('Loaded all server-settings connections.');
+        console.log(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
         await this.userSettingsConnections._load();
-        console.log('Loaded all user-settings connections.');
+        console.log(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
         await this._loadCommands();
-        console.log('Loaded all commands.');
+        console.log(`[${this.shard.ids[0]}] Loaded all commands.`);
         await this._loadButtons();
-        console.log('Loaded all buttons.');
+        console.log(`[${this.shard.ids[0]}] Loaded all buttons.`);
     }
 }

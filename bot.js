@@ -47,17 +47,20 @@ client.once(Discord.Events.ClientReady, async () => {
         { prefix: process.env.PREFIX, 'guild_count': client.guilds.cache.size },
     ));
 
-    //Set Activity
-    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
+    //Register minecraft font
+    Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
+});
 
-    //Start API server
-    await client.api.startServer();
+client.on('allShardsReady', async () => {
+    if(client.shard.ids.includes(0)) {
+        //Start API server
+        await client.api.startServer();
+        //Set Activity
+        client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
+    }
 
     //Load all connections and commands
     await client.loadEverything();
-
-    //Register minecraft font
-    Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
 });
 
 client.on(Discord.Events.GuildCreate, guild => {
