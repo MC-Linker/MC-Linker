@@ -1,5 +1,6 @@
 import { Base } from 'discord.js';
 import fs from 'fs-extra';
+import { getManagerStringFromConnection } from '../api/shardingUtils.js';
 
 export default class Connection extends Base {
 
@@ -58,16 +59,14 @@ export default class Connection extends Base {
      */
     async edit(data) {
         this._patch(data);
-        if(await this._output()) return this;
+        if(await this._output()) {
+            // Broadcast the patch to all shards
+            await this.client.shard.broadcastEval((c, { id, data, manager }) => {
+                c[manager].cache.get(id) ? c[manager].cache.get(id)._patch(data) : c[manager].connect(data);
+            }, { context: { id: this.id, data, manager: getManagerStringFromConnection(this) } });
+            return this;
+        }
         else return null;
-    }
-
-    /**
-     * Saves the connection to the fs.
-     * @returns {Promise<boolean>} - Whether the connection was saved successfully.
-     */
-    async save() {
-        return await this._output();
     }
 
     /**

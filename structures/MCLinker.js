@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import ServerConnectionManager from './ServerConnectionManager.js';
 import UserConnectionManager from './UserConnectionManager.js';
 import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.js';
+import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
 import fs from 'fs-extra';
 import { addPh } from '../api/messages.js';
 import keys from '../api/keys.js';
@@ -9,7 +10,6 @@ import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';
 import BotAPI from '../api/BotAPI.js';
-import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
 
 export default class MCLinker extends Discord.Client {
 

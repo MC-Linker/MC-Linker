@@ -242,6 +242,9 @@ export default class ServerConnection extends Connection {
             delete this.channels;
         }
         else this.protocol._patch({ ...data, sftp: data.protocol === 'sftp' });
+
+
+        console.log(`[Shard ${this.client.shard.ids[0]}] ${this}`);
     }
 
     async _output() {

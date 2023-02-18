@@ -76,7 +76,7 @@
     },
     "success": {
       "login": {
-        "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers."
+        "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers."
       },
       "command_load": {
         "console": "[%shard%] Successfully loaded command: %command%"
@@ -97,10 +97,10 @@
         ]
       },
       "guild_create": {
-        "console": "Joined a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!"
+        "console": "Joined a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!"
       },
       "guild_delete": {
-        "console": "Left a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!"
+        "console": "Left a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!"
       },
       "disconnected": {
         "console": "Successfully deleted connection file of guild: %guild_name%"

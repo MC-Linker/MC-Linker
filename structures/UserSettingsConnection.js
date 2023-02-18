@@ -3,17 +3,6 @@ import Discord from 'discord.js';
 
 export default class UserSettingsConnection extends Connection {
 
-    /** @type {Omit<UserSettingsConnectionData, 'id'>} */
-    static defaultSettingsData = {
-        disabled: {
-            'bot-commands': [],
-            advancements: [],
-            stats: [],
-            'chat-commands': [],
-        },
-        language: 'en_us',
-    };
-
     /**
      * @typedef {object} UserSettingsConnectionData - The data for the user settings.
      * @property {OAuthTokens} tokens - The OAuth2 tokens for the user.

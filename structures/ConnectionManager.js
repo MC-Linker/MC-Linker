@@ -1,5 +1,6 @@
 import { CachedManager } from 'discord.js';
 import fs from 'fs-extra';
+import { getManagerString } from '../api/shardingUtils.js';
 
 export default class ConnectionManager extends CachedManager {
 
@@ -47,7 +48,13 @@ export default class ConnectionManager extends CachedManager {
     async connect(data) {
         /** @type {?Connection} */
         const connection = this._add(data, true, { extras: [this.outputPath, this.outputFile] });
-        if(connection && await connection._output()) return connection;
+        if(connection && await connection._output()) {
+            //Broadcast to all shards
+            await this.client.shard.broadcastEval((c, { data, manager }) => {
+                c[manager]._add(data, true, { extras: [c[manager].outputPath, c[manager].outputFile] });
+            }, { context: { data, manager: getManagerString(this) } });
+            return connection;
+        }
         else {
             this.cache.delete(this.resolveId(connection));
             return null;
@@ -63,6 +70,10 @@ export default class ConnectionManager extends CachedManager {
         /** @type {?Connection} */
         const instance = this.resolve(connection);
         if(instance && await instance._delete()) {
+            //Broadcast to all shards
+            await this.client.shard.broadcastEval((c, { instanceId, manager }) => {
+                c[manager].cache.delete(instanceId);
+            }, { context: { instanceId: instance.id, manager: getManagerString(this) } });
             return this.cache.delete(this.resolveId(connection));
         }
         else return false;
