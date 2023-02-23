@@ -133,18 +133,16 @@ export default class Command extends AutocompleteCommand {
         const command = args[0];
         args.shift(); //Shift commandName
 
-        for(let i = 0; i < args.length; i++) {
-            const arg = args[i];
-
+        for(let arg of args) {
             let user;
             if(arg === '@s') user = interaction.member.user;
-            else user = await utils.getUsersFromMention(client, arg)?.[0];
+            else user = (await utils.getUsersFromMention(client, arg))?.[0];
             if(!user) continue;
 
             const username = client.userConnections.cache.get(user.id)?.username;
             if(!username) return;
 
-            args[i] = arg.replace(arg, username);
+            arg = arg.replace(arg, username);
         }
 
         const resp = await server.protocol.execute(`${command} ${args.join(' ')}`);
@@ -300,7 +298,7 @@ async function getPlaceholder(key, args) {
         case 'enabled_datapacks':
             const level = await getNBTFile(...FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
 
-            let datapacks = level?.Data?.DataPacks;
+            const datapacks = level?.Data?.DataPacks;
             if(key === 'enabled_datapacks') placeholder = datapacks?.Enabled;
             else if(key === 'disabled_datapacks') placeholder = datapacks?.Disabled;
 
@@ -3148,7 +3146,7 @@ async function getPlaceholder(key, args) {
             });
 
             for(const category of ['mined', 'broken', 'crafted', 'used', 'picked_up', 'dropped', 'killed', 'killed_by']) {
-                const stats = await utils.searchStats('', category, true, true, Infinity);
+                const stats = utils.searchStats('', category, true, true, Infinity);
                 stats.forEach(stat =>
                     placeholder[`${category}.${stat.name}`] = `minecraft.${category}:minecraft.${stat.name}`,
                 );
@@ -4454,7 +4452,7 @@ async function getPlaceholder(key, args) {
     return placeholder;
 
     function toSnakeCase(string) {
-        return string.replace(/([A-Z])/g, (_, y) => '_' + y.toLowerCase()).replace(/^_/, '');
+        return string.replace(/([A-Z])/g, (_, y) => `_${y.toLowerCase()}`).replace(/^_/, '');
     }
 
     async function getNBTFile(getPath, putPath) {
@@ -4476,7 +4474,7 @@ async function getPlaceholder(key, args) {
         const worldPath = server?.path;
         if(!worldPath) return [];
 
-        let allFunctions = [];
+        const allFunctions = [];
 
         const datapacks = await server.protocol.list(FilePath.DataPacks(worldPath));
         if(datapacks?.status !== 200) return [];

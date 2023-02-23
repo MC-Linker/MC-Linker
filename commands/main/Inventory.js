@@ -128,7 +128,7 @@ export default class Inventory extends Command {
 
 
         const invAttach = new Discord.AttachmentBuilder(
-            await invCanvas.toBuffer('image/png'),
+            await invCanvas.toBuffer('png'),
             { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
         );
         const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.emojis(), { username: user.username });

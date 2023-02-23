@@ -63,6 +63,12 @@ export default class ServerConnection extends Connection {
      */
 
     /**
+     * The protocol used to communicate with the server.
+     * @type {Protocol}
+     */
+    protocol;
+
+    /**
      * @param {MCLinker} client - The client to create the server-connection for.
      * @param {ServerConnectionData} data - The data for the server-connection.
      * @param {string} outputPath - The path to write the server-connection to.
@@ -83,10 +89,6 @@ export default class ServerConnection extends Connection {
 
         // Assign the protocol used to communicate with the server.
         if(data.protocol === 'http') {
-            /**
-             * The http protocol for this server.
-             * @type {HttpProtocol}
-             */
             this.protocol = new HttpProtocol(client, {
                 id: data.id,
                 ip: data.ip,
@@ -95,10 +97,6 @@ export default class ServerConnection extends Connection {
             });
         }
         else if(data.protocol === 'ftp') {
-            /**
-             * The ftp protocol for this server.
-             * @type {FtpProtocol}
-             */
             this.protocol = new FtpProtocol(client, {
                 ip: data.ip,
                 port: data.port,
@@ -108,10 +106,6 @@ export default class ServerConnection extends Connection {
             });
         }
         else if(data.protocol === 'websocket') {
-            /**
-             * The websocket protocol for this server.
-             * @type {WebSocketProtocol}
-             */
             this.protocol = new WebSocketProtocol(client, {
                 id: data.id,
                 ip: data.ip,

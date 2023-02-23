@@ -311,7 +311,7 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
 export function createUUIDv3(username) {
     const hash = crypto.createHash('md5');
     hash.update(`OfflinePlayer:${username}`);
-    let digest = hash.digest();
+    const digest = hash.digest();
 
     digest[6] = digest[6] & 0x0f | 0x30;  // set version to 3
     digest[8] = digest[8] & 0x3f | 0x80;  // set variant to 2
@@ -486,11 +486,10 @@ export function wrapText(ctx, text, maxWidth) {
     const lines = [];
     let currentLine = words[0];
 
-    for(let i = 1; i < words.length; i++) {
-        const word = words[i];
+    for(const word of words) {
         const width = ctx.measureText(`${currentLine} ${word}`).width;
         if(width < maxWidth) {
-            currentLine += ' ' + word;
+            currentLine += ` ${word}`;
         }
         else {
             lines.push(currentLine);

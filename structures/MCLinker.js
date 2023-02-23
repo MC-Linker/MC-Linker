@@ -140,6 +140,7 @@ export default class MCLinker extends Discord.Client {
             if(CommandFile?.prototype instanceof Command) {
                 const command = new CommandFile();
 
+                // noinspection JSPotentiallyInvalidUsageOfClassThis
                 this.commands.set(command.name, command);
                 console.log(addPh(
                     category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,

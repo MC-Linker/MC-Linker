@@ -233,6 +233,7 @@ export default class HttpProtocol extends Protocol {
      * @inheritDoc
      */
     static async testConnection(data) {
+        // noinspection HttpUrlsUsage
         const url = new URL(PluginRoutes.Base()[1], `http://${data.ip}:${data.port}`);
         const response = await HttpProtocol.fetch(PluginRoutes.Base()[0], url, data.token);
         if(response) return response.ok;
@@ -435,6 +436,7 @@ export default class HttpProtocol extends Protocol {
      */
     async _fetch(method, route, body = {}, queries = {}, authorization = null) {
         try {
+            // noinspection HttpUrlsUsage
             const url = new URL(`http://${this.ip}:${this.port}`);
             url.pathname = route;
             for(const key in queries) {

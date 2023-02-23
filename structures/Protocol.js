@@ -201,7 +201,7 @@ export default class Protocol extends Base {
      * Gets a file from the server.
      * @param {string} getPath - The remote path where the file is located.
      * @param {string} putPath - The local path where the file should be written.
-     * @returns {Promise<?ProtocolResponse>} - The response from the server.
+     * @returns {Promise<?ProtocolResponse & { data: Buffer }>} - The response from the server.
      * @abstract
      */
     async get(getPath, putPath) {

@@ -18,7 +18,7 @@ export default class Pagination {
 
     /**
      * @typedef  {Object} PaginationPage
-     * @property {ButtonBuilder} button - The button that points to this page
+     * @property {ButtonBuilder} [button] - The button that points to this page
      * @property {import('discord.js').BaseMessageOptions} [page] - The page to send
      * @property {PaginationPages} [pages] - The pages to send (for nested pagination)
      * @property {boolean} [startPage=false] - Whether this is the starting page

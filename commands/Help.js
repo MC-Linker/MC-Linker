@@ -1,7 +1,7 @@
 import { addPh, fetchCommand, getActionRows, getEmbed, ph } from '../api/messages.js';
 import keys from '../api/keys.js';
 import Command from '../structures/Command.js';
-import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
+import { ApplicationCommand, ApplicationCommandOptionType, ApplicationCommandSubCommand } from 'discord.js';
 
 export default class Help extends Command {
 
@@ -89,14 +89,14 @@ export default class Help extends Command {
             }
 
             /**
-             * @param {ApplicationCommand|Discord.ApplicationCommandSubCommand} command
+             * @param {ApplicationCommand|ApplicationCommandSubCommand} command
              * @returns {string}
              */
             function getCommandUsage(command) {
                 let usage = [];
 
                 if(!command.options) usage.push(''); //No options
-                for(let option of command.options ?? []) {
+                for(const option of command.options ?? []) {
                     if(option.type === ApplicationCommandOptionType.Subcommand) {
                         usage.push(`${getCommandUsage(option)}`);
                     }

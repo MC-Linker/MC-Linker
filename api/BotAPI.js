@@ -32,6 +32,7 @@ export default class BotAPI extends EventEmitter {
          * @type {import('fastify').FastifyInstance}
          */
         this.fastify = Fastify();
+        // noinspection JSCheckFunctionSignatures
         this.fastify.register(fastifyIO);
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
@@ -142,7 +143,7 @@ export default class BotAPI extends EventEmitter {
     }
 
     addListeners(socket, server, hash) {
-        socket.on('chat', data => {
+        socket.on('chat', async data => {
             //Update server variable to ensure it wasn't disconnected in the meantime
             /** @type {?ServerConnection} */
             const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
@@ -150,7 +151,7 @@ export default class BotAPI extends EventEmitter {
             //If no connection on that guild, disconnect socket
             if(!server) socket.disconnect();
 
-            this._chat(JSON.parse(data), server);
+            await this._chat(JSON.parse(data), server);
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);

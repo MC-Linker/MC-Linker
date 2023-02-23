@@ -20,6 +20,7 @@ export default class Connect extends Command {
             defer: false,
         });
 
+        // noinspection JSIgnoredPromiseFromCall
         client.shard.broadcastEval(c => {
             if(!c.shard.ids.includes(0)) return;
 
@@ -48,8 +49,8 @@ export default class Connect extends Command {
                         id: interaction.guildId,
                         path: socket.handshake.query.path,
                         channels: [],
-                        online: socket.handshake.query.online,
-                        version: socket.handshake.query.version,
+                        online: Boolean(socket.handshake.query.online),
+                        version: Number(socket.handshake.query.version),
                         worldPath: socket.handshake.query.worldPath,
                         protocol: 'websocket',
                         hash,
@@ -168,9 +169,9 @@ export default class Connect extends Command {
                     await modal.deferReply();
                     modal = addTranslatedResponses(modal);
 
-                    const ip = modal.fields.getTextInputValue('ip').split(':').shift();
-                    let port = modal.fields.getTextInputValue('port');
-                    if(port === '') port = process.env.PLUGIN_PORT ?? 11111;
+                    const ip = modal.fields.getTextInputValue('ip').split(':')[0];
+                    let port = parseInt(modal.fields.getTextInputValue('port'));
+                    if(isNaN(port)) port = process.env.PLUGIN_PORT ?? 11111;
 
                     await this._disconnectOldPlugin(modal, server);
 

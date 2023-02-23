@@ -34,9 +34,8 @@ export default class Chatchannel extends Command {
             let menu;
             try {
                 menu = await logChooserMsg.awaitMessageComponent({
-                    componentType: Discord.ComponentType.SelectMenu,
+                    componentType: Discord.ComponentType.StringSelect,
                     time: 180_000,
-                    max: 1,
                 });
                 menu = addTranslatedResponses(menu);
 
@@ -78,7 +77,7 @@ export default class Chatchannel extends Command {
         }
         //Remove chatchannel
         else if(method === 'remove') {
-            let channel = args[1];
+            const channel = args[1];
 
             if(!channel.isTextBased()) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
@@ -92,10 +91,7 @@ export default class Chatchannel extends Command {
             const resp = await server.protocol.removeChatChannel(server.channels[channelIndex]);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            await server.edit({
-                chat: resp.data.chat,
-                channels: resp.data,
-            });
+            await server.edit({ channels: resp.data });
 
             return interaction.replyTl(keys.commands.chatchannel.success.remove);
         }
@@ -105,7 +101,7 @@ export default class Chatchannel extends Command {
             }
 
             const listEmbeds = [];
-            let channelButtons = [];
+            const channelButtons = [];
 
             for(const channel of server.channels) {
                 const formattedTypes = channel.types.map(type => {

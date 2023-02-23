@@ -93,6 +93,7 @@ client.on(Discord.Events.MessageCreate, async message => {
             repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
         }
         const repliedUser = repliedMessage ? repliedMessage.member.nickname ?? message.author.username : null;
+        // noinspection ES6MissingAwait
         server.protocol.chat(content, message.member.nickname ?? message.author.username, repliedContent, repliedUser);
     }
 

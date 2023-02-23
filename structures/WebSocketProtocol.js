@@ -7,7 +7,7 @@ export default class WebSocketProtocol extends Protocol {
      * @typedef {object} WebSocketProtocolData
      * @property {string} ip - The ip the websocket client is listening on.
      * @property {string} id - The guild id this protocol is for.
-     * @property {import('socket.io').Socket} socket - The connected WebSocket of this protocol.
+     * @property {import('socket.io').Socket} [socket] - The connected WebSocket of this protocol.
      */
 
     /**
@@ -84,7 +84,7 @@ export default class WebSocketProtocol extends Protocol {
     async put(getPath, putPath) {
         if(!this.socket) return null;
         return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('put-file', await fs.readFile(getPath), (err, response) => {
+            this.socket.timeout(5000).emit('put-file', { path: encodeURIComponent(putPath) }, await fs.readFile(getPath), (err, response) => {
                 if(err) return resolve(null);
                 resolve(JSON.parse(response));
             });

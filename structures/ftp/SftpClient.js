@@ -37,19 +37,19 @@ export default class SftpClient extends BaseClient {
 
     async get(source, destination) {
         await fs.ensureFile(destination);
-        await this.client.get(source, destination);
+        await this.client.get(source, destination, {});
         return true;
     }
 
     async list(folder) {
-        const listing = await this.client.list(folder);
+        const listing = await this.client.list(folder, () => {});
         return listing.map(item => {
             return { name: item.name, isDirectory: item.type === 'd' };
         });
     }
 
     async put(source, destination) {
-        await this.client.put(source, destination);
+        await this.client.put(source, destination, {});
         return true;
     }
 
@@ -62,7 +62,7 @@ export default class SftpClient extends BaseClient {
         return new Promise(async resolve => {
             if(path.split('/').length - 1 >= maxDepth) return resolve(undefined);
 
-            const listing = await this.client.list(path);
+            const listing = await this.client.list(path, () => {});
             const foundFile = listing.find(item => item.name === name && item.type === '-');
             if(foundFile) return resolve(path);
 
