@@ -244,7 +244,7 @@ export async function getUsersFromMention(client, mention) {
     if(!matches) return [];
 
     const userArray = [];
-    for(let match of matches) {
+    for(const match of matches) {
         // match[0] = entire mention
         // match[1] = Id
         userArray.push(await client.users.fetch(match[1]));

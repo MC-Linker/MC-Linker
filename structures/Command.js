@@ -155,12 +155,12 @@ export default class Command {
         }
 
         //Parse booleans and channels in arguments
-        for(let i = 0; i < args.length; i++) {
-            if(args[i] === 'true') args[i] = true;
-            else if(args[i] === 'false') args[i] = false;
+        for(let item of args) {
+            if(item === 'true') item = true;
+            else if(item === 'false') item = false;
             else {
-                const channelId = MessageMentions.ChannelsPattern.exec(args[i]);
-                args[i] = channelId ? await client.channels.fetch(channelId[1]) : args[i];
+                const channelId = MessageMentions.ChannelsPattern.exec(item);
+                item = channelId ? await client.channels.fetch(channelId[1]) : item;
             }
         }
 
