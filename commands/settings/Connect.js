@@ -32,7 +32,6 @@ export default class Connect extends Command {
 
                 const {
                     code: serverCode,
-                    timeout,
                     server,
                     shard,
                 } = wsVerification.get(id) ?? {};
@@ -45,7 +44,7 @@ export default class Connect extends Command {
                     if(alreadyConnectedServer) {
                         const guild = await c.guilds.fetch(alreadyConnectedServer.id);
                         await c.shard.broadcastEval(c => {
-                            c.emit('editConnectResponse', id, timeout, 'already_connected', { server: guild.name });
+                            c.emit('editConnectResponse', id, 'already_connected', { server: guild.name });
                         }, { shard });
                         return socket.disconnect(true);
                     }
@@ -74,20 +73,22 @@ export default class Connect extends Command {
                     c.api.addListeners(socket, client.serverConnections.cache.get(id), hash);
 
                     await c.shard.broadcastEval(c => {
-                        c.emit('editConnectResponse', id, timeout, 'success');
+                        c.emit('editConnectResponse', id, 'success');
                     }, { shard });
                 }
                 catch(err) {
                     await c.shard.broadcastEval(c => {
-                        c.emit('editConnectResponse', id, timeout, 'error', { error: err });
+                        c.emit('editConnectResponse', id, 'error', { error: err });
                     }, { shard });
                     socket.disconnect(true);
                 }
             });
         }, { shard: 0 });
 
-        client.on('editConnectResponse', async (code, timeout, id, responseType, placeholders = {}) => {
-            const interaction = this.waitingInteractions.get(id);
+        client.on('editConnectResponse', async (code, id, responseType, placeholders = {}) => {
+            const { timeout, interaction } = this.waitingInteractions.get(id);
+            if(!interaction) return;
+
             clearTimeout(timeout);
 
             if(responseType === 'success') {
@@ -277,15 +278,12 @@ export default class Connect extends Command {
                 const timeout = setTimeout(async () => {
                     await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
                 }, 180_000);
-                const timeoutId = timeout[Symbol.toPrimitive]();
 
-                await client.shard.broadcastEval((c, { code, timeout, id, shard }) => {
+                this.waitingInteractions.set(interaction.guildId, { interaction, timeout });
+                await client.shard.broadcastEval((c, { code, id, shard }) => {
                     const server = c.serverConnections.cache.get(id);
-                    c.commands.get('connect').wsVerification.set(id, { code, timeout, server, shard });
-                }, {
-                    context: { code, timeout: timeoutId, id: interaction.guildId, shard: client.shard.ids[0] },
-                    shard: 0,
-                });
+                    c.commands.get('connect').wsVerification.set(id, { code, server, shard });
+                }, { context: { code, id: interaction.guildId, shard: client.shard.ids[0] }, shard: 0 });
 
                 //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
             }
