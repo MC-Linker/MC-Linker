@@ -36,7 +36,7 @@ export default class Connect extends Command {
                     webhook: webhookObject,
                     timeout,
                     server,
-                } = this.wsVerification.get(id) ?? {};
+                } = wsVerification.get(id) ?? {};
                 const webhook = new InteractionWebhook(c, webhookObject.id, webhookObject.token);
                 try {
                     if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
