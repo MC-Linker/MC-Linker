@@ -174,7 +174,7 @@ export default class WebSocketProtocol extends Protocol {
      * @private
      */
     async _sendRaw(name, ...data) {
-        return new Promise(async resolve => {
+        return await new Promise(async resolve => {
             // Broadcast the event to shard 0 where the websocket server is running
             resolve(await this.client.shard.broadcastEval(async (c, { id, name, data }) => {
                 /** @type {WebSocketProtocol} */
