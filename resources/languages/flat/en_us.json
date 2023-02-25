@@ -569,7 +569,7 @@
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
 
   "commands.connect.warnings.already_connected.embeds.0.title": "Plugin Already Connected",
-  "commands.connect.warnings.already_connected.embeds.0.description": "%emoji_warning% This plugin is already connected to another server (%server%). Please disconnect it first.",
+  "commands.connect.warnings.already_connected.embeds.0.description": "%emoji_warning% This plugin is already connected to another server (**%server%**). Please disconnect it first.",
   "commands.connect.warnings.already_connected.console": "Plugin already connected",
 
   "commands.connect.warnings.verification.embeds.0.title": "Code Verification",

@@ -1109,7 +1109,7 @@
           "embeds": [
             {
               "title": "Plugin Already Connected",
-              "description": "%emoji_warning% This plugin is already connected to another server (%server%). Please disconnect it first."
+              "description": "%emoji_warning% This plugin is already connected to another server (**%server%**). Please disconnect it first."
             }
           ],
           "console": "Plugin already connected"

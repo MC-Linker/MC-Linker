@@ -7,11 +7,12 @@ import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
 import client from '../../bot.js';
-import { InteractionWebhook } from 'discord.js';
 
 export default class Connect extends Command {
 
     wsVerification = new Map();
+
+    waitingInteractions = new Map();
 
     constructor() {
         super({
@@ -23,8 +24,6 @@ export default class Connect extends Command {
 
         // noinspection JSIgnoredPromiseFromCall
         client.shard.broadcastEval(c => {
-            if(!c.shard.ids.includes(0)) return;
-
             c.api.websocket.on('connection', async socket => {
                 const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
 
@@ -33,11 +32,10 @@ export default class Connect extends Command {
 
                 const {
                     code: serverCode,
-                    webhook: webhookObject,
                     timeout,
                     server,
+                    shard,
                 } = wsVerification.get(id) ?? {};
-                const webhook = new InteractionWebhook(c, webhookObject.id, webhookObject.token);
                 try {
                     if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
 
@@ -46,14 +44,13 @@ export default class Connect extends Command {
                     const alreadyConnectedServer = c.serverConnections.cache.find(s => s.ip === socket.handshake.address && s.id !== id);
                     if(alreadyConnectedServer) {
                         const guild = await c.guilds.fetch(alreadyConnectedServer.id);
-                        await webhook.editMessage('@original', addPh(keys.commands.connect.warnings.already_connected, { server: guild.name }, ph.emojis()));
+                        await c.shard.broadcastEval(c => {
+                            c.emit('editConnectResponse', id, timeout, 'already_connected', { server: guild.name });
+                        }, { shard });
                         return socket.disconnect(true);
                     }
 
-                    await c.shard.broadcastEval(c => {
-                        c.commands.get('connect').wsVerification.delete(id);
-                        clearTimeout(timeout);
-                    });
+                    c.commands.get('connect').wsVerification.delete(id);
                     socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
 
                     const hash = utils.createHash(socket.handshake.auth.token);
@@ -76,15 +73,31 @@ export default class Connect extends Command {
 
                     c.api.addListeners(socket, client.serverConnections.cache.get(id), hash);
 
-                    await webhook.editMessage('@original', addPh(keys.commands.connect.success.websocket, ph.emojis()));
+                    await c.shard.broadcastEval(c => {
+                        c.emit('editConnectResponse', id, timeout, 'success');
+                    }, { shard });
                 }
                 catch(err) {
                     await webhookObject.editMessage('@original', addPh(keys.commands.connect.errors.websocket_error, ph.emojis(), ph.error(err)));
                     socket.disconnect(true);
                 }
             });
-        });
+        }, { shard: 0 });
 
+        client.on('editConnectResponse', async (code, timeout, id, responseType, placeholders = {}) => {
+            const interaction = this.waitingInteractions.get(id);
+            clearTimeout(timeout);
+
+            if(responseType === 'success') {
+                await interaction.replyTl(keys.commands.connect.success.websocket, placeholders, ph.emojis());
+            }
+            else if(responseType === 'already_connected') {
+                await interaction.replyTl(keys.commands.connect.warnings.already_connected, placeholders, ph.emojis());
+            }
+            else if(responseType === 'error') {
+                await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders, ph.emojis());
+            }
+        });
     }
 
     async execute(interaction, client, args, server) {
@@ -264,10 +277,13 @@ export default class Connect extends Command {
                 }, 180_000);
                 const timeoutId = timeout[Symbol.toPrimitive]();
 
-                await client.shard.broadcastEval((c, { code, webhook, timeout, id }) => {
+                await client.shard.broadcastEval((c, { code, timeout, id, shard }) => {
                     const server = c.serverConnections.cache.get(id);
-                    c.commands.get('connect').wsVerification.set(id, { code, webhook, timeout, server });
-                }, { context: { code, webhook: interaction.webhook, timeout: timeoutId, id: interaction.guildId } });
+                    c.commands.get('connect').wsVerification.set(id, { code, timeout, server, shard });
+                }, {
+                    context: { code, timeout: timeoutId, id: interaction.guildId, shard: client.shard.ids[0] },
+                    shard: 0,
+                });
 
                 //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
             }
