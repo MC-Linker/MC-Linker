@@ -57,6 +57,7 @@ export default class ConnectionManager extends CachedManager {
         /** @type {?Connection} */
         const connection = this._add(data, true, { extras: [this.outputPath, this.outputFile] });
         if(connection && await connection._output()) {
+            if('socket' in data) delete data.socket;// The socket is not serializable and should not be broadcasted
             //Broadcast to all shards
             await this.client.shard.broadcastEval((c, { data, manager }) => {
                 c[manager]._add(data, true, { extras: [c[manager].outputPath, c[manager].outputFile] });
