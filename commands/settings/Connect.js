@@ -67,9 +67,9 @@ export default class Connect extends Command {
                     };
 
                     if(server) await server.edit(serverConnectionData);
-                    else await client.serverConnections.connect(serverConnectionData);
+                    else await c.serverConnections.connect(serverConnectionData);
 
-                    c.api.addListeners(socket, client.serverConnections.cache.get(id), hash);
+                    c.api.addListeners(socket, c.serverConnections.cache.get(id), hash);
 
                     await c.shard.broadcastEval((c, { id }) => {
                         c.emit('editConnectResponse', id, 'success');
