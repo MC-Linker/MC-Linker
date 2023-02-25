@@ -174,18 +174,18 @@ export default class WebSocketProtocol extends Protocol {
      * @private
      */
     async _sendRaw(name, ...data) {
-        return await new Promise(async resolve => {
-            // Broadcast the event to shard 0 where the websocket server is running
-            resolve(await this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+        // Broadcast the event to shard 0 where the websocket server is running
+        return await this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+            return await new Promise(resolve => {
                 /** @type {WebSocketProtocol} */
                 const protocol = c.serverConnections.cache.get(id).protocol;
-                if(!protocol.socket) return null;
+                if(!protocol.socket) return resolve(null);
                 protocol.socket.timeout(5000).emit(name, ...data, (err, response) => {
-                    if(err) return null;
-                    return response;
+                    if(err) return resolve(null);
+                    return resolve(response);
                 });
-            }, { context: { id: this.id, name, data }, shard: 0 }));
-        });
+            });
+        }, { context: { id: this.id, name, data }, shard: 0 });
     }
 
     /**
