@@ -7,6 +7,7 @@ import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
 import client from '../../bot.js';
+import { InteractionWebhook } from 'discord.js';
 
 export default class Connect extends Command {
 
@@ -26,27 +27,38 @@ export default class Connect extends Command {
 
             c.api.websocket.on('connection', async socket => {
                 const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
-                if(!this.wsVerification.has(id)) return;
 
-                const { code: serverCode, interaction, timeout, server } = this.wsVerification.get(id) ?? {};
+                const wsVerification = c.api.commands.get('connect').wsVerification;
+                if(!wsVerification.has(id)) return;
+
+                const {
+                    code: serverCode,
+                    webhook: webhookObject,
+                    timeout,
+                    server,
+                } = this.wsVerification.get(id) ?? {};
+                const webhook = new InteractionWebhook(c, webhookObject.id, webhookObject.token);
                 try {
                     if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
 
                     //Prevent connection of a different guild to an already connected server
-                    if(client.serverConnections.cache.some(s => s.ip === socket.handshake.address && s.id !== id)) {
-                        await interaction.replyTl(keys.commands.connect.warnings.already_connected);
+                    /** @type {?ServerConnection} */
+                    const alreadyConnectedServer = c.serverConnections.cache.find(s => s.ip === socket.handshake.address && s.id !== id);
+                    if(alreadyConnectedServer) {
+                        const guild = await c.guilds.fetch(alreadyConnectedServer.id);
+                        await webhook.editMessage('@original', addPh(keys.commands.connect.warnings.already_connected, { server: guild.name }, ph.emojis()));
                         return socket.disconnect(true);
                     }
 
                     clearTimeout(timeout);
-                    this.wsVerification.delete(id);
-                    socket.emit('auth-success', {}); //Tell the client that the auth was successful
+                    await c.shard.broadcastEval(c => c.api.commands.get('connect').wsVerification.delete(id));
+                    socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
 
                     const hash = utils.createHash(socket.handshake.auth.token);
                     /** @type {WebSocketServerConnectionData} */
                     const serverConnectionData = {
+                        id,
                         ip: socket.handshake.address,
-                        id: interaction.guildId,
                         path: socket.handshake.query.path,
                         channels: [],
                         online: Boolean(socket.handshake.query.online),
@@ -57,15 +69,15 @@ export default class Connect extends Command {
                         socket,
                     };
 
-                    if(client.serverConnections.cache.has(id)) await server.edit(serverConnectionData);
+                    if(server) await server.edit(serverConnectionData);
                     else await client.serverConnections.connect(serverConnectionData);
 
                     c.api.addListeners(socket, client.serverConnections.cache.get(id), hash);
 
-                    await interaction.replyTl(keys.commands.connect.success.websocket);
+                    await webhook.editMessage('@original', addPh(keys.commands.connect.success.websocket, ph.emojis()));
                 }
                 catch(err) {
-                    await interaction.replyTl(keys.commands.connect.errors.websocket_error, ph.error(err));
+                    await webhookObject.editMessage('@original', addPh(keys.commands.connect.errors.websocket_error, ph.emojis(), ph.error(err)));
                     socket.disconnect(true);
                 }
             });
@@ -249,7 +261,11 @@ export default class Connect extends Command {
                     await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
                 }, 180_000);
 
-                this.wsVerification.set(interaction.guildId, { code, interaction, timeout, server });
+                await client.shard.broadcastEval((c, { code, webhook, timeout, id }) => {
+                    const server = c.serverConnections.cache.get(id);
+                    c.api.commands.get('connect').wsVerification.set(id, { code, webhook, timeout, server });
+                }, { context: { code, webhook: interaction.webhook, timeout, id: interaction.guildId } });
+
                 //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
             }
         }
