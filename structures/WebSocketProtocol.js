@@ -52,9 +52,17 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async disconnect() {
-        if(!this.socket) return { status: 200 };
-        await this.socket.disconnect(true);
-        return { status: 200 };
+        const response = await this.client.shard.broadcastEval(async (c, { id }) => {
+            /** @type {WebSocketProtocol} */
+            const protocol = c.serverConnections.cache.get(id).protocol;
+            console.log(protocol);
+            if(!protocol.socket) return { status: 200 };
+            await protocol.socket.disconnect(true);
+            console.log('disconnected');
+            return { status: 200 };
+        }, { context: { id: this.id }, shard: 0 });
+        console.log(response);
+        return response;
     }
 
     /**
