@@ -62,9 +62,17 @@ export default class Connection extends Base {
         if(await this._output()) {
             if('socket' in data) delete data.socket;// The socket is not serializable and should not be broadcasted
             // Broadcast the patch to all shards
-            await this.client.shard.broadcastEval((c, { id, data, manager }) => {
+            await this.client.shard.broadcastEval((c, { id, data, manager, shard }) => {
+                if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
                 c[manager].cache.get(id) ? c[manager].cache.get(id)._patch(data) : c[manager].connect(data);
-            }, { context: { id: this.id, data, manager: getManagerStringFromConnection(this) } });
+            }, {
+                context: {
+                    id: this.id,
+                    data,
+                    manager: getManagerStringFromConnection(this),
+                    shard: this.client.shard.ids[0],
+                },
+            });
             return this;
         }
         else return null;
