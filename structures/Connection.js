@@ -60,6 +60,7 @@ export default class Connection extends Base {
     async edit(data) {
         this._patch(data);
         if(await this._output()) {
+            if('socket' in data) delete data.socket;// The socket is not serializable and should not be broadcasted
             // Broadcast the patch to all shards
             await this.client.shard.broadcastEval((c, { id, data, manager }) => {
                 c[manager].cache.get(id) ? c[manager].cache.get(id)._patch(data) : c[manager].connect(data);
