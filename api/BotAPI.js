@@ -139,6 +139,7 @@ export default class BotAPI extends EventEmitter {
             this.addListeners(socket, server, hash);
         });
 
+        this.client.emit('apiReady', this);
         return this.fastify;
     }
 

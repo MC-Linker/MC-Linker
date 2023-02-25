@@ -24,65 +24,67 @@ export default class Connect extends Command {
 
         // noinspection JSIgnoredPromiseFromCall
         client.shard.broadcastEval(c => {
-            c.api.websocket.on('connection', async socket => {
-                const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
+            c.on('apiReady', api => {
+                api.websocket.on('connection', async socket => {
+                    const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
 
-                const wsVerification = c.commands.get('connect').wsVerification;
-                if(!wsVerification.has(id)) return;
+                    const wsVerification = c.commands.get('connect').wsVerification;
+                    if(!wsVerification.has(id)) return;
 
-                const {
-                    code: serverCode,
-                    server,
-                    shard,
-                } = wsVerification.get(id) ?? {};
-                try {
-                    if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
+                    const {
+                        code: serverCode,
+                        server,
+                        shard,
+                    } = wsVerification.get(id) ?? {};
+                    try {
+                        if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
 
-                    //Prevent connection of a different guild to an already connected server
-                    /** @type {?ServerConnection} */
-                    const alreadyConnectedServer = c.serverConnections.cache.find(s => s.ip === socket.handshake.address && s.id !== id);
-                    if(alreadyConnectedServer) {
-                        const guild = await c.guilds.fetch(alreadyConnectedServer.id);
-                        await c.shard.broadcastEval((c, { id, server }) => {
-                            c.emit('editConnectResponse', id, 'already_connected', { server });
-                        }, { context: { id, server: guild.name }, shard });
-                        return socket.disconnect(true);
+                        //Prevent connection of a different guild to an already connected server
+                        /** @type {?ServerConnection} */
+                        const alreadyConnectedServer = c.serverConnections.cache.find(s => s.ip === socket.handshake.address && s.id !== id);
+                        if(alreadyConnectedServer) {
+                            const guild = await c.guilds.fetch(alreadyConnectedServer.id);
+                            await c.shard.broadcastEval((c, { id, server }) => {
+                                c.emit('editConnectResponse', id, 'already_connected', { server });
+                            }, { context: { id, server: guild.name }, shard });
+                            return socket.disconnect(true);
+                        }
+
+                        c.commands.get('connect').wsVerification.delete(id);
+                        socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
+
+                        const hash = c.utils.createHash(socket.handshake.auth.token);
+                        /** @type {WebSocketServerConnectionData} */
+                        const serverConnectionData = {
+                            id,
+                            ip: socket.handshake.address,
+                            path: socket.handshake.query.path,
+                            channels: [],
+                            online: Boolean(socket.handshake.query.online),
+                            version: Number(socket.handshake.query.version),
+                            worldPath: socket.handshake.query.worldPath,
+                            protocol: 'websocket',
+                            socket,
+                        };
+
+                        if(server) await server.edit(serverConnectionData);
+                        else await c.serverConnections.connect(serverConnectionData);
+
+                        c.api.addListeners(socket, c.serverConnections.cache.get(id), hash);
+
+                        await c.shard.broadcastEval((c, { id }) => {
+                            c.emit('editConnectResponse', id, 'success');
+                        }, { context: { id }, shard });
                     }
-
-                    c.commands.get('connect').wsVerification.delete(id);
-                    socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
-
-                    const hash = c.utils.createHash(socket.handshake.auth.token);
-                    /** @type {WebSocketServerConnectionData} */
-                    const serverConnectionData = {
-                        id,
-                        ip: socket.handshake.address,
-                        path: socket.handshake.query.path,
-                        channels: [],
-                        online: Boolean(socket.handshake.query.online),
-                        version: Number(socket.handshake.query.version),
-                        worldPath: socket.handshake.query.worldPath,
-                        protocol: 'websocket',
-                        socket,
-                    };
-
-                    if(server) await server.edit(serverConnectionData);
-                    else await c.serverConnections.connect(serverConnectionData);
-
-                    c.api.addListeners(socket, c.serverConnections.cache.get(id), hash);
-
-                    await c.shard.broadcastEval((c, { id }) => {
-                        c.emit('editConnectResponse', id, 'success');
-                    }, { context: { id }, shard });
-                }
-                catch(err) {
-                    await c.shard.broadcastEval((c, { id, error }) => {
-                        c.emit('editConnectResponse', id, 'error', { error });
-                    }, { context: { id, error: err.stack }, shard });
-                    socket.disconnect(true);
-                }
-            });
-        }, { shard: 0 });
+                    catch(err) {
+                        await c.shard.broadcastEval((c, { id, error }) => {
+                            c.emit('editConnectResponse', id, 'error', { error });
+                        }, { context: { id, error: err.stack }, shard });
+                        socket.disconnect(true);
+                    }
+                });
+            }, { shard: 0 });
+        });
 
         client.on('editConnectResponse', async (id, responseType, placeholders = {}) => {
             if(!this.waitingInteractions.has(id)) return;
@@ -293,7 +295,7 @@ export default class Connect extends Command {
         /** @type {?ProtocolResponse} */
         let resp;
         if(server?.hasHttpProtocol()) resp = await server.protocol.disconnect();
-        else if(server?.hasWebSocketProtocol()) resp = server.protocol.disconnect();
+        else if(server?.hasWebSocketProtocol()) resp = await server.protocol.disconnect();
         else if(server?.hasFtpProtocol()) return await client.serverConnections.disconnect(server);
         else return;
 

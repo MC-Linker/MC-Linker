@@ -52,15 +52,15 @@ client.once(Discord.Events.ClientReady, async () => {
 });
 
 client.on('allShardsReady', async () => {
+    //Load all connections and commands
+    await client.loadEverything();
+
     if(client.shard.ids.includes(0)) {
         //Start API server
         await client.api.startServer();
         //Set Activity
         client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
     }
-
-    //Load all connections and commands
-    await client.loadEverything();
 });
 
 client.on(Discord.Events.GuildCreate, guild => {
