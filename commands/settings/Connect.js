@@ -28,7 +28,7 @@ export default class Connect extends Command {
             c.api.websocket.on('connection', async socket => {
                 const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
 
-                const wsVerification = c.api.commands.get('connect').wsVerification;
+                const wsVerification = c.commands.get('connect').wsVerification;
                 if(!wsVerification.has(id)) return;
 
                 const {
@@ -50,8 +50,10 @@ export default class Connect extends Command {
                         return socket.disconnect(true);
                     }
 
-                    clearTimeout(timeout);
-                    await c.shard.broadcastEval(c => c.api.commands.get('connect').wsVerification.delete(id));
+                    await c.shard.broadcastEval(c => {
+                        c.commands.get('connect').wsVerification.delete(id);
+                        clearTimeout(timeout);
+                    });
                     socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
 
                     const hash = utils.createHash(socket.handshake.auth.token);
@@ -260,11 +262,12 @@ export default class Connect extends Command {
                 const timeout = setTimeout(async () => {
                     await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
                 }, 180_000);
+                const timeoutId = timeout[Symbol.toPrimitive]();
 
                 await client.shard.broadcastEval((c, { code, webhook, timeout, id }) => {
                     const server = c.serverConnections.cache.get(id);
-                    c.api.commands.get('connect').wsVerification.set(id, { code, webhook, timeout, server });
-                }, { context: { code, webhook: interaction.webhook, timeout, id: interaction.guildId } });
+                    c.commands.get('connect').wsVerification.set(id, { code, webhook, timeout, server });
+                }, { context: { code, webhook: interaction.webhook, timeout: timeoutId, id: interaction.guildId } });
 
                 //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
             }
