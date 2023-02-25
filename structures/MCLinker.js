@@ -10,6 +10,7 @@ import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';
 import BotAPI from '../api/BotAPI.js';
+import * as utils from '../api/utils.js';
 
 export default class MCLinker extends Discord.Client {
 
@@ -115,6 +116,12 @@ export default class MCLinker extends Discord.Client {
          * @type {string}
          */
         this.buttonPath = buttonPath;
+
+        /**
+         * Utility functions for the bot to use in cross-shard communication.
+         * @type {typeof utils}
+         */
+        this.utils = { ...utils };
     }
 
     async _loadCommands() {

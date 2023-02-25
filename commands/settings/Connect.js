@@ -52,7 +52,7 @@ export default class Connect extends Command {
                     c.commands.get('connect').wsVerification.delete(id);
                     socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
 
-                    const hash = utils.createHash(socket.handshake.auth.token);
+                    const hash = c.utils.createHash(socket.handshake.auth.token);
                     /** @type {WebSocketServerConnectionData} */
                     const serverConnectionData = {
                         id,
@@ -63,7 +63,6 @@ export default class Connect extends Command {
                         version: Number(socket.handshake.query.version),
                         worldPath: socket.handshake.query.worldPath,
                         protocol: 'websocket',
-                        hash,
                         socket,
                     };
 
@@ -79,7 +78,7 @@ export default class Connect extends Command {
                 catch(err) {
                     await c.shard.broadcastEval((c, { id, error }) => {
                         c.emit('editConnectResponse', id, 'error', { error });
-                    }, { context: { id, error: err }, shard });
+                    }, { context: { id, error: err.stack }, shard });
                     socket.disconnect(true);
                 }
             });
