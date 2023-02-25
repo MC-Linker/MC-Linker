@@ -15,9 +15,6 @@
   },
   "homepage": "https://github.com/MC-Linker/MC-Linker#readme",
   "type": "module",
-  "scripts": {
-    "build": "tsc"
-  },
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
     "discord.js": "^14.3.0",
