@@ -43,9 +43,9 @@ export default class Connect extends Command {
                     const alreadyConnectedServer = c.serverConnections.cache.find(s => s.ip === socket.handshake.address && s.id !== id);
                     if(alreadyConnectedServer) {
                         const guild = await c.guilds.fetch(alreadyConnectedServer.id);
-                        await c.shard.broadcastEval(c => {
-                            c.emit('editConnectResponse', id, 'already_connected', { server: guild.name });
-                        }, { shard });
+                        await c.shard.broadcastEval((c, { id, server }) => {
+                            c.emit('editConnectResponse', id, 'already_connected', { server });
+                        }, { context: { id, server: guild.name }, shard });
                         return socket.disconnect(true);
                     }
 
@@ -72,14 +72,14 @@ export default class Connect extends Command {
 
                     c.api.addListeners(socket, client.serverConnections.cache.get(id), hash);
 
-                    await c.shard.broadcastEval(c => {
+                    await c.shard.broadcastEval((c, { id }) => {
                         c.emit('editConnectResponse', id, 'success');
-                    }, { shard });
+                    }, { context: { id }, shard });
                 }
                 catch(err) {
-                    await c.shard.broadcastEval(c => {
-                        c.emit('editConnectResponse', id, 'error', { error: err });
-                    }, { shard });
+                    await c.shard.broadcastEval((c, { id, error }) => {
+                        c.emit('editConnectResponse', id, 'error', { error });
+                    }, { context: { id, error: err }, shard });
                     socket.disconnect(true);
                 }
             });
