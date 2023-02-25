@@ -85,9 +85,9 @@ export default class Connect extends Command {
             });
         }, { shard: 0 });
 
-        client.on('editConnectResponse', async (code, id, responseType, placeholders = {}) => {
+        client.on('editConnectResponse', async (id, responseType, placeholders = {}) => {
+            if(!this.waitingInteractions.has(id)) return;
             const { timeout, interaction } = this.waitingInteractions.get(id);
-            if(!interaction) return;
 
             clearTimeout(timeout);
 
