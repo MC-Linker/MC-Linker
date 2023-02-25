@@ -78,7 +78,9 @@ export default class Connect extends Command {
                     }, { shard });
                 }
                 catch(err) {
-                    await webhookObject.editMessage('@original', addPh(keys.commands.connect.errors.websocket_error, ph.emojis(), ph.error(err)));
+                    await c.shard.broadcastEval(c => {
+                        c.emit('editConnectResponse', id, timeout, 'error', { error: err });
+                    }, { shard });
                     socket.disconnect(true);
                 }
             });
