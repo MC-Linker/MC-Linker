@@ -187,7 +187,10 @@ export const ph = {
         if(!(err instanceof Error)) return {};
 
         return {
-            'error': err.stack,
+            'error': err,
+            'error_name': err.name,
+            'error_stack': err.stack ?? 'No stack trace.',
+            'error_code': err.code ?? 'No error code.',
             'error_message': err.message,
         };
     },
