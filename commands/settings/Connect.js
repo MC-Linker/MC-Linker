@@ -61,10 +61,11 @@ export default class Connect extends Command {
                             path: socket.handshake.query.path,
                             channels: [],
                             online: Boolean(socket.handshake.query.online),
-                            version: Number(socket.handshake.query.version),
+                            version: Number(socket.handshake.query.version.split('.')[1]),
                             worldPath: socket.handshake.query.worldPath,
                             protocol: 'websocket',
                             socket,
+                            hash,
                         };
 
                         if(server) await server.edit(serverConnectionData);

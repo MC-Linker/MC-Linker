@@ -58,7 +58,6 @@ export default class WebSocketProtocol extends Protocol {
             console.log(protocol);
             if(!protocol.socket) return { status: 200 };
             await protocol.socket.disconnect(true);
-            console.log('disconnected');
             return { status: 200 };
         }, { context: { id: this.id }, shard: 0 });
         console.log(response);
