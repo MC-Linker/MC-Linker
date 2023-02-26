@@ -182,7 +182,8 @@ export default class WebSocketProtocol extends Protocol {
                 if(!protocol.socket) return resolve(null);
                 protocol.socket.timeout(5000).emit(name, ...data, (err, response) => {
                     if(err) return resolve(null);
-                    return resolve(response);
+                    if(typeof response === 'string') resolve(JSON.parse(response));
+                    else resolve(response);
                 });
             });
         }, { context: { id: this.id, name, data }, shard: 0 });
