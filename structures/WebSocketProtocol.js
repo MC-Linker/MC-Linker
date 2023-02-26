@@ -67,9 +67,9 @@ export default class WebSocketProtocol extends Protocol {
     async get(getPath, putPath) {
         const response = await this._sendRaw('get-file', { path: getPath });
         if(!response) return null;
-        if(!(response instanceof Buffer)) return { status: JSON.parse(response).status, data: null };
+        if(response.type !== 'Buffer') return { status: JSON.parse(response).status, data: null };
 
-        await fs.writeFile(putPath, response[1]);
+        await fs.outputFile(putPath, Buffer.from(response.data));
         return { status: 200, data: await fs.readFile(putPath) };
     }
 

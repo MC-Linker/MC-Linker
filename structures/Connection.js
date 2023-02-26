@@ -37,7 +37,7 @@ export default class Connection extends Base {
      */
     async _output() {
         const data = this.getData();
-        return await fs.outputJson(`${this.outputPath}/${this.outputFile}`, data, { spaces: 2 })
+        return await fs.writeJson(`${this.outputPath}/${this.outputFile}`, data, { spaces: 2 })
             .then(() => true)
             .catch(() => false);
     }
@@ -72,6 +72,7 @@ export default class Connection extends Base {
                     manager: getManagerStringFromConnection(this),
                     shard: this.client.shard.ids[0],
                 },
+                shard: 0,
             });
             return this;
         }
