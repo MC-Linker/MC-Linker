@@ -153,7 +153,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async getOnlinePlayers() {
-        return await this._sendRaw('list-players');
+        return await this._sendRaw('list-players', {});
     }
 
     /**
