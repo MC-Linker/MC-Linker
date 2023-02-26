@@ -72,7 +72,6 @@ export default class Connection extends Base {
                     manager: getManagerStringFromConnection(this),
                     shard: this.client.shard.ids[0],
                 },
-                shard: 0,
             });
             return this;
         }

@@ -62,10 +62,7 @@ export default class ConnectionManager extends CachedManager {
             await this.client.shard.broadcastEval((c, { data, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
                 c[manager]._add(data, true, { extras: [c[manager].outputPath, c[manager].outputFile] });
-            }, {
-                context: { data, manager: getManagerString(this), shard: this.client.shard.ids[0] },
-                shard: 0,
-            });
+            }, { context: { data, manager: getManagerString(this), shard: this.client.shard.ids[0] } });
             return connection;
         }
         else {
@@ -89,7 +86,6 @@ export default class ConnectionManager extends CachedManager {
                 c[manager].cache.delete(instanceId);
             }, {
                 context: { instanceId: instance.id, manager: getManagerString(this), shard: this.client.shard.ids[0] },
-                shard: 0,
             });
             return this.cache.delete(this.resolveId(connection));
         }
