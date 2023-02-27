@@ -175,10 +175,6 @@ export default class Command extends AutocompleteCommand {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
-
-        // -12 for code block (```ansi\n\n```)
-        if(respMessage.length > MaxEmbedDescriptionLength - 12) respMessage = `${respMessage.substring(0, MaxEmbedDescriptionLength - 15)}...`;
-
         //Parse color codes to ansi
         respMessage = respMessage.replace(/[&§]([0-9a-fk-or])/gi, (_, color) => {
             const ansi = this.colorCodesToAnsi[color];
@@ -187,6 +183,9 @@ export default class Command extends AutocompleteCommand {
 
             return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
         });
+
+        // -12 for code block (```ansi\n\n```)
+        if(respMessage.length > MaxEmbedDescriptionLength - 12) respMessage = `${respMessage.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
         //Wrap in discord code block for color
         respMessage = Discord.codeBlock('ansi', `${respMessage}`);
