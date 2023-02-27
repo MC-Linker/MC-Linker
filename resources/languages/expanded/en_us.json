@@ -567,7 +567,7 @@
         "embeds": [
           {
             "title": "Command Executed",
-            "description": "**Command Response:**\n\n%response%",
+            "description": "%response%",
             "color": "Blue"
           }
         ]

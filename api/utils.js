@@ -22,6 +22,7 @@ import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 const mcData = McData('1.19.2');
 
 export const MaxEmbedFieldValueLength = 1024;
+export const MaxEmbedDescriptionLength = 4096;
 
 /**
  * @typedef {object} AdvancementData

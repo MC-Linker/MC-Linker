@@ -2,6 +2,7 @@
 import { addPh, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import * as utils from '../../api/utils.js';
+import { MaxEmbedDescriptionLength } from '../../api/utils.js';
 import Discord from 'discord.js';
 import nbt from 'prismarine-nbt';
 import minecraft_data from 'minecraft-data';
@@ -149,6 +150,8 @@ export default class Command extends AutocompleteCommand {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
+        const maxDescriptionLength = MaxEmbedDescriptionLength - 10; // -10 for code block (```diff```)
+        if(respMessage.length > maxDescriptionLength) respMessage = `${respMessage.substring(0, maxDescriptionLength - 3)}...`;
 
         //Either '+' or '-' depending on color code
         let colorChar = '';

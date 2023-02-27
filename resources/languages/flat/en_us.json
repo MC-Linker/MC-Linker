@@ -268,7 +268,7 @@
   "commands.command.warnings.could_not_find_placeholders.console": "Could not find placeholder value for %placeholder%",
 
   "commands.command.success.embeds.0.title": "Command Executed",
-  "commands.command.success.embeds.0.description": "**Command Response:**\n\n%response%",
+  "commands.command.success.embeds.0.description": "%response%",
   "commands.command.success.embeds.0.color": "Blue",
 
 
