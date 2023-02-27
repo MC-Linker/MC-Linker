@@ -180,7 +180,7 @@ export default class Command extends AutocompleteCommand {
         if(respMessage.length > MaxEmbedDescriptionLength - 12) respMessage = `${respMessage.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
         //Parse color codes to ansi
-        respMessage = respMessage.replace(/§([0-9a-fk-or])/g, (_, color) => {
+        respMessage = respMessage.replace(/[&§]([0-9a-fk-or])/gi, (_, color) => {
             const ansi = this.colorCodesToAnsi[color];
             const format = this.formattingCodesToAnsi[color];
             if(!ansi && !format) return '';
