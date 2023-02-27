@@ -22,6 +22,31 @@ export default class Command extends AutocompleteCommand {
         });
     }
 
+    colorCodesToAnsi = {
+        '4': '31', //Red
+        'c': '31', //Red
+        '6': '33', //Yellow
+        'e': '33', //Yellow
+        '2': '32', //Green
+        'a': '32', //Green
+        'b': '36', //Cyan
+        '3': '36', //Cyan
+        '1': '34', //Blue
+        '9': '34', //Blue
+        'd': '35', //Magenta
+        '5': '35', //Magenta
+        'f': '37', //White
+        '7': '37', //White
+        '0': '30', //Black
+        '8': '30', //Black
+    };
+
+    formattingCodesToAnsi = {
+        'l': '1', //Bold
+        'n': '4', //Underline
+        'r': '0', //Reset
+    };
+
     async autocomplete(interaction, client) {
         const respondArray = [];
         const focused = interaction.options.getFocused(true);
@@ -151,17 +176,20 @@ export default class Command extends AutocompleteCommand {
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
 
-        //Either '+' or '-' depending on color code
-        let colorChar = '';
-        if(resp.data?.color === 'c' || resp.status !== 200) colorChar = '- ';
-        else if(resp.data?.color === 'a') colorChar = '+ ';
-        respMessage = `${colorChar}${respMessage}`;
-
-        // -12 for code block (```diff\n\n```)
+        // -12 for code block (```ansi\n\n```)
         if(respMessage.length > MaxEmbedDescriptionLength - 12) respMessage = `${respMessage.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
+        //Parse color codes to ansi
+        respMessage = respMessage.replace(/§([0-9a-fk-or])/g, (_, color) => {
+            const ansi = this.colorCodesToAnsi[color];
+            const format = this.formattingCodesToAnsi[color];
+            if(!ansi && !format) return '';
+
+            return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
+        });
+
         //Wrap in discord code block for color
-        respMessage = Discord.codeBlock('diff', `${colorChar}${respMessage}`);
+        respMessage = Discord.codeBlock('ansi', `${respMessage}`);
         return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
     }
 }
