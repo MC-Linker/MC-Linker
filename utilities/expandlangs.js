@@ -15,6 +15,6 @@ function convertKeys() {
         }
 
 
-        fs.writeJsonSync(`../resources/languages/expanded/${lang}`, converted, { spaces: 2 });
+        fs.outputJsonSync(`../resources/languages/expanded/${lang}`, converted, { spaces: 2 });
     });
 }
