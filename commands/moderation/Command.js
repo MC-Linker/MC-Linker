@@ -150,17 +150,18 @@ export default class Command extends AutocompleteCommand {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
-        const maxDescriptionLength = MaxEmbedDescriptionLength - 10; // -10 for code block (```diff```)
-        if(respMessage.length > maxDescriptionLength) respMessage = `${respMessage.substring(0, maxDescriptionLength - 3)}...`;
 
         //Either '+' or '-' depending on color code
         let colorChar = '';
         if(resp.data?.color === 'c' || resp.status !== 200) colorChar = '- ';
         else if(resp.data?.color === 'a') colorChar = '+ ';
+        respMessage = `${colorChar}${respMessage}`;
+
+        // -12 for code block (```diff\n\n```)
+        if(respMessage.length > MaxEmbedDescriptionLength - 12) respMessage = `${respMessage.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
         //Wrap in discord code block for color
         respMessage = Discord.codeBlock('diff', `${colorChar}${respMessage}`);
-
         return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
     }
 }
