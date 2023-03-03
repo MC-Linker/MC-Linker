@@ -259,7 +259,7 @@ export default class BotAPI extends EventEmitter {
                             return;
                         }
 
-                        await server.edit({ channels: regChannel.data.channels });
+                        await server.edit({ channels: regChannel.data });
                     }
 
                     //Edit webhook if name doesnt match
