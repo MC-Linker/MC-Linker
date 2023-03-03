@@ -47,6 +47,8 @@ export default class Command extends AutocompleteCommand {
         'r': '0', //Reset
     };
 
+    colorPattern = /[&§]([0-9a-fk-or])/gi;
+
     async autocomplete(interaction, client) {
         const respondArray = [];
         const focused = interaction.options.getFocused(true);
@@ -175,14 +177,19 @@ export default class Command extends AutocompleteCommand {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
-        //Parse color codes to ansi
-        respMessage = respMessage.replace(/[&§]([0-9a-fk-or])/gi, (_, color) => {
-            const ansi = this.colorCodesToAnsi[color];
-            const format = this.formattingCodesToAnsi[color];
-            if(!ansi && !format) return '';
 
-            return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
-        });
+        // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
+        if(respMessage >= 1015) respMessage = respMessage.replace(this.colorPattern, '');
+        else {
+            //Parse color codes to ansi
+            respMessage = respMessage.replace(this.colorPattern, (_, color) => {
+                const ansi = this.colorCodesToAnsi[color];
+                const format = this.formattingCodesToAnsi[color];
+                if(!ansi && !format) return '';
+
+                return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
+            });
+        }
 
         // -12 for code block (```ansi\n\n```)
         if(respMessage.length > MaxEmbedDescriptionLength - 12) respMessage = `${respMessage.substring(0, MaxEmbedDescriptionLength - 15)}...`;
