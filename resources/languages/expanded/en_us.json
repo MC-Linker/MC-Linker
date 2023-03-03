@@ -44,7 +44,7 @@
     },
     "errors": {
       "unknown_rejection": {
-        "console": "Unknown promise rejection %error%"
+        "console": "Unknown promise rejection %error_stack%"
       },
       "could_not_post_stats": {
         "console": "Could not post stats to Top.gg"
