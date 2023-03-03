@@ -62,10 +62,9 @@ export default class Account extends Command {
             }, 180_000);
 
             this.waitingInteractions.set(interaction.user.id, { interaction, timeout });
-            await client.shard.broadcastEval((c, { id, uuid, username, code, shard }) => {
-                c.api.once('/verify/response', async (request, reply) => {
-                    if(request.body.uuid !== uuid || request.body.code !== code) return;
-                    reply.send({});
+            await client.shard.broadcastEval((c, { id, uuid, username, code, shard, websocket }) => {
+                const listener = async data => {
+                    if(data.uuid !== uuid || data.code !== code) return;
 
                     await c.userConnections.connect({
                         id,
@@ -73,14 +72,30 @@ export default class Account extends Command {
                         username,
                     });
 
-                    const settings = c.userSettingsConnections.cache.get(interaction.user.id);
+                    const settings = c.userSettingsConnections.cache.get(id);
                     if(settings) await settings.updateRoleConnection(username, {
                         'connectedaccount': 1,
                     });
 
                     await c.shard.broadcastEval(c => c.emit('accountVerificationResponse', id), { shard });
+                };
+
+                if(websocket) c.api.websocket.on('/verify/response', listener);
+                else c.api.once('/verify/response', (request, reply) => {
+                    reply.send({});
+                    listener(request.body);
                 });
-            }, { context: { uuid, username, code, id: interaction.user.id, shard: client.shard.ids[0] }, shard: 0 });
+            }, {
+                context: {
+                    uuid,
+                    username,
+                    code,
+                    id: interaction.user.id,
+                    shard: client.shard.ids[0],
+                    websocket: server.hasWebSocketProtocol(),
+                },
+                shard: 0,
+            });
         }
         else if(subcommand === 'disconnect') {
             const connection = client.userConnections.cache.get(interaction.user.id);
