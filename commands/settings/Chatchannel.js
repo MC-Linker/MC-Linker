@@ -36,14 +36,9 @@ export default class Chatchannel extends Command {
                 menu = await logChooserMsg.awaitMessageComponent({
                     componentType: Discord.ComponentType.StringSelect,
                     time: 180_000,
+                    filter: m => m.user.id === interaction.user.id && m.customId === 'log',
                 });
                 menu = addTranslatedResponses(menu);
-
-                if(menu.customId !== 'log') return;
-                if(menu.user.id !== interaction.user.id) {
-                    const notAuthorEmbed = getEmbed(keys.api.select_menu.warnings.no_author, ph.emojis());
-                    return menu.replyOptions({ embeds: [notAuthorEmbed], ephemeral: true });
-                }
             }
             catch(_) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
