@@ -80,7 +80,7 @@ export default class Account extends Command {
                     await c.shard.broadcastEval(c => c.emit('accountVerificationResponse', id), { shard });
                 };
 
-                if(websocket) c.api.websocket.on('/verify/response', listener);
+                if(websocket) c.api.websocket.on('verify-response', listener);
                 else c.api.once('/verify/response', (request, reply) => {
                     reply.send({});
                     listener(request.body);
