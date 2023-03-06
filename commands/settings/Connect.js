@@ -187,7 +187,7 @@ export default class Connect extends Command {
                 id: interaction.guildId,
             };
 
-            if(client.serverConnections.cache.has(id)) await server.edit(serverConnectionData);
+            if(client.serverConnections.cache.has(interaction.guildId)) await server.edit(serverConnectionData);
             else await client.serverConnections.connect(serverConnectionData);
 
             await interaction.replyTl(keys.commands.connect.success.ftp);
