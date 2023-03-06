@@ -18,7 +18,7 @@ export default class Ban extends Command {
 
         const user = args[0];
         args.shift(); // Shift user
-        let reason = args[0] ? args.join(' ') : 'Banned by an operator.';
+        const reason = args[0] ? args.join(' ') : 'Banned by an operator.';
 
         const resp = await server.protocol.execute(`ban ${user.username} ${reason}`);
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;

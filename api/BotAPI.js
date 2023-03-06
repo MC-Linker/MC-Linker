@@ -32,6 +32,7 @@ export default class BotAPI extends EventEmitter {
          * @type {import('fastify').FastifyInstance}
          */
         this.fastify = Fastify();
+        // noinspection JSCheckFunctionSignatures
         this.fastify.register(fastifyIO);
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
@@ -138,11 +139,12 @@ export default class BotAPI extends EventEmitter {
             this.addListeners(socket, server, hash);
         });
 
+        this.client.emit('apiReady', this);
         return this.fastify;
     }
 
     addListeners(socket, server, hash) {
-        socket.on('chat', data => {
+        socket.on('chat', async data => {
             //Update server variable to ensure it wasn't disconnected in the meantime
             /** @type {?ServerConnection} */
             const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
@@ -150,7 +152,7 @@ export default class BotAPI extends EventEmitter {
             //If no connection on that guild, disconnect socket
             if(!server) socket.disconnect();
 
-            this._chat(JSON.parse(data), server);
+            await this._chat(JSON.parse(data), server);
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
@@ -215,11 +217,11 @@ export default class BotAPI extends EventEmitter {
             for(const channel of channels) {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
-                const discordChannel = await this.client.channels.fetch(channel.id);
+                const discordChannel = await guild.channels.fetch(channel.id);
                 if(!discordChannel) continue;
 
                 if(!allWebhooks) {
-                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
                     return;
                 }
 
@@ -232,48 +234,53 @@ export default class BotAPI extends EventEmitter {
                     continue;
                 }
 
-                let webhook = allWebhooks.get(channel.webhook);
+                try {
+                    let webhook = allWebhooks.get(channel.webhook);
 
-                //Create new webhook if old one doesn't exist
-                if(!webhook) {
-                    const options = {
-                        name: player,
-                        reason: 'ChatChannel to Minecraft',
-                        avatar: authorURL,
-                    };
+                    //Create new webhook if old one doesn't exist
+                    if(!webhook) {
+                        const options = {
+                            name: player,
+                            reason: 'ChatChannel to Minecraft',
+                            avatar: authorURL,
+                        };
 
-                    if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
-                    else webhook = await discordChannel.createWebhook(options);
+                        if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
+                        else webhook = await discordChannel.createWebhook(options);
 
-                    const regChannel = await server.protocol.addChatChannel({
-                        types: channel.types,
-                        webhook: webhook.id,
-                        id: channel.id,
-                    });
-                    if(!regChannel) {
-                        discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
-                        await webhook.delete();
-                        return;
+                        const regChannel = await server.protocol.addChatChannel({
+                            types: channel.types,
+                            webhook: webhook.id,
+                            id: channel.id,
+                        });
+                        if(!regChannel) {
+                            discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
+                            await webhook.delete();
+                            return;
+                        }
+
+                        await server.edit({ channels: regChannel.data });
                     }
 
+                    //Edit webhook if name doesnt match
+                    if(webhook.name !== player) {
+                        await webhook.edit({ name: player, avatar: authorURL });
+                    }
 
-                    await server.edit({ channels: regChannel.data.channels });
+                    if(discordChannel.isThread()) await webhook.send({
+                        threadId: discordChannel.id,
+                        content: argPlaceholder.message,
+                        allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
+                    });
+                    else await webhook.send({
+                        content: argPlaceholder.message,
+                        allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
+                    });
                 }
-
-                //Edit webhook if name doesnt match
-                if(webhook.name !== player) {
-                    await webhook.edit({ name: player, avatar: authorURL });
+                catch(_) {
+                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    return;
                 }
-
-                if(discordChannel.isThread()) await webhook.send({
-                    threadId: discordChannel.id,
-                    content: argPlaceholder.message,
-                    allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-                });
-                else await webhook.send({
-                    content: argPlaceholder.message,
-                    allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-                });
             }
             return;
         }
@@ -286,6 +293,8 @@ export default class BotAPI extends EventEmitter {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
                 const discordChannel = await this.client.channels.fetch(channel.id);
+                if(!discordChannel) continue;
+
                 await discordChannel?.send({ embeds: [chatEmbed] })
                     .catch(() => {});
             }

@@ -44,7 +44,7 @@
     },
     "errors": {
       "unknown_rejection": {
-        "console": "Unknown promise rejection %error%"
+        "console": "Unknown promise rejection %error_stack%"
       },
       "could_not_post_stats": {
         "console": "Could not post stats to Top.gg"
@@ -76,16 +76,16 @@
     },
     "success": {
       "login": {
-        "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers."
+        "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers."
       },
       "command_load": {
-        "console": "Successfully loaded command: %command%"
+        "console": "[%shard%] Successfully loaded command: %command%"
       },
       "command_load_category": {
-        "console": "Successfully loaded command: %category%/%command%"
+        "console": "[%shard%] Successfully loaded command: %category%/%command%"
       },
       "button_load": {
-        "console": "Successfully loaded button: %button%"
+        "console": "[%shard%] Successfully loaded button: %button%"
       },
       "ping": {
         "embeds": [
@@ -97,10 +97,10 @@
         ]
       },
       "guild_create": {
-        "console": "Joined a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!"
+        "console": "Joined a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!"
       },
       "guild_delete": {
-        "console": "Left a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!"
+        "console": "Left a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!"
       },
       "disconnected": {
         "console": "Successfully deleted connection file of guild: %guild_name%"
@@ -567,7 +567,7 @@
         "embeds": [
           {
             "title": "Command Executed",
-            "description": "**Command Response:**\n\n%response%",
+            "description": "%response%",
             "color": "Blue"
           }
         ]
@@ -1109,7 +1109,7 @@
           "embeds": [
             {
               "title": "Plugin Already Connected",
-              "description": "%emoji_warning% This plugin is already connected to another server. Please disconnect it first."
+              "description": "%emoji_warning% This plugin is already connected to another server (**%server%**). Please disconnect it first."
             }
           ],
           "console": "Plugin already connected"

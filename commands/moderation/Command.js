@@ -2,6 +2,7 @@
 import { addPh, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import * as utils from '../../api/utils.js';
+import { MaxEmbedDescriptionLength } from '../../api/utils.js';
 import Discord from 'discord.js';
 import nbt from 'prismarine-nbt';
 import minecraft_data from 'minecraft-data';
@@ -20,6 +21,33 @@ export default class Command extends AutocompleteCommand {
             category: 'moderation',
         });
     }
+
+    colorCodesToAnsi = {
+        '4': '31', //Red
+        'c': '31', //Red
+        '6': '33', //Yellow
+        'e': '33', //Yellow
+        '2': '32', //Green
+        'a': '32', //Green
+        'b': '36', //Cyan
+        '3': '36', //Cyan
+        '1': '34', //Blue
+        '9': '34', //Blue
+        'd': '35', //Magenta
+        '5': '35', //Magenta
+        'f': '37', //White
+        '7': '37', //White
+        '0': '30', //Black
+        '8': '30', //Black
+    };
+
+    formattingCodesToAnsi = {
+        'l': '1', //Bold
+        'n': '4', //Underline
+        'r': '0', //Reset
+    };
+
+    colorPattern = /[&§]([0-9a-fk-or])/gi;
 
     async autocomplete(interaction, client) {
         const respondArray = [];
@@ -133,18 +161,16 @@ export default class Command extends AutocompleteCommand {
         const command = args[0];
         args.shift(); //Shift commandName
 
-        for(let i = 0; i < args.length; i++) {
-            const arg = args[i];
-
+        for(let arg of args) {
             let user;
             if(arg === '@s') user = interaction.member.user;
-            else user = await utils.getUsersFromMention(client, arg)?.[0];
+            else user = (await utils.getUsersFromMention(client, arg))?.[0];
             if(!user) continue;
 
             const username = client.userConnections.cache.get(user.id)?.username;
             if(!username) return;
 
-            args[i] = arg.replace(arg, username);
+            arg = arg.replace(arg, username);
         }
 
         const resp = await server.protocol.execute(`${command} ${args.join(' ')}`);
@@ -152,14 +178,24 @@ export default class Command extends AutocompleteCommand {
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
 
-        //Either '+' or '-' depending on color code
-        let colorChar = '';
-        if(resp.data?.color === 'c' || resp.status !== 200) colorChar = '- ';
-        else if(resp.data?.color === 'a') colorChar = '+ ';
+        // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
+        if(respMessage.length >= 1015) respMessage = respMessage.replace(this.colorPattern, '');
+        else {
+            //Parse color codes to ansi
+            respMessage = respMessage.replace(this.colorPattern, (_, color) => {
+                const ansi = this.colorCodesToAnsi[color];
+                const format = this.formattingCodesToAnsi[color];
+                if(!ansi && !format) return '';
+
+                return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
+            });
+        }
+
+        // -12 for code block (```ansi\n\n```)
+        if(respMessage.length > MaxEmbedDescriptionLength - 12) respMessage = `${respMessage.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
         //Wrap in discord code block for color
-        respMessage = Discord.codeBlock('diff', `${colorChar}${respMessage}`);
-
+        respMessage = Discord.codeBlock('ansi', `${respMessage}`);
         return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
     }
 }
@@ -300,7 +336,7 @@ async function getPlaceholder(key, args) {
         case 'enabled_datapacks':
             const level = await getNBTFile(...FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
 
-            let datapacks = level?.Data?.DataPacks;
+            const datapacks = level?.Data?.DataPacks;
             if(key === 'enabled_datapacks') placeholder = datapacks?.Enabled;
             else if(key === 'disabled_datapacks') placeholder = datapacks?.Disabled;
 
@@ -3148,7 +3184,7 @@ async function getPlaceholder(key, args) {
             });
 
             for(const category of ['mined', 'broken', 'crafted', 'used', 'picked_up', 'dropped', 'killed', 'killed_by']) {
-                const stats = await utils.searchStats('', category, true, true, Infinity);
+                const stats = utils.searchStats('', category, true, true, Infinity);
                 stats.forEach(stat =>
                     placeholder[`${category}.${stat.name}`] = `minecraft.${category}:minecraft.${stat.name}`,
                 );
@@ -4454,7 +4490,7 @@ async function getPlaceholder(key, args) {
     return placeholder;
 
     function toSnakeCase(string) {
-        return string.replace(/([A-Z])/g, (_, y) => '_' + y.toLowerCase()).replace(/^_/, '');
+        return string.replace(/([A-Z])/g, (_, y) => `_${y.toLowerCase()}`).replace(/^_/, '');
     }
 
     async function getNBTFile(getPath, putPath) {
@@ -4476,7 +4512,7 @@ async function getPlaceholder(key, args) {
         const worldPath = server?.path;
         if(!worldPath) return [];
 
-        let allFunctions = [];
+        const allFunctions = [];
 
         const datapacks = await server.protocol.list(FilePath.DataPacks(worldPath));
         if(datapacks?.status !== 200) return [];

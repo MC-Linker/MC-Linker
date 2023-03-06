@@ -33,7 +33,7 @@
   "main.warnings.not_in_guild.embeds.0.description": "%emoji_warning% I can only be used in server channels!",
   "main.warnings.not_in_guild.console": "Not in guild",
 
-  "main.errors.unknown_rejection.console": "Unknown promise rejection %error%",
+  "main.errors.unknown_rejection.console": "Unknown promise rejection %error_stack%",
   "main.errors.could_not_post_stats.console": "Could not post stats to Top.gg",
   "main.errors.no_connection_file.console": "No connection file found for guild: %guild_name%",
 
@@ -47,18 +47,18 @@
 
   "main.errors.could_not_autocomplete_command.console": "Could not respond to %interaction_name% autocomplete %error%",
 
-  "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nBot is on %guild_count% servers.",
+  "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers.",
 
-  "main.success.command_load.console": "Successfully loaded command: %command%",
-  "main.success.command_load_category.console": "Successfully loaded command: %category%/%command%",
-  "main.success.button_load.console": "Successfully loaded button: %button%",
+  "main.success.command_load.console": "[%shard%] Successfully loaded command: %command%",
+  "main.success.command_load_category.console": "[%shard%] Successfully loaded command: %category%/%command%",
+  "main.success.button_load.console": "[%shard%] Successfully loaded button: %button%",
 
   "main.success.ping.embeds.0.title": "Hey, I'm %client_username%! :wave:",
   "main.success.ping.embeds.0.description": "I use slash commands. Type `/help` if you need more help for a specific command.",
   "main.success.ping.embeds.0.color": "Blue",
 
-  "main.success.guild_create.console": "Joined a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!",
-  "main.success.guild_delete.console": "Left a guild: %guild_name%: %guild_member_count% members.\nBot is now on %guild_count% servers!",
+  "main.success.guild_create.console": "Joined a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!",
+  "main.success.guild_delete.console": "Left a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!",
 
   "main.success.disconnected.console": "Successfully deleted connection file of guild: %guild_name%",
 
@@ -268,7 +268,7 @@
   "commands.command.warnings.could_not_find_placeholders.console": "Could not find placeholder value for %placeholder%",
 
   "commands.command.success.embeds.0.title": "Command Executed",
-  "commands.command.success.embeds.0.description": "**Command Response:**\n\n%response%",
+  "commands.command.success.embeds.0.description": "%response%",
   "commands.command.success.embeds.0.color": "Blue",
 
 
@@ -569,7 +569,7 @@
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
 
   "commands.connect.warnings.already_connected.embeds.0.title": "Plugin Already Connected",
-  "commands.connect.warnings.already_connected.embeds.0.description": "%emoji_warning% This plugin is already connected to another server. Please disconnect it first.",
+  "commands.connect.warnings.already_connected.embeds.0.description": "%emoji_warning% This plugin is already connected to another server (**%server%**). Please disconnect it first.",
   "commands.connect.warnings.already_connected.console": "Plugin already connected",
 
   "commands.connect.warnings.verification.embeds.0.title": "Code Verification",

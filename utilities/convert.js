@@ -18,7 +18,7 @@ for(const folder of serverFolders) {
         console.log('Converted plugin to http protocol.');
     }
 
-    fs.writeJsonSync(`./serverdata/connections/${folder}/connection.json`, newConnection, { spaces: 2 });
+    fs.outputJsonSync(`./serverdata/connections/${folder}/connection.json`, newConnection, { spaces: 2 });
     console.log(`Finished converting server ${folder}!`);
     console.groupEnd();
 }

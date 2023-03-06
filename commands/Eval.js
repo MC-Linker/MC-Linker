@@ -1,5 +1,7 @@
 // noinspection JSVoidFunctionReturnValueUsed
+
 import Discord from 'discord.js';
+// noinspection ES6CheckImport
 import { Console } from 'console';
 import { Duplex } from 'stream';
 import { ph } from '../api/messages.js';
@@ -8,16 +10,21 @@ import Command from '../structures/Command.js';
 
 // noinspection FunctionNamingConventionJS
 class ConsoleOutput extends Duplex {
+
+    // noinspection JSCheckFunctionSignatures
     constructor(...args) {
+        // noinspection JSCheckFunctionSignatures
         super(...args);
         this.output = '';
     }
 
+    // noinspection JSCheckFunctionSignatures
     _write(str) {
         this.output += str;
     }
 
     _read(ignored) {
+        // noinspection JSValidateTypes
         return this.output;
     }
 }
@@ -52,14 +59,15 @@ export default class Eval extends Command {
             // noinspection JSUnusedLocalSymbols
             const console = {
                 log(...args) {
+                    // noinspection JSVoidFunctionReturnValueUsed
                     for(const [i, arg] of args.entries()) {
                         const evalOut2 = new ConsoleOutput();
                         const console2 = new Console({ stdout: evalOut2 });
 
-                        console2.log(arg);
-
                         if(i > 0) out = `${out.slice(0, -1)} ${evalOut2._read()}`;
                         else out += evalOut2._read();
+
+                        console2.log(arg);
                     }
                 },
             };

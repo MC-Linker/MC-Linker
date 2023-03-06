@@ -36,6 +36,17 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
     async getOrConnect(guildId) {
         const connection = await this.cache.get(guildId);
         if(connection) return connection;
-        return await this.connect(guildId);
+
+        //Default settings
+        return await this.connect({
+            disabled: {
+                'bot-commands': [],
+                advancements: [],
+                stats: [],
+                'chat-commands': [],
+            },
+            language: 'en_us',
+            id: guildId,
+        });
     }
 }

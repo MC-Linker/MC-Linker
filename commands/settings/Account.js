@@ -4,8 +4,11 @@ import * as utils from '../../api/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
 import { ph } from '../../api/messages.js';
+import client from '../../bot.js';
 
 export default class Account extends Command {
+
+    waitingInteractions = new Map();
 
     constructor() {
         super({
@@ -13,6 +16,14 @@ export default class Account extends Command {
             category: 'settings',
             requiresConnectedServer: false,
             ephemeral: true,
+        });
+
+        client.on('accountVerificationResponse', id => {
+            if(!this.waitingInteractions.has(id)) return;
+
+            const { interaction, timeout } = this.waitingInteractions.get(id);
+            clearTimeout(timeout);
+            interaction.replyTl(keys.commands.account.success.verified, ph.emojis());
         });
     }
 
@@ -50,23 +61,49 @@ export default class Account extends Command {
                 await interaction.replyTl(keys.commands.account.warnings.verification_timeout);
             }, 180_000);
 
-            client.api.once('/verify/response', async (request, reply) => {
-                if(request.body.uuid !== uuid || request.body.code !== code) return;
-                reply.send({});
+            this.waitingInteractions.set(interaction.user.id, { interaction, timeout });
+            await client.shard.broadcastEval((c, { uuid, username, code, userId, serverId, shard, websocket }) => {
+                const listener = async data => {
+                    if(data.uuid !== uuid || data.code !== code) return;
 
-                clearTimeout(timeout);
+                    await c.userConnections.connect({
+                        userId,
+                        uuid,
+                        username,
+                    });
 
-                await client.userConnections.connect({
-                    id: interaction.user.id,
+                    const settings = c.userSettingsConnections.cache.get(userId);
+                    if(settings) await settings.updateRoleConnection(username, {
+                        'connectedaccount': 1,
+                    });
+
+                    await c.shard.broadcastEval((c, { id }) => c.emit('accountVerificationResponse', id), {
+                        context: { id: userId },
+                        shard,
+                    });
+                };
+
+                if(websocket) {
+                    const socket = c.serverConnections.cache.get(serverId).protocol.socket;
+                    socket.on('verify-response', data => {
+                        listener(JSON.parse(data));
+                    });
+                }
+                else c.api.once('/verify/response', (request, reply) => {
+                    reply.send({});
+                    listener(request.body);
+                });
+            }, {
+                context: {
                     uuid,
                     username,
-                });
-                const settings = client.userSettingsConnections.cache.get(interaction.user.id);
-                if(settings) await settings.updateRoleConnection(username, {
-                    'connectedaccount': 1,
-                });
-
-                await interaction.replyTl(keys.commands.account.success.verified, ph.emojis());
+                    code,
+                    userId: interaction.user.id,
+                    serverId: server.id,
+                    shard: client.shard.ids[0],
+                    websocket: server.hasWebSocketProtocol(),
+                },
+                shard: 0,
             });
         }
         else if(subcommand === 'disconnect') {

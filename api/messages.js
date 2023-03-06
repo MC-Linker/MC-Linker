@@ -187,7 +187,10 @@ export const ph = {
         if(!(err instanceof Error)) return {};
 
         return {
-            'error': err.stack,
+            'error': err,
+            'error_name': err.name,
+            'error_stack': err.stack ?? 'No stack trace.',
+            'error_code': err.code ?? 'No error code.',
             'error_message': err.message,
         };
     },
@@ -235,7 +238,7 @@ export const ph = {
     async allCommands(client) {
         if(!(client instanceof Discord.Client)) return {};
 
-        let commands = await client.application.commands.fetch();
+        const commands = await client.application.commands.fetch();
 
         const allPh = commands.map(cmd => prependName(this.command(cmd), cmd.name));
         return Object.assign({}, ...allPh);
@@ -266,9 +269,7 @@ export function addPh(key, ...placeholders) {
     else if(Array.isArray(key)) {
         let replaced = [];
 
-        for(let i = 0; i < key.length; i++) {
-            const string = key[i];
-
+        for(const string of key) {
             if(typeof string === 'object' && Array.isArray(replaced)) {
                 replaced.push(addPh(string, placeholders));
                 continue;
@@ -444,13 +445,13 @@ export function getComponent(key, ...placeholders) {
     //Get first component
     if(key.components) component = key.components[0];
 
-    if(!component.type) return;
+    if(!component.type) return null;
     component = addPh(component, ...placeholders);
 
     let componentBuilder;
     switch(ComponentType[component.type]) {
         case ComponentType.Button:
-            if(!component.style) return;
+            if(!component.style) return null;
 
             componentBuilder = new Discord.ButtonBuilder()
                 .setDisabled(component.disabled ?? false)
@@ -463,7 +464,7 @@ export function getComponent(key, ...placeholders) {
 
             break;
         case Discord.ComponentType.StringSelect:
-            if(!component.options || !component.custom_id) return;
+            if(!component.options || !component.custom_id) return null;
 
             componentBuilder = new Discord.StringSelectMenuBuilder()
                 .setCustomId(component.custom_id)
@@ -474,7 +475,7 @@ export function getComponent(key, ...placeholders) {
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
 
             for(const option of component.options ?? []) {
-                if(!option.label || !option.value) return;
+                if(!option.label || !option.value) return null;
 
                 const optionBuilder = new Discord.StringSelectMenuOptionBuilder()
                     .setLabel(option.label)
@@ -489,7 +490,7 @@ export function getComponent(key, ...placeholders) {
 
             break;
         case Discord.ComponentType.TextInput:
-            if(!component.style || !component.custom_id || !component.label) return;
+            if(!component.style || !component.custom_id || !component.label) return null;
 
             componentBuilder = new Discord.TextInputBuilder()
                 .setStyle(Discord.TextInputStyle[component.style])
@@ -513,12 +514,12 @@ export function getComponent(key, ...placeholders) {
  * Get discord reply options from a language key.
  * @param {Discord.MessageReplyOptions|Discord.InteractionReplyOptions} key - The language key to get the reply options from.
  * @param {object} placeholders - The placeholders to replace in the language key.
- * @returns {Discord.MessageReplyOptions|Discord.InteractionReplyOptions}
+ * @returns {?Discord.MessageReplyOptions|?Discord.InteractionReplyOptions}
  */
 export function getReplyOptions(key, ...placeholders) {
     if(!key) {
         console.error(keys.api.messages.errors.no_reply_key.console);
-        return;
+        return null;
     }
 
     const options = { ...key };
@@ -787,7 +788,7 @@ export function createActionRows(components) {
  * @returns {Promise<ApplicationCommand>}
  */
 export async function fetchCommand(commandManager, name) {
-    let slashCommand = commandManager.cache.find(cmd => cmd.name === name);
+    const slashCommand = commandManager.cache.find(cmd => cmd.name === name);
     if(!slashCommand) {
         const commands = await commandManager.fetch();
         return commands.find(cmd => cmd.name === name);

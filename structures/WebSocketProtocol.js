@@ -7,7 +7,7 @@ export default class WebSocketProtocol extends Protocol {
      * @typedef {object} WebSocketProtocolData
      * @property {string} ip - The ip the websocket client is listening on.
      * @property {string} id - The guild id this protocol is for.
-     * @property {import('socket.io').Socket} socket - The connected WebSocket of this protocol.
+     * @property {import('socket.io').Socket} [socket] - The connected WebSocket of this protocol.
      */
 
     /**
@@ -52,56 +52,39 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async disconnect() {
-        if(!this.socket) return { status: 200 };
-        await this.socket.disconnect(true);
-        return { status: 200 };
+        return await this.client.shard.broadcastEval(async (c, { id }) => {
+            /** @type {WebSocketProtocol} */
+            const protocol = c.serverConnections.cache.get(id).protocol;
+            if(!protocol.socket) return { status: 200 };
+            await protocol.socket.disconnect(true);
+            return { status: 200 };
+        }, { context: { id: this.id }, shard: 0 });
     }
 
     /**
      * @inheritDoc
      */
     async get(getPath, putPath) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            await fs.ensureFile(putPath);
+        const response = await this._sendRaw('get-file', { path: getPath });
+        if(!response) return null;
+        if(response.type !== 'Buffer') return { status: JSON.parse(response).status, data: null };
 
-            this.socket.timeout(5000).emit('get-file', { path: getPath }, async (err, response) => {
-                if(err || !response) return resolve(null);
-                if(!(response instanceof Buffer)) return resolve({ status: JSON.parse(response).status });
-
-                await fs.writeFile(putPath, response);
-                resolve({
-                    status: 200,
-                    data: await fs.readFile(putPath),
-                });
-            });
-        });
+        await fs.outputFile(putPath, Buffer.from(response.data));
+        return { status: 200, data: await fs.readFile(putPath) };
     }
 
     /**
      * @inheritDoc
      */
     async put(getPath, putPath) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('put-file', await fs.readFile(getPath), (err, response) => {
-                if(err) return resolve(null);
-                resolve(JSON.parse(response));
-            });
-        });
+        return await this._sendRaw('put-file', { path: encodeURIComponent(putPath) }, await fs.readFile(getPath));
     }
 
     /**
      * @inheritDoc
      */
     async list(folder) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('list-file', { folder }, (err, response) => {
-                if(err) return resolve(null);
-                resolve(JSON.parse(response));
-            });
-        });
+        return await this._sendRaw('list-file', { folder });
     }
 
     /**
@@ -113,23 +96,17 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async chat(message, username, replyMessage = null, replyUsername = null) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            const data = {
-                msg: message,
-                username,
-                private: false,
-            };
-            if(replyMessage && replyUsername) {
-                data.reply_msg = replyMessage;
-                data.reply_username = replyUsername;
-            }
+        const data = {
+            msg: message,
+            username,
+            private: false,
+        };
+        if(replyMessage && replyUsername) {
+            data.reply_msg = replyMessage;
+            data.reply_username = replyUsername;
+        }
 
-            this.socket.timeout(5000).emit('chat', data, (err, response) => {
-                if(err) return resolve(null);
-                resolve(JSON.parse(response));
-            });
-        });
+        return await this._sendRaw('chat', data);
     }
 
     /**
@@ -140,14 +117,8 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async chatPrivate(message, username, target) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            const data = { msg: message, username, target, private: true };
-            this.socket.timeout(5000).emit('chat', data, (err, response) => {
-                if(err) return resolve(null);
-                resolve(JSON.parse(response));
-            });
-        });
+        const data = { msg: message, username, target, private: true };
+        return await this._sendRaw('chat', data);
     }
 
     /**
@@ -156,13 +127,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async addChatChannel(channel) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('add-channel', channel, (err, response) => {
-                if(err) return resolve(null);
-                resolve(JSON.parse(response));
-            });
-        });
+        return await this._sendRaw('add-channel', channel);
     }
 
     /**
@@ -171,13 +136,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeChatChannel(channel) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('remove-channel', channel, (err, response) => {
-                if(err) return resolve(null);
-                resolve(JSON.parse(response));
-            });
-        });
+        return await this._sendRaw('remove-channel', channel);
     }
 
     /**
@@ -186,13 +145,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async execute(command) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('command', { cmd: encodeURIComponent(command) }, (err, response) => {
-                if(err) return resolve(null);
-                resolve(JSON.parse(response));
-            });
-        });
+        return await this._sendRaw('command', { cmd: encodeURIComponent(command) });
     }
 
     /**
@@ -200,13 +153,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async getOnlinePlayers() {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('list-players', {}, (err, response) => {
-                if(err) return resolve(null);
-                resolve(JSON.parse(response));
-            });
-        });
+        return await this._sendRaw('list-players', {});
     }
 
     /**
@@ -216,13 +163,30 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the websocket client.
      */
     async verifyUser(code, uuid) {
-        if(!this.socket) return null;
-        return new Promise(async resolve => {
-            this.socket.timeout(5000).emit('verify-user', { code, uuid }, (err, response) => {
-                if(err) return resolve(null);
-                resolve(response);
+        return await this._sendRaw('verify-user', { code, uuid });
+    }
+
+    /**
+     * Sends a raw event to the websocket client.
+     * @param {string} name - The name of the event.
+     * @param {...Serializable} data - The data to send.
+     * @returns {Promise<?ProtocolResponse>}
+     * @private
+     */
+    async _sendRaw(name, ...data) {
+        // Broadcast the event to shard 0 where the websocket server is running
+        return await this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+            return await new Promise(resolve => {
+                /** @type {WebSocketProtocol} */
+                const protocol = c.serverConnections.cache.get(id).protocol;
+                if(!protocol.socket) return resolve(null);
+                protocol.socket.timeout(5000).emit(name, ...data, (err, response) => {
+                    if(err) return resolve(null);
+                    if(typeof response === 'string') resolve(JSON.parse(response));
+                    else resolve(response);
+                });
             });
-        });
+        }, { context: { id: this.id, name, data }, shard: 0 });
     }
 
     /**
