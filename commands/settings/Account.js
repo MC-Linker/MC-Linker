@@ -62,26 +62,26 @@ export default class Account extends Command {
             }, 180_000);
 
             this.waitingInteractions.set(interaction.user.id, { interaction, timeout });
-            await client.shard.broadcastEval((c, { id, uuid, username, code, shard, websocket }) => {
+            await client.shard.broadcastEval((c, { userId, serverId, uuid, username, code, shard, websocket }) => {
                 const listener = async data => {
                     if(data.uuid !== uuid || data.code !== code) return;
 
                     await c.userConnections.connect({
-                        id,
+                        userId,
                         uuid,
                         username,
                     });
 
-                    const settings = c.userSettingsConnections.cache.get(id);
+                    const settings = c.userSettingsConnections.cache.get(userId);
                     if(settings) await settings.updateRoleConnection(username, {
                         'connectedaccount': 1,
                     });
 
-                    await c.shard.broadcastEval(c => c.emit('accountVerificationResponse', id), { shard });
+                    await c.shard.broadcastEval(c => c.emit('accountVerificationResponse', userId), { shard });
                 };
 
                 if(websocket) {
-                    const socket = c.serverConnections.cache.get(id).protocol.socket;
+                    const socket = c.serverConnections.cache.get(serverId).protocol.socket;
                     socket.on('verify-response', data => {
                         listener(JSON.parse(data));
                     });
@@ -95,7 +95,8 @@ export default class Account extends Command {
                     uuid,
                     username,
                     code,
-                    id: interaction.user.id,
+                    userId: interaction.user.id,
+                    serverId: server.id,
                     shard: client.shard.ids[0],
                     websocket: server.hasWebSocketProtocol(),
                 },
