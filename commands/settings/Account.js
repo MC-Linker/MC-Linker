@@ -62,8 +62,8 @@ export default class Account extends Command {
             }, 180_000);
 
             this.waitingInteractions.set(interaction.user.id, { interaction, timeout });
-            await client.shard.broadcastEval((c, { userId, serverId, uuid, username, code, shard, websocket }) => {
-                const listener = async data => {
+            await client.shard.broadcastEval((c, { uuid, username, code, userId, serverId, shard, websocket }) => {
+                const listener = async (data, userId) => {
                     if(data.uuid !== uuid || data.code !== code) return;
 
                     await c.userConnections.connect({
@@ -77,18 +77,21 @@ export default class Account extends Command {
                         'connectedaccount': 1,
                     });
 
-                    await c.shard.broadcastEval(c => c.emit('accountVerificationResponse', userId), { shard });
+                    await c.shard.broadcastEval((c, { id }) => c.emit('accountVerificationResponse', id), {
+                        context: { id: userId },
+                        shard,
+                    });
                 };
 
                 if(websocket) {
                     const socket = c.serverConnections.cache.get(serverId).protocol.socket;
                     socket.on('verify-response', data => {
-                        listener(JSON.parse(data));
+                        listener(JSON.parse(data), userId);
                     });
                 }
                 else c.api.once('/verify/response', (request, reply) => {
                     reply.send({});
-                    listener(request.body);
+                    listener(request.body, userId);
                 });
             }, {
                 context: {
