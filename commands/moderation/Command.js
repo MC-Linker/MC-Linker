@@ -179,7 +179,7 @@ export default class Command extends AutocompleteCommand {
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
 
         // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
-        if(respMessage >= 1015) respMessage = respMessage.replace(this.colorPattern, '');
+        if(respMessage.length >= 1015) respMessage = respMessage.replace(this.colorPattern, '');
         else {
             //Parse color codes to ansi
             respMessage = respMessage.replace(this.colorPattern, (_, color) => {
