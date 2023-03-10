@@ -67,7 +67,7 @@ export default class Account extends Command {
                     if(data.uuid !== uuid || data.code !== code) return;
 
                     await c.userConnections.connect({
-                        userId,
+                        id: userId,
                         uuid,
                         username,
                     });
