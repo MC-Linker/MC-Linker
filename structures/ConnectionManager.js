@@ -43,7 +43,7 @@ export default class ConnectionManager extends CachedManager {
 
         /**
          * The connection cache of this manager.
-         * @type {Collection<string, ServerConnection|UserConnection|ServerSettingsConnection|UserSettingsConnection>}
+         * @type {Collection<string, Connection>}
          */
         this.cache = super.cache;
     }
