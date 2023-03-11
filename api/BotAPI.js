@@ -43,13 +43,13 @@ export default class BotAPI extends EventEmitter {
     }
 
     async startServer() {
-        async function _getServerFastify(data, reply) {
+        function _getServerFastify(data, reply, client) {
             const id = data.id;
             const ip = data.ip.split(':')[0];
             const port = data.ip.split(':')[1];
 
             /** @type {ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasHttpProtocol());
+            const server = client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasHttpProtocol());
 
             //If no connection on that guild send disconnection status
             if(!server) return reply.status(403).send();
@@ -57,13 +57,13 @@ export default class BotAPI extends EventEmitter {
         }
 
         this.fastify.post('/chat', (request, reply) => {
-            const server = _getServerFastify(request.body, reply);
+            const server = _getServerFastify(request.body, reply, this.client);
             if(!server) return;
             this._chat(request.body, server);
         });
 
         this.fastify.post('/update-stats-channels', (request, reply) => {
-            const server = _getServerFastify(request.body, reply);
+            const server = _getServerFastify(request.body, reply, this.client);
             if(!server) return;
             this._updateStatsChannel(request.body);
         });
@@ -155,12 +155,12 @@ export default class BotAPI extends EventEmitter {
 
     addListeners(socket, server, hash) {
         socket.on('chat', async data => {
-            const server = getServerWebsocket();
+            const server = getServerWebsocket(this.client);
             if(!server) return;
             await this._chat(JSON.parse(data), server);
         });
         socket.on('update-stats-channels', async data => {
-            const server = getServerWebsocket();
+            const server = getServerWebsocket(this.client);
             if(!server) return;
             await this._updateStatsChannel(JSON.parse(data));
         });
@@ -168,10 +168,10 @@ export default class BotAPI extends EventEmitter {
             server.protocol.updateSocket(null);
         });
 
-        function getServerWebsocket() {
+        function getServerWebsocket(client) {
             //Update server variable to ensure it wasn't disconnected in the meantime
             /** @type {?ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
+            const server = client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
 
             //If no connection on that guild, disconnect socket
             if(!server) {
