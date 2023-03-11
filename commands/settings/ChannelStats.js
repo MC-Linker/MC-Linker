@@ -70,7 +70,7 @@ export default class ChannelStats extends Command {
             if(filter) statsChannels = statsChannels.filter(c => c.type === filter);
 
             if(statsChannels.length === 0) {
-                await interaction.replyTl(keys.commands['stats-channels'].errors.no_channels);
+                await interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
                 return;
             }
 
