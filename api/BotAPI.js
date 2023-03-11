@@ -318,8 +318,10 @@ export default class BotAPI extends EventEmitter {
                 const discordChannel = await this.client.channels.fetch(channel.id);
                 if(!discordChannel) continue;
 
-                await discordChannel?.send({ embeds: [chatEmbed] })
-                    .catch(() => {});
+                try {
+                    await discordChannel?.send({ embeds: [chatEmbed] });
+                }
+                catch(_) {}
             }
         }
         catch(_) {}
