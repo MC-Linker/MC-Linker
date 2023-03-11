@@ -2,6 +2,7 @@ import Command from '../../structures/Command.js';
 import keys from '../../api/keys.js';
 import { getComponent, getEmbed, ph } from '../../api/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import * as utils from '../../api/utils.js';
 
 export default class ChannelStats extends Command {
 
@@ -40,7 +41,8 @@ export default class ChannelStats extends Command {
                 'stats-channels': [statChannel],
             });
 
-            await server.protocol.addStatsChannel(statChannel);
+            const response = await server.protocol.addStatsChannel(statChannel);
+            if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
             await interaction.replyTl(keys.commands['stats-channels'].success.add);
         }
@@ -56,7 +58,8 @@ export default class ChannelStats extends Command {
             statsChannels.splice(index, 1);
             await settings.edit({ 'stats-channels': statsChannels });
 
-            await server.protocol.removeStatsChannel(statsChannels[index]);
+            const response = await server.protocol.removeStatsChannel(statsChannels[index]);
+            if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
             await interaction.replyTl(keys.commands['stats-channels'].success.remove);
         }
@@ -71,8 +74,6 @@ export default class ChannelStats extends Command {
                 return;
             }
 
-            const listEmbeds = [];
-            const channelButtons = [];
             /** @type {PaginationPages} */
             const pages = {};
 
