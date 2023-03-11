@@ -11,7 +11,16 @@ export default class ServerSettingsConnection extends Connection {
             'chat-commands': [],
         },
         language: 'en_us',
+        'stats-channels': [],
     };
+
+    /**
+     * @typedef {object} ServerSettingsConnectionData - The data for the server settings.
+     * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
+     * @property {StatsChannelData[]} stats-channels - The data for stats channels.
+     * @property {string} language - The language code id this server uses.
+     * @property {string} id - The id of the server the settings are connected to.
+     */
 
     /**
      * @typedef {object} DisableData - The data for disabled commands, advancements or stats.
@@ -22,10 +31,13 @@ export default class ServerSettingsConnection extends Connection {
      */
 
     /**
-     * @typedef {object} ServerSettingsConnectionData - The data for the server settings.
-     * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
-     * @property {string} language - The language code id this server uses.
-     * @property {string} id - The id of the server the settings are connected to.''
+     * @typedef {object} StatsChannelData - The data for a stats channel.
+     * @property {'member-counter'|'status'} type - The type of the stats channel.
+     * @property {string} id - The id of the channel.
+     * @property {object} names - The names for the stats channel.
+     * @property {string} [names.online] - The name when the server is online.
+     * @property {string} [names.offline] - The name when the server is offline.
+     * @property {string} [names.members] - The name for the member count.
      */
 
     /**
@@ -94,6 +106,12 @@ export default class ServerSettingsConnection extends Connection {
                 this.disabled['chat-commands'] = data.disabled['chat-commands'];
             }
         }
+
+        /**
+         * The data for stats channels.
+         * @type {StatsChannelData[]}
+         */
+        this['stats-channels'] = data['stats-channels'] ?? this['stats-channels'];
     }
 
     /**
