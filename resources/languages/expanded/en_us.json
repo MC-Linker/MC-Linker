@@ -2412,6 +2412,101 @@
         }
       ]
     },
+    "channel-stats": {
+      "name": "channel-stats",
+      "type": "ChatInput",
+      "long_description": "Manage stats-channel in the server that will show the current player count of the minecraft server or it's online status.",
+      "description": "Manage stats-channels in the server.",
+      "options": [
+        {
+          "type": "SubcommandGroup",
+          "name": "add",
+          "description": "Add a stats-channel to the server.",
+          "options": [
+            {
+              "type": "Subcommand",
+              "name": "status",
+              "description": "Add a stats-channel that will show the online status of the minecraft server.",
+              "options": [
+                {
+                  "type": "Channel",
+                  "name": "channel",
+                  "description": "Set the channel you want to add as a stats-channel.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "online",
+                  "description": "Set the message that will be shown when the server is online.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "offline",
+                  "description": "Set the message that will be shown when the server is offline.",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "type": "Subcommand",
+              "name": "member-counter",
+              "description": "Add a stats-channel that will show the current player count of the minecraft server.",
+              "options": [
+                {
+                  "type": "Channel",
+                  "name": "channel",
+                  "description": "Set the channel you want to add as a stats-channel.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "message",
+                  "description": "Set the message that will be shown for the player count. Use %count% for the player count.",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "remove",
+          "description": "Remove a stats-channel from the server.",
+          "options": [
+            {
+              "type": "Channel",
+              "name": "channel",
+              "description": "Set the channel you want to remove.",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "List all stats-channels in the server.",
+          "options": [
+            {
+              "type": "String",
+              "name": "filter",
+              "description": "Set a filter to only show stats-channels of a specific type.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Status",
+                  "value": "status"
+                },
+                {
+                  "name": "Member Counter",
+                  "value": "member-counter"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "chatchannel": {
       "name": "chatchannel",
       "type": "ChatInput",

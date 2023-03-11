@@ -55,7 +55,7 @@ export default class Connection extends Base {
     /**
      * Edits the connection with the given data and writes it to the fs.
      * @param {Partial<ConnectionData>} data - The data to edit the connection with.
-     * @returns {Promise<?UserConnection|?ServerConnection|?ServerSettingsConnection|?UserSettingsConnection>} - The connection instance that has been edited.
+     * @returns {Promise<?Connection>} - The connection instance that has been edited.
      */
     async edit(data) {
         this._patch(data);

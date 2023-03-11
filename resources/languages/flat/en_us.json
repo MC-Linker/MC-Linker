@@ -1283,6 +1283,75 @@
 
 
 
+  "data.channel-stats.name": "channel-stats",
+  "data.channel-stats.type": "ChatInput",
+  "data.channel-stats.long_description": "Manage stats-channel in the server that will show the current player count of the minecraft server or it's online status.",
+  "data.channel-stats.description": "Manage stats-channels in the server.",
+
+  "data.channel-stats.options.0.type": "SubcommandGroup",
+  "data.channel-stats.options.0.name": "add",
+  "data.channel-stats.options.0.description": "Add a stats-channel to the server.",
+
+  "data.channel-stats.options.0.options.0.type": "Subcommand",
+  "data.channel-stats.options.0.options.0.name": "status",
+  "data.channel-stats.options.0.options.0.description": "Add a stats-channel that will show the online status of the minecraft server.",
+
+  "data.channel-stats.options.0.options.0.options.0.type": "Channel",
+  "data.channel-stats.options.0.options.0.options.0.name": "channel",
+  "data.channel-stats.options.0.options.0.options.0.description": "Set the channel you want to add as a stats-channel.",
+  "data.channel-stats.options.0.options.0.options.0.required": true,
+
+  "data.channel-stats.options.0.options.0.options.1.type": "String",
+  "data.channel-stats.options.0.options.0.options.1.name": "online",
+  "data.channel-stats.options.0.options.0.options.1.description": "Set the message that will be shown when the server is online.",
+  "data.channel-stats.options.0.options.0.options.1.required": true,
+
+  "data.channel-stats.options.0.options.0.options.2.type": "String",
+  "data.channel-stats.options.0.options.0.options.2.name": "offline",
+  "data.channel-stats.options.0.options.0.options.2.description": "Set the message that will be shown when the server is offline.",
+  "data.channel-stats.options.0.options.0.options.2.required": true,
+
+
+  "data.channel-stats.options.0.options.1.type": "Subcommand",
+  "data.channel-stats.options.0.options.1.name": "member-counter",
+  "data.channel-stats.options.0.options.1.description": "Add a stats-channel that will show the current player count of the minecraft server.",
+
+  "data.channel-stats.options.0.options.1.options.0.type": "Channel",
+  "data.channel-stats.options.0.options.1.options.0.name": "channel",
+  "data.channel-stats.options.0.options.1.options.0.description": "Set the channel you want to add as a stats-channel.",
+  "data.channel-stats.options.0.options.1.options.0.required": true,
+
+  "data.channel-stats.options.0.options.1.options.1.type": "String",
+  "data.channel-stats.options.0.options.1.options.1.name": "message",
+  "data.channel-stats.options.0.options.1.options.1.description": "Set the message that will be shown for the player count. Use %count% for the player count.",
+  "data.channel-stats.options.0.options.1.options.1.required": true,
+
+
+  "data.channel-stats.options.1.type": "Subcommand",
+  "data.channel-stats.options.1.name": "remove",
+  "data.channel-stats.options.1.description": "Remove a stats-channel from the server.",
+
+  "data.channel-stats.options.1.options.0.type": "Channel",
+  "data.channel-stats.options.1.options.0.name": "channel",
+  "data.channel-stats.options.1.options.0.description": "Set the channel you want to remove.",
+  "data.channel-stats.options.1.options.0.required": true,
+
+
+  "data.channel-stats.options.2.type": "Subcommand",
+  "data.channel-stats.options.2.name": "list",
+  "data.channel-stats.options.2.description": "List all stats-channels in the server.",
+
+  "data.channel-stats.options.2.options.0.type": "String",
+  "data.channel-stats.options.2.options.0.name": "filter",
+  "data.channel-stats.options.2.options.0.description": "Set a filter to only show stats-channels of a specific type.",
+  "data.channel-stats.options.2.options.0.required": false,
+  "data.channel-stats.options.2.options.0.choices.0.name": "Status",
+  "data.channel-stats.options.2.options.0.choices.0.value": "status",
+  "data.channel-stats.options.2.options.0.choices.1.name": "Member Counter",
+  "data.channel-stats.options.2.options.0.choices.1.value": "member-counter",
+
+
+
   "data.chatchannel.name": "chatchannel",
   "data.chatchannel.type": "ChatInput",
   "data.chatchannel.default_member_permissions.0": "Administrator",

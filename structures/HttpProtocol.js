@@ -161,6 +161,26 @@ const PluginRoutes = {
         channel,
     ],
     /**
+     * Adds a stats-channel to the server.
+     * @param {StatsChannelData} channel - The stats channel to add.
+     * @returns {HttpProtocolFetchData}
+     */
+    AddStatsChannel: channel => [
+        'POST',
+        '/stats-channel/add',
+        channel,
+    ],
+    /**
+     * Removes a stats-channel from the server.
+     * @param {StatsChannelData} channel - The stats channel to remove.
+     * @returns {HttpProtocolFetchData}
+     */
+    RemoveStatsChannel: channel => [
+        'POST',
+        '/stats-channel/remove',
+        channel,
+    ],
+    /**
      * Lists the online players on the server.
      * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
@@ -402,6 +422,26 @@ export default class HttpProtocol extends Protocol {
      */
     async removeChatChannel(channel) {
         const response = await this._fetch(...PluginRoutes.RemoveChannel(channel));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Adds a stats channel to the server.
+     * @param {StatsChannelData} channel - The stats channel to add.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async addStatsChannel(channel) {
+        const response = await this._fetch(...PluginRoutes.AddStatsChannel(channel));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Removes a stats channel from the server.
+     * @param {StatsChannelData} channel - The stats channel to remove.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async removeStatsChannel(channel) {
+        const response = await this._fetch(...PluginRoutes.RemoveStatsChannel(channel));
         return fetchToProtocolResponse(response);
     }
 
