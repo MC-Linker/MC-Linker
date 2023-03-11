@@ -95,8 +95,8 @@ export default class Chatchannel extends Command {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
             }
 
-            const listEmbeds = [];
-            const channelButtons = [];
+            /** @type {PaginationPages} */
+            const pages = {};
 
             for(const channel of server.channels) {
                 const formattedTypes = channel.types.map(type => {
@@ -121,19 +121,13 @@ export default class Chatchannel extends Command {
                     index: index,
                 });
 
-                listEmbeds.push(channelEmbed);
-                channelButtons.push(channelButton);
-            }
-
-            /** @type {PaginationPages} */
-            const pages = {};
-            for(let i = 0; i < listEmbeds.length; i++) {
-                const button = channelButtons[i];
-                pages[button.data.custom_id] = {
-                    page: { embeds: [listEmbeds[i]] },
-                    button: button,
+                pages[channelButton.data.custom_id] = {
+                    page: { embeds: [channelEmbed] },
+                    button: channelButton,
                 };
             }
+            ``;
+
             const pagination = new Pagination(client, interaction, pages);
             return pagination.start();
         }

@@ -1,5 +1,7 @@
 import Command from '../../structures/Command.js';
 import keys from '../../api/keys.js';
+import { getComponent, getEmbed, ph } from '../../api/messages.js';
+import Pagination from '../../structures/helpers/Pagination.js';
 
 export default class ChannelStats extends Command {
 
@@ -48,8 +50,7 @@ export default class ChannelStats extends Command {
             const statsChannels = settings['stats-channels'];
             const index = statsChannels.findIndex(c => c.id === channel.id);
             if(index === -1) {
-                await interaction.replyTl(keys.commands['stats-channels'].errors.not_added);
-                return;
+                return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
             }
 
             statsChannels.splice(index, 1);
@@ -69,6 +70,39 @@ export default class ChannelStats extends Command {
                 await interaction.replyTl(keys.commands['stats-channels'].errors.no_channels);
                 return;
             }
+
+            const listEmbeds = [];
+            const channelButtons = [];
+            /** @type {PaginationPages} */
+            const pages = {};
+
+            for(const channel of statsChannels) {
+                const key = channel.type === 'member-counter' ? 'member-counter' : 'status';
+                const channelEmbed = getEmbed(
+                    keys.commands['stats-channels'].success.list[key],
+                    ph.std(interaction),
+                    {
+                        channel: await interaction.guild.channels.fetch(channel.id),
+                        name: channel.names.members,
+                        offline_name: channel.names.offline,
+                        online_name: channel.names.online,
+                    },
+                );
+
+                const index = statsChannels.indexOf(channel);
+                const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
+                    index1: index + 1,
+                    index: index,
+                });
+
+                pages[channelButton.data.custom_id] = {
+                    page: { embeds: [channelEmbed] },
+                    button: channelButton,
+                };
+            }
+
+            const pagination = new Pagination(client, interaction, pages);
+            return pagination.start();
         }
     }
 }

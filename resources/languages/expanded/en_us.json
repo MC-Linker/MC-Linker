@@ -860,6 +860,72 @@
         }
       }
     },
+    "channel-stats": {
+      "success": {
+        "add": {
+          "embeds": [
+            {
+              "title": "Added Stats Channel",
+              "description": "%emoji_success% Successfully added the chat channel"
+            }
+          ],
+          "console": "Successfully added stats channel"
+        },
+        "remove": {
+          "embeds": [
+            {
+              "title": "Removed Stats Channel",
+              "description": "%emoji_success% Successfully removed the stats channel"
+            }
+          ],
+          "console": "Successfully removed stats channel"
+        },
+        "list": {
+          "member-counter": {
+            "embeds": [
+              {
+                "title": "List Chat Channels",
+                "description": "%emoji_success% %channel%",
+                "fields": [
+                  {
+                    "name": "Type",
+                    "value": "Status"
+                  },
+                  {
+                    "name": "Offline Text",
+                    "value": "%online_name%"
+                  },
+                  {
+                    "name": "Online Text",
+                    "value": "%offline_name%"
+                  }
+                ]
+              }
+            ],
+            "console": "Successfully listed stats channels"
+          },
+          "status": {
+            "embeds": [
+              {
+                "title": "List Chat Channels",
+                "description": "%emoji_success% %channel%",
+                "fields": [
+                  {
+                    "name": "Type",
+                    "value": "Member Counter"
+                  },
+                  {
+                    "name": "Channel Text",
+                    "value": "%name%"
+                  }
+                ]
+              }
+            ],
+            "console": "Successfully listed stats channels"
+          }
+        }
+      }
+    },
     "chatchannel": {
       "warnings": {
         "no_channels": {
@@ -988,7 +1054,7 @@
         "remove": {
           "embeds": [
             {
-              "title": "Remove Chat Channel",
+              "title": "Removed Chat Channel",
               "description": "%emoji_success% Successfully removed the chat channel"
             }
           ],
@@ -1011,7 +1077,7 @@
               ]
             }
           ],
-          "console": "Successfully listed chat channel"
+          "console": "Successfully listed chat channels"
         },
         "channel_button": {
           "components": [
