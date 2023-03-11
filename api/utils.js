@@ -215,12 +215,13 @@ export async function getArgs(interaction) {
     let incrementIndex = 0;
 
     function addArgs(allOptions, option) {
+        //we use optIndex instead of push because users can select options in any order they want
         const optIndex = allOptions.findIndex(opt => opt.name === option.name) + incrementIndex;
 
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
             incrementIndex++;
-            option.options.forEach(opt => addArgs(slashCommand.options[optIndex].options, opt));
+            option.options.forEach(opt => addArgs(option.options, opt));
         }
         else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
         else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;
