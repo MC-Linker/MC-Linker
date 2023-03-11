@@ -210,14 +210,17 @@ export async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
     const slashCommand = await interaction.client.application.commands.fetch(interaction.commandId);
-    const args = [];
 
-    function addArgs(allOptions, option, incrementIndex) {
+    const args = [];
+    let incrementIndex = 0;
+
+    function addArgs(allOptions, option) {
         const optIndex = allOptions.findIndex(opt => opt.name === option.name) + incrementIndex;
 
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
-            option.options.forEach(opt => addArgs(slashCommand.options[optIndex].options, opt, 1));
+            incrementIndex++;
+            option.options.forEach(opt => addArgs(slashCommand.options[optIndex].options, opt));
         }
         else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
         else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;
@@ -226,7 +229,7 @@ export async function getArgs(interaction) {
         else args[optIndex] = option.value;
     }
 
-    interaction.options.data.forEach(option => addArgs(slashCommand.options, option, 0));
+    interaction.options.data.forEach(option => addArgs(slashCommand.options, option));
 
     return args;
 }

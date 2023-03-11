@@ -173,7 +173,7 @@ export default class Command {
             let option;
             const subcommandGroupOption = command.options.find(option => option.name === subcommandGroup);
             if(subcommandGroupOption?.type === ApplicationCommandOptionType.SubcommandGroup || subcommandGroupOption?.type === ApplicationCommandOptionType.Subcommand) {
-                const subcommandOption = subcommandGroupOption?.options?.find(option => option.name === subcommand);
+                const subcommandOption = subcommandGroupOption.options.find(option => option.name === subcommand);
                 if(subcommandOption?.type === ApplicationCommandOptionType.Subcommand) {
                     option = subcommandOption?.options?.[args.length - 2];
                 }

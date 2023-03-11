@@ -339,7 +339,10 @@ export default class BotAPI extends EventEmitter {
 
             //Replace %count% with the actual count
             if(event === 'members') channel.names[event] = channel.names[event].replace('%count%', data.members);
-            discordChannel.setName(channel.names[event]);
+            try {
+                await discordChannel.setName(channel.names[event]);
+            }
+            catch(_) {}
         }
     }
 }
