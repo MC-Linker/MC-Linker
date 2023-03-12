@@ -154,7 +154,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeStatsChannel(channel) {
-        return await this._sendRaw('remove-channel', channel);
+        return await this._sendRaw('remove-stats-channel', channel);
     }
 
     /**
