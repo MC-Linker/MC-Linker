@@ -126,7 +126,6 @@ export default class Chatchannel extends Command {
                     button: channelButton,
                 };
             }
-            ``;
 
             const pagination = new Pagination(client, interaction, pages);
             return pagination.start();

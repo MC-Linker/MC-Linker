@@ -37,11 +37,19 @@ export default class ChannelStats extends Command {
                 statChannel.names.offline = args[4];
             }
 
-            const response = await server.protocol.addStatsChannel(statChannel);
-            if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
+            const resp = await server.protocol.addStatsChannel(statChannel);
+            if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
             settings.statsChannels.push(statChannel);
-            await settings.edit({ 'stats-channels': settings.statsChannels });
+            await settings.edit({ 'stats-channels': resp.data });
+
+            let message;
+            if(statChannel.type === 'member-counter') {
+                const onlinePlayers = await server.protocol.getOnlinePlayers();
+                message = statChannel.names.members.replace('%count%', onlinePlayers.data);
+            }
+            else message = statChannel.names.online;
+            channel.setName(message);
 
             await interaction.replyTl(keys.commands['channel-stats'].success.add);
         }
