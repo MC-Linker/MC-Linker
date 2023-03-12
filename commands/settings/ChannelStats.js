@@ -46,7 +46,7 @@ export default class ChannelStats extends Command {
             let message;
             if(statChannel.type === 'member-counter') {
                 const onlinePlayers = await server.protocol.getOnlinePlayers();
-                message = statChannel.names.members.replace('%count%', onlinePlayers.data);
+                message = statChannel.names.members.replace('%count%', onlinePlayers.data.length);
             }
             else message = statChannel.names.online;
             channel.setName(message);
