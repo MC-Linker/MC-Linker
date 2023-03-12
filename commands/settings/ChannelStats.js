@@ -27,7 +27,7 @@ export default class ChannelStats extends Command {
             /** @type {GuildChannel} */
             const channel = args[2];
             if(!channel.manageable) {
-                return interaction.replyTl(keys.commands['channel-stats'].warnings.not_manageable);
+                return interaction.replyTl(keys.commands['channel-stats'].errors.not_manageable);
             }
 
             /** @type {StatsChannelData} */
