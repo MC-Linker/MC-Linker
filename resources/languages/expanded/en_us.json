@@ -881,7 +881,7 @@
           "console": "Successfully removed stats channel"
         },
         "list": {
-          "member-counter": {
+          "status": {
             "embeds": [
               {
                 "title": "List Chat Channels",
@@ -904,7 +904,7 @@
             ],
             "console": "Successfully listed stats channels"
           },
-          "status": {
+          "member-counter": {
             "embeds": [
               {
                 "title": "List Stats Channels",

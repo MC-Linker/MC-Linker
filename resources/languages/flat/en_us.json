@@ -450,23 +450,23 @@
   "commands.channel-stats.success.remove.embeds.0.description": "%emoji_success% Successfully removed the stats channel.",
   "commands.channel-stats.success.remove.console": "Successfully removed stats channel",
 
-  "commands.channel-stats.success.list.member-counter.embeds.0.title": "List Chat Channels",
-  "commands.channel-stats.success.list.member-counter.embeds.0.description": "%emoji_success% %channel%",
-  "commands.channel-stats.success.list.member-counter.embeds.0.fields.0.name": "Type",
-  "commands.channel-stats.success.list.member-counter.embeds.0.fields.0.value": "Status",
-  "commands.channel-stats.success.list.member-counter.embeds.0.fields.1.name": "Offline Text",
-  "commands.channel-stats.success.list.member-counter.embeds.0.fields.1.value": "%online_name%",
-  "commands.channel-stats.success.list.member-counter.embeds.0.fields.2.name": "Online Text",
-  "commands.channel-stats.success.list.member-counter.embeds.0.fields.2.value": "%offline_name%",
-  "commands.channel-stats.success.list.member-counter.console": "Successfully listed stats channels",
-
-  "commands.channel-stats.success.list.status.embeds.0.title": "List Stats Channels",
+  "commands.channel-stats.success.list.status.embeds.0.title": "List Chat Channels",
   "commands.channel-stats.success.list.status.embeds.0.description": "%emoji_success% %channel%",
   "commands.channel-stats.success.list.status.embeds.0.fields.0.name": "Type",
-  "commands.channel-stats.success.list.status.embeds.0.fields.0.value": "Member Counter",
-  "commands.channel-stats.success.list.status.embeds.0.fields.1.name": "Channel Text",
-  "commands.channel-stats.success.list.status.embeds.0.fields.1.value": "%name%",
+  "commands.channel-stats.success.list.status.embeds.0.fields.0.value": "Status",
+  "commands.channel-stats.success.list.status.embeds.0.fields.1.name": "Offline Text",
+  "commands.channel-stats.success.list.status.embeds.0.fields.1.value": "%online_name%",
+  "commands.channel-stats.success.list.status.embeds.0.fields.2.name": "Online Text",
+  "commands.channel-stats.success.list.status.embeds.0.fields.2.value": "%offline_name%",
   "commands.channel-stats.success.list.status.console": "Successfully listed stats channels",
+
+  "commands.channel-stats.success.list.member-counter.embeds.0.title": "List Stats Channels",
+  "commands.channel-stats.success.list.member-counter.embeds.0.description": "%emoji_success% %channel%",
+  "commands.channel-stats.success.list.member-counter.embeds.0.fields.0.name": "Type",
+  "commands.channel-stats.success.list.member-counter.embeds.0.fields.0.value": "Member Counter",
+  "commands.channel-stats.success.list.member-counter.embeds.0.fields.1.name": "Channel Text",
+  "commands.channel-stats.success.list.member-counter.embeds.0.fields.1.value": "%name%",
+  "commands.channel-stats.success.list.member-counter.console": "Successfully listed stats channels",
 
 
 

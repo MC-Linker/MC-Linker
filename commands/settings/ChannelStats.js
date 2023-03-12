@@ -41,7 +41,7 @@ export default class ChannelStats extends Command {
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
             settings.statsChannels.push(statChannel);
-            await settings.edit({ statsChannels: settings.statsChannels });
+            await settings.edit({ 'stats-channels': settings.statsChannels });
 
             await interaction.replyTl(keys.commands['channel-stats'].success.add);
         }
@@ -58,7 +58,7 @@ export default class ChannelStats extends Command {
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
             statsChannels.splice(index, 1);
-            await settings.edit({ statsChannels });
+            await settings.edit({ 'stats-channels': statsChannels });
 
             await interaction.replyTl(keys.commands['channel-stats'].success.remove);
         }
