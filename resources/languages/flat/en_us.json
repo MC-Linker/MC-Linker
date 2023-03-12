@@ -442,6 +442,11 @@
   "commands.account.success.verified.embeds.0.console": "Account verified",
 
 
+
+  "commands.channel-stats.errors.not_manageable.embeds.0.title": "Cannot Change Name",
+  "commands.channel-stats.errors.not_manageable.embeds.0.description": "%emoji_error% I do not have permission to edit this channel's name.",
+  "commands.channel-stats.errors.not_manageable.console": "Channel not manageable",
+
   "commands.channel-stats.success.add.embeds.0.title": "Added Stats Channel",
   "commands.channel-stats.success.add.embeds.0.description": "%emoji_success% Successfully added the stats channel.",
   "commands.channel-stats.success.add.console": "Successfully added stats channel",

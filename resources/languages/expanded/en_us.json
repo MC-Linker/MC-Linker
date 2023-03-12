@@ -861,6 +861,17 @@
       }
     },
     "channel-stats": {
+      "errors": {
+        "not_manageable": {
+          "embeds": [
+            {
+              "title": "Cannot Change Name",
+              "description": "%emoji_error% I do not have permission to edit this channel's name."
+            }
+          ],
+          "console": "Channel not manageable"
+        }
+      },
       "success": {
         "add": {
           "embeds": [

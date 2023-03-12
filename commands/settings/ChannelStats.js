@@ -3,6 +3,7 @@ import keys from '../../api/keys.js';
 import { getComponent, getEmbed, ph } from '../../api/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../api/utils.js';
+import { GuildChannel } from 'discord.js';
 
 export default class ChannelStats extends Command {
 
@@ -23,7 +24,11 @@ export default class ChannelStats extends Command {
 
         if(subcommand === 'add') {
             const type = args[1];
+            /** @type {GuildChannel} */
             const channel = args[2];
+            if(!channel.manageable) {
+                return interaction.replyTl(keys.commands['channel-stats'].warnings.not_manageable);
+            }
 
             /** @type {StatsChannelData} */
             const statChannel = {
@@ -49,7 +54,7 @@ export default class ChannelStats extends Command {
                 message = statChannel.names.members.replace('%count%', onlinePlayers.data.length);
             }
             else message = statChannel.names.online;
-            channel.setName(message);
+            await channel.setName(message);
 
             await interaction.replyTl(keys.commands['channel-stats'].success.add);
         }
