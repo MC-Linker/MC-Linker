@@ -44,7 +44,7 @@ export default class ChannelStats extends Command {
             const response = await server.protocol.addStatsChannel(statChannel);
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
-            await interaction.replyTl(keys.commands['stats-channels'].success.add);
+            await interaction.replyTl(keys.commands['channel-stats'].success.add);
         }
         else if(subcommand === 'remove') {
             const channel = args[1];
@@ -61,7 +61,7 @@ export default class ChannelStats extends Command {
             const response = await server.protocol.removeStatsChannel(statsChannels[index]);
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
-            await interaction.replyTl(keys.commands['stats-channels'].success.remove);
+            await interaction.replyTl(keys.commands['channel-stats'].success.remove);
         }
         else if(subcommand === 'list') {
             const filter = args[1];
@@ -80,7 +80,7 @@ export default class ChannelStats extends Command {
             for(const channel of statsChannels) {
                 const key = channel.type === 'member-counter' ? 'member-counter' : 'status';
                 const channelEmbed = getEmbed(
-                    keys.commands['stats-channels'].success.list[key],
+                    keys.commands['channel-stats'].success.list[key],
                     ph.std(interaction),
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
