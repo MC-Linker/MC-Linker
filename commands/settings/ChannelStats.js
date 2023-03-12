@@ -37,12 +37,11 @@ export default class ChannelStats extends Command {
                 statChannel.names.offline = args[4];
             }
 
-            await settings.edit({
-                'stats-channels': [statChannel],
-            });
-
             const response = await server.protocol.addStatsChannel(statChannel);
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
+
+            settings['stats-channels'].push(statChannel);
+            await settings.edit({ 'stats-channels': settings['stats-channels'] });
 
             await interaction.replyTl(keys.commands['channel-stats'].success.add);
         }
@@ -55,11 +54,11 @@ export default class ChannelStats extends Command {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
             }
 
-            statsChannels.splice(index, 1);
-            await settings.edit({ 'stats-channels': statsChannels });
-
             const response = await server.protocol.removeStatsChannel(statsChannels[index]);
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
+
+            statsChannels.splice(index, 1);
+            await settings.edit({ 'stats-channels': statsChannels });
 
             await interaction.replyTl(keys.commands['channel-stats'].success.remove);
         }
