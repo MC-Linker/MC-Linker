@@ -40,15 +40,15 @@ export default class ChannelStats extends Command {
             const response = await server.protocol.addStatsChannel(statChannel);
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
-            settings['stats-channels'].push(statChannel);
-            await settings.edit({ 'stats-channels': settings['stats-channels'] });
+            settings.statsChannels.push(statChannel);
+            await settings.edit({ statsChannels: settings.statsChannels });
 
             await interaction.replyTl(keys.commands['channel-stats'].success.add);
         }
         else if(subcommand === 'remove') {
             const channel = args[1];
 
-            const statsChannels = settings['stats-channels'];
+            const statsChannels = settings.statsChannels;
             const index = statsChannels.findIndex(c => c.id === channel.id);
             if(index === -1) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
@@ -58,14 +58,14 @@ export default class ChannelStats extends Command {
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
             statsChannels.splice(index, 1);
-            await settings.edit({ 'stats-channels': statsChannels });
+            await settings.edit({ statsChannels });
 
             await interaction.replyTl(keys.commands['channel-stats'].success.remove);
         }
         else if(subcommand === 'list') {
             const filter = args[1];
 
-            let statsChannels = settings['stats-channels'];
+            let statsChannels = settings.statsChannels;
             if(filter) statsChannels = statsChannels.filter(c => c.type === filter);
 
             if(statsChannels.length === 0) {

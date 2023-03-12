@@ -866,7 +866,7 @@
           "embeds": [
             {
               "title": "Added Stats Channel",
-              "description": "%emoji_success% Successfully added the chat channel"
+              "description": "%emoji_success% Successfully added the stats channel."
             }
           ],
           "console": "Successfully added stats channel"
@@ -875,7 +875,7 @@
           "embeds": [
             {
               "title": "Removed Stats Channel",
-              "description": "%emoji_success% Successfully removed the stats channel"
+              "description": "%emoji_success% Successfully removed the stats channel."
             }
           ],
           "console": "Successfully removed stats channel"
@@ -907,7 +907,7 @@
           "status": {
             "embeds": [
               {
-                "title": "List Chat Channels",
+                "title": "List Stats Channels",
                 "description": "%emoji_success% %channel%",
                 "fields": [
                   {
@@ -1046,7 +1046,7 @@
           "embeds": [
             {
               "title": "Added Chat Channel",
-              "description": "%emoji_success% Successfully added the chat channel"
+              "description": "%emoji_success% Successfully added the chat channel."
             }
           ],
           "console": "Successfully added chat channel"
@@ -1055,7 +1055,7 @@
           "embeds": [
             {
               "title": "Removed Chat Channel",
-              "description": "%emoji_success% Successfully removed the chat channel"
+              "description": "%emoji_success% Successfully removed the chat channel."
             }
           ],
           "console": "Successfully removed chat channel"

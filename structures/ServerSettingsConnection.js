@@ -11,7 +11,7 @@ export default class ServerSettingsConnection extends Connection {
             'chat-commands': [],
         },
         language: 'en_us',
-        'stats-channels': [],
+        statsChannels: [],
     };
 
     /**
@@ -111,7 +111,7 @@ export default class ServerSettingsConnection extends Connection {
          * The data for stats channels.
          * @type {StatsChannelData[]}
          */
-        this['stats-channels'] = data['stats-channels'] ?? this['stats-channels'];
+        this.statsChannels = data.statsChannels ?? data['stats-channels'] ?? this.statsChannels;
     }
 
     /**
@@ -160,6 +160,7 @@ export default class ServerSettingsConnection extends Connection {
             disabled: this.disabled,
             language: this.language,
             id: this.id,
+            'stats-channels': this.statsChannels,
         };
     }
 }

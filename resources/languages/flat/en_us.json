@@ -443,11 +443,11 @@
 
 
   "commands.channel-stats.success.add.embeds.0.title": "Added Stats Channel",
-  "commands.channel-stats.success.add.embeds.0.description": "%emoji_success% Successfully added the chat channel",
+  "commands.channel-stats.success.add.embeds.0.description": "%emoji_success% Successfully added the stats channel.",
   "commands.channel-stats.success.add.console": "Successfully added stats channel",
 
   "commands.channel-stats.success.remove.embeds.0.title": "Removed Stats Channel",
-  "commands.channel-stats.success.remove.embeds.0.description": "%emoji_success% Successfully removed the stats channel",
+  "commands.channel-stats.success.remove.embeds.0.description": "%emoji_success% Successfully removed the stats channel.",
   "commands.channel-stats.success.remove.console": "Successfully removed stats channel",
 
   "commands.channel-stats.success.list.member-counter.embeds.0.title": "List Chat Channels",
@@ -460,7 +460,7 @@
   "commands.channel-stats.success.list.member-counter.embeds.0.fields.2.value": "%offline_name%",
   "commands.channel-stats.success.list.member-counter.console": "Successfully listed stats channels",
 
-  "commands.channel-stats.success.list.status.embeds.0.title": "List Chat Channels",
+  "commands.channel-stats.success.list.status.embeds.0.title": "List Stats Channels",
   "commands.channel-stats.success.list.status.embeds.0.description": "%emoji_success% %channel%",
   "commands.channel-stats.success.list.status.embeds.0.fields.0.name": "Type",
   "commands.channel-stats.success.list.status.embeds.0.fields.0.value": "Member Counter",
@@ -540,11 +540,11 @@
 
 
   "commands.chatchannel.success.add.embeds.0.title": "Added Chat Channel",
-  "commands.chatchannel.success.add.embeds.0.description": "%emoji_success% Successfully added the chat channel",
+  "commands.chatchannel.success.add.embeds.0.description": "%emoji_success% Successfully added the chat channel.",
   "commands.chatchannel.success.add.console": "Successfully added chat channel",
 
   "commands.chatchannel.success.remove.embeds.0.title": "Removed Chat Channel",
-  "commands.chatchannel.success.remove.embeds.0.description": "%emoji_success% Successfully removed the chat channel",
+  "commands.chatchannel.success.remove.embeds.0.description": "%emoji_success% Successfully removed the chat channel.",
   "commands.chatchannel.success.remove.console": "Successfully removed chat channel",
 
   "commands.chatchannel.success.list.embeds.0.title": "List Chat Channels",
