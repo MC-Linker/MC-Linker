@@ -10,7 +10,7 @@ import Discord from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
 import { cleanEmojis, getArgs } from './api/utils.js';
-import keys from './api/keys.js';
+import keys, { getLanguageKey } from './api/keys.js';
 import { addPh, addTranslatedResponses, ph } from './api/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
@@ -37,7 +37,7 @@ if(process.env.TOPGG_TOKEN) {
     const poster = AutoPoster(process.env.TOPGG_TOKEN, client);
 
     poster.on('posted', () => {});
-    poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
+    poster.on('error', () => console.log(getLanguageKey(keys.main.errors.could_not_post_stats.console)));
 }
 
 client.once(Discord.Events.ClientReady, async () => {
@@ -105,7 +105,7 @@ client.on(Discord.Events.MessageCreate, async message => {
     if(!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
     //check if in guild
-    if(!message.inGuild()) return message.replyTl(keys.main.warnings.not_in_guild);
+    if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
@@ -116,7 +116,6 @@ client.on(Discord.Events.MessageCreate, async message => {
     try {
         // noinspection JSUnresolvedFunction
         await command.execute(message, client, args, server)
-            ?.catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message)));
     }
     catch(err) {
         await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
@@ -127,7 +126,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
     interaction = addTranslatedResponses(interaction);
 
     //check if in guild
-    if(!interaction.guildId) return interaction.replyTl(keys.main.warnings.not_in_guild);
+    if(!interaction.guildId) return interaction.replyTl(keys.main.no_access.not_in_guild);
 
     if(interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
@@ -154,7 +153,6 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         try {
             // noinspection JSUnresolvedFunction
             await command.execute(interaction, client, args, server)
-                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction)));
         }
         catch(err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction));
@@ -166,7 +164,6 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client)
-                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err))));
         }
         catch(err) {
             await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err)));
@@ -180,7 +177,6 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
             if(!button) return;
             // noinspection JSUnresolvedFunction
             await button.execute(interaction, client)
-                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId }));
         }
         catch(err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId });

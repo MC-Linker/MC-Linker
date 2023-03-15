@@ -92,7 +92,7 @@ export default class ChannelStats extends Command {
             for(const channel of statsChannels) {
                 const key = channel.type === 'member-counter' ? 'member-counter' : 'status';
                 const channelEmbed = getEmbed(
-                    keys.commands['channel-stats'].success.list[key],
+                    keys.commands['channel-stats'].success[`${key}_list`],
                     ph.std(interaction),
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),

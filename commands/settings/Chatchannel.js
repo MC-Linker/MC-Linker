@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import { addTranslatedResponses, getComponent, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import keys, { getLanguageKey } from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../api/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -91,19 +91,14 @@ export default class Chatchannel extends Command {
             return interaction.replyTl(keys.commands.chatchannel.success.remove);
         }
         else if(method === 'list') {
-            if(!server?.channels?.length) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
-            }
+            if(!server.channels?.length) return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
 
             /** @type {PaginationPages} */
             const pages = {};
 
             for(const channel of server.channels) {
-                const formattedTypes = channel.types.map(type => {
-                    const options = keys.commands.chatchannel.success.choose.components[0].options;
-                    return options.find(o => o.value === type).label;
-                }).join(',\n');
-
+                const options = getLanguageKey(keys.commands.chatchannel.success.choose.components[0].options);
+                const formattedTypes = channel.types.map(type => options.find(o => o.value === type).label).join(',\n');
 
                 const channelEmbed = getEmbed(
                     keys.commands.chatchannel.success.list,
