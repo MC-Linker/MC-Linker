@@ -46,6 +46,7 @@
   "colors.success": "#729e34",
   "colors.error": "#9e3436",
   "colors.warning": "#f1c40f",
+  "colors.step": "#f88239",
 
 
 
@@ -453,9 +454,9 @@
   "commands.account.warnings.verification_timeout.embeds.0.description": "Account verification timed out. Please try again.",
   "commands.account.warnings.verification_timeout.console": "Verification timed out",
 
-  "commands.account.success.verification_info.embeds.0.title": "Account Verification",
-  "commands.account.success.verification_info.embeds.0.description": "To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
-  "commands.account.success.verification_info.embeds.0.color": "DarkGold",
+  "commands.account.step.verification_info.embeds.0.title": "Account Verification",
+  "commands.account.step.verification_info.embeds.0.description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
+  "commands.account.step.verification_info.embeds.0.color": "%color_step%",
 
   "commands.account.success.verified.embeds.0.title": "Account Verified",
   "commands.account.success.verified.embeds.0.description": "Successfully verified your account.",
@@ -618,7 +619,8 @@
   "commands.connect.warnings.searching_properties.console": "Searching for server.properties...",
 
   "commands.connect.warnings.check_dms.embeds.0.title": "Check Your DMs",
-  "commands.connect.warnings.check_dms.embeds.0.description": "Please check your DMs to complete the connection.",
+  "commands.connect.warnings.check_dms.embeds.0.description": "%emoji_step% Please check your DMs to complete the connection.",
+  "commands.connect.warnings.check_dms.embeds.0.color": "%color_step%",
 
   "commands.connect.warnings.could_not_dm.embeds.0.title": "Could Not DM",
   "commands.connect.warnings.could_not_dm.embeds.0.description": "Could not DM you. Verifying in the current channel...",
@@ -660,8 +662,8 @@
   "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error%",
 
   "commands.connect.success.verification_info.embeds.0.title": "Server Verification",
-  "commands.connect.success.verification_info.embeds.0.description": "Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
-  "commands.connect.success.verification_info.embeds.0.color": "DarkGold",
+  "commands.connect.success.verification_info.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
+  "commands.connect.success.verification_info.embeds.0.color": "%color_step%",
 
   "commands.connect.success.ftp.embeds.0.title": "Connected to Server",
   "commands.connect.success.ftp.embeds.0.description": "Successfully connected to the ftp server.",
