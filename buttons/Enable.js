@@ -20,7 +20,7 @@ export default class Enable extends Button {
         const settings = client.serverSettingsConnections.cache.get(interaction.guildId);
 
         if(!settings?.isDisabled('bot-commands', commandName)) {
-            return interaction.replyTl(keys.buttons.enable.errors.already_enabled, { 'command_name': commandName.cap() });
+            return interaction.replyTl(keys.buttons.enable.warnings.already_enabled, { 'command_name': commandName.cap() });
         }
 
         await settings.enable('commands', commandName);

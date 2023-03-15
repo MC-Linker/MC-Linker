@@ -57,7 +57,7 @@ export default class Advancements extends AutocompleteCommand {
 
         if(server.settings.isDisabled('advancements', advancement)) {
             return interaction.replyTl(
-                keys.commands.advancements.warnings.advancement_disabled,
+                keys.commands.advancements.no_access.advancement_disabled,
                 { 'advancement_title': advancementTitle },
             );
         }

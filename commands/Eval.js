@@ -7,6 +7,7 @@ import { Duplex } from 'stream';
 import { ph } from '../api/messages.js';
 import keys from '../api/keys.js';
 import Command from '../structures/Command.js';
+import { MaxEmbedFieldValueLength } from '../api/utils.js';
 
 // noinspection FunctionNamingConventionJS
 class ConsoleOutput extends Duplex {
@@ -28,8 +29,6 @@ class ConsoleOutput extends Duplex {
         return this.output;
     }
 }
-
-const maxCharLength = 4086;
 
 export default class Eval extends Command {
 
@@ -94,7 +93,7 @@ export default class Eval extends Command {
             }
 
             //If it's too long, send an attachment
-            if(out.length > maxCharLength) {
+            if(out.length > MaxEmbedFieldValueLength) {
                 const attachment = new Discord.AttachmentBuilder(Buffer.from(out, 'utf8'), { name: 'Eval.js' });
                 return interaction.replyOptions({ files: [attachment] });
             }

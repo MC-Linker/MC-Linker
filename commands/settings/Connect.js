@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { addPh, addTranslatedResponses, getEmbed, getModal, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import keys, { getLanguageKey } from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
@@ -234,7 +234,7 @@ export default class Connect extends Command {
                     });
                     const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
                     if(!message) {
-                        console.log(keys.commands.connect.warnings.no_reply_in_time.console);
+                        console.log(getLanguageKey(keys.commands.connect.warnings.no_reply_in_time.console));
                         return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojis()));
                     }
 
