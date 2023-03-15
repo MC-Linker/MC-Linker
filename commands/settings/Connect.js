@@ -215,7 +215,7 @@ export default class Connect extends Command {
                         409: keys.commands.connect.warnings.already_connected,
                     })) return;
 
-                    await modal.replyTl(keys.commands.connect.warnings.check_dms);
+                    await modal.replyTl(keys.commands.connect.step.check_dms);
 
                     let dmChannel = await interaction.user.createDM();
                     try {
@@ -275,7 +275,7 @@ export default class Connect extends Command {
                 await this._disconnectOldPlugin(interaction, server);
 
                 const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-                await interaction.replyTl(keys.commands.connect.success.verification_info, { code: `${interaction.guildId}:${code}` });
+                await interaction.replyTl(keys.commands.connect.step.verification_info, { code: `${interaction.guildId}:${code}` });
 
                 const timeout = setTimeout(async () => {
                     await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);

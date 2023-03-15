@@ -618,9 +618,9 @@
   "commands.connect.warnings.searching_properties.embeds.0.description": "Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)",
   "commands.connect.warnings.searching_properties.console": "Searching for server.properties...",
 
-  "commands.connect.warnings.check_dms.embeds.0.title": "Check Your DMs",
-  "commands.connect.warnings.check_dms.embeds.0.description": "%emoji_step% Please check your DMs to complete the connection.",
-  "commands.connect.warnings.check_dms.embeds.0.color": "%color_step%",
+  "commands.connect.step.check_dms.embeds.0.title": "Check Your DMs",
+  "commands.connect.step.check_dms.embeds.0.description": "%emoji_step% Please check your DMs to complete the connection.",
+  "commands.connect.step.check_dms.embeds.0.color": "%color_step%",
 
   "commands.connect.warnings.could_not_dm.embeds.0.title": "Could Not DM",
   "commands.connect.warnings.could_not_dm.embeds.0.description": "Could not DM you. Verifying in the current channel...",

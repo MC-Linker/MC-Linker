@@ -1198,15 +1198,6 @@
           ],
           "console": "Searching for server.properties..."
         },
-        "check_dms": {
-          "embeds": [
-            {
-              "title": "Check Your DMs",
-              "description": "%emoji_step% Please check your DMs to complete the connection.",
-              "color": "%color_step%"
-            }
-          ]
-        },
         "could_not_dm": {
           "embeds": [
             {
@@ -1239,6 +1230,17 @@
               "title": "Code Verification",
               "description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
               "color": "DarkGold"
+            }
+          ]
+        }
+      },
+      "step": {
+        "check_dms": {
+          "embeds": [
+            {
+              "title": "Check Your DMs",
+              "description": "%emoji_step% Please check your DMs to complete the connection.",
+              "color": "%color_step%"
             }
           ]
         }
