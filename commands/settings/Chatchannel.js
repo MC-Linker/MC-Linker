@@ -66,7 +66,7 @@ export default class Chatchannel extends Command {
 
             await server.edit({ channels: resp.data });
             return menu.update({
-                embeds: [getEmbed(keys.commands.chatchannel.success.add, ph.emojis())],
+                embeds: [getEmbed(keys.commands.chatchannel.success.add, ph.emojis(), ph.colors())],
                 components: [],
             });
         }

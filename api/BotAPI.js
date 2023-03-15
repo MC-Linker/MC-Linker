@@ -229,7 +229,7 @@ export default class BotAPI extends EventEmitter {
                 argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
             }
 
-            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
+            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis(), ph.colors());
 
             let allWebhooks;
             try {
@@ -244,7 +244,7 @@ export default class BotAPI extends EventEmitter {
                 if(!discordChannel) continue;
 
                 if(!allWebhooks) {
-                    discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
                     return;
                 }
 
@@ -277,7 +277,7 @@ export default class BotAPI extends EventEmitter {
                             id: channel.id,
                         });
                         if(!regChannel) {
-                            discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
+                            discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis(), ph.colors())] });
                             await webhook.delete();
                             return;
                         }
@@ -301,14 +301,14 @@ export default class BotAPI extends EventEmitter {
                     });
                 }
                 catch(_) {
-                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
                     return;
                 }
             }
             return;
         }
         else {
-            chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), { 'timestamp_now': Date.now() });
+            chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), ph.colors(), { 'timestamp_now': Date.now() });
         }
 
         try {

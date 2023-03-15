@@ -94,13 +94,13 @@ export default class Connect extends Command {
             clearTimeout(timeout);
 
             if(responseType === 'success') {
-                await interaction.replyTl(keys.commands.connect.success.websocket, placeholders, ph.emojis());
+                await interaction.replyTl(keys.commands.connect.success.websocket, placeholders, ph.emojis(), ph.colors());
             }
             else if(responseType === 'already_connected') {
-                await interaction.replyTl(keys.commands.connect.warnings.already_connected, placeholders, ph.emojis());
+                await interaction.replyTl(keys.commands.connect.warnings.already_connected, placeholders, ph.emojis(), ph.colors());
             }
             else if(responseType === 'error') {
-                await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders, ph.emojis());
+                await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders, ph.emojis(), ph.colors());
             }
         });
     }
@@ -219,12 +219,12 @@ export default class Connect extends Command {
 
                     let dmChannel = await interaction.user.createDM();
                     try {
-                        await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.emojis())] });
+                        await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.emojis(), ph.colors())] });
                     }
                     catch(err) {
                         dmChannel = modal.channel;
                         await modal.replyTl(keys.commands.connect.warnings.could_not_dm);
-                        await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.emojis())] });
+                        await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.emojis(), ph.colors())] });
                     }
 
                     const collector = await dmChannel.awaitMessages({
@@ -235,7 +235,7 @@ export default class Connect extends Command {
                     const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
                     if(!message) {
                         console.log(getLanguageKey(keys.commands.connect.warnings.no_reply_in_time.console));
-                        return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojis()));
+                        return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojis(), ph.colors()));
                     }
 
                     const resp = await httpProtocol.connect(collector.first().content);
@@ -300,10 +300,10 @@ export default class Connect extends Command {
         else if(server?.hasFtpProtocol()) return await client.serverConnections.disconnect(server);
         else return;
 
-        if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), { ip: server.ip }));
+        if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
         else {
             await client.serverConnections.disconnect(server);
-            await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), { ip: server.ip }));
+            await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
         }
     }
 }

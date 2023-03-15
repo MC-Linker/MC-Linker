@@ -26,7 +26,7 @@ export default class Enable extends Button {
         await settings.enable('commands', commandName);
         await interaction.replyTl(keys.buttons.enable.success.response, { 'command_name': commandName.cap() });
 
-        const disableRows = getActionRows(keys.commands.help.success.disable_button, { 'command_name': commandName }, ph.emojis());
+        const disableRows = getActionRows(keys.commands.help.success.disable_button, { 'command_name': commandName }, ph.emojis(), ph.colors());
         const helpEmbed = EmbedBuilder.from(interaction.message.embeds[0])
             .setDescription(keys.buttons.enable.success.help.embeds[0].description)
             .setColor(Discord.Colors[keys.buttons.enable.success.help.embeds[0].color]);
