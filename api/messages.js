@@ -402,7 +402,7 @@ export async function replyOptions(interaction, options) {
  * @param {Discord.BaseMessageOptions} message - The message to add the completion to.
  * @returns {Discord.BaseMessageOptions} - The message with the completion added.
  */
-function addCompletion(path, message) {
+export function addCompletion(path, message) {
     let completion;
     if(Object.keys(completions).includes(path[path.length - 1])) completion = completions[path[path.length - 1]];
     else if(Object.keys(completions).includes(path[path.length - 2])) completion = completions[path[path.length - 2]];

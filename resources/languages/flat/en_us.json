@@ -516,6 +516,7 @@
 
   "commands.chatchannel.warnings.not_collected.embeds.0.title": "Select Message Types",
   "commands.chatchannel.warnings.not_collected.embeds.0.description": "Select all message types you want the bot to send. (Time ran out)",
+  "commands.chatchannel.warnings.not_collected.components": [],
 
   "commands.chatchannel.warnings.already_responded.embeds.0.title": "Select Message Types",
   "commands.chatchannel.warnings.already_responded.embeds.0.description": "Select all message types you want the bot to send. (Already responded)",
@@ -573,6 +574,7 @@
 
   "commands.chatchannel.success.add.embeds.0.title": "Added Chat Channel",
   "commands.chatchannel.success.add.embeds.0.description": "Successfully added the chat channel.",
+  "commands.chatchannel.success.components": [],
   "commands.chatchannel.success.add.console": "Successfully added chat channel",
 
   "commands.chatchannel.success.remove.embeds.0.title": "Removed Chat Channel",

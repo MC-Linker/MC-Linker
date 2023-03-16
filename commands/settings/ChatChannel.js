@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import { addTranslatedResponses, getComponent, getEmbed, ph } from '../../api/messages.js';
+import { getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys, { getLanguageKey } from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../api/utils.js';
@@ -38,10 +38,9 @@ export default class ChatChannel extends Command {
                     time: 180_000,
                     filter: m => m.user.id === interaction.user.id && m.customId === 'log',
                 });
-                menu = addTranslatedResponses(menu);
             }
             catch(_) {
-                return interaction.replyTl({ ...keys.commands.chatchannel.warnings.not_collected, components: [] });
+                return interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
             }
 
             //Create webhook for channel
@@ -65,10 +64,8 @@ export default class ChatChannel extends Command {
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook?.delete();
 
             await server.edit({ channels: resp.data });
-            return menu.update({
-                ...getLanguageKey(keys.commands.chatchannel.success.add),
-                components: [],
-            }, ph.emojis(), ph.colors());
+
+            return interaction.replyTl(keys.commands.chatchannel.success.add, ph.emojis(), ph.colors());
         }
         //Remove chatchannel
         else if(method === 'remove') {
@@ -97,7 +94,7 @@ export default class ChatChannel extends Command {
             const pages = {};
 
             for(const channel of server.channels) {
-                const options = getLanguageKey(keys.commands.chatchannel.success.choose.components[0].options);
+                const options = getLanguageKey(keys.commands.chatchannel.step.choose.components[0].options);
                 const formattedTypes = channel.types.map(type => options.find(o => o.value === type).label).join(',\n');
 
                 const channelEmbed = getEmbed(
