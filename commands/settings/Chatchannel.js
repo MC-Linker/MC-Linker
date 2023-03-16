@@ -29,7 +29,8 @@ export default class Chatchannel extends Command {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
             }
 
-            const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.success.choose);
+            const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
+            E;
 
             let menu;
             try {
@@ -41,7 +42,7 @@ export default class Chatchannel extends Command {
                 menu = addTranslatedResponses(menu);
             }
             catch(_) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
+                return interaction.replyTl({ ...keys.commands.chatchannel.warnings.not_collected, components: [] });
             }
 
             //Create webhook for channel
@@ -66,9 +67,9 @@ export default class Chatchannel extends Command {
 
             await server.edit({ channels: resp.data });
             return menu.update({
-                embeds: [getEmbed(keys.commands.chatchannel.success.add, ph.emojis(), ph.colors())],
+                ...getLanguageKey(keys.commands.chatchannel.success.add),
                 components: [],
-            });
+            }, ph.emojis(), ph.colors());
         }
         //Remove chatchannel
         else if(method === 'remove') {

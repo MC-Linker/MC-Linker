@@ -15,6 +15,8 @@
   "completions.no_access.author.icon_url": "https://cdn.discordapp.com/emojis/1084892473756766370.webp",
   "completions.no_access.color": "%color_error%",
 
+  "completions.step.color": "%color_step%",
+
 
 
   "emojis.warning": "<:warn:1084892438205829180>",
@@ -456,7 +458,6 @@
 
   "commands.account.step.verification_info.embeds.0.title": "Account Verification",
   "commands.account.step.verification_info.embeds.0.description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
-  "commands.account.step.verification_info.embeds.0.color": "%color_step%",
 
   "commands.account.success.verified.embeds.0.title": "Account Verified",
   "commands.account.success.verified.embeds.0.description": "Successfully verified your account.",
@@ -520,8 +521,8 @@
   "commands.chatchannel.warnings.already_responded.embeds.0.description": "Select all message types you want the bot to send. (Already responded)",
 
 
-  "commands.chatchannel.success.choose.embeds.0.title": "Select Message Types",
-  "commands.chatchannel.success.choose.embeds.0.description": "Select all message types you want the bot to send. (You have 3 minutes to select)",
+  "commands.chatchannel.step.choose.embeds.0.title": "Select Message Types",
+  "commands.chatchannel.success.choose.embeds.0.description": "%emoji_step% Select all message types you want the bot to send. (You have 3 minutes to select)",
 
   "commands.chatchannel.success.choose.components.0.type": "SelectMenu",
   "commands.chatchannel.success.choose.components.0.custom_id": "log",
@@ -620,7 +621,6 @@
 
   "commands.connect.step.check_dms.embeds.0.title": "Check Your DMs",
   "commands.connect.step.check_dms.embeds.0.description": "%emoji_step% Please check your DMs to complete the connection.",
-  "commands.connect.step.check_dms.embeds.0.color": "%color_step%",
 
   "commands.connect.warnings.could_not_dm.embeds.0.title": "Could Not DM",
   "commands.connect.warnings.could_not_dm.embeds.0.description": "Could not DM you. Verifying in the current channel...",
@@ -663,7 +663,6 @@
 
   "commands.connect.success.verification_info.embeds.0.title": "Server Verification",
   "commands.connect.success.verification_info.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
-  "commands.connect.success.verification_info.embeds.0.color": "%color_step%",
 
   "commands.connect.success.ftp.embeds.0.title": "Connected to Server",
   "commands.connect.success.ftp.embeds.0.description": "Successfully connected to the ftp server.",

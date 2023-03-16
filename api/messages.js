@@ -411,7 +411,6 @@ function addCompletion(path, message) {
     return message;
 }
 
-
 /**
  * Get an embed builder from a language key.
  * @param {Discord.APIEmbed|{embeds: Discord.APIEmbed[]}} key - The language key to get the embed from.
