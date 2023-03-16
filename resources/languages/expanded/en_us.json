@@ -1027,15 +1027,7 @@
         "choose": {
           "embeds": [
             {
-              "title": "Select Message Types"
-            }
-          ]
-        }
-      },
-      "success": {
-        "choose": {
-          "embeds": [
-            {
+              "title": "Select Message Types",
               "description": "%emoji_step% Select all message types you want the bot to send. (You have 3 minutes to select)"
             }
           ],
@@ -1100,7 +1092,9 @@
               ]
             }
           ]
-        },
+        }
+      },
+      "success": {
         "add": {
           "embeds": [
             {
