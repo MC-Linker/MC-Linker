@@ -45,7 +45,6 @@ export default class ChannelStats extends Command {
             const resp = await server.protocol.addStatsChannel(statChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            settings.statsChannels.push(statChannel);
             await settings.edit({ 'stats-channels': resp.data });
 
             let message;
