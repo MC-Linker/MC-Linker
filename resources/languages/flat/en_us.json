@@ -625,7 +625,7 @@
   "commands.connect.warnings.could_not_dm.embeds.0.title": "Could Not DM",
   "commands.connect.warnings.could_not_dm.embeds.0.description": "Could not DM you. Verifying in the current channel...",
 
-  "commands.connect.warnings.no_reply_in_time.embeds.0.title": "Verification Unsuccessful",
+  "commands.connect.warnings.no_reply_in_time.embeds.0.title": "Verification Failed",
   "commands.connect.warnings.no_reply_in_time.embeds.0.description": "You did not reply in time!",
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
 
@@ -653,11 +653,11 @@
   "commands.connect.errors.could_not_get_properties.embeds.0.description": "Could not download server configuration. Please specify the server-path manually.",
   "commands.connect.errors.could_not_get_properties.console": "Could not download server.properties",
 
-  "commands.connect.errors.incorrect_code.embeds.0.title": "Verification Unsuccessful",
+  "commands.connect.errors.incorrect_code.embeds.0.title": "Verification Failed",
   "commands.connect.errors.incorrect_code.embeds.0.description": "You didn't reply with the correct code.",
   "commands.connect.errors.incorrect_code.console": "Incorrect code",
 
-  "commands.connect.errors.websocket_error.embeds.0.title": "Verification Unsuccessful",
+  "commands.connect.errors.websocket_error.embeds.0.title": "Verification Failed",
   "commands.connect.errors.websocket_error.embeds.0.description": "An unknown error occurred while connecting to the plugin.",
   "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error%",
 

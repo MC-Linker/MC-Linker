@@ -5,7 +5,7 @@ import Command from '../../structures/Command.js';
 import * as utils from '../../api/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
-export default class Chatchannel extends Command {
+export default class ChatChannel extends Command {
 
     constructor() {
         super({
@@ -30,7 +30,6 @@ export default class Chatchannel extends Command {
             }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
-            E;
 
             let menu;
             try {

@@ -1219,7 +1219,7 @@
         "no_reply_in_time": {
           "embeds": [
             {
-              "title": "Verification Unsuccessful",
+              "title": "Verification Failed",
               "description": "You did not reply in time!"
             }
           ],
@@ -1302,7 +1302,7 @@
         "incorrect_code": {
           "embeds": [
             {
-              "title": "Verification Unsuccessful",
+              "title": "Verification Failed",
               "description": "You didn't reply with the correct code."
             }
           ],
@@ -1311,7 +1311,7 @@
         "websocket_error": {
           "embeds": [
             {
-              "title": "Verification Unsuccessful",
+              "title": "Verification Failed",
               "description": "An unknown error occurred while connecting to the plugin."
             }
           ],
