@@ -943,13 +943,11 @@
                 },
                 {
                   "name": "Offline Text",
-                  "value": "%online_name%",
-                  "inline": true
+                  "value": "%online_name%"
                 },
                 {
                   "name": "Online Text",
-                  "value": "%offline_name%",
-                  "inline": true
+                  "value": "%offline_name%"
                 }
               ]
             }
@@ -960,15 +958,21 @@
           "embeds": [
             {
               "title": "List Stats Channels",
-              "description": "%channel%",
               "fields": [
                 {
+                  "name": "Channel",
+                  "value": "%channel%",
+                  "inline": true
+                },
+                {
                   "name": "Type",
-                  "value": "Member Counter"
+                  "value": "Member Counter",
+                  "inline": true
                 },
                 {
                   "name": "Channel Text",
-                  "value": "%name%"
+                  "value": "%name%",
+                  "inline": true
                 }
               ]
             }

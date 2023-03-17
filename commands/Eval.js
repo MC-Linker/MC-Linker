@@ -98,11 +98,11 @@ export default class Eval extends Command {
                 return interaction.replyOptions({ files: [attachment] });
             }
             else {
-                return interaction.replyTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, maxCharLength)) });
+                return interaction.replyTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, MaxEmbedFieldValueLength)) });
             }
         }
         catch(err) {
-            return interaction.replyTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, maxCharLength)) }, ph.error(err));
+            return interaction.replyTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, MaxEmbedFieldValueLength)) }, ph.error(err));
         }
     }
 }
