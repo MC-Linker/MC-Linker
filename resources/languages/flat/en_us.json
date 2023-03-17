@@ -576,7 +576,7 @@
 
   "commands.chatchannel.success.add.embeds.0.title": "Added Chat Channel",
   "commands.chatchannel.success.add.embeds.0.description": "Successfully added the chat channel.",
-  "commands.chatchannel.success.components": [],
+  "commands.chatchannel.success.add.components": [],
   "commands.chatchannel.success.add.console": "Successfully added chat channel",
 
   "commands.chatchannel.success.remove.embeds.0.title": "Removed Chat Channel",
@@ -768,6 +768,7 @@
   "api.plugin.errors.no_response.embeds.0.title": "Plugin Does Not Respond",
   "api.plugin.errors.no_response.embeds.0.description": "[Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
+  "api.plugin.errors.no_response.components": [],
 
   "api.plugin.errors.no_webhook_permission.embeds.0.title": "No Webhook Permission",
   "api.plugin.errors.no_webhook_permission.embeds.0.description": "The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission.",

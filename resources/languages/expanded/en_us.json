@@ -1107,9 +1107,9 @@
               "description": "Successfully added the chat channel."
             }
           ],
+          "components": [],
           "console": "Successfully added chat channel"
         },
-        "components": [],
         "remove": {
           "embeds": [
             {
@@ -1547,7 +1547,8 @@
               "description": "[Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled."
             }
           ],
-          "console": "Plugin does not respond"
+          "console": "Plugin does not respond",
+          "components": []
         },
         "no_webhook_permission": {
           "embeds": [
