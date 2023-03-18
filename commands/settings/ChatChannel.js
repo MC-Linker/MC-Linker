@@ -23,7 +23,8 @@ export default class ChatChannel extends Command {
         //Add chatchannel
         if(method === 'add') {
             const channel = args[1];
-            const useWebhooks = args[2];
+            const allowDiscordToMinecraft = args[2] ?? true;
+            const useWebhooks = args[3] ?? false;
 
             if(!channel.isTextBased()) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
@@ -60,6 +61,7 @@ export default class ChatChannel extends Command {
                 id: channel.id,
                 webhook: webhook?.id,
                 types: menu.values,
+                allowDiscordToMinecraft,
             });
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook?.delete();
 

@@ -80,7 +80,13 @@ client.on(Discord.Events.MessageCreate, async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
 
-    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(process.env.PREFIX)) {
+    if(!message.author.bot && !message.content.startsWith(process.env.PREFIX)) {
+        /** @type {ChatChannelData} */
+        const channel = server?.channels?.find(c => c.id === message.channel.id);
+        //Explicitly check for false
+        //because it can be undefined (i haven't added the field to already existing connections)
+        if(!channel || channel.allowDiscordToMinecraft === false) return;
+
         let content = cleanEmojis(message.cleanContent);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
 

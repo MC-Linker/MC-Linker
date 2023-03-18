@@ -9,6 +9,7 @@ export default class ServerConnection extends Connection {
      * @typedef {object} ChatChannelData - The data for a chatchannel.
      * @property {string} id - The id of the channel.
      * @property {string[]} types - The enabled types of the chatchannel.
+     * @property {string} [allowDiscordToMinecraft] - Whether the chatchannel should send messages from discord to minecraft.
      * @property {string} [webhook] - The webhook id of the chatchannel.
      */
 
