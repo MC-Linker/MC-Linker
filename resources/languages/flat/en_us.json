@@ -1435,12 +1435,12 @@
 
   "data.chatchannel.options.0.options.1.type": "Boolean",
   "data.chatchannel.options.0.options.1.name": "discord-to-minecraft",
-  "data.chatchannel.options.0.options.1.description": "Enable chat messages from discord to minecraft.",
+  "data.chatchannel.options.0.options.1.description": "Enable chat messages from discord to minecraft. (Default: true)",
   "data.chatchannel.options.0.options.1.required": false,
 
   "data.chatchannel.options.0.options.2.type": "Boolean",
   "data.chatchannel.options.0.options.2.name": "webhooks",
-  "data.chatchannel.options.0.options.2.description": "Enable webhook mode for chat messages.",
+  "data.chatchannel.options.0.options.2.description": "Enable webhook mode for chat messages. (Default: false)",
   "data.chatchannel.options.0.options.2.required": false,
 
 

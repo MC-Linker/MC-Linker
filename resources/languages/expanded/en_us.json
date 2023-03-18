@@ -2649,13 +2649,13 @@
             {
               "type": "Boolean",
               "name": "discord-to-minecraft",
-              "description": "Enable chat messages from discord to minecraft.",
+              "description": "Enable chat messages from discord to minecraft. (Default: true)",
               "required": false
             },
             {
               "type": "Boolean",
               "name": "webhooks",
-              "description": "Enable webhook mode for chat messages.",
+              "description": "Enable webhook mode for chat messages. (Default: false)",
               "required": false
             }
           ]

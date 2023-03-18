@@ -180,7 +180,7 @@ export default class ServerInfo extends Command {
 
         if(isAdmin) {
             const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
-                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
+                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
                 seed: datObject.Data.WorldGenSettings.seed,
             });
             const newFields = [];
