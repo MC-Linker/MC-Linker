@@ -1,5 +1,5 @@
 import Command from '../../structures/Command.js';
-import keys, { getLanguageKey } from '../../api/keys.js';
+import keys from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../api/utils.js';
@@ -180,7 +180,7 @@ export default class ServerInfo extends Command {
 
         if(isAdmin) {
             const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
-                enable_whitelist: getLanguageKey(propertiesObject['white-list'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled),
+                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
                 seed: datObject.Data.WorldGenSettings.seed,
             });
             const newFields = [];
