@@ -1,5 +1,5 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
+import keys, { getLanguageKey } from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../api/utils.js';
@@ -126,7 +126,7 @@ export default class ServerInfo extends Command {
         });
 
         const difficulty = typeof propertiesObject['difficulty'] === 'number' ?
-            keys.commands.serverinfo.difficulty[propertiesObject['difficulty']] :
+            getLanguageKey(keys.commands.serverinfo.difficulty[propertiesObject['difficulty']]) :
             propertiesObject['difficulty'].cap();
 
         const filteredGamerules = Object.entries(datObject.Data.GameRules)
@@ -144,8 +144,8 @@ export default class ServerInfo extends Command {
             spawn_y: datObject.Data.SpawnY,
             spawn_z: datObject.Data.SpawnZ,
             spawn_world: datObject.Data.LevelName,
-            allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
-            allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
+            allow_end: getLanguageKey(propertiesObject['allow-end'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled),
+            allow_nether: getLanguageKey(propertiesObject['allow-nether'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled),
             difficulty,
             gamerules: filteredGamerules.join('\n'),
         });
@@ -155,7 +155,7 @@ export default class ServerInfo extends Command {
 
         /** @type {Discord.InteractionReplyOptions} */
         const startingMessage = {
-            embeds: [keys.commands.serverinfo.success.general],
+            embeds: getLanguageKey(keys.commands.serverinfo.success.general.embeds),
             files: [iconAttachment, serverListAttachment],
         };
         /** @type {PaginationPages} */
@@ -163,7 +163,7 @@ export default class ServerInfo extends Command {
             serverinfo_general: {
                 button: getComponent(keys.commands.serverinfo.success.general_button),
                 page: getReplyOptions(startingMessage, {
-                    server_name: propertiesObject['server-name'] ?? keys.commands.serverinfo.warnings.unknown,
+                    server_name: propertiesObject['server-name'] ?? getLanguageKey(keys.commands.serverinfo.warnings.unknown),
                     motd: motd.join('\n'),
                     max_players: propertiesObject['max-players'],
                     online_players: onlinePlayers,
@@ -180,7 +180,7 @@ export default class ServerInfo extends Command {
 
         if(isAdmin) {
             const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
-                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
+                enable_whitelist: getLanguageKey(propertiesObject['white-list'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled),
                 seed: datObject.Data.WorldGenSettings.seed,
             });
             const newFields = [];
