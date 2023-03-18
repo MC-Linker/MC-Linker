@@ -3,7 +3,7 @@ import keys, { getLanguageKey } from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../api/utils.js';
-import { addPh, getComponent, getEmbed, getReplyOptions } from '../../api/messages.js';
+import { addPh, getComponent, getEmbed } from '../../api/messages.js';
 import gamerules from '../../resources/data/gamerules.json' assert { type: 'json' };
 import { unraw } from 'unraw';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -126,7 +126,7 @@ export default class ServerInfo extends Command {
         });
 
         const difficulty = typeof propertiesObject['difficulty'] === 'number' ?
-            getLanguageKey(keys.commands.serverinfo.difficulty[propertiesObject['difficulty']]) :
+            keys.commands.serverinfo.difficulty[propertiesObject['difficulty']] :
             propertiesObject['difficulty'].cap();
 
         const filteredGamerules = Object.entries(datObject.Data.GameRules)
@@ -144,8 +144,8 @@ export default class ServerInfo extends Command {
             spawn_y: datObject.Data.SpawnY,
             spawn_z: datObject.Data.SpawnZ,
             spawn_world: datObject.Data.LevelName,
-            allow_end: getLanguageKey(propertiesObject['allow-end'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled),
-            allow_nether: getLanguageKey(propertiesObject['allow-nether'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled),
+            allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
+            allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
             difficulty,
             gamerules: filteredGamerules.join('\n'),
         });
@@ -155,21 +155,21 @@ export default class ServerInfo extends Command {
 
         /** @type {Discord.InteractionReplyOptions} */
         const startingMessage = {
-            embeds: getLanguageKey(keys.commands.serverinfo.success.general.embeds),
+            embeds: [getEmbed(keys.commands.serverinfo.success.general, {
+                server_name: propertiesObject['server-name'] ?? keys.commands.serverinfo.warnings.unknown,
+                motd: motd.join('\n'),
+                max_players: propertiesObject['max-players'],
+                online_players: onlinePlayers,
+                ip: server.protocol.ip,
+                version: datObject.Data.Version.Name,
+            })],
             files: [iconAttachment, serverListAttachment],
         };
         /** @type {PaginationPages} */
         const pages = {
             serverinfo_general: {
                 button: getComponent(keys.commands.serverinfo.success.general_button),
-                page: getReplyOptions(startingMessage, {
-                    server_name: propertiesObject['server-name'] ?? getLanguageKey(keys.commands.serverinfo.warnings.unknown),
-                    motd: motd.join('\n'),
-                    max_players: propertiesObject['max-players'],
-                    online_players: onlinePlayers,
-                    ip: server.protocol.ip,
-                    version: datObject.Data.Version.Name,
-                }),
+                page: startingMessage,
                 startPage: true,
             },
             serverinfo_world: {

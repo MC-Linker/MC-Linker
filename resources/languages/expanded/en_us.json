@@ -677,15 +677,15 @@
       "warnings": {
         "unknown": "*Unknown*"
       },
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "difficulty": [
+        "Peaceful",
+        "Easy",
+        "Normal",
+        "Hard"
+      ],
       "success": {
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "difficulty": [
-          "Peaceful",
-          "Easy",
-          "Normal",
-          "Hard"
-        ],
         "general": {
           "embeds": [
             {
@@ -2645,6 +2645,12 @@
                 "PublicThread",
                 "PrivateThread"
               ]
+            },
+            {
+              "type": "Boolean",
+              "name": "discord-to-minecraft",
+              "description": "Enable chat messages from discord to minecraft.",
+              "required": false
             },
             {
               "type": "Boolean",

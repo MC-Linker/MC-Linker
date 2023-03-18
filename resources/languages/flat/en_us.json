@@ -334,13 +334,13 @@
 
   "commands.serverinfo.warnings.unknown": "*Unknown*",
 
-  "commands.serverinfo.success.enabled": "Enabled",
-  "commands.serverinfo.success.disabled": "Disabled",
+  "commands.serverinfo.enabled": "Enabled",
+  "commands.serverinfo.disabled": "Disabled",
 
-  "commands.serverinfo.success.difficulty.0": "Peaceful",
-  "commands.serverinfo.success.difficulty.1": "Easy",
-  "commands.serverinfo.success.difficulty.2": "Normal",
-  "commands.serverinfo.success.difficulty.3": "Hard",
+  "commands.serverinfo.difficulty.0": "Peaceful",
+  "commands.serverinfo.difficulty.1": "Easy",
+  "commands.serverinfo.difficulty.2": "Normal",
+  "commands.serverinfo.difficulty.3": "Hard",
 
   "commands.serverinfo.success.general.embeds.0.title": "Server Information",
   "commands.serverinfo.success.general.embeds.0.thumbnail": "attachment://server-icon.png",
@@ -1434,9 +1434,14 @@
   "data.chatchannel.options.0.options.0.channel_types.4": "PrivateThread",
 
   "data.chatchannel.options.0.options.1.type": "Boolean",
-  "data.chatchannel.options.0.options.1.name": "webhooks",
-  "data.chatchannel.options.0.options.1.description": "Enable webhook mode for chat messages.",
+  "data.chatchannel.options.0.options.1.name": "discord-to-minecraft",
+  "data.chatchannel.options.0.options.1.description": "Enable chat messages from discord to minecraft.",
   "data.chatchannel.options.0.options.1.required": false,
+
+  "data.chatchannel.options.0.options.2.type": "Boolean",
+  "data.chatchannel.options.0.options.2.name": "webhooks",
+  "data.chatchannel.options.0.options.2.description": "Enable webhook mode for chat messages.",
+  "data.chatchannel.options.0.options.2.required": false,
 
 
   "data.chatchannel.options.1.type": "Subcommand",
