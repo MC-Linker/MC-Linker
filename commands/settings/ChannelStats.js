@@ -70,7 +70,7 @@ export default class ChannelStats extends Command {
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
             statsChannels.splice(index, 1);
-            await settings.edit({ 'stats-channels': statsChannels });
+            await settings.edxit({ 'stats-channels': statsChannels });
 
             await interaction.replyTl(keys.commands['channel-stats'].success.remove);
         }
