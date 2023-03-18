@@ -336,7 +336,7 @@ export default class BotAPI extends EventEmitter {
         for(const channel of channels) {
             if(!channel.names[event]) return;
 
-            const discordChannel = await guild.channels.fetch(id);
+            const discordChannel = await guild.channels.fetch(channel.id);
             if(!discordChannel) return;
 
             //Replace %count% with the actual count
