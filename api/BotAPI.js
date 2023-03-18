@@ -241,18 +241,18 @@ export default class BotAPI extends EventEmitter {
             for(const channel of channels) {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
+                /** @type {?Discord.TextChannel} */
                 const discordChannel = await guild.channels.fetch(channel.id);
                 if(!discordChannel) continue;
 
                 if(!allWebhooks) {
-                    discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
+                    await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
                     return;
                 }
 
                 if(!channel.webhook) {
                     try {
-                        discordChannel.send({ embeds: [chatEmbed] })
-                            .catch(() => {});
+                        await discordChannel.send({ embeds: [chatEmbed] });
                     }
                     catch(_) {}
                     continue;
@@ -278,7 +278,7 @@ export default class BotAPI extends EventEmitter {
                             id: channel.id,
                         });
                         if(!regChannel) {
-                            discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis(), ph.colors())] });
+                            await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis(), ph.colors())] });
                             await webhook.delete();
                             return;
                         }
@@ -302,7 +302,7 @@ export default class BotAPI extends EventEmitter {
                     });
                 }
                 catch(_) {
-                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
+                    await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
                     return;
                 }
             }
