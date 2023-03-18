@@ -201,6 +201,8 @@ export default class BotAPI extends EventEmitter {
             if(server.settings.isDisabled('chat-commands', commandName)) return;
         }
 
+        const guild = await this.client.guilds.fetch(guildId);
+
         let chatEmbed;
         if(type === 'advancement') {
             let advancementTitle;
@@ -220,7 +222,6 @@ export default class BotAPI extends EventEmitter {
             });
         }
         else if(type === 'chat') {
-            const guild = await this.client.guilds.fetch(guildId);
 
             //Parse pings (@name)
             const mentions = message.match(/@(\S+)/g);
@@ -315,7 +316,7 @@ export default class BotAPI extends EventEmitter {
             for(const channel of channels) {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
-                const discordChannel = await this.client.channels.fetch(channel.id);
+                const discordChannel = await guild.channels.fetch(channel.id);
                 if(!discordChannel) continue;
 
                 try {
@@ -329,12 +330,13 @@ export default class BotAPI extends EventEmitter {
 
     async _updateStatsChannel(data) {
         // event can be one of: 'online', 'offline', 'members'
-        const { channels, event } = data;
+        const { channels, event, id } = data;
 
+        const guild = await this.client.guilds.fetch(id);
         for(const channel of channels) {
             if(!channel.names[event]) return;
 
-            const discordChannel = await this.client.channels.fetch(channel.id);
+            const discordChannel = await guild.channels.fetch(id);
             if(!discordChannel) return;
 
             //Replace %count% with the actual count
