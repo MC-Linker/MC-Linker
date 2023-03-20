@@ -327,15 +327,18 @@
             "fields": [
               {
                 "name": "%advancement_title%",
-                "value": "%advancement_description%"
+                "value": "%advancement_description%",
+                "inline": true
               },
               {
                 "name": "Requirements",
-                "value": "%advancements_criteria%"
+                "value": "%advancement_criteria%",
+                "inline": true
               },
               {
                 "name": "Acquired on",
-                "value": "%advancement_timestamps%"
+                "value": "%advancement_timestamps%",
+                "inline": true
               }
             ],
             "footer": {

@@ -176,7 +176,7 @@
   "commands.advancements.success.embeds.0.fields.0.value": "%advancement_description%",
   "commands.advancements.success.embeds.0.fields.0.inline": true,
   "commands.advancements.success.embeds.0.fields.1.name": "Requirements",
-  "commands.advancements.success.embeds.0.fields.1.value": "%advancements_criteria%",
+  "commands.advancements.success.embeds.0.fields.1.value": "%advancement_criteria%",
   "commands.advancements.success.embeds.0.fields.1.inline": true,
   "commands.advancements.success.embeds.0.fields.2.name": "Acquired on",
   "commands.advancements.success.embeds.0.fields.2.value": "%advancement_timestamps%",
