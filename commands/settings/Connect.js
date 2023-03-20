@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { addPh, addTranslatedResponses, getEmbed, getModal, ph } from '../../api/messages.js';
+import { addPh, addTranslatedResponses, getEmbed, getModal, getReplyOptions, ph } from '../../api/messages.js';
 import keys, { getLanguageKey } from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
@@ -303,7 +303,7 @@ export default class Connect extends Command {
         if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
         else {
             await client.serverConnections.disconnect(server);
-            await interaction.channel.send(addPh(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
+            await interaction.followUp(getReplyOptions(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
         }
     }
 }

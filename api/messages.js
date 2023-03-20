@@ -341,7 +341,7 @@ export function addPh(key, ...placeholders) {
  * @returns {Promise<?Message|?InteractionResponse>}
  */
 export async function replyTl(interaction, key, ...placeholders) {
-    const message = addCompletion(getObjectPath(key), getLanguageKey(key));
+    const message = addCompletion(key);
 
     // Log to console if interaction doesn't exist
     // noinspection JSUnresolvedVariable
@@ -398,16 +398,18 @@ export async function replyOptions(interaction, options) {
 
 /**
  * If the path's last or second to last element is contained in the `completions` array of the language file, merge the first embed with the completion.
- * @param {Array.<string>} path - The path to the language key.
- * @param {Discord.BaseMessageOptions} message - The message to add the completion to.
+ * @param {any} key - The language key to add the completion to.
  * @returns {Discord.BaseMessageOptions} - The message with the completion added.
  */
-export function addCompletion(path, message) {
+export function addCompletion(key) {
+    const path = getObjectPath(key);
+    const message = getLanguageKey(key);
+
     let completion;
     if(Object.keys(completions).includes(path[path.length - 1])) completion = completions[path[path.length - 1]];
     else if(Object.keys(completions).includes(path[path.length - 2])) completion = completions[path[path.length - 2]];
 
-    if(completion) message.embeds[0] = { ...completion, ...message.embeds[0] }; // original embeds is last, so it overrides the completion
+    if(completion && message.embeds[0]) message.embeds[0] = { ...completion, ...message.embeds[0] }; // original embeds is last, so it overrides the completion
     return message;
 }
 
@@ -422,7 +424,7 @@ export function getEmbed(key, ...placeholders) {
         console.error(getLanguageKey(keys.api.messages.errors.no_embed_key.console));
         return null;
     }
-    if(util.types.isProxy(key)) key = addCompletion(getObjectPath(key), getLanguageKey(key));
+    if(util.types.isProxy(key)) key = addCompletion(key);
 
     //Get first embed
     if(key.embeds) key = key.embeds[0];
@@ -563,7 +565,7 @@ export function getReplyOptions(key, ...placeholders) {
         console.error(getLanguageKey(keys.api.messages.errors.no_reply_key.console));
         return null;
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
+    if(util.types.isProxy(key)) key = addCompletion(key);
 
     const options = { ...addPh(key, ...placeholders) };
     if(key.embeds) options.embeds = key.embeds.map(embed => getEmbed(embed, ...placeholders));
