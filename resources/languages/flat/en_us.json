@@ -180,6 +180,7 @@
   "commands.advancements.success.embeds.0.fields.1.value": "%advancement_timestamps%",
   "commands.advancements.success.embeds.0.fields.1.inline": true,
   "commands.advancements.success.embeds.0.footer.text": "Advancement %is_done%",
+  "commands.advancements.success.embeds.0.footer.icon_url": "%is_done_icon%",
 
 
 

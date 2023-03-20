@@ -72,28 +72,28 @@ export default class Advancements extends AutocompleteCommand {
 
         const advancementCriteria = [];
         const advancementTimestamps = [];
-        let isAdvancementDone = true;
+        let isAdvancementDone = false;
 
-        try {
-            if(category === 'recipes') {
-                const allAdvancements = Object.keys(advancementData);
-                const filteredAdvancement = allAdvancements.find(key => key.includes(`recipes/`) && key.endsWith(`/${advancement}`));
+        if(category === 'recipes') {
+            const allAdvancements = Object.keys(advancementData);
+            const filteredAdvancement = allAdvancements.find(key => key.includes(`recipes/`) && key.endsWith(`/${advancement}`));
 
-                const criteria = Object.keys(advancementData[filteredAdvancement]['criteria']).join('');
-                const date = advancementData[filteredAdvancement]['criteria'][criteria];
-                const done = advancementData[filteredAdvancement]['done'];
+            const criteria = Object.keys(advancementData[filteredAdvancement]['criteria']).join('');
+            const date = advancementData[filteredAdvancement]['criteria'][criteria];
+            const done = advancementData[filteredAdvancement]['done'];
 
-                if(!done) isAdvancementDone = false;
-                advancementCriteria.push(criteria.split(':').pop());
-                advancementTimestamps.push(time(new Date(date)));
-            }
-            else {
-                const allAdvancements = Object.keys(advancementData);
-                //Filter either by category + id or just id
-                const filteredAdvancement = category ?
-                    allAdvancements.find(key => key.split(':').pop() === `${category}/${advancement}`) :
-                    allAdvancements.find(key => key.endsWith(advancement));
+            if(done) isAdvancementDone = true;
+            advancementCriteria.push(criteria.split(':').pop());
+            advancementTimestamps.push(time(new Date(date)));
+        }
+        else {
+            const allAdvancements = Object.keys(advancementData);
+            //Filter either by category + id or just id
+            const filteredAdvancement = category ?
+                allAdvancements.find(key => key.split(':').pop() === `${category}/${advancement}`) :
+                allAdvancements.find(key => key.endsWith(advancement));
 
+            if(filteredAdvancement) {
                 const criteriaKeys = Object.keys(advancementData[filteredAdvancement]['criteria']);
                 const done = advancementData[filteredAdvancement]['done'];
 
@@ -107,19 +107,17 @@ export default class Advancements extends AutocompleteCommand {
                     advancementTimestamps.push(time(new Date(date)));
                 }
 
-                if(!done) isAdvancementDone = false;
+                if(done) isAdvancementDone = true;
             }
+        }
 
-            await interaction.replyTl(keys.commands.advancements.success, {
-                'advancement_title': advancementTitle,
-                'advancement_description': advancementDesc,
-                'advancement_criteria': advancementCriteria.join('\n'),
-                'advancement_timestamps': advancementTimestamps.join('\n'),
-                'is_done': isAdvancementDone ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
-            });
-        }
-        catch(err) {
-            await interaction.replyTl(keys.commands.advancements.warnings.not_completed, { 'advancement_title': advancementTitle });
-        }
+        await interaction.replyTl(keys.commands.advancements.success, {
+            'advancement_title': advancementTitle,
+            'advancement_description': advancementDesc,
+            'advancement_criteria': advancementCriteria.join('\n'),
+            'advancement_timestamps': advancementTimestamps.join('\n'),
+            'is_done': isAdvancementDone ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
+            'is_done_icon': isAdvancementDone ? keys.completions.success.author.icon_url : keys.completions.errors.author.icon_url,
+        });
     }
 }

@@ -338,7 +338,8 @@
               }
             ],
             "footer": {
-              "text": "Advancement %is_done%"
+              "text": "Advancement %is_done%",
+              "icon_url": "%is_done_icon%"
             }
           }
         ]
