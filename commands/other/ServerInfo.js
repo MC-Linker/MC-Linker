@@ -76,6 +76,8 @@ export default class ServerInfo extends Command {
         else onlinePlayers = onlinePlayers.data.length;
 
         const serverName = propertiesObject['server-name'] ?? server.protocol.ip;
+        const serverPort = propertiesObject['server-port'] ?? 25565;
+        const serverIp = serverPort !== 25565 ? `${server.protocol.ip}:${serverPort}` : server.protocol.ip;
 
         let motd;
         try {
@@ -160,7 +162,7 @@ export default class ServerInfo extends Command {
                 motd: motd.join('\n'),
                 max_players: propertiesObject['max-players'],
                 online_players: onlinePlayers,
-                ip: server.protocol.ip,
+                ip: serverIp,
                 version: datObject.Data.Version.Name,
             })],
             files: [iconAttachment, serverListAttachment],
