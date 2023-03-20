@@ -156,6 +156,8 @@
 
 
   "commands.advancements.no_description_available": "No description available...",
+  "commands.advancements.acquired": "Acquired",
+  "commands.advancements.not_acquired": "Not Acquired",
 
   "commands.advancements.no_access.category_disabled.embeds.0.title": "Category Disabled",
   "commands.advancements.no_access.category_disabled.embeds.0.description": "Advancement category **%advancement_category%** disabled!",
@@ -169,23 +171,14 @@
   "commands.advancements.warnings.not_completed.embeds.0.description": "Advancement **%advancement_title%** not completed/unlocked or misspelled!",
   "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
 
-  "commands.advancements.success.base.embeds.0.title": "%username%",
-  "commands.advancements.success.base.embeds.0.description": "%advancement_description%",
-  "commands.advancements.success.base.embeds.0.color": "LuminousVividPink",
-  "commands.advancements.success.base.embeds.0.fields.0.name": "%equals%\n%advancement_title%",
-  "commands.advancements.success.base.embeds.0.fields.0.value": "**%equals%**",
-  "commands.advancements.success.base.embeds.0.image": "https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png",
-
-  "commands.advancements.success.done.embeds.0.footer.text": "Advancement unlocked/completed",
-  "commands.advancements.success.done.embeds.0.footer.icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png",
-  "commands.advancements.success.not_done.embeds.0.footer.text": "Advancement not unlocked/completed",
-  "commands.advancements.success.not_done.embeds.0.footer.icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png",
-
-  "commands.advancements.success.final.embeds.0.fields.0.name": "**Requirement**",
-  "commands.advancements.success.final.embeds.0.fields.0.value": "%advancement_requirement%",
-  "commands.advancements.success.final.embeds.0.fields.1.name": "**Unlocked on**",
-  "commands.advancements.success.final.embeds.0.fields.1.value": "%advancement_timestamp%",
-  "commands.advancements.success.final.console": "Sent advancement %advancement_title% of %username%",
+  "commands.advancements.success.embeds.0.title": "Advancement",
+  "commands.advancements.success.embeds.0.fields.0.name": "%advancement_title%",
+  "commands.advancements.success.embeds.0.fields.0.value": "%advancement_description%",
+  "commands.advancements.success.embeds.0.fields.1.name": "Requirements",
+  "commands.advancements.success.embeds.0.fields.1.value": "%advancements_criteria%",
+  "commands.advancements.success.embeds.0.fields.2.name": "Acquired on",
+  "commands.advancements.success.embeds.0.fields.2.value": "%advancement_timestamps%",
+  "commands.advancements.success.embeds.0.footer.text": "Advancement %is_done%",
 
 
 

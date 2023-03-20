@@ -287,6 +287,8 @@
     },
     "advancements": {
       "no_description_available": "No description available...",
+      "acquired": "Acquired",
+      "not_acquired": "Not Acquired",
       "no_access": {
         "category_disabled": {
           "embeds": [
@@ -319,59 +321,28 @@
         }
       },
       "success": {
-        "base": {
-          "embeds": [
-            {
-              "title": "%username%",
-              "description": "%advancement_description%",
-              "color": "LuminousVividPink",
-              "fields": [
-                {
-                  "name": "%equals%\n%advancement_title%",
-                  "value": "**%equals%**"
-                }
-              ],
-              "image": "https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png"
-            }
-          ]
-        },
-        "done": {
-          "embeds": [
-            {
-              "footer": {
-                "text": "Advancement unlocked/completed",
-                "icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png"
+        "embeds": [
+          {
+            "title": "Advancement",
+            "fields": [
+              {
+                "name": "%advancement_title%",
+                "value": "%advancement_description%"
+              },
+              {
+                "name": "Requirements",
+                "value": "%advancements_criteria%"
+              },
+              {
+                "name": "Acquired on",
+                "value": "%advancement_timestamps%"
               }
+            ],
+            "footer": {
+              "text": "Advancement %is_done%"
             }
-          ]
-        },
-        "not_done": {
-          "embeds": [
-            {
-              "footer": {
-                "text": "Advancement not unlocked/completed",
-                "icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png"
-              }
-            }
-          ]
-        },
-        "final": {
-          "embeds": [
-            {
-              "fields": [
-                {
-                  "name": "**Requirement**",
-                  "value": "%advancement_requirement%"
-                },
-                {
-                  "name": "**Unlocked on**",
-                  "value": "%advancement_timestamp%"
-                }
-              ]
-            }
-          ],
-          "console": "Sent advancement %advancement_title% of %username%"
-        }
+          }
+        ]
       }
     },
     "inventory": {

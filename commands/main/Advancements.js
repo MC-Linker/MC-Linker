@@ -1,7 +1,7 @@
 import * as utils from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import { time } from 'discord.js';
-import { addPh, getEmbed, ph } from '../../api/messages.js';
+import { addPh, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
@@ -70,22 +70,11 @@ export default class Advancements extends AutocompleteCommand {
         )) return;
         const advancementData = JSON.parse(amFile.data.toString('utf-8'));
 
-        const letters = [...advancementTitle];
-        let equals = '';
-        for(const {} of letters) equals += '=';
-
-        const baseEmbed = getEmbed(
-            keys.commands.advancements.success.base,
-            ph.std(interaction), {
-                equals,
-                'username': user.username,
-                'advancement_title': advancementTitle,
-                'advancement_description': advancementDesc,
-            },
-        );
+        const advancementCriteria = [];
+        const advancementTimestamps = [];
+        let isAdvancementDone = true;
 
         try {
-            let amEmbed;
             if(category === 'recipes') {
                 const allAdvancements = Object.keys(advancementData);
                 const filteredAdvancement = allAdvancements.find(key => key.includes(`recipes/`) && key.endsWith(`/${advancement}`));
@@ -94,16 +83,9 @@ export default class Advancements extends AutocompleteCommand {
                 const date = advancementData[filteredAdvancement]['criteria'][criteria];
                 const done = advancementData[filteredAdvancement]['done'];
 
-                amEmbed = baseEmbed.addFields(addPh(
-                    keys.commands.advancements.success.final.embeds[0].fields,
-                    {
-                        'advancement_requirement': criteria.split(':').pop(),
-                        'advancement_timestamp': time(new Date(date)),
-                    },
-                ));
-
-                if(!done) amEmbed.setFooter(keys.commands.advancements.success.not_done.embeds[0].footer);
-                else amEmbed.setFooter(keys.commands.advancements.success.done.embeds[0].footer);
+                if(!done) isAdvancementDone = false;
+                advancementCriteria.push(criteria.split(':').pop());
+                advancementTimestamps.push(time(new Date(date)));
             }
             else {
                 const allAdvancements = Object.keys(advancementData);
@@ -115,42 +97,26 @@ export default class Advancements extends AutocompleteCommand {
                 const criteriaKeys = Object.keys(advancementData[filteredAdvancement]['criteria']);
                 const done = advancementData[filteredAdvancement]['done'];
 
-                let counter = 1;
-                let amString = '';
                 for(const criteria of criteriaKeys) {
                     const date = advancementData[filteredAdvancement]['criteria'][criteria];
 
                     let formattedCriteria = criteria.split(':').pop();
                     formattedCriteria = mcData.itemsByName[formattedCriteria]?.displayName ?? formattedCriteria;
 
-                    amString +=
-                        `\n${keys.commands.advancements.success.final.embeds[0].fields[0].name}
-                    ${addPh(keys.commands.advancements.success.final.embeds[0].fields[0].value,
-                            { 'advancement_requirement': formattedCriteria })}
-                    
-                    ${keys.commands.advancements.success.final.embeds[0].fields[1].name}
-                    ${addPh(keys.commands.advancements.success.final.embeds[0].fields[1].value,
-                            { 'advancement_timestamp': time(new Date(date)) })}`;
-
-                    //Add one field for every 2 criteria
-                    if(counter % 2 || criteriaKeys.length === 1) {
-                        amEmbed = baseEmbed.addFields({ name: '\u200b', value: amString, inline: true });
-                        amString = '';
-                    }
-
-                    counter++;
+                    advancementCriteria.push(formattedCriteria);
+                    advancementTimestamps.push(time(new Date(date)));
                 }
 
-                if(!done) amEmbed.setFooter(keys.commands.advancements.success.not_done.embeds[0].footer);
-                else amEmbed.setFooter(keys.commands.advancements.success.done.embeds[0].footer);
+                if(!done) isAdvancementDone = false;
             }
 
-            console.log(addPh(keys.commands.advancements.success.final.console, {
+            await interaction.replyTl(keys.commands.advancements.success, {
                 'advancement_title': advancementTitle,
-                'username': user.username ?? user,
-            }));
-
-            await interaction.replyOptions({ embeds: [amEmbed] });
+                'advancement_description': advancementDesc,
+                'advancement_criteria': advancementCriteria.join('\n'),
+                'advancement_timestamps': advancementTimestamps.join('\n'),
+                'is_done': isAdvancementDone ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
+            });
         }
         catch(err) {
             await interaction.replyTl(keys.commands.advancements.warnings.not_completed, { 'advancement_title': advancementTitle });
