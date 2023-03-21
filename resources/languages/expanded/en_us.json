@@ -338,8 +338,11 @@
               }
             ],
             "footer": {
-              "text": "Advancement %is_done%",
-              "icon_url": "%is_done_icon%"
+              "text": "Advancement %is_done%"
+            },
+            "author": {
+              "name": "%username%",
+              "icon_url": "%user_icon%"
             }
           }
         ]

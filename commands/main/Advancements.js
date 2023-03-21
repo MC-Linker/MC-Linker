@@ -1,4 +1,5 @@
 import * as utils from '../../api/utils.js';
+import { minecraftAvatarURL } from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import { time } from 'discord.js';
 import { addPh, ph } from '../../api/messages.js';
@@ -112,12 +113,13 @@ export default class Advancements extends AutocompleteCommand {
         }
 
         await interaction.replyTl(keys.commands.advancements.success, {
+            'username': user.username,
+            'user_icon': minecraftAvatarURL(user.uuid),
             'advancement_title': advancementTitle,
             'advancement_description': advancementDesc,
             'advancement_criteria': advancementCriteria.join('\n'),
             'advancement_timestamps': advancementTimestamps.join('\n'),
             'is_done': isAdvancementDone ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
-            'is_done_icon': isAdvancementDone ? keys.completions.success.author.icon_url : keys.completions.errors.author.icon_url,
         });
     }
 }

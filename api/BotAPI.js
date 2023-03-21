@@ -2,6 +2,7 @@
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from './oauth.js';
 import * as utils from './utils.js';
+import { minecraftAvatarURL } from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import { EventEmitter } from 'node:events';
@@ -191,7 +192,7 @@ export default class BotAPI extends EventEmitter {
      */
     async _chat(data, server) {
         const { message, channels, id: guildId, type, player } = data;
-        const authorURL = `https://minotar.net/helm/${player}/64.png`;
+        const authorURL = minecraftAvatarURL(player);
 
         const argPlaceholder = { username: player, author_url: authorURL, message };
 

@@ -23,6 +23,7 @@ const mcData = McData('1.19.2');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
+export const minecraftAvatarURL = username => `https://minotar.net/helm/${username}/64.png`;
 
 /**
  * @typedef {object} AdvancementData
