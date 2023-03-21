@@ -70,6 +70,15 @@
           }
         ],
         "console": "Not in guild"
+      },
+      "no_prefix_commands": {
+        "embeds": [
+          {
+            "title": "Use Slash Commands",
+            "description": "Prefixed commands are disabled. Please use [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) instead by typing `/` in a server channel followed by the command name."
+          }
+        ],
+        "console": "%author_username% used prefix command %interaction_name%"
       }
     },
     "errors": {

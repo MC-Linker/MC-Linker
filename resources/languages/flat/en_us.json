@@ -56,6 +56,10 @@
   "main.no_access.not_in_guild.embeds.0.description": "I can only be used in server channels!",
   "main.no_access.not_in_guild.console": "Not in guild",
 
+  "main.no_access.no_prefix_commands.embeds.0.title": "Use Slash Commands",
+  "main.no_access.no_prefix_commands.embeds.0.description": "Prefixed commands are disabled. Please use [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) instead by typing `/` in a server channel followed by the command name.",
+  "main.no_access.no_prefix_commands.console": "%author_username% used prefix command %interaction_name%",
+
   "main.errors.unknown_rejection.console": "Unknown promise rejection %error_stack%",
   "main.errors.could_not_post_stats.console": "Could not post stats to Top.gg",
   "main.errors.no_connection_file.console": "No connection file found for guild: %guild_name%",
