@@ -22,6 +22,7 @@ export default class Command {
      * @property {boolean} [requiresConnectedPlugin=false] - Indicates whether this command requires a connected plugin.
      * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
      * @property {string} [category] - The category of this command.
+     * @property {string} [allowPrefix=false] - Whether this command can be executed with the prefix.
      */
 
     /**
@@ -77,6 +78,12 @@ export default class Command {
          * @type {?string}
          */
         this.category = options.category ?? null;
+
+        /**
+         * Whether this command can be executed with the prefix.
+         * @type {boolean}
+         */
+        this.allowPrefix = options.allowPrefix ?? false;
     }
 
     /**
@@ -121,7 +128,7 @@ export default class Command {
                 );
             }
             else {
-                await interaction.replyTl(keys.api.command.warnings.no_unknown_permission);
+                await interaction.replyTl(keys.api.command.no_access.no_unknown_permission);
             }
             return false;
         }

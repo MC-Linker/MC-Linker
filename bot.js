@@ -108,14 +108,27 @@ client.on(Discord.Events.MessageCreate, async message => {
 
     message = addTranslatedResponses(message);
 
+    //Make message compatible with slash commands
+    message.user = message.author;
+
     //check if in guild
     if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 
+    /** @type {Command} */
     const command = client.commands.get(commandName);
-    if(command) return message.replyTl(keys.main.no_access.no_prefix_commands);
+    if(!command) return;
+    if(!command.allowPrefix) return message.replyTl(keys.main.no_access.no_prefix_commands);
+
+    try {
+        // noinspection JSUnresolvedFunction
+        await command.execute(message, client, args, server);
+    }
+    catch(err) {
+        await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
+    }
 });
 
 client.on(Discord.Events.InteractionCreate, async interaction => {
@@ -148,7 +161,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         const server = client.serverConnections.cache.get(interaction.guildId);
         try {
             // noinspection JSUnresolvedFunction
-            await command.execute(interaction, client, args, server)
+            await command.execute(interaction, client, args, server);
         }
         catch(err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction));

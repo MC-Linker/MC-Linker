@@ -37,6 +37,7 @@ export default class Eval extends Command {
             name: 'eval',
             requiresConnectedServer: false,
             ownerOnly: true,
+            allowPrefix: true,
         });
     }
 
