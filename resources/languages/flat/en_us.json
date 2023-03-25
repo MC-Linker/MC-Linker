@@ -97,12 +97,10 @@
 
   "commands.eval.success.embeds.0.title": "Successfully Evaluated Command",
   "commands.eval.success.embeds.0.description": "%output%",
-  "commands.eval.success.embeds.0.color": "#70A02C",
   "commands.eval.success.console": "Successfully evaluated command",
 
   "commands.eval.errors.unknown_error.embeds.0.title": "Unknown Error",
   "commands.eval.errors.unknown_error.embeds.0.description": "%output_error%",
-  "commands.eval.errors.unknown_error.embeds.0.color": "#70A02C",
   "commands.eval.errors.unknown_error.console": "Unknown error %error%",
 
 
@@ -422,7 +420,7 @@
   "commands.serverinfo.success.admin.embeds.0.fields.7.inline": true,
 
   "commands.serverinfo.success.admin.embeds.0.fields.8.name": "Seed",
-  "commands.serverinfo.success.admin.embeds.0.fields.8.value": "%seed%",
+  "commands.serverinfo.success.admin.embeds.0.fields.8.value": "`%seed%`",
   "commands.serverinfo.success.admin.embeds.0.fields.8.inline": true,
 
 

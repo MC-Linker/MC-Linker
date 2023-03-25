@@ -9,6 +9,7 @@ import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
 import Discord from 'discord.js';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 export default class BotAPI extends EventEmitter {
 
@@ -17,6 +18,15 @@ export default class BotAPI extends EventEmitter {
      * @type {import('socket.io').Server}
      */
     websocket;
+
+    /**
+     * The rate limiter for the api.
+     * @type {RateLimiterMemory}
+     */
+    rateLimiter = new RateLimiterMemory({
+        points: 5, // 5 points
+        duration: 1, // Per second
+    });
 
     constructor(client) {
         super();
@@ -44,29 +54,42 @@ export default class BotAPI extends EventEmitter {
     }
 
     async startServer() {
-        function _getServerFastify(data, reply, client) {
-            const id = data.id;
-            const ip = data.ip.split(':')[0];
-            const port = data.ip.split(':')[1];
+        async function _getServerFastify(request, reply, client, rateLimiter) {
+            try {
+                await rateLimiter.consume(request.ip);
 
-            /** @type {ServerConnection} */
-            const server = client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasHttpProtocol());
+                const id = request.body.id;
+                const ip = request.body.ip.split(':')[0];
+                const port = request.body.ip.split(':')[1];
 
-            //If no connection on that guild send disconnection status
-            if(!server) return reply.status(403).send();
-            else reply.send({});
+                /** @type {ServerConnection} */
+                const server = client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasHttpProtocol());
+
+                //If no connection on that guild send disconnection status
+                if(!server) reply.status(403).send();
+                else reply.send({});
+            }
+            catch(rateLimiterRes) {
+                reply.status(429).headers({
+                    'Retry-After': rateLimiterRes.msBeforeNext / 1000,
+                    'X-RateLimit-Limit': rateLimiter.points,
+                    'X-RateLimit-Remaining': rateLimiterRes.remainingPoints,
+                    'X-RateLimit-Reset': new Date(Date.now() + rateLimiterRes.msBeforeNext),
+                }).send({ message: 'Too many requests' });
+            }
         }
 
-        this.fastify.post('/chat', (request, reply) => {
-            const server = _getServerFastify(request.body, reply, this.client);
+        this.fastify.post('/chat', async (request, reply) => {
+            await this.rateLimiter.consume(request.ip);
+            const server = await _getServerFastify(request, reply, this.client, this.rateLimiter);
             if(!server) return;
-            this._chat(request.body, server);
+            await this._chat(request.body, server);
         });
 
-        this.fastify.post('/update-stats-channels', (request, reply) => {
-            const server = _getServerFastify(request.body, reply, this.client);
+        this.fastify.post('/update-stats-channels', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client, this.rateLimiter);
             if(!server) return;
-            this._updateStatsChannel(request.body);
+            await this._updateStatsChannel(request.body);
         });
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -156,12 +179,12 @@ export default class BotAPI extends EventEmitter {
 
     addListeners(socket, server, hash) {
         socket.on('chat', async data => {
-            const server = getServerWebsocket(this.client);
+            const server = await getServerWebsocket(this.client, this.rateLimiter);
             if(!server) return;
             await this._chat(JSON.parse(data), server);
         });
         socket.on('update-stats-channels', async data => {
-            const server = getServerWebsocket(this.client);
+            const server = await getServerWebsocket(this.client, this.rateLimiter);
             if(!server) return;
             await this._updateStatsChannel(JSON.parse(data));
         });
@@ -169,17 +192,24 @@ export default class BotAPI extends EventEmitter {
             server.protocol.updateSocket(null);
         });
 
-        function getServerWebsocket(client) {
-            //Update server variable to ensure it wasn't disconnected in the meantime
-            /** @type {?ServerConnection} */
-            const server = client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
+        async function getServerWebsocket(client, rateLimiter) {
+            try {
+                await rateLimiter.consume(socket.handshake.address);
 
-            //If no connection on that guild, disconnect socket
-            if(!server) {
-                socket.disconnect();
-                return;
+                //Update server variable to ensure it wasn't disconnected in the meantime
+                /** @type {?ServerConnection} */
+                const server = client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
+
+                //If no connection on that guild, disconnect socket
+                if(!server) {
+                    socket.disconnect();
+                    return;
+                }
+                return server;
             }
-            return server;
+            catch(rejRes) {
+                socket.emit('blocked', { 'retry-ms': rejRes.msBeforeNext });
+            }
         }
     }
 

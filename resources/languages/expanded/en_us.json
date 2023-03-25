@@ -163,8 +163,7 @@
         "embeds": [
           {
             "title": "Successfully Evaluated Command",
-            "description": "%output%",
-            "color": "#70A02C"
+            "description": "%output%"
           }
         ],
         "console": "Successfully evaluated command"
@@ -174,8 +173,7 @@
           "embeds": [
             {
               "title": "Unknown Error",
-              "description": "%output_error%",
-              "color": "#70A02C"
+              "description": "%output_error%"
             }
           ],
           "console": "Unknown error %error%"
@@ -799,7 +797,7 @@
                 },
                 {
                   "name": "Seed",
-                  "value": "%seed%",
+                  "value": "`%seed%`",
                   "inline": true
                 }
               ]
