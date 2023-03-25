@@ -172,7 +172,7 @@ export default class ServerConnection extends Connection {
              * The port of this server.
              * @type {number}
              * */
-            this.port = data.port ?? this.port;
+            this.port = data.port;
         }
         if('username' in data) {
             /**
@@ -214,7 +214,7 @@ export default class ServerConnection extends Connection {
              * The data for stats channels.
              * @type {StatsChannelData[]}
              */
-            this.statsChannels = data.statsChannels ?? data['stats-channels'] ?? this.statsChannels;
+            this.statsChannels = data.statsChannels ?? data['stats-channels'];
         }
 
         //Switch protocols if needed

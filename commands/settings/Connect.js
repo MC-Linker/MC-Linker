@@ -60,6 +60,7 @@ export default class Connect extends Command {
                             ip: socket.handshake.address,
                             path: socket.handshake.query.path,
                             channels: [],
+                            'stats-channels': [],
                             online: Boolean(socket.handshake.query.online),
                             version: Number(socket.handshake.query.version.split('.')[1]),
                             worldPath: socket.handshake.query.worldPath,
@@ -259,6 +260,7 @@ export default class Connect extends Command {
                         online: resp.data.online,
                         protocol: 'http',
                         channels: [],
+                        'stats-channels': [],
                         id: interaction.guildId,
                     };
 

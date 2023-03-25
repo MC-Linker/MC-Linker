@@ -11,7 +11,6 @@ export default class ServerSettingsConnection extends Connection {
             'chat-commands': [],
         },
         language: 'en_us',
-        statsChannels: [],
     };
 
     /**
@@ -78,23 +77,7 @@ export default class ServerSettingsConnection extends Connection {
          * The data for disabled commands, advancements or stats.
          * @type {DisableData}
          */
-        this.disabled ??= ServerSettingsConnection.defaultSettingsData.disabled;
-
-        //Loop over data.disabled and assign commands, advancements and stats to this.disabled
-        if('disabled' in data) {
-            if('bot-commands' in data.disabled) {
-                this.disabled['bot-commands'] = data.disabled['bot-commands'];
-            }
-            if('advancements' in data.disabled) {
-                this.disabled.advancements = data.disabled.advancements;
-            }
-            if('stats' in data.disabled) {
-                this.disabled.stats = data.disabled.stats;
-            }
-            if('chat-commands' in data.disabled) {
-                this.disabled['chat-commands'] = data.disabled['chat-commands'];
-            }
-        }
+        this.disabled = data.disabled ?? this.disabled;
     }
 
     /**
