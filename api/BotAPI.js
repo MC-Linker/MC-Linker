@@ -44,7 +44,7 @@ export default class BotAPI extends EventEmitter {
      * @type {RateLimiterMemory}
      */
     rateLimiterMemberCounter = new RateLimiterMemory({
-        keyPrefix: 'stats-channels',
+        keyPrefix: 'member-counters',
         points: 2, // 1 points
         duration: 60 * 5, // per 5 minutes
     });
@@ -220,7 +220,7 @@ export default class BotAPI extends EventEmitter {
 
         async function getServerWebsocket(client, rateLimiter) {
             try {
-                await rateLimiter.consume(socket.handshake.address);
+                if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
 
                 //Update server variable to ensure it wasn't disconnected in the meantime
                 /** @type {?ServerConnection} */
