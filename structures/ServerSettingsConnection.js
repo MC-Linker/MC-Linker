@@ -17,7 +17,6 @@ export default class ServerSettingsConnection extends Connection {
     /**
      * @typedef {object} ServerSettingsConnectionData - The data for the server settings.
      * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
-     * @property {StatsChannelData[]} stats-channels - The data for stats channels.
      * @property {string} language - The language code id this server uses.
      * @property {string} id - The id of the server the settings are connected to.
      */
@@ -28,16 +27,6 @@ export default class ServerSettingsConnection extends Connection {
      * @property {string[]} advancements - The disabled advancements.
      * @property {string[]} stats - The disabled stats.
      * @property {string[]} chat-commands - The disabled chatchannel-commands.
-     */
-
-    /**
-     * @typedef {object} StatsChannelData - The data for a stats channel.
-     * @property {'member-counter'|'status'} type - The type of the stats channel.
-     * @property {string} id - The id of the channel.
-     * @property {object} names - The names for the stats channel.
-     * @property {string} [names.online] - The name when the server is online.
-     * @property {string} [names.offline] - The name when the server is offline.
-     * @property {string} [names.members] - The name for the member count.
      */
 
     /**
@@ -106,12 +95,6 @@ export default class ServerSettingsConnection extends Connection {
                 this.disabled['chat-commands'] = data.disabled['chat-commands'];
             }
         }
-
-        /**
-         * The data for stats channels.
-         * @type {StatsChannelData[]}
-         */
-        this.statsChannels = data.statsChannels ?? data['stats-channels'] ?? this.statsChannels;
     }
 
     /**
@@ -160,7 +143,6 @@ export default class ServerSettingsConnection extends Connection {
             disabled: this.disabled,
             language: this.language,
             id: this.id,
-            'stats-channels': this.statsChannels,
         };
     }
 }

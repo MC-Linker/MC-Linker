@@ -20,8 +20,6 @@ export default class ChannelStats extends Command {
         if(!await super.execute(interaction, client, args, server)) return;
 
         const subcommand = args[0];
-        const settings = await client.serverSettingsConnections.getOrConnect(server.id);
-
         if(subcommand === 'add') {
             const type = args[1];
             /** @type {GuildChannel} */
@@ -45,7 +43,7 @@ export default class ChannelStats extends Command {
             const resp = await server.protocol.addStatsChannel(statChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            await settings.edit({ 'stats-channels': resp.data });
+            await server.edit({ 'stats-channels': resp.data });
 
             let message;
             if(statChannel.type === 'member-counter') {
@@ -60,7 +58,7 @@ export default class ChannelStats extends Command {
         else if(subcommand === 'remove') {
             const channel = args[1];
 
-            const statsChannels = settings.statsChannels;
+            const statsChannels = server.statsChannels;
             const index = statsChannels.findIndex(c => c.id === channel.id);
             if(index === -1) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
@@ -70,14 +68,14 @@ export default class ChannelStats extends Command {
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
             statsChannels.splice(index, 1);
-            await settings.edit({ 'stats-channels': statsChannels });
+            await server.edit({ 'stats-channels': statsChannels });
 
             await interaction.replyTl(keys.commands['channel-stats'].success.remove);
         }
         else if(subcommand === 'list') {
             const filter = args[1];
 
-            let statsChannels = settings.statsChannels;
+            let statsChannels = server.statsChannels;
             if(filter) statsChannels = statsChannels.filter(c => c.type === filter);
 
             if(statsChannels.length === 0) {

@@ -24,6 +24,7 @@ export default class ServerConnection extends Connection {
      * @property {string} token - The connection token used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
+     * @property {StatsChannelData[]} stats-channels - The data for stats channels.
      * @property {'http'} protocol - The protocol used to connect to the server.
      */
 
@@ -51,8 +52,19 @@ export default class ServerConnection extends Connection {
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
+     * @property {StatsChannelData[]} stats-channels - The data for stats channels.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
+     */
+
+    /**
+     * @typedef {object} StatsChannelData - The data for a stats channel.
+     * @property {'member-counter'|'status'} type - The type of the stats channel.
+     * @property {string} id - The id of the channel.
+     * @property {object} names - The names for the stats channel.
+     * @property {string} [names.online] - The name when the server is online.
+     * @property {string} [names.offline] - The name when the server is offline.
+     * @property {string} [names.members] - The name for the member count.
      */
 
     /**
@@ -197,6 +209,13 @@ export default class ServerConnection extends Connection {
              * */
             this.channels = data.channels;
         }
+        if('stats-channels' in data || 'statsChannels' in data) {
+            /**
+             * The data for stats channels.
+             * @type {StatsChannelData[]}
+             */
+            this.statsChannels = data.statsChannels ?? data['stats-channels'] ?? this.statsChannels;
+        }
 
         //Switch protocols if needed
         if(!this.hasHttpProtocol() && data.protocol === 'http') {
@@ -265,6 +284,7 @@ export default class ServerConnection extends Connection {
                 port: this.port,
                 token: this.token,
                 channels: this.channels ?? [],
+                'stats-channels': this.statsChannels ?? [],
                 protocol: 'http',
             };
         }
@@ -282,6 +302,7 @@ export default class ServerConnection extends Connection {
                 ...baseData,
                 hash: this.hash,
                 channels: this.channels ?? [],
+                'stats-channels': this.statsChannels ?? [],
                 protocol: 'websocket',
             };
         }
