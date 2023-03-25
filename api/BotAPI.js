@@ -20,12 +20,33 @@ export default class BotAPI extends EventEmitter {
     websocket;
 
     /**
-     * The rate limiter for the api.
+     * The rate limiter for chat-channel endpoints.
      * @type {RateLimiterMemory}
      */
-    rateLimiter = new RateLimiterMemory({
-        points: 5, // 5 points
-        duration: 1, // Per second
+    rateLimiterChatChannels = new RateLimiterMemory({
+        keyPrefix: 'chatchannels',
+        points: 2, // 1 points
+        duration: 1, // per second
+    });
+
+    /**
+     * The rate limiter for chat-channel endpoints of type chat.
+     * @type {RateLimiterMemory}
+     */
+    rateLimiterChats = new RateLimiterMemory({
+        keyPrefix: 'chats',
+        points: 20, // 20 points
+        duration: 10, // per 10 seconds
+    });
+
+    /**
+     * The rate limiter for stats-channel endpoints.
+     * @type {RateLimiterMemory}
+     */
+    rateLimiterMemberCounter = new RateLimiterMemory({
+        keyPrefix: 'stats-channels',
+        points: 2, // 1 points
+        duration: 60 * 5, // per 5 minutes
     });
 
     constructor(client) {
@@ -56,7 +77,7 @@ export default class BotAPI extends EventEmitter {
     async startServer() {
         async function _getServerFastify(request, reply, client, rateLimiter) {
             try {
-                await rateLimiter.consume(request.ip);
+                if(rateLimiter) await rateLimiter.consume(request.ip);
 
                 const id = request.body.id;
                 const ip = request.body.ip.split(':')[0];
@@ -80,14 +101,15 @@ export default class BotAPI extends EventEmitter {
         }
 
         this.fastify.post('/chat', async (request, reply) => {
-            await this.rateLimiter.consume(request.ip);
-            const server = await _getServerFastify(request, reply, this.client, this.rateLimiter);
+            const rateLimiter = request.body?.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
+            const server = await _getServerFastify(request, reply, this.client, rateLimiter);
             if(!server) return;
             await this._chat(request.body, server);
         });
 
         this.fastify.post('/update-stats-channels', async (request, reply) => {
-            const server = await _getServerFastify(request, reply, this.client, this.rateLimiter);
+            const rateLimiter = request.body.event === 'members' ? this.rateLimiterMemberCounter : null;
+            const server = await _getServerFastify(request, reply, this.client, rateLimiter);
             if(!server) return;
             await this._updateStatsChannel(request.body);
         });
@@ -179,14 +201,18 @@ export default class BotAPI extends EventEmitter {
 
     addListeners(socket, server, hash) {
         socket.on('chat', async data => {
-            const server = await getServerWebsocket(this.client, this.rateLimiter);
+            data = JSON.parse(data);
+            const rateLimiter = data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
+            const server = await getServerWebsocket(this.client, rateLimiter);
             if(!server) return;
-            await this._chat(JSON.parse(data), server);
+            await this._chat(data, server);
         });
         socket.on('update-stats-channels', async data => {
-            const server = await getServerWebsocket(this.client, this.rateLimiter);
+            data = JSON.parse(data);
+            const rateLimiter = data.event === 'members' ? this.rateLimiterMemberCounter : null;
+            const server = await getServerWebsocket(this.client, rateLimiter);
             if(!server) return;
-            await this._updateStatsChannel(JSON.parse(data));
+            await this._updateStatsChannel(data);
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
@@ -253,7 +279,6 @@ export default class BotAPI extends EventEmitter {
             });
         }
         else if(type === 'chat') {
-
             //Parse pings (@name)
             const mentions = message.match(/@(\S+)/g);
             for(const mention of mentions ?? []) {
