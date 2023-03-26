@@ -61,8 +61,6 @@ client.on('allShardsReady', async () => {
         //Set Activity
         client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
     }
-
-    client.emit(Discord.Events.GuildCreate, client.guilds.cache.first());
 });
 
 client.on(Discord.Events.GuildCreate, async guild => {
