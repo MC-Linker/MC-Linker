@@ -1206,15 +1206,6 @@
           ],
           "console": "No reply in time"
         },
-        "already_connected": {
-          "embeds": [
-            {
-              "title": "Plugin Already Connected",
-              "description": "This plugin is already connected to another server (**%server%**). Please disconnect it first."
-            }
-          ],
-          "console": "Plugin already connected"
-        },
         "verification": {
           "embeds": [
             {

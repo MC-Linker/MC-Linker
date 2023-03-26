@@ -14,6 +14,16 @@ export default class ServerConnection extends Connection {
      */
 
     /**
+     * @typedef {object} StatsChannelData - The data for a stats channel.
+     * @property {'member-counter'|'status'} type - The type of the stats channel.
+     * @property {string} id - The id of the channel.
+     * @property {object} names - The names for the stats channel.
+     * @property {string} [names.online] - The name when the server is online.
+     * @property {string} [names.offline] - The name when the server is offline.
+     * @property {string} [names.members] - The name for the member count.
+     */
+
+    /**
      * @typedef {object} HttpServerConnectionData - The data for a server-connection established by the plugin.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
@@ -55,16 +65,6 @@ export default class ServerConnection extends Connection {
      * @property {StatsChannelData[]} stats-channels - The data for stats channels.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
-     */
-
-    /**
-     * @typedef {object} StatsChannelData - The data for a stats channel.
-     * @property {'member-counter'|'status'} type - The type of the stats channel.
-     * @property {string} id - The id of the channel.
-     * @property {object} names - The names for the stats channel.
-     * @property {string} [names.online] - The name when the server is online.
-     * @property {string} [names.offline] - The name when the server is offline.
-     * @property {string} [names.members] - The name for the member count.
      */
 
     /**

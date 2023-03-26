@@ -39,17 +39,6 @@ export default class Connect extends Command {
                     try {
                         if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
 
-                        //Prevent connection of a different guild to an already connected server
-                        /** @type {?ServerConnection} */
-                        const alreadyConnectedServer = c.serverConnections.cache.find(s => s.ip === socket.handshake.address && s.id !== id);
-                        if(alreadyConnectedServer) {
-                            const guild = await c.guilds.fetch(alreadyConnectedServer.id);
-                            await c.shard.broadcastEval((c, { id, server }) => {
-                                c.emit('editConnectResponse', id, 'already_connected', { server });
-                            }, { context: { id, server: guild.name }, shard });
-                            return socket.disconnect(true);
-                        }
-
                         c.commands.get('connect').wsVerification.delete(id);
                         socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
 
@@ -96,9 +85,6 @@ export default class Connect extends Command {
 
             if(responseType === 'success') {
                 await interaction.replyTl(keys.commands.connect.success.websocket, placeholders, ph.emojis(), ph.colors());
-            }
-            else if(responseType === 'already_connected') {
-                await interaction.replyTl(keys.commands.connect.warnings.already_connected, placeholders, ph.emojis(), ph.colors());
             }
             else if(responseType === 'error') {
                 await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders, ph.emojis(), ph.colors());

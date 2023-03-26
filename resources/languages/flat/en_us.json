@@ -631,10 +631,6 @@
   "commands.connect.warnings.no_reply_in_time.embeds.0.description": "You did not reply in time!",
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
 
-  "commands.connect.warnings.already_connected.embeds.0.title": "Plugin Already Connected",
-  "commands.connect.warnings.already_connected.embeds.0.description": "This plugin is already connected to another server (**%server%**). Please disconnect it first.",
-  "commands.connect.warnings.already_connected.console": "Plugin already connected",
-
   "commands.connect.warnings.verification.embeds.0.title": "Code Verification",
   "commands.connect.warnings.verification.embeds.0.description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
   "commands.connect.warnings.verification.embeds.0.color": "DarkGold",
