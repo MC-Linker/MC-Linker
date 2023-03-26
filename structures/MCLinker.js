@@ -34,13 +34,13 @@ export default class MCLinker extends Discord.Client {
 
     /**
      * A collection of all commands in this bot.
-     * @type {Collection<string, Command>}
+     * @type {Discord.Collection<string, Command>}
      */
     commands = new Discord.Collection();
 
     /**
      * A collection of all buttons in this bot.
-     * @type {Collection<string, Button>}
+     * @type {Discord.Collection<string, Button>}
      */
     buttons = new Discord.Collection();
 
@@ -101,7 +101,7 @@ export default class MCLinker extends Discord.Client {
 
         /**
          * A collection of all buttons in this bot.
-         * @type {Collection<string, Button>}
+         * @type {import('discord.js').Collection<string, Button>}
          */
         this.buttons = new Discord.Collection();
 

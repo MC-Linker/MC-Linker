@@ -440,7 +440,7 @@ export function getEmbed(key, ...placeholders) {
 
     if(key.title) embed.setTitle(key.title);
     if(key.description) embed.setDescription(key.description);
-    if(key.color) embed.setColor(Discord.Colors[key.color] ?? key.color);
+    if(key.color) embed.setColor(key.color);
     if(key.author?.name) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
     if(key.thumbnail) embed.setThumbnail(key.thumbnail);

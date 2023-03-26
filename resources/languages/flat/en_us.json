@@ -89,6 +89,9 @@
 
   "main.success.disconnected.console": "Successfully deleted connection file of guild: %guild_name%",
 
+  "main.success.invite.embeds.0.title": "Thanks for inviting MC Linker!",
+  "main.success.invite.embeds.0.description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute </connect plugin:932257443394777129> in Discord.\n• Execute the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using </chatchannel add:1070686492378288141> or check out any of the other commands!\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com).",
+
 
 
   "commands.eval.warnings.no_command.embeds.0.title": "No Command Specified",

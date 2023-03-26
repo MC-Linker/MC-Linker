@@ -127,7 +127,6 @@ export default class Pagination {
         if(!startingPage) return;
 
         //Map custom ids of buttons to default button instances
-        /** @type {Collection<string, DefaultButton>} */
         buttons.forEach((button, i) => {
             if(!(button instanceof ButtonBuilder)) return;
             this.buttons.set(button.data.custom_id, new DefaultButton({
