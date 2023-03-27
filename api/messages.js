@@ -15,7 +15,8 @@ import Discord, {
     SlashCommandBuilder,
     User,
 } from 'discord.js';
-import keys from './keys.js';
+import keys, { getLanguageKey, getObjectPath } from './keys.js';
+import util from 'util';
 
 const maxComponentsInActionRow = {
     [ComponentType.Button]: 5,
@@ -26,6 +27,8 @@ const maxComponentsInActionRow = {
     [ComponentType.MentionableSelect]: 1,
     [ComponentType.TextInput]: 1,
 };
+
+const completions = getLanguageKey(keys.completions);
 
 /**
  * Adds methods that allow to respond with a translation key.
@@ -153,10 +156,23 @@ export const ph = {
      * @returns {object}
      */
     emojis() {
-        const emojis = Object.entries(keys.emojis);
+        const emojis = Object.entries(getLanguageKey(keys.emojis));
         const placeholders = {};
 
         emojis.forEach(([name, emoji]) => placeholders[`emoji_${name}`] = emoji);
+
+        return placeholders;
+    },
+
+    /**
+     * Color placeholders.
+     * @returns {object}
+     */
+    colors() {
+        const colors = Object.entries(getLanguageKey(keys.colors));
+        const placeholders = {};
+
+        colors.forEach(([name, color]) => placeholders[`color_${name}`] = color);
 
         return placeholders;
     },
@@ -210,6 +226,7 @@ export const ph = {
             this.channel(interaction.channel),
             this.client(interaction.client),
             this.emojis(),
+            this.colors(),
             { 'timestamp_now': Discord.time(Date.now() / 1000) },
         );
     },
@@ -259,6 +276,8 @@ export const ph = {
  * @returns {K}
  */
 export function addPh(key, ...placeholders) {
+    if(util.types.isProxy(key)) key = getLanguageKey(key);
+
     placeholders = Object.assign({}, ...placeholders);
 
     if(typeof key === 'string') {
@@ -317,39 +336,40 @@ export function addPh(key, ...placeholders) {
 /**
  * Reply to an interaction with a translation key.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.WebhookEditMessageOptions|Discord.MessageReplyOptions} key - The translation key to reply with.
+ * @param {string} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Promise<?Message|?InteractionResponse>}
  */
 export async function replyTl(interaction, key, ...placeholders) {
+    const message = addCompletion(key);
+
     // Log to console if interaction doesn't exist
     // noinspection JSUnresolvedVariable
-    if(key?.console && !interaction) {
-        console.log(addPh(key.console, Object.assign({}, ...placeholders)));
+    if(message?.console && !interaction) {
+        console.log(addPh(message.console, Object.assign({}, ...placeholders)));
         return null;
     }
 
-    if(!interaction || !key || !placeholders) {
-        console.error(keys.api.messages.errors.no_reply_arguments.console);
+    if(!interaction || !message || !placeholders) {
+        console.error(getLanguageKey(keys.api.messages.errors.no_reply_arguments.console));
         return null;
     }
 
     placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
 
-    const options = getReplyOptions(key, placeholders);
+    const options = getReplyOptions(message, placeholders);
 
-    //Reply to interaction
     // noinspection JSUnresolvedVariable
-    if(key.console) console.log(addPh(key.console, placeholders));
+    if(message.console) console.log(addPh(message.console, placeholders));
 
-    if(!key.embeds && !key.components && !key.files) return null; //If only console don't reply
+    if(!message.embeds && !message.components && !message.files) return null; //If only console don't reply
     return replyOptions(interaction, options);
 }
 
 /**
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.WebhookEditMessageOptions|Discord.MessageReplyOptions} options - The options to reply with.
+ * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.MessageReplyOptions} options - The options to reply with.
  * @returns {Promise<Message>|Message}
  */
 export async function replyOptions(interaction, options) {
@@ -376,6 +396,22 @@ export async function replyOptions(interaction, options) {
     }
 }
 
+/**
+ * If the path's last or second to last element is contained in the `completions` array of the language file, merge the first embed with the completion.
+ * @param {any} key - The language key to add the completion to.
+ * @returns {Discord.BaseMessageOptions} - The message with the completion added.
+ */
+export function addCompletion(key) {
+    const path = getObjectPath(key);
+    const message = getLanguageKey(key);
+
+    let completion;
+    if(Object.keys(completions).includes(path[path.length - 1])) completion = completions[path[path.length - 1]];
+    else if(Object.keys(completions).includes(path[path.length - 2])) completion = completions[path[path.length - 2]];
+
+    if(completion && message.embeds[0]) message.embeds[0] = { ...completion, ...message.embeds[0] }; // original embeds is last, so it overrides the completion
+    return message;
+}
 
 /**
  * Get an embed builder from a language key.
@@ -385,9 +421,10 @@ export async function replyOptions(interaction, options) {
  */
 export function getEmbed(key, ...placeholders) {
     if(!key) {
-        console.error(keys.api.messages.errors.no_embed_key.console);
+        console.error(getLanguageKey(keys.api.messages.errors.no_embed_key.console));
         return null;
     }
+    if(util.types.isProxy(key)) key = addCompletion(key);
 
     //Get first embed
     if(key.embeds) key = key.embeds[0];
@@ -403,7 +440,7 @@ export function getEmbed(key, ...placeholders) {
 
     if(key.title) embed.setTitle(key.title);
     if(key.description) embed.setDescription(key.description);
-    if(key.color) embed.setColor(Discord.Colors[key.color] ?? key.color);
+    if(key.color) embed.setColor(key.color);
     if(key.author?.name) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
     if(key.thumbnail) embed.setThumbnail(key.thumbnail);
@@ -422,9 +459,10 @@ export function getEmbed(key, ...placeholders) {
  */
 export function getActionRows(key, ...placeholders) {
     if(!key) {
-        console.error(keys.api.messages.errors.no_component_key.console);
+        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
         return [];
     }
+    if(util.types.isProxy(key)) key = getLanguageKey(key);
 
     const allComponents = key.components?.map(component => getComponent(component, ...placeholders))
         ?.filter(component => component !== undefined);
@@ -439,6 +477,12 @@ export function getActionRows(key, ...placeholders) {
  * @returns {?ComponentBuilder}
  */
 export function getComponent(key, ...placeholders) {
+    if(!key) {
+        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
+        return null;
+    }
+    if(util.types.isProxy(key)) key = getLanguageKey(key);
+
     /** @type {Discord.AnyComponent} */
     let component = key;
 
@@ -518,13 +562,15 @@ export function getComponent(key, ...placeholders) {
  */
 export function getReplyOptions(key, ...placeholders) {
     if(!key) {
-        console.error(keys.api.messages.errors.no_reply_key.console);
+        console.error(getLanguageKey(keys.api.messages.errors.no_reply_key.console));
         return null;
     }
+    if(util.types.isProxy(key)) key = addCompletion(key);
 
-    const options = { ...key };
+    const options = { ...addPh(key, ...placeholders) };
     if(key.embeds) options.embeds = key.embeds.map(embed => getEmbed(embed, ...placeholders));
     if(key.components) options.components = getActionRows(key, ...placeholders);
+    if(key.color) options.color = Discord.resolveColor(options.color);
 
     return options;
 }
@@ -536,11 +582,13 @@ export function getReplyOptions(key, ...placeholders) {
  */
 export function getCommand(key) {
     if(!key) {
-        console.error(keys.api.messages.errors.no_command_key.console);
+        console.error(getLanguageKey(keys.api.messages.errors.no_command_key.console));
         return null;
     }
+    if(util.types.isProxy(key)) key = getLanguageKey(key);
+
     if(!key.name || !key.type) {
-        console.error(keys.api.messages.errors.no_command_arguments.console);
+        console.error(getLanguageKey(keys.api.messages.errors.no_command_arguments.console));
         return null;
     }
 
@@ -600,6 +648,12 @@ export function getCommand(key) {
  * @returns {?ModalBuilder}
  */
 export function getModal(key, ...placeholders) {
+    if(!key) {
+        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
+        return null;
+    }
+    if(util.types.isProxy(key)) key = getLanguageKey(key);
+
     key = addPh(key, ...placeholders);
 
     const modalBuilder = new Discord.ModalBuilder()

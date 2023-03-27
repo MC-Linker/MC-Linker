@@ -14,18 +14,18 @@ export default class ServerSettingsConnection extends Connection {
     };
 
     /**
+     * @typedef {object} ServerSettingsConnectionData - The data for the server settings.
+     * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
+     * @property {string} language - The language code id this server uses.
+     * @property {string} id - The id of the server the settings are connected to.
+     */
+
+    /**
      * @typedef {object} DisableData - The data for disabled commands, advancements or stats.
      * @property {string[]} bot-commands - The disabled bot-commands.
      * @property {string[]} advancements - The disabled advancements.
      * @property {string[]} stats - The disabled stats.
      * @property {string[]} chat-commands - The disabled chatchannel-commands.
-     */
-
-    /**
-     * @typedef {object} ServerSettingsConnectionData - The data for the server settings.
-     * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
-     * @property {string} language - The language code id this server uses.
-     * @property {string} id - The id of the server the settings are connected to.''
      */
 
     /**
@@ -77,23 +77,7 @@ export default class ServerSettingsConnection extends Connection {
          * The data for disabled commands, advancements or stats.
          * @type {DisableData}
          */
-        this.disabled ??= ServerSettingsConnection.defaultSettingsData.disabled;
-
-        //Loop over data.disabled and assign commands, advancements and stats to this.disabled
-        if('disabled' in data) {
-            if('bot-commands' in data.disabled) {
-                this.disabled['bot-commands'] = data.disabled['bot-commands'];
-            }
-            if('advancements' in data.disabled) {
-                this.disabled.advancements = data.disabled.advancements;
-            }
-            if('stats' in data.disabled) {
-                this.disabled.stats = data.disabled.stats;
-            }
-            if('chat-commands' in data.disabled) {
-                this.disabled['chat-commands'] = data.disabled['chat-commands'];
-            }
-        }
+        this.disabled = data.disabled ?? this.disabled;
     }
 
     /**

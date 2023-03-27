@@ -2,12 +2,14 @@
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from './oauth.js';
 import * as utils from './utils.js';
+import { minecraftAvatarURL } from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
 import Discord from 'discord.js';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 export default class BotAPI extends EventEmitter {
 
@@ -16,6 +18,36 @@ export default class BotAPI extends EventEmitter {
      * @type {import('socket.io').Server}
      */
     websocket;
+
+    /**
+     * The rate limiter for chat-channel endpoints.
+     * @type {RateLimiterMemory}
+     */
+    rateLimiterChatChannels = new RateLimiterMemory({
+        keyPrefix: 'chatchannels',
+        points: 2, // 1 points
+        duration: 1, // per second
+    });
+
+    /**
+     * The rate limiter for chat-channel endpoints of type chat.
+     * @type {RateLimiterMemory}
+     */
+    rateLimiterChats = new RateLimiterMemory({
+        keyPrefix: 'chats',
+        points: 20, // 20 points
+        duration: 10, // per 10 seconds
+    });
+
+    /**
+     * The rate limiter for stats-channel endpoints.
+     * @type {RateLimiterMemory}
+     */
+    rateLimiterMemberCounter = new RateLimiterMemory({
+        keyPrefix: 'member-counters',
+        points: 2, // 1 points
+        duration: 60 * 5, // per 5 minutes
+    });
 
     constructor(client) {
         super();
@@ -43,19 +75,43 @@ export default class BotAPI extends EventEmitter {
     }
 
     async startServer() {
-        this.fastify.post('/chat', (request, reply) => {
-            const guildId = request.body.id;
-            const ip = request.body.ip.split(':')[0];
-            const port = request.body.ip.split(':')[1];
+        async function _getServerFastify(request, reply, client, rateLimiter) {
+            try {
+                if(rateLimiter) await rateLimiter.consume(request.ip);
 
-            /** @type {ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.id === guildId && server.ip === ip && server.port === port && server.hasHttpProtocol());
+                const id = request.body.id;
+                const ip = request.body.ip.split(':')[0];
+                const port = request.body.ip.split(':')[1];
 
-            //If no connection on that guild send disconnection status
-            if(!server) return reply.status(403).send();
-            else reply.send({});
+                /** @type {ServerConnection} */
+                const server = client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasHttpProtocol());
 
-            this._chat(request.body, server);
+                //If no connection on that guild send disconnection status
+                if(!server) reply.status(403).send();
+                else reply.send({});
+            }
+            catch(rateLimiterRes) {
+                reply.status(429).headers({
+                    'Retry-After': rateLimiterRes.msBeforeNext / 1000,
+                    'X-RateLimit-Limit': rateLimiter.points,
+                    'X-RateLimit-Remaining': rateLimiterRes.remainingPoints,
+                    'X-RateLimit-Reset': new Date(Date.now() + rateLimiterRes.msBeforeNext),
+                }).send({ message: 'Too many requests' });
+            }
+        }
+
+        this.fastify.post('/chat', async (request, reply) => {
+            const rateLimiter = request.body?.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
+            const server = await _getServerFastify(request, reply, this.client, rateLimiter);
+            if(!server) return;
+            await this._chat(request.body, server);
+        });
+
+        this.fastify.post('/update-stats-channels', async (request, reply) => {
+            const rateLimiter = request.body.event === 'members' ? this.rateLimiterMemberCounter : null;
+            const server = await _getServerFastify(request, reply, this.client, rateLimiter);
+            if(!server) return;
+            await this._updateStatsChannel(request.body);
         });
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -145,18 +201,42 @@ export default class BotAPI extends EventEmitter {
 
     addListeners(socket, server, hash) {
         socket.on('chat', async data => {
-            //Update server variable to ensure it wasn't disconnected in the meantime
-            /** @type {?ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
-
-            //If no connection on that guild, disconnect socket
-            if(!server) socket.disconnect();
-
-            await this._chat(JSON.parse(data), server);
+            data = JSON.parse(data);
+            const rateLimiter = data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
+            const server = await getServerWebsocket(this.client, rateLimiter);
+            if(!server) return;
+            await this._chat(data, server);
+        });
+        socket.on('update-stats-channels', async data => {
+            data = JSON.parse(data);
+            const rateLimiter = data.event === 'members' ? this.rateLimiterMemberCounter : null;
+            const server = await getServerWebsocket(this.client, rateLimiter);
+            if(!server) return;
+            await this._updateStatsChannel(data);
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
         });
+
+        async function getServerWebsocket(client, rateLimiter) {
+            try {
+                if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
+
+                //Update server variable to ensure it wasn't disconnected in the meantime
+                /** @type {?ServerConnection} */
+                const server = client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
+
+                //If no connection on that guild, disconnect socket
+                if(!server) {
+                    socket.disconnect();
+                    return;
+                }
+                return server;
+            }
+            catch(rejRes) {
+                socket.emit('blocked', { 'retry-ms': rejRes.msBeforeNext });
+            }
+        }
     }
 
     /**
@@ -168,7 +248,7 @@ export default class BotAPI extends EventEmitter {
      */
     async _chat(data, server) {
         const { message, channels, id: guildId, type, player } = data;
-        const authorURL = `https://minotar.net/helm/${player}/64.png`;
+        const authorURL = minecraftAvatarURL(player);
 
         const argPlaceholder = { username: player, author_url: authorURL, message };
 
@@ -177,6 +257,8 @@ export default class BotAPI extends EventEmitter {
             const commandName = message.replace(/^\//, '').split(/\s+/)[0];
             if(server.settings.isDisabled('chat-commands', commandName)) return;
         }
+
+        const guild = await this.client.guilds.fetch(guildId);
 
         let chatEmbed;
         if(type === 'advancement') {
@@ -197,8 +279,6 @@ export default class BotAPI extends EventEmitter {
             });
         }
         else if(type === 'chat') {
-            const guild = await this.client.guilds.fetch(guildId);
-
             //Parse pings (@name)
             const mentions = message.match(/@(\S+)/g);
             for(const mention of mentions ?? []) {
@@ -206,7 +286,7 @@ export default class BotAPI extends EventEmitter {
                 argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
             }
 
-            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis());
+            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis(), ph.colors());
 
             let allWebhooks;
             try {
@@ -217,18 +297,18 @@ export default class BotAPI extends EventEmitter {
             for(const channel of channels) {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
+                /** @type {?Discord.TextChannel} */
                 const discordChannel = await guild.channels.fetch(channel.id);
                 if(!discordChannel) continue;
 
                 if(!allWebhooks) {
-                    discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
                     return;
                 }
 
                 if(!channel.webhook) {
                     try {
-                        discordChannel.send({ embeds: [chatEmbed] })
-                            .catch(() => {});
+                        await discordChannel.send({ embeds: [chatEmbed] });
                     }
                     catch(_) {}
                     continue;
@@ -254,7 +334,7 @@ export default class BotAPI extends EventEmitter {
                             id: channel.id,
                         });
                         if(!regChannel) {
-                            discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis())] });
+                            await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis(), ph.colors())] });
                             await webhook.delete();
                             return;
                         }
@@ -278,27 +358,49 @@ export default class BotAPI extends EventEmitter {
                     });
                 }
                 catch(_) {
-                    discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis())] });
+                    await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
                     return;
                 }
             }
             return;
         }
         else {
-            chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), { 'timestamp_now': Date.now() });
+            chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), ph.colors(), { 'timestamp_now': Date.now() });
         }
 
         try {
             for(const channel of channels) {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
-                const discordChannel = await this.client.channels.fetch(channel.id);
+                const discordChannel = await guild.channels.fetch(channel.id);
                 if(!discordChannel) continue;
 
-                await discordChannel?.send({ embeds: [chatEmbed] })
-                    .catch(() => {});
+                try {
+                    await discordChannel?.send({ embeds: [chatEmbed] });
+                }
+                catch(_) {}
             }
         }
         catch(_) {}
+    }
+
+    async _updateStatsChannel(data) {
+        // event can be one of: 'online', 'offline', 'members'
+        const { channels, event, id } = data;
+
+        const guild = await this.client.guilds.fetch(id);
+        for(const channel of channels) {
+            if(!channel.names[event]) return;
+
+            const discordChannel = await guild.channels.fetch(channel.id);
+            if(!discordChannel) return;
+
+            //Replace %count% with the actual count
+            if(event === 'members') channel.names[event] = channel.names[event].replace('%count%', data.members);
+            try {
+                await discordChannel.setName(channel.names[event]);
+            }
+            catch(_) {}
+        }
     }
 }

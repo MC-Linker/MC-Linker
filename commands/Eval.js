@@ -7,6 +7,7 @@ import { Duplex } from 'stream';
 import { ph } from '../api/messages.js';
 import keys from '../api/keys.js';
 import Command from '../structures/Command.js';
+import { MaxEmbedFieldValueLength } from '../api/utils.js';
 
 // noinspection FunctionNamingConventionJS
 class ConsoleOutput extends Duplex {
@@ -29,8 +30,6 @@ class ConsoleOutput extends Duplex {
     }
 }
 
-const maxCharLength = 4086;
-
 export default class Eval extends Command {
 
     constructor() {
@@ -38,6 +37,7 @@ export default class Eval extends Command {
             name: 'eval',
             requiresConnectedServer: false,
             ownerOnly: true,
+            allowPrefix: true,
         });
     }
 
@@ -94,16 +94,16 @@ export default class Eval extends Command {
             }
 
             //If it's too long, send an attachment
-            if(out.length > maxCharLength) {
+            if(out.length > MaxEmbedFieldValueLength) {
                 const attachment = new Discord.AttachmentBuilder(Buffer.from(out, 'utf8'), { name: 'Eval.js' });
                 return interaction.replyOptions({ files: [attachment] });
             }
             else {
-                return interaction.replyTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, maxCharLength)) });
+                return interaction.replyTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, MaxEmbedFieldValueLength)) });
             }
         }
         catch(err) {
-            return interaction.replyTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, maxCharLength)) }, ph.error(err));
+            return interaction.replyTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, MaxEmbedFieldValueLength)) }, ph.error(err));
         }
     }
 }

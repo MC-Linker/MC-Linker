@@ -1,9 +1,29 @@
 {
-  "emojis.warning": ":warning:",
-  "emojis.error": "<:Error:849215023264169985>",
-  "emojis.success": "<:Checkmark:849224496232660992>",
-  "emojis.red_success": "<:redsuccess:885601791465640016>",
-  "emojis.no_entry": ":no_entry:",
+  "completions.success.author.name": "Success",
+  "completions.success.author.icon_url": "https://cdn.discordapp.com/emojis/1084892413035810897.webp?size=96&quality=lossless",
+  "completions.success.color": "%color_success%",
+
+  "completions.warnings.author.name": "Warning",
+  "completions.warnings.author.icon_url": "https://cdn.discordapp.com/emojis/1084892438205829180.webp",
+  "completions.warnings.color": "%color_warning%",
+
+  "completions.errors.author.name": "Error",
+  "completions.errors.author.icon_url": "https://cdn.discordapp.com/emojis/1084892456371376240.webp",
+  "completions.errors.color": "%color_error%",
+
+  "completions.no_access.author.name": "No Access",
+  "completions.no_access.author.icon_url": "https://cdn.discordapp.com/emojis/1084892473756766370.webp",
+  "completions.no_access.color": "%color_error%",
+
+  "completions.step.color": "%color_step%",
+
+
+
+  "emojis.warning": "<:warn:1084892438205829180>",
+  "emojis.error": "<:error:1084892456371376240>",
+  "emojis.success": "<:success:1084892413035810897>",
+  "emojis.step": "<:step:1084904567961034803>",
+  "emojis.no_access": "<:noaccess:1084892473756766370>",
 
   "emojis.join": "<:join:905924638083784836>",
   "emojis.leave": "<:leave:905924638100557865>",
@@ -25,24 +45,31 @@
 
 
 
-  "main.warnings.disabled.embeds.0.title": "Command Disabled",
-  "main.warnings.disabled.embeds.0.description": "%emoji_no_entry% Command **%interaction_name%** disabled!",
-  "main.warnings.disabled.console": "Command disabled",
+  "colors.success": "#729e34",
+  "colors.error": "#9e3436",
+  "colors.warning": "#f1c40f",
+  "colors.step": "#f88239",
 
-  "main.warnings.not_in_guild.embeds.0.title": "Guild-Only",
-  "main.warnings.not_in_guild.embeds.0.description": "%emoji_warning% I can only be used in server channels!",
-  "main.warnings.not_in_guild.console": "Not in guild",
+
+
+  "main.no_access.not_in_guild.embeds.0.title": "Guild-Only",
+  "main.no_access.not_in_guild.embeds.0.description": "I can only be used in server channels!",
+  "main.no_access.not_in_guild.console": "Not in guild",
+
+  "main.no_access.no_prefix_commands.embeds.0.title": "Use Slash Commands",
+  "main.no_access.no_prefix_commands.embeds.0.description": "Prefixed commands are disabled. Please use [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) instead by typing `/` in a server channel followed by the command name.",
+  "main.no_access.no_prefix_commands.console": "%author_username% used prefix command %interaction_name%",
 
   "main.errors.unknown_rejection.console": "Unknown promise rejection %error_stack%",
   "main.errors.could_not_post_stats.console": "Could not post stats to Top.gg",
   "main.errors.no_connection_file.console": "No connection file found for guild: %guild_name%",
 
   "main.errors.could_not_execute_command.embeds.0.title": "Unknown Error",
-  "main.errors.could_not_execute_command.embeds.0.description": "%emoji_error% An unknown error occurred while executing this command. Please try again.",
+  "main.errors.could_not_execute_command.embeds.0.description": "An unknown error occurred while executing this command. Please try again.",
   "main.errors.could_not_execute_command.console": "Could not execute %interaction_name% command %error%",
 
   "main.errors.could_not_execute_button.embeds.0.title": "Unknown Error",
-  "main.errors.could_not_execute_button.embeds.0.description": "%emoji_error% An unknown error occurred while executing this button. Please try again.",
+  "main.errors.could_not_execute_button.embeds.0.description": "An unknown error occurred while executing this button. Please try again.",
   "main.errors.could_not_execute_button.console": "Could not execute %button% button %error%",
 
   "main.errors.could_not_autocomplete_command.console": "Could not respond to %interaction_name% autocomplete %error%",
@@ -62,26 +89,27 @@
 
   "main.success.disconnected.console": "Successfully deleted connection file of guild: %guild_name%",
 
+  "main.success.invite.embeds.0.title": "Thanks for inviting MC Linker!",
+  "main.success.invite.embeds.0.description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute </connect plugin:932257443394777129> in Discord.\n• Execute the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using </chatchannel add:932257443394777128> or check out any of the other commands!\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com).",
+
 
 
   "commands.eval.warnings.no_command.embeds.0.title": "No Command Specified",
-  "commands.eval.warnings.no_command.embeds.0.description": "%emoji_warning% Please specify a command to evaluate.",
+  "commands.eval.warnings.no_command.embeds.0.description": "Please specify a command to evaluate.",
   "commands.eval.warnings.no_command.console": "No command specified",
 
   "commands.eval.success.embeds.0.title": "Successfully Evaluated Command",
   "commands.eval.success.embeds.0.description": "%output%",
-  "commands.eval.success.embeds.0.color": "#70A02C",
   "commands.eval.success.console": "Successfully evaluated command",
 
   "commands.eval.errors.unknown_error.embeds.0.title": "Unknown Error",
   "commands.eval.errors.unknown_error.embeds.0.description": "%output_error%",
-  "commands.eval.errors.unknown_error.embeds.0.color": "#70A02C",
   "commands.eval.errors.unknown_error.console": "Unknown error %error%",
 
 
 
   "commands.help.warnings.command_does_not_exist.embeds.0.title": "Command/Category Does Not Exist",
-  "commands.help.warnings.command_does_not_exist.embeds.0.description": "%emoji_warning% Command/Category **%command_name%** does not exist.",
+  "commands.help.warnings.command_does_not_exist.embeds.0.description": "Command/Category **%command_name%** does not exist.",
   "commands.help.warnings.command_does_not_exist.console": "Command/Category does not exist",
 
   "commands.help.success.base.embeds.0.title": "Help Menu",
@@ -133,36 +161,32 @@
 
 
   "commands.advancements.no_description_available": "No description available...",
+  "commands.advancements.acquired": "Acquired",
+  "commands.advancements.not_acquired": "Not Acquired",
 
-  "commands.advancements.warnings.category_disabled.embeds.0.title": "Category Disabled",
-  "commands.advancements.warnings.category_disabled.embeds.0.description": "%emoji_no_entry% Advancement category **%advancement_category%** disabled!",
-  "commands.advancements.warnings.category_disabled.console": "Advancement category %advancement_category% disabled.",
+  "commands.advancements.no_access.category_disabled.embeds.0.title": "Category Disabled",
+  "commands.advancements.no_access.category_disabled.embeds.0.description": "Advancement category **%advancement_category%** disabled!",
+  "commands.advancements.no_access.category_disabled.console": "Advancement category %advancement_category% disabled.",
 
-  "commands.advancements.warnings.advancement_disabled.embeds.0.title": "Advancement Disabled",
-  "commands.advancements.warnings.advancement_disabled.embeds.0.description": "%emoji_no_entry% Advancement **%advancement_title%** disabled!",
-  "commands.advancements.warnings.advancement_disabled.console": "Advancement %advancement_title% disabled.",
+  "commands.advancements.no_access.advancement_disabled.embeds.0.title": "Advancement Disabled",
+  "commands.advancements.no_access.advancement_disabled.embeds.0.description": "Advancement **%advancement_title%** disabled!",
+  "commands.advancements.no_access.advancement_disabled.console": "Advancement %advancement_title% disabled.",
 
   "commands.advancements.warnings.not_completed.embeds.0.title": "Advancement Not Completed",
-  "commands.advancements.warnings.not_completed.embeds.0.description": "%emoji_warning% Advancement **%advancement_title%** not completed/unlocked or misspelled!",
+  "commands.advancements.warnings.not_completed.embeds.0.description": "Advancement **%advancement_title%** not completed/unlocked or misspelled!",
   "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
 
-  "commands.advancements.success.base.embeds.0.title": "%username%",
-  "commands.advancements.success.base.embeds.0.description": "%advancement_description%",
-  "commands.advancements.success.base.embeds.0.color": "LuminousVividPink",
-  "commands.advancements.success.base.embeds.0.fields.0.name": "%equals%\n%advancement_title%",
-  "commands.advancements.success.base.embeds.0.fields.0.value": "**%equals%**",
-  "commands.advancements.success.base.embeds.0.image": "https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png",
-
-  "commands.advancements.success.done.embeds.0.footer.text": "Advancement unlocked/completed",
-  "commands.advancements.success.done.embeds.0.footer.icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png",
-  "commands.advancements.success.not_done.embeds.0.footer.text": "Advancement not unlocked/completed",
-  "commands.advancements.success.not_done.embeds.0.footer.icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png",
-
-  "commands.advancements.success.final.embeds.0.fields.0.name": "**Requirement**",
-  "commands.advancements.success.final.embeds.0.fields.0.value": "%advancement_requirement%",
-  "commands.advancements.success.final.embeds.0.fields.1.name": "**Unlocked on**",
-  "commands.advancements.success.final.embeds.0.fields.1.value": "%advancement_timestamp%",
-  "commands.advancements.success.final.console": "Sent advancement %advancement_title% of %username%",
+  "commands.advancements.success.embeds.0.title": "Advancement",
+  "commands.advancements.success.embeds.0.description": "**%advancement_title%**\n*%advancement_description%*",
+  "commands.advancements.success.embeds.0.fields.0.name": "Requirements",
+  "commands.advancements.success.embeds.0.fields.0.value": "%advancement_criteria%",
+  "commands.advancements.success.embeds.0.fields.0.inline": true,
+  "commands.advancements.success.embeds.0.fields.1.name": "Acquired on",
+  "commands.advancements.success.embeds.0.fields.1.value": "%advancement_timestamps%",
+  "commands.advancements.success.embeds.0.fields.1.inline": true,
+  "commands.advancements.success.embeds.0.footer.text": "Advancement %is_done%",
+  "commands.advancements.success.embeds.0.author.name": "%username%",
+  "commands.advancements.success.embeds.0.author.icon_url": "%user_icon%",
 
 
 
@@ -174,15 +198,15 @@
   "commands.inventory.success.item_button.components.0.label": "%slot%: %name%",
 
   "commands.inventory.success.final.embeds.0.title": "Player Inventory",
-  "commands.inventory.success.final.embeds.0.description": "%emoji_success% Here's the inventory of **%username%**:\n",
+  "commands.inventory.success.final.embeds.0.description": "Here's the inventory of **%username%**:\n",
   "commands.inventory.success.final.embeds.0.image": "attachment://Inventory_Player.png",
 
   "commands.inventory.success.final_shulker.embeds.0.title": "Player Inventory",
-  "commands.inventory.success.final_shulker.embeds.0.description": "%emoji_success% Here are the shulker contents of **%username%**:\n",
+  "commands.inventory.success.final_shulker.embeds.0.description": "Here are the shulker contents of **%username%**:\n",
   "commands.inventory.success.final_shulker.embeds.0.image": "attachment://Shulker_Contents.png",
 
   "commands.inventory.success.item.embeds.0.title": "Item Information",
-  "commands.inventory.success.item.embeds.0.description": "%emoji_success% Here's information about the **%name%**. [%count%/%max_count%]",
+  "commands.inventory.success.item.embeds.0.description": "Here's information about the **%name%**. [%count%/%max_count%]",
   "commands.inventory.success.item.embeds.0.author.name": "%username%'s %slot_name% slot",
   "commands.inventory.success.item.embeds.0.author.icon_url": "%avatar%",
   "commands.inventory.success.item.embeds.0.footer.text": "Item Id: %id%",
@@ -222,22 +246,22 @@
 
 
 
-  "commands.stats.warnings.category_disabled.embeds.0.title": "Category Disabled",
-  "commands.stats.warnings.category_disabled.embeds.0.description": "%emoji_no_entry% Stat category **%stat_category%** disabled!",
-  "commands.stats.warnings.category_disabled.console": "Stat category %stat_category% disabled.",
+  "commands.stats.no_access.category_disabled.embeds.0.title": "Category Disabled",
+  "commands.stats.no_access.category_disabled.embeds.0.description": "Stat category **%stat_category%** disabled!",
+  "commands.stats.no_access.category_disabled.console": "Stat category %stat_category% disabled.",
 
-  "commands.stats.warnings.stat_disabled.embeds.0.title": "Stat Disabled",
-  "commands.stats.warnings.stat_disabled.embeds.0.description": "%emoji_no_entry% Stat **%stat_name%** disabled!",
-  "commands.stats.warnings.stat_disabled.console": "Stat %stat_name% disabled",
+  "commands.stats.no_access.stat_disabled.embeds.0.title": "Stat Disabled",
+  "commands.stats.no_access.stat_disabled.embeds.0.description": "Stat **%stat_name%** disabled!",
+  "commands.stats.no_access.stat_disabled.console": "Stat %stat_name% disabled",
 
   "commands.stats.warnings.no_match.embeds.0.title": "Could Not Find Stat",
-  "commands.stats.warnings.no_match.embeds.0.description": "%emoji_warning% Stat is either 0 or misspelled!",
+  "commands.stats.warnings.no_match.embeds.0.description": "Stat is either 0 or misspelled!",
   "commands.stats.warnings.no_match.console": "Could not find stat",
 
   "commands.stats.warnings.no_image.console": "No Image available for %stat_name%",
 
   "commands.stats.errors.could_not_parse.embeds.0.title": "Could Not Find Category",
-  "commands.stats.errors.could_not_parse.embeds.0.description": "%emoji_error% %username% has never done anything in this category.",
+  "commands.stats.errors.could_not_parse.embeds.0.description": "%username% has never done anything in this category.",
   "commands.stats.errors.could_not_parse.console": "Error trying to parse stat json",
 
   "commands.stats.success.stat_message.custom": "**%stat_name%**: **%stat_value%**",
@@ -260,7 +284,7 @@
 
 
   "commands.ban.success.embeds.0.title": "Ban Player",
-  "commands.ban.success.embeds.0.description": "%emoji_success% Successfully banned player **%username%**: `%reason%`\n%warning%",
+  "commands.ban.success.embeds.0.description": "Successfully banned player **%username%**: `%reason%`\n%warning%",
   "commands.ban.success.embeds.0.color": "Orange",
 
 
@@ -274,50 +298,50 @@
 
 
   "commands.deop.success.embeds.0.title": "Deop Player",
-  "commands.deop.success.embeds.0.description": "%emoji_success% Successfully Deoped player **%username%**\n%warning%",
+  "commands.deop.success.embeds.0.description": "Successfully Deoped player **%username%**\n%warning%",
   "commands.deop.success.embeds.0.color": "Blue",
 
 
 
   "commands.gamemode.success.embeds.0.title": "Change Gamemode",
-  "commands.gamemode.success.embeds.0.description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**\n%warning%",
+  "commands.gamemode.success.embeds.0.description": "Successfully changed gamemode of **%username%** to **%gamemode%**\n%warning%",
   "commands.gamemode.success.embeds.0.color": "Orange",
 
 
 
   "commands.kick.success.embeds.0.title": "Kick Player",
-  "commands.kick.success.embeds.0.description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`\n%warning%",
+  "commands.kick.success.embeds.0.description": "Successfully kicked player **%username%**: `%reason%`\n%warning%",
   "commands.kick.success.embeds.0.color": "Orange",
 
 
 
   "commands.op.success.embeds.0.title": "OP Player",
-  "commands.op.success.embeds.0.description": "%emoji_success% Successfully oped player **%username%**\n%warning%",
+  "commands.op.success.embeds.0.description": "Successfully oped player **%username%**\n%warning%",
   "commands.op.success.embeds.0.color": "Blue",
 
 
 
   "commands.unban.success.embeds.0.title": "Unban Player",
-  "commands.unban.success.embeds.0.description": "%emoji_success% Successfully unbanned player **%username%**\n%warning%",
+  "commands.unban.success.embeds.0.description": "Successfully unbanned player **%username%**\n%warning%",
   "commands.unban.success.embeds.0.color": "Blue",
 
 
 
   "commands.message.success.embeds.0.title": "Send Message",
-  "commands.message.success.embeds.0.description": "%emoji_success% Successfully sent message to player **%username%**\n%warning%",
+  "commands.message.success.embeds.0.description": "Successfully sent message to player **%username%**\n%warning%",
   "commands.message.success.embeds.0.color": "Blue",
 
 
 
   "commands.serverinfo.warnings.unknown": "*Unknown*",
 
-  "commands.serverinfo.success.enabled": "Enabled",
-  "commands.serverinfo.success.disabled": "Disabled",
+  "commands.serverinfo.enabled": "Enabled",
+  "commands.serverinfo.disabled": "Disabled",
 
-  "commands.serverinfo.success.difficulty.0": "Peaceful",
-  "commands.serverinfo.success.difficulty.1": "Easy",
-  "commands.serverinfo.success.difficulty.2": "Normal",
-  "commands.serverinfo.success.difficulty.3": "Hard",
+  "commands.serverinfo.difficulty.0": "Peaceful",
+  "commands.serverinfo.difficulty.1": "Easy",
+  "commands.serverinfo.difficulty.2": "Normal",
+  "commands.serverinfo.difficulty.3": "Hard",
 
   "commands.serverinfo.success.general.embeds.0.title": "Server Information",
   "commands.serverinfo.success.general.embeds.0.thumbnail": "attachment://server-icon.png",
@@ -399,7 +423,7 @@
   "commands.serverinfo.success.admin.embeds.0.fields.7.inline": true,
 
   "commands.serverinfo.success.admin.embeds.0.fields.8.name": "Seed",
-  "commands.serverinfo.success.admin.embeds.0.fields.8.value": "%seed%",
+  "commands.serverinfo.success.admin.embeds.0.fields.8.value": "`%seed%`",
   "commands.serverinfo.success.admin.embeds.0.fields.8.inline": true,
 
 
@@ -422,110 +446,152 @@
 
 
   "commands.account.warnings.mention.embeds.0.title": "No Username Specified",
-  "commands.account.warnings.mention.embeds.0.description": "%emoji_warning% Don't ping someone. Specify your **minecraft java-edition account name** instead.",
+  "commands.account.warnings.mention.embeds.0.description": "Don't ping someone. Specify your **minecraft java-edition account name** instead.",
   "commands.account.warnings.mention.console": "No username specified",
 
   "commands.account.warnings.not_connected.embeds.0.title": "Account Not Connected",
-  "commands.account.warnings.not_connected.embeds.0.description": "%emoji_warning% Your minecraft account is not connected.",
+  "commands.account.warnings.not_connected.embeds.0.description": "Your minecraft account is not connected.",
   "commands.account.warnings.not_connected.console": "Account not connected",
 
   "commands.account.warnings.verification_timeout.embeds.0.title": "Verification Timeout",
-  "commands.account.warnings.verification_timeout.embeds.0.description": "%emoji_warning% Account verification timed out. Please try again.",
+  "commands.account.warnings.verification_timeout.embeds.0.description": "Account verification timed out. Please try again.",
   "commands.account.warnings.verification_timeout.console": "Verification timed out",
 
-  "commands.account.success.verification_info.embeds.0.title": "Account Verification",
-  "commands.account.success.verification_info.embeds.0.description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
-  "commands.account.success.verification_info.embeds.0.color": "DarkGold",
+  "commands.account.step.verification_info.embeds.0.title": "Account Verification",
+  "commands.account.step.verification_info.embeds.0.description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
 
   "commands.account.success.verified.embeds.0.title": "Account Verified",
-  "commands.account.success.verified.embeds.0.description": "%emoji_success% Successfully verified your account.",
+  "commands.account.success.verified.embeds.0.description": "Successfully verified your account.",
   "commands.account.success.verified.embeds.0.console": "Account verified",
 
 
+
+  "commands.channel-stats.errors.not_manageable.embeds.0.title": "Cannot Change Name",
+  "commands.channel-stats.errors.not_manageable.embeds.0.description": "I do not have permission to edit this channel's name.",
+  "commands.channel-stats.errors.not_manageable.console": "Channel not manageable",
+
+  "commands.channel-stats.success.add.embeds.0.title": "Added Stats Channel",
+  "commands.channel-stats.success.add.embeds.0.description": "Successfully added the stats channel.",
+  "commands.channel-stats.success.add.console": "Successfully added stats channel",
+
+  "commands.channel-stats.success.remove.embeds.0.title": "Removed Stats Channel",
+  "commands.channel-stats.success.remove.embeds.0.description": "Successfully removed the stats channel.",
+  "commands.channel-stats.success.remove.console": "Successfully removed stats channel",
+
+  "commands.channel-stats.success.status_list.embeds.0.title": "List Chat Channels",
+  "commands.channel-stats.success.status_list.embeds.0.fields.0.name": "Channel",
+  "commands.channel-stats.success.status_list.embeds.0.fields.0.value": "%channel%",
+  "commands.channel-stats.success.status_list.embeds.0.fields.0.inline": true,
+  "commands.channel-stats.success.status_list.embeds.0.fields.1.name": "Type",
+  "commands.channel-stats.success.status_list.embeds.0.fields.1.value": "Status",
+  "commands.channel-stats.success.status_list.embeds.0.fields.1.inline": true,
+  "commands.channel-stats.success.status_list.embeds.0.fields.2.name": "Offline Text",
+  "commands.channel-stats.success.status_list.embeds.0.fields.2.value": "%online_name%",
+  "commands.channel-stats.success.status_list.embeds.0.fields.3.name": "Online Text",
+  "commands.channel-stats.success.status_list.embeds.0.fields.3.value": "%offline_name%",
+  "commands.channel-stats.success.status_list.console": "Successfully listed stats channels",
+
+  "commands.channel-stats.success.member-counter_list.embeds.0.title": "List Stats Channels",
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.0.name": "Channel",
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.0.value": "%channel%",
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.0.inline": true,
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.1.name": "Type",
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.1.value": "Member Counter",
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.1.inline": true,
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.2.name": "Channel Text",
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.2.value": "%name%",
+  "commands.channel-stats.success.member-counter_list.embeds.0.fields.2.inline": true,
+  "commands.channel-stats.success.member-counter_list.console": "Successfully listed stats channels",
+
+
+
   "commands.chatchannel.warnings.no_channels.embeds.0.title": "No Channels Added",
-  "commands.chatchannel.warnings.no_channels.embeds.0.description": "%emoji_warning% There are no added channels.",
+  "commands.chatchannel.warnings.no_channels.embeds.0.description": "There are no added channels.",
   "commands.chatchannel.warnings.no_channels.console": "No channels added",
 
   "commands.chatchannel.warnings.no_text_channel.embeds.0.title": "No Text Channel Specified",
-  "commands.chatchannel.warnings.no_text_channel.embeds.0.description": "%emoji_warning% Please mention a text, thread or news channel.",
+  "commands.chatchannel.warnings.no_text_channel.embeds.0.description": "Please mention a text, thread or news channel.",
   "commands.chatchannel.warnings.no_text_channel.console": "No text channel specified",
 
   "commands.chatchannel.warnings.channel_not_added.embeds.0.title": "Channel Not Added",
-  "commands.chatchannel.warnings.channel_not_added.embeds.0.description": "%emoji_warning% The specified channel is not added.",
+  "commands.chatchannel.warnings.channel_not_added.embeds.0.description": "The specified channel is not added.",
   "commands.chatchannel.warnings.channel_not_added.console": "Channel not added",
 
   "commands.chatchannel.warnings.not_collected.embeds.0.title": "Select Message Types",
   "commands.chatchannel.warnings.not_collected.embeds.0.description": "Select all message types you want the bot to send. (Time ran out)",
+  "commands.chatchannel.warnings.not_collected.components": [],
 
   "commands.chatchannel.warnings.already_responded.embeds.0.title": "Select Message Types",
   "commands.chatchannel.warnings.already_responded.embeds.0.description": "Select all message types you want the bot to send. (Already responded)",
 
 
-  "commands.chatchannel.success.choose.embeds.0.title": "Select Message Types",
-  "commands.chatchannel.success.choose.embeds.0.description": "Select all message types you want the bot to send. (You have 3 minutes to select)",
+  "commands.chatchannel.step.choose.embeds.0.title": "Select Message Types",
+  "commands.chatchannel.step.choose.embeds.0.description": "%emoji_step% Select all message types you want the bot to send. (You have 3 minutes to select)",
 
-  "commands.chatchannel.success.choose.components.0.type": "SelectMenu",
-  "commands.chatchannel.success.choose.components.0.custom_id": "log",
-  "commands.chatchannel.success.choose.components.0.min_values": 1,
-  "commands.chatchannel.success.choose.components.0.max_values": 10,
-  "commands.chatchannel.success.choose.components.0.placeholder": "Select up to 10 message types.",
+  "commands.chatchannel.step.choose.components.0.type": "SelectMenu",
+  "commands.chatchannel.step.choose.components.0.custom_id": "log",
+  "commands.chatchannel.step.choose.components.0.min_values": 1,
+  "commands.chatchannel.step.choose.components.0.max_values": 10,
+  "commands.chatchannel.step.choose.components.0.placeholder": "Select up to 10 message types.",
 
-  "commands.chatchannel.success.choose.components.0.options.0.label": "Chat Messages",
-  "commands.chatchannel.success.choose.components.0.options.0.description": "Send a message whenever a player chats.",
-  "commands.chatchannel.success.choose.components.0.options.0.value": "chat",
+  "commands.chatchannel.step.choose.components.0.options.0.label": "Chat Messages",
+  "commands.chatchannel.step.choose.components.0.options.0.description": "Send a message whenever a player chats.",
+  "commands.chatchannel.step.choose.components.0.options.0.value": "chat",
 
-  "commands.chatchannel.success.choose.components.0.options.1.label": "Join Messages",
-  "commands.chatchannel.success.choose.components.0.options.1.description": "Send a message whenever a player joins the server.",
-  "commands.chatchannel.success.choose.components.0.options.1.value": "join",
+  "commands.chatchannel.step.choose.components.0.options.1.label": "Join Messages",
+  "commands.chatchannel.step.choose.components.0.options.1.description": "Send a message whenever a player joins the server.",
+  "commands.chatchannel.step.choose.components.0.options.1.value": "join",
 
-  "commands.chatchannel.success.choose.components.0.options.2.label": "Quit Messages",
-  "commands.chatchannel.success.choose.components.0.options.2.description": "Send a message whenever a player leaves the server.",
-  "commands.chatchannel.success.choose.components.0.options.2.value": "quit",
+  "commands.chatchannel.step.choose.components.0.options.2.label": "Quit Messages",
+  "commands.chatchannel.step.choose.components.0.options.2.description": "Send a message whenever a player leaves the server.",
+  "commands.chatchannel.step.choose.components.0.options.2.value": "quit",
 
-  "commands.chatchannel.success.choose.components.0.options.3.label": "Advancement Messages",
-  "commands.chatchannel.success.choose.components.0.options.3.description": "Send a message whenever a player completes an advancement.",
-  "commands.chatchannel.success.choose.components.0.options.3.value": "advancement",
+  "commands.chatchannel.step.choose.components.0.options.3.label": "Advancement Messages",
+  "commands.chatchannel.step.choose.components.0.options.3.description": "Send a message whenever a player completes an advancement.",
+  "commands.chatchannel.step.choose.components.0.options.3.value": "advancement",
 
-  "commands.chatchannel.success.choose.components.0.options.4.label": "Death Messages",
-  "commands.chatchannel.success.choose.components.0.options.4.description": "Send a message whenever a player dies.",
-  "commands.chatchannel.success.choose.components.0.options.4.value": "death",
+  "commands.chatchannel.step.choose.components.0.options.4.label": "Death Messages",
+  "commands.chatchannel.step.choose.components.0.options.4.description": "Send a message whenever a player dies.",
+  "commands.chatchannel.step.choose.components.0.options.4.value": "death",
 
-  "commands.chatchannel.success.choose.components.0.options.5.label": "Player Command Messages",
-  "commands.chatchannel.success.choose.components.0.options.5.description": "Send a message whenever a command is sent by a player.",
-  "commands.chatchannel.success.choose.components.0.options.5.value": "player_command",
+  "commands.chatchannel.step.choose.components.0.options.5.label": "Player Command Messages",
+  "commands.chatchannel.step.choose.components.0.options.5.description": "Send a message whenever a command is sent by a player.",
+  "commands.chatchannel.step.choose.components.0.options.5.value": "player_command",
 
-  "commands.chatchannel.success.choose.components.0.options.6.label": "Console Command Messages",
-  "commands.chatchannel.success.choose.components.0.options.6.description": "Send a message whenever a command is sent by the console.",
-  "commands.chatchannel.success.choose.components.0.options.6.value": "console_command",
+  "commands.chatchannel.step.choose.components.0.options.6.label": "Console Command Messages",
+  "commands.chatchannel.step.choose.components.0.options.6.description": "Send a message whenever a command is sent by the console.",
+  "commands.chatchannel.step.choose.components.0.options.6.value": "console_command",
 
-  "commands.chatchannel.success.choose.components.0.options.7.label": "Block Command Messages",
-  "commands.chatchannel.success.choose.components.0.options.7.description": "Send a message whenever a command block is executed.",
-  "commands.chatchannel.success.choose.components.0.options.7.value": "block_command",
+  "commands.chatchannel.step.choose.components.0.options.7.label": "Block Command Messages",
+  "commands.chatchannel.step.choose.components.0.options.7.description": "Send a message whenever a command block is executed.",
+  "commands.chatchannel.step.choose.components.0.options.7.value": "block_command",
 
-  "commands.chatchannel.success.choose.components.0.options.8.label": "Startup Messages",
-  "commands.chatchannel.success.choose.components.0.options.8.description": "Send a message whenever the server starts up.",
-  "commands.chatchannel.success.choose.components.0.options.8.value": "start",
+  "commands.chatchannel.step.choose.components.0.options.8.label": "Startup Messages",
+  "commands.chatchannel.step.choose.components.0.options.8.description": "Send a message whenever the server starts up.",
+  "commands.chatchannel.step.choose.components.0.options.8.value": "start",
 
-  "commands.chatchannel.success.choose.components.0.options.9.label": "Shutdown Messages",
-  "commands.chatchannel.success.choose.components.0.options.9.description": "Send a message whenever the server shuts down.",
-  "commands.chatchannel.success.choose.components.0.options.9.value": "close",
+  "commands.chatchannel.step.choose.components.0.options.9.label": "Shutdown Messages",
+  "commands.chatchannel.step.choose.components.0.options.9.description": "Send a message whenever the server shuts down.",
+  "commands.chatchannel.step.choose.components.0.options.9.value": "close",
 
 
   "commands.chatchannel.success.add.embeds.0.title": "Added Chat Channel",
-  "commands.chatchannel.success.add.embeds.0.description": "%emoji_success% Successfully added the chat channel",
+  "commands.chatchannel.success.add.embeds.0.description": "Successfully added the chat channel.",
+  "commands.chatchannel.success.add.components": [],
   "commands.chatchannel.success.add.console": "Successfully added chat channel",
 
-  "commands.chatchannel.success.remove.embeds.0.title": "Remove Chat Channel",
-  "commands.chatchannel.success.remove.embeds.0.description": "%emoji_success% Successfully removed the chat channel",
+  "commands.chatchannel.success.remove.embeds.0.title": "Removed Chat Channel",
+  "commands.chatchannel.success.remove.embeds.0.description": "Successfully removed the chat channel.",
   "commands.chatchannel.success.remove.console": "Successfully removed chat channel",
 
   "commands.chatchannel.success.list.embeds.0.title": "List Chat Channels",
-  "commands.chatchannel.success.list.embeds.0.description": "%emoji_success% %channel%",
-  "commands.chatchannel.success.list.embeds.0.fields.0.name": "Logging",
-  "commands.chatchannel.success.list.embeds.0.fields.0.value": "%channel_types%",
-  "commands.chatchannel.success.list.embeds.0.fields.1.name": "Webhook Mode",
-  "commands.chatchannel.success.list.embeds.0.fields.1.value": "%webhooks%",
-  "commands.chatchannel.success.list.console": "Successfully listed chat channel",
+  "commands.chatchannel.success.list.embeds.0.fields.0.name": "Channel",
+  "commands.chatchannel.success.list.embeds.0.fields.0.value": "%channel%",
+  "commands.chatchannel.success.list.embeds.0.fields.1.name": "Logging",
+  "commands.chatchannel.success.list.embeds.0.fields.1.value": "%channel_types%",
+  "commands.chatchannel.success.list.embeds.0.fields.2.name": "Webhook Mode",
+  "commands.chatchannel.success.list.embeds.0.fields.2.value": "%webhooks%",
+  "commands.chatchannel.success.list.console": "Successfully listed chat channels",
 
   "commands.chatchannel.success.channel_button.components.0.type": "Button",
   "commands.chatchannel.success.channel_button.components.0.label": "Channel #%index1%",
@@ -538,113 +604,108 @@
 
 
   "commands.connect.warnings.invalid_version.embeds.0.title": "Invalid Version Specified",
-  "commands.connect.warnings.invalid_version.embeds.0.description": "%emoji_warning% Please specify a valid minor minecraft version without patch number (e.g. `1.19`, `1.16`).",
+  "commands.connect.warnings.invalid_version.embeds.0.description": "Please specify a valid minor minecraft version without patch number (e.g. `1.19`, `1.16`).",
   "commands.connect.warnings.invalid_version.console": "Invalid version specified",
 
   "commands.connect.warnings.invalid_port.embeds.0.title": "Invalid Port Specified",
-  "commands.connect.warnings.invalid_port.embeds.0.description": "%emoji_warning% Please specify a port that is bigger than 0 and smaller than 65536.",
+  "commands.connect.warnings.invalid_port.embeds.0.description": "Please specify a port that is bigger than 0 and smaller than 65536.",
   "commands.connect.warnings.invalid_port.console": "Invalid port specified",
 
   "commands.connect.warnings.version_below_11.embeds.0.title": "Version Below 1.11",
-  "commands.connect.warnings.version_below_11.embeds.0.description": "%emoji_warning% The advancement command might not work because advancements don't exist in your minecraft version yet.",
+  "commands.connect.warnings.version_below_11.embeds.0.description": "The advancement command might not work because advancements don't exist in your minecraft version yet.",
 
   "commands.connect.warnings.version_below_7.embeds.0.title": "Version Below 1.7",
-  "commands.connect.warnings.version_below_7.embeds.0.description": "%emoji_warning% The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet.",
+  "commands.connect.warnings.version_below_7.embeds.0.description": "The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet.",
 
   "commands.connect.warnings.connecting.embeds.0.title": "Connecting...",
   "commands.connect.warnings.connecting.embeds.0.description": "Connecting to ftp...",
 
   "commands.connect.warnings.searching_properties.embeds.0.title": "Searching For Server...",
-  "commands.connect.warnings.searching_properties.embeds.0.description": "%emoji_success% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)",
+  "commands.connect.warnings.searching_properties.embeds.0.description": "Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)",
   "commands.connect.warnings.searching_properties.console": "Searching for server.properties...",
 
-  "commands.connect.warnings.check_dms.embeds.0.title": "Check Your DMs",
-  "commands.connect.warnings.check_dms.embeds.0.description": "%emoji_red_success% Please check your DMs to complete the connection.",
+  "commands.connect.step.check_dms.embeds.0.title": "Check Your DMs",
+  "commands.connect.step.check_dms.embeds.0.description": "%emoji_step% Please check your DMs to complete the connection.",
 
   "commands.connect.warnings.could_not_dm.embeds.0.title": "Could Not DM",
-  "commands.connect.warnings.could_not_dm.embeds.0.description": "%emoji_warning% Could not DM you. Verifying in the current channel...",
+  "commands.connect.warnings.could_not_dm.embeds.0.description": "Could not DM you. Verifying in the current channel...",
 
-  "commands.connect.warnings.no_reply_in_time.embeds.0.title": "Verification Unsuccessful",
-  "commands.connect.warnings.no_reply_in_time.embeds.0.description": "%emoji_warning% You did not reply in time!",
+  "commands.connect.warnings.no_reply_in_time.embeds.0.title": "Verification Failed",
+  "commands.connect.warnings.no_reply_in_time.embeds.0.description": "You did not reply in time!",
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
-
-  "commands.connect.warnings.already_connected.embeds.0.title": "Plugin Already Connected",
-  "commands.connect.warnings.already_connected.embeds.0.description": "%emoji_warning% This plugin is already connected to another server (**%server%**). Please disconnect it first.",
-  "commands.connect.warnings.already_connected.console": "Plugin already connected",
 
   "commands.connect.warnings.verification.embeds.0.title": "Code Verification",
   "commands.connect.warnings.verification.embeds.0.description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
   "commands.connect.warnings.verification.embeds.0.color": "DarkGold",
 
   "commands.connect.errors.could_not_connect_ftp.embeds.0.title": "Could Not Connect",
-  "commands.connect.errors.could_not_connect_ftp.embeds.0.description": "%emoji_error% Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again.",
+  "commands.connect.errors.could_not_connect_ftp.embeds.0.description": "Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again.",
   "commands.connect.errors.could_not_connect_ftp.console": "Could not connect with ftp, sftp or ftps.",
 
   "commands.connect.errors.could_not_connect_plugin.embeds.0.title": "Could Not Connect",
-  "commands.connect.errors.could_not_connect_plugin.embeds.0.description": "%emoji_error% Could not connect to server with plugin.",
+  "commands.connect.errors.could_not_connect_plugin.embeds.0.description": "Could not connect to server with plugin.",
   "commands.connect.errors.could_not_connect_plugin.console": "Could not connect with plugin.",
 
   "commands.connect.errors.could_not_find_properties.embeds.0.title": "Could Not Find Server",
-  "commands.connect.errors.could_not_find_properties.embeds.0.description": "%emoji_error% Could not find server folder. Please specify the server path manually.",
+  "commands.connect.errors.could_not_find_properties.embeds.0.description": "Could not find server folder. Please specify the server path manually.",
   "commands.connect.errors.could_not_find_properties.console": "Could not find server.properties",
 
   "commands.connect.errors.could_not_get_properties.embeds.0.title": "Could Not Download",
-  "commands.connect.errors.could_not_get_properties.embeds.0.description": "%emoji_error% Could not download server configuration. Please specify the server-path manually.",
+  "commands.connect.errors.could_not_get_properties.embeds.0.description": "Could not download server configuration. Please specify the server-path manually.",
   "commands.connect.errors.could_not_get_properties.console": "Could not download server.properties",
 
-  "commands.connect.errors.incorrect_code.embeds.0.title": "Verification Unsuccessful",
-  "commands.connect.errors.incorrect_code.embeds.0.description": "%emoji_error% You didn't reply with the correct code.",
+  "commands.connect.errors.incorrect_code.embeds.0.title": "Verification Failed",
+  "commands.connect.errors.incorrect_code.embeds.0.description": "You didn't reply with the correct code.",
   "commands.connect.errors.incorrect_code.console": "Incorrect code",
 
-  "commands.connect.errors.websocket_error.embeds.0.title": "Verification Unsuccessful",
-  "commands.connect.errors.websocket_error.embeds.0.description": "%emoji_error% An unknown error occurred while connecting to the plugin.",
+  "commands.connect.errors.websocket_error.embeds.0.title": "Verification Failed",
+  "commands.connect.errors.websocket_error.embeds.0.description": "An unknown error occurred while connecting to the plugin.",
   "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error%",
 
-  "commands.connect.success.verification_info.embeds.0.title": "Server Verification",
-  "commands.connect.success.verification_info.embeds.0.description": "%emoji_red_success% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
-  "commands.connect.success.verification_info.embeds.0.color": "DarkGold",
+  "commands.connect.step.verification_info.embeds.0.title": "Server Verification",
+  "commands.connect.step.verification_info.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
 
   "commands.connect.success.ftp.embeds.0.title": "Connected to Server",
-  "commands.connect.success.ftp.embeds.0.description": "%emoji_success% Successfully connected to the ftp server.",
+  "commands.connect.success.ftp.embeds.0.description": "Successfully connected to the ftp server.",
   "commands.connect.success.ftp.console": "Successfully wrote ftp file",
 
   "commands.connect.success.plugin.embeds.0.title": "Connected to Server",
-  "commands.connect.success.plugin.embeds.0.description": "%emoji_success% Successfully connected to the plugin.",
-  "websocketcommands.connect.success.plugin.console": "Successfully wrote plugin file",
+  "commands.connect.success.plugin.embeds.0.description": "Successfully connected to the plugin.",
+  "commands.connect.success.plugin.console": "Successfully wrote plugin file",
 
   "commands.connect.success.websocket.embeds.0.title": "Connected to Server",
-  "commands.connect.success.websocket.embeds.0.description": "%emoji_success% Successfully connected to the plugin.",
+  "commands.connect.success.websocket.embeds.0.description": "Successfully connected to the plugin.",
   "commands.connect.success.websocket.console": "Successfully wrote websocket file",
 
   "commands.connect.success.verification.embeds.0.title": "Verification Successful",
-  "commands.connect.success.verification.embeds.0.description": "%emoji_success% Successfully verified your server.",
+  "commands.connect.success.verification.embeds.0.description": "Successfully verified your server.",
   "commands.connect.success.verification.console": "Guild verified",
 
 
 
   "commands.disable.warnings.command_does_not_exist.embeds.0.title": "Command Does Not Exist",
-  "commands.disable.warnings.command_does_not_exist.embeds.0.description": "%emoji_warning% Command **%disable%** does not exist.",
+  "commands.disable.warnings.command_does_not_exist.embeds.0.description": "Command **%disable%** does not exist.",
   "commands.disable.warnings.command_does_not_exist.console": "Command does not exist",
 
   "commands.disable.warnings.disabled_command.embeds.0.title": "Disabled Command Specified",
-  "commands.disable.warnings.disabled_command.embeds.0.description": "%emoji_no_entry% You cannot disable the command **%disable%**.",
+  "commands.disable.warnings.disabled_command.embeds.0.description": "You cannot disable the command **%disable%**.",
   "commands.disable.warnings.disabled_command.console": "Disabled command specified",
 
   "commands.disable.errors.could_not_disable.embeds.0.title": "Could Not Disable",
-  "commands.disable.errors.could_not_disable.embeds.0.description": "%emoji_error% Could not disable %type% **%disable%**.",
+  "commands.disable.errors.could_not_disable.embeds.0.description": "Could not disable %type% **%disable%**.",
   "commands.disable.errors.could_not_disable.console": "Could not disable %disable%",
 
   "commands.disable.success.nothing_disabled.embeds.0.title": "Nothing Disabled",
-  "commands.disable.success.nothing_disabled.embeds.0.description": "%emoji_success% There are no disabled %type%.",
+  "commands.disable.success.nothing_disabled.embeds.0.description": "There are no disabled %type%.",
   "commands.disable.success.nothing_disabled.console": "Nothing disabled",
   "commands.disable.success.nothing_disabled.embeds.0.color": "Green",
 
   "commands.disable.success.disabled.embeds.0.title": "Successfully Disabled",
-  "commands.disable.success.disabled.embeds.0.description": "%emoji_success% Successfully disabled %type% **%disable%**.",
+  "commands.disable.success.disabled.embeds.0.description": "Successfully disabled %type% **%disable%**.",
   "commands.disable.success.disabled.console": "Successfully disabled %type% %disable%",
 
   "commands.disable.success.list.base.embeds.0.title": "Disable List",
-  "commands.disable.success.list.base.embeds.0.description": "%emoji_success% Here's a list of all disabled **%type%**:",
+  "commands.disable.success.list.base.embeds.0.description": "Here's a list of all disabled **%type%**:",
   "commands.disable.success.list.base.embeds.0.color": "Green",
 
   "commands.disable.success.list.entry": "- `%disable%`",
@@ -656,21 +717,21 @@
 
 
   "commands.disconnect.success.embeds.0.title": "Disconnected From %protocol_cap%",
-  "commands.disconnect.success.embeds.0.description": "%emoji_success% The **%protocol%** connection was successfully disconnected.",
+  "commands.disconnect.success.embeds.0.description": "The **%protocol%** connection was successfully disconnected.",
   "commands.disconnect.success.console": "Disconnected from %protocol%",
 
 
 
   "commands.enable.warnings.command_does_not_exist.embeds.0.title": "Command Does Not Exist",
-  "commands.enable.warnings.command_does_not_exist.embeds.0.description": "%emoji_warning% Command **%enable%** does not exist.",
+  "commands.enable.warnings.command_does_not_exist.embeds.0.description": "Command **%enable%** does not exist.",
   "commands.enable.warnings.command_does_not_exist.console": "Command does not exist",
 
   "commands.enable.warnings.already_enabled.embeds.0.title": "Already Enabled",
-  "commands.enable.warnings.already_enabled.embeds.0.description": "%emoji_warning% %type% **%enable%** is already enabled.",
+  "commands.enable.warnings.already_enabled.embeds.0.description": "%type% **%enable%** is already enabled.",
   "commands.enable.warnings.already_enabled.console": "Already enabled %enable%",
 
   "commands.enable.success.embeds.0.title": "Successfully Enabled",
-  "commands.enable.success.embeds.0.description": "%emoji_success% Successfully enabled %type% **%enable%**.",
+  "commands.enable.success.embeds.0.description": "Successfully enabled %type% **%enable%**.",
   "commands.enable.success.console": "Successfully enabled %type% %enable%",
 
 
@@ -693,40 +754,41 @@
 
 
   "api.plugin.warnings.not_completely_disconnected.embeds.0.title": "Not Completely Disconnected",
-  "api.plugin.warnings.not_completely_disconnected.embeds.0.description": "%emoji_warning% The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely.",
+  "api.plugin.warnings.not_completely_disconnected.embeds.0.description": "The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely.",
 
   "api.plugin.warnings.automatically_disconnected.embeds.0.title": "Automatically Disconnected",
-  "api.plugin.warnings.automatically_disconnected.embeds.0.description": "%emoji_warning% Automatically disconnected from the old server (**%ip%**) to ensure no complications happen.",
+  "api.plugin.warnings.automatically_disconnected.embeds.0.description": "Automatically disconnected from the old server (**%ip%**) to ensure no complications happen.",
 
   "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
   "api.plugin.warnings.no_response_message_short": "No response message! This commonly happens after using `/reload`.",
 
   "api.plugin.errors.no_response.embeds.0.title": "Plugin Does Not Respond",
-  "api.plugin.errors.no_response.embeds.0.description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled.",
+  "api.plugin.errors.no_response.embeds.0.description": "[Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",
+  "api.plugin.errors.no_response.components": [],
 
   "api.plugin.errors.no_webhook_permission.embeds.0.title": "No Webhook Permission",
-  "api.plugin.errors.no_webhook_permission.embeds.0.description": "%emoji_error% The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission.",
+  "api.plugin.errors.no_webhook_permission.embeds.0.description": "The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission.",
   "api.plugin.errors.no_webhook_permission.console": "No webhook permission",
 
   "api.plugin.errors.could_not_add_webhook.embeds.0.title": "Could Not Add Webhook",
-  "api.plugin.errors.could_not_add_webhook.embeds.0.description": "%emoji_error% The chatchannel webhook got deleted for an unknown reason and could not be re-added.",
+  "api.plugin.errors.could_not_add_webhook.embeds.0.description": "The chatchannel webhook got deleted for an unknown reason and could not be re-added.",
   "api.plugin.errors.could_not_add_webhook.console": "Could not re-add webhook",
 
   "api.plugin.errors.status_400.embeds.0.title": "Unknown Bot Error",
-  "api.plugin.errors.status_400.embeds.0.description": "%emoji_error% An unknown bot error occurred.",
+  "api.plugin.errors.status_400.embeds.0.description": "An unknown bot error occurred.",
   "api.plugin.errors.status_400.console": "400: Unknown client error, %data%",
 
   "api.plugin.errors.status_401.embeds.0.title": "Unknown Bot Error",
-  "api.plugin.errors.status_401.embeds.0.description": "%emoji_error% An unknown bot error occurred.",
+  "api.plugin.errors.status_401.embeds.0.description": "An unknown bot error occurred.",
   "api.plugin.errors.status_401.console": "401: Wrong authorization",
 
   "api.plugin.errors.status_404.embeds.0.title": "Data Not Found",
-  "api.plugin.errors.status_404.embeds.0.description": "%emoji_error% The requested data could not be found on the server.",
+  "api.plugin.errors.status_404.embeds.0.description": "The requested data could not be found on the server.",
   "api.plugin.errors.status_404.console": "404: Data could not be found, %data%",
 
   "api.plugin.errors.status_500.embeds.0.title": "Unknown Plugin Error",
-  "api.plugin.errors.status_500.embeds.0.description": "%emoji_error% An unknown plugin error occurred.",
+  "api.plugin.errors.status_500.embeds.0.description": "An unknown plugin error occurred.",
   "api.plugin.errors.status_500.console": "500: Unknown server error, %data%",
 
 
@@ -783,29 +845,29 @@
 
 
   "api.ftp.errors.could_not_connect.embeds.0.title": "Could Not Connect",
-  "api.ftp.errors.could_not_connect.embeds.0.description": "%emoji_error% Could not connect to server with ftp. Please check if the ftp server is online.",
+  "api.ftp.errors.could_not_connect.embeds.0.description": "Could not connect to server with ftp. Please check if the ftp server is online.",
   "api.ftp.errors.could_not_connect.console": "Could not connect with ftp, sftp or ftps.",
 
   "api.ftp.errors.could_not_parse.embeds.0.title": "Could not Read File",
-  "api.ftp.errors.could_not_parse.embeds.0.description": "%emoji_error% Could not read the NBT file. File may be corrupted.",
+  "api.ftp.errors.could_not_parse.embeds.0.description": "Could not read the NBT file. File may be corrupted.",
   "api.ftp.errors.could_not_parse.console": "Could not read nbt file %error%",
 
 
 
   "api.utils.errors.could_not_fetch_uuid.embeds.0.title": "Could Not Fetch UUID",
-  "api.utils.errors.could_not_fetch_uuid.embeds.0.description": "%emoji_error% **%username%** is not a valid minecraft java edition account name.",
+  "api.utils.errors.could_not_fetch_uuid.embeds.0.description": "**%username%** is not a valid minecraft java edition account name.",
   "api.utils.errors.could_not_fetch_uuid.console": "Could not fetch uuid of %username%",
 
 
 
   "api.button.clicked.console": "%author_tag% has clicked button %interaction_id% in %guild_name%",
 
-  "api.button.warnings.no_author.embeds.0.title": "No Permission",
-  "api.button.warnings.no_author.embeds.0.description": "%emoji_warning% Only the command sender can use this button.",
+  "api.button.no_access.no_author.embeds.0.title": "No Permission",
+  "api.button.no_access.no_author.embeds.0.description": "Only the command sender can use this button.",
 
-  "api.button.warnings.no_permission.embeds.0.title": "No Permission",
-  "api.button.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This button can only be used with the `%permission%` permission!",
-  "api.button.warnings.no_permission.console": "No permission",
+  "api.button.no_access.no_permission.embeds.0.title": "No Permission",
+  "api.button.no_access.no_permission.embeds.0.description": "This button can only be used with the `%permission%` permission!",
+  "api.button.no_access.no_permission.console": "No permission",
 
   "api.button.success.next_button.components.0.type": "Button",
   "api.button.success.next_button.components.0.style": "Secondary",
@@ -824,61 +886,56 @@
 
 
 
-  "api.select_menu.warnings.no_author.embeds.0.title": "No Permission",
-  "api.select_menu.warnings.no_author.embeds.0.description": "%emoji_warning% Only the command sender can use this select menu.",
-
-
-
   "api.command.executed.console": "%author_tag% executed /%interaction_name% %args% in %guild_name%",
 
   "api.command.errors.server_not_connected.embeds.0.title": "Server Not Connected",
-  "api.command.errors.server_not_connected.embeds.0.description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
+  "api.command.errors.server_not_connected.embeds.0.description": "Your server is not connected. Please use `/connect plugin` or `/connect ftp` first.",
   "api.command.errors.server_not_connected.console": "Server not connected",
 
   "api.command.errors.user_not_connected.embeds.0.title": "User Not Connected",
-  "api.command.errors.user_not_connected.embeds.0.description": "%emoji_error% User did not use `/account connect`! Instead of pinging someone you can also specify their **minecraft-username**.",
+  "api.command.errors.user_not_connected.embeds.0.description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **minecraft-username**.",
   "api.command.errors.user_not_connected.console": "User not connected",
 
   "api.command.errors.server_not_connected_plugin.embeds.0.title": "Server Not Connected",
-  "api.command.errors.server_not_connected_plugin.embeds.0.description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first.",
+  "api.command.errors.server_not_connected_plugin.embeds.0.description": "Your server is not connected with the plugin. Please use `/connect plugin` first.",
   "api.command.errors.server_not_connected_plugin.console": "Server not connected with plugin",
 
   "api.command.errors.server_not_connected_ftp.embeds.0.title": "Server Not Connected",
-  "api.command.errors.server_not_connected_ftp.embeds.0.description": "%emoji_error% Your server is not connected with ftp. Please use `/connect ftp` first.",
+  "api.command.errors.server_not_connected_ftp.embeds.0.description": "Your server is not connected with ftp. Please use `/connect ftp` first.",
   "api.command.errors.server_not_connected_ftp.console": "Server not connected with ftp",
 
-  "api.command.warnings.disabled.embeds.0.title": "Command Disabled",
-  "api.command.warnings.disabled.embeds.0.description": "%emoji_no_entry% Command **%interaction_name%** disabled!",
-  "api.command.warnings.disabled.console": "Command disabled",
+  "api.command.no_access.disabled.embeds.0.title": "Command Disabled",
+  "api.command.no_access.disabled.embeds.0.description": "Command **%interaction_name%** disabled!",
+  "api.command.no_access.disabled.console": "Command disabled",
 
   "api.command.warnings.no_argument.embeds.0.title": "Missing Required Argument",
-  "api.command.warnings.no_argument.embeds.0.description": "%emoji_warning% Please specify: `%argument%`",
+  "api.command.warnings.no_argument.embeds.0.description": "Please specify: `%argument%`",
   "api.command.warnings.no_argument.console": "Missing required argument",
 
   "api.command.warnings.no_user.embeds.0.title": "No User Specified",
-  "api.command.warnings.no_user.embeds.0.description": "%emoji_warning% Please ping a user or specify a minecraft-username.",
+  "api.command.warnings.no_user.embeds.0.description": "Please ping a user or specify a minecraft-username.",
   "api.command.warnings.no_user.console": "No user specified",
 
-  "api.command.warnings.no_permission.embeds.0.title": "No Permission",
-  "api.command.warnings.no_permission.embeds.0.description": "%emoji_no_entry% This command can only be used with the `%permission%` permission!",
-  "api.command.warnings.no_permission.console": "No permission",
+  "api.command.no_access.no_permission.embeds.0.title": "No Permission",
+  "api.command.no_access.no_permission.embeds.0.description": "This command can only be used with the `%permission%` permission!",
+  "api.command.no_access.no_permission.console": "No permission",
 
-  "api.command.warnings.no_unknown_permission.embeds.0.title": "No Permission",
-  "api.command.warnings.no_unknown_permission.embeds.0.description": "%emoji_no_entry% You do not have permission to execute this command!",
-  "api.command.warnings.no_unknown_permission.console": "No permission",
+  "api.command.no_access.no_unknown_permission.embeds.0.title": "No Permission",
+  "api.command.no_access.no_unknown_permission.embeds.0.description": "You do not have permission to execute this command!",
+  "api.command.no_access.no_unknown_permission.console": "No permission",
 
   "api.command.errors.could_not_download.embeds.0.title": "Could Not Download",
-  "api.command.errors.could_not_download.embeds.0.description": "%emoji_error% Could not download %category% files.",
+  "api.command.errors.could_not_download.embeds.0.description": "Could not download %category% files.",
   "api.command.errors.could_not_download.console": "Could not download %category% files",
 
   "api.command.errors.could_not_download_user_files.embeds.0.title": "Could Not Download",
-  "api.command.errors.could_not_download_user_files.embeds.0.description": "%emoji_error% Could not download %category% files. The user most likely never joined the server.",
+  "api.command.errors.could_not_download_user_files.embeds.0.description": "Could not download %category% files. The user most likely never joined the server.",
   "api.command.errors.could_not_download_user_files.console": "Could not download %category% files",
 
 
 
   "buttons.disable.success.response.embeds.0.title": "Disabled Command",
-  "buttons.disable.success.response.embeds.0.description": "%emoji_success% Successfully disabled command **%command_name%**.",
+  "buttons.disable.success.response.embeds.0.description": "Successfully disabled command **%command_name%**.",
   "buttons.disable.success.response.console": "Disabled command %command_name%",
 
   "buttons.disable.success.help.embeds.0.description": "```diff\n- [COMMAND DISABLED]```",
@@ -886,12 +943,12 @@
 
 
 
-  "buttons.enable.errors.already_enabled.embeds.0.title": "Already Enabled",
-  "buttons.enable.errors.already_enabled.embeds.0.description": "%emoji_warning% Command **%command_name%** is already enabled.",
-  "buttons.enable.errors.already_enabled.console": "Could not enable %command_name%",
+  "buttons.enable.warnings.already_enabled.embeds.0.title": "Already Enabled",
+  "buttons.enable.warnings.already_enabled.embeds.0.description": "Command **%command_name%** is already enabled.",
+  "buttons.enable.warnings.already_enabled.console": "Could not enable %command_name%",
 
   "buttons.enable.success.response.embeds.0.title": "Enabled Command",
-  "buttons.enable.success.response.embeds.0.description": "%emoji_success% Successfully enabled command **%command_name%**.",
+  "buttons.enable.success.response.embeds.0.description": "Successfully enabled command **%command_name%**.",
   "buttons.enable.success.response.console": "Enabled command %command_name%",
 
   "buttons.enable.success.help.embeds.0.description": "```diff\n+ [COMMAND ENABLED]```",
@@ -1283,6 +1340,75 @@
 
 
 
+  "data.channel-stats.name": "channel-stats",
+  "data.channel-stats.type": "ChatInput",
+  "data.channel-stats.long_description": "Manage stats-channel in the server that will show the current player count of the minecraft server or it's online status.",
+  "data.channel-stats.description": "Manage stats-channels in the server.",
+
+  "data.channel-stats.options.0.type": "SubcommandGroup",
+  "data.channel-stats.options.0.name": "add",
+  "data.channel-stats.options.0.description": "Add a stats-channel to the server.",
+
+  "data.channel-stats.options.0.options.0.type": "Subcommand",
+  "data.channel-stats.options.0.options.0.name": "status",
+  "data.channel-stats.options.0.options.0.description": "Add a stats-channel that will show the online status of the minecraft server.",
+
+  "data.channel-stats.options.0.options.0.options.0.type": "Channel",
+  "data.channel-stats.options.0.options.0.options.0.name": "channel",
+  "data.channel-stats.options.0.options.0.options.0.description": "Set the channel you want to add as a stats-channel.",
+  "data.channel-stats.options.0.options.0.options.0.required": true,
+
+  "data.channel-stats.options.0.options.0.options.1.type": "String",
+  "data.channel-stats.options.0.options.0.options.1.name": "online",
+  "data.channel-stats.options.0.options.0.options.1.description": "Set the message that will be shown when the server is online.",
+  "data.channel-stats.options.0.options.0.options.1.required": true,
+
+  "data.channel-stats.options.0.options.0.options.2.type": "String",
+  "data.channel-stats.options.0.options.0.options.2.name": "offline",
+  "data.channel-stats.options.0.options.0.options.2.description": "Set the message that will be shown when the server is offline.",
+  "data.channel-stats.options.0.options.0.options.2.required": true,
+
+
+  "data.channel-stats.options.0.options.1.type": "Subcommand",
+  "data.channel-stats.options.0.options.1.name": "member-counter",
+  "data.channel-stats.options.0.options.1.description": "Add a stats-channel that will show the current player count of the minecraft server.",
+
+  "data.channel-stats.options.0.options.1.options.0.type": "Channel",
+  "data.channel-stats.options.0.options.1.options.0.name": "channel",
+  "data.channel-stats.options.0.options.1.options.0.description": "Set the channel you want to add as a stats-channel.",
+  "data.channel-stats.options.0.options.1.options.0.required": true,
+
+  "data.channel-stats.options.0.options.1.options.1.type": "String",
+  "data.channel-stats.options.0.options.1.options.1.name": "message",
+  "data.channel-stats.options.0.options.1.options.1.description": "Set the message that will be shown for the player count. Use %count% for the player count.",
+  "data.channel-stats.options.0.options.1.options.1.required": true,
+
+
+  "data.channel-stats.options.1.type": "Subcommand",
+  "data.channel-stats.options.1.name": "remove",
+  "data.channel-stats.options.1.description": "Remove a stats-channel from the server.",
+
+  "data.channel-stats.options.1.options.0.type": "Channel",
+  "data.channel-stats.options.1.options.0.name": "channel",
+  "data.channel-stats.options.1.options.0.description": "Set the channel you want to remove.",
+  "data.channel-stats.options.1.options.0.required": true,
+
+
+  "data.channel-stats.options.2.type": "Subcommand",
+  "data.channel-stats.options.2.name": "list",
+  "data.channel-stats.options.2.description": "List all stats-channels in the server.",
+
+  "data.channel-stats.options.2.options.0.type": "String",
+  "data.channel-stats.options.2.options.0.name": "filter",
+  "data.channel-stats.options.2.options.0.description": "Set a filter to only show stats-channels of a specific type.",
+  "data.channel-stats.options.2.options.0.required": false,
+  "data.channel-stats.options.2.options.0.choices.0.name": "Status",
+  "data.channel-stats.options.2.options.0.choices.0.value": "status",
+  "data.channel-stats.options.2.options.0.choices.1.name": "Member Counter",
+  "data.channel-stats.options.2.options.0.choices.1.value": "member-counter",
+
+
+
   "data.chatchannel.name": "chatchannel",
   "data.chatchannel.type": "ChatInput",
   "data.chatchannel.default_member_permissions.0": "Administrator",
@@ -1305,9 +1431,14 @@
   "data.chatchannel.options.0.options.0.channel_types.4": "PrivateThread",
 
   "data.chatchannel.options.0.options.1.type": "Boolean",
-  "data.chatchannel.options.0.options.1.name": "webhooks",
-  "data.chatchannel.options.0.options.1.description": "Enable webhook mode for chat messages.",
+  "data.chatchannel.options.0.options.1.name": "discord-to-minecraft",
+  "data.chatchannel.options.0.options.1.description": "Enable chat messages from discord to minecraft. (Default: true)",
   "data.chatchannel.options.0.options.1.required": false,
+
+  "data.chatchannel.options.0.options.2.type": "Boolean",
+  "data.chatchannel.options.0.options.2.name": "webhooks",
+  "data.chatchannel.options.0.options.2.description": "Enable webhook mode for chat messages. (Default: false)",
+  "data.chatchannel.options.0.options.2.required": false,
 
 
   "data.chatchannel.options.1.type": "Subcommand",

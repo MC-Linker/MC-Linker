@@ -23,6 +23,7 @@ const mcData = McData('1.19.2');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
+export const minecraftAvatarURL = username => `https://minotar.net/helm/${username}/64.png?rnd=${Math.random()}`; //Random query to prevent caching
 
 /**
  * @typedef {object} AdvancementData
@@ -210,14 +211,18 @@ export async function getArgs(interaction) {
     if(!(interaction instanceof CommandInteraction)) return [];
 
     const slashCommand = await interaction.client.application.commands.fetch(interaction.commandId);
-    const args = [];
 
-    function addArgs(allOptions, option, incrementIndex) {
+    const args = [];
+    let incrementIndex = 0;
+
+    function addArgs(allOptions, option) {
+        //we use optIndex instead of push because users can select options in any order they want
         const optIndex = allOptions.findIndex(opt => opt.name === option.name) + incrementIndex;
 
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
-            option.options.forEach(opt => addArgs(slashCommand.options[optIndex].options, opt, 1));
+            incrementIndex++;
+            option.options.forEach(opt => addArgs(option.options, opt));
         }
         else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
         else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;
@@ -226,7 +231,7 @@ export async function getArgs(interaction) {
         else args[optIndex] = option.value;
     }
 
-    interaction.options.data.forEach(option => addArgs(slashCommand.options, option, 0));
+    interaction.options.data.forEach(option => addArgs(slashCommand.options, option));
 
     return args;
 }

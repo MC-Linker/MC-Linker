@@ -1,10 +1,43 @@
 {
+  "completions": {
+    "success": {
+      "author": {
+        "name": "Success",
+        "icon_url": "https://cdn.discordapp.com/emojis/1084892413035810897.webp?size=96&quality=lossless"
+      },
+      "color": "%color_success%"
+    },
+    "warnings": {
+      "author": {
+        "name": "Warning",
+        "icon_url": "https://cdn.discordapp.com/emojis/1084892438205829180.webp"
+      },
+      "color": "%color_warning%"
+    },
+    "errors": {
+      "author": {
+        "name": "Error",
+        "icon_url": "https://cdn.discordapp.com/emojis/1084892456371376240.webp"
+      },
+      "color": "%color_error%"
+    },
+    "no_access": {
+      "author": {
+        "name": "No Access",
+        "icon_url": "https://cdn.discordapp.com/emojis/1084892473756766370.webp"
+      },
+      "color": "%color_error%"
+    },
+    "step": {
+      "color": "%color_step%"
+    }
+  },
   "emojis": {
-    "warning": ":warning:",
-    "error": "<:Error:849215023264169985>",
-    "success": "<:Checkmark:849224496232660992>",
-    "red_success": "<:redsuccess:885601791465640016>",
-    "no_entry": ":no_entry:",
+    "warning": "<:warn:1084892438205829180>",
+    "error": "<:error:1084892456371376240>",
+    "success": "<:success:1084892413035810897>",
+    "step": "<:step:1084904567961034803>",
+    "no_access": "<:noaccess:1084892473756766370>",
     "join": "<:join:905924638083784836>",
     "leave": "<:leave:905924638100557865>",
     "death": "<:death:905924668735770674>",
@@ -21,25 +54,31 @@
     "mc_t": "<:MinecraftT:849561902979350529>",
     "mc_a": "<:MinecraftA:849561916632465408>"
   },
+  "colors": {
+    "success": "#729e34",
+    "error": "#9e3436",
+    "warning": "#f1c40f",
+    "step": "#f88239"
+  },
   "main": {
-    "warnings": {
-      "disabled": {
-        "embeds": [
-          {
-            "title": "Command Disabled",
-            "description": "%emoji_no_entry% Command **%interaction_name%** disabled!"
-          }
-        ],
-        "console": "Command disabled"
-      },
+    "no_access": {
       "not_in_guild": {
         "embeds": [
           {
             "title": "Guild-Only",
-            "description": "%emoji_warning% I can only be used in server channels!"
+            "description": "I can only be used in server channels!"
           }
         ],
         "console": "Not in guild"
+      },
+      "no_prefix_commands": {
+        "embeds": [
+          {
+            "title": "Use Slash Commands",
+            "description": "Prefixed commands are disabled. Please use [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) instead by typing `/` in a server channel followed by the command name."
+          }
+        ],
+        "console": "%author_username% used prefix command %interaction_name%"
       }
     },
     "errors": {
@@ -56,7 +95,7 @@
         "embeds": [
           {
             "title": "Unknown Error",
-            "description": "%emoji_error% An unknown error occurred while executing this command. Please try again."
+            "description": "An unknown error occurred while executing this command. Please try again."
           }
         ],
         "console": "Could not execute %interaction_name% command %error%"
@@ -65,7 +104,7 @@
         "embeds": [
           {
             "title": "Unknown Error",
-            "description": "%emoji_error% An unknown error occurred while executing this button. Please try again."
+            "description": "An unknown error occurred while executing this button. Please try again."
           }
         ],
         "console": "Could not execute %button% button %error%"
@@ -104,6 +143,14 @@
       },
       "disconnected": {
         "console": "Successfully deleted connection file of guild: %guild_name%"
+      },
+      "invite": {
+        "embeds": [
+          {
+            "title": "Thanks for inviting MC Linker!",
+            "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute </connect plugin:932257443394777129> in Discord.\n• Execute the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using </chatchannel add:932257443394777128> or check out any of the other commands!\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
+          }
+        ]
       }
     }
   },
@@ -114,7 +161,7 @@
           "embeds": [
             {
               "title": "No Command Specified",
-              "description": "%emoji_warning% Please specify a command to evaluate."
+              "description": "Please specify a command to evaluate."
             }
           ],
           "console": "No command specified"
@@ -124,8 +171,7 @@
         "embeds": [
           {
             "title": "Successfully Evaluated Command",
-            "description": "%output%",
-            "color": "#70A02C"
+            "description": "%output%"
           }
         ],
         "console": "Successfully evaluated command"
@@ -135,8 +181,7 @@
           "embeds": [
             {
               "title": "Unknown Error",
-              "description": "%output_error%",
-              "color": "#70A02C"
+              "description": "%output_error%"
             }
           ],
           "console": "Unknown error %error%"
@@ -149,7 +194,7 @@
           "embeds": [
             {
               "title": "Command/Category Does Not Exist",
-              "description": "%emoji_warning% Command/Category **%command_name%** does not exist."
+              "description": "Command/Category **%command_name%** does not exist."
             }
           ],
           "console": "Command/Category does not exist"
@@ -257,12 +302,14 @@
     },
     "advancements": {
       "no_description_available": "No description available...",
-      "warnings": {
+      "acquired": "Acquired",
+      "not_acquired": "Not Acquired",
+      "no_access": {
         "category_disabled": {
           "embeds": [
             {
               "title": "Category Disabled",
-              "description": "%emoji_no_entry% Advancement category **%advancement_category%** disabled!"
+              "description": "Advancement category **%advancement_category%** disabled!"
             }
           ],
           "console": "Advancement category %advancement_category% disabled."
@@ -271,75 +318,49 @@
           "embeds": [
             {
               "title": "Advancement Disabled",
-              "description": "%emoji_no_entry% Advancement **%advancement_title%** disabled!"
+              "description": "Advancement **%advancement_title%** disabled!"
             }
           ],
           "console": "Advancement %advancement_title% disabled."
-        },
+        }
+      },
+      "warnings": {
         "not_completed": {
           "embeds": [
             {
               "title": "Advancement Not Completed",
-              "description": "%emoji_warning% Advancement **%advancement_title%** not completed/unlocked or misspelled!"
+              "description": "Advancement **%advancement_title%** not completed/unlocked or misspelled!"
             }
           ],
           "console": "Advancement %advancement_title% not completed."
         }
       },
       "success": {
-        "base": {
-          "embeds": [
-            {
-              "title": "%username%",
-              "description": "%advancement_description%",
-              "color": "LuminousVividPink",
-              "fields": [
-                {
-                  "name": "%equals%\n%advancement_title%",
-                  "value": "**%equals%**"
-                }
-              ],
-              "image": "https://cdn.discordapp.com/attachments/844493685244297226/849604323264430140/unknown.png"
-            }
-          ]
-        },
-        "done": {
-          "embeds": [
-            {
-              "footer": {
-                "text": "Advancement unlocked/completed",
-                "icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png"
+        "embeds": [
+          {
+            "title": "Advancement",
+            "description": "**%advancement_title%**\n*%advancement_description%*",
+            "fields": [
+              {
+                "name": "Requirements",
+                "value": "%advancement_criteria%",
+                "inline": true
+              },
+              {
+                "name": "Acquired on",
+                "value": "%advancement_timestamps%",
+                "inline": true
               }
+            ],
+            "footer": {
+              "text": "Advancement %is_done%"
+            },
+            "author": {
+              "name": "%username%",
+              "icon_url": "%user_icon%"
             }
-          ]
-        },
-        "not_done": {
-          "embeds": [
-            {
-              "footer": {
-                "text": "Advancement not unlocked/completed",
-                "icon_url": "https://cdn.discordapp.com/emojis/849224496232660992.png"
-              }
-            }
-          ]
-        },
-        "final": {
-          "embeds": [
-            {
-              "fields": [
-                {
-                  "name": "**Requirement**",
-                  "value": "%advancement_requirement%"
-                },
-                {
-                  "name": "**Unlocked on**",
-                  "value": "%advancement_timestamp%"
-                }
-              ]
-            }
-          ],
-          "console": "Sent advancement %advancement_title% of %username%"
-        }
+          }
+        ]
       }
     },
     "inventory": {
@@ -363,7 +384,7 @@
           "embeds": [
             {
               "title": "Player Inventory",
-              "description": "%emoji_success% Here's the inventory of **%username%**:\n",
+              "description": "Here's the inventory of **%username%**:\n",
               "image": "attachment://Inventory_Player.png"
             }
           ]
@@ -372,7 +393,7 @@
           "embeds": [
             {
               "title": "Player Inventory",
-              "description": "%emoji_success% Here are the shulker contents of **%username%**:\n",
+              "description": "Here are the shulker contents of **%username%**:\n",
               "image": "attachment://Shulker_Contents.png"
             }
           ]
@@ -381,7 +402,7 @@
           "embeds": [
             {
               "title": "Item Information",
-              "description": "%emoji_success% Here's information about the **%name%**. [%count%/%max_count%]",
+              "description": "Here's information about the **%name%**. [%count%/%max_count%]",
               "author": {
                 "name": "%username%'s %slot_name% slot",
                 "icon_url": "%avatar%"
@@ -473,12 +494,12 @@
       "shulker_description": "Image of shulker contents"
     },
     "stats": {
-      "warnings": {
+      "no_access": {
         "category_disabled": {
           "embeds": [
             {
               "title": "Category Disabled",
-              "description": "%emoji_no_entry% Stat category **%stat_category%** disabled!"
+              "description": "Stat category **%stat_category%** disabled!"
             }
           ],
           "console": "Stat category %stat_category% disabled."
@@ -487,16 +508,18 @@
           "embeds": [
             {
               "title": "Stat Disabled",
-              "description": "%emoji_no_entry% Stat **%stat_name%** disabled!"
+              "description": "Stat **%stat_name%** disabled!"
             }
           ],
           "console": "Stat %stat_name% disabled"
-        },
+        }
+      },
+      "warnings": {
         "no_match": {
           "embeds": [
             {
               "title": "Could Not Find Stat",
-              "description": "%emoji_warning% Stat is either 0 or misspelled!"
+              "description": "Stat is either 0 or misspelled!"
             }
           ],
           "console": "Could not find stat"
@@ -510,7 +533,7 @@
           "embeds": [
             {
               "title": "Could Not Find Category",
-              "description": "%emoji_error% %username% has never done anything in this category."
+              "description": "%username% has never done anything in this category."
             }
           ],
           "console": "Error trying to parse stat json"
@@ -551,7 +574,7 @@
         "embeds": [
           {
             "title": "Ban Player",
-            "description": "%emoji_success% Successfully banned player **%username%**: `%reason%`\n%warning%",
+            "description": "Successfully banned player **%username%**: `%reason%`\n%warning%",
             "color": "Orange"
           }
         ]
@@ -578,7 +601,7 @@
         "embeds": [
           {
             "title": "Deop Player",
-            "description": "%emoji_success% Successfully Deoped player **%username%**\n%warning%",
+            "description": "Successfully Deoped player **%username%**\n%warning%",
             "color": "Blue"
           }
         ]
@@ -589,7 +612,7 @@
         "embeds": [
           {
             "title": "Change Gamemode",
-            "description": "%emoji_success% Successfully changed gamemode of **%username%** to **%gamemode%**\n%warning%",
+            "description": "Successfully changed gamemode of **%username%** to **%gamemode%**\n%warning%",
             "color": "Orange"
           }
         ]
@@ -600,7 +623,7 @@
         "embeds": [
           {
             "title": "Kick Player",
-            "description": "%emoji_success% Successfully kicked player **%username%**: `%reason%`\n%warning%",
+            "description": "Successfully kicked player **%username%**: `%reason%`\n%warning%",
             "color": "Orange"
           }
         ]
@@ -611,7 +634,7 @@
         "embeds": [
           {
             "title": "OP Player",
-            "description": "%emoji_success% Successfully oped player **%username%**\n%warning%",
+            "description": "Successfully oped player **%username%**\n%warning%",
             "color": "Blue"
           }
         ]
@@ -622,7 +645,7 @@
         "embeds": [
           {
             "title": "Unban Player",
-            "description": "%emoji_success% Successfully unbanned player **%username%**\n%warning%",
+            "description": "Successfully unbanned player **%username%**\n%warning%",
             "color": "Blue"
           }
         ]
@@ -633,7 +656,7 @@
         "embeds": [
           {
             "title": "Send Message",
-            "description": "%emoji_success% Successfully sent message to player **%username%**\n%warning%",
+            "description": "Successfully sent message to player **%username%**\n%warning%",
             "color": "Blue"
           }
         ]
@@ -643,15 +666,15 @@
       "warnings": {
         "unknown": "*Unknown*"
       },
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "difficulty": [
+        "Peaceful",
+        "Easy",
+        "Normal",
+        "Hard"
+      ],
       "success": {
-        "enabled": "Enabled",
-        "disabled": "Disabled",
-        "difficulty": [
-          "Peaceful",
-          "Easy",
-          "Normal",
-          "Hard"
-        ],
         "general": {
           "embeds": [
             {
@@ -782,7 +805,7 @@
                 },
                 {
                   "name": "Seed",
-                  "value": "%seed%",
+                  "value": "`%seed%`",
                   "inline": true
                 }
               ]
@@ -815,7 +838,7 @@
           "embeds": [
             {
               "title": "No Username Specified",
-              "description": "%emoji_warning% Don't ping someone. Specify your **minecraft java-edition account name** instead."
+              "description": "Don't ping someone. Specify your **minecraft java-edition account name** instead."
             }
           ],
           "console": "No username specified"
@@ -824,7 +847,7 @@
           "embeds": [
             {
               "title": "Account Not Connected",
-              "description": "%emoji_warning% Your minecraft account is not connected."
+              "description": "Your minecraft account is not connected."
             }
           ],
           "console": "Account not connected"
@@ -833,30 +856,117 @@
           "embeds": [
             {
               "title": "Verification Timeout",
-              "description": "%emoji_warning% Account verification timed out. Please try again."
+              "description": "Account verification timed out. Please try again."
             }
           ],
           "console": "Verification timed out"
         }
       },
-      "success": {
+      "step": {
         "verification_info": {
           "embeds": [
             {
               "title": "Account Verification",
-              "description": "%emoji_red_success% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
-              "color": "DarkGold"
+              "description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**"
             }
           ]
-        },
+        }
+      },
+      "success": {
         "verified": {
           "embeds": [
             {
               "title": "Account Verified",
-              "description": "%emoji_success% Successfully verified your account.",
+              "description": "Successfully verified your account.",
               "console": "Account verified"
             }
           ]
+        }
+      }
+    },
+    "channel-stats": {
+      "errors": {
+        "not_manageable": {
+          "embeds": [
+            {
+              "title": "Cannot Change Name",
+              "description": "I do not have permission to edit this channel's name."
+            }
+          ],
+          "console": "Channel not manageable"
+        }
+      },
+      "success": {
+        "add": {
+          "embeds": [
+            {
+              "title": "Added Stats Channel",
+              "description": "Successfully added the stats channel."
+            }
+          ],
+          "console": "Successfully added stats channel"
+        },
+        "remove": {
+          "embeds": [
+            {
+              "title": "Removed Stats Channel",
+              "description": "Successfully removed the stats channel."
+            }
+          ],
+          "console": "Successfully removed stats channel"
+        },
+        "status_list": {
+          "embeds": [
+            {
+              "title": "List Chat Channels",
+              "fields": [
+                {
+                  "name": "Channel",
+                  "value": "%channel%",
+                  "inline": true
+                },
+                {
+                  "name": "Type",
+                  "value": "Status",
+                  "inline": true
+                },
+                {
+                  "name": "Offline Text",
+                  "value": "%online_name%"
+                },
+                {
+                  "name": "Online Text",
+                  "value": "%offline_name%"
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed stats channels"
+        },
+        "member-counter_list": {
+          "embeds": [
+            {
+              "title": "List Stats Channels",
+              "fields": [
+                {
+                  "name": "Channel",
+                  "value": "%channel%",
+                  "inline": true
+                },
+                {
+                  "name": "Type",
+                  "value": "Member Counter",
+                  "inline": true
+                },
+                {
+                  "name": "Channel Text",
+                  "value": "%name%",
+                  "inline": true
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed stats channels"
         }
       }
     },
@@ -866,7 +976,7 @@
           "embeds": [
             {
               "title": "No Channels Added",
-              "description": "%emoji_warning% There are no added channels."
+              "description": "There are no added channels."
             }
           ],
           "console": "No channels added"
@@ -875,7 +985,7 @@
           "embeds": [
             {
               "title": "No Text Channel Specified",
-              "description": "%emoji_warning% Please mention a text, thread or news channel."
+              "description": "Please mention a text, thread or news channel."
             }
           ],
           "console": "No text channel specified"
@@ -884,7 +994,7 @@
           "embeds": [
             {
               "title": "Channel Not Added",
-              "description": "%emoji_warning% The specified channel is not added."
+              "description": "The specified channel is not added."
             }
           ],
           "console": "Channel not added"
@@ -895,7 +1005,8 @@
               "title": "Select Message Types",
               "description": "Select all message types you want the bot to send. (Time ran out)"
             }
-          ]
+          ],
+          "components": []
         },
         "already_responded": {
           "embeds": [
@@ -906,12 +1017,12 @@
           ]
         }
       },
-      "success": {
+      "step": {
         "choose": {
           "embeds": [
             {
               "title": "Select Message Types",
-              "description": "Select all message types you want the bot to send. (You have 3 minutes to select)"
+              "description": "%emoji_step% Select all message types you want the bot to send. (You have 3 minutes to select)"
             }
           ],
           "components": [
@@ -975,21 +1086,24 @@
               ]
             }
           ]
-        },
+        }
+      },
+      "success": {
         "add": {
           "embeds": [
             {
               "title": "Added Chat Channel",
-              "description": "%emoji_success% Successfully added the chat channel"
+              "description": "Successfully added the chat channel."
             }
           ],
+          "components": [],
           "console": "Successfully added chat channel"
         },
         "remove": {
           "embeds": [
             {
-              "title": "Remove Chat Channel",
-              "description": "%emoji_success% Successfully removed the chat channel"
+              "title": "Removed Chat Channel",
+              "description": "Successfully removed the chat channel."
             }
           ],
           "console": "Successfully removed chat channel"
@@ -998,8 +1112,11 @@
           "embeds": [
             {
               "title": "List Chat Channels",
-              "description": "%emoji_success% %channel%",
               "fields": [
+                {
+                  "name": "Channel",
+                  "value": "%channel%"
+                },
                 {
                   "name": "Logging",
                   "value": "%channel_types%"
@@ -1011,7 +1128,7 @@
               ]
             }
           ],
-          "console": "Successfully listed chat channel"
+          "console": "Successfully listed chat channels"
         },
         "channel_button": {
           "components": [
@@ -1033,7 +1150,7 @@
           "embeds": [
             {
               "title": "Invalid Version Specified",
-              "description": "%emoji_warning% Please specify a valid minor minecraft version without patch number (e.g. `1.19`, `1.16`)."
+              "description": "Please specify a valid minor minecraft version without patch number (e.g. `1.19`, `1.16`)."
             }
           ],
           "console": "Invalid version specified"
@@ -1042,7 +1159,7 @@
           "embeds": [
             {
               "title": "Invalid Port Specified",
-              "description": "%emoji_warning% Please specify a port that is bigger than 0 and smaller than 65536."
+              "description": "Please specify a port that is bigger than 0 and smaller than 65536."
             }
           ],
           "console": "Invalid port specified"
@@ -1051,7 +1168,7 @@
           "embeds": [
             {
               "title": "Version Below 1.11",
-              "description": "%emoji_warning% The advancement command might not work because advancements don't exist in your minecraft version yet."
+              "description": "The advancement command might not work because advancements don't exist in your minecraft version yet."
             }
           ]
         },
@@ -1059,7 +1176,7 @@
           "embeds": [
             {
               "title": "Version Below 1.7",
-              "description": "%emoji_warning% The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet."
+              "description": "The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet."
             }
           ]
         },
@@ -1075,44 +1192,27 @@
           "embeds": [
             {
               "title": "Searching For Server...",
-              "description": "%emoji_success% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)"
+              "description": "Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)"
             }
           ],
           "console": "Searching for server.properties..."
-        },
-        "check_dms": {
-          "embeds": [
-            {
-              "title": "Check Your DMs",
-              "description": "%emoji_red_success% Please check your DMs to complete the connection."
-            }
-          ]
         },
         "could_not_dm": {
           "embeds": [
             {
               "title": "Could Not DM",
-              "description": "%emoji_warning% Could not DM you. Verifying in the current channel..."
+              "description": "Could not DM you. Verifying in the current channel..."
             }
           ]
         },
         "no_reply_in_time": {
           "embeds": [
             {
-              "title": "Verification Unsuccessful",
-              "description": "%emoji_warning% You did not reply in time!"
+              "title": "Verification Failed",
+              "description": "You did not reply in time!"
             }
           ],
           "console": "No reply in time"
-        },
-        "already_connected": {
-          "embeds": [
-            {
-              "title": "Plugin Already Connected",
-              "description": "%emoji_warning% This plugin is already connected to another server (**%server%**). Please disconnect it first."
-            }
-          ],
-          "console": "Plugin already connected"
         },
         "verification": {
           "embeds": [
@@ -1124,12 +1224,30 @@
           ]
         }
       },
+      "step": {
+        "check_dms": {
+          "embeds": [
+            {
+              "title": "Check Your DMs",
+              "description": "%emoji_step% Please check your DMs to complete the connection."
+            }
+          ]
+        },
+        "verification_info": {
+          "embeds": [
+            {
+              "title": "Server Verification",
+              "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
+            }
+          ]
+        }
+      },
       "errors": {
         "could_not_connect_ftp": {
           "embeds": [
             {
               "title": "Could Not Connect",
-              "description": "%emoji_error% Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again."
+              "description": "Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again."
             }
           ],
           "console": "Could not connect with ftp, sftp or ftps."
@@ -1138,7 +1256,7 @@
           "embeds": [
             {
               "title": "Could Not Connect",
-              "description": "%emoji_error% Could not connect to server with plugin."
+              "description": "Could not connect to server with plugin."
             }
           ],
           "console": "Could not connect with plugin."
@@ -1147,7 +1265,7 @@
           "embeds": [
             {
               "title": "Could Not Find Server",
-              "description": "%emoji_error% Could not find server folder. Please specify the server path manually."
+              "description": "Could not find server folder. Please specify the server path manually."
             }
           ],
           "console": "Could not find server.properties"
@@ -1156,7 +1274,7 @@
           "embeds": [
             {
               "title": "Could Not Download",
-              "description": "%emoji_error% Could not download server configuration. Please specify the server-path manually."
+              "description": "Could not download server configuration. Please specify the server-path manually."
             }
           ],
           "console": "Could not download server.properties"
@@ -1164,8 +1282,8 @@
         "incorrect_code": {
           "embeds": [
             {
-              "title": "Verification Unsuccessful",
-              "description": "%emoji_error% You didn't reply with the correct code."
+              "title": "Verification Failed",
+              "description": "You didn't reply with the correct code."
             }
           ],
           "console": "Incorrect code"
@@ -1173,28 +1291,19 @@
         "websocket_error": {
           "embeds": [
             {
-              "title": "Verification Unsuccessful",
-              "description": "%emoji_error% An unknown error occurred while connecting to the plugin."
+              "title": "Verification Failed",
+              "description": "An unknown error occurred while connecting to the plugin."
             }
           ],
           "console": "Unknown websocket connection error %error%"
         }
       },
       "success": {
-        "verification_info": {
-          "embeds": [
-            {
-              "title": "Server Verification",
-              "description": "%emoji_red_success% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
-              "color": "DarkGold"
-            }
-          ]
-        },
         "ftp": {
           "embeds": [
             {
               "title": "Connected to Server",
-              "description": "%emoji_success% Successfully connected to the ftp server."
+              "description": "Successfully connected to the ftp server."
             }
           ],
           "console": "Successfully wrote ftp file"
@@ -1203,15 +1312,16 @@
           "embeds": [
             {
               "title": "Connected to Server",
-              "description": "%emoji_success% Successfully connected to the plugin."
+              "description": "Successfully connected to the plugin."
             }
-          ]
+          ],
+          "console": "Successfully wrote plugin file"
         },
         "websocket": {
           "embeds": [
             {
               "title": "Connected to Server",
-              "description": "%emoji_success% Successfully connected to the plugin."
+              "description": "Successfully connected to the plugin."
             }
           ],
           "console": "Successfully wrote websocket file"
@@ -1220,7 +1330,7 @@
           "embeds": [
             {
               "title": "Verification Successful",
-              "description": "%emoji_success% Successfully verified your server."
+              "description": "Successfully verified your server."
             }
           ],
           "console": "Guild verified"
@@ -1233,7 +1343,7 @@
           "embeds": [
             {
               "title": "Command Does Not Exist",
-              "description": "%emoji_warning% Command **%disable%** does not exist."
+              "description": "Command **%disable%** does not exist."
             }
           ],
           "console": "Command does not exist"
@@ -1242,7 +1352,7 @@
           "embeds": [
             {
               "title": "Disabled Command Specified",
-              "description": "%emoji_no_entry% You cannot disable the command **%disable%**."
+              "description": "You cannot disable the command **%disable%**."
             }
           ],
           "console": "Disabled command specified"
@@ -1253,7 +1363,7 @@
           "embeds": [
             {
               "title": "Could Not Disable",
-              "description": "%emoji_error% Could not disable %type% **%disable%**."
+              "description": "Could not disable %type% **%disable%**."
             }
           ],
           "console": "Could not disable %disable%"
@@ -1264,7 +1374,7 @@
           "embeds": [
             {
               "title": "Nothing Disabled",
-              "description": "%emoji_success% There are no disabled %type%.",
+              "description": "There are no disabled %type%.",
               "color": "Green"
             }
           ],
@@ -1274,7 +1384,7 @@
           "embeds": [
             {
               "title": "Successfully Disabled",
-              "description": "%emoji_success% Successfully disabled %type% **%disable%**."
+              "description": "Successfully disabled %type% **%disable%**."
             }
           ],
           "console": "Successfully disabled %type% %disable%"
@@ -1284,7 +1394,7 @@
             "embeds": [
               {
                 "title": "Disable List",
-                "description": "%emoji_success% Here's a list of all disabled **%type%**:",
+                "description": "Here's a list of all disabled **%type%**:",
                 "color": "Green"
               }
             ]
@@ -1311,7 +1421,7 @@
         "embeds": [
           {
             "title": "Disconnected From %protocol_cap%",
-            "description": "%emoji_success% The **%protocol%** connection was successfully disconnected."
+            "description": "The **%protocol%** connection was successfully disconnected."
           }
         ],
         "console": "Disconnected from %protocol%"
@@ -1323,7 +1433,7 @@
           "embeds": [
             {
               "title": "Command Does Not Exist",
-              "description": "%emoji_warning% Command **%enable%** does not exist."
+              "description": "Command **%enable%** does not exist."
             }
           ],
           "console": "Command does not exist"
@@ -1332,7 +1442,7 @@
           "embeds": [
             {
               "title": "Already Enabled",
-              "description": "%emoji_warning% %type% **%enable%** is already enabled."
+              "description": "%type% **%enable%** is already enabled."
             }
           ],
           "console": "Already enabled %enable%"
@@ -1342,19 +1452,10 @@
         "embeds": [
           {
             "title": "Successfully Enabled",
-            "description": "%emoji_success% Successfully enabled %type% **%enable%**."
+            "description": "Successfully enabled %type% **%enable%**."
           }
         ],
         "console": "Successfully enabled %type% %enable%"
-      }
-    }
-  },
-  "websocketcommands": {
-    "connect": {
-      "success": {
-        "plugin": {
-          "console": "Successfully wrote plugin file"
-        }
       }
     }
   },
@@ -1403,7 +1504,7 @@
           "embeds": [
             {
               "title": "Not Completely Disconnected",
-              "description": "%emoji_warning% The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely."
+              "description": "The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely."
             }
           ]
         },
@@ -1411,7 +1512,7 @@
           "embeds": [
             {
               "title": "Automatically Disconnected",
-              "description": "%emoji_warning% Automatically disconnected from the old server (**%ip%**) to ensure no complications happen."
+              "description": "Automatically disconnected from the old server (**%ip%**) to ensure no complications happen."
             }
           ]
         },
@@ -1423,16 +1524,17 @@
           "embeds": [
             {
               "title": "Plugin Does Not Respond",
-              "description": "%emoji_error% [Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled."
+              "description": "[Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled."
             }
           ],
-          "console": "Plugin does not respond"
+          "console": "Plugin does not respond",
+          "components": []
         },
         "no_webhook_permission": {
           "embeds": [
             {
               "title": "No Webhook Permission",
-              "description": "%emoji_error% The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission."
+              "description": "The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission."
             }
           ],
           "console": "No webhook permission"
@@ -1441,7 +1543,7 @@
           "embeds": [
             {
               "title": "Could Not Add Webhook",
-              "description": "%emoji_error% The chatchannel webhook got deleted for an unknown reason and could not be re-added."
+              "description": "The chatchannel webhook got deleted for an unknown reason and could not be re-added."
             }
           ],
           "console": "Could not re-add webhook"
@@ -1450,7 +1552,7 @@
           "embeds": [
             {
               "title": "Unknown Bot Error",
-              "description": "%emoji_error% An unknown bot error occurred."
+              "description": "An unknown bot error occurred."
             }
           ],
           "console": "400: Unknown client error, %data%"
@@ -1459,7 +1561,7 @@
           "embeds": [
             {
               "title": "Unknown Bot Error",
-              "description": "%emoji_error% An unknown bot error occurred."
+              "description": "An unknown bot error occurred."
             }
           ],
           "console": "401: Wrong authorization"
@@ -1468,7 +1570,7 @@
           "embeds": [
             {
               "title": "Data Not Found",
-              "description": "%emoji_error% The requested data could not be found on the server."
+              "description": "The requested data could not be found on the server."
             }
           ],
           "console": "404: Data could not be found, %data%"
@@ -1477,7 +1579,7 @@
           "embeds": [
             {
               "title": "Unknown Plugin Error",
-              "description": "%emoji_error% An unknown plugin error occurred."
+              "description": "An unknown plugin error occurred."
             }
           ],
           "console": "500: Unknown server error, %data%"
@@ -1611,7 +1713,7 @@
           "embeds": [
             {
               "title": "Could Not Connect",
-              "description": "%emoji_error% Could not connect to server with ftp. Please check if the ftp server is online."
+              "description": "Could not connect to server with ftp. Please check if the ftp server is online."
             }
           ],
           "console": "Could not connect with ftp, sftp or ftps."
@@ -1620,7 +1722,7 @@
           "embeds": [
             {
               "title": "Could not Read File",
-              "description": "%emoji_error% Could not read the NBT file. File may be corrupted."
+              "description": "Could not read the NBT file. File may be corrupted."
             }
           ],
           "console": "Could not read nbt file %error%"
@@ -1633,7 +1735,7 @@
           "embeds": [
             {
               "title": "Could Not Fetch UUID",
-              "description": "%emoji_error% **%username%** is not a valid minecraft java edition account name."
+              "description": "**%username%** is not a valid minecraft java edition account name."
             }
           ],
           "console": "Could not fetch uuid of %username%"
@@ -1644,12 +1746,12 @@
       "clicked": {
         "console": "%author_tag% has clicked button %interaction_id% in %guild_name%"
       },
-      "warnings": {
+      "no_access": {
         "no_author": {
           "embeds": [
             {
               "title": "No Permission",
-              "description": "%emoji_warning% Only the command sender can use this button."
+              "description": "Only the command sender can use this button."
             }
           ]
         },
@@ -1657,7 +1759,7 @@
           "embeds": [
             {
               "title": "No Permission",
-              "description": "%emoji_no_entry% This button can only be used with the `%permission%` permission!"
+              "description": "This button can only be used with the `%permission%` permission!"
             }
           ],
           "console": "No permission"
@@ -1696,18 +1798,6 @@
         }
       }
     },
-    "select_menu": {
-      "warnings": {
-        "no_author": {
-          "embeds": [
-            {
-              "title": "No Permission",
-              "description": "%emoji_warning% Only the command sender can use this select menu."
-            }
-          ]
-        }
-      }
-    },
     "command": {
       "executed": {
         "console": "%author_tag% executed /%interaction_name% %args% in %guild_name%"
@@ -1717,7 +1807,7 @@
           "embeds": [
             {
               "title": "Server Not Connected",
-              "description": "%emoji_error% Your server is not connected. Please use `/connect plugin` or `/connect ftp` first."
+              "description": "Your server is not connected. Please use `/connect plugin` or `/connect ftp` first."
             }
           ],
           "console": "Server not connected"
@@ -1726,7 +1816,7 @@
           "embeds": [
             {
               "title": "User Not Connected",
-              "description": "%emoji_error% User did not use `/account connect`! Instead of pinging someone you can also specify their **minecraft-username**."
+              "description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **minecraft-username**."
             }
           ],
           "console": "User not connected"
@@ -1735,7 +1825,7 @@
           "embeds": [
             {
               "title": "Server Not Connected",
-              "description": "%emoji_error% Your server is not connected with the plugin. Please use `/connect plugin` first."
+              "description": "Your server is not connected with the plugin. Please use `/connect plugin` first."
             }
           ],
           "console": "Server not connected with plugin"
@@ -1744,7 +1834,7 @@
           "embeds": [
             {
               "title": "Server Not Connected",
-              "description": "%emoji_error% Your server is not connected with ftp. Please use `/connect ftp` first."
+              "description": "Your server is not connected with ftp. Please use `/connect ftp` first."
             }
           ],
           "console": "Server not connected with ftp"
@@ -1753,7 +1843,7 @@
           "embeds": [
             {
               "title": "Could Not Download",
-              "description": "%emoji_error% Could not download %category% files."
+              "description": "Could not download %category% files."
             }
           ],
           "console": "Could not download %category% files"
@@ -1762,45 +1852,27 @@
           "embeds": [
             {
               "title": "Could Not Download",
-              "description": "%emoji_error% Could not download %category% files. The user most likely never joined the server."
+              "description": "Could not download %category% files. The user most likely never joined the server."
             }
           ],
           "console": "Could not download %category% files"
         }
       },
-      "warnings": {
+      "no_access": {
         "disabled": {
           "embeds": [
             {
               "title": "Command Disabled",
-              "description": "%emoji_no_entry% Command **%interaction_name%** disabled!"
+              "description": "Command **%interaction_name%** disabled!"
             }
           ],
           "console": "Command disabled"
-        },
-        "no_argument": {
-          "embeds": [
-            {
-              "title": "Missing Required Argument",
-              "description": "%emoji_warning% Please specify: `%argument%`"
-            }
-          ],
-          "console": "Missing required argument"
-        },
-        "no_user": {
-          "embeds": [
-            {
-              "title": "No User Specified",
-              "description": "%emoji_warning% Please ping a user or specify a minecraft-username."
-            }
-          ],
-          "console": "No user specified"
         },
         "no_permission": {
           "embeds": [
             {
               "title": "No Permission",
-              "description": "%emoji_no_entry% This command can only be used with the `%permission%` permission!"
+              "description": "This command can only be used with the `%permission%` permission!"
             }
           ],
           "console": "No permission"
@@ -1809,10 +1881,30 @@
           "embeds": [
             {
               "title": "No Permission",
-              "description": "%emoji_no_entry% You do not have permission to execute this command!"
+              "description": "You do not have permission to execute this command!"
             }
           ],
           "console": "No permission"
+        }
+      },
+      "warnings": {
+        "no_argument": {
+          "embeds": [
+            {
+              "title": "Missing Required Argument",
+              "description": "Please specify: `%argument%`"
+            }
+          ],
+          "console": "Missing required argument"
+        },
+        "no_user": {
+          "embeds": [
+            {
+              "title": "No User Specified",
+              "description": "Please ping a user or specify a minecraft-username."
+            }
+          ],
+          "console": "No user specified"
         }
       }
     }
@@ -1824,7 +1916,7 @@
           "embeds": [
             {
               "title": "Disabled Command",
-              "description": "%emoji_success% Successfully disabled command **%command_name%**."
+              "description": "Successfully disabled command **%command_name%**."
             }
           ],
           "console": "Disabled command %command_name%"
@@ -1840,12 +1932,12 @@
       }
     },
     "enable": {
-      "errors": {
+      "warnings": {
         "already_enabled": {
           "embeds": [
             {
               "title": "Already Enabled",
-              "description": "%emoji_warning% Command **%command_name%** is already enabled."
+              "description": "Command **%command_name%** is already enabled."
             }
           ],
           "console": "Could not enable %command_name%"
@@ -1856,7 +1948,7 @@
           "embeds": [
             {
               "title": "Enabled Command",
-              "description": "%emoji_success% Successfully enabled command **%command_name%**."
+              "description": "Successfully enabled command **%command_name%**."
             }
           ],
           "console": "Enabled command %command_name%"
@@ -2412,6 +2504,101 @@
         }
       ]
     },
+    "channel-stats": {
+      "name": "channel-stats",
+      "type": "ChatInput",
+      "long_description": "Manage stats-channel in the server that will show the current player count of the minecraft server or it's online status.",
+      "description": "Manage stats-channels in the server.",
+      "options": [
+        {
+          "type": "SubcommandGroup",
+          "name": "add",
+          "description": "Add a stats-channel to the server.",
+          "options": [
+            {
+              "type": "Subcommand",
+              "name": "status",
+              "description": "Add a stats-channel that will show the online status of the minecraft server.",
+              "options": [
+                {
+                  "type": "Channel",
+                  "name": "channel",
+                  "description": "Set the channel you want to add as a stats-channel.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "online",
+                  "description": "Set the message that will be shown when the server is online.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "offline",
+                  "description": "Set the message that will be shown when the server is offline.",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "type": "Subcommand",
+              "name": "member-counter",
+              "description": "Add a stats-channel that will show the current player count of the minecraft server.",
+              "options": [
+                {
+                  "type": "Channel",
+                  "name": "channel",
+                  "description": "Set the channel you want to add as a stats-channel.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "message",
+                  "description": "Set the message that will be shown for the player count. Use %count% for the player count.",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "remove",
+          "description": "Remove a stats-channel from the server.",
+          "options": [
+            {
+              "type": "Channel",
+              "name": "channel",
+              "description": "Set the channel you want to remove.",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "List all stats-channels in the server.",
+          "options": [
+            {
+              "type": "String",
+              "name": "filter",
+              "description": "Set a filter to only show stats-channels of a specific type.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Status",
+                  "value": "status"
+                },
+                {
+                  "name": "Member Counter",
+                  "value": "member-counter"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "chatchannel": {
       "name": "chatchannel",
       "type": "ChatInput",
@@ -2441,8 +2628,14 @@
             },
             {
               "type": "Boolean",
+              "name": "discord-to-minecraft",
+              "description": "Enable chat messages from discord to minecraft. (Default: true)",
+              "required": false
+            },
+            {
+              "type": "Boolean",
               "name": "webhooks",
-              "description": "Enable webhook mode for chat messages.",
+              "description": "Enable webhook mode for chat messages. (Default: false)",
               "required": false
             }
           ]

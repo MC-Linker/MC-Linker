@@ -1,46 +1,91 @@
-The following Terms of Service (“TOS”) govern your use of the `Minecraft SMP Bot`. The terms "we", "us", and "our" refer to the owner and moderators of the `Minecraft SMP Bot`. The terms "Bot" and "Minecraft SMP Bot" refer to the Discord bot itself.
-The Minecraft SMP Bot may also offer services or features that have their own terms of use or rules, and to the extent any portion of those special terms conflict with these TOS, the special terms will govern for that specific portion.
-Using the Minecraft SMP Bot is at-will and can be terminated at any time by either us or you for any reason. By using the Bot, you agree to be bound by these TOS. If you do not agree to be bound, you are not authorized to use the Bot. These TOS are a legal contract between you and the Bot and govern your access to and use of the Bot. We reserve the right to modify these TOS at any time without prior notice. You should visit this Site from time to time to review the current TOS. By using the Bot subsequent to any modification of these TOS, you agree to be bound by such modification(s).
-The Minecraft SMP Bot is not affiliated with Minecraft, Mojang or any game developers of Minecraft.
+The following Terms of Service (“TOS”) govern your use of the `MC Linker`. The terms "we", "us", and "our" refer to the
+owner and moderators of the `MC Linker`. The terms "Bot" and "MC Linker" refer to the Discord bot itself.
+MC Linker may also offer services or features that have their own terms of use or rules, and to the extent any
+portion of those special terms conflict with these TOS, the special terms will govern for that specific portion.
+Using MC Linker is at-will and can be terminated at any time by either us or you for any reason. By using the Bot,
+you agree to be bound by these TOS. If you do not agree to be bound, you are not authorized to use the Bot. These TOS
+are a legal contract between you and the Bot and govern your access to and use of the Bot. We reserve the right to
+modify these TOS at any time without prior notice. You should visit this Site from time to time to review the current
+TOS. By using the Bot subsequent to any modification of these TOS, you agree to be bound by such modification(s).
+MC Linker is not affiliated with Minecraft, Mojang or any game developers of Minecraft.
 
-# Minecraft SMP Bot
-The purpose of the Minecraft SMP Bot is to provide a simple way to connect your Discord server to a Minecraft server.
-The information supplied by the Minecraft SMP Bot is provided for entertainment and informational purposes only. You agree that you will only use the Bot, or data/information provided by it, for its intended purposes, and not for other commercial ventures without first seeking approval from us.
+# MC Linker
+
+The purpose of MC Linker is to provide a simple way to connect your Discord server to a Minecraft server.
+The information supplied by MC Linker is provided for entertainment and informational purposes only. You agree that
+you will only use the Bot, or data/information provided by it, for its intended purposes, and not for other commercial
+ventures without first seeking approval from us.
 
 # Privacy Policy
+
 Our Privacy Policy, which also governs your use of the Bot, can be found [here](https://mclinker.com/privacy). Please
 review our Privacy Policy for information on how we collect, use and share information about our users.
 
 # LICENSE
-We hereby grant you a revocable and nonexclusive right and license to use the Bot in a manner that is consistent with the other terms in these TOS and the Bot’s intended purposes. We reserve the right to terminate this License for any or no reason and at any time without notice to you, including, but not limited to, for breach of any term contained in these TOS.
+
+We hereby grant you a revocable and nonexclusive right and license to use the Bot in a manner that is consistent with
+the other terms in these TOS and the Bot’s intended purposes. We reserve the right to terminate this License for any or
+no reason and at any time without notice to you, including, but not limited to, for breach of any term contained in
+these TOS.
 
 # CONTENT DISCLAIMERS
-We do not warrant or guarantee the accuracy, completeness, timeliness, merchantability, or fitness for a particular purpose of the information and data distributed by the Bot. In no event shall we be liable to you or anyone else for any decision made or action taken by you in reliance of any information or data found through the Bot.
+
+We do not warrant or guarantee the accuracy, completeness, timeliness, merchantability, or fitness for a particular
+purpose of the information and data distributed by the Bot. In no event shall we be liable to you or anyone else for any
+decision made or action taken by you in reliance of any information or data found through the Bot.
 
 # INTELLECTUAL AND OTHER PROPERTY
+
 Some content distributed by the Bot remains property of the 3rd parties where they are obtained.
-Other than the exceptions referenced in these TOS or noted elsewhere the content of the Bot is property of us including, but not limited to, all marks, logos, names, text, data, documents, messages, pictures, images, video, audio, graphics, links, software and its underlying code, or other electronic files (referred hereafter as “Bot Content” or “Minecraft SMP Bot Content”).
-Certain elements of the Minecraft SMP Bot, including but not limited to, text, graphics, photos, images, video, audio, color selections, and layout, are copyright protected under German and international copyright laws and treaty provisions. Any Minecraft SMP Bot Content protected by intellectual property laws may not be copied, republished, posted, modified, edited, transmitted, distributed, used to create derivative works of, or reverse engineered without permission. No right, title, or interest in any Bot Content is transferred to you as a result of you accessing, downloading, or printing such content from the Bot. Any use of Minecraft SMP Bot Content must display the appropriate copyright, trademark, and other proprietary notices.
-You acknowledge that you have no right, title, or interest in or to the Minecraft SMP Bot and/or Minecraft SMP Bot Content. The Minecraft SMP Bot and the Bot’s logo are marks of the Minecraft SMP Bot.
-There may be other content distributed by the Bot not owned by the Minecraft SMP Bot, and you should respect those property rights as well. All rights not expressly granted herein are reserved to the Minecraft SMP Bot.
+Other than the exceptions referenced in these TOS or noted elsewhere the content of the Bot is property of us including,
+but not limited to, all marks, logos, names, text, data, documents, messages, pictures, images, video, audio, graphics,
+links, software and its underlying code, or other electronic files (referred hereafter as “Bot Content” or “MC Linker
+Content”).
+Certain elements of MC Linker, including but not limited to, text, graphics, photos, images, video, audio, color
+selections, and layout, are copyright protected under German and international copyright laws and treaty provisions. Any
+MC Linker Content protected by intellectual property laws may not be copied, republished, posted, modified, edited,
+transmitted, distributed, used to create derivative works of, or reverse engineered without permission. No right, title,
+or interest in any Bot Content is transferred to you as a result of you accessing, downloading, or printing such content
+from the Bot. Any use of MC Linker Content must display the appropriate copyright, trademark, and other proprietary
+notices.
+You acknowledge that you have no right, title, or interest in or to MC Linker and/or MC Linker Content. The MC
+Linker and the Bot’s logo are marks of MC Linker.
+There may be other content distributed by the Bot not owned by MC Linker, and you should respect those property
+rights as well. All rights not expressly granted herein are reserved to MC Linker.
 
 # LINKS TO THIRD PARTY SITES AND OTHER SITE INTERACTIONS
-The Bot may contain links to external sites not controlled by and/or affiliated with the Minecraft SMP Bot. The Minecraft SMP Bot provides these links to you only as a convenience. We are not responsible for the content at the linked sites, including, without limitation, links displayed on such sites. You access any linked sites at your own risk.
-The display of the links is not meant to imply that the Bot guarantees, approves, recommends, or endorses the linked sites or any information, content and/or products/services available on those linked sites. The links are not meant to indicate any association with the Minecraft SMP Bot. We are not responsible or liable for any linked site nor do we warrant that the linked sites or any goods, services, or information on the sites are current, accurate, or error-free. If you access the linked sites, you will be subject to the terms of use, privacy, and other policies applicable to those sites. You visit those sites at your own risk and should consult the sites’ policies.
+
+The Bot may contain links to external sites not controlled by and/or affiliated with MC Linker. MC Linker
+provides these links to you only as a convenience. We are not responsible for the content at the linked sites,
+including, without limitation, links displayed on such sites. You access any linked sites at your own risk.
+The display of the links is not meant to imply that the Bot guarantees, approves, recommends, or endorses the linked
+sites or any information, content and/or products/services available on those linked sites. The links are not meant to
+indicate any association with MC Linker. We are not responsible or liable for any linked site nor do we warrant that
+the linked sites or any goods, services, or information on the sites are current, accurate, or error-free. If you access
+the linked sites, you will be subject to the terms of use, privacy, and other policies applicable to those sites. You
+visit those sites at your own risk and should consult the sites’ policies.
 
 # OTHER PROHIBITED CONDUCT
-In connection with your access and/or use of the Minecraft SMP Bot or any Bot’s services, you agree not to:
+
+In connection with your access and/or use of MC Linker or any Bot’s services, you agree not to:
+
 + Violate any federal, state, or local laws or regulations.
-+ Specify anything that imposes an unreasonable or disproportionately large strain on the Bot’s network or computer infrastructure.
-+ Engage in any behavior that is designed to hack into or gain unauthorized access to protected areas of the Minecraft SMP Bot and/or the Bot’s computers, servers, or networks.
-+ Specify anything that could destroy, damage, or impair any portion of the Bot or any computers, systems, hardware, or software used by the Minecraft SMP Bot.
++ Specify anything that imposes an unreasonable or disproportionately large strain on the Bot’s network or computer
+  infrastructure.
++ Engage in any behavior that is designed to hack into or gain unauthorized access to protected areas of MC Linker
+  and/or the Bot’s computers, servers, or networks.
++ Specify anything that could destroy, damage, or impair any portion of the Bot or any computers, systems, hardware, or
+  software used by MC Linker.
 + Make unauthorized attempts to modify any information stored by the Bot.
-+ Make attempts to defeat or circumvent security features, or to utilize the Bot for any other purpose other than its intended purposes.
++ Make attempts to defeat or circumvent security features, or to utilize the Bot for any other purpose other than its
+  intended purposes.
 + Discuss, incite, or promote illegal activity.
-+ Specify any unsolicited or unauthorized advertising, promotional materials, spam emails, chain letters, pyramid schemes, or any other form of such solicitations.
++ Specify any unsolicited or unauthorized advertising, promotional materials, spam emails, chain letters, pyramid
+  schemes, or any other form of such solicitations.
 + Use any automated technology such as a robot, spider, or scraper to access, scrape, or data mine the Bot.
 + Use the Bot to send spam or unsolicited bulk messages.
-+ Provide false or misleading information when specifying any false or misleading information or content through the Bot.
++ Provide false or misleading information when specifying any false or misleading information or content through the
+  Bot.
 
 The previous list of prohibitions is not exclusive. We reserve the right to terminate your access to the Bot or any Bot’s services for any reason. We reserve the right to refuse, delete, or edit any UGC without cause and without notice for any or no reason including, but not limited to, for any action that we determine to be inappropriate or disruptive to the Bot or to any other user of the Bot.
 We are under no duty to, and does not represent it will, monitor and/or remove any UGC.

@@ -6,12 +6,12 @@ console.log(
     'Loading...',   // Second argument (%s)
 );
 
-import Discord from 'discord.js';
+import Discord, { ChannelType } from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
 import { cleanEmojis, getArgs } from './api/utils.js';
-import keys from './api/keys.js';
-import { addPh, addTranslatedResponses, ph } from './api/messages.js';
+import keys, { getLanguageKey } from './api/keys.js';
+import { addPh, addTranslatedResponses, getReplyOptions, ph } from './api/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
 
@@ -37,7 +37,7 @@ if(process.env.TOPGG_TOKEN) {
     const poster = AutoPoster(process.env.TOPGG_TOKEN, client);
 
     poster.on('posted', () => {});
-    poster.on('error', () => console.log(keys.main.errors.could_not_post_stats.console));
+    poster.on('error', () => console.log(getLanguageKey(keys.main.errors.could_not_post_stats.console)));
 }
 
 client.once(Discord.Events.ClientReady, async () => {
@@ -63,8 +63,9 @@ client.on('allShardsReady', async () => {
     }
 });
 
-client.on(Discord.Events.GuildCreate, guild => {
+client.on(Discord.Events.GuildCreate, async guild => {
     console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
+    await sendToServer(guild, keys.main.success.invite, ph.colors(), ph.emojis());
 });
 
 client.on(Discord.Events.GuildDelete, async guild => {
@@ -80,7 +81,13 @@ client.on(Discord.Events.MessageCreate, async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
 
-    if(!message.author.bot && server?.channels?.some(c => c.id === message.channel.id) && !message.content.startsWith(process.env.PREFIX)) {
+    if(!message.author.bot && !message.content.startsWith(process.env.PREFIX)) {
+        /** @type {ChatChannelData} */
+        const channel = server?.channels?.find(c => c.id === message.channel.id);
+        //Explicit check for false
+        //because it can be undefined (i haven't added the field to already existing connections)
+        if(!channel || channel.allowDiscordToMinecraft === false) return;
+
         let content = cleanEmojis(message.cleanContent);
         message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
 
@@ -97,26 +104,28 @@ client.on(Discord.Events.MessageCreate, async message => {
         server.protocol.chat(content, message.member?.nickname ?? message.author.username, repliedContent, repliedUser);
     }
 
-    message = addTranslatedResponses(message);
-    //Make message compatible with slash commands
-    message.user = message.author;
-
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
     if(!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
+    message = addTranslatedResponses(message);
+
+    //Make message compatible with slash commands
+    message.user = message.author;
+
     //check if in guild
-    if(!message.inGuild()) return message.replyTl(keys.main.warnings.not_in_guild);
+    if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 
+    /** @type {Command} */
     const command = client.commands.get(commandName);
     if(!command) return;
+    if(!command.allowPrefix) return message.replyTl(keys.main.no_access.no_prefix_commands);
 
     try {
         // noinspection JSUnresolvedFunction
-        await command.execute(message, client, args, server)
-            ?.catch(err => message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message)));
+        await command.execute(message, client, args, server);
     }
     catch(err) {
         await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
@@ -127,7 +136,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
     interaction = addTranslatedResponses(interaction);
 
     //check if in guild
-    if(!interaction.guildId) return interaction.replyTl(keys.main.warnings.not_in_guild);
+    if(!interaction.guildId) return interaction.replyTl(keys.main.no_access.not_in_guild);
 
     if(interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
@@ -153,8 +162,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         const server = client.serverConnections.cache.get(interaction.guildId);
         try {
             // noinspection JSUnresolvedFunction
-            await command.execute(interaction, client, args, server)
-                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction)));
+            await command.execute(interaction, client, args, server);
         }
         catch(err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction));
@@ -166,7 +174,6 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client)
-                ?.catch(err => console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err))));
         }
         catch(err) {
             await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err)));
@@ -179,14 +186,89 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         try {
             if(!button) return;
             // noinspection JSUnresolvedFunction
-            await button.execute(interaction, client)
-                ?.catch(err => interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId }));
+            await button.execute(interaction, client);
         }
         catch(err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId });
         }
     }
 });
+
+/**
+ * Send a message to a guild with the given key
+ * This will try to send the message to the system channel first
+ * If that also fails, it will try to send it to the public updates channel
+ * If that fails, it will try to send it to the first text channel it finds
+ * @param {Guild} guild - The guild to send the message to
+ * @param {any} key - The key of the message to send
+ * @param {...Object} placeholders - The placeholders to use in the message
+ * @returns {Promise<void>}
+ */
+async function sendToServer(guild, key, ...placeholders) {
+    const replyOptions = getReplyOptions(key, ...placeholders);
+
+    if(await trySendMessage(guild.systemChannel)) return;
+    if(await trySendMessage(guild.publicUpdatesChannel)) return;
+
+    const sortedChannels = await sortChannels(guild);
+    for(const channel of sortedChannels) {
+        if(await trySendMessage(channel)) return;
+    }
+
+    async function trySendMessage(channel) {
+        if(!channel || !channel.isTextBased()) return false;
+        try {
+            await channel.send(replyOptions);
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+}
+
+/**
+ * Sort channels in a guild by their position
+ * @param {Guild} guild - The guild to sort the channels in
+ * @returns {Promise<Discord.Channel[]>}
+ */
+async function sortChannels(guild) {
+    const guildChannels = await guild.channels.fetch();
+
+    //Sorting by type (text over voice) and by position
+    const descendingPosition = (a, b) => {
+        if(a.type === b.type) return a.position - b.position;
+        else if(a.type === 'voice') return 1;
+        else return -1;
+    };
+
+    const sortedChannels = [];
+
+    /** @type {Discord.Collection<?Discord.CategoryChannel, Collection<Discord.Channel>>} */
+    const channels = new Discord.Collection();
+
+    //Push channels without category/parent
+    guildChannels
+        .filter(channel => !channel.parent && channel.type !== ChannelType.GuildCategory)
+        .sort(descendingPosition)
+        .forEach(c => sortedChannels.push(c));
+
+    //Set Categories with their children
+    /** @type {Discord.Collection<Discord.Snowflake, Discord.CategoryChannel>} */
+    const categories = guildChannels.filter(channel => channel.type === ChannelType.GuildCategory).sort(descendingPosition);
+    categories.forEach(category => channels.set(category, category.children.cache.sort(descendingPosition)));
+
+    //Loop over all categories
+    channels.forEach(([category, children]) => {
+        //Push category
+        if(category) sortedChannels.push(category);
+
+        //Loop over children of categories and push children
+        for(const [_, child] of children) sortedChannels.push(child);
+    });
+
+    return sortedChannels;
+}
 
 await client.login(process.env.TOKEN);
 

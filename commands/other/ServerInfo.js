@@ -3,7 +3,7 @@ import keys from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../api/utils.js';
-import { addPh, getComponent, getEmbed, getReplyOptions } from '../../api/messages.js';
+import { addPh, getComponent, getEmbed } from '../../api/messages.js';
 import gamerules from '../../resources/data/gamerules.json' assert { type: 'json' };
 import { unraw } from 'unraw';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -76,6 +76,8 @@ export default class ServerInfo extends Command {
         else onlinePlayers = onlinePlayers.data.length;
 
         const serverName = propertiesObject['server-name'] ?? server.protocol.ip;
+        const serverPort = propertiesObject['server-port'] ?? 25565;
+        const serverIp = serverPort !== 25565 ? `${server.protocol.ip}:${serverPort}` : server.protocol.ip;
 
         let motd;
         try {
@@ -144,8 +146,8 @@ export default class ServerInfo extends Command {
             spawn_y: datObject.Data.SpawnY,
             spawn_z: datObject.Data.SpawnZ,
             spawn_world: datObject.Data.LevelName,
-            allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
-            allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
+            allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
+            allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
             difficulty,
             gamerules: filteredGamerules.join('\n'),
         });
@@ -155,21 +157,21 @@ export default class ServerInfo extends Command {
 
         /** @type {Discord.InteractionReplyOptions} */
         const startingMessage = {
-            embeds: [keys.commands.serverinfo.success.general],
+            embeds: [getEmbed(keys.commands.serverinfo.success.general, {
+                server_name: propertiesObject['server-name'] ?? keys.commands.serverinfo.warnings.unknown,
+                motd: motd.join('\n'),
+                max_players: propertiesObject['max-players'],
+                online_players: onlinePlayers,
+                ip: serverIp,
+                version: datObject.Data.Version.Name,
+            })],
             files: [iconAttachment, serverListAttachment],
         };
         /** @type {PaginationPages} */
         const pages = {
             serverinfo_general: {
                 button: getComponent(keys.commands.serverinfo.success.general_button),
-                page: getReplyOptions(startingMessage, {
-                    server_name: propertiesObject['server-name'] ?? keys.commands.serverinfo.warnings.unknown,
-                    motd: motd.join('\n'),
-                    max_players: propertiesObject['max-players'],
-                    online_players: onlinePlayers,
-                    ip: server.protocol.ip,
-                    version: datObject.Data.Version.Name,
-                }),
+                page: startingMessage,
                 startPage: true,
             },
             serverinfo_world: {
@@ -180,7 +182,7 @@ export default class ServerInfo extends Command {
 
         if(isAdmin) {
             const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
-                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.success.enabled : keys.commands.serverinfo.success.disabled,
+                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
                 seed: datObject.Data.WorldGenSettings.seed,
             });
             const newFields = [];

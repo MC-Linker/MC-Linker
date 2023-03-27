@@ -67,7 +67,7 @@ export default class WebSocketProtocol extends Protocol {
     async get(getPath, putPath) {
         const response = await this._sendRaw('get-file', { path: getPath });
         if(!response) return null;
-        if(response.type !== 'Buffer') return { status: JSON.parse(response).status, data: null };
+        if(response.type !== 'Buffer') return { status: response.status, data: null };
 
         await fs.outputFile(putPath, Buffer.from(response.data));
         return { status: 200, data: await fs.readFile(putPath) };
@@ -131,12 +131,30 @@ export default class WebSocketProtocol extends Protocol {
     }
 
     /**
-     * Removes a chat channel from the server.
-     * @param {ChatChannelData} channel - The chat channel to remove.
+     * Removes a stats channel from the server.
+     * @param {ChatChannelData} channel - The stats channel to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeChatChannel(channel) {
         return await this._sendRaw('remove-channel', channel);
+    }
+
+    /**
+     * Adds a stats channel to the server.
+     * @param {StatsChannelData} channel - The stats channel to add.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async addStatsChannel(channel) {
+        return await this._sendRaw('add-stats-channel', channel);
+    }
+
+    /**
+     * Removes a chat channel from the server.
+     * @param {StatsChannelData} channel - The chat channel to remove.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async removeStatsChannel(channel) {
+        return await this._sendRaw('remove-stats-channel', channel);
     }
 
     /**

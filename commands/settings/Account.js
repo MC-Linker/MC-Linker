@@ -23,7 +23,7 @@ export default class Account extends Command {
 
             const { interaction, timeout } = this.waitingInteractions.get(id);
             clearTimeout(timeout);
-            interaction.replyTl(keys.commands.account.success.verified, ph.emojis());
+            interaction.replyTl(keys.commands.account.success.verified, ph.emojis(), ph.colors(), ph.colors());
         });
     }
 
@@ -52,10 +52,10 @@ export default class Account extends Command {
             const verifyResponse = await server.protocol.verifyUser(code, uuid);
             if(!await utils.handleProtocolResponse(verifyResponse, server.protocol, interaction)) return;
 
-            await interaction.replyTl(keys.commands.account.success.verification_info, {
+            await interaction.replyTl(keys.commands.account.step.verification_info, {
                 code,
                 ip: server.ip,
-            }, ph.emojis());
+            }, ph.emojis(), ph.colors());
 
             const timeout = setTimeout(async () => {
                 await interaction.replyTl(keys.commands.account.warnings.verification_timeout);

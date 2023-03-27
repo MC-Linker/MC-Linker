@@ -22,6 +22,7 @@ export default class Command {
      * @property {boolean} [requiresConnectedPlugin=false] - Indicates whether this command requires a connected plugin.
      * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
      * @property {string} [category] - The category of this command.
+     * @property {string} [allowPrefix=false] - Whether this command can be executed with the prefix.
      */
 
     /**
@@ -77,6 +78,12 @@ export default class Command {
          * @type {?string}
          */
         this.category = options.category ?? null;
+
+        /**
+         * Whether this command can be executed with the prefix.
+         * @type {boolean}
+         */
+        this.allowPrefix = options.allowPrefix ?? false;
     }
 
     /**
@@ -89,7 +96,7 @@ export default class Command {
      * @abstract
      */
     async execute(interaction, client, args, server) {
-        await interaction.replyTl(keys.api.command.executed, ph.std(interaction), { args: args.join(' ') });
+        await interaction.replyTl(keys.api.command.executed, { args: args.join(' ') });
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
         if(this.ownerOnly) {
@@ -98,7 +105,7 @@ export default class Command {
 
         const settings = await client.serverSettingsConnections.cache.get(interaction.guildId);
         if(settings?.isDisabled('bot-commands', this.name)) {
-            await interaction.replyTl(keys.api.command.warnings.disabled, await ph.interaction(interaction));
+            await interaction.replyTl(keys.api.command.no_access.disabled, await ph.interaction(interaction));
             return false;
         }
 
@@ -116,12 +123,12 @@ export default class Command {
         if(missingPermission !== true) {
             if(typeof missingPermission === 'string') {
                 await interaction.replyTl(
-                    keys.api.command.warnings.no_permission,
+                    keys.api.command.no_access.no_permission,
                     { permission: missingPermission },
                 );
             }
             else {
-                await interaction.replyTl(keys.api.command.warnings.no_unknown_permission);
+                await interaction.replyTl(keys.api.command.no_access.no_unknown_permission);
             }
             return false;
         }
@@ -173,7 +180,7 @@ export default class Command {
             let option;
             const subcommandGroupOption = command.options.find(option => option.name === subcommandGroup);
             if(subcommandGroupOption?.type === ApplicationCommandOptionType.SubcommandGroup || subcommandGroupOption?.type === ApplicationCommandOptionType.Subcommand) {
-                const subcommandOption = subcommandGroupOption?.options?.find(option => option.name === subcommand);
+                const subcommandOption = subcommandGroupOption.options?.find(option => option.name === subcommand);
                 if(subcommandOption?.type === ApplicationCommandOptionType.Subcommand) {
                     option = subcommandOption?.options?.[args.length - 2];
                 }
@@ -212,25 +219,20 @@ export default class Command {
             if(!perms) return requiredPermissions.find(permission => !memberPermissions.includes(permission)) ?? true;
 
             let canRun = true;
-            const everyone = perms
-                .find(e => e.type === ApplicationCommandPermissionType.User && e.id === interaction.guild.id)?.permission;
+            const everyone = perms.find(e => e.type === ApplicationCommandPermissionType.User && e.id === interaction.guild.id)?.permission;
             if(!everyone) canRun = false;
 
-            const channelOverride = perms
-                .find(e => e.type === ApplicationCommandPermissionType.Channel && e.id === interaction.channel.id)?.permission;
+            const channelOverride = perms.find(e => e.type === ApplicationCommandPermissionType.Channel && e.id === interaction.channel.id)?.permission;
             if(channelOverride === false) return false;
 
-            const everyChannel = perms
-                .find(e => e.type === ApplicationCommandPermissionType.Channel && BigInt(e.id) === BigInt(interaction.guild.id) - 1n)?.permission;
+            const everyChannel = perms.find(e => e.type === ApplicationCommandPermissionType.Channel && BigInt(e.id) === BigInt(interaction.guild.id) - 1n)?.permission;
             if(!channelOverride && everyChannel === false) return false;
 
-            const roleOverrides = perms
-                .filter(e => e.type === ApplicationCommandPermissionType.Role && e.id !== interaction.guildId && interaction.member.roles.cache.has(e.id));
+            const roleOverrides = perms.filter(e => e.type === ApplicationCommandPermissionType.Role && e.id !== interaction.guildId && interaction.member.roles.cache.has(e.id));
             if((channelOverride || channelOverride === undefined) && roleOverrides.some(e => e.permission)) canRun = true;
             else if(roleOverrides.length && roleOverrides.every(e => !e.permission)) canRun = false;
 
-            const userOverride = perms
-                .find(e => e.type === ApplicationCommandPermissionType.User && e.id === interaction.member.id)?.permission;
+            const userOverride = perms.find(e => e.type === ApplicationCommandPermissionType.User && e.id === interaction.member.id)?.permission;
 
             if(userOverride) return true;
             else if(userOverride === false) return false;

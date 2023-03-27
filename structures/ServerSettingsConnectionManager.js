@@ -30,7 +30,7 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
 
     /**
      * Gets a settings connection for the specified guild. If the guild does not have a settings connection, one will be created.
-     * @param {string} guildId - The Id of the guild to get the settings connection for.
+     * @param {string} guildId - The id of the guild to get the settings connection for.
      * @returns {Promise<?ServerSettingsConnection>}
      */
     async getOrConnect(guildId) {

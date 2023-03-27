@@ -130,7 +130,7 @@ export default class Inventory extends Command {
             await invCanvas.toBuffer('png'),
             { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
         );
-        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.emojis(), { username: user.username });
+        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.emojis(), ph.colors(), { username: user.username });
         // Send without buttons if showDetails is false
         if(!showDetails) return await interaction.replyOptions({ files: [invAttach], embeds: [invEmbed] });
 
@@ -311,7 +311,7 @@ export default class Inventory extends Command {
                     username: username,
                     avatar: `https://minotar.net/helm/${username}/64.png`,
                 },
-                ph.emojis(),
+                ph.emojis(), ph.colors(),
             );
             const isSpecialItem = this.addInfo(itemEmbed, item.tag, itemStats);
 
@@ -349,7 +349,7 @@ export default class Inventory extends Command {
                     await shulkerImage.toBuffer('png'),
                     { name: `Shulker_Contents.png`, description: keys.commands.inventory.shulker_description },
                 );
-                const shulkerEmbed = getEmbed(keys.commands.inventory.success.final_shulker, ph.emojis(), { username });
+                const shulkerEmbed = getEmbed(keys.commands.inventory.success.final_shulker, ph.emojis(), ph.colors(), { username });
 
                 paginationPages[buttonId] = {
                     button,

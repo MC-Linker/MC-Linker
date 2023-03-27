@@ -35,10 +35,10 @@ export default class Stats extends AutocompleteCommand {
         argPlaceholder.stat_name = statName[0]?.name ?? stat;
 
         if(server.settings.isDisabled('stats', category)) {
-            return interaction.replyTl(keys.commands.stats.warnings.category_disabled, argPlaceholder);
+            return interaction.replyTl(keys.commands.stats.no_access.category_disabled, argPlaceholder);
         }
         else if(server.settings.isDisabled('stats', stat)) {
-            return interaction.replyTl(keys.commands.stats.warnings.stat_disabled, argPlaceholder);
+            return interaction.replyTl(keys.commands.stats.no_access.stat_disabled, argPlaceholder);
         }
 
         const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/stats/${user.uuid}.json`);

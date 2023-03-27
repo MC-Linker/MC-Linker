@@ -1,11 +1,11 @@
 import Discord from 'discord.js';
-import { addTranslatedResponses, getComponent, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import { getComponent, getEmbed, ph } from '../../api/messages.js';
+import keys, { getLanguageKey } from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../api/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
-export default class Chatchannel extends Command {
+export default class ChatChannel extends Command {
 
     constructor() {
         super({
@@ -23,13 +23,14 @@ export default class Chatchannel extends Command {
         //Add chatchannel
         if(method === 'add') {
             const channel = args[1];
-            const useWebhooks = args[2];
+            const allowDiscordToMinecraft = args[2] ?? true;
+            const useWebhooks = args[3] ?? false;
 
             if(!channel.isTextBased()) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
             }
 
-            const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.success.choose);
+            const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
 
             let menu;
             try {
@@ -38,7 +39,6 @@ export default class Chatchannel extends Command {
                     time: 180_000,
                     filter: m => m.user.id === interaction.user.id && m.customId === 'log',
                 });
-                menu = addTranslatedResponses(menu);
             }
             catch(_) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
@@ -61,14 +61,13 @@ export default class Chatchannel extends Command {
                 id: channel.id,
                 webhook: webhook?.id,
                 types: menu.values,
+                allowDiscordToMinecraft,
             });
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook?.delete();
 
             await server.edit({ channels: resp.data });
-            return menu.update({
-                embeds: [getEmbed(keys.commands.chatchannel.success.add, ph.emojis())],
-                components: [],
-            });
+
+            return interaction.replyTl(keys.commands.chatchannel.success.add, ph.emojis(), ph.colors());
         }
         //Remove chatchannel
         else if(method === 'remove') {
@@ -91,19 +90,14 @@ export default class Chatchannel extends Command {
             return interaction.replyTl(keys.commands.chatchannel.success.remove);
         }
         else if(method === 'list') {
-            if(!server?.channels?.length) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
-            }
+            if(!server.channels?.length) return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
 
-            const listEmbeds = [];
-            const channelButtons = [];
+            /** @type {PaginationPages} */
+            const pages = {};
 
             for(const channel of server.channels) {
-                const formattedTypes = channel.types.map(type => {
-                    const options = keys.commands.chatchannel.success.choose.components[0].options;
-                    return options.find(o => o.value === type).label;
-                }).join(',\n');
-
+                const options = getLanguageKey(keys.commands.chatchannel.step.choose.components[0].options);
+                const formattedTypes = channel.types.map(type => options.find(o => o.value === type).label).join(',\n');
 
                 const channelEmbed = getEmbed(
                     keys.commands.chatchannel.success.list,
@@ -121,19 +115,12 @@ export default class Chatchannel extends Command {
                     index: index,
                 });
 
-                listEmbeds.push(channelEmbed);
-                channelButtons.push(channelButton);
-            }
-
-            /** @type {PaginationPages} */
-            const pages = {};
-            for(let i = 0; i < listEmbeds.length; i++) {
-                const button = channelButtons[i];
-                pages[button.data.custom_id] = {
-                    page: { embeds: [listEmbeds[i]] },
-                    button: button,
+                pages[channelButton.data.custom_id] = {
+                    page: { embeds: [channelEmbed] },
+                    button: channelButton,
                 };
             }
+
             const pagination = new Pagination(client, interaction, pages);
             return pagination.start();
         }

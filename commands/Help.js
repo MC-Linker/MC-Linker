@@ -73,7 +73,7 @@ export default class Help extends Command {
             if(settings && settings.isDisabled('bot-commands', command.name)) {
                 const enableRows = getActionRows(
                     keys.commands.help.success.enable_button,
-                    { 'command_name': command.name }, ph.emojis(),
+                    { 'command_name': command.name }, ph.emojis(), ph.colors(),
                 );
 
                 helpEmbed.setDescription(keys.commands.help.success.disabled.embeds[0].description);
@@ -82,7 +82,7 @@ export default class Help extends Command {
             else {
                 const disableRows = getActionRows(
                     keys.commands.help.success.disable_button,
-                    { 'command_name': command.name }, ph.emojis(),
+                    { 'command_name': command.name }, ph.emojis(), ph.colors(),
                 );
 
                 return interaction.replyOptions({ embeds: [helpEmbed], components: disableRows });
