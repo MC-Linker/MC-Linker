@@ -208,8 +208,7 @@
               "author": {
                 "name": "%client_username%",
                 "icon_url": "%client_avatar%"
-              },
-              "color": "NotQuiteBlack"
+              }
             }
           ]
         },

@@ -115,7 +115,6 @@
   "commands.help.success.base.embeds.0.title": "Help Menu",
   "commands.help.success.base.embeds.0.author.name": "%client_username%",
   "commands.help.success.base.embeds.0.author.icon_url": "%client_avatar%",
-  "commands.help.success.base.embeds.0.color": "NotQuiteBlack",
 
   "commands.help.success.no_args.embeds.0.fields.0.name": "Main",
   "commands.help.success.no_args.embeds.0.fields.0.value": "Main commands such as %inventory_command_mention%, or %advancements_command_mention%.",
