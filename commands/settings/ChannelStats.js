@@ -76,9 +76,9 @@ export default class ChannelStats extends Command {
             const filter = args[1];
 
             let statsChannels = server.statsChannels;
-            if(filter) statsChannels = statsChannels.filter(c => c.type === filter);
+            if(filter && statsChannels) statsChannels = statsChannels.filter(c => c.type === filter);
 
-            if(statsChannels.length === 0) {
+            if(!statsChannels?.length) {
                 await interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
                 return;
             }
