@@ -199,7 +199,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
  * This will try to send the message to the system channel first
  * If that also fails, it will try to send it to the public updates channel
  * If that fails, it will try to send it to the first text channel it finds
- * @param {Guild} guild - The guild to send the message to
+ * @param {Discord.Guild} guild - The guild to send the message to
  * @param {any} key - The key of the message to send
  * @param {...Object} placeholders - The placeholders to use in the message
  * @returns {Promise<void>}
