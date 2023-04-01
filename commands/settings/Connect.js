@@ -291,7 +291,7 @@ export default class Connect extends Command {
         if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
         else {
             await client.serverConnections.disconnect(server);
-            await interaction.followUp(getReplyOptions(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
+            await interaction.channel.send(getReplyOptions(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
         }
     }
 }

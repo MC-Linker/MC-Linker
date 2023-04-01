@@ -65,7 +65,7 @@ export default class Advancements extends AutocompleteCommand {
 
         const amFile = await server.protocol.get(FilePath.Advancements(server.worldPath, user.uuid), `./userdata/advancements/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
-            404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' }),
+            404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' }, ph.colors()),
         })) return;
         const advancementData = JSON.parse(amFile.data.toString('utf-8'));
 

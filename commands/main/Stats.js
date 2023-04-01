@@ -43,7 +43,7 @@ export default class Stats extends AutocompleteCommand {
 
         const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/stats/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
-            404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'stats' }),
+            404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'stats' }, ph.colors()),
         })) return;
         const statData = JSON.parse(statFile.data.toString('utf-8'));
 

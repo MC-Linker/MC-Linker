@@ -3,7 +3,7 @@ import keys from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../api/utils.js';
-import { addPh, getComponent, getEmbed, getReplyOptions } from '../../api/messages.js';
+import { addPh, getComponent, getEmbed, getReplyOptions, ph } from '../../api/messages.js';
 import gamerules from '../../resources/data/gamerules.json' assert { type: 'json' };
 import { unraw } from 'unraw';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -28,7 +28,7 @@ export default class ServerInfo extends Command {
         const serverProperties = await server.protocol.get(...FilePath.ServerProperties(server.path, server.id));
         const levelDat = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
-            404: getReplyOptions(keys.api.command.errors.could_not_download, { category: 'server-info' }),
+            404: getReplyOptions(keys.api.command.errors.could_not_download, { category: 'server-info' }, ph.colors()``),
         })) return await server.protocol.endBatch();
 
         const datObject = await utils.nbtBufferToObject(levelDat.data, interaction);
