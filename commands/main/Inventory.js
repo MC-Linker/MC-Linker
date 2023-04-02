@@ -1,7 +1,7 @@
 import Canvas from 'skia-canvas';
 import Discord from 'discord.js';
 import minecraft_data from 'minecraft-data';
-import { addPh, getComponent, getEmbed, getReplyOptions, ph } from '../../api/messages.js';
+import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import { FilePath } from '../../structures/Protocol.js';
@@ -93,8 +93,8 @@ export default class Inventory extends Command {
         const showDetails = args[1];
         const nbtFile = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
         if(!await utils.handleProtocolResponse(nbtFile, server.protocol, interaction, {
-            404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' }, ph.colors()),
-        })) return;
+            404: keys.api.command.errors.could_not_download_user_files,
+        }, { category: 'player-data' })) return;
 
         const playerData = await utils.nbtBufferToObject(nbtFile.data, interaction);
         if(!playerData) return;

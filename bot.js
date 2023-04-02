@@ -244,7 +244,7 @@ async function sortChannels(guild) {
 
     const sortedChannels = [];
 
-    /** @type {Discord.Collection<?Discord.CategoryChannel, Collection<Discord.Channel>>} */
+    /** @type {Discord.Collection<?Discord.CategoryChannel, Discord.Collection<Discord.Snowflake, Discord.CategoryChildChannel>>} */
     const channels = new Discord.Collection();
 
     //Push channels without category/parent
@@ -259,7 +259,7 @@ async function sortChannels(guild) {
     categories.forEach(category => channels.set(category, category.children.cache.sort(descendingPosition)));
 
     //Loop over all categories
-    channels.forEach(([category, children]) => {
+    channels.forEach((children, category) => {
         //Push category
         if(category) sortedChannels.push(category);
 
