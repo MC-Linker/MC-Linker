@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import * as utils from '../../api/utils.js';
-import { addPh, getEmbed, ph } from '../../api/messages.js';
+import { addPh, getEmbed, getReplyOptions, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
@@ -42,11 +42,9 @@ export default class Stats extends AutocompleteCommand {
         }
 
         const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/stats/${user.uuid}.json`);
-        if(!await utils.handleProtocolResponse(
-            statFile, server.protocol, interaction, {
-                404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'stats' }),
-            },
-        )) return;
+        if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
+            404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'stats' }, ph.colors()),
+        })) return;
         const statData = JSON.parse(statFile.data.toString('utf-8'));
 
         try {

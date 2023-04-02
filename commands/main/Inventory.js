@@ -93,8 +93,8 @@ export default class Inventory extends Command {
         const showDetails = args[1];
         const nbtFile = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
         if(!await utils.handleProtocolResponse(nbtFile, server.protocol, interaction, {
-            404: addPh(keys.api.command.errors.could_not_download_user_files, { category: 'player-data' }),
-        })) return;
+            404: keys.api.command.errors.could_not_download_user_files,
+        }, { category: 'player-data' })) return;
 
         const playerData = await utils.nbtBufferToObject(nbtFile.data, interaction);
         if(!playerData) return;
@@ -124,7 +124,6 @@ export default class Inventory extends Command {
         const { skin: skinBase64 } = await skinJson.json();
         const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
         ctx.drawImage(skinImg, 70, 20, 65, 131);
-
 
         const invAttach = new Discord.AttachmentBuilder(
             await invCanvas.toBuffer('png'),

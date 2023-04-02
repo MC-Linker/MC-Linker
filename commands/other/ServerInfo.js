@@ -28,8 +28,8 @@ export default class ServerInfo extends Command {
         const serverProperties = await server.protocol.get(...FilePath.ServerProperties(server.path, server.id));
         const levelDat = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
-            404: addPh(keys.api.command.errors.could_not_download, { category: 'server-info' }),
-        })) return await server.protocol.endBatch();
+            404: keys.api.command.errors.could_not_download,
+        }, { category: 'server-info' })) return await server.protocol.endBatch();
 
         const datObject = await utils.nbtBufferToObject(levelDat.data, interaction);
         if(!datObject) return await server.protocol.endBatch();

@@ -199,7 +199,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
  * This will try to send the message to the system channel first
  * If that also fails, it will try to send it to the public updates channel
  * If that fails, it will try to send it to the first text channel it finds
- * @param {Guild} guild - The guild to send the message to
+ * @param {Discord.Guild} guild - The guild to send the message to
  * @param {any} key - The key of the message to send
  * @param {...Object} placeholders - The placeholders to use in the message
  * @returns {Promise<void>}
@@ -244,7 +244,7 @@ async function sortChannels(guild) {
 
     const sortedChannels = [];
 
-    /** @type {Discord.Collection<?Discord.CategoryChannel, Collection<Discord.Channel>>} */
+    /** @type {Discord.Collection<?Discord.CategoryChannel, Discord.Collection<Discord.Snowflake, Discord.CategoryChildChannel>>} */
     const channels = new Discord.Collection();
 
     //Push channels without category/parent
@@ -259,7 +259,7 @@ async function sortChannels(guild) {
     categories.forEach(category => channels.set(category, category.children.cache.sort(descendingPosition)));
 
     //Loop over all categories
-    channels.forEach(([category, children]) => {
+    channels.forEach((children, category) => {
         //Push category
         if(category) sortedChannels.push(category);
 

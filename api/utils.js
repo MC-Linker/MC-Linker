@@ -271,27 +271,28 @@ const defaultStatusRespones = {
  * @param {Protocol} protocol - The protocol that was called.
  * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
+ * @param {...Object.<string, string>[]} [placeholders=[] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether the response was successful.
  */
-export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}) {
-    const placeholders = { data: JSON.stringify(response?.data ?? '') };
+export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}, ...placeholders) {
+    placeholders.push({ data: JSON.stringify(response?.data ?? '') });
 
     if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
-        await interaction.replyTl(keys.api.plugin.errors.no_response, placeholders);
+        await interaction.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
         return false;
     }
     else if(!response && protocol instanceof FtpProtocol) {
-        await interaction.replyTl(keys.api.ftp.errors.could_not_connect, placeholders);
+        await interaction.replyTl(keys.api.ftp.errors.could_not_connect, ...placeholders);
         return false;
     }
     else if(response.status >= 500 && response.status < 600) {
-        await interaction.replyTl(keys.api.plugin.errors.status_500, placeholders);
+        await interaction.replyTl(keys.api.plugin.errors.status_500, ...placeholders);
         return false;
     }
     else if(response.status !== 200) {
         const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
         if(responseKey) {
-            await interaction.replyTl(responseKey, placeholders);
+            await interaction.replyTl(responseKey, ...placeholders);
             return false;
         }
     }
@@ -305,11 +306,12 @@ export async function handleProtocolResponse(response, protocol, interaction, st
  * @param {Protocol} protocol - The protocol that was called.
  * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
+ * @param {...Object.<string, string>[]} [placeholders=[] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether all responses were successful.
  */
-export async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}) {
+export async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}, ...placeholders) {
     for(const response of responses) {
-        if(!await handleProtocolResponse(response, protocol, interaction, statusResponses)) return false;
+        if(!await handleProtocolResponse(response, protocol, interaction, statusResponses, ...placeholders)) return false;
     }
     return true;
 }
