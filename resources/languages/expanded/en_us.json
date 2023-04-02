@@ -883,7 +883,7 @@
         }
       }
     },
-    "channel-stats": {
+    "statchannel": {
       "errors": {
         "not_manageable": {
           "embeds": [
@@ -899,25 +899,25 @@
         "add": {
           "embeds": [
             {
-              "title": "Added Stats Channel",
-              "description": "Successfully added the stats channel."
+              "title": "Added Stat Channel",
+              "description": "Successfully added the stat channel."
             }
           ],
-          "console": "Successfully added stats channel"
+          "console": "Successfully added stat channel"
         },
         "remove": {
           "embeds": [
             {
-              "title": "Removed Stats Channel",
-              "description": "Successfully removed the stats channel."
+              "title": "Removed Stat Channel",
+              "description": "Successfully removed the stat channel."
             }
           ],
-          "console": "Successfully removed stats channel"
+          "console": "Successfully removed stat channel"
         },
         "status_list": {
           "embeds": [
             {
-              "title": "List Chat Channels",
+              "title": "List Stat Channels",
               "fields": [
                 {
                   "name": "Channel",
@@ -940,12 +940,12 @@
               ]
             }
           ],
-          "console": "Successfully listed stats channels"
+          "console": "Successfully listed stat channels"
         },
         "member-counter_list": {
           "embeds": [
             {
-              "title": "List Stats Channels",
+              "title": "List Stat Channels",
               "fields": [
                 {
                   "name": "Channel",
@@ -965,7 +965,7 @@
               ]
             }
           ],
-          "console": "Successfully listed stats channels"
+          "console": "Successfully listed stat channels"
         }
       }
     },
@@ -2503,26 +2503,26 @@
         }
       ]
     },
-    "channel-stats": {
-      "name": "channel-stats",
+    "statchannel": {
+      "name": "statchannel",
       "type": "ChatInput",
-      "long_description": "Manage stats-channel in the server that will show the current player count of the minecraft server or it's online status.",
-      "description": "Manage stats-channels in the server.",
+      "long_description": "Manage statchannels in the server that will show the current player count of the minecraft server or it's online status.",
+      "description": "Manage statchannels in the server.",
       "options": [
         {
           "type": "SubcommandGroup",
           "name": "add",
-          "description": "Add a stats-channel to the server.",
+          "description": "Add a statchannel to the server.",
           "options": [
             {
               "type": "Subcommand",
               "name": "status",
-              "description": "Add a stats-channel that will show the online status of the minecraft server.",
+              "description": "Add a statchannel that will show the online status of the minecraft server.",
               "options": [
                 {
                   "type": "Channel",
                   "name": "channel",
-                  "description": "Set the channel you want to add as a stats-channel.",
+                  "description": "Set the channel you want to add as a statchannel.",
                   "required": true
                 },
                 {
@@ -2542,12 +2542,12 @@
             {
               "type": "Subcommand",
               "name": "member-counter",
-              "description": "Add a stats-channel that will show the current player count of the minecraft server.",
+              "description": "Add a statchannel that will show the current player count of the minecraft server.",
               "options": [
                 {
                   "type": "Channel",
                   "name": "channel",
-                  "description": "Set the channel you want to add as a stats-channel.",
+                  "description": "Set the channel you want to add as a statchannel.",
                   "required": true
                 },
                 {
@@ -2563,7 +2563,7 @@
         {
           "type": "Subcommand",
           "name": "remove",
-          "description": "Remove a stats-channel from the server.",
+          "description": "Remove a statchannel from the server.",
           "options": [
             {
               "type": "Channel",
@@ -2576,12 +2576,12 @@
         {
           "type": "Subcommand",
           "name": "list",
-          "description": "List all stats-channels in the server.",
+          "description": "List all statchannels in the server.",
           "options": [
             {
               "type": "String",
               "name": "filter",
-              "description": "Set a filter to only show stats-channels of a specific type.",
+              "description": "Set a filter to only show statchannels of a specific type.",
               "required": false,
               "choices": [
                 {

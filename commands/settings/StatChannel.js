@@ -5,11 +5,11 @@ import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../api/utils.js';
 import { GuildChannel } from 'discord.js';
 
-export default class ChannelStats extends Command {
+export default class StatChannel extends Command {
 
     constructor() {
         super({
-            name: 'channel-stats',
+            name: 'statchannel',
             category: 'settings',
             requiresConnectedPlugin: true,
         });
@@ -25,7 +25,7 @@ export default class ChannelStats extends Command {
             /** @type {GuildChannel} */
             const channel = args[2];
             if(!channel.manageable) {
-                return interaction.replyTl(keys.commands['channel-stats'].errors.not_manageable);
+                return interaction.replyTl(keys.commands.statchannel.errors.not_manageable);
             }
 
             /** @type {StatsChannelData} */
@@ -53,7 +53,7 @@ export default class ChannelStats extends Command {
             else message = statChannel.names.online;
             await channel.setName(message);
 
-            await interaction.replyTl(keys.commands['channel-stats'].success.add);
+            await interaction.replyTl(keys.commands.statchannel.success.add);
         }
         else if(subcommand === 'remove') {
             const channel = args[1];
@@ -70,7 +70,7 @@ export default class ChannelStats extends Command {
             statsChannels.splice(index, 1);
             await server.edit({ 'stats-channels': statsChannels });
 
-            await interaction.replyTl(keys.commands['channel-stats'].success.remove);
+            await interaction.replyTl(keys.commands.statchannel.success.remove);
         }
         else if(subcommand === 'list') {
             const filter = args[1];
@@ -89,7 +89,7 @@ export default class ChannelStats extends Command {
             for(const channel of statsChannels) {
                 const key = channel.type === 'member-counter' ? 'member-counter' : 'status';
                 const channelEmbed = getEmbed(
-                    keys.commands['channel-stats'].success[`${key}_list`],
+                    keys.commands.statchannel.success[`${key}_list`],
                     ph.std(interaction),
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
