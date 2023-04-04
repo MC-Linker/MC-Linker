@@ -42,7 +42,7 @@ export default class Account extends Command {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 
-            const uuid = await utils.fetchUUID(username);
+            const uuid = server.online ? await utils.fetchUUID(username) : utils.createUUIDv3(username);
             if(!uuid) {
                 return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
             }
