@@ -50,7 +50,7 @@ export default class Connect extends Command {
                             path: socket.handshake.query.path,
                             channels: [],
                             'stats-channels': [],
-                            online: Boolean(socket.handshake.query.online),
+                            online: socket.handshake.query.online === 'true',
                             version: Number(socket.handshake.query.version.split('.')[1]),
                             worldPath: socket.handshake.query.worldPath,
                             protocol: 'websocket',

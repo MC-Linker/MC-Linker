@@ -23,7 +23,7 @@ export default class Account extends Command {
 
             const { interaction, timeout } = this.waitingInteractions.get(id);
             clearTimeout(timeout);
-            interaction.replyTl(keys.commands.account.success.verified, ph.emojis(), ph.colors(), ph.colors());
+            interaction.replyTl(keys.commands.account.success.verified, ph.emojis(), ph.colors());
         });
     }
 
