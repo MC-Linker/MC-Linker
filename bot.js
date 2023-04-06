@@ -54,13 +54,12 @@ client.once(Discord.Events.ClientReady, async () => {
 client.on('allShardsReady', async () => {
     //Load all connections and commands
     await client.loadEverything();
+    
+    //Set Activity
+    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
-    if(client.shard.ids.includes(0)) {
-        //Start API server
-        await client.api.startServer();
-        //Set Activity
-        client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
-    }
+    //Start API server if this is the first shard
+    if(client.shard.ids.includes(0)) await client.api.startServer();
 });
 
 client.on(Discord.Events.GuildCreate, async guild => {
