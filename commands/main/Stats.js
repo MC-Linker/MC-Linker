@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import * as utils from '../../api/utils.js';
-import { addPh, getEmbed, getReplyOptions, ph } from '../../api/messages.js';
+import { addPh, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
@@ -43,8 +43,8 @@ export default class Stats extends AutocompleteCommand {
 
         const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/stats/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
-            404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'stats' }, ph.colors()),
-        })) return;
+            404: keys.api.command.errors.could_not_download_user_files,
+        }, { category: 'stats' })) return;
         const statData = JSON.parse(statFile.data.toString('utf-8'));
 
         try {
@@ -94,7 +94,7 @@ export default class Stats extends AutocompleteCommand {
 
             fs.access(`./resources/images/${imgType}/${stat}.png`, err => {
                 if(err) {
-                    interaction.replyTl(keys.commands.stats.warnings.no_image, { 'stat_name': stat });
+                    console.log(addPh(keys.commands.stats.warnings.no_image.console, { 'stat_name': stat }));
                     interaction.replyOptions({ embeds: [statEmbed] });
                     return;
                 }
