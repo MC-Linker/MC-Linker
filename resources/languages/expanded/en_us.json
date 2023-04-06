@@ -1016,6 +1016,17 @@
           ]
         }
       },
+      "errors": {
+        "not_sendable": {
+          "embeds": [
+            {
+              "title": "Cannot Send Messages",
+              "description": "I do not have permission to send messages in this channel."
+            }
+          ],
+          "console": "Channel not sendable"
+        }
+      },
       "step": {
         "choose": {
           "embeds": [

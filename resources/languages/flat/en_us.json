@@ -523,6 +523,10 @@
   "commands.chatchannel.warnings.already_responded.embeds.0.title": "Select Message Types",
   "commands.chatchannel.warnings.already_responded.embeds.0.description": "Select all message types you want the bot to send. (Already responded)",
 
+  "commands.chatchannel.errors.not_sendable.embeds.0.title": "Cannot Send Messages",
+  "commands.chatchannel.errors.not_sendable.embeds.0.description": "I do not have permission to send messages in this channel.",
+  "commands.chatchannel.errors.not_sendable.console": "Channel not sendable",
+
 
   "commands.chatchannel.step.choose.embeds.0.title": "Select Message Types",
   "commands.chatchannel.step.choose.embeds.0.description": "%emoji_step% Select all message types you want the bot to send. (You have 3 minutes to select)",
