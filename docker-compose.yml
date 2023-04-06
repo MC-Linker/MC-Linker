@@ -6,7 +6,6 @@ services:
     restart: on-failure
     ports:
       - "${BOT_PORT}:${BOT_PORT}"
-      - "80:80"
     volumes:
       - type: bind
         source: ./serverdata

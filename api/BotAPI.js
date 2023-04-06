@@ -168,8 +168,7 @@ export default class BotAPI extends EventEmitter {
             reply.redirect('https://mclinker.com');
         });
 
-        const port = process.env.USE_HTTP_DEFAULT_PORT === 'true' ? 80 : process.env.BOT_PORT;
-        this.fastify.listen({ port, host: '0.0.0.0' }, (err, address) => {
+        this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
             if(err) throw err;
             console.log(addPh(keys.api.plugin.success.listening.console, { address }));
         });
@@ -195,21 +194,6 @@ export default class BotAPI extends EventEmitter {
             server.protocol.updateSocket(socket);
             this.addListeners(socket, server, hash);
         });
-
-        //If server is running on default http port (80), redirect old bot port (3100) from .env to 80
-        //This is because older versions of the plugin used port 3100
-        if(process.env.USE_HTTP_DEFAULT_PORT === 'true') {
-            const redirectServer = Fastify();
-            redirectServer.get('*', (request, reply) => {
-                //Redirect to port 80
-                reply.redirect(`http://${request.hostname.split(':')[0]}:${port}${request.url}`);
-            });
-
-            redirectServer.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
-                if(err) throw err;
-                console.log(addPh(keys.api.plugin.success.listening.console, { address }));
-            });
-        }
 
         this.client.emit('apiReady', this);
         return this.fastify;
