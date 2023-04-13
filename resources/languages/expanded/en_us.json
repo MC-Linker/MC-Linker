@@ -2517,6 +2517,9 @@
     "statchannel": {
       "name": "statchannel",
       "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
       "long_description": "Manage statchannels in the server that will show the current player count of the minecraft server or it's online status.",
       "description": "Manage statchannels in the server.",
       "options": [
