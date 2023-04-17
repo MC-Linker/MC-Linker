@@ -111,7 +111,7 @@ export default class BotAPI extends EventEmitter {
             const rateLimiter = request.body.event === 'members' ? this.rateLimiterMemberCounter : null;
             const server = await _getServerFastify(request, reply, this.client, rateLimiter);
             if(!server) return;
-            await this._updateStatsChannel(request.body);
+            await this._updateStatsChannel(request.body, server);
         });
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -212,7 +212,7 @@ export default class BotAPI extends EventEmitter {
             const rateLimiter = data.event === 'members' ? this.rateLimiterMemberCounter : null;
             const server = await getServerWebsocket(this.client, rateLimiter);
             if(!server) return;
-            await this._updateStatsChannel(data);
+            await this._updateStatsChannel(data, server);
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
@@ -298,8 +298,20 @@ export default class BotAPI extends EventEmitter {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
                 /** @type {?Discord.TextChannel} */
-                const discordChannel = await guild.channels.fetch(channel.id);
-                if(!discordChannel) continue;
+                let discordChannel;
+                try {
+                    discordChannel = await guild.channels.fetch(channel.id);
+                    if(!discordChannel) continue;
+                }
+                catch(err) {
+                    if(err.code === 10003) {
+                        console.log(`[API] Channel ${channel}} was deleted`);
+                        const regChannel = await server.protocol.removeChatChannel(channel);
+                        if(!regChannel) continue;
+                        await server.edit({ channels: regChannel.data });
+                    }
+                    continue;
+                }
 
                 if(!allWebhooks) {
                     await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
@@ -372,8 +384,21 @@ export default class BotAPI extends EventEmitter {
             for(const channel of channels) {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
-                const discordChannel = await guild.channels.fetch(channel.id);
-                if(!discordChannel) continue;
+                /** @type {?Discord.TextChannel} */
+                let discordChannel;
+                try {
+                    discordChannel = await guild.channels.fetch(channel.id);
+                    if(!discordChannel) continue;
+                }
+                catch(err) {
+                    if(err.code === 10003) {
+                        console.log(`[API] Channel ${channel}} was deleted`);
+                        const regChannel = await server.protocol.removeChatChannel(channel);
+                        if(!regChannel) continue;
+                        await server.edit({ channels: regChannel.data });
+                    }
+                    continue;
+                }
 
                 try {
                     await discordChannel?.send({ embeds: [chatEmbed] });
@@ -384,7 +409,14 @@ export default class BotAPI extends EventEmitter {
         catch(_) {}
     }
 
-    async _updateStatsChannel(data) {
+    /**
+     * Handles stats channel updates
+     * @param {Object} data - The chat data
+     * @param {ServerConnection} server - The server connection
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _updateStatsChannel(data, server) {
         // event can be one of: 'online', 'offline', 'members'
         const { channels, event, id } = data;
 
@@ -392,8 +424,21 @@ export default class BotAPI extends EventEmitter {
         for(const channel of channels) {
             if(!channel.names[event]) return;
 
-            const discordChannel = await guild.channels.fetch(channel.id);
-            if(!discordChannel) return;
+            /** @type {?Discord.TextChannel} */
+            let discordChannel;
+            try {
+                discordChannel = await guild.channels.fetch(channel.id);
+                if(!discordChannel) continue;
+            }
+            catch(err) {
+                if(err.code === 10003) {
+                    console.log(`[API] Channel ${channel}} was deleted`);
+                    const regChannel = await server.protocol.removeStatsChannel(channel);
+                    if(!regChannel) continue;
+                    await server.edit({ 'stats-channels': regChannel.data });
+                }
+                continue;
+            }
 
             //Replace %count% with the actual count
             if(event === 'members') channel.names[event] = channel.names[event].replace('%count%', data.members);
