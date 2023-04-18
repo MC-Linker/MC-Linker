@@ -1,8 +1,7 @@
 // noinspection HttpUrlsUsage
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from './oauth.js';
-import * as utils from './utils.js';
-import { minecraftAvatarURL } from './utils.js';
+import { createHash, minecraftAvatarURL, searchAdvancements } from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import { EventEmitter } from 'node:events';
@@ -85,6 +84,12 @@ export default class BotAPI extends EventEmitter {
 
                 /** @type {ServerConnection} */
                 const server = client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasHttpProtocol());
+
+                //check authorization: Bearer <token>
+                if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization?.split(' ')[1]) {
+                    reply.status(401).send();
+                    return;
+                }
 
                 //If no connection on that guild send disconnection status
                 if(!server) reply.status(403).send();
@@ -183,7 +188,7 @@ export default class BotAPI extends EventEmitter {
             if(this.client.commands.get('connect')?.wsVerification?.has(id)) return;
 
             const token = socket.handshake.auth.token;
-            const hash = utils.createHash(token);
+            const hash = createHash(token);
 
             /** @type {?ServerConnection} */
             const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
@@ -268,7 +273,7 @@ export default class BotAPI extends EventEmitter {
             if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
             const [category, id] = message.replace('minecraft:', '').split('/');
-            const advancement = utils.searchAdvancements(id, category, false, true, 1);
+            const advancement = searchAdvancements(id, category, false, true, 1);
 
             advancementTitle = advancement[0]?.name ?? message;
             advancementDesc = advancement[0]?.description ?? keys.commands.advancements.no_description_available;
