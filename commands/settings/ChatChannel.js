@@ -35,7 +35,6 @@ export default class ChatChannel extends Command {
             }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
-            Ad;
             let menu;
             try {
                 menu = await logChooserMsg.awaitMessageComponent({
