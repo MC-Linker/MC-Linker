@@ -260,7 +260,7 @@ export default class BotAPI extends EventEmitter {
 
         const guild = await this.client.guilds.fetch(guildId);
 
-        let chatEmbed;
+        //Add special placeholders for advancements
         if(type === 'advancement') {
             let advancementTitle;
             let advancementDesc;
@@ -273,27 +273,13 @@ export default class BotAPI extends EventEmitter {
             advancementTitle = advancement[0]?.name ?? message;
             advancementDesc = advancement[0]?.description ?? keys.commands.advancements.no_description_available;
 
-            chatEmbed = getEmbed(keys.api.plugin.success.messages.advancement, argPlaceholder, {
-                'advancement_title': advancementTitle,
-                'advancement_description': advancementDesc,
-            });
+            // Add placeholder to argPlaceholder so it can be used later
+            argPlaceholder.advancement_title = advancementTitle;
+            argPlaceholder.advancement_description = advancementDesc;
         }
-        else if(type === 'chat') {
-            //Parse pings (@name)
-            const mentions = message.match(/@(\S+)/g);
-            for(const mention of mentions ?? []) {
-                const users = await guild.members.search({ query: mention.replace('@', '') });
-                argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
-            }
 
-            chatEmbed = getEmbed(keys.api.plugin.success.messages.chat, argPlaceholder, ph.emojis(), ph.colors());
-
-            let allWebhooks;
-            try {
-                allWebhooks = await guild.fetchWebhooks();
-            }
-            catch(_) {}
-
+        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), ph.colors(), { 'timestamp_now': Date.now() });
+        if(type !== 'chat') {
             for(const channel of channels) {
                 if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
@@ -302,112 +288,107 @@ export default class BotAPI extends EventEmitter {
                 try {
                     discordChannel = await guild.channels.fetch(channel.id);
                     if(!discordChannel) continue;
+                    await discordChannel?.send({ embeds: [chatEmbed] });
                 }
                 catch(err) {
                     if(err.code === 10003) {
-                        console.log(`[API] Channel ${channel}} was deleted`);
                         const regChannel = await server.protocol.removeChatChannel(channel);
                         if(!regChannel) continue;
                         await server.edit({ channels: regChannel.data });
                     }
-                    continue;
-                }
-
-                if(!allWebhooks) {
-                    await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
-                    return;
-                }
-
-                if(!channel.webhook) {
-                    try {
-                        await discordChannel.send({ embeds: [chatEmbed] });
-                    }
-                    catch(_) {}
-                    continue;
-                }
-
-                try {
-                    let webhook = allWebhooks.get(channel.webhook);
-
-                    //Create new webhook if old one doesn't exist
-                    if(!webhook) {
-                        const options = {
-                            name: player,
-                            reason: 'ChatChannel to Minecraft',
-                            avatar: authorURL,
-                        };
-
-                        if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
-                        else webhook = await discordChannel.createWebhook(options);
-
-                        const regChannel = await server.protocol.addChatChannel({
-                            types: channel.types,
-                            webhook: webhook.id,
-                            id: channel.id,
-                        });
-                        if(!regChannel) {
-                            await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis(), ph.colors())] });
-                            await webhook.delete();
-                            return;
-                        }
-
-                        await server.edit({ channels: regChannel.data });
-                    }
-
-                    //Edit webhook if name doesnt match
-                    if(webhook.name !== player) {
-                        await webhook.edit({ name: player, avatar: authorURL });
-                    }
-
-                    if(discordChannel.isThread()) await webhook.send({
-                        threadId: discordChannel.id,
-                        content: argPlaceholder.message,
-                        allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-                    });
-                    else await webhook.send({
-                        content: argPlaceholder.message,
-                        allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-                    });
-                }
-                catch(_) {
-                    await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
-                    return;
                 }
             }
             return;
         }
-        else {
-            chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), ph.colors(), { 'timestamp_now': Date.now() });
+
+        //type === 'chat'
+
+        //Parse pings (@name)
+        const mentions = message.match(/@(\S+)/g);
+        for(const mention of mentions ?? []) {
+            const users = await guild.members.search({ query: mention.replace('@', '') });
+            argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
         }
 
-        try {
-            for(const channel of channels) {
-                if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
+        const allWebhooks = await guild.fetchWebhooks().catch(() => {});
 
-                /** @type {?Discord.TextChannel} */
-                let discordChannel;
-                try {
-                    discordChannel = await guild.channels.fetch(channel.id);
-                    if(!discordChannel) continue;
+        for(const channel of channels) {
+            if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
+
+            /** @type {?Discord.TextChannel} */
+            let discordChannel;
+            try {
+                discordChannel = await guild.channels.fetch(channel.id);
+                if(!discordChannel) continue;
+            }
+            catch(err) {
+                if(err.code === 10003) {
+                    const regChannel = await server.protocol.removeChatChannel(channel);
+                    if(!regChannel) continue;
+                    await server.edit({ channels: regChannel.data });
                 }
-                catch(err) {
-                    if(err.code === 10003) {
-                        console.log(`[API] Channel ${channel}} was deleted`);
-                        const regChannel = await server.protocol.removeChatChannel(channel);
-                        if(!regChannel) continue;
-                        await server.edit({ channels: regChannel.data });
+                continue;
+            }
+
+            if(!allWebhooks) {
+                await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
+                return;
+            }
+
+            if(!channel.webhook) {
+                await discordChannel.send({ embeds: [chatEmbed] }).catch(() => {});
+                continue;
+            }
+
+            try {
+                let webhook = allWebhooks.get(channel.webhook);
+
+                //Create new webhook if old one doesn't exist
+                if(!webhook) {
+                    const options = {
+                        name: player,
+                        reason: 'ChatChannel to Minecraft',
+                        avatar: authorURL,
+                    };
+                    if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
+                    else webhook = await discordChannel.createWebhook(options);
+
+                    const regChannel = await server.protocol.addChatChannel({
+                        types: channel.types,
+                        webhook: webhook.id,
+                        id: channel.id,
+                    });
+                    if(!regChannel) {
+                        await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis(), ph.colors())] });
+                        await webhook.delete();
+                        return;
                     }
-                    continue;
+
+                    await server.edit({ channels: regChannel.data });
                 }
 
-                try {
-                    await discordChannel?.send({ embeds: [chatEmbed] });
+                //Edit webhook if name doesnt match
+                if(webhook.name !== player) {
+                    await webhook.edit({ name: player, avatar: authorURL });
                 }
-                catch(_) {}
+
+                if(discordChannel.isThread()) await webhook.send({
+                    threadId: discordChannel.id,
+                    content: argPlaceholder.message,
+                    allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
+                });
+                else await webhook.send({
+                    content: argPlaceholder.message,
+                    allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
+                });
+            }
+            catch(_) {
+                await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
             }
         }
-        catch(_) {}
     }
+
+    //TODO TEST CHATCHANNELS
 
     /**
      * Handles stats channel updates
