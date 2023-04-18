@@ -94,6 +94,7 @@ export default class BotAPI extends EventEmitter {
                 //If no connection on that guild send disconnection status
                 if(!server) reply.status(403).send();
                 else reply.send({});
+                return server;
             }
             catch(rateLimiterRes) {
                 reply.status(429).headers({
