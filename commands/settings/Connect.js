@@ -288,7 +288,7 @@ export default class Connect extends Command {
         else if(server?.hasFtpProtocol()) return await client.serverConnections.disconnect(server);
         else return;
 
-        if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
+        if(!resp || resp.status !== 200) await interaction.channel.send(getReplyOptions(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
         else {
             await client.serverConnections.disconnect(server);
             await interaction.channel.send(getReplyOptions(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
