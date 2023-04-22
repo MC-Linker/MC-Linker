@@ -9,7 +9,7 @@ export default class Stats extends AutocompleteCommand {
     constructor() {
         super({
             name: 'stats',
-            requiresConnectedUser: 2,
+            requiresUserIndex: 2,
             category: 'main',
         });
     }

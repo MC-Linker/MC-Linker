@@ -53,10 +53,10 @@ export default class ServerInfo extends Command {
             plugins = await server.protocol.list(FilePath.Plugins(server.path));
             mods = await server.protocol.list(FilePath.Mods(server.path));
 
-            operators = operators?.status === 200 ? JSON.parse(operators.data.toString('utf-8')) : null;
-            whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString('utf-8')) : null;
-            bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString('utf-8')) : null;
-            bannedIPs = bannedIPs?.status === 200 ? JSON.parse(bannedIPs.data.toString('utf-8')) : null;
+            operators = operators?.status === 200 ? JSON.parse(operators.data.toString()) : null;
+            whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString()) : null;
+            bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString()) : null;
+            bannedIPs = bannedIPs?.status === 200 ? JSON.parse(bannedIPs.data.toString()) : null;
             plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory).map(plugin => plugin.name.replace('.jar', '')) : [];
             mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
 
@@ -158,7 +158,7 @@ export default class ServerInfo extends Command {
         /** @type {Discord.InteractionReplyOptions} */
         const startingMessage = {
             embeds: [getEmbed(keys.commands.serverinfo.success.general, {
-                server_name: propertiesObject['server-name'] ?? keys.commands.serverinfo.warnings.unknown,
+                server_name: propertiesObject['server-name'] ?? keys.commands.serverinfo.unknown,
                 motd: motd.join('\n'),
                 max_players: propertiesObject['max-players'],
                 online_players: onlinePlayers,
@@ -193,7 +193,7 @@ export default class ServerInfo extends Command {
             if(bannedUsers) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[4], { banned_users: bannedUsers.length }));
             if(bannedIPs) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[5], { banned_ips: bannedIPs.length }));
             if(operators) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[6], { operators: operators.length }));
-            newFields.push(adminEmbed.data.fields[7], adminEmbed.data.fields[8]); //Push seed and whitelist fields
+            newFields.push(adminEmbed.data.fields[7], adminEmbed.data.fields[8]); //Copy seed and whitelist fields
             adminEmbed.setFields(...newFields);
 
             pages['serverinfo_admin'] = {

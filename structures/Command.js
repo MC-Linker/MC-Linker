@@ -18,7 +18,7 @@ export default class Command {
      * @property {boolean} [defer=true] - Indicates whether to defer this command.
      * @property {boolean} [ephemeral=false] - Indicates whether to defer this command as ephemeral.
      * @property {boolean} [requiresConnectedServer=true] - Indicates whether this command requires a connected server.
-     * @property {int} [requiresConnectedUser=null] - The user argument index that requires a connected user.
+     * @property {int} [requiresUserIndex=null] - The user argument index that requires a user.
      * @property {boolean} [requiresConnectedPlugin=false] - Indicates whether this command requires a connected plugin.
      * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
      * @property {string} [category] - The category of this command.
@@ -56,10 +56,10 @@ export default class Command {
         this.requiresConnectedServer = options.requiresConnectedServer ?? true;
 
         /**
-         * The user argument index that requires a connected user.
+         * The user argument index that requires a user.
          * @type {?int}
          */
-        this.requiresConnectedUser = options.requiresConnectedUser ?? null;
+        this.requiresUserIndex = options.requiresUserIndex ?? null;
 
         /**
          * Indicates whether this command requires a connected plugin.
@@ -133,8 +133,8 @@ export default class Command {
             return false;
         }
 
-        if(this.requiresConnectedUser !== null && (this.requiresConnectedUser === 0 || args[this.requiresConnectedUser - 1] !== undefined)) {
-            const user = await client.userConnections.userFromArgument(args[this.requiresConnectedUser], server);
+        if(this.requiresUserIndex !== null && (this.requiresUserIndex === 0 || args[this.requiresUserIndex - 1] !== undefined)) {
+            const user = await client.userConnections.userFromArgument(args[this.requiresUserIndex], server);
             if(user.error === 'nullish') {
                 await interaction.replyTl(keys.api.command.warnings.no_user);
                 return false;
@@ -144,11 +144,11 @@ export default class Command {
                 return false;
             }
             else if(user.error === 'fetch') {
-                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username: args[this.requiresConnectedUser] });
+                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username: args[this.requiresUserIndex] });
                 return false;
             }
 
-            args[this.requiresConnectedUser] = user;
+            args[this.requiresUserIndex] = user;
         }
 
         const optionName = await getMissingOptionName(args, slashCommand);

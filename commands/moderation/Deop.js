@@ -8,7 +8,7 @@ export default class Deop extends Command {
         super({
             name: 'deop',
             requiresConnectedPlugin: true,
-            requiresConnectedUser: 0,
+            requiresUserIndex: 0,
             category: 'moderation',
         });
     }

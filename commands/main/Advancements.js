@@ -7,14 +7,14 @@ import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
 
-const mcData = minecraft_data('1.19.2');
+const mcData = minecraft_data('1.19.3');
 
 export default class Advancements extends AutocompleteCommand {
 
     constructor() {
         super({
             name: 'advancements',
-            requiresConnectedUser: 1,
+            requiresUserIndex: 1,
             category: 'main',
         });
     }

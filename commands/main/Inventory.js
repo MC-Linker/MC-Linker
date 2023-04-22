@@ -8,7 +8,7 @@ import { FilePath } from '../../structures/Protocol.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../api/utils.js';
 
-const mcData = minecraft_data('1.19.2');
+const mcData = minecraft_data('1.19.3');
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -81,7 +81,7 @@ export default class Inventory extends Command {
     constructor() {
         super({
             name: 'inventory',
-            requiresConnectedUser: 0,
+            requiresUserIndex: 0,
             category: 'main',
         });
     }

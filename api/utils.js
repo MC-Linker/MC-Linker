@@ -19,7 +19,7 @@ import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 
-const mcData = McData('1.19.2');
+const mcData = McData('1.19.3');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
@@ -330,7 +330,7 @@ export function createUUIDv3(username) {
 /**
  * Creates a JS object from an nbt buffer.
  * @param {Buffer} buffer - The nbt buffer to create the object from.
- * @param {TranslatedResponses} interaction - The interaction to respond to.
+ * @param {TranslatedResponses} interaction - The interaction to respond to in case of an error.
  * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
  */
 export async function nbtBufferToObject(buffer, interaction) {
@@ -512,7 +512,7 @@ export function wrapText(ctx, text, maxWidth) {
  * Converts custom discord emojis and unicode emojis to their string representation.
  * @example
  * // returns "Hello :smile:"
- * convertEmojisToString('Hello 😀');
+ * cleanEmojis('Hello 😀');
  * @param {string} message - The message to clean
  * @returns {string} - The cleaned message.
  */
