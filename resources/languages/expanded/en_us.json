@@ -662,9 +662,7 @@
       }
     },
     "serverinfo": {
-      "warnings": {
-        "unknown": "*Unknown*"
-      },
+      "unknown": "*Unknown*",
       "enabled": "Enabled",
       "disabled": "Disabled",
       "difficulty": [
@@ -748,7 +746,7 @@
                   "inline": true
                 },
                 {
-                  "name": "Gamerules",
+                  "name": "Gamerules (only non-default values)",
                   "value": "%gamerules%",
                   "inline": false
                 }
@@ -828,6 +826,182 @@
           "type": "Button",
           "style": "Danger",
           "custom_id": "serverinfo_admin"
+        }
+      }
+    },
+    "userinfo": {
+      "online": "Online",
+      "offline": "Offline",
+      "yes": "Yes",
+      "no": "No",
+      "none": "None",
+      "gamemode": [
+        "Survival",
+        "Creative",
+        "Adventure",
+        "Spectator"
+      ],
+      "dimensions": {
+        "overworld": "Overworld",
+        "the_nether": "Nether",
+        "the_end": "End"
+      },
+      "success": {
+        "general": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "footer": {
+                "text": "UUID: %uuid%"
+              },
+              "fields": [
+                {
+                  "name": "Status",
+                  "value": "%status%",
+                  "inline": true
+                },
+                {
+                  "name": "Banned",
+                  "value": "%banned%",
+                  "inline": true
+                },
+                {
+                  "name": "Whitelisted",
+                  "value": "%whitelisted%",
+                  "inline": true
+                },
+                {
+                  "name": "Operator",
+                  "value": "%operator% (Level: %operator_level%)",
+                  "inline": true
+                },
+                {
+                  "name": "Gamemode",
+                  "value": "%gamemode%",
+                  "inline": true
+                },
+                {
+                  "name": "Health",
+                  "value": "%health%❤️",
+                  "inline": true
+                },
+                {
+                  "name": "Food Level",
+                  "value": "%food%🍗 (Saturation: %saturation%)",
+                  "inline": true
+                },
+                {
+                  "name": "XP",
+                  "value": "%xp%✨ (Level: %xp_level%)",
+                  "inline": true
+                },
+                {
+                  "name": "Score",
+                  "value": "%score%",
+                  "inline": true
+                },
+                {
+                  "name": "Play Time",
+                  "value": "%play_time%",
+                  "inline": true
+                },
+                {
+                  "name": "Teams",
+                  "value": "%teams%",
+                  "inline": true
+                },
+                {
+                  "name": "Effects",
+                  "value": "%effects%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "admin": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "fields": [
+                {
+                  "name": "Position",
+                  "value": "%position% (Dimension: %dimension%)",
+                  "inline": true
+                },
+                {
+                  "name": "Spawn Location",
+                  "value": "%spawn_location% (Dimension: %spawn_dimension%)",
+                  "inline": true
+                },
+                {
+                  "name": "Last Death Location",
+                  "value": "%death_location% (Dimension: %death_dimension%)",
+                  "inline": true
+                }
+              ]
+            }
+          ],
+          "components": [
+            {
+              "type": 1,
+              "components": [
+                {
+                  "style": 4,
+                  "label": "Kick",
+                  "custom_id": "userinfo_kick",
+                  "disabled": false,
+                  "type": 2
+                },
+                {
+                  "style": 4,
+                  "label": "Ban",
+                  "custom_id": "userinfo_ban",
+                  "disabled": false,
+                  "type": 2
+                },
+                {
+                  "style": 2,
+                  "label": "Whitelist",
+                  "custom_id": "userinfo_whitelist",
+                  "type": 2
+                }
+              ]
+            }
+          ],
+          "admin": {
+            "components": [
+              {
+                "components": [
+                  null,
+                  null,
+                  {
+                    "disabled": false
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "general_button": {
+          "label": "General Information",
+          "type": "Button",
+          "style": "Primary",
+          "custom_id": "userinfo_general"
+        },
+        "admin_button": {
+          "label": "Admin Information",
+          "type": "Button",
+          "style": "Danger",
+          "custom_id": "userinfo_admin"
         }
       }
     },
@@ -2487,6 +2661,20 @@
       "type": "ChatInput",
       "long_description": "View information about the connected **minecraft server**.",
       "description": "View information about the connected minecraft server."
+    },
+    "userinfo": {
+      "name": "userinfo",
+      "type": "ChatInput",
+      "long_description": "View information about the specified **minecraft user**.",
+      "description": "View information about the specified minecraft user.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to view information about.",
+          "required": true
+        }
+      ]
     },
     "account": {
       "name": "account",
