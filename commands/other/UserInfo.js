@@ -112,7 +112,7 @@ export default class UserInfo extends Command {
             ));
         }
         if(scoreboardDat) {
-            placeholders.teams = scoreboardDatObject.Teams.filter(team => team.Players.includes(user.username)).map(team => team.DisplayName).join(', ');
+            placeholders.teams = scoreboardDatObject.data.Teams.filter(team => team.Players.includes(user.username)).map(team => team.DisplayName).join(', ');
             newGeneralFields.push(addPh(
                 keys.commands.userinfo.success.general.embeds[0].fields[10], placeholders,
             ));
