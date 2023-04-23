@@ -80,13 +80,13 @@ export default class UserInfo extends Command {
             placeholders.xp_level = playerDatObject.XpLevel;
             placeholders.food = playerDatObject.foodLevel;
             placeholders.saturation = playerDatObject.foodSaturationLevel;
-            placeholders.health = playerDatObject.Health;
+            placeholders.health = playerDatObject.Health / 2;
             placeholders.score = playerDatObject.Score;
             placeholders.gamemode = keys.commands.userinfo.gamemode[playerDatObject.playerGameType] ?? keys.commands.serverinfo.unknown;
             placeholders.dimension = keys.commands.userinfo.dimensions[playerDatObject.Dimension.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
             placeholders.position = `${playerDatObject.Pos[0]}, ${playerDatObject.Pos[1]}, ${playerDatObject.Pos[2]}`;
-            placeholders.death_location = `${playerDatObject.LastDeathLocation.pos[0]}, ${playerDatObject.LastDeathLocation.pos[1]}, ${playerDatObject.LastDeathLocation.pos[2]}`;
-            placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDatObject.LastDeathLocation.dimension.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
+            placeholders.death_location = `${playerDatObject.LastDeathLocation?.pos?.[0] ?? '?'}, ${playerDatObject.LastDeathLocation?.pos?.[1] ?? '?'}, ${playerDatObject.LastDeathLocation?.pos?.[2] ?? '?'}`;
+            placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDatObject.LastDeathLocation?.dimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
             placeholders.spawn_location = `${playerDatObject.SpawnX ?? '?'}, ${playerDatObject.SpawnY ?? '?'}, ${playerDatObject.SpawnZ ?? '?'}`;
             placeholders.spawn_dimension = keys.commands.userinfo.dimensions[playerDatObject.SpawnDimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
             placeholders.first_join = playerDatObject.bukkit?.firstPlayed ? time(Number(playerDatObject.bukkit.firstPlayed / 1000n)) : keys.commands.serverinfo.unknown;

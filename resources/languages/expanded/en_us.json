@@ -885,6 +885,11 @@
                   "inline": true
                 },
                 {
+                  "name": "Score",
+                  "value": "%score% ♦",
+                  "inline": true
+                },
+                {
                   "name": "Health",
                   "value": "%health% ❤️",
                   "inline": true
@@ -897,11 +902,6 @@
                 {
                   "name": "XP",
                   "value": "%xp% ✨ (Level: %xp_level%)",
-                  "inline": true
-                },
-                {
-                  "name": "Score",
-                  "value": "%score%",
                   "inline": true
                 },
                 {
@@ -944,17 +944,17 @@
               "fields": [
                 {
                   "name": "Current Position",
-                  "value": "%position% (Dimension: %dimension%)",
+                  "value": "`%position%` (Dimension: %dimension%)",
                   "inline": true
                 },
                 {
                   "name": "Spawn Location",
-                  "value": "%spawn_location% (Dimension: %spawn_dimension%)",
+                  "value": "`%spawn_location%` (Dimension: %spawn_dimension%)",
                   "inline": true
                 },
                 {
                   "name": "Last Death Location",
-                  "value": "%death_location% (Dimension: %death_dimension%)",
+                  "value": "`%death_location%` (Dimension: %death_dimension%)",
                   "inline": true
                 }
               ]
@@ -982,24 +982,12 @@
                   "style": 2,
                   "label": "Whitelist",
                   "custom_id": "userinfo_whitelist",
+                  "disabled": false,
                   "type": 2
                 }
               ]
             }
-          ],
-          "admin": {
-            "components": [
-              {
-                "components": [
-                  null,
-                  null,
-                  {
-                    "disabled": false
-                  }
-                ]
-              }
-            ]
-          }
+          ]
         },
         "general_button": {
           "label": "General Information",
