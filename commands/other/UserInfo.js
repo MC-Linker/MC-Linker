@@ -2,8 +2,7 @@ import Command from '../../structures/Command.js';
 import keys from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
-import { minecraftAvatarURL } from '../../api/utils.js';
-import { time } from 'discord.js';
+import { formatDuration, minecraftAvatarURL } from '../../api/utils.js';
 import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
 import minecraft_data from 'minecraft-data';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -106,7 +105,7 @@ export default class UserInfo extends Command {
                 let playTimeMs;
                 if(playTimeTicks) playTimeMs = Math.round(playTimeTicks / 20 * 1000);
                 else if(playTimeMinutes) playTimeMs = playTimeMinutes * 60 * 1000;
-                placeholders.play_time = time(playTimeMs);
+                placeholders.play_time = formatDuration(playTimeMs);
 
                 newGeneralFields.push(addPh(
                     keys.commands.userinfo.success.general.embeds[0].fields[9], placeholders,

@@ -549,8 +549,8 @@
           "dropped": "has dropped **%stat_value% %stat_name%**",
           "killed": "has killed **%stat_value% %stat_name%**",
           "killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
-          "time": "**%stat_name%**: **%stat_value%** hours",
-          "distance": "**%stat_name%**: **%stat_value%** meters"
+          "time": "**%stat_name%**: **%stat_value%**",
+          "distance": "**%stat_name%**: **%stat_value%**"
         },
         "final": {
           "embeds": [

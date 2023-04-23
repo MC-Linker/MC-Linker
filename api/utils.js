@@ -526,3 +526,25 @@ export function createHash(token) {
         .update(token)
         .digest('hex');
 }
+
+export function formatDuration(milliseconds) {
+    const seconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+
+    const formattedSeconds = seconds % 60;
+    const formattedMinutes = minutes % 60;
+    const formattedHours = hours % 24;
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+}
+
+export function formatDistance(centimeters) {
+    const meters = centimeters / 100;
+    const kilometers = meters / 1000;
+
+    const formattedMeters = Math.floor(meters % 1000);
+    const formattedKilometers = Math.floor(kilometers % 1000);
+
+    return `${formattedKilometers}km ${formattedMeters}m`;
+}

@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import * as utils from '../../api/utils.js';
+import { formatDistance, formatDuration } from '../../api/utils.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
@@ -72,13 +73,13 @@ export default class Stats extends AutocompleteCommand {
             if(stat.includes('time')) {
                 statMessage = addPh(
                     keys.commands.stats.success.stat_message.time,
-                    argPlaceholder, { 'stat_value': (statMatch / 20 / 3600).toFixed(2) }, //Convert ticks to hours
+                    argPlaceholder, { 'stat_value': formatDuration(statMatch / 20) }, //Convert ticks to hours
                 );
             }
             else if(stat.includes('_one_cm')) {
                 statMessage = addPh(
                     keys.commands.stats.success.stat_message.distance,
-                    argPlaceholder, { 'stat_value': (statMatch / 100).toFixed(2) },
+                    argPlaceholder, { 'stat_value': formatDistance(statMatch) },
                 );
             }
 

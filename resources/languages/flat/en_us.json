@@ -272,8 +272,8 @@
   "commands.stats.success.stat_message.dropped": "has dropped **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.killed": "has killed **%stat_value% %stat_name%**",
   "commands.stats.success.stat_message.killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
-  "commands.stats.success.stat_message.time": "**%stat_name%**: **%stat_value%** hours",
-  "commands.stats.success.stat_message.distance": "**%stat_name%**: **%stat_value%** meters",
+  "commands.stats.success.stat_message.time": "**%stat_name%**: **%stat_value%**",
+  "commands.stats.success.stat_message.distance": "**%stat_name%**: **%stat_value%**",
 
   "commands.stats.success.final.embeds.0.title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
   "commands.stats.success.final.embeds.0.fields.0.name": "%username%",
