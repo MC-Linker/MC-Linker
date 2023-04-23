@@ -279,12 +279,7 @@ export function addPh(key, ...placeholders) {
     placeholders = Object.assign({}, ...placeholders);
 
     if(typeof key === 'string') {
-        let match = key.match(/%([^%]+)%/);
-        while(match) {
-            const phValue = placeholders[match[1]];
-            key = key.replace(match[0], phValue ?? match[0]);
-            match = key.match(/%([^%]+)%/);
-        }
+        key = key.replace(/%([^%]+)%/g, (match, name) => placeholders[name] ?? match);
         return key;
     }
     else if(Array.isArray(key)) {
