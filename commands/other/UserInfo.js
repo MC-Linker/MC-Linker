@@ -92,7 +92,7 @@ export default class UserInfo extends Command {
 
             const fieldsToPush = [
                 ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 9)),
-                ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(10, 13)),
+                keys.commands.userinfo.success.general.embeds[0].fields[11],
             ];
             newGeneralFields.push(...(addPh(fieldsToPush, placeholders)));
             newAdminFields.push(...(addPh(
@@ -113,7 +113,7 @@ export default class UserInfo extends Command {
                 ));
             }
         }
-        if(scoreboardDat) {
+        if(scoreboardDatObject?.data?.Teams?.length > 0) {
             placeholders.teams = scoreboardDatObject.data.Teams.filter(team => team.Players.includes(user.username)).map(team => team.DisplayName).join(', ');
             newGeneralFields.push(addPh(
                 keys.commands.userinfo.success.general.embeds[0].fields[10], placeholders,
