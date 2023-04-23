@@ -886,7 +886,7 @@
                 },
                 {
                   "name": "Score",
-                  "value": "%score% ♦",
+                  "value": "%score% :diamonds:",
                   "inline": true
                 },
                 {
@@ -962,30 +962,25 @@
           ],
           "components": [
             {
-              "type": 1,
-              "components": [
-                {
-                  "style": 4,
-                  "label": "Kick",
-                  "custom_id": "userinfo_kick",
-                  "disabled": false,
-                  "type": 2
-                },
-                {
-                  "style": 4,
-                  "label": "Ban",
-                  "custom_id": "userinfo_ban",
-                  "disabled": false,
-                  "type": 2
-                },
-                {
-                  "style": 2,
-                  "label": "Whitelist",
-                  "custom_id": "userinfo_whitelist",
-                  "disabled": false,
-                  "type": 2
-                }
-              ]
+              "style": 4,
+              "label": "Kick",
+              "custom_id": "userinfo_kick",
+              "disabled": false,
+              "type": 2
+            },
+            {
+              "style": 4,
+              "label": "Ban",
+              "custom_id": "userinfo_ban",
+              "disabled": false,
+              "type": 2
+            },
+            {
+              "style": 2,
+              "label": "Whitelist",
+              "custom_id": "userinfo_whitelist",
+              "disabled": false,
+              "type": 2
             }
           ]
         },

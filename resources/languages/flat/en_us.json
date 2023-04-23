@@ -486,7 +486,7 @@
   "commands.userinfo.success.general.embeds.0.fields.4.inline": true,
 
   "commands.userinfo.success.general.embeds.0.fields.5.name": "Score",
-  "commands.userinfo.success.general.embeds.0.fields.5.value": "%score% ♦",
+  "commands.userinfo.success.general.embeds.0.fields.5.value": "%score% :diamonds:",
   "commands.userinfo.success.general.embeds.0.fields.5.inline": true,
 
   "commands.userinfo.success.general.embeds.0.fields.6.name": "Health",
@@ -540,24 +540,23 @@
   "commands.userinfo.success.admin.embeds.0.fields.2.value": "`%death_location%` (Dimension: %death_dimension%)",
   "commands.userinfo.success.admin.embeds.0.fields.2.inline": true,
 
-  "commands.userinfo.success.admin.components.0.type": 1,
-  "commands.userinfo.success.admin.components.0.components.0.style": 4,
-  "commands.userinfo.success.admin.components.0.components.0.label": "Kick",
-  "commands.userinfo.success.admin.components.0.components.0.custom_id": "userinfo_kick",
-  "commands.userinfo.success.admin.components.0.components.0.disabled": false,
-  "commands.userinfo.success.admin.components.0.components.0.type": 2,
+  "commands.userinfo.success.admin.components.0.style": 4,
+  "commands.userinfo.success.admin.components.0.label": "Kick",
+  "commands.userinfo.success.admin.components.0.custom_id": "userinfo_kick",
+  "commands.userinfo.success.admin.components.0.disabled": false,
+  "commands.userinfo.success.admin.components.0.type": 2,
 
-  "commands.userinfo.success.admin.components.0.components.1.style": 4,
-  "commands.userinfo.success.admin.components.0.components.1.label": "Ban",
-  "commands.userinfo.success.admin.components.0.components.1.custom_id": "userinfo_ban",
-  "commands.userinfo.success.admin.components.0.components.1.disabled": false,
-  "commands.userinfo.success.admin.components.0.components.1.type": 2,
+  "commands.userinfo.success.admin.components.1.style": 4,
+  "commands.userinfo.success.admin.components.1.label": "Ban",
+  "commands.userinfo.success.admin.components.1.custom_id": "userinfo_ban",
+  "commands.userinfo.success.admin.components.1.disabled": false,
+  "commands.userinfo.success.admin.components.1.type": 2,
 
-  "commands.userinfo.success.admin.components.0.components.2.style": 2,
-  "commands.userinfo.success.admin.components.0.components.2.label": "Whitelist",
-  "commands.userinfo.success.admin.components.0.components.2.custom_id": "userinfo_whitelist",
-  "commands.userinfo.success.admin.components.0.components.2.disabled": false,
-  "commands.userinfo.success.admin.components.0.components.2.type": 2,
+  "commands.userinfo.success.admin.components.2.style": 2,
+  "commands.userinfo.success.admin.components.2.label": "Whitelist",
+  "commands.userinfo.success.admin.components.2.custom_id": "userinfo_whitelist",
+  "commands.userinfo.success.admin.components.2.disabled": false,
+  "commands.userinfo.success.admin.components.2.type": 2,
 
 
   "commands.userinfo.success.general_button.label": "General Information",

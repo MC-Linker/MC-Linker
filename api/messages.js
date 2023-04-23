@@ -426,7 +426,8 @@ export function getActionRows(key, ...placeholders) {
     }
     if(util.types.isProxy(key)) key = getLanguageKey(key);
 
-    const allComponents = key.components?.map(component => getComponent(component, ...placeholders))
+    const allComponents = key.components
+        ?.map(component => getComponent(component, ...placeholders))
         ?.filter(component => component !== undefined);
 
     return createActionRows(allComponents);
