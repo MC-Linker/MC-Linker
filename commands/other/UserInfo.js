@@ -100,8 +100,8 @@ export default class UserInfo extends Command {
             )));
         }
         if(stats) {
-            const playTimeTicks = stats.stats['minecraft:custom']['minecraft:play_time'];
-            const playTimeMinutes = stats.stats['minecraft:custom']['minecraft:play_one_minute'];
+            const playTimeTicks = stats?.stats?.['minecraft:custom']?.['minecraft:play_time'];
+            const playTimeMinutes = stats.stats?.['minecraft:custom']?.['minecraft:play_one_minute'];
             if(playTimeTicks || playTimeMinutes) {
                 let playTimeSeconds;
                 if(playTimeTicks) playTimeSeconds = playTimeTicks / 20;
