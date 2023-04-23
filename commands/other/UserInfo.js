@@ -23,13 +23,15 @@ export default class UserInfo extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
+        const user = args[0];
+
         const batch = await server.protocol.startBatch();
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
 
         const scoreboardDat = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
-        const playerDat = await server.protocol.get(...FilePath.PlayerData(server.worldPath, args[0].uuid));
+        const playerDat = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
 
-        let stats = await server.protocol.get(...FilePath.Stats(server.worldPath, args[0].uuid));
+        let stats = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
         let operators = await server.protocol.get(...FilePath.Operators(server.worldPath, server.id));
         let whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.worldPath, server.id));
         let bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.worldPath, server.id));
@@ -54,14 +56,14 @@ export default class UserInfo extends Command {
         if(playerDatObject === undefined) return;
 
         const placeholders = {
-            name: args[0].username,
-            uuid: args[0].uuid,
-            icon_url: minecraftAvatarURL(args[0].username),
-            status: onlinePlayers.includes(args[0].username) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
-            banned: bannedUsers.includes(args[0].uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
-            whitelisted: whitelistedUsers.includes(args[0].uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
-            operator: operators.includes(args[0].uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
-            operator_level: operators[args[0].uuid] ?? 0,
+            name: user.username,
+            uuid: user.uuid,
+            icon_url: minecraftAvatarURL(user.username),
+            status: onlinePlayers.includes(user.username) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
+            banned: bannedUsers.includes(user.uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
+            whitelisted: whitelistedUsers.includes(user.uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
+            operator: operators.includes(user.uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
+            operator_level: operators[user.uuid] ?? 0,
         };
         const generalEmbed = getEmbed(keys.commands.userinfo.success.general, placeholders);
         const adminEmbed = getEmbed(keys.commands.userinfo.success.admin, placeholders);
@@ -109,7 +111,7 @@ export default class UserInfo extends Command {
             ));
         }
         if(scoreboardDat) {
-            placeholders.teams = scoreboardDatObject.Teams.filter(team => team.Players.includes(args[0].username)).map(team => team.DisplayName).join(', ');
+            placeholders.teams = scoreboardDatObject.Teams.filter(team => team.Players.includes(user.username)).map(team => team.DisplayName).join(', ');
             newGeneralFields.push(...addPh(
                 keys.commands.userinfo.success.general.embeds[0].fields[10], placeholders,
             ));
