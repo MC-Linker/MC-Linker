@@ -66,13 +66,13 @@
 
   "main.errors.could_not_execute_command.embeds.0.title": "Unknown Error",
   "main.errors.could_not_execute_command.embeds.0.description": "An unknown error occurred while executing this command. Please try again.",
-  "main.errors.could_not_execute_command.console": "Could not execute %interaction_name% command %error%",
+  "main.errors.could_not_execute_command.console": "Could not execute %interaction_name% command %error_stack%",
 
   "main.errors.could_not_execute_button.embeds.0.title": "Unknown Error",
   "main.errors.could_not_execute_button.embeds.0.description": "An unknown error occurred while executing this button. Please try again.",
-  "main.errors.could_not_execute_button.console": "Could not execute %button% button %error%",
+  "main.errors.could_not_execute_button.console": "Could not execute %button% button %error_stack%",
 
-  "main.errors.could_not_autocomplete_command.console": "Could not respond to %interaction_name% autocomplete %error%",
+  "main.errors.could_not_autocomplete_command.console": "Could not respond to %interaction_name% autocomplete %error_stack%",
 
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers.",
 
@@ -104,7 +104,7 @@
 
   "commands.eval.errors.unknown_error.embeds.0.title": "Unknown Error",
   "commands.eval.errors.unknown_error.embeds.0.description": "%output_error%",
-  "commands.eval.errors.unknown_error.console": "Unknown error %error%",
+  "commands.eval.errors.unknown_error.console": "Unknown error %error_stack%",
 
 
 
@@ -782,7 +782,7 @@
 
   "commands.connect.errors.websocket_error.embeds.0.title": "Verification Failed",
   "commands.connect.errors.websocket_error.embeds.0.description": "An unknown error occurred while connecting to the plugin.",
-  "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error%",
+  "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error_stack%",
 
   "commands.connect.step.verification_info.embeds.0.title": "Server Verification",
   "commands.connect.step.verification_info.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
@@ -865,13 +865,13 @@
   "api.messages.errors.no_reply_arguments.console": "Could not reply: No message, key or placeholders specified",
   "api.messages.errors.no_reply_key.console": "Could not get reply options: No key specified",
 
-  "api.messages.errors.could_not_reply.console": "Could not reply to interaction %error%\n%interaction%",
-  "api.messages.errors.could_not_reply_channel.console": "Could not send message to channel of interaction %error%\n%interaction%",
+  "api.messages.errors.could_not_reply.console": "Could not reply to interaction %error_stack%\n%interaction%",
+  "api.messages.errors.could_not_reply_channel.console": "Could not send message to channel of interaction %error_stack%\n%interaction%",
 
 
 
-  "api.settings.errors.could_not_read_file.console": "Could not read disable file %error%",
-  "api.settings.errors.could_not_write_file.console": "Could not read disable file %error%",
+  "api.settings.errors.could_not_read_file.console": "Could not read disable file %error_stack%",
+  "api.settings.errors.could_not_write_file.console": "Could not read disable file %error_stack%",
 
 
 
@@ -972,7 +972,7 @@
 
   "api.ftp.errors.could_not_parse.embeds.0.title": "Could not Read File",
   "api.ftp.errors.could_not_parse.embeds.0.description": "Could not read the NBT file. File may be corrupted.",
-  "api.ftp.errors.could_not_parse.console": "Could not read nbt file %error%",
+  "api.ftp.errors.could_not_parse.console": "Could not read nbt file %error_stack%",
 
 
 

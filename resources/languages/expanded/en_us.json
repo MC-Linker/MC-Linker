@@ -98,7 +98,7 @@
             "description": "An unknown error occurred while executing this command. Please try again."
           }
         ],
-        "console": "Could not execute %interaction_name% command %error%"
+        "console": "Could not execute %interaction_name% command %error_stack%"
       },
       "could_not_execute_button": {
         "embeds": [
@@ -107,10 +107,10 @@
             "description": "An unknown error occurred while executing this button. Please try again."
           }
         ],
-        "console": "Could not execute %button% button %error%"
+        "console": "Could not execute %button% button %error_stack%"
       },
       "could_not_autocomplete_command": {
-        "console": "Could not respond to %interaction_name% autocomplete %error%"
+        "console": "Could not respond to %interaction_name% autocomplete %error_stack%"
       }
     },
     "success": {
@@ -184,7 +184,7 @@
               "description": "%output_error%"
             }
           ],
-          "console": "Unknown error %error%"
+          "console": "Unknown error %error_stack%"
         }
       }
     },
@@ -1479,7 +1479,7 @@
               "description": "An unknown error occurred while connecting to the plugin."
             }
           ],
-          "console": "Unknown websocket connection error %error%"
+          "console": "Unknown websocket connection error %error_stack%"
         }
       },
       "success": {
@@ -1665,20 +1665,20 @@
           "console": "Could not get reply options: No key specified"
         },
         "could_not_reply": {
-          "console": "Could not reply to interaction %error%\n%interaction%"
+          "console": "Could not reply to interaction %error_stack%\n%interaction%"
         },
         "could_not_reply_channel": {
-          "console": "Could not send message to channel of interaction %error%\n%interaction%"
+          "console": "Could not send message to channel of interaction %error_stack%\n%interaction%"
         }
       }
     },
     "settings": {
       "errors": {
         "could_not_read_file": {
-          "console": "Could not read disable file %error%"
+          "console": "Could not read disable file %error_stack%"
         },
         "could_not_write_file": {
-          "console": "Could not read disable file %error%"
+          "console": "Could not read disable file %error_stack%"
         }
       }
     },
@@ -1909,7 +1909,7 @@
               "description": "Could not read the NBT file. File may be corrupted."
             }
           ],
-          "console": "Could not read nbt file %error%"
+          "console": "Could not read nbt file %error_stack%"
         }
       }
     },
