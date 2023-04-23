@@ -102,14 +102,16 @@ export default class UserInfo extends Command {
         if(stats) {
             const playTimeTicks = stats.stats['minecraft:custom']['minecraft:play_time'];
             const playTimeMinutes = stats.stats['minecraft:custom']['minecraft:play_one_minute'];
-            let playTimeSeconds;
-            if(playTimeTicks) playTimeSeconds = playTimeTicks / 20;
-            else if(playTimeMinutes) playTimeSeconds = playTimeMinutes * 60;
-            placeholders.play_time = time(playTimeSeconds);
+            if(playTimeTicks || playTimeMinutes) {
+                let playTimeSeconds;
+                if(playTimeTicks) playTimeSeconds = playTimeTicks / 20;
+                else if(playTimeMinutes) playTimeSeconds = playTimeMinutes * 60;
+                placeholders.play_time = time(playTimeSeconds);
 
-            newGeneralFields.push(addPh(
-                keys.commands.userinfo.success.general.embeds[0].fields[9], placeholders,
-            ));
+                newGeneralFields.push(addPh(
+                    keys.commands.userinfo.success.general.embeds[0].fields[9], placeholders,
+                ));
+            }
         }
         if(scoreboardDat) {
             placeholders.teams = scoreboardDatObject.data.Teams.filter(team => team.Players.includes(user.username)).map(team => team.DisplayName).join(', ');
@@ -133,7 +135,7 @@ export default class UserInfo extends Command {
             },
         };
 
-        const pagination = new Pagination(client, nteraction, pages);
+        const pagination = new Pagination(client, interaction, pages);
         await pagination.start();
     }
 }
