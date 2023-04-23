@@ -83,7 +83,7 @@ export default class UserInfo extends Command {
             placeholders.death_location = `${playerDatObject.LastDeathLocation.pos[0]}, ${playerDatObject.LastDeathLocation.pos[1]}, ${playerDatObject.LastDeathLocation.pos[2]}`;
             placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDatObject.LastDeathLocation.dimension.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
             placeholders.spawn_location = `${playerDatObject.SpawnX ?? '?'}, ${playerDatObject.SpawnY ?? '?'}, ${playerDatObject.SpawnZ ?? '?'}`;
-            placeholders.spawn_dimension = keys.commands.userinfo.dimensions[playerDatObject.SpawnDimension.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
+            placeholders.spawn_dimension = keys.commands.userinfo.dimensions[playerDatObject.SpawnDimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
             if(playerDatObject.ActiveEffects?.length > 0) {
                 placeholders.effects = playerDatObject.ActiveEffects.map(effect => mcData.effectsArray.find(e => e.id === effect.Id)?.displayName).filter(e => e).join('\n');
             }
