@@ -905,18 +905,28 @@
                   "inline": true
                 },
                 {
+                  "name": "First Joined",
+                  "value": "%first_join%",
+                  "inline": true
+                },
+                {
+                  "name": "Last Joined",
+                  "value": "%last_join%",
+                  "inline": true
+                },
+                {
                   "name": "Play Time",
                   "value": "%play_time%",
                   "inline": true
                 },
                 {
-                  "name": "Teams",
-                  "value": "%teams%",
+                  "name": "Effects",
+                  "value": "%effects%",
                   "inline": true
                 },
                 {
-                  "name": "Effects",
-                  "value": "%effects%",
+                  "name": "Teams",
+                  "value": "%teams%",
                   "inline": true
                 }
               ]

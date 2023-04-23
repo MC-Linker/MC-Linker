@@ -501,17 +501,26 @@
   "commands.userinfo.success.general.embeds.0.fields.8.value": "%score%",
   "commands.userinfo.success.general.embeds.0.fields.8.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.9.name": "Play Time",
-  "commands.userinfo.success.general.embeds.0.fields.9.value": "%play_time%",
+  "commands.userinfo.success.general.embeds.0.fields.9.name": "First Joined",
+  "commands.userinfo.success.general.embeds.0.fields.9.value": "%first_join%",
   "commands.userinfo.success.general.embeds.0.fields.9.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.10.name": "Teams",
-  "commands.userinfo.success.general.embeds.0.fields.10.value": "%teams%",
+  "commands.userinfo.success.general.embeds.0.fields.10.name": "Last Joined",
+  "commands.userinfo.success.general.embeds.0.fields.10.value": "%last_join%",
   "commands.userinfo.success.general.embeds.0.fields.10.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.11.name": "Effects",
-  "commands.userinfo.success.general.embeds.0.fields.11.value": "%effects%",
+  "commands.userinfo.success.general.embeds.0.fields.11.name": "Play Time",
+  "commands.userinfo.success.general.embeds.0.fields.11.value": "%play_time%",
   "commands.userinfo.success.general.embeds.0.fields.11.inline": true,
+
+  "commands.userinfo.success.general.embeds.0.fields.12.name": "Effects",
+  "commands.userinfo.success.general.embeds.0.fields.12.value": "%effects%",
+  "commands.userinfo.success.general.embeds.0.fields.12.inline": true,
+
+  "commands.userinfo.success.general.embeds.0.fields.13.name": "Teams",
+  "commands.userinfo.success.general.embeds.0.fields.13.value": "%teams%",
+  "commands.userinfo.success.general.embeds.0.fields.13.inline": true,
+
 
 
   "commands.userinfo.success.admin.embeds.0.title": "User Information",

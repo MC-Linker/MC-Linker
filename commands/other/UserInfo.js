@@ -3,9 +3,10 @@ import keys from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
 import { formatDuration, minecraftAvatarURL } from '../../api/utils.js';
-import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
+import { addPh, getComponent, getReplyOptions, ph } from '../../api/messages.js';
 import minecraft_data from 'minecraft-data';
 import Pagination from '../../structures/helpers/Pagination.js';
+import { time } from 'discord.js';
 
 const mcData = minecraft_data('1.19.4');
 
@@ -28,6 +29,7 @@ export default class UserInfo extends Command {
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
 
         const scoreboardDat = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
+        //TODO get live data with commands if plugin connection
         const playerDat = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
 
         let stats = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
@@ -54,23 +56,26 @@ export default class UserInfo extends Command {
         if(playerDat?.status === 200) playerDatObject = await utils.nbtBufferToObject(playerDat.data, interaction);
         if(playerDatObject === undefined) return;
 
+        const matchingOp = operators.find(o => o.uuid === user.uuid);
+        const matchingWhitelist = whitelistedUsers.find(w => w.uuid === user.uuid);
+        const matchingBan = bannedUsers.find(b => b.uuid === user.uuid);
+
         const placeholders = {
             name: user.username,
             uuid: user.uuid,
             icon_url: minecraftAvatarURL(user.username),
             status: onlinePlayers.includes(user.username) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
-            banned: bannedUsers.includes(user.uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
-            whitelisted: whitelistedUsers.includes(user.uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
-            operator: operators.includes(user.uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
-            operator_level: operators[user.uuid] ?? 0,
+            operator: matchingOp ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
+            operator_level: matchingOp.level ?? 0,
+            whitelisted: matchingWhitelist ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
+            banned: matchingBan ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
         };
-        const generalEmbed = getEmbed(keys.commands.userinfo.success.general, placeholders, ph.colors());
-        const adminEmbed = getEmbed(keys.commands.userinfo.success.admin, placeholders, ph.colors());
+        const generalMessage = getReplyOptions(keys.commands.userinfo.success.general, placeholders, ph.colors());
+        const adminMessage = getReplyOptions(keys.commands.userinfo.success.admin, placeholders, ph.colors());
 
-        const newGeneralFields = generalEmbed.data.fields.slice(0, 4);
+        const newGeneralFields = generalMessage.embeds[0].data.fields.slice(0, 4);
         const newAdminFields = [];
         if(playerDatObject) {
-            //TODO bukkit time
             placeholders.xp = playerDatObject.XpTotal;
             placeholders.xp_level = playerDatObject.XpLevel;
             placeholders.food = playerDatObject.foodLevel;
@@ -84,13 +89,15 @@ export default class UserInfo extends Command {
             placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDatObject.LastDeathLocation.dimension.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
             placeholders.spawn_location = `${playerDatObject.SpawnX ?? '?'}, ${playerDatObject.SpawnY ?? '?'}, ${playerDatObject.SpawnZ ?? '?'}`;
             placeholders.spawn_dimension = keys.commands.userinfo.dimensions[playerDatObject.SpawnDimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
+            placeholders.first_join = playerDatObject.bukkit?.firstPlayed ? time(playerDatObject.bukkit.firstPlayed) : keys.commands.serverinfo.unknown;
+            placeholders.last_join = playerDatObject.bukkit?.lastPlayed ? time(playerDatObject.bukkit.lastPlayed) : keys.commands.serverinfo.unknown;
             if(playerDatObject.ActiveEffects?.length > 0) {
                 placeholders.effects = playerDatObject.ActiveEffects.map(effect => mcData.effectsArray.find(e => e.id === effect.Id)?.displayName).filter(e => e).join('\n');
             }
             else placeholders.effects = keys.commands.userinfo.none;
 
             const fieldsToPush = [
-                ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 9)),
+                ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 10)),
                 keys.commands.userinfo.success.general.embeds[0].fields[11],
             ];
             newGeneralFields.push(...(addPh(fieldsToPush, placeholders)));
@@ -108,31 +115,35 @@ export default class UserInfo extends Command {
                 placeholders.play_time = formatDuration(playTimeMs);
 
                 newGeneralFields.push(addPh(
-                    keys.commands.userinfo.success.general.embeds[0].fields[9], placeholders,
+                    keys.commands.userinfo.success.general.embeds[0].fields[11], placeholders,
                 ));
             }
         }
-        if(scoreboardDatObject?.data?.Teams?.length > 0) {
-            placeholders.teams = scoreboardDatObject.data.Teams.filter(team => team.Players.includes(user.username)).map(team => team.DisplayName).join(', ');
+        if(scoreboardDatObject) {
+            const teams = scoreboardDatObject.data.Teams.filter(team => team.Players.includes(user.username));
+            if(teams.length > 0) placeholders.teams = teams.map(team => team.DisplayName).join('\n');
+            else placeholders.teams = keys.commands.serverinfo.none;
             newGeneralFields.push(addPh(
-                keys.commands.userinfo.success.general.embeds[0].fields[10], placeholders,
+                keys.commands.userinfo.success.general.embeds[0].fields[13], placeholders,
             ));
         }
-        generalEmbed.setFields(...newGeneralFields);
-        adminEmbed.setFields(...newAdminFields);
+        generalMessage.embeds[0].setFields(...newGeneralFields);
+        adminMessage.embeds[0].setFields(...newAdminFields);
 
         /** @type {PaginationPages} */
         const pages = {
             userinfo_general: {
                 button: getComponent(keys.commands.userinfo.success.general_button),
-                page: { embeds: [generalEmbed] },
+                page: generalMessage,
                 startPage: true,
             },
             userinfo_admin: {
                 button: getComponent(keys.commands.userinfo.success.admin_button),
-                page: { embeds: [adminEmbed] },
+                page: adminMessage,
             },
         };
+        // If there are no admin fields, delete the admin page
+        if(newAdminFields.length === 0) delete pages.userinfo_admin;
 
         const pagination = new Pagination(client, interaction, pages);
         await pagination.start();
