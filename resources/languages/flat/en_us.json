@@ -519,7 +519,7 @@
   "commands.userinfo.success.admin.embeds.0.author.name": "%name%",
   "commands.userinfo.success.admin.embeds.0.author.icon_url": "%icon_url%",
 
-  "commands.userinfo.success.admin.embeds.0.fields.0.name": "Position",
+  "commands.userinfo.success.admin.embeds.0.fields.0.name": "Current Position",
   "commands.userinfo.success.admin.embeds.0.fields.0.value": "%position% (Dimension: %dimension%)",
   "commands.userinfo.success.admin.embeds.0.fields.0.inline": true,
 

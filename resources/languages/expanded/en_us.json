@@ -933,7 +933,7 @@
               },
               "fields": [
                 {
-                  "name": "Position",
+                  "name": "Current Position",
                   "value": "%position% (Dimension: %dimension%)",
                   "inline": true
                 },
