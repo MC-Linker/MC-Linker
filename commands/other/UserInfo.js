@@ -104,7 +104,7 @@ export default class UserInfo extends Command {
             const playTimeMinutes = stats.stats?.['minecraft:custom']?.['minecraft:play_one_minute'];
             if(playTimeTicks || playTimeMinutes) {
                 let playTimeSeconds;
-                if(playTimeTicks) playTimeSeconds = playTimeTicks / 20;
+                if(playTimeTicks) playTimeSeconds = Math.round(playTimeTicks / 20);
                 else if(playTimeMinutes) playTimeSeconds = playTimeMinutes * 60;
                 placeholders.play_time = time(playTimeSeconds);
 
@@ -124,12 +124,12 @@ export default class UserInfo extends Command {
 
         /** @type {PaginationPages} */
         const pages = {
-            general: {
+            userinfo_general: {
                 button: getComponent(keys.commands.userinfo.success.general_button),
                 page: { embeds: [generalEmbed] },
                 startPage: true,
             },
-            admin: {
+            userinfo_admin: {
                 button: getComponent(keys.commands.userinfo.success.admin_button),
                 page: { embeds: [adminEmbed] },
             },
