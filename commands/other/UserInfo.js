@@ -103,10 +103,10 @@ export default class UserInfo extends Command {
             const playTimeTicks = stats?.stats?.['minecraft:custom']?.['minecraft:play_time'];
             const playTimeMinutes = stats.stats?.['minecraft:custom']?.['minecraft:play_one_minute'];
             if(playTimeTicks || playTimeMinutes) {
-                let playTimeSeconds;
-                if(playTimeTicks) playTimeSeconds = Math.round(playTimeTicks / 20);
-                else if(playTimeMinutes) playTimeSeconds = playTimeMinutes * 60;
-                placeholders.play_time = time(playTimeSeconds);
+                let playTimeMs;
+                if(playTimeTicks) playTimeMs = Math.round(playTimeTicks / 20 * 1000);
+                else if(playTimeMinutes) playTimeMs = playTimeMinutes * 60 * 1000;
+                placeholders.play_time = time(playTimeMs);
 
                 newGeneralFields.push(addPh(
                     keys.commands.userinfo.success.general.embeds[0].fields[9], placeholders,
