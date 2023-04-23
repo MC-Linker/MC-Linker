@@ -68,7 +68,7 @@ export default class UserInfo extends Command {
         const generalEmbed = getEmbed(keys.commands.userinfo.success.general, placeholders, ph.colors());
         const adminEmbed = getEmbed(keys.commands.userinfo.success.admin, placeholders, ph.colors());
 
-        const newGeneralFields = keys.commands.userinfo.success.general.embeds[0].fields.slice(0, 4);
+        const newGeneralFields = generalEmbed.data.fields.slice(0, 4);
         const newAdminFields = [];
         if(playerDatObject) {
             //TODO bukkit time
