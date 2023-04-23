@@ -91,8 +91,8 @@ export default class UserInfo extends Command {
             else placeholders.effects = keys.commands.userinfo.none;
 
             const fieldsToPush = [
-                keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 9),
-                keys.commands.userinfo.success.general.embeds[0].fields.slice(10, 13),
+                ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 9)),
+                ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(10, 13)),
             ];
             newGeneralFields.push(...(addPh(fieldsToPush, placeholders)));
             newAdminFields.push(...(addPh(
