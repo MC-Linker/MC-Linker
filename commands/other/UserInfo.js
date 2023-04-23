@@ -33,9 +33,9 @@ export default class UserInfo extends Command {
         const playerDat = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
 
         let stats = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
-        let operators = await server.protocol.get(...FilePath.Operators(server.worldPath, server.id));
-        let whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.worldPath, server.id));
-        let bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.worldPath, server.id));
+        let operators = await server.protocol.get(...FilePath.Operators(server.path, server.id));
+        let whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.path, server.id));
+        let bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.path, server.id));
 
         let onlinePlayers = [];
         if(!server.hasFtpProtocol()) {
@@ -66,7 +66,7 @@ export default class UserInfo extends Command {
             icon_url: minecraftAvatarURL(user.username),
             status: onlinePlayers.includes(user.username) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
             operator: matchingOp ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
-            operator_level: matchingOp.level ?? 0,
+            operator_level: matchingOp?.level ?? 0,
             whitelisted: matchingWhitelist ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
             banned: matchingBan ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
         };
