@@ -4,7 +4,7 @@ import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
 import { minecraftAvatarURL } from '../../api/utils.js';
 import { time } from 'discord.js';
-import { addPh, getComponent, getEmbed } from '../../api/messages.js';
+import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
 import minecraft_data from 'minecraft-data';
 import Pagination from '../../structures/helpers/Pagination.js';
 
@@ -65,12 +65,13 @@ export default class UserInfo extends Command {
             operator: operators.includes(user.uuid) ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
             operator_level: operators[user.uuid] ?? 0,
         };
-        const generalEmbed = getEmbed(keys.commands.userinfo.success.general, placeholders);
-        const adminEmbed = getEmbed(keys.commands.userinfo.success.admin, placeholders);
+        const generalEmbed = getEmbed(keys.commands.userinfo.success.general, placeholders, ph.colors());
+        const adminEmbed = getEmbed(keys.commands.userinfo.success.admin, placeholders, ph.colors());
 
         const newGeneralFields = keys.commands.userinfo.success.general.embeds[0].fields.slice(0, 4);
         const newAdminFields = [];
         if(playerDatObject) {
+            //TODO bukkit time
             placeholders.xp = playerDatObject.XpTotal;
             placeholders.xp_level = playerDatObject.XpLevel;
             placeholders.food = playerDatObject.foodLevel;
@@ -82,7 +83,7 @@ export default class UserInfo extends Command {
             placeholders.position = `${playerDatObject.Pos[0]}, ${playerDatObject.Pos[1]}, ${playerDatObject.Pos[2]}`;
             placeholders.death_location = `${playerDatObject.LastDeathLocation.pos[0]}, ${playerDatObject.LastDeathLocation.pos[1]}, ${playerDatObject.LastDeathLocation.pos[2]}`;
             placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDatObject.LastDeathLocation.dimension] ?? keys.commands.serverinfo.unknown;
-            placeholders.spawn_location = `${playerDatObject.SpawnX}, ${playerDatObject.SpawnY}, ${playerDatObject.SpawnZ}`;
+            placeholders.spawn_location = `${playerDatObject.SpawnX ?? '?'}, ${playerDatObject.SpawnY ?? '?'}, ${playerDatObject.SpawnZ ?? '?'}`;
             placeholders.spawn_dimension = keys.commands.userinfo.dimensions[playerDatObject.SpawnDimension] ?? keys.commands.serverinfo.unknown;
             if(playerDatObject.ActiveEffects.length > 0) {
                 placeholders.effects = playerDatObject.ActiveEffects.map(effect => mcData.effectsArray.find(e => e.id === effect.Id)?.displayName).filter(e => e).join('\n');
