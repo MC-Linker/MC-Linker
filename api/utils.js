@@ -528,15 +528,15 @@ export function createHash(token) {
 }
 
 export function formatDuration(milliseconds) {
-    const seconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
+    const seconds = milliseconds / 1000;
+    const minutes = seconds / 60;
+    const hours = minutes / 60;
 
-    const formattedSeconds = seconds % 60;
-    const formattedMinutes = minutes % 60;
-    const formattedHours = hours % 24;
+    const formattedSeconds = Math.floor(seconds % 60);
+    const formattedMinutes = Math.floor(minutes % 60);
+    const formattedHours = Math.floor(hours % 60);
 
-    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    return `${formattedHours}h ${formattedMinutes}m ${formattedSeconds}s`;
 }
 
 export function formatDistance(centimeters) {
