@@ -94,10 +94,10 @@ export default class UserInfo extends Command {
                 keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 9),
                 keys.commands.userinfo.success.general.embeds[0].fields.slice(10, 13),
             ];
-            newGeneralFields.push(...addPh(fieldsToPush, placeholders));
-            newAdminFields.push(...addPh(
+            newGeneralFields.push(...(addPh(fieldsToPush, placeholders)));
+            newAdminFields.push(...(addPh(
                 keys.commands.userinfo.success.admin.embeds[0].fields, placeholders,
-            ));
+            )));
         }
         if(stats) {
             const playTimeTicks = stats.stats['minecraft:custom']['minecraft:play_time'];
@@ -107,15 +107,15 @@ export default class UserInfo extends Command {
             else if(playTimeMinutes) playTimeSeconds = playTimeMinutes * 60;
             placeholders.play_time = time(playTimeSeconds);
 
-            newGeneralFields.push(...addPh(
+            newGeneralFields.push(...(addPh(
                 keys.commands.userinfo.success.general.embeds[0].fields[9], placeholders,
-            ));
+            )));
         }
         if(scoreboardDat) {
             placeholders.teams = scoreboardDatObject.Teams.filter(team => team.Players.includes(user.username)).map(team => team.DisplayName).join(', ');
-            newGeneralFields.push(...addPh(
+            newGeneralFields.push(...(addPh(
                 keys.commands.userinfo.success.general.embeds[0].fields[10], placeholders,
-            ));
+            )));
         }
         generalEmbed.setFields(...newGeneralFields);
         adminEmbed.setFields(...newAdminFields);
