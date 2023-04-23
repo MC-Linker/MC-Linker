@@ -962,25 +962,25 @@
           ],
           "components": [
             {
-              "style": 4,
+              "style": "Danger",
               "label": "Kick",
               "custom_id": "userinfo_kick",
               "disabled": false,
-              "type": 2
+              "type": "Button"
             },
             {
-              "style": 4,
+              "style": "Danger",
               "label": "Ban",
               "custom_id": "userinfo_ban",
               "disabled": false,
-              "type": 2
+              "type": "Button"
             },
             {
-              "style": 2,
+              "style": "Secondary",
               "label": "Whitelist",
               "custom_id": "userinfo_whitelist",
               "disabled": false,
-              "type": 2
+              "type": "Button"
             }
           ]
         },
