@@ -446,7 +446,7 @@
   "commands.userinfo.offline": "Offline",
   "commands.userinfo.yes": "Yes",
   "commands.userinfo.no": "No",
-  "commands.userinfo.none": "None",
+  "commands.userinfo.none": "*None*",
 
   "commands.userinfo.gamemode.0": "Survival",
   "commands.userinfo.gamemode.1": "Creative",
@@ -486,15 +486,15 @@
   "commands.userinfo.success.general.embeds.0.fields.4.inline": true,
 
   "commands.userinfo.success.general.embeds.0.fields.5.name": "Health",
-  "commands.userinfo.success.general.embeds.0.fields.5.value": "%health%❤️",
+  "commands.userinfo.success.general.embeds.0.fields.5.value": "%health% ❤️",
   "commands.userinfo.success.general.embeds.0.fields.5.inline": true,
 
   "commands.userinfo.success.general.embeds.0.fields.6.name": "Food Level",
-  "commands.userinfo.success.general.embeds.0.fields.6.value": "%food%🍗 (Saturation: %saturation%)",
+  "commands.userinfo.success.general.embeds.0.fields.6.value": "%food% 🍗 (Saturation: %saturation%)",
   "commands.userinfo.success.general.embeds.0.fields.6.inline": true,
 
   "commands.userinfo.success.general.embeds.0.fields.7.name": "XP",
-  "commands.userinfo.success.general.embeds.0.fields.7.value": "%xp%✨ (Level: %xp_level%)",
+  "commands.userinfo.success.general.embeds.0.fields.7.value": "%xp% ✨ (Level: %xp_level%)",
   "commands.userinfo.success.general.embeds.0.fields.7.inline": true,
 
   "commands.userinfo.success.general.embeds.0.fields.8.name": "Score",

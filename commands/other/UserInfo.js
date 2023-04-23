@@ -89,16 +89,16 @@ export default class UserInfo extends Command {
             placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDatObject.LastDeathLocation.dimension.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
             placeholders.spawn_location = `${playerDatObject.SpawnX ?? '?'}, ${playerDatObject.SpawnY ?? '?'}, ${playerDatObject.SpawnZ ?? '?'}`;
             placeholders.spawn_dimension = keys.commands.userinfo.dimensions[playerDatObject.SpawnDimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
-            placeholders.first_join = playerDatObject.bukkit?.firstPlayed ? time(playerDatObject.bukkit.firstPlayed) : keys.commands.serverinfo.unknown;
-            placeholders.last_join = playerDatObject.bukkit?.lastPlayed ? time(playerDatObject.bukkit.lastPlayed) : keys.commands.serverinfo.unknown;
+            placeholders.first_join = playerDatObject.bukkit?.firstPlayed ? time(Number(playerDatObject.bukkit.firstPlayed / 1000n)) : keys.commands.serverinfo.unknown;
+            placeholders.last_join = playerDatObject.bukkit?.lastPlayed ? time(Number(playerDatObject.bukkit.lastPlayed / 1000n)) : keys.commands.serverinfo.unknown;
             if(playerDatObject.ActiveEffects?.length > 0) {
                 placeholders.effects = playerDatObject.ActiveEffects.map(effect => mcData.effectsArray.find(e => e.id === effect.Id)?.displayName).filter(e => e).join('\n');
             }
             else placeholders.effects = keys.commands.userinfo.none;
 
             const fieldsToPush = [
-                ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 10)),
-                keys.commands.userinfo.success.general.embeds[0].fields[11],
+                ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 11)),
+                keys.commands.userinfo.success.general.embeds[0].fields[12],
             ];
             newGeneralFields.push(...(addPh(fieldsToPush, placeholders)));
             newAdminFields.push(...(addPh(
@@ -122,7 +122,7 @@ export default class UserInfo extends Command {
         if(scoreboardDatObject) {
             const teams = scoreboardDatObject.data.Teams.filter(team => team.Players.includes(user.username));
             if(teams.length > 0) placeholders.teams = teams.map(team => team.DisplayName).join('\n');
-            else placeholders.teams = keys.commands.serverinfo.none;
+            else placeholders.teams = keys.commands.userinfo.none;
             newGeneralFields.push(addPh(
                 keys.commands.userinfo.success.general.embeds[0].fields[13], placeholders,
             ));

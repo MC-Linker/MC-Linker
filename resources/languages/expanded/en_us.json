@@ -834,7 +834,7 @@
       "offline": "Offline",
       "yes": "Yes",
       "no": "No",
-      "none": "None",
+      "none": "*None*",
       "gamemode": [
         "Survival",
         "Creative",
@@ -886,17 +886,17 @@
                 },
                 {
                   "name": "Health",
-                  "value": "%health%❤️",
+                  "value": "%health% ❤️",
                   "inline": true
                 },
                 {
                   "name": "Food Level",
-                  "value": "%food%🍗 (Saturation: %saturation%)",
+                  "value": "%food% 🍗 (Saturation: %saturation%)",
                   "inline": true
                 },
                 {
                   "name": "XP",
-                  "value": "%xp%✨ (Level: %xp_level%)",
+                  "value": "%xp% ✨ (Level: %xp_level%)",
                   "inline": true
                 },
                 {
