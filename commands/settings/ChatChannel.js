@@ -108,6 +108,7 @@ export default class ChatChannel extends Command {
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
                         webhooks: channel.webhook ? keys.commands.chatchannel.success.enabled : keys.commands.chatchannel.success.disabled,
+                        discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.commands.chatchannel.success.enabled : keys.commands.chatchannel.success.disabled,
                         channel_types: formattedTypes,
                     },
                 );
