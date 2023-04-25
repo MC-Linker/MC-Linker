@@ -1,5 +1,5 @@
 import HttpProtocol from '../structures/HttpProtocol.js';
-import {
+import Discord, {
     ApplicationCommandOptionType,
     BaseInteraction,
     CommandInteraction,
@@ -18,6 +18,7 @@ import { ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
+import mojangson from 'mojangson';
 
 const mcData = McData('1.19.3');
 
@@ -339,7 +340,27 @@ export async function nbtBufferToObject(buffer, interaction) {
         return nbt.simplify(object.parsed);
     }
     catch(err) {
-        await interaction.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        await interaction?.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        return undefined;
+    }
+}
+
+/**
+ * Creates a JS object from a snbt string. This will also strip extra color codes from the string.
+ * @param {string} string - The snbt string to create the object from.
+ * @param {TranslatedResponses} interaction - The interaction to respond to in case of an error.
+ * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
+ */
+export function nbtStringToObject(string, interaction) {
+    try {
+        const object = mojangson.parse(stripColorCodes(string));
+        //remove possibly empty arrays to prevent error (please fix this mojangson)
+        delete object.value.EnderItems;
+        delete object.value.Inventory;
+        return mojangson.simplify(object);
+    }
+    catch(err) {
+        interaction?.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
         return undefined;
     }
 }
@@ -506,6 +527,68 @@ export function wrapText(ctx, text, maxWidth) {
     }
     lines.push(currentLine);
     return lines;
+}
+
+const colorCodesToAnsi = {
+    '4': '31', //Red
+    'c': '31', //Red
+    '6': '33', //Yellow
+    'e': '33', //Yellow
+    '2': '32', //Green
+    'a': '32', //Green
+    'b': '36', //Cyan
+    '3': '36', //Cyan
+    '1': '34', //Blue
+    '9': '34', //Blue
+    'd': '35', //Magenta
+    '5': '35', //Magenta
+    'f': '37', //White
+    '7': '37', //White
+    '0': '30', //Black
+    '8': '30', //Black
+};
+
+const formattingCodesToAnsi = {
+    'l': '1', //Bold
+    'n': '4', //Underline
+    'r': '0', //Reset
+};
+
+const colorPattern = /[&§]([0-9a-fk-or])/gi;
+
+/**
+ * Removes all minecraft color codes from a string.
+ * @param {string} text - The text to remove color codes from.
+ * @returns {string} - The text without color codes.
+ */
+export function stripColorCodes(text) {
+    return text.replace(colorPattern, '');
+}
+
+/**
+ * Creates a discord code block from a minecraft command response (with colors codes using ansi).
+ * @param {string} response - The command response.
+ * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
+ */
+export function codeBlockFromCommandResponse(response) {
+    // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
+    if(response.length >= 1015) response = stripColorCodes(response);
+    else {
+        //Parse color codes to ansi
+        response = response.replace(colorPattern, (_, color) => {
+            const ansi = colorCodesToAnsi[color];
+            const format = formattingCodesToAnsi[color];
+            if(!ansi && !format) return '';
+
+            return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
+        });
+    }
+
+    // -12 for code block (```ansi\n\n```)
+    if(response.length > MaxEmbedDescriptionLength - 12) response = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
+
+    //Wrap in discord code block for color
+    return Discord.codeBlock('ansi', `${response}`);
 }
 
 /**
