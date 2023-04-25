@@ -1,4 +1,12 @@
-import { ActionRowBuilder, BaseInteraction, ButtonBuilder, ComponentType, InteractionCollector } from 'discord.js';
+import {
+    ActionRowBuilder,
+    BaseInteraction,
+    ButtonBuilder,
+    ComponentType,
+    InteractionCollector,
+    InteractionResponse,
+    Message,
+} from 'discord.js';
 import DefaultButton from './DefaultButton.js';
 import { createActionRows, getComponent } from '../../api/messages.js';
 import keys from '../../api/keys.js';
@@ -115,7 +123,7 @@ export default class Pagination {
 
     /**
      * Starts the pagination interaction
-     * @returns {Promise<void>}
+     * @returns {Promise<Message|InteractionResponse>} - The message that was sent
      */
     async start() {
         /** @type {ButtonBuilder[]} */
@@ -162,6 +170,7 @@ export default class Pagination {
 
         //Create button collector
         this._createComponentCollector(message);
+        return message;
     }
 
     _createComponentCollector(message) {
@@ -169,7 +178,7 @@ export default class Pagination {
             componentType: ComponentType.Button,
             time: this.options.timeout ?? 120_000,
         });
-        this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client, null));
+        this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', () => {
             if(!message?.components) return;
 

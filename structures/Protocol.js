@@ -161,6 +161,10 @@ export const FilePath = {
     },
 };
 
+/**
+ * @typedef {HttpProtocol|WebSocketProtocol} PluginProtocol - A protocol that uses the plugin for communication.
+ */
+
 export default class Protocol extends Base {
 
     /**
