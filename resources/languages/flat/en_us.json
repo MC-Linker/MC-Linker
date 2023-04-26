@@ -446,7 +446,6 @@
   "commands.userinfo.offline": "Offline",
   "commands.userinfo.yes": "Yes",
   "commands.userinfo.no": "No",
-  "commands.userinfo.none": "*None*",
 
   "commands.userinfo.gamemode.0": "Survival",
   "commands.userinfo.gamemode.1": "Creative",
@@ -466,7 +465,7 @@
   "commands.userinfo.success.general.embeds.0.footer.text": "UUID: %uuid%",
 
   "commands.userinfo.success.general.embeds.0.fields.0.name": "Status",
-  "commands.userinfo.success.general.embeds.0.fields.0.value": "%status%",
+  "commands.userinfo.success.general.embeds.0.fields.0.value": "%status% %status_emoji%",
   "commands.userinfo.success.general.embeds.0.fields.0.inline": true,
 
   "commands.userinfo.success.general.embeds.0.fields.1.name": "Banned",
@@ -481,46 +480,51 @@
   "commands.userinfo.success.general.embeds.0.fields.3.value": "%operator% (Level: %operator_level%)",
   "commands.userinfo.success.general.embeds.0.fields.3.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.4.name": "Gamemode",
-  "commands.userinfo.success.general.embeds.0.fields.4.value": "%gamemode%",
-  "commands.userinfo.success.general.embeds.0.fields.4.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.5.name": "Score",
-  "commands.userinfo.success.general.embeds.0.fields.5.value": "%score% :diamonds:",
-  "commands.userinfo.success.general.embeds.0.fields.5.inline": true,
+  "commands.userinfo.success.survival.embeds.0.title": "User Information",
 
-  "commands.userinfo.success.general.embeds.0.fields.6.name": "Health",
-  "commands.userinfo.success.general.embeds.0.fields.6.value": "%health% ❤️",
-  "commands.userinfo.success.general.embeds.0.fields.6.inline": true,
+  "commands.userinfo.success.survival.embeds.0.author.name": "%name%",
+  "commands.userinfo.success.survival.embeds.0.author.icon_url": "%icon_url%",
 
-  "commands.userinfo.success.general.embeds.0.fields.7.name": "Food Level",
-  "commands.userinfo.success.general.embeds.0.fields.7.value": "%food% 🍗 (Saturation: %saturation%)",
-  "commands.userinfo.success.general.embeds.0.fields.7.inline": true,
+  "commands.userinfo.success.survival.embeds.0.fields.0.name": "Gamemode",
+  "commands.userinfo.success.survival.embeds.0.fields.0.value": "%gamemode%",
+  "commands.userinfo.success.survival.embeds.0.fields.0.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.8.name": "XP",
-  "commands.userinfo.success.general.embeds.0.fields.8.value": "%xp% ✨ (Level: %xp_level%)",
-  "commands.userinfo.success.general.embeds.0.fields.8.inline": true,
+  "commands.userinfo.success.survival.embeds.0.fields.1.name": "Score",
+  "commands.userinfo.success.survival.embeds.0.fields.1.value": "%score% :diamonds:",
+  "commands.userinfo.success.survival.embeds.0.fields.1.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.9.name": "First Joined",
-  "commands.userinfo.success.general.embeds.0.fields.9.value": "%first_join%",
-  "commands.userinfo.success.general.embeds.0.fields.9.inline": true,
+  "commands.userinfo.success.survival.embeds.0.fields.2.name": "Health",
+  "commands.userinfo.success.survival.embeds.0.fields.2.value": "%health% ❤️",
+  "commands.userinfo.success.survival.embeds.0.fields.2.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.10.name": "Last Joined",
-  "commands.userinfo.success.general.embeds.0.fields.10.value": "%last_join%",
-  "commands.userinfo.success.general.embeds.0.fields.10.inline": true,
+  "commands.userinfo.success.survival.embeds.0.fields.3.name": "Food Level",
+  "commands.userinfo.success.survival.embeds.0.fields.3.value": "%food% 🍗 (Saturation: %saturation%)",
+  "commands.userinfo.success.survival.embeds.0.fields.3.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.11.name": "Play Time",
-  "commands.userinfo.success.general.embeds.0.fields.11.value": "%play_time%",
-  "commands.userinfo.success.general.embeds.0.fields.11.inline": true,
+  "commands.userinfo.success.survival.embeds.0.fields.4.name": "XP",
+  "commands.userinfo.success.survival.embeds.0.fields.4.value": "%xp% ✨ (Level: %xp_level%)",
+  "commands.userinfo.success.survival.embeds.0.fields.4.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.12.name": "Effects",
-  "commands.userinfo.success.general.embeds.0.fields.12.value": "%effects%",
-  "commands.userinfo.success.general.embeds.0.fields.12.inline": true,
+  "commands.userinfo.success.survival.embeds.0.fields.5.name": "First Joined",
+  "commands.userinfo.success.survival.embeds.0.fields.5.value": "%first_join%",
+  "commands.userinfo.success.survival.embeds.0.fields.5.inline": true,
 
-  "commands.userinfo.success.general.embeds.0.fields.13.name": "Teams",
-  "commands.userinfo.success.general.embeds.0.fields.13.value": "%teams%",
-  "commands.userinfo.success.general.embeds.0.fields.13.inline": true,
+  "commands.userinfo.success.survival.embeds.0.fields.6.name": "Last Joined",
+  "commands.userinfo.success.survival.embeds.0.fields.6.value": "%last_join%",
+  "commands.userinfo.success.survival.embeds.0.fields.6.inline": true,
 
+  "commands.userinfo.success.survival.embeds.0.fields.7.name": "Play Time",
+  "commands.userinfo.success.survival.embeds.0.fields.7.value": "%play_time%",
+  "commands.userinfo.success.survival.embeds.0.fields.7.inline": true,
+
+  "commands.userinfo.success.survival.embeds.0.fields.8.name": "Effects",
+  "commands.userinfo.success.survival.embeds.0.fields.8.value": "%effects%",
+  "commands.userinfo.success.survival.embeds.0.fields.8.inline": true,
+
+  "commands.userinfo.success.survival.embeds.0.fields.9.name": "Teams",
+  "commands.userinfo.success.survival.embeds.0.fields.9.value": "%teams%",
+  "commands.userinfo.success.survival.embeds.0.fields.9.inline": true,
 
 
   "commands.userinfo.success.admin.embeds.0.title": "User Information",
@@ -540,34 +544,67 @@
   "commands.userinfo.success.admin.embeds.0.fields.2.value": "`%death_location%` (Dimension: %death_dimension%)",
   "commands.userinfo.success.admin.embeds.0.fields.2.inline": true,
 
-  "commands.userinfo.success.admin.components.0.style": "Danger",
-  "commands.userinfo.success.admin.components.0.label": "Kick",
-  "commands.userinfo.success.admin.components.0.custom_id": "userinfo_kick",
-  "commands.userinfo.success.admin.components.0.disabled": false,
-  "commands.userinfo.success.admin.components.0.type": "Button",
 
-  "commands.userinfo.success.admin.components.1.style": "Danger",
-  "commands.userinfo.success.admin.components.1.label": "Ban",
-  "commands.userinfo.success.admin.components.1.custom_id": "userinfo_ban",
-  "commands.userinfo.success.admin.components.1.disabled": false,
-  "commands.userinfo.success.admin.components.1.type": "Button",
-
-  "commands.userinfo.success.admin.components.2.style": "Secondary",
-  "commands.userinfo.success.admin.components.2.label": "Whitelist",
-  "commands.userinfo.success.admin.components.2.custom_id": "userinfo_whitelist",
-  "commands.userinfo.success.admin.components.2.disabled": false,
-  "commands.userinfo.success.admin.components.2.type": "Button",
+  "commands.userinfo.success.admin_button.embeds.0.title": "Command Executed",
+  "commands.userinfo.success.admin_button.embeds.0.description": "Command: `%command%`\n%response%",
 
 
-  "commands.userinfo.success.general_button.label": "General Information",
-  "commands.userinfo.success.general_button.type": "Button",
-  "commands.userinfo.success.general_button.style": "Primary",
-  "commands.userinfo.success.general_button.custom_id": "userinfo_general",
+  "commands.userinfo.success.buttons.kick.style": "Danger",
+  "commands.userinfo.success.buttons.kick.label": "Kick",
+  "commands.userinfo.success.buttons.kick.custom_id": "userinfo_kick",
+  "commands.userinfo.success.buttons.kick.disabled": false,
+  "commands.userinfo.success.buttons.kick.type": "Button",
 
-  "commands.userinfo.success.admin_button.label": "Admin Information",
-  "commands.userinfo.success.admin_button.type": "Button",
-  "commands.userinfo.success.admin_button.style": "Danger",
-  "commands.userinfo.success.admin_button.custom_id": "userinfo_admin",
+  "commands.userinfo.success.buttons.ban.style": "Danger",
+  "commands.userinfo.success.buttons.ban.label": "Ban",
+  "commands.userinfo.success.buttons.ban.custom_id": "userinfo_ban",
+  "commands.userinfo.success.buttons.ban.disabled": false,
+  "commands.userinfo.success.buttons.ban.type": "Button",
+
+  "commands.userinfo.success.buttons.unban.style": "Danger",
+  "commands.userinfo.success.buttons.unban.label": "Un-Ban",
+  "commands.userinfo.success.buttons.unban.custom_id": "userinfo_unban",
+  "commands.userinfo.success.buttons.unban.disabled": false,
+  "commands.userinfo.success.buttons.unban.type": "Button",
+
+  "commands.userinfo.success.buttons.whitelist.style": "Secondary",
+  "commands.userinfo.success.buttons.whitelist.label": "Whitelist",
+  "commands.userinfo.success.buttons.whitelist.custom_id": "userinfo_whitelist",
+  "commands.userinfo.success.buttons.whitelist.disabled": false,
+  "commands.userinfo.success.buttons.whitelist.type": "Button",
+
+  "commands.userinfo.success.buttons.unwhitelist.style": "Secondary",
+  "commands.userinfo.success.buttons.unwhitelist.label": "Un-Whitelist",
+  "commands.userinfo.success.buttons.unwhitelist.custom_id": "userinfo_unwhitelist",
+  "commands.userinfo.success.buttons.unwhitelist.disabled": false,
+  "commands.userinfo.success.buttons.unwhitelist.type": "Button",
+
+  "commands.userinfo.success.buttons.op.style": "Primary",
+  "commands.userinfo.success.buttons.op.label": "OP",
+  "commands.userinfo.success.buttons.op.custom_id": "userinfo_op",
+  "commands.userinfo.success.buttons.op.disabled": false,
+  "commands.userinfo.success.buttons.op.type": "Button",
+
+  "commands.userinfo.success.buttons.deop.style": "Primary",
+  "commands.userinfo.success.buttons.deop.label": "De-OP",
+  "commands.userinfo.success.buttons.deop.custom_id": "userinfo_deop",
+  "commands.userinfo.success.buttons.deop.disabled": false,
+  "commands.userinfo.success.buttons.deop.type": "Button",
+
+  "commands.userinfo.success.buttons.general.label": "General Information",
+  "commands.userinfo.success.buttons.general.type": "Button",
+  "commands.userinfo.success.buttons.general.style": "Secondary",
+  "commands.userinfo.success.buttons.general.custom_id": "userinfo_general",
+
+  "commands.userinfo.success.buttons.survival.label": "Survival Information",
+  "commands.userinfo.success.buttons.survival.type": "Button",
+  "commands.userinfo.success.buttons.survival.style": "Secondary",
+  "commands.userinfo.success.buttons.survival.custom_id": "userinfo_survival",
+
+  "commands.userinfo.success.buttons.admin.label": "Admin Information",
+  "commands.userinfo.success.buttons.admin.type": "Button",
+  "commands.userinfo.success.buttons.admin.style": "Danger",
+  "commands.userinfo.success.buttons.admin.custom_id": "userinfo_admin",
 
 
 
@@ -721,6 +758,8 @@
   "commands.chatchannel.success.list.embeds.0.fields.1.value": "%channel_types%",
   "commands.chatchannel.success.list.embeds.0.fields.2.name": "Webhook Mode",
   "commands.chatchannel.success.list.embeds.0.fields.2.value": "%webhooks%",
+  "commands.chatchannel.success.list.embeds.0.fields.3.name": "Discord To Minecraft",
+  "commands.chatchannel.success.list.embeds.0.fields.3.value": "%discord_to_minecraft%",
   "commands.chatchannel.success.list.console": "Successfully listed chat channels",
 
   "commands.chatchannel.success.channel_button.components.0.type": "Button",
@@ -994,20 +1033,21 @@
 
   "api.button.no_access.no_author.embeds.0.title": "No Permission",
   "api.button.no_access.no_author.embeds.0.description": "Only the command sender can use this button.",
+  "api.button.no_access.no_author.ephemeral": true,
 
   "api.button.no_access.no_permission.embeds.0.title": "No Permission",
   "api.button.no_access.no_permission.embeds.0.description": "This button can only be used with the `%permission%` permission!",
-  "api.button.no_access.no_permission.console": "No permission",
+  "api.button.no_access.no_permission.ephemeral": true,
 
   "api.button.success.next_button.components.0.type": "Button",
   "api.button.success.next_button.components.0.style": "Secondary",
   "api.button.success.next_button.components.0.custom_id": "%id%",
-  "api.button.success.next_button.components.0.label": "Next",
+  "api.button.success.next_button.components.0.label": "Next >",
 
   "api.button.success.back_button.components.0.type": "Button",
   "api.button.success.back_button.components.0.style": "Secondary",
   "api.button.success.back_button.components.0.custom_id": "%id%",
-  "api.button.success.back_button.components.0.label": "Back",
+  "api.button.success.back_button.components.0.label": "< Back",
 
   "api.button.success.exit_button.components.0.type": "Button",
   "api.button.success.exit_button.components.0.style": "Secondary",
@@ -1580,7 +1620,7 @@
 
   "data.chatchannel.options.0.options.2.type": "Boolean",
   "data.chatchannel.options.0.options.2.name": "webhooks",
-  "data.chatchannel.options.0.options.2.description": "Enable webhook mode for chat messages. (Default: false)",
+  "data.chatchannel.options.0.options.2.description": "Enable webhook mode for chat messages. (Default: true)",
   "data.chatchannel.options.0.options.2.required": false,
 
 

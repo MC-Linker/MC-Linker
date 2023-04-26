@@ -44,8 +44,9 @@ export default class UserInfo extends Command {
         }
 
         const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
+        const levelDatResponse = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
 
-        let playerDat;
+        let playerDat = null;
         let playerDatResponse;
         //If player is online, get their live-data using /data get entity <username>
         if(!server.hasFtpProtocol() && onlinePlayers.includes(user.username)) {
@@ -71,8 +72,11 @@ export default class UserInfo extends Command {
         stats = stats?.status === 200 ? JSON.parse(stats.data.toString()) : [];
 
         let scoreboardDat = null;
+        let levelDat = null;
         if(scoreboardDatResponse?.status === 200) scoreboardDat = await utils.nbtBufferToObject(scoreboardDatResponse.data, interaction);
         if(scoreboardDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
+        if(levelDatResponse?.status === 200) levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
+        if(levelDatResponse === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
         if(playerDatResponse?.status === 200) playerDat = await utils.nbtBufferToObject(playerDatResponse.data, interaction);
         if(playerDat === undefined) return;
 
@@ -90,13 +94,13 @@ export default class UserInfo extends Command {
             operator_level: matchingOp?.level ?? 0,
             whitelisted: matchingWhitelist ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
             banned: matchingBan ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
-            banned_until: matchingBan?.expires ? time(new Date(matchingBan.expires)) : keys.commands.userinfo.never,
         };
         const generalMessage = getReplyOptions(keys.commands.userinfo.success.general, placeholders, ph.colors());
         const adminMessage = getReplyOptions(keys.commands.userinfo.success.admin, placeholders, ph.colors());
+        const survivalMessage = getReplyOptions(keys.commands.userinfo.success.survival, placeholders, ph.colors());
 
-        const newGeneralFields = generalMessage.embeds[0].data.fields.slice(0, 4);
         const newAdminFields = [];
+        const newSurvivalFields = [];
         if(playerDat) {
             placeholders.xp = playerDat.XpTotal;
             placeholders.xp_level = playerDat.XpLevel;
@@ -110,8 +114,8 @@ export default class UserInfo extends Command {
             placeholders.position = `${playerDat.Pos[0]}, ${playerDat.Pos[1]}, ${playerDat.Pos[2]}`;
             placeholders.death_location = `${playerDat.LastDeathLocation?.pos?.[0] ?? '?'}, ${playerDat.LastDeathLocation?.pos?.[1] ?? '?'}, ${playerDat.LastDeathLocation?.pos?.[2] ?? '?'}`;
             placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDat.LastDeathLocation?.dimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
-            placeholders.spawn_location = `${playerDat.SpawnX ?? '?'}, ${playerDat.SpawnY ?? '?'}, ${playerDat.SpawnZ ?? '?'}`;
-            placeholders.spawn_dimension = keys.commands.userinfo.dimensions[playerDat.SpawnDimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
+            placeholders.spawn_location = playerDat.SpawnX && playerDat.SpawnY && playerDat.SpawnZ ? `${playerDat.SpawnX}, ${playerDat.SpawnY}, ${playerDat.SpawnZ}` : null; // set it from level.dat
+            placeholders.spawn_dimension = playerDat.SpawnDimension ? keys.commands.userinfo.dimensions[playerDat.SpawnDimension.replace('minecraft:', '')] : null; // set it from level.dat
             // these values will be an integer if it's coming from the data command and a bigint if it's coming from the playerdata file
             if(playerDat.bukkit?.firstPlayed && typeof playerDat.bukkit.firstPlayed !== 'bigint') playerDat.bukkit.firstPlayed = BigInt(playerDat.bukkit.firstPlayed);
             if(playerDat.bukkit?.firstPlayed && typeof playerDat.bukkit.lastPlayed !== 'bigint') playerDat.bukkit.lastPlayed = BigInt(playerDat.bukkit.lastPlayed);
@@ -120,23 +124,28 @@ export default class UserInfo extends Command {
             if(playerDat.ActiveEffects?.length > 0) {
                 placeholders.effects = playerDat.ActiveEffects.map(effect => mcData.effectsArray.find(e => e.id === effect.Id)?.displayName).filter(e => e).join('\n');
             }
-            else placeholders.effects = keys.commands.userinfo.none;
 
-            const fieldsToPush = [
-                ...(keys.commands.userinfo.success.general.embeds[0].fields.slice(4, 11)),
-                keys.commands.userinfo.success.general.embeds[0].fields[12],
-            ];
-            newGeneralFields.push(...(addPh(fieldsToPush, placeholders)));
+            newSurvivalFields.push(...(addPh(keys.commands.userinfo.success.survival.embeds[0].fields.slice(0, 7), placeholders)));
+            if(placeholders.effects) newSurvivalFields.push(addPh(keys.commands.userinfo.success.survival.embeds[0].fields[8], placeholders));
             newAdminFields.push(...(addPh(
                 keys.commands.userinfo.success.admin.embeds[0].fields, placeholders,
             )));
         }
+        if(!placeholders.spawn_location || !placeholders.spawn_dimension) {
+            // If the spawn location is not in the playerdata file, try to get it from the level.dat file
+            placeholders.spawn_location = `${levelDat?.Data?.SpawnX ?? '?'}, ${levelDat?.Data?.SpawnY ?? '?'}, ${levelDat?.Data?.SpawnZ ?? '?'}`;
+            placeholders.spawn_dimension = keys.commands.userinfo.dimensions.overworld;
+
+            //replace the spawn location and dimension field
+            if(newAdminFields.length !== 0) newAdminFields.splice(1, 1, addPh(
+                keys.commands.userinfo.success.admin.embeds[0].fields[1], placeholders,
+            ));
+        }
         if(scoreboardDat) {
             const teams = scoreboardDat.data.Teams.filter(team => team.Players.includes(user.username));
             if(teams.length > 0) placeholders.teams = teams.map(team => team.DisplayName).join('\n');
-            else placeholders.teams = keys.commands.userinfo.none;
-            newGeneralFields.push(addPh(
-                keys.commands.userinfo.success.general.embeds[0].fields[13], placeholders,
+            if(placeholders.teams) newSurvivalFields.push(addPh(
+                keys.commands.userinfo.success.survival.embeds[0].fields[9], placeholders,
             ));
         }
         if(stats) {
@@ -148,14 +157,23 @@ export default class UserInfo extends Command {
                 else if(playTimeMinutes) playTimeMs = playTimeMinutes * 60 * 1000;
                 placeholders.play_time = formatDuration(playTimeMs);
 
-                newGeneralFields.push(addPh(
-                    keys.commands.userinfo.success.general.embeds[0].fields[11], placeholders,
+                newSurvivalFields.push(addPh(
+                    keys.commands.userinfo.success.survival.embeds[0].fields[7], placeholders,
                 ));
             }
         }
 
-        generalMessage.embeds[0].setFields(...newGeneralFields);
-        adminMessage.embeds[0].setFields(...newAdminFields);
+        //Push the fields even if they're unknown so that admin buttons can be shown
+        if(newAdminFields.length === 0) newAdminFields.push(...(addPh(keys.commands.userinfo.success.admin.embeds[0].fields, placeholders, {
+            position: '?, ?, ?',
+            dimension: keys.commands.serverinfo.unknown,
+            death_location: '?, ?, ?',
+            death_dimension: keys.commands.serverinfo.unknown,
+        })));
+
+        survivalMessage.embeds[0].setFields(newSurvivalFields);
+        adminMessage.embeds[0].setFields(newAdminFields);
+
         const adminButtons = [
             matchingBan ? getComponent(keys.commands.userinfo.success.buttons.unban) : getComponent(keys.commands.userinfo.success.buttons.ban),
             matchingOp ? getComponent(keys.commands.userinfo.success.buttons.deop) : getComponent(keys.commands.userinfo.success.buttons.op),
@@ -173,13 +191,17 @@ export default class UserInfo extends Command {
                 page: generalMessage,
                 startPage: true,
             },
+            userinfo_survival: {
+                button: getComponent(keys.commands.userinfo.success.buttons.survival),
+                page: survivalMessage,
+            },
             userinfo_admin: {
                 button: getComponent(keys.commands.userinfo.success.buttons.admin),
                 page: adminMessage,
             },
         };
-        // If there are no admin fields, delete the admin page
-        if(newAdminFields.length === 0) delete pages.userinfo_admin;
+
+        if(newSurvivalFields.length === 0) delete pages.userinfo_survival;
         // If the user is not an admin, delete the admin page
         if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) delete pages.userinfo_admin;
 

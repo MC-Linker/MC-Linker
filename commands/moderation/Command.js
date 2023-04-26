@@ -2,9 +2,7 @@
 import { addPh, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import * as utils from '../../api/utils.js';
-import { MaxEmbedDescriptionLength } from '../../api/utils.js';
-import Discord from 'discord.js';
-import nbt from 'prismarine-nbt';
+import { codeBlockFromCommandResponse } from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };
@@ -21,33 +19,6 @@ export default class Command extends AutocompleteCommand {
             category: 'moderation',
         });
     }
-
-    colorCodesToAnsi = {
-        '4': '31', //Red
-        'c': '31', //Red
-        '6': '33', //Yellow
-        'e': '33', //Yellow
-        '2': '32', //Green
-        'a': '32', //Green
-        'b': '36', //Cyan
-        '3': '36', //Cyan
-        '1': '34', //Blue
-        '9': '34', //Blue
-        'd': '35', //Magenta
-        '5': '35', //Magenta
-        'f': '37', //White
-        '7': '37', //White
-        '0': '30', //Black
-        '8': '30', //Black
-    };
-
-    formattingCodesToAnsi = {
-        'l': '1', //Bold
-        'n': '4', //Underline
-        'r': '0', //Reset
-    };
-
-    colorPattern = /[&§]([0-9a-fk-or])/gi;
 
     async autocomplete(interaction, client) {
         const respondArray = [];
@@ -85,20 +56,25 @@ export default class Command extends AutocompleteCommand {
                     await addPlaceholders(sug);
                 }
 
-                const suggestions = addPh(formattedSuggestions, placeholders);
+                const suggestions = formattedSuggestions.map(sug => {
+                    const match = sug.match(/%([^%]+)%/);
+                    return placeholders[match?.[1]] ?? sug;
+                });
 
-                if(Array.isArray(suggestions)) {
-                    for(const sug of suggestions) {
-                        if(sug?.toLowerCase()?.includes(focused.value.toLowerCase()))
-                            respondArray.push({ name: sug, value: sug });
+                suggestions.forEach(sug => {
+                    if(Array.isArray(sug)) {
+                        for(const sug of suggestions) {
+                            if(sug?.toLowerCase()?.includes(focused.value.toLowerCase()))
+                                respondArray.push({ name: sug, value: sug });
+                        }
                     }
-                }
-                else {
-                    for(const [k, v] of Object.entries(suggestions)) {
-                        if(k?.toLowerCase()?.includes(focused.value.toLowerCase()) || v?.toLowerCase()?.includes(focused.value.toLowerCase()))
-                            respondArray.push({ name: k, value: v });
+                    else {
+                        for(const [k, v] of Object.entries(sug)) {
+                            if(k?.toLowerCase()?.includes(focused.value.toLowerCase()) || v?.toLowerCase()?.includes(focused.value.toLowerCase()))
+                                respondArray.push({ name: k, value: v });
+                        }
                     }
-                }
+                });
 
                 async function addPlaceholders(suggestion) {
                     if(suggestion.match(/%.+%/g)) {
@@ -177,25 +153,7 @@ export default class Command extends AutocompleteCommand {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
-
-        // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
-        if(respMessage.length >= 1015) respMessage = respMessage.replace(this.colorPattern, '');
-        else {
-            //Parse color codes to ansi
-            respMessage = respMessage.replace(this.colorPattern, (_, color) => {
-                const ansi = this.colorCodesToAnsi[color];
-                const format = this.formattingCodesToAnsi[color];
-                if(!ansi && !format) return '';
-
-                return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
-            });
-        }
-
-        // -12 for code block (```ansi\n\n```)
-        if(respMessage.length > MaxEmbedDescriptionLength - 12) respMessage = `${respMessage.substring(0, MaxEmbedDescriptionLength - 15)}...`;
-
-        //Wrap in discord code block for color
-        respMessage = Discord.codeBlock('ansi', `${respMessage}`);
+        respMessage = codeBlockFromCommandResponse(respMessage);
         return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
     }
 }
@@ -230,7 +188,7 @@ function findSuggestionKey(suggestions, previousArgument, allOptions) {
  * @param {string} key - The command key.
  * @param {object} args - Additional arguments passed to this function.
  * @param {MCLinker} args.client - The MCLinker client.
- * @param {Discord.User} args.user - The Discord user who sent the command.
+ * @param {User} args.user - The Discord user who sent the command.
  * @param {?ServerConnection} args.server - The server connection.
  * @param {string} args.focused - The focused command autocomplete value.
  * @param {string[]} args.commands - The list of commands.
@@ -4498,14 +4456,7 @@ async function getPlaceholder(key, args) {
 
         const nbtBuffer = await server.protocol.get(getPath, putPath);
         if(nbtBuffer?.status !== 200) return {};
-
-        try {
-            const nbtObject = await nbt.parse(nbtBuffer.data, 'big');
-            return nbt.simplify(nbtObject.parsed);
-        }
-        catch(_) {
-            return {};
-        }
+        return utils.nbtBufferToObject(nbtBuffer.data, null);
     }
 
     async function getFunctions() {

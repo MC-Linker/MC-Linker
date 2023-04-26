@@ -834,7 +834,6 @@
       "offline": "Offline",
       "yes": "Yes",
       "no": "No",
-      "none": "*None*",
       "gamemode": [
         "Survival",
         "Creative",
@@ -861,7 +860,7 @@
               "fields": [
                 {
                   "name": "Status",
-                  "value": "%status%",
+                  "value": "%status% %status_emoji%",
                   "inline": true
                 },
                 {
@@ -878,7 +877,20 @@
                   "name": "Operator",
                   "value": "%operator% (Level: %operator_level%)",
                   "inline": true
-                },
+                }
+              ]
+            }
+          ]
+        },
+        "survival": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "fields": [
                 {
                   "name": "Gamemode",
                   "value": "%gamemode%",
@@ -959,42 +971,84 @@
                 }
               ]
             }
-          ],
-          "components": [
+          ]
+        },
+        "admin_button": {
+          "embeds": [
             {
-              "style": "Danger",
-              "label": "Kick",
-              "custom_id": "userinfo_kick",
-              "disabled": false,
-              "type": "Button"
-            },
-            {
-              "style": "Danger",
-              "label": "Ban",
-              "custom_id": "userinfo_ban",
-              "disabled": false,
-              "type": "Button"
-            },
-            {
-              "style": "Secondary",
-              "label": "Whitelist",
-              "custom_id": "userinfo_whitelist",
-              "disabled": false,
-              "type": "Button"
+              "title": "Command Executed",
+              "description": "Command: `%command%`\n%response%"
             }
           ]
         },
-        "general_button": {
-          "label": "General Information",
-          "type": "Button",
-          "style": "Primary",
-          "custom_id": "userinfo_general"
-        },
-        "admin_button": {
-          "label": "Admin Information",
-          "type": "Button",
-          "style": "Danger",
-          "custom_id": "userinfo_admin"
+        "buttons": {
+          "kick": {
+            "style": "Danger",
+            "label": "Kick",
+            "custom_id": "userinfo_kick",
+            "disabled": false,
+            "type": "Button"
+          },
+          "ban": {
+            "style": "Danger",
+            "label": "Ban",
+            "custom_id": "userinfo_ban",
+            "disabled": false,
+            "type": "Button"
+          },
+          "unban": {
+            "style": "Danger",
+            "label": "Un-Ban",
+            "custom_id": "userinfo_unban",
+            "disabled": false,
+            "type": "Button"
+          },
+          "whitelist": {
+            "style": "Secondary",
+            "label": "Whitelist",
+            "custom_id": "userinfo_whitelist",
+            "disabled": false,
+            "type": "Button"
+          },
+          "unwhitelist": {
+            "style": "Secondary",
+            "label": "Un-Whitelist",
+            "custom_id": "userinfo_unwhitelist",
+            "disabled": false,
+            "type": "Button"
+          },
+          "op": {
+            "style": "Primary",
+            "label": "OP",
+            "custom_id": "userinfo_op",
+            "disabled": false,
+            "type": "Button"
+          },
+          "deop": {
+            "style": "Primary",
+            "label": "De-OP",
+            "custom_id": "userinfo_deop",
+            "disabled": false,
+            "type": "Button"
+          },
+          "general": {
+            "label": "General Information",
+            "type": "Button",
+            "style": "Secondary",
+            "custom_id": "userinfo_general"
+          },
+          "survival": {
+            "label": "Survival Information",
+            "type": "Button",
+            "style": "Secondary",
+            "custom_id": "userinfo_survival"
+          },
+          "admin": {
+            "label": "Admin Information",
+            "type": "Button",
+            "style": "Danger",
+            "custom_id": "userinfo_admin"
+          }
         }
       }
     },
@@ -1301,6 +1355,10 @@
                 {
                   "name": "Webhook Mode",
                   "value": "%webhooks%"
+                },
+                {
+                  "name": "Discord To Minecraft",
+                  "value": "%discord_to_minecraft%"
                 }
               ]
             }
@@ -1930,7 +1988,8 @@
               "title": "No Permission",
               "description": "Only the command sender can use this button."
             }
-          ]
+          ],
+          "ephemeral": true
         },
         "no_permission": {
           "embeds": [
@@ -1939,7 +1998,7 @@
               "description": "This button can only be used with the `%permission%` permission!"
             }
           ],
-          "console": "No permission"
+          "ephemeral": true
         }
       },
       "success": {
@@ -1949,7 +2008,7 @@
               "type": "Button",
               "style": "Secondary",
               "custom_id": "%id%",
-              "label": "Next"
+              "label": "Next >"
             }
           ]
         },
@@ -1959,7 +2018,7 @@
               "type": "Button",
               "style": "Secondary",
               "custom_id": "%id%",
-              "label": "Back"
+              "label": "< Back"
             }
           ]
         },
@@ -2829,7 +2888,7 @@
             {
               "type": "Boolean",
               "name": "webhooks",
-              "description": "Enable webhook mode for chat messages. (Default: false)",
+              "description": "Enable webhook mode for chat messages. (Default: true)",
               "required": false
             }
           ]
