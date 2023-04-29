@@ -91,7 +91,7 @@ export default class Command {
      * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @param {any[]} args - The command arguments set by the user.
-     * @param {?ServerConnection} server - The connection of the server the command was executed in.
+     * @param {requiresConnectedPlugin extends true ? ServerConnection<PluginProtocol> : ServerConnection<Protocol>} server - The connection of the server the command was executed in.
      * @returns {Promise<?boolean>|?boolean}
      * @abstract
      */
@@ -109,7 +109,7 @@ export default class Command {
             return false;
         }
 
-        if(this.requiresConnectedPlugin && !(server?.hasHttpProtocol() || server?.hasWebSocketProtocol())) {
+        if(this.requiresConnectedPlugin && !server.protocol.isPluginProtocol()) {
             await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             return false;
         }

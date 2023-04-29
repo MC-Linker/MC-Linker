@@ -71,7 +71,7 @@ export default class ServerInfo extends Command {
         }
         await server.protocol.endBatch();
 
-        let onlinePlayers = server.hasHttpProtocol() ? await server.protocol.getOnlinePlayers() : null;
+        let onlinePlayers = server.protocol.isPluginProtocol() ? await server.protocol.getOnlinePlayers() : null;
         if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;
         else onlinePlayers = onlinePlayers.data.length;
 

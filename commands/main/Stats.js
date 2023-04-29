@@ -46,7 +46,7 @@ export default class Stats extends AutocompleteCommand {
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
             404: keys.api.command.errors.could_not_download_user_files,
         }, { category: 'stats' })) return;
-        const statData = JSON.parse(statFile.data.toString('utf-8'));
+        const statData = JSON.parse(statFile.data.toString());
 
         try {
             let statMatch;

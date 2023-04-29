@@ -83,7 +83,7 @@ export default class BotAPI extends EventEmitter {
                 const port = request.body.ip.split(':')[1];
 
                 /** @type {ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === port && server.hasHttpProtocol());
+                const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === port);
 
                 //check authorization: Bearer <token>
                 if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization?.split(' ')[1]) {
@@ -192,7 +192,7 @@ export default class BotAPI extends EventEmitter {
             const hash = createHash(token);
 
             /** @type {?ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
+            const server = this.client.serverConnections.cache.find(server => server.protocol.isWebSocketProtocol() && server.hash === hash);
             if(!server) return socket.disconnect();
 
             socket.emit('auth-success', {}); //Tell the client that the auth was successful
@@ -230,7 +230,7 @@ export default class BotAPI extends EventEmitter {
 
                 //Update server variable to ensure it wasn't disconnected in the meantime
                 /** @type {?ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.hasWebSocketProtocol() && server.hash === hash);
+                const server = client.serverConnections.cache.find(server => server.protocol.isWebSocketProtocol() && server.hash === hash);
 
                 //If no connection on that guild, disconnect socket
                 if(!server) {
