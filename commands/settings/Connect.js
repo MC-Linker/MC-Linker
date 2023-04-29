@@ -69,7 +69,7 @@ export default class Connect extends Command {
                     }
                     catch(err) {
                         await c.shard.broadcastEval((c, { id, error }) => {
-                            c.emit('editConnectResponse', id, 'error', { error });
+                            c.emit('editConnectResponse', id, 'error', { error_stack: error });
                         }, { context: { id, error: err.stack }, shard });
                         socket.disconnect(true);
                     }
@@ -283,9 +283,8 @@ export default class Connect extends Command {
     async _disconnectOldPlugin(interaction, server) {
         /** @type {?ProtocolResponse} */
         let resp;
-        if(server?.hasHttpProtocol()) resp = await server.protocol.disconnect();
-        else if(server?.hasWebSocketProtocol()) resp = await server.protocol.disconnect();
-        else if(server?.hasFtpProtocol()) return await client.serverConnections.disconnect(server);
+        if(server?.protocol?.isPluginProtocol()) resp = await server.protocol.disconnect();
+        else if(server?.protocol?.isFtpProtocol()) return await client.serverConnections.disconnect(server);
         else return;
 
         if(!resp || resp.status !== 200) await interaction.channel.send(getReplyOptions(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
