@@ -17,9 +17,11 @@
   "type": "module",
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
+    "bufferutil": "^4.0.7",
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.3",
     "emojione": "^4.5.0",
+    "erlpack": "github:discord/erlpack",
     "fastify": "^4.5.3",
     "fastify-socket.io": "^4.0.0",
     "fs-extra": "^11.1.0",
@@ -31,7 +33,9 @@
     "skia-canvas": "1.0.0",
     "ssh2-sftp-client": "^9.0.4",
     "topgg-autoposter": "^2.0.1",
-    "unraw": "^2.0.1"
+    "unraw": "^2.0.1",
+    "utf-8-validate": "^5.0.10",
+    "zlib-sync": "^0.1.8"
   },
   "devDependencies": {
     "lodash": "^4.17.21",
