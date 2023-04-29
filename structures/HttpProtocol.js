@@ -84,6 +84,17 @@ const PluginRoutes = {
         { cmd },
     ],
     /**
+     * Gets the live snbt-data of a player. The Player has to be online for this endpoint to work.
+     * @param {string} uuid - The uuid of the player to get the snbt-data of.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
+     */
+    GetPlayerNbt: uuid => [
+        'GET',
+        '/player/nbt',
+        {},
+        { uuid },
+    ],
+    /**
      * Sends a chat message to the server.
      * @param {string} msg - The message to send.
      * @param {string} username - The user to send the message to.
@@ -365,13 +376,8 @@ export default class HttpProtocol extends Protocol {
      * @inheritDoc
      */
     async list(folder) {
-        try {
-            const response = await this._fetch(...PluginRoutes.ListFiles(folder));
-            return fetchToProtocolResponse(response);
-        }
-        catch(err) {
-            return null;
-        }
+        const response = await this._fetch(...PluginRoutes.ListFiles(folder));
+        return fetchToProtocolResponse(response);
     }
 
     /**
@@ -452,6 +458,16 @@ export default class HttpProtocol extends Protocol {
      */
     async execute(command) {
         const response = await this._fetch(...PluginRoutes.Command(command));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Gets the snbt data of a player.
+     * @param {string} uuid - The uuid of the player to get the snbt data of.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async getPlayerNbt(uuid) {
+        const response = await this._fetch(...PluginRoutes.GetPlayerNbt(uuid));
         return fetchToProtocolResponse(response);
     }
 
