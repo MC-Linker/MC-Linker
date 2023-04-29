@@ -25,6 +25,7 @@ export default class UserInfo extends Command {
             name: 'userinfo',
             category: 'other',
             requiresUserIndex: 0,
+            requiresConnectedServer: true,
         });
     }
 
@@ -38,27 +39,13 @@ export default class UserInfo extends Command {
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
 
         let onlinePlayers = [];
-        if(!server.hasFtpProtocol()) {
+        if(server.protocol.isPluginProtocol()) {
             const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
             if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data;
         }
 
         const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
         const levelDatResponse = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
-
-        let playerDat = null;
-        let playerDatResponse;
-        //If player is online, get their live-data using /data get entity <username>
-        if(!server.hasFtpProtocol() && onlinePlayers.includes(user.username)) {
-            const commandResponse = await server.protocol.execute(`data get entity ${user.username}`);
-            if(commandResponse?.status === 200) {
-                const nbtString = commandResponse.data.message.split('entity data: ')[1];
-                playerDat = utils.nbtStringToObject(nbtString, null);
-            }
-        }
-        if(!playerDat) {
-            playerDatResponse = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
-        }
 
         let stats = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
         let operators = await server.protocol.get(...FilePath.Operators(server.path, server.id));
@@ -77,8 +64,8 @@ export default class UserInfo extends Command {
         if(scoreboardDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
         if(levelDatResponse?.status === 200) levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
         if(levelDatResponse === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
-        if(playerDatResponse?.status === 200) playerDat = await utils.nbtBufferToObject(playerDatResponse.data, interaction);
-        if(playerDat === undefined) return;
+
+        const playerDat = await utils.getLivePlayerNbt(server, user, null);
 
         const matchingOp = operators.find(o => o.uuid === user.uuid);
         const matchingWhitelist = whitelistedUsers.find(w => w.uuid === user.uuid);
@@ -143,7 +130,7 @@ export default class UserInfo extends Command {
         }
         if(scoreboardDat) {
             const teams = scoreboardDat.data.Teams.filter(team => team.Players.includes(user.username));
-            if(teams.length > 0) placeholders.teams = teams.map(team => team.DisplayName).join('\n');
+            if(teams.length > 0) placeholders.teams = teams.map(team => JSON.parse(team.DisplayName).text).join('\n');
             if(placeholders.teams) newSurvivalFields.push(addPh(
                 keys.commands.userinfo.success.survival.embeds[0].fields[9], placeholders,
             ));
@@ -182,7 +169,7 @@ export default class UserInfo extends Command {
         if(onlinePlayers.includes(user.username)) adminButtons.unshift(getComponent(keys.commands.userinfo.success.buttons.kick));
 
         // FTP does not support commands
-        if(!server.hasFtpProtocol()) adminMessage.components = createActionRows(adminButtons);
+        if(!server.protocol.isFtpProtocol()) adminMessage.components = createActionRows(adminButtons);
 
         /** @type {PaginationPages} */
         const pages = {

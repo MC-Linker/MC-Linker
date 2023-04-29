@@ -1,7 +1,6 @@
 import HttpProtocol from '../structures/HttpProtocol.js';
 import Discord, {
     ApplicationCommandOptionType,
-    BaseInteraction,
     CommandInteraction,
     MessageMentions,
     MessagePayload,
@@ -19,6 +18,7 @@ import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import mojangson from 'mojangson';
+import { FilePath } from '../structures/Protocol.js';
 
 const mcData = McData('1.19.3');
 
@@ -270,7 +270,7 @@ const defaultStatusRespones = {
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
- * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
+ * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @param {...Object.<string, string>[]} [placeholders=[] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether the response was successful.
@@ -305,7 +305,7 @@ export async function handleProtocolResponse(response, protocol, interaction, st
  * Handles multiple responses of protocol calls.
  * @param {?ProtocolResponse[]} responses - The responses to handle.
  * @param {Protocol} protocol - The protocol that was called.
- * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
+ * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @param {...Object.<string, string>[]} [placeholders=[] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether all responses were successful.
@@ -315,6 +315,33 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
         if(!await handleProtocolResponse(response, protocol, interaction, statusResponses, ...placeholders)) return false;
     }
     return true;
+}
+
+/**
+ * Gets the live player nbt data from the server.
+ * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise it will download the nbt file.
+ * @param {ServerConnection} server - The server to get the nbt data from.
+ * @param {UserResponse} user - The uuid of the player.
+ * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
+ * @returns {Promise<?Object>} - The parsed and simplified nbt data or null if an error occurred.
+ */
+export async function getLivePlayerNbt(server, user, interaction) {
+    if(server.protocol.isPluginProtocol()) {
+        const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
+        const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
+        if(onlinePlayers.includes(user.username)) {
+            const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
+            if(playerNbtResponse?.status === 200) return nbtStringToObject(playerNbtResponse.data.data, interaction);
+        }
+    }
+
+    // If the server is not connected using the plugin or the player is not online or the getPlayerNbt endpoint failed, download the nbt file
+    const nbtResponse = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
+
+    // handProtocolResponse if interaction is set, otherwise manually check the status code
+    if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;
+    else if(nbtResponse?.status === 200) return nbtBufferToObject(nbtResponse.data, interaction);
+    else return null;
 }
 
 export function createUUIDv3(username) {
@@ -354,10 +381,14 @@ export async function nbtBufferToObject(buffer, interaction) {
 export function nbtStringToObject(string, interaction) {
     try {
         const object = mojangson.parse(stripColorCodes(string));
-        //remove possibly empty arrays to prevent error (please fix this mojangson)
-        delete object.value.EnderItems;
-        delete object.value.Inventory;
-        return mojangson.simplify(object);
+        //remove empty inventory/ender-items to prevent error (please fix this mojangson)
+        if(!object.value?.Inventory?.value?.value) delete object.value.Inventory;
+        else if(!object.value?.EnderItems?.value?.value) delete object.value.EnderItems;
+        const simplified = mojangson.simplify(object);
+        // re-add empty inventory/ender-items
+        if(!simplified.Inventory) simplified.Inventory = [];
+        if(!simplified.EnderItems) simplified.EnderItems = [];
+        return simplified;
     }
     catch(err) {
         interaction?.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));

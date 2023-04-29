@@ -4,7 +4,6 @@ import minecraft_data from 'minecraft-data';
 import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
-import { FilePath } from '../../structures/Protocol.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../api/utils.js';
 
@@ -89,14 +88,11 @@ export default class Inventory extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
+        /** @type {UserResponse} */
         const user = args[0];
         const showDetails = args[1];
-        const nbtFile = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
-        if(!await utils.handleProtocolResponse(nbtFile, server.protocol, interaction, {
-            404: keys.api.command.errors.could_not_download_user_files,
-        }, { category: 'player-data' })) return;
 
-        const playerData = await utils.nbtBufferToObject(nbtFile.data, interaction);
+        const playerData = await utils.getLivePlayerNbt(server, user, interaction);
         if(!playerData) return;
 
         //Convert slots to network slots
