@@ -51,6 +51,8 @@ export default class UserInfo extends Command {
         let operators = await server.protocol.get(...FilePath.Operators(server.path, server.id));
         let whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.path, server.id));
         let bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.path, server.id));
+
+        const playerDat = await utils.getLivePlayerNbt(server, user, null);
         await server.protocol.endBatch();
 
         operators = operators?.status === 200 ? JSON.parse(operators.data.toString()) : [];
@@ -64,8 +66,6 @@ export default class UserInfo extends Command {
         if(scoreboardDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
         if(levelDatResponse?.status === 200) levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
         if(levelDatResponse === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
-
-        const playerDat = await utils.getLivePlayerNbt(server, user, null);
 
         const matchingOp = operators.find(o => o.uuid === user.uuid);
         const matchingWhitelist = whitelistedUsers.find(w => w.uuid === user.uuid);
