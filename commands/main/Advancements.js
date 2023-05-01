@@ -1,5 +1,5 @@
 import * as utils from '../../api/utils.js';
-import { minecraftAvatarURL } from '../../api/utils.js';
+import { getMinecraftAvatarURL } from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import { time } from 'discord.js';
 import { getReplyOptions, ph } from '../../api/messages.js';
@@ -112,7 +112,7 @@ export default class Advancements extends AutocompleteCommand {
 
         await interaction.replyTl(keys.commands.advancements.success, {
             'username': user.username,
-            'user_icon': minecraftAvatarURL(user.uuid),
+            'user_icon': await getMinecraftAvatarURL(user.uuid),
             'advancement_title': advancementTitle,
             'advancement_description': advancementDesc,
             'advancement_criteria': advancementCriteria.join('\n'),

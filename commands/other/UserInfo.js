@@ -2,7 +2,7 @@ import Command from '../../structures/Command.js';
 import keys from '../../api/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
-import { codeBlockFromCommandResponse, formatDuration, minecraftAvatarURL } from '../../api/utils.js';
+import { codeBlockFromCommandResponse, formatDuration, getMinecraftAvatarURL } from '../../api/utils.js';
 import {
     addPh,
     addTranslatedResponses,
@@ -74,7 +74,7 @@ export default class UserInfo extends Command {
         const placeholders = {
             name: user.username,
             uuid: user.uuid,
-            icon_url: minecraftAvatarURL(user.username),
+            icon_url: await getMinecraftAvatarURL(user.username),
             status: onlinePlayers.includes(user.username) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
             status_emoji: onlinePlayers.includes(user.username) ? ':green_circle:' : ':red_circle:',
             operator: matchingOp ? keys.commands.userinfo.yes : keys.commands.userinfo.no,

@@ -1,7 +1,7 @@
 // noinspection HttpUrlsUsage
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from './oauth.js';
-import { createHash, minecraftAvatarURL, searchAdvancements } from './utils.js';
+import { createHash, getMinecraftAvatarURL, searchAdvancements } from './utils.js';
 import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import { EventEmitter } from 'node:events';
@@ -254,7 +254,7 @@ export default class BotAPI extends EventEmitter {
      */
     async _chat(data, server) {
         const { message, channels, id: guildId, type, player } = data;
-        const authorURL = minecraftAvatarURL(player);
+        const authorURL = await getMinecraftAvatarURL(player);
 
         const argPlaceholder = { username: player, author_url: authorURL, message };
 

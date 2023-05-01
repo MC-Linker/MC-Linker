@@ -24,7 +24,20 @@ const mcData = McData('1.19.3');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
-export const minecraftAvatarURL = username => `https://minotar.net/helm/${username}/64.png?rnd=${Math.random()}`; //Random query to prevent caching
+
+/**
+ * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.
+ * @param {string} username - The username to get the avatar for.
+ * @returns {Promise<string>} - The url of the avatar.
+ */
+export async function getMinecraftAvatarURL(username) {
+    const url = `https://minotar.net/helm/${username}/64.png?rnd=${Math.random()}`; //Random query to prevent caching
+    //fetch the url to check if the user exists
+    const res = await fetch(url);
+    //If the user doesn't exist, return steve
+    if(res.status === 404) return url.replace(username, 'MHF_STEVE');
+    return url;
+}
 
 /**
  * @typedef {object} AdvancementData
