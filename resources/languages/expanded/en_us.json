@@ -2876,7 +2876,9 @@
                 "GuildAnnouncement",
                 "AnnouncementThread",
                 "PublicThread",
-                "PrivateThread"
+                "PrivateThread",
+                "GuildVoice",
+                "GuildStageVoice"
               ]
             },
             {
@@ -2908,7 +2910,9 @@
                 "GuildAnnouncement",
                 "AnnouncementThread",
                 "PublicThread",
-                "PrivateThread"
+                "PrivateThread",
+                "GuildVoice",
+                "GuildStageVoice"
               ]
             }
           ]

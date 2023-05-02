@@ -1612,6 +1612,8 @@
   "data.chatchannel.options.0.options.0.channel_types.2": "AnnouncementThread",
   "data.chatchannel.options.0.options.0.channel_types.3": "PublicThread",
   "data.chatchannel.options.0.options.0.channel_types.4": "PrivateThread",
+  "data.chatchannel.options.0.options.0.channel_types.5": "GuildVoice",
+  "data.chatchannel.options.0.options.0.channel_types.6": "GuildStageVoice",
 
   "data.chatchannel.options.0.options.1.type": "Boolean",
   "data.chatchannel.options.0.options.1.name": "discord-to-minecraft",
@@ -1637,6 +1639,8 @@
   "data.chatchannel.options.1.options.0.channel_types.2": "AnnouncementThread",
   "data.chatchannel.options.1.options.0.channel_types.3": "PublicThread",
   "data.chatchannel.options.1.options.0.channel_types.4": "PrivateThread",
+  "data.chatchannel.options.1.options.0.channel_types.5": "GuildVoice",
+  "data.chatchannel.options.1.options.0.channel_types.6": "GuildStageVoice",
 
   "data.chatchannel.options.2.type": "Subcommand",
   "data.chatchannel.options.2.name": "list",
