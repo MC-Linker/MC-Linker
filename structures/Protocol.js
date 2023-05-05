@@ -14,7 +14,7 @@ export const FilePath = {
      */
     Advancements: (worldPath, uuid, userId = null) => {
         const advancementPath = `${worldPath}/advancements/${uuid}.json`;
-        return userId ? [advancementPath, `./userdata/connections/${userId}/advancements.json`] : `${worldPath}/advancements/${uuid}.json`;
+        return userId ? [advancementPath, `./userdata/connections/${userId}/advancements.json`] : advancementPath;
     },
     /**
      * Constructs the path to the user's stats file.
@@ -25,7 +25,7 @@ export const FilePath = {
      */
     Stats: (worldPath, uuid, userId) => {
         const statPath = `${worldPath}/stats/${uuid}.json`;
-        return userId ? [statPath, `./userdata/connections/${userId}/stats.json`] : `${worldPath}/stats/${uuid}.json`;
+        return userId ? [statPath, `./userdata/connections/${userId}/stats.json`] : statPath;
     },
     /**
      * Constructs the path to the user's playerdata folder.
@@ -36,7 +36,7 @@ export const FilePath = {
      */
     PlayerData: (worldPath, uuid, userId) => {
         const playerdataPath = `${worldPath}/playerdata/${uuid}.dat`;
-        return userId ? [playerdataPath, `./userdata/connections/${userId}/playerdata.dat`] : `${worldPath}/playerdata/${uuid}.dat`;
+        return userId ? [playerdataPath, `./userdata/connections/${userId}/playerdata.dat`] : playerdataPath;
     },
 
     /**
@@ -46,8 +46,8 @@ export const FilePath = {
      * @returns {string[]|`${string}/level.dat`} - The path to the world's level.dat file.
      */
     LevelDat: (worldPath, serverId) => {
-        const leveldatPath = `${worldPath}/level.dat`;
-        return serverId ? [leveldatPath, `./serverdata/connections/${serverId}/level.dat`] : `${worldPath}/level.dat`;
+        const levelDatPath = `${worldPath}/level.dat`;
+        return serverId ? [levelDatPath, `./serverdata/connections/${serverId}/level.dat`] : levelDatPath;
     },
 
     /**
@@ -58,7 +58,7 @@ export const FilePath = {
      */
     Scoreboards: (worldPath, serverId) => {
         const scoreboardsPath = `${worldPath}/data/scoreboard.dat`;
-        return serverId ? [scoreboardsPath, `./serverdata/connections/${serverId}/scoreboard.dat`] : `${worldPath}/data/scoreboard.dat`;
+        return serverId ? [scoreboardsPath, `./serverdata/connections/${serverId}/scoreboard.dat`] : scoreboardsPath;
     },
 
     /**
@@ -69,7 +69,7 @@ export const FilePath = {
      */
     ServerProperties: (serverPath, serverId) => {
         const serverPropertiesPath = `${serverPath}/server.properties`;
-        return serverId ? [serverPropertiesPath, `./serverdata/connections/${serverId}/server.properties`] : `${serverPath}/server.properties`;
+        return serverId ? [serverPropertiesPath, `./serverdata/connections/${serverId}/server.properties`] : serverPropertiesPath;
     },
 
     /**
@@ -79,8 +79,8 @@ export const FilePath = {
      * @returns {string[]|`${string}/server-icon.png`} - The path to the server's server-icon.png file.
      */
     ServerIcon: (serverPath, serverId) => {
-        const servericonPath = `${serverPath}/server-icon.png`;
-        return serverId ? [servericonPath, `./serverdata/connections/${serverId}/server-icon.png`] : `${serverPath}/server-icon.png`;
+        const serverIconPath = `${serverPath}/server-icon.png`;
+        return serverId ? [serverIconPath, `./serverdata/connections/${serverId}/server-icon.png`] : serverIconPath;
     },
 
     /**
@@ -91,7 +91,7 @@ export const FilePath = {
      */
     Whitelist: (serverPath, serverId) => {
         const whitelistPath = `${serverPath}/whitelist.json`;
-        return serverId ? [whitelistPath, `./serverdata/connections/${serverId}/whitelist.json`] : `${serverPath}/whitelist.json`;
+        return serverId ? [whitelistPath, `./serverdata/connections/${serverId}/whitelist.json`] : whitelistPath;
     },
 
     /**
@@ -102,7 +102,7 @@ export const FilePath = {
      */
     Operators: (serverPath, serverId) => {
         const operatorsPath = `${serverPath}/ops.json`;
-        return serverId ? [operatorsPath, `./serverdata/connections/${serverId}/ops.json`] : `${serverPath}/ops.json`;
+        return serverId ? [operatorsPath, `./serverdata/connections/${serverId}/ops.json`] : operatorsPath;
     },
 
     /**
@@ -112,8 +112,8 @@ export const FilePath = {
      * @returns {string[]|`${string}/banned-players.json`} - The path to the server's banned-players.json file.
      */
     BannedPlayers: (serverPath, serverId) => {
-        const bannedplayersPath = `${serverPath}/banned-players.json`;
-        return serverId ? [bannedplayersPath, `./serverdata/connections/${serverId}/banned-players.json`] : `${serverPath}/banned-players.json`;
+        const bannedPlayersPath = `${serverPath}/banned-players.json`;
+        return serverId ? [bannedPlayersPath, `./serverdata/connections/${serverId}/banned-players.json`] : bannedPlayersPath;
     },
 
     /**
@@ -124,7 +124,7 @@ export const FilePath = {
      */
     BannedIPs: (serverPath, serverId) => {
         const bannedIpsPath = `${serverPath}/banned-ips.json`;
-        return serverId ? [bannedIpsPath, `./serverdata/connections/${serverId}/banned-ips.json`] : `${serverPath}/banned-ips.json`;
+        return serverId ? [bannedIpsPath, `./serverdata/connections/${serverId}/banned-ips.json`] : bannedIpsPath;
     },
 
     /**
@@ -135,7 +135,7 @@ export const FilePath = {
      */
     Plugins: (serverPath, serverId) => {
         const pluginsPath = `${serverPath}/plugins`;
-        return serverId ? [pluginsPath, `./serverdata/connections/${serverId}/plugins`] : `${serverPath}/plugins`;
+        return serverId ? [pluginsPath, `./serverdata/connections/${serverId}/plugins`] : pluginsPath;
     },
 
     /**
@@ -146,7 +146,7 @@ export const FilePath = {
      */
     Mods: (serverPath, serverId) => {
         const modsPath = `${serverPath}/mods`;
-        return serverId ? [modsPath, `./serverdata/connections/${serverId}/mods`] : `${serverPath}/mods`;
+        return serverId ? [modsPath, `./serverdata/connections/${serverId}/mods`] : modsPath;
     },
 
     /**
@@ -157,7 +157,17 @@ export const FilePath = {
      */
     DataPacks: (worldPath, serverId) => {
         const datapacksPath = `${worldPath}/datapacks`;
-        return serverId ? [datapacksPath, `./serverdata/connections/${serverId}/datapacks`] : `${worldPath}/datapacks`;
+        return serverId ? [datapacksPath, `./serverdata/connections/${serverId}/datapacks`] : datapacksPath;
+    },
+    /**
+     * Constructs the path to the server's floodgate config file.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/plugins/floodgate/config.yml`} - The path to the server's floodgate config file.
+     */
+    FloodgateConfig: (serverPath, serverId) => {
+        const floodgateConfigPath = `${serverPath}/plugins/floodgate/config.yml`;
+        return serverId ? [floodgateConfigPath, `./serverdata/connections/${serverId}/floodgate-config.yml`] : floodgateConfigPath;
     },
 };
 

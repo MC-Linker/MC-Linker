@@ -33,6 +33,7 @@ export default class UserConnectionManager extends ConnectionManager {
 
         const id = Discord.MessageMentions.UsersPattern.exec(arg)?.[1];
         if(id) {
+            /** @type {UserConnection} */
             const cacheConnection = this.cache.get(id);
             if(cacheConnection) {
                 return {
