@@ -16,14 +16,26 @@ import nbt from 'prismarine-nbt';
 import { ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
-import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import mojangson from 'mojangson';
+import { Authflow } from 'prismarine-auth';
+import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import { FilePath } from '../structures/Protocol.js';
 
 const mcData = McData('1.19.3');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
+
+// Password Auth:
+const flow = new Authflow(process.env.MICROSOFT_EMAIL, 'node_modules', {
+    flow: 'msal', // required, but will be ignored because password field is set
+    password: process.env.MICROSOFT_PASSWORD,
+});
+// MSAL Auth:
+// const flow = new Authflow('Lianecx', 'node_modules', { flow: 'msal' }, res => {
+//     console.log(res);
+// });
+
 
 /**
  * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.
@@ -195,19 +207,48 @@ export function searchAllStats(searchString, shouldSearchNames = true, shouldSea
 /**
  * Fetches the uuid of the given username from the Mojang API.
  * @param {string} username - The username to fetch the uuid for.
- * @returns {Promise<?string>}
+ * @returns {Promise<?string>} - The uuid or undefined if the user doesn't exist.
  */
 export async function fetchUUID(username) {
     try {
         const data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
             .then(data => data.json());
 
+        if(!data.id) return undefined;
         return addHyphen(data.id);
     }
     catch(err) {
         return undefined;
     }
 }
+
+/**
+ * Fetches the floodgate (geyser) uuid of the given username from the XBL API.
+ * @param {string} username - The username to fetch the uuid for.
+ * @returns {Promise<?string>} - The floodgate uuid or undefined if the user doesn't exist.
+ */
+export async function fetchFloodgateUUID(username) {
+    try {
+        const { userHash, XSTSToken: xstsToken } = await flow.getXboxToken();
+        const data = await fetch(`https://profile.xboxlive.com/users/gt(${username})/profile/settings`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `XBL3.0 x=${userHash};${xstsToken}`,
+                'x-xbl-contract-version': '3',
+            },
+        }).then(data => data.json());
+
+        if(!data.profileUsers?.[0]?.id) return undefined;
+        const xuid = parseInt(data.profileUsers[0].id);
+        // Floodate UUID Format: 00000000-0000-0000-000x-xxxxxxxxxxxx (xuid)
+        const uuid = `0000000000000000000${xuid.toString(16)}`;
+        return addHyphen(uuid);
+    }
+    catch(err) {
+        return undefined;
+    }
+}
+
 
 function addHyphen(uuid) {
     uuid = [...uuid];
@@ -355,6 +396,25 @@ export async function getLivePlayerNbt(server, user, interaction) {
     if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;
     else if(nbtResponse?.status === 200) return nbtBufferToObject(nbtResponse.data, interaction);
     else return null;
+}
+
+/**
+ * Gets the configured floodgate prefix of a server by downloading the floodgate config file.
+ * @param {ServerConnection} server - The server to get the prefix from.
+ * @returns {Promise<?string>} - The configured prefix or undefined if floodgate is not installed or an error occurred.
+ */
+export async function getFloodgatePrefix(server) {
+    const response = await server.protocol.get(...FilePath.FloodgateConfig(server.path, server.id));
+    if(response?.status === 200) {
+        //parse yml without module
+        const searchKey = 'username-prefix:';
+        const lines = response.data.toString().split('\n');
+        for(const line of lines) {
+            if(line.startsWith(searchKey)) {
+                return line.substring(searchKey.length).trim();
+            }
+        }
+    }
 }
 
 export function createUUIDv3(username) {
