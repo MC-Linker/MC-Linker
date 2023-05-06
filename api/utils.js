@@ -27,12 +27,12 @@ export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
 
 // Password Auth:
-const flow = new Authflow(process.env.MICROSOFT_EMAIL, 'node_modules', {
+const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
     flow: 'msal', // required, but will be ignored because password field is set
     password: process.env.MICROSOFT_PASSWORD,
 });
 // MSAL Auth:
-// const flow = new Authflow('Lianecx', 'node_modules', { flow: 'msal' }, res => {
+// const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
 //     console.log(res);
 // });
 
@@ -411,7 +411,11 @@ export async function getFloodgatePrefix(server) {
         const lines = response.data.toString().split('\n');
         for(const line of lines) {
             if(line.startsWith(searchKey)) {
-                return line.substring(searchKey.length).trim();
+                return line
+                    .substring(searchKey.length)
+                    .trim()
+                    // Remove quotes at the start and end of the string
+                    .replace(/^["'](.+(?=["']$))["']$/, '$1');
             }
         }
     }
@@ -437,6 +441,7 @@ export function createUUIDv3(username) {
 export async function nbtBufferToObject(buffer, interaction) {
     try {
         const object = await nbt.parse(buffer, 'big');
+        console.log(object);
         return nbt.simplify(object.parsed);
     }
     catch(err) {
@@ -734,4 +739,21 @@ export function formatDistance(centimeters) {
     const formattedKilometers = Math.floor(kilometers % 1000);
 
     return `${formattedKilometers}km ${formattedMeters}m`;
+}
+
+/**
+ * Memoizes a function.
+ * @param {Function} fn - The function to memoize.
+ * @param {Number} parameters - The number of parameters to use as key.
+ * @returns {Function} - The memoized function.
+ */
+export function memoize(fn, parameters) {
+    const cache = new Map();
+    return async function(...args) {
+        const key = JSON.stringify(args.slice(0, parameters));
+        if(cache.has(key)) return cache.get(key);
+        const result = await fn.apply(this, args);
+        cache.set(key, result);
+        return result;
+    };
 }
