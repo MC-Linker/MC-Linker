@@ -20,7 +20,7 @@ export default class Stats extends AutocompleteCommand {
         const focused = interaction.options.getFocused().toLowerCase();
 
         const stats = utils.searchStats(focused, subcommand);
-        interaction.respond(stats).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
+        interaction.respond(stats).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {
