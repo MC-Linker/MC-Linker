@@ -20,115 +20,125 @@ export default class Command extends AutocompleteCommand {
         });
     }
 
-    async autocomplete(interaction, client) {
+    memoizedGetAutocompleteSuggestions = utils.memoize(this.getAutocompleteSuggestions, 4);
+
+    async getAutocompleteSuggestions(focusedOption, allOptions, user, guildId, client) {
         const respondArray = [];
+
+        if(focusedOption.name === 'command') {
+            return Object.keys(commands)
+                .filter(cmd => cmd.includes(focusedOption.value))
+                .map(cmd => ({ name: cmd, value: cmd }));
+        }
+
+        // Get the command name from the first option
+        const commandName = allOptions[0].value.toLowerCase();
+        allOptions.shift();
+
+        // if the command doesn't exist, return an empty array
+        if(!Object.keys(commands).includes(commandName)) return [];
+
+        // Find index of focused option and get suggestions for that option
+        const focusedIndex = allOptions.findIndex(opt => opt.name === focusedOption.name);
+        const allSuggestions = commands[commandName];
+        const suggestions = allSuggestions[focusedIndex]; // get the suggestions for the focused option
+        // if there are no suggestions for that index on the command, return an empty array
+        if(!allSuggestions || !suggestions) return [];
+
+        const previousArgument = allOptions[focusedIndex - 1]?.value; // get the value of the previous argument, if it exists
+        await addPlaceholdersFromSuggestions(suggestions);
+
+        return respondArray;
+
+        async function addPlaceholdersFromSuggestions(suggestions) {
+            const filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
+            const filteredSuggestions = suggestions?.[filteredKey]; // get the filtered suggestions
+            if(!filteredSuggestions) return [];
+
+            for(const suggestion of filteredSuggestions) {
+                await addAndPushPlaceholder(suggestion);
+            }
+        }
+
+        async function addAndPushPlaceholder(suggestion) {
+            // if no placeholder in suggestion, add it directly to the response array
+            if(!suggestion.match(/%.+%/g)) return pushPlaceholder(suggestion, suggestion);
+
+            //Replace arg[0-9] with corresponding value for placeholders
+            //arg2 => value of 2nd option
+            suggestion = suggestion.replace(/%arg(-?\d)_.+%/g, (match, index) => {
+                index = parseInt(index);
+                if(index < 0) index = allOptions.length + index - 1; //Allow relative (negative) indexes
+                return allOptions[index]?.value ? match.replace(/arg-?\d/, allOptions[index]?.value) : match;
+            });
+
+            if(suggestion.includes('_argument_')) {
+                const [command, index] = suggestion.split(/%(.+)_argument_(\d)%/).filter(n => n); // get the command and argument index from the placeholder
+                const commandSuggestions = commands[command]?.[parseInt(index)]; // get the suggestions for the command and index
+                await addPlaceholdersFromSuggestions(commandSuggestions);
+                return;
+            }
+
+            const placeholder = await getPlaceholder(suggestion.replaceAll('%', ''), {
+                client,
+                user,
+                server: client.serverConnections.cache.get(guildId),
+                focused: focusedOption.value,
+            });
+            if(!placeholder) {
+                console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
+                return;
+            }
+
+            // push the placeholder entries to the respond array
+            if(Array.isArray(placeholder)) {
+                for(const ph of placeholder) pushPlaceholder(ph, ph);
+            }
+            else if(typeof placeholder === 'object') {
+                for(const [name, value] of Object.entries(placeholder)) pushPlaceholder(name, value);
+            }
+        }
+
+        function pushPlaceholder(name, value) {
+            // if the placeholder value or name includes the focused option, push it to the response array
+            if([name, value].some(e => e.toLowerCase().includes(focusedOption.value.toLowerCase()))) {
+                respondArray.push({ name, value });
+            }
+        }
+
+        //Suggestion key:
+        //"arg2=string" => 2nd option === string
+        //"string" => previous option === string
+        //"arg-1!=string" => previous option !== string
+        //"arg2=string & arg1=string2" => 2nd option === string && 1st option === string2
+        //"" => any previous option
+        function findSuggestionKey(suggestions, previousArgument, allOptions) {
+            return Object.keys(suggestions).find(suggestion => {
+                suggestion = suggestion.replaceAll(' ', ''); //Remove all whitespaces
+
+                let returnBool = true;
+                suggestion.split('&').forEach(condition => {
+                    if(!returnBool) return;
+                    let [index, string] = condition.split('=', 2);
+
+                    index = parseInt(index.replace('arg', ''));
+                    if(index < 0) index = allOptions?.length + index - 1; //Allow relative (negative) indexes
+
+                    returnBool = condition === previousArgument || (!isNaN(index) ? string === allOptions?.[index]?.value : false);
+                });
+
+                return returnBool;
+            }) ?? ''; // return empty string if no suggestion key was found (default option)
+        }
+    }
+
+    async autocomplete(interaction, client) {
         const focused = interaction.options.getFocused(true);
 
-        if(focused.name === 'command') {
-            Object.keys(commands).forEach(cmd => {
-                if(cmd.includes(focused.value)) respondArray.push({ name: cmd, value: cmd });
-            });
-        }
-        else {
-            const allOptions = [...interaction.options.data];
-            const commandName = allOptions[0].value.toLowerCase();
-            allOptions.shift(); //Shift command name
-
-            const placeholders = {};
-
-            const cmdKey = Object.keys(commands).find(cmd => cmd === commandName);
-            const focusedIndex = allOptions.findIndex(opt => opt.name === focused.name);
-
-            const allSuggestions = commands[cmdKey];
-            if(!allSuggestions) return;
-            const suggestions = allSuggestions[focusedIndex];
-            if(!suggestions) return;
-
-            const previousArgument = allOptions?.[focusedIndex - 1]?.value;
-
-            const filteredKey = findSuggestionKey(suggestions, previousArgument, allOptions);
-
-            const filteredSuggestions = suggestions?.[filteredKey] ?? suggestions?.[''];
-            if(filteredSuggestions) {
-                const formattedSuggestions = [];
-                for(const sug of filteredSuggestions) {
-                    //Run logic for each placeholder and add properties to ph object
-                    await addPlaceholders(sug);
-                }
-
-                const suggestions = formattedSuggestions.map(sug => {
-                    const match = sug.match(/%([^%]+)%/);
-                    return placeholders[match?.[1]] ?? sug;
-                });
-
-                suggestions.forEach(sug => {
-                    if(Array.isArray(sug)) {
-                        for(const sug of suggestions) {
-                            if(sug?.toLowerCase()?.includes(focused.value.toLowerCase()))
-                                respondArray.push({ name: sug, value: sug });
-                        }
-                    }
-                    else {
-                        for(const [k, v] of Object.entries(sug)) {
-                            if(k?.toLowerCase()?.includes(focused.value.toLowerCase()) || v?.toLowerCase()?.includes(focused.value.toLowerCase()))
-                                respondArray.push({ name: k, value: v });
-                        }
-                    }
-                });
-
-                async function addPlaceholders(suggestion) {
-                    if(suggestion.match(/%.+%/g)) {
-                        //Replace arg[0-9] with corresponding value for placeholders
-                        //arg2 => value of 2nd option
-                        suggestion = suggestion.replace(/%arg(-?\d)_.+%/g, (match, index) => {
-                            index = parseInt(index);
-
-                            if(index < 0) index = allOptions.length + index - 1; //Allow relative (negative) indexes
-                            return allOptions?.[index]?.value ? match.replace(/arg-?\d/, allOptions?.[index]?.value) : match;
-                        });
-
-                        let filteredArguments;
-                        if(suggestion.includes('_argument_')) {
-                            const [command, index] = suggestion.split(/%(.+)_argument_(\d)%/).filter(n => n);
-                            const commandSuggestions = commands[command]?.[parseInt(index)];
-
-                            if(commandSuggestions) {
-                                const filteredCommandKey = findSuggestionKey(commandSuggestions, previousArgument, allOptions);
-
-                                filteredArguments = commandSuggestions[filteredCommandKey] ?? commandSuggestions[''];
-                            }
-                        }
-
-                        const placeholder = await getPlaceholder(
-                            suggestion.replaceAll('%', ''), {
-                                client: client,
-                                user: interaction.user,
-                                server: client.serverConnections.cache.get(interaction.guild.id),
-                                focused: focused.value,
-                                commands: Object.keys(commands),
-                                commandSuggestions: filteredArguments,
-                            },
-                        );
-                        if(!placeholder) {
-                            console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
-                            return;
-                        }
-
-                        if(filteredArguments) {
-                            for(const argument of filteredArguments) await addPlaceholders(argument);
-                        }
-                        //Add Placeholder
-                        placeholders[suggestion.replaceAll('%', '')] = placeholder;
-                    }
-
-                    formattedSuggestions.push(suggestion);
-                }
-            }
-            else return;
-        }
-
+        const mutableOptions = [...interaction.options.data];
+        const respondArray = await this.memoizedGetAutocompleteSuggestions(focused, mutableOptions, interaction.user, interaction.guildId, client);
         if(respondArray.length >= 25) respondArray.length = 25;
-        interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
+        interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {
@@ -158,31 +168,6 @@ export default class Command extends AutocompleteCommand {
     }
 }
 
-//Suggestion key:
-//"arg2=string" => 2nd option === string
-//"string" => previous option === string
-//"arg-1!=string" => previous option !== string
-//"arg2=string & arg1=string2" => 2nd option === string && 1st option === string2
-//"" => any previous option
-function findSuggestionKey(suggestions, previousArgument, allOptions) {
-    return Object.keys(suggestions).find(suggestion => {
-        suggestion = suggestion.replaceAll(' ', ''); //Remove all whitespaces
-
-        let returnBool = true;
-        suggestion.split('&').forEach(condition => {
-            if(!returnBool) return;
-            let [index, string] = condition.split('=', 2);
-
-            index = parseInt(index.replace('arg', ''));
-            if(index < 0) index = allOptions?.length + index - 1; //Allow relative (negative) indexes
-
-            returnBool = condition === previousArgument || (!isNaN(index) ? string === allOptions?.[index]?.value : false);
-        });
-
-        return returnBool;
-    });
-}
-
 /**
  * Gets the placeholder for the given command key.
  * @param {string} key - The command key.
@@ -191,8 +176,6 @@ function findSuggestionKey(suggestions, previousArgument, allOptions) {
  * @param {User} args.user - The Discord user who sent the command.
  * @param {?ServerConnection} args.server - The server connection.
  * @param {string} args.focused - The focused command autocomplete value.
- * @param {string[]} args.commands - The list of commands.
- * @param {string[]} args.commandSuggestions - The list of command suggestions.
  * @returns {Promise<object|array>}
  */
 async function getPlaceholder(key, args) {
@@ -235,15 +218,15 @@ async function getPlaceholder(key, args) {
                 '@e': '@e',
             };
 
-            const resp = await server?.protocol?.getOnlinePlayers?.();
-            const onlinePlayers = resp?.status === 200 ? resp.data : [];
             const username = userConn?.username;
-
-            onlinePlayers.forEach(player => placeholder[player] = player);
             if(username) {
                 placeholder['@s'] = username;
                 placeholder[username] = username;
             }
+
+            const resp = await server?.protocol?.getOnlinePlayers?.();
+            const onlinePlayers = resp?.status === 200 ? resp.data : [];
+            onlinePlayers.forEach(player => placeholder[player] = player);
             break;
         case 'attributes':
             mcData.attributesArray.forEach(attribute =>
@@ -308,8 +291,8 @@ async function getPlaceholder(key, args) {
             if(!uuid) return {};
             const playerData = await getNBTFile(...FilePath.PlayerData(server?.path, uuid), `./userdata/playernbt/${uuid}.dat`);
 
+            if(!playerData?.Pos) return {};
             const [x, y, z] = playerData?.Pos;
-            if(!x || !z || !y) return {};
 
             if(key === 'player_coordinates') placeholder = { '~ ~ ~': `${x} ${y} ${z}` };
             else if(key === 'player_coordinates_xz') placeholder = { '~ ~': `${x} ${z}` };
@@ -701,7 +684,7 @@ async function getPlaceholder(key, args) {
             }
             break;
         case 'commands':
-            placeholder = args.commands;
+            placeholder = Object.keys(commands);
             break;
         case 'slots':
             placeholder = [
@@ -4430,19 +4413,18 @@ async function getPlaceholder(key, args) {
             placeholder = colors;
             placeholder.push('reset');
             break;
-        case key.includes('_argument_') ? key : null:
-            placeholder = args.commandSuggestions;
-            break;
         case key.endsWith('_criteria') ? key : null:
             //TODO get advancement criteria
             break;
         case key.endsWith('_levels') ? key : null:
             const focusedEnchantment = key.split('_').shift();
 
-            const enchantment = mcData.enchantmentsArray.find(enchantment =>
-                enchantment.displayName === focusedEnchantment || enchantment.name === focusedEnchantment);
+            const enchantment = mcData.enchantmentsArray
+                .find(enchantment => enchantment.displayName === focusedEnchantment || enchantment.name === focusedEnchantment);
             placeholder = [];
-            for(let i = 1; i <= enchantment.maxLevel; i++) placeholder.push(i.toString());
+            if(enchantment) {
+                for(let i = 1; i <= enchantment.maxLevel + 1; i++) placeholder.push(i.toString());
+            }
     }
 
     return placeholder;
@@ -4453,10 +4435,9 @@ async function getPlaceholder(key, args) {
 
     async function getNBTFile(getPath, putPath) {
         if(!server) return {};
-
-        const nbtBuffer = await server.protocol.get(getPath, putPath);
-        if(nbtBuffer?.status !== 200) return {};
-        return utils.nbtBufferToObject(nbtBuffer.data, null);
+        const nbtResponse = await server.protocol.get(getPath, putPath);
+        if(nbtResponse?.status !== 200) return {};
+        return utils.nbtBufferToObject(nbtResponse.data, null);
     }
 
     async function getFunctions() {
