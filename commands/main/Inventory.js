@@ -111,14 +111,20 @@ export default class Inventory extends Command {
             './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-            showDetails ? this.pushInvButton.bind(null, itemButtons, Infinity) : () => {}, //Push itemButtons if showDetails is set to true
+            showDetails ? this.pushInvButton.bind(null, itemButtons, Infinity) : () => {
+            }, //Push itemButtons if showDetails is set to true
         );
 
-        //Draw skin in inventory
-        const skinUrl = `https://minecraft-api.com/api/skins/${server.online ? user.uuid : await utils.fetchUUID(user.username)}/body/10.5/10/json`;
-        const skinJson = await fetch(skinUrl);
-        const { skin: skinBase64 } = await skinJson.json();
-        const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+        async function getSkin(uuidOrUsername) {
+            const skinUrl = `https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`;
+            const skinJson = await fetch(skinUrl);
+            const { skin: skinBase64 } = await skinJson.json();
+            return await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+        }
+
+        let skinImg = await getSkin(user.uuid);
+        //check dimensions of skinImg
+        if(skinImg.width !== 195 || skinImg.height !== 353) skinImg = await getSkin('MHF_Steve');
         ctx.drawImage(skinImg, 70, 20, 65, 131);
 
         const invAttach = new Discord.AttachmentBuilder(
