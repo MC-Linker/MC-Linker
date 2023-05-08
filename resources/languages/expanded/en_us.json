@@ -1970,7 +1970,7 @@
           "embeds": [
             {
               "title": "Could Not Fetch UUID",
-              "description": "**%username%** is not a valid minecraft java edition account name."
+              "description": "**%username%** is not a valid minecraft account name. Geyser/Floodgate usernames need to start with the configured prefix."
             }
           ],
           "console": "Could not fetch uuid of %username%"
