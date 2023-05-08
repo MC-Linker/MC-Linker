@@ -400,11 +400,13 @@ export async function getLivePlayerNbt(server, user, interaction) {
 
 /**
  * Gets the configured floodgate prefix of a server by downloading the floodgate config file.
- * @param {ServerConnection} server - The server to get the prefix from.
+ * @param {import('../structures/Protocol.js')} protocol - The protocol to get the config with.
+ * @param {string} path - The path to the server.
+ * @param {string} id - The id of the server.
  * @returns {Promise<?string>} - The configured prefix or undefined if floodgate is not installed or an error occurred.
  */
-export async function getFloodgatePrefix(server) {
-    const response = await server.protocol.get(...FilePath.FloodgateConfig(server.path, server.id));
+export async function getFloodgatePrefix(protocol, path, id) {
+    const response = await protocol.get(...FilePath.FloodgateConfig(path, id));
     if(response?.status === 200) {
         //parse yml without module
         const searchKey = 'username-prefix:';
@@ -441,7 +443,6 @@ export function createUUIDv3(username) {
 export async function nbtBufferToObject(buffer, interaction) {
     try {
         const object = await nbt.parse(buffer, 'big');
-        console.log(object);
         return nbt.simplify(object.parsed);
     }
     catch(err) {
