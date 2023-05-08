@@ -43,13 +43,10 @@ export default class Account extends Command {
             }
 
             let uuid;
-            const floodgatePrefix = await utils.getFloodgatePrefix(server);
-            if(username.startsWith(floodgatePrefix)) {
-                const usernameWithoutPrefix = username.slice(floodgatePrefix.length);
+            if(server.floodgatePrefix && username.startsWith(server.floodgatePrefix)) {
+                const usernameWithoutPrefix = username.slice(server.floodgatePrefix.length);
                 uuid = await utils.fetchFloodgateUUID(usernameWithoutPrefix);
-                console.log(uuid, usernameWithoutPrefix);
-            }
-            else uuid = server.online ? await utils.fetchUUID(username) : utils.createUUIDv3(username);
+            } else uuid = server.online ? await utils.fetchUUID(username) : utils.createUUIDv3(username);
 
             if(!uuid) {
                 return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
