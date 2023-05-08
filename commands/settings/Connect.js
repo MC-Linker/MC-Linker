@@ -49,8 +49,9 @@ export default class Connect extends Command {
                             ip: socket.handshake.address,
                             path: socket.handshake.query.path,
                             channels: [],
-                            'stats-channels': [],
+                            statsChannels: [],
                             online: socket.handshake.query.online === 'true',
+                            floodgatePrefix: socket.handshake.query.floodgatePrefix,
                             version: Number(socket.handshake.query.version.split('.')[1]),
                             worldPath: socket.handshake.query.worldPath,
                             protocol: 'websocket',
@@ -167,6 +168,7 @@ export default class Connect extends Command {
                 password,
                 port,
                 online: propertiesObject['online-mode'],
+                floodgatePrefix: await utils.getFloodgatePrefix(ftpProtocol, serverPath, interaction.guildId),
                 path: serverPath,
                 worldPath: `${serverPath}${separator}${propertiesObject['level-name']}`,
                 version,
@@ -235,18 +237,20 @@ export default class Connect extends Command {
 
                     await message.replyTl(keys.commands.connect.success.verification);
 
+                    const serverPath = decodeURIComponent(resp.data.path);
                     /** @type {HttpServerConnectionData} */
                     const serverConnectionData = {
                         ip,
                         port,
                         version: parseInt(resp.data.version.split('.')[1]),
-                        path: decodeURIComponent(resp.data.path),
+                        path: serverPath,
                         worldPath: decodeURIComponent(resp.data.worldPath),
+                        floodgatePrefix: resp.data.floodgatePrefix,
                         token: resp.data.token,
                         online: resp.data.online,
                         protocol: 'http',
                         channels: [],
-                        'stats-channels': [],
+                        statsChannels: [],
                         id: interaction.guildId,
                     };
 

@@ -34,8 +34,9 @@ export default class ServerConnection extends Connection {
      * @property {string} path - The path to the server folder of the server.
      * @property {string} token - The connection token used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
-     * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} stats-channels - The data for stats channels.
+     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
+     * @property {ChatChannelData[]} channels - The chatchannels connected to the server.
+     * @property {StatsChannelData[]} statsChannels - The data for stats channels.
      * @property {'http'} protocol - The protocol used to connect to the server.
      */
 
@@ -50,6 +51,7 @@ export default class ServerConnection extends Connection {
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {boolean} online - Whether the server-connection has online mode enabled or not.
+     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
      * @property {'ftp'|'sftp'} protocol - The protocol used to connect to the server.
      */
 
@@ -62,8 +64,9 @@ export default class ServerConnection extends Connection {
      * @property {string} path - The path to the server folder of the server.
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
      * @property {boolean} online - Whether online mode is enabled on this server.
-     * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} stats-channels - The data for stats channels.
+     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
+     * @property {ChatChannelData[]} channels - The chatchannels connected to the server.
+     * @property {StatsChannelData[]} statsChannels - The data for stats channels.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
      */
@@ -164,9 +167,16 @@ export default class ServerConnection extends Connection {
 
         /**
          * Whether online mode is enabled on this server.
+         * @default true
          * @type {boolean}
          * */
-        this.online = data.online ?? this.online;
+        this.online = data.online ?? this.online ?? true;
+
+        /**
+         * The floodgate prefix of this server.
+         * @type {?string}
+         */
+        this.floodgatePrefix = data.floodgatePrefix ?? data['floodgate-prefix'] ?? this.floodgatePrefix;
 
         if('port' in data) {
             /**
@@ -277,6 +287,7 @@ export default class ServerConnection extends Connection {
             path: this.path,
             worldPath: this.worldPath,
             online: this.online,
+            floodgatePrefix: this.floodgatePrefix,
         };
 
         if(this.protocol.isHttpProtocol()) {
@@ -285,7 +296,7 @@ export default class ServerConnection extends Connection {
                 port: this.port,
                 token: this.token,
                 channels: this.channels ?? [],
-                'stats-channels': this.statsChannels ?? [],
+                statsChannels: this.statsChannels ?? [],
                 protocol: 'http',
             };
         }
@@ -303,7 +314,7 @@ export default class ServerConnection extends Connection {
                 ...baseData,
                 hash: this.hash,
                 channels: this.channels ?? [],
-                'stats-channels': this.statsChannels ?? [],
+                statsChannels: this.statsChannels ?? [],
                 protocol: 'websocket',
             };
         }

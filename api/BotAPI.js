@@ -422,7 +422,7 @@ export default class BotAPI extends EventEmitter {
                     console.log(`[API] Channel ${channel}} was deleted`);
                     const regChannel = await server.protocol.removeStatsChannel(channel);
                     if(!regChannel) continue;
-                    await server.edit({ 'stats-channels': regChannel.data });
+                    await server.edit({ statsChannels: regChannel.data });
                 }
                 continue;
             }
