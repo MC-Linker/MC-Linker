@@ -8,7 +8,7 @@ export default class Ban extends Command {
         super({
             name: 'ban',
             requiresConnectedPlugin: true,
-            requiresConnectedUser: 0,
+            requiresUserIndex: 0,
             category: 'moderation',
         });
     }

@@ -4,11 +4,10 @@ import minecraft_data from 'minecraft-data';
 import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
-import { FilePath } from '../../structures/Protocol.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../api/utils.js';
 
-const mcData = minecraft_data('1.19.2');
+const mcData = minecraft_data('1.19.3');
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -81,7 +80,7 @@ export default class Inventory extends Command {
     constructor() {
         super({
             name: 'inventory',
-            requiresConnectedUser: 0,
+            requiresUserIndex: 0,
             category: 'main',
         });
     }
@@ -89,14 +88,11 @@ export default class Inventory extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
+        /** @type {UserResponse} */
         const user = args[0];
         const showDetails = args[1];
-        const nbtFile = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
-        if(!await utils.handleProtocolResponse(nbtFile, server.protocol, interaction, {
-            404: keys.api.command.errors.could_not_download_user_files,
-        }, { category: 'player-data' })) return;
 
-        const playerData = await utils.nbtBufferToObject(nbtFile.data, interaction);
+        const playerData = await utils.getLivePlayerNbt(server, user, interaction);
         if(!playerData) return;
 
         //Convert slots to network slots
@@ -115,14 +111,20 @@ export default class Inventory extends Command {
             './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-            showDetails ? this.pushInvButton.bind(null, itemButtons, Infinity) : () => {}, //Push itemButtons if showDetails is set to true
+            showDetails ? this.pushInvButton.bind(null, itemButtons, Infinity) : () => {
+            }, //Push itemButtons if showDetails is set to true
         );
 
-        //Draw skin in inventory
-        const skinUrl = `https://minecraft-api.com/api/skins/${server.online ? user.uuid : await utils.fetchUUID(user.username)}/body/10.5/10/json`;
-        const skinJson = await fetch(skinUrl);
-        const { skin: skinBase64 } = await skinJson.json();
-        const skinImg = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+        async function getSkin(uuidOrUsername) {
+            const skinUrl = `https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`;
+            const skinJson = await fetch(skinUrl);
+            const { skin: skinBase64 } = await skinJson.json();
+            return await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+        }
+
+        let skinImg = await getSkin(user.uuid);
+        //check dimensions of skinImg
+        if(skinImg.width !== 195 || skinImg.height !== 353) skinImg = await getSkin('MHF_Steve');
         ctx.drawImage(skinImg, 70, 20, 65, 131);
 
         const invAttach = new Discord.AttachmentBuilder(

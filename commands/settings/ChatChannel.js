@@ -22,20 +22,16 @@ export default class ChatChannel extends Command {
 
         //Add chatchannel
         if(method === 'add') {
-            /** @type {Discord.GuildChannel} */
+            /** @type {Discord.BaseGuildTextChannel} */
             const channel = args[1];
             const allowDiscordToMinecraft = args[2] ?? true;
-            const useWebhooks = args[3] ?? false;
+            const useWebhooks = args[3] ?? true;
 
-            if(!channel.isTextBased()) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
-            }
-            else if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) {
+            if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) {
                 return interaction.replyTl(keys.commands.chatchannel.errors.not_sendable);
             }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
-            Ad;
             let menu;
             try {
                 menu = await logChooserMsg.awaitMessageComponent({
@@ -109,6 +105,7 @@ export default class ChatChannel extends Command {
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
                         webhooks: channel.webhook ? keys.commands.chatchannel.success.enabled : keys.commands.chatchannel.success.disabled,
+                        discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.commands.chatchannel.success.enabled : keys.commands.chatchannel.success.disabled,
                         channel_types: formattedTypes,
                     },
                 );

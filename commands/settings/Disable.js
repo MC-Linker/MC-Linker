@@ -39,7 +39,7 @@ export default class Disable extends AutocompleteCommand {
         }
 
         interaction.respond(matchingKeys)
-            .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
+            .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {

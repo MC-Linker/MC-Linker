@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const manager = new ShardingManager('./bot.js', { token: process.env.TOKEN, totalShards: 2 });
+const manager = new ShardingManager('./bot.js', { token: process.env.TOKEN });
 
 const readyShards = new Set();
 manager.on('shardCreate', shard => {

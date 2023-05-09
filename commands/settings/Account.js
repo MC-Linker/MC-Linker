@@ -34,7 +34,7 @@ export default class Account extends Command {
         if(subcommand === 'connect') {
             const username = args[1];
 
-            if(!server?.hasHttpProtocol() && !server?.hasWebSocketProtocol()) {
+            if(!server?.protocol?.isPluginProtocol()) {
                 return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             }
 
@@ -42,7 +42,12 @@ export default class Account extends Command {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 
-            const uuid = server.online ? await utils.fetchUUID(username) : utils.createUUIDv3(username);
+            let uuid;
+            if(server.floodgatePrefix && username.startsWith(server.floodgatePrefix)) {
+                const usernameWithoutPrefix = username.slice(server.floodgatePrefix.length);
+                uuid = await utils.fetchFloodgateUUID(usernameWithoutPrefix);
+            } else uuid = server.online ? await utils.fetchUUID(username) : utils.createUUIDv3(username);
+
             if(!uuid) {
                 return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
             }
@@ -101,7 +106,7 @@ export default class Account extends Command {
                     userId: interaction.user.id,
                     serverId: server.id,
                     shard: client.shard.ids[0],
-                    websocket: server.hasWebSocketProtocol(),
+                    websocket: server.protocol.isWebSocketProtocol(),
                 },
                 shard: 0,
             });

@@ -172,10 +172,10 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
 
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
-            await command.autocomplete(interaction, client)
+            await command.autocomplete(interaction, client);
         }
         catch(err) {
-            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.command(interaction.command), ph.error(err)));
+            await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.interaction(interaction), ph.error(err)));
         }
     }
     else if(interaction.isButton()) {

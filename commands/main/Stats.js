@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import * as utils from '../../api/utils.js';
+import { formatDistance, formatDuration } from '../../api/utils.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
@@ -9,7 +10,7 @@ export default class Stats extends AutocompleteCommand {
     constructor() {
         super({
             name: 'stats',
-            requiresConnectedUser: 2,
+            requiresUserIndex: 2,
             category: 'main',
         });
     }
@@ -19,7 +20,7 @@ export default class Stats extends AutocompleteCommand {
         const focused = interaction.options.getFocused().toLowerCase();
 
         const stats = utils.searchStats(focused, subcommand);
-        interaction.respond(stats).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
+        interaction.respond(stats).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {
@@ -45,7 +46,7 @@ export default class Stats extends AutocompleteCommand {
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
             404: keys.api.command.errors.could_not_download_user_files,
         }, { category: 'stats' })) return;
-        const statData = JSON.parse(statFile.data.toString('utf-8'));
+        const statData = JSON.parse(statFile.data.toString());
 
         try {
             let statMatch;
@@ -72,13 +73,13 @@ export default class Stats extends AutocompleteCommand {
             if(stat.includes('time')) {
                 statMessage = addPh(
                     keys.commands.stats.success.stat_message.time,
-                    argPlaceholder, { 'stat_value': (statMatch / 20 / 3600).toFixed(2) }, //Convert ticks to hours
+                    argPlaceholder, { 'stat_value': formatDuration(statMatch / 20) }, //Convert ticks to hours
                 );
             }
             else if(stat.includes('_one_cm')) {
                 statMessage = addPh(
                     keys.commands.stats.success.stat_message.distance,
-                    argPlaceholder, { 'stat_value': (statMatch / 100).toFixed(2) },
+                    argPlaceholder, { 'stat_value': formatDistance(statMatch) },
                 );
             }
 

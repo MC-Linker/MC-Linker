@@ -1,7 +1,6 @@
 import HttpProtocol from '../structures/HttpProtocol.js';
-import {
+import Discord, {
     ApplicationCommandOptionType,
-    BaseInteraction,
     CommandInteraction,
     MessageMentions,
     MessagePayload,
@@ -17,13 +16,40 @@ import nbt from 'prismarine-nbt';
 import { ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
+import mojangson from 'mojangson';
+import { Authflow } from 'prismarine-auth';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
+import { FilePath } from '../structures/Protocol.js';
 
-const mcData = McData('1.19.2');
+const mcData = McData('1.19.3');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
-export const minecraftAvatarURL = username => `https://minotar.net/helm/${username}/64.png?rnd=${Math.random()}`; //Random query to prevent caching
+
+// Password Auth:
+const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
+    flow: 'msal', // required, but will be ignored because password field is set
+    password: process.env.MICROSOFT_PASSWORD,
+});
+// MSAL Auth:
+// const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
+//     console.log(res);
+// });
+
+
+/**
+ * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.
+ * @param {string} username - The username to get the avatar for.
+ * @returns {Promise<string>} - The url of the avatar.
+ */
+export async function getMinecraftAvatarURL(username) {
+    const url = `https://minotar.net/helm/${username}/64.png?rnd=${Math.random()}`; //Random query to prevent caching
+    //fetch the url to check if the user exists
+    const res = await fetch(url);
+    //If the user doesn't exist, return steve
+    if(res.status === 404) return url.replace(username, 'MHF_STEVE');
+    return url;
+}
 
 /**
  * @typedef {object} AdvancementData
@@ -181,19 +207,48 @@ export function searchAllStats(searchString, shouldSearchNames = true, shouldSea
 /**
  * Fetches the uuid of the given username from the Mojang API.
  * @param {string} username - The username to fetch the uuid for.
- * @returns {Promise<?string>}
+ * @returns {Promise<?string>} - The uuid or undefined if the user doesn't exist.
  */
 export async function fetchUUID(username) {
     try {
         const data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
             .then(data => data.json());
 
+        if(!data.id) return undefined;
         return addHyphen(data.id);
     }
     catch(err) {
         return undefined;
     }
 }
+
+/**
+ * Fetches the floodgate (geyser) uuid of the given username from the XBL API.
+ * @param {string} username - The username to fetch the uuid for.
+ * @returns {Promise<?string>} - The floodgate uuid or undefined if the user doesn't exist.
+ */
+export async function fetchFloodgateUUID(username) {
+    try {
+        const { userHash, XSTSToken: xstsToken } = await flow.getXboxToken();
+        const data = await fetch(`https://profile.xboxlive.com/users/gt(${username})/profile/settings`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `XBL3.0 x=${userHash};${xstsToken}`,
+                'x-xbl-contract-version': '3',
+            },
+        }).then(data => data.json());
+
+        if(!data.profileUsers?.[0]?.id) return undefined;
+        const xuid = parseInt(data.profileUsers[0].id);
+        // Floodate UUID Format: 00000000-0000-0000-000x-xxxxxxxxxxxx (xuid)
+        const uuid = `0000000000000000000${xuid.toString(16)}`;
+        return addHyphen(uuid);
+    }
+    catch(err) {
+        return undefined;
+    }
+}
+
 
 function addHyphen(uuid) {
     uuid = [...uuid];
@@ -269,7 +324,7 @@ const defaultStatusRespones = {
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
- * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
+ * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @param {...Object.<string, string>[]} [placeholders=[] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether the response was successful.
@@ -304,7 +359,7 @@ export async function handleProtocolResponse(response, protocol, interaction, st
  * Handles multiple responses of protocol calls.
  * @param {?ProtocolResponse[]} responses - The responses to handle.
  * @param {Protocol} protocol - The protocol that was called.
- * @param {(BaseInteraction|Message) & TranslatedResponses} interaction - The interaction to respond to.
+ * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @param {...Object.<string, string>[]} [placeholders=[] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether all responses were successful.
@@ -314,6 +369,58 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
         if(!await handleProtocolResponse(response, protocol, interaction, statusResponses, ...placeholders)) return false;
     }
     return true;
+}
+
+/**
+ * Gets the live player nbt data from the server.
+ * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise it will download the nbt file.
+ * @param {ServerConnection} server - The server to get the nbt data from.
+ * @param {UserResponse} user - The uuid of the player.
+ * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
+ * @returns {Promise<?Object>} - The parsed and simplified nbt data or null if an error occurred.
+ */
+export async function getLivePlayerNbt(server, user, interaction) {
+    if(server.protocol.isPluginProtocol()) {
+        const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
+        const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
+        if(onlinePlayers.includes(user.username)) {
+            const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
+            if(playerNbtResponse?.status === 200) return nbtStringToObject(playerNbtResponse.data.data, interaction);
+        }
+    }
+
+    // If the server is not connected using the plugin or the player is not online or the getPlayerNbt endpoint failed, download the nbt file
+    const nbtResponse = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
+
+    // handProtocolResponse if interaction is set, otherwise manually check the status code
+    if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;
+    else if(nbtResponse?.status === 200) return nbtBufferToObject(nbtResponse.data, interaction);
+    else return null;
+}
+
+/**
+ * Gets the configured floodgate prefix of a server by downloading the floodgate config file.
+ * @param {import('../structures/Protocol.js')} protocol - The protocol to get the config with.
+ * @param {string} path - The path to the server.
+ * @param {string} id - The id of the server.
+ * @returns {Promise<?string>} - The configured prefix or undefined if floodgate is not installed or an error occurred.
+ */
+export async function getFloodgatePrefix(protocol, path, id) {
+    const response = await protocol.get(...FilePath.FloodgateConfig(path, id));
+    if(response?.status === 200) {
+        //parse yml without module
+        const searchKey = 'username-prefix:';
+        const lines = response.data.toString().split('\n');
+        for(const line of lines) {
+            if(line.startsWith(searchKey)) {
+                return line
+                    .substring(searchKey.length)
+                    .trim()
+                    // Remove quotes at the start and end of the string
+                    .replace(/^["'](.+(?=["']$))["']$/, '$1');
+            }
+        }
+    }
 }
 
 export function createUUIDv3(username) {
@@ -330,7 +437,7 @@ export function createUUIDv3(username) {
 /**
  * Creates a JS object from an nbt buffer.
  * @param {Buffer} buffer - The nbt buffer to create the object from.
- * @param {TranslatedResponses} interaction - The interaction to respond to.
+ * @param {TranslatedResponses} interaction - The interaction to respond to in case of an error.
  * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
  */
 export async function nbtBufferToObject(buffer, interaction) {
@@ -339,7 +446,31 @@ export async function nbtBufferToObject(buffer, interaction) {
         return nbt.simplify(object.parsed);
     }
     catch(err) {
-        await interaction.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        await interaction?.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        return undefined;
+    }
+}
+
+/**
+ * Creates a JS object from a snbt string. This will also strip extra color codes from the string.
+ * @param {string} string - The snbt string to create the object from.
+ * @param {TranslatedResponses} interaction - The interaction to respond to in case of an error.
+ * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
+ */
+export function nbtStringToObject(string, interaction) {
+    try {
+        const object = mojangson.parse(stripColorCodes(string));
+        //remove empty inventory/ender-items to prevent error (please fix this mojangson)
+        if(!object.value?.Inventory?.value?.value) delete object.value.Inventory;
+        else if(!object.value?.EnderItems?.value?.value) delete object.value.EnderItems;
+        const simplified = mojangson.simplify(object);
+        // re-add empty inventory/ender-items
+        if(!simplified.Inventory) simplified.Inventory = [];
+        if(!simplified.EnderItems) simplified.EnderItems = [];
+        return simplified;
+    }
+    catch(err) {
+        interaction?.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
         return undefined;
     }
 }
@@ -508,11 +639,73 @@ export function wrapText(ctx, text, maxWidth) {
     return lines;
 }
 
+const colorCodesToAnsi = {
+    '4': '31', //Red
+    'c': '31', //Red
+    '6': '33', //Yellow
+    'e': '33', //Yellow
+    '2': '32', //Green
+    'a': '32', //Green
+    'b': '36', //Cyan
+    '3': '36', //Cyan
+    '1': '34', //Blue
+    '9': '34', //Blue
+    'd': '35', //Magenta
+    '5': '35', //Magenta
+    'f': '37', //White
+    '7': '37', //White
+    '0': '30', //Black
+    '8': '30', //Black
+};
+
+const formattingCodesToAnsi = {
+    'l': '1', //Bold
+    'n': '4', //Underline
+    'r': '0', //Reset
+};
+
+const colorPattern = /[&§]([0-9a-fk-or])/gi;
+
+/**
+ * Removes all minecraft color codes from a string.
+ * @param {string} text - The text to remove color codes from.
+ * @returns {string} - The text without color codes.
+ */
+export function stripColorCodes(text) {
+    return text.replace(colorPattern, '');
+}
+
+/**
+ * Creates a discord code block from a minecraft command response (with colors codes using ansi).
+ * @param {string} response - The command response.
+ * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
+ */
+export function codeBlockFromCommandResponse(response) {
+    // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
+    if(response.length >= 1015) response = stripColorCodes(response);
+    else {
+        //Parse color codes to ansi
+        response = response.replace(colorPattern, (_, color) => {
+            const ansi = colorCodesToAnsi[color];
+            const format = formattingCodesToAnsi[color];
+            if(!ansi && !format) return '';
+
+            return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
+        });
+    }
+
+    // -12 for code block (```ansi\n\n```)
+    if(response.length > MaxEmbedDescriptionLength - 12) response = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
+
+    //Wrap in discord code block for color
+    return Discord.codeBlock('ansi', `${response}`);
+}
+
 /**
  * Converts custom discord emojis and unicode emojis to their string representation.
  * @example
  * // returns "Hello :smile:"
- * convertEmojisToString('Hello 😀');
+ * cleanEmojis('Hello 😀');
  * @param {string} message - The message to clean
  * @returns {string} - The cleaned message.
  */
@@ -525,4 +718,43 @@ export function createHash(token) {
     return crypto.createHash('sha256')
         .update(token)
         .digest('hex');
+}
+
+export function formatDuration(milliseconds) {
+    const seconds = milliseconds / 1000;
+    const minutes = seconds / 60;
+    const hours = minutes / 60;
+
+    const formattedSeconds = Math.floor(seconds % 60);
+    const formattedMinutes = Math.floor(minutes % 60);
+    const formattedHours = Math.floor(hours % 60);
+
+    return `${formattedHours}h ${formattedMinutes}m ${formattedSeconds}s`;
+}
+
+export function formatDistance(centimeters) {
+    const meters = centimeters / 100;
+    const kilometers = meters / 1000;
+
+    const formattedMeters = Math.floor(meters % 1000);
+    const formattedKilometers = Math.floor(kilometers % 1000);
+
+    return `${formattedKilometers}km ${formattedMeters}m`;
+}
+
+/**
+ * Memoizes a function.
+ * @param {Function} fn - The function to memoize.
+ * @param {Number} parameters - The number of parameters to use as key.
+ * @returns {Function} - The memoized function.
+ */
+export function memoize(fn, parameters) {
+    const cache = new Map();
+    return async function(...args) {
+        const key = JSON.stringify(args.slice(0, parameters));
+        if(cache.has(key)) return cache.get(key);
+        const result = await fn.apply(this, args);
+        cache.set(key, result);
+        return result;
+    };
 }

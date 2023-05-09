@@ -8,7 +8,7 @@ export default class Kick extends Command {
         super({
             name: 'kick',
             requiresConnectedPlugin: true,
-            requiresConnectedUser: 0,
+            requiresUserIndex: 0,
             category: 'moderation',
         });
     }

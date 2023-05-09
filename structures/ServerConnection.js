@@ -3,6 +3,7 @@ import HttpProtocol from './HttpProtocol.js';
 import FtpProtocol from './FtpProtocol.js';
 import WebSocketProtocol from './WebSocketProtocol.js';
 
+/** @template {Protocol} T */
 export default class ServerConnection extends Connection {
 
     /**
@@ -33,8 +34,9 @@ export default class ServerConnection extends Connection {
      * @property {string} path - The path to the server folder of the server.
      * @property {string} token - The connection token used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
-     * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} stats-channels - The data for stats channels.
+     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
+     * @property {ChatChannelData[]} channels - The chatchannels connected to the server.
+     * @property {StatsChannelData[]} statsChannels - The data for stats channels.
      * @property {'http'} protocol - The protocol used to connect to the server.
      */
 
@@ -49,6 +51,7 @@ export default class ServerConnection extends Connection {
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {boolean} online - Whether the server-connection has online mode enabled or not.
+     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
      * @property {'ftp'|'sftp'} protocol - The protocol used to connect to the server.
      */
 
@@ -61,8 +64,9 @@ export default class ServerConnection extends Connection {
      * @property {string} path - The path to the server folder of the server.
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
      * @property {boolean} online - Whether online mode is enabled on this server.
-     * @property {ChatChannelData[]} [channels] - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} stats-channels - The data for stats channels.
+     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
+     * @property {ChatChannelData[]} channels - The chatchannels connected to the server.
+     * @property {StatsChannelData[]} statsChannels - The data for stats channels.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
      */
@@ -77,7 +81,7 @@ export default class ServerConnection extends Connection {
 
     /**
      * The protocol used to communicate with the server.
-     * @type {Protocol}
+     * @type {T|Protocol}
      */
     protocol;
 
@@ -163,9 +167,16 @@ export default class ServerConnection extends Connection {
 
         /**
          * Whether online mode is enabled on this server.
+         * @default true
          * @type {boolean}
          * */
-        this.online = data.online ?? this.online;
+        this.online = data.online ?? this.online ?? true;
+
+        /**
+         * The floodgate prefix of this server.
+         * @type {?string}
+         */
+        this.floodgatePrefix = data.floodgatePrefix ?? data['floodgate-prefix'] ?? this.floodgatePrefix;
 
         if('port' in data) {
             /**
@@ -218,7 +229,7 @@ export default class ServerConnection extends Connection {
         }
 
         //Switch protocols if needed
-        if(!this.hasHttpProtocol() && data.protocol === 'http') {
+        if(!this.protocol.isHttpProtocol() && data.protocol === 'http') {
             this.protocol = new HttpProtocol(this.client, {
                 id: data.id,
                 ip: this.ip,
@@ -230,7 +241,7 @@ export default class ServerConnection extends Connection {
             delete this.channels;
             delete this.hash;
         }
-        else if(!this.hasFtpProtocol() && (data.protocol === 'ftp' || data.protocol === 'sftp')) {
+        else if(!this.protocol.isFtpProtocol() && (data.protocol === 'ftp' || data.protocol === 'sftp')) {
             this.protocol = new FtpProtocol(this.client, {
                 ip: this.ip,
                 port: this.port,
@@ -243,7 +254,7 @@ export default class ServerConnection extends Connection {
             delete this.hash;
             delete this.channels;
         }
-        else if(!this.hasWebSocketProtocol() && data.protocol === 'websocket') {
+        else if(!this.protocol.isWebSocketProtocol() && data.protocol === 'websocket') {
             this.protocol = new WebSocketProtocol(this.client, {
                 id: this.id,
                 ip: this.ip,
@@ -276,19 +287,20 @@ export default class ServerConnection extends Connection {
             path: this.path,
             worldPath: this.worldPath,
             online: this.online,
+            floodgatePrefix: this.floodgatePrefix,
         };
 
-        if(this.hasHttpProtocol()) {
+        if(this.protocol.isHttpProtocol()) {
             return {
                 ...baseData,
                 port: this.port,
                 token: this.token,
                 channels: this.channels ?? [],
-                'stats-channels': this.statsChannels ?? [],
+                statsChannels: this.statsChannels ?? [],
                 protocol: 'http',
             };
         }
-        else if(this.hasFtpProtocol()) {
+        else if(this.protocol.isFtpProtocol()) {
             return {
                 ...baseData,
                 port: this.port,
@@ -297,38 +309,14 @@ export default class ServerConnection extends Connection {
                 protocol: this.protocol.sftp ? 'sftp' : 'ftp',
             };
         }
-        else if(this.hasWebSocketProtocol()) {
+        else if(this.protocol.isWebSocketProtocol()) {
             return {
                 ...baseData,
                 hash: this.hash,
                 channels: this.channels ?? [],
-                'stats-channels': this.statsChannels ?? [],
+                statsChannels: this.statsChannels ?? [],
                 protocol: 'websocket',
             };
         }
-    }
-
-    /**
-     * Checks whether this server is connected with a http connection.
-     * @returns {boolean}
-     */
-    hasHttpProtocol() {
-        return this.protocol instanceof HttpProtocol;
-    }
-
-    /**
-     * Checks whether this server is connected to a ftp server.
-     * @returns {boolean}
-     */
-    hasFtpProtocol() {
-        return this.protocol instanceof FtpProtocol;
-    }
-
-    /**
-     * Checks whether this server is connected with a websocket connection.
-     * @returns {boolean}
-     */
-    hasWebSocketProtocol() {
-        return this.protocol instanceof WebSocketProtocol;
     }
 }

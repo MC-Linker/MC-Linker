@@ -9,7 +9,7 @@ export default class Op extends Command {
         super({
             name: 'op',
             requiresConnectedPlugin: true,
-            requiresConnectedUser: 0,
+            requiresUserIndex: 0,
             category: 'moderation',
         });
     }
