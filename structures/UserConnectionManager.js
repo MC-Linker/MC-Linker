@@ -1,6 +1,6 @@
 import UserConnection from './UserConnection.js';
 import ConnectionManager from './ConnectionManager.js';
-import { createUUIDv3, fetchUUID } from '../api/utils.js';
+import * as utils from '../api/utils.js';
 import Discord from 'discord.js';
 
 export default class UserConnectionManager extends ConnectionManager {
@@ -33,6 +33,7 @@ export default class UserConnectionManager extends ConnectionManager {
 
         const id = Discord.MessageMentions.UsersPattern.exec(arg)?.[1];
         if(id) {
+            /** @type {UserConnection} */
             const cacheConnection = this.cache.get(id);
             if(cacheConnection) {
                 return {
@@ -45,8 +46,14 @@ export default class UserConnectionManager extends ConnectionManager {
         }
 
         server = this.client.serverConnections.resolve(server);
-        const apiUUID = server?.online === undefined || server.online ? await fetchUUID(arg) : createUUIDv3(arg);
-        if(apiUUID) return { uuid: apiUUID, username: arg, error: null };
+
+        let uuid;
+        if(server.floodgatePrefix && arg.startsWith(server.floodgatePrefix)) {
+            const usernameWithoutPrefix = arg.slice(server.floodgatePrefix.length);
+            uuid = await utils.fetchFloodgateUUID(usernameWithoutPrefix);
+        } else uuid = server.online ? await utils.fetchUUID(arg) : utils.createUUIDv3(arg);
+
+        if(uuid) return { uuid: uuid, username: arg, error: null };
         return { error: 'fetch', uuid: null, username: null };
     }
 }

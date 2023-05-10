@@ -1,5 +1,5 @@
 import * as utils from '../../api/utils.js';
-import { minecraftAvatarURL } from '../../api/utils.js';
+import { getMinecraftAvatarURL } from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import { time } from 'discord.js';
 import { getReplyOptions, ph } from '../../api/messages.js';
@@ -7,14 +7,14 @@ import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
 
-const mcData = minecraft_data('1.19.2');
+const mcData = minecraft_data('1.19.3');
 
 export default class Advancements extends AutocompleteCommand {
 
     constructor() {
         super({
             name: 'advancements',
-            requiresConnectedUser: 1,
+            requiresUserIndex: 1,
             category: 'main',
         });
     }
@@ -33,7 +33,7 @@ export default class Advancements extends AutocompleteCommand {
         });
 
         interaction.respond(respondArray)
-            .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.command(interaction.command), ph.error(err)));
+            .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {
@@ -67,7 +67,7 @@ export default class Advancements extends AutocompleteCommand {
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
             404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' }, ph.colors()),
         })) return;
-        const advancementData = JSON.parse(amFile.data.toString('utf-8'));
+        const advancementData = JSON.parse(amFile.data.toString());
 
         const advancementCriteria = [];
         const advancementTimestamps = [];
@@ -112,7 +112,7 @@ export default class Advancements extends AutocompleteCommand {
 
         await interaction.replyTl(keys.commands.advancements.success, {
             'username': user.username,
-            'user_icon': minecraftAvatarURL(user.uuid),
+            'user_icon': await getMinecraftAvatarURL(user.uuid),
             'advancement_title': advancementTitle,
             'advancement_description': advancementDesc,
             'advancement_criteria': advancementCriteria.join('\n'),

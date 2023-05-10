@@ -235,10 +235,9 @@ export const ph = {
      * Placeholders for a command by name.
      * @param {string} commandName - The name of the command to get placeholders for.
      * @param {Client} client - The client to get the command from.
-     * @param {Guild} guild - The guild to get the command from (for non-production).
      * @returns {Promise<{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}>}
      */
-    async commandName(commandName, client, guild) {
+    async commandName(commandName, client) {
         if(!(client instanceof Discord.Client)) return {};
 
         const command = await fetchCommand(client.application.commands, commandName);
@@ -272,63 +271,26 @@ export const ph = {
  * Adds placeholders to a language key.
  * @template K
  * @param {K} key - The language key to add placeholders to.
- * @param {...object} placeholders - The placeholders to add.
+ * @param {...Object} placeholders - The placeholders to add.
  * @returns {K}
  */
 export function addPh(key, ...placeholders) {
     if(util.types.isProxy(key)) key = getLanguageKey(key);
-
     placeholders = Object.assign({}, ...placeholders);
 
     if(typeof key === 'string') {
-        return key.replace(/%\w+%/g, match =>
-            placeholders[match.replaceAll('%', '')] ?? match,
-        );
+        key = key.replace(/%([^%]+)%/g, (match, name) => placeholders[name] ?? match);
+        return key;
     }
     else if(Array.isArray(key)) {
-        let replaced = [];
-
-        for(const string of key) {
-            if(typeof string === 'object' && Array.isArray(replaced)) {
-                replaced.push(addPh(string, placeholders));
-                continue;
-            }
-
-            const match = string.match(/%.+%/g)?.shift();
-            if(match) {
-                /** @type {Object.<string, string> | Array<string>} */
-                const placeholder = placeholders[match.replaceAll('%', '')];
-
-                if(Array.isArray(placeholder)) {
-                    for(const v of placeholder) {
-                        if(!v.match(/%.+%/g) && Array.isArray(replaced)) replaced.push(v);
-                    }
-                }
-                else if(typeof placeholder === 'object') {
-                    replaced = {};
-                    for(const [k, v] of Object.entries(placeholder)) replaced[k] = v;
-                }
-                else if(Array.isArray(replaced)) {
-                    const v = placeholder ?? match;
-                    replaced.push(v);
-                }
-
-                continue;
-            }
-
-            if(Array.isArray(replaced)) replaced.push(string);
-        }
-
-        return replaced;
+        return key.map(item => addPh(item, placeholders));
     }
-    else if(typeof key === 'object') {
-        const replacedObject = {};
-
-        for(const [k, v] of Object.entries(key)) {
-            replacedObject[k] = addPh(v, placeholders);
+    else if(typeof key === 'object' && key !== null) {
+        const result = {};
+        for(const entry in key) {
+            result[entry] = addPh(key[entry], placeholders);
         }
-
-        return replacedObject;
+        return result;
     }
     else return key;
 }
@@ -464,7 +426,8 @@ export function getActionRows(key, ...placeholders) {
     }
     if(util.types.isProxy(key)) key = getLanguageKey(key);
 
-    const allComponents = key.components?.map(component => getComponent(component, ...placeholders))
+    const allComponents = key.components
+        ?.map(component => getComponent(component, ...placeholders))
         ?.filter(component => component !== undefined);
 
     return createActionRows(allComponents);

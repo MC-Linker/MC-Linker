@@ -167,6 +167,15 @@ export default class WebSocketProtocol extends Protocol {
     }
 
     /**
+     * Gets the live snbt-data of a player. The Player has to be online for this endpoint to work.
+     * @param {string} uuid - The uuid of the player to get the snbt-data of.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async getPlayerNbt(uuid) {
+        return await this._sendRaw('get-player-nbt', { uuid });
+    }
+
+    /**
      * Gets a list of online players on the server.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */

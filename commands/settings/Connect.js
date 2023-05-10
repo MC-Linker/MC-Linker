@@ -49,8 +49,9 @@ export default class Connect extends Command {
                             ip: socket.handshake.address,
                             path: socket.handshake.query.path,
                             channels: [],
-                            'stats-channels': [],
+                            statsChannels: [],
                             online: socket.handshake.query.online === 'true',
+                            floodgatePrefix: socket.handshake.query.floodgatePrefix,
                             version: Number(socket.handshake.query.version.split('.')[1]),
                             worldPath: socket.handshake.query.worldPath,
                             protocol: 'websocket',
@@ -69,7 +70,7 @@ export default class Connect extends Command {
                     }
                     catch(err) {
                         await c.shard.broadcastEval((c, { id, error }) => {
-                            c.emit('editConnectResponse', id, 'error', { error });
+                            c.emit('editConnectResponse', id, 'error', { error_stack: error });
                         }, { context: { id, error: err.stack }, shard });
                         socket.disconnect(true);
                     }
@@ -167,6 +168,7 @@ export default class Connect extends Command {
                 password,
                 port,
                 online: propertiesObject['online-mode'],
+                floodgatePrefix: await utils.getFloodgatePrefix(ftpProtocol, serverPath, interaction.guildId),
                 path: serverPath,
                 worldPath: `${serverPath}${separator}${propertiesObject['level-name']}`,
                 version,
@@ -235,18 +237,20 @@ export default class Connect extends Command {
 
                     await message.replyTl(keys.commands.connect.success.verification);
 
+                    const serverPath = decodeURIComponent(resp.data.path);
                     /** @type {HttpServerConnectionData} */
                     const serverConnectionData = {
                         ip,
                         port,
                         version: parseInt(resp.data.version.split('.')[1]),
-                        path: decodeURIComponent(resp.data.path),
+                        path: serverPath,
                         worldPath: decodeURIComponent(resp.data.worldPath),
+                        floodgatePrefix: resp.data.floodgatePrefix,
                         token: resp.data.token,
                         online: resp.data.online,
                         protocol: 'http',
                         channels: [],
-                        'stats-channels': [],
+                        statsChannels: [],
                         id: interaction.guildId,
                     };
 
@@ -283,12 +287,11 @@ export default class Connect extends Command {
     async _disconnectOldPlugin(interaction, server) {
         /** @type {?ProtocolResponse} */
         let resp;
-        if(server?.hasHttpProtocol()) resp = await server.protocol.disconnect();
-        else if(server?.hasWebSocketProtocol()) resp = await server.protocol.disconnect();
-        else if(server?.hasFtpProtocol()) return await client.serverConnections.disconnect(server);
+        if(server?.protocol?.isPluginProtocol()) resp = await server.protocol.disconnect();
+        else if(server?.protocol?.isFtpProtocol()) return await client.serverConnections.disconnect(server);
         else return;
 
-        if(!resp || resp.status !== 200) await interaction.channel.send(addPh(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
+        if(!resp || resp.status !== 200) await interaction.channel.send(getReplyOptions(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
         else {
             await client.serverConnections.disconnect(server);
             await interaction.channel.send(getReplyOptions(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));

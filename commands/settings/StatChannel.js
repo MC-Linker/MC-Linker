@@ -43,7 +43,7 @@ export default class StatChannel extends Command {
             const resp = await server.protocol.addStatsChannel(statChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            await server.edit({ 'stats-channels': resp.data });
+            await server.edit({ statsChannels: resp.data });
 
             let message;
             if(statChannel.type === 'member-counter') {
@@ -68,7 +68,7 @@ export default class StatChannel extends Command {
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
             statsChannels.splice(index, 1);
-            await server.edit({ 'stats-channels': statsChannels });
+            await server.edit({ statsChannels: statsChannels });
 
             await interaction.replyTl(keys.commands.statchannel.success.remove);
         }

@@ -98,7 +98,7 @@
             "description": "An unknown error occurred while executing this command. Please try again."
           }
         ],
-        "console": "Could not execute %interaction_name% command %error%"
+        "console": "Could not execute %interaction_name% command %error_stack%"
       },
       "could_not_execute_button": {
         "embeds": [
@@ -107,10 +107,10 @@
             "description": "An unknown error occurred while executing this button. Please try again."
           }
         ],
-        "console": "Could not execute %button% button %error%"
+        "console": "Could not execute %button% button %error_stack%"
       },
       "could_not_autocomplete_command": {
-        "console": "Could not respond to %interaction_name% autocomplete %error%"
+        "console": "Could not respond to %interaction_name% autocomplete %error_stack%"
       }
     },
     "success": {
@@ -184,7 +184,7 @@
               "description": "%output_error%"
             }
           ],
-          "console": "Unknown error %error%"
+          "console": "Unknown error %error_stack%"
         }
       }
     },
@@ -549,8 +549,8 @@
           "dropped": "has dropped **%stat_value% %stat_name%**",
           "killed": "has killed **%stat_value% %stat_name%**",
           "killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
-          "time": "**%stat_name%**: **%stat_value%** hours",
-          "distance": "**%stat_name%**: **%stat_value%** meters"
+          "time": "**%stat_name%**: **%stat_value%**",
+          "distance": "**%stat_name%**: **%stat_value%**"
         },
         "final": {
           "embeds": [
@@ -662,9 +662,7 @@
       }
     },
     "serverinfo": {
-      "warnings": {
-        "unknown": "*Unknown*"
-      },
+      "unknown": "*Unknown*",
       "enabled": "Enabled",
       "disabled": "Disabled",
       "difficulty": [
@@ -748,7 +746,7 @@
                   "inline": true
                 },
                 {
-                  "name": "Gamerules",
+                  "name": "Gamerules (only non-default values)",
                   "value": "%gamerules%",
                   "inline": false
                 }
@@ -828,6 +826,229 @@
           "type": "Button",
           "style": "Danger",
           "custom_id": "serverinfo_admin"
+        }
+      }
+    },
+    "userinfo": {
+      "online": "Online",
+      "offline": "Offline",
+      "yes": "Yes",
+      "no": "No",
+      "gamemode": [
+        "Survival",
+        "Creative",
+        "Adventure",
+        "Spectator"
+      ],
+      "dimensions": {
+        "overworld": "Overworld",
+        "the_nether": "Nether",
+        "the_end": "End"
+      },
+      "success": {
+        "general": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "footer": {
+                "text": "UUID: %uuid%"
+              },
+              "fields": [
+                {
+                  "name": "Status",
+                  "value": "%status% %status_emoji%",
+                  "inline": true
+                },
+                {
+                  "name": "Banned",
+                  "value": "%banned%",
+                  "inline": true
+                },
+                {
+                  "name": "Whitelisted",
+                  "value": "%whitelisted%",
+                  "inline": true
+                },
+                {
+                  "name": "Operator",
+                  "value": "%operator% (Level: %operator_level%)",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "survival": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "fields": [
+                {
+                  "name": "Gamemode",
+                  "value": "%gamemode%",
+                  "inline": true
+                },
+                {
+                  "name": "Score",
+                  "value": "%score% :diamonds:",
+                  "inline": true
+                },
+                {
+                  "name": "Health",
+                  "value": "%health% ❤️",
+                  "inline": true
+                },
+                {
+                  "name": "Food Level",
+                  "value": "%food% 🍗 (Saturation: %saturation%)",
+                  "inline": true
+                },
+                {
+                  "name": "XP",
+                  "value": "%xp% ✨ (Level: %xp_level%)",
+                  "inline": true
+                },
+                {
+                  "name": "First Joined",
+                  "value": "%first_join%",
+                  "inline": true
+                },
+                {
+                  "name": "Last Joined",
+                  "value": "%last_join%",
+                  "inline": true
+                },
+                {
+                  "name": "Play Time",
+                  "value": "%play_time%",
+                  "inline": true
+                },
+                {
+                  "name": "Effects",
+                  "value": "%effects%",
+                  "inline": true
+                },
+                {
+                  "name": "Teams",
+                  "value": "%teams%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "admin": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "fields": [
+                {
+                  "name": "Current Position",
+                  "value": "`%position%` (Dimension: %dimension%)",
+                  "inline": true
+                },
+                {
+                  "name": "Spawn Location",
+                  "value": "`%spawn_location%` (Dimension: %spawn_dimension%)",
+                  "inline": true
+                },
+                {
+                  "name": "Last Death Location",
+                  "value": "`%death_location%` (Dimension: %death_dimension%)",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "admin_button": {
+          "embeds": [
+            {
+              "title": "Command Executed",
+              "description": "Command: `%command%`\n%response%"
+            }
+          ]
+        },
+        "buttons": {
+          "kick": {
+            "style": "Danger",
+            "label": "Kick",
+            "custom_id": "userinfo_kick",
+            "disabled": false,
+            "type": "Button"
+          },
+          "ban": {
+            "style": "Danger",
+            "label": "Ban",
+            "custom_id": "userinfo_ban",
+            "disabled": false,
+            "type": "Button"
+          },
+          "unban": {
+            "style": "Danger",
+            "label": "Un-Ban",
+            "custom_id": "userinfo_unban",
+            "disabled": false,
+            "type": "Button"
+          },
+          "whitelist": {
+            "style": "Secondary",
+            "label": "Whitelist",
+            "custom_id": "userinfo_whitelist",
+            "disabled": false,
+            "type": "Button"
+          },
+          "unwhitelist": {
+            "style": "Secondary",
+            "label": "Un-Whitelist",
+            "custom_id": "userinfo_unwhitelist",
+            "disabled": false,
+            "type": "Button"
+          },
+          "op": {
+            "style": "Primary",
+            "label": "OP",
+            "custom_id": "userinfo_op",
+            "disabled": false,
+            "type": "Button"
+          },
+          "deop": {
+            "style": "Primary",
+            "label": "De-OP",
+            "custom_id": "userinfo_deop",
+            "disabled": false,
+            "type": "Button"
+          },
+          "general": {
+            "label": "General Information",
+            "type": "Button",
+            "style": "Secondary",
+            "custom_id": "userinfo_general"
+          },
+          "survival": {
+            "label": "Survival Information",
+            "type": "Button",
+            "style": "Secondary",
+            "custom_id": "userinfo_survival"
+          },
+          "admin": {
+            "label": "Admin Information",
+            "type": "Button",
+            "style": "Danger",
+            "custom_id": "userinfo_admin"
+          }
         }
       }
     },
@@ -1134,6 +1355,10 @@
                 {
                   "name": "Webhook Mode",
                   "value": "%webhooks%"
+                },
+                {
+                  "name": "Discord To Minecraft",
+                  "value": "%discord_to_minecraft%"
                 }
               ]
             }
@@ -1305,7 +1530,7 @@
               "description": "An unknown error occurred while connecting to the plugin."
             }
           ],
-          "console": "Unknown websocket connection error %error%"
+          "console": "Unknown websocket connection error %error_stack%"
         }
       },
       "success": {
@@ -1491,20 +1716,20 @@
           "console": "Could not get reply options: No key specified"
         },
         "could_not_reply": {
-          "console": "Could not reply to interaction %error%\n%interaction%"
+          "console": "Could not reply to interaction %error_stack%\n%interaction%"
         },
         "could_not_reply_channel": {
-          "console": "Could not send message to channel of interaction %error%\n%interaction%"
+          "console": "Could not send message to channel of interaction %error_stack%\n%interaction%"
         }
       }
     },
     "settings": {
       "errors": {
         "could_not_read_file": {
-          "console": "Could not read disable file %error%"
+          "console": "Could not read disable file %error_stack%"
         },
         "could_not_write_file": {
-          "console": "Could not read disable file %error%"
+          "console": "Could not read disable file %error_stack%"
         }
       }
     },
@@ -1735,7 +1960,7 @@
               "description": "Could not read the NBT file. File may be corrupted."
             }
           ],
-          "console": "Could not read nbt file %error%"
+          "console": "Could not read nbt file %error_stack%"
         }
       }
     },
@@ -1745,7 +1970,7 @@
           "embeds": [
             {
               "title": "Could Not Fetch UUID",
-              "description": "**%username%** is not a valid minecraft java edition account name."
+              "description": "**%username%** is not a valid minecraft account name. Geyser/Floodgate usernames need to start with the configured prefix."
             }
           ],
           "console": "Could not fetch uuid of %username%"
@@ -1763,7 +1988,8 @@
               "title": "No Permission",
               "description": "Only the command sender can use this button."
             }
-          ]
+          ],
+          "ephemeral": true
         },
         "no_permission": {
           "embeds": [
@@ -1772,7 +1998,7 @@
               "description": "This button can only be used with the `%permission%` permission!"
             }
           ],
-          "console": "No permission"
+          "ephemeral": true
         }
       },
       "success": {
@@ -1782,7 +2008,7 @@
               "type": "Button",
               "style": "Secondary",
               "custom_id": "%id%",
-              "label": "Next"
+              "label": "Next >"
             }
           ]
         },
@@ -1792,7 +2018,7 @@
               "type": "Button",
               "style": "Secondary",
               "custom_id": "%id%",
-              "label": "Back"
+              "label": "< Back"
             }
           ]
         },
@@ -2488,6 +2714,20 @@
       "long_description": "View information about the connected **minecraft server**.",
       "description": "View information about the connected minecraft server."
     },
+    "userinfo": {
+      "name": "userinfo",
+      "type": "ChatInput",
+      "long_description": "View information about the specified **minecraft user**.",
+      "description": "View information about the specified minecraft user.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to view information about.",
+          "required": true
+        }
+      ]
+    },
     "account": {
       "name": "account",
       "type": "ChatInput",
@@ -2636,7 +2876,9 @@
                 "GuildAnnouncement",
                 "AnnouncementThread",
                 "PublicThread",
-                "PrivateThread"
+                "PrivateThread",
+                "GuildVoice",
+                "GuildStageVoice"
               ]
             },
             {
@@ -2648,7 +2890,7 @@
             {
               "type": "Boolean",
               "name": "webhooks",
-              "description": "Enable webhook mode for chat messages. (Default: false)",
+              "description": "Enable webhook mode for chat messages. (Default: true)",
               "required": false
             }
           ]
@@ -2668,7 +2910,9 @@
                 "GuildAnnouncement",
                 "AnnouncementThread",
                 "PublicThread",
-                "PrivateThread"
+                "PrivateThread",
+                "GuildVoice",
+                "GuildStageVoice"
               ]
             }
           ]

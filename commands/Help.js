@@ -42,7 +42,7 @@ export default class Help extends Command {
 
                 helpEmbed.addFields(addPh(
                     keys.commands.help.success.category.embeds[0].fields[0],
-                    await ph.commandName(command.name, client, interaction.guild),
+                    await ph.commandName(command.name, client),
                     { 'command_description': command.description },
                 ));
             }
@@ -67,7 +67,7 @@ export default class Help extends Command {
                     'command_usage': commandUsage,
                     'invite_link': process.env.DISCORD_LINK,
                 },
-                await ph.commandName(commandName, client, interaction.guild),
+                await ph.commandName(commandName, client),
             ));
 
             if(settings && settings.isDisabled('bot-commands', command.name)) {

@@ -66,17 +66,14 @@ export default class Button {
             const memberPerms = interaction.member.permissionsIn(interaction.channel);
             if(!memberPerms.has(this.permissions)) {
                 const missingPermission = this.permissions.toArray().find(perm => !memberPerms.has(perm));
-                await interaction.replyTl({
-                    ...keys.api.button.no_access.no_permission,
-                    ephemeral: true,
-                }, { permission: missingPermission });
+                await interaction.replyTl(keys.api.button.no_access.no_permission, { permission: missingPermission });
                 return false;
             }
         }
 
         if(this.author) {
             if(this.author.id !== interaction.user.id) {
-                await interaction.replyTl({ ...keys.api.button.no_access.no_author, ephemeral: true });
+                await interaction.replyTl(keys.api.button.no_access.no_author);
                 return false;
             }
         }
