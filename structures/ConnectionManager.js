@@ -22,24 +22,17 @@ export default class ConnectionManager extends CachedManager {
      * Creates a new ConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {typeof Connection} holds - The type of connection the manager holds.
-     * @param {string} outputPath - The path to write server data to.
-     * @param {string} outputFile - The name of the file to write the connection data to.
+     * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ConnectionManager} - A new ConnectionManager instance.
      */
-    constructor(client, holds, outputPath, outputFile) {
+    constructor(client, holds, collectionName) {
         super(client, holds);
 
         /**
-         * The path to write server data to.
-         * @type {string}
+         * The name of the database collection that this manager controls.
+         * @type {CollectionName}
          */
-        this.outputPath = outputPath;
-
-        /**
-         * The name of the file to write the connection data to.
-         * @type {string}
-         */
-        this.outputFile = outputFile;
+        this.collectionName = collectionName;
 
         /**
          * The connection cache of this manager.
@@ -55,13 +48,13 @@ export default class ConnectionManager extends CachedManager {
      */
     async connect(data) {
         /** @type {?Connection} */
-        const connection = this._add(data, true, { extras: [this.outputPath, this.outputFile] });
+        const connection = this._add(data, true, { extras: [this.collectionName] });
         if(connection && await connection._output()) {
             if('socket' in data) delete data.socket;// The socket is not serializable and should not be broadcasted
             //Broadcast to all shards
             await this.client.shard.broadcastEval((c, { data, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
-                c[manager]._add(data, true, { extras: [c[manager].outputPath, c[manager].outputFile] });
+                c[manager]._add(data, true, { extras: [c[manager].collectionName] });
             }, { context: { data, manager: getManagerString(this), shard: this.client.shard.ids[0] } });
             return connection;
         }
@@ -97,15 +90,37 @@ export default class ConnectionManager extends CachedManager {
      * @returns {Promise<void>}
      */
     async _load() {
-        await fs.ensureDir(this.outputPath);
+        /** @type {ServerConnectionFindManyArgs} */
+        const findManyOptions = {};
+        if(this.collectionName === 'serverConnection') findManyOptions.include = {
+            chatChannels: true,
+            statsChannels: true,
+            serverSettings: true,
+        };
+        else if(this.collectionName === 'serverSettingsConnection') findManyOptions.include = {
+            server: true,
+            disabled: true,
+        };
+        else if(this.collectionName === 'userSettingsConnection') findManyOptions.include = { tokens: true };
 
-        const connections = await fs.readdir(this.outputPath);
-        for(const connectionFile of connections) {
-            try {
-                const connection = await fs.readFile(`${this.outputPath}/${connectionFile}/${this.outputFile}`, 'utf8');
-                await this._add(JSON.parse(connection), true, { extras: [this.outputPath] });
-            }
-            catch(error) {}
+        const connections = await this.client.prisma[this.collectionName].findMany(findManyOptions);
+        for(const connection of connections) {
+            await this._add(connection, true, { extras: [this.collectionName] });
+        }
+    }
+
+    /**
+     * Removes the download cache folder for a connection.
+     * @param {string} id - The id of the connection.
+     * @returns {Promise<boolean>}
+     */
+    async removeCache(id) {
+        try {
+            await fs.rm(`./download-cache/${this.collectionName}/${id}/`, { recursive: true });
+            return true;
+        }
+        catch(_) {
+            return false;
         }
     }
 }

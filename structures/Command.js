@@ -104,7 +104,7 @@ export default class Command {
         }
 
         const settings = await client.serverSettingsConnections.cache.get(interaction.guildId);
-        if(settings?.isDisabled('bot-commands', this.name)) {
+        if(settings?.isDisabled('botCommands', this.name)) {
             await interaction.replyTl(keys.api.command.no_access.disabled, await ph.interaction(interaction));
             return false;
         }

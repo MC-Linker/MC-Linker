@@ -70,7 +70,7 @@ export default class Help extends Command {
                 await ph.commandName(commandName, client),
             ));
 
-            if(settings && settings.isDisabled('bot-commands', command.name)) {
+            if(settings && settings.isDisabled('botCommands', command.name)) {
                 const enableRows = getActionRows(
                     keys.commands.help.success.enable_button,
                     { 'command_name': command.name }, ph.emojis(), ph.colors(),

@@ -26,7 +26,7 @@ export default class Disable extends Button {
         const settings = await client.serverSettingsConnections.getOrConnect(interaction.guildId);
 
 
-        if(await settings.disable('bot-commands', commandName)) {
+        if(await settings.disable('botCommands', commandName)) {
             await interaction.replyTl(keys.buttons.disable.success.response, { 'command_name': commandName.cap() });
         }
         else {

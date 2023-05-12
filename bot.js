@@ -54,7 +54,7 @@ client.once(Discord.Events.ClientReady, async () => {
 client.on('allShardsReady', async () => {
     //Load all connections and commands
     await client.loadEverything();
-    
+
     //Set Activity
     client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
@@ -73,7 +73,7 @@ client.on(Discord.Events.GuildDelete, async guild => {
 
     await client.serverConnections.disconnect(guild.id);
     await client.serverSettingsConnections.disconnect(guild.id);
-    await client.serverConnections.removeDataFolder(guild.id);
+    await client.serverConnections.removeCache(guild.id);
 });
 
 client.on(Discord.Events.MessageCreate, async message => {
@@ -82,7 +82,7 @@ client.on(Discord.Events.MessageCreate, async message => {
 
     if(!message.author.bot && !message.content.startsWith(process.env.PREFIX)) {
         /** @type {ChatChannelData} */
-        const channel = server?.channels?.find(c => c.id === message.channel.id);
+        const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
         //Explicit check for false
         //because it can be undefined (i haven't added the field to already existing connections)
         if(!channel || channel.allowDiscordToMinecraft === false) return;

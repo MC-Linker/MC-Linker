@@ -3065,7 +3065,7 @@
       "options": [
         {
           "type": "Subcommand",
-          "name": "bot-commands",
+          "name": "botCommands",
           "description": "Disable a bot-command preventing it from being used.",
           "options": [
             {
@@ -3131,7 +3131,7 @@
               "choices": [
                 {
                   "name": "Bot Commands",
-                  "value": "bot-commands"
+                  "value": "botCommands"
                 },
                 {
                   "name": "Chat Commands",

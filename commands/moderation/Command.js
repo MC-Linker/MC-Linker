@@ -275,7 +275,8 @@ async function getPlaceholder(key, args) {
             break;
         case 'disabled_datapacks':
         case 'enabled_datapacks':
-            const level = await getNBTFile(...FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
+            if(!server) return {};
+            const level = await getNBTFile(...FilePath.LevelDat(server.path, server.id));
 
             const datapacks = level?.Data?.DataPacks;
             if(key === 'enabled_datapacks') placeholder = datapacks?.Enabled;
@@ -288,8 +289,8 @@ async function getPlaceholder(key, args) {
         case 'player_coordinates':
         case 'player_coordinates_xz':
             const uuid = userConn?.uuid;
-            if(!uuid) return {};
-            const playerData = await getNBTFile(...FilePath.PlayerData(server?.path, uuid), `./userdata/playernbt/${uuid}.dat`);
+            if(!uuid || !server) return {};
+            const playerData = await getNBTFile(FilePath.PlayerData(server.path, uuid), `./download-cache/playernbt/${uuid}.dat`);
 
             if(!playerData?.Pos) return {};
             const [x, y, z] = playerData?.Pos;
@@ -668,12 +669,14 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'scoreboards':
-            const scoreboards = await getNBTFile(...FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
+            if(!server) return {};
+            const scoreboards = await getNBTFile(...FilePath.Scoreboards(server.path, server.id));
 
             placeholder = scoreboards?.data?.Objectives?.map(scoreboard => scoreboard.Name) ?? {};
             break;
         case 'bossbars':
-            const bossbars = await getNBTFile(...FilePath.LevelDat(server?.path), `./serverdata/connections/${server?.id}/level.dat`);
+            if(!server) return {};
+            const bossbars = await getNBTFile(...FilePath.LevelDat(server.path, server.id));
             if(!bossbars) return {};
 
             try {
@@ -3137,7 +3140,8 @@ async function getPlaceholder(key, args) {
             );
             break;
         case 'teams':
-            const teams = await getNBTFile(...FilePath.Scoreboards(server?.path), `./serverdata/connections/${server?.id}/scoreboard.dat`);
+            if(!server) return {};
+            const teams = await getNBTFile(...FilePath.Scoreboards(server.path, server.id));
 
             placeholder = teams?.data?.Teams?.map(team => team.Name) ?? {};
             break;

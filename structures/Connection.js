@@ -1,5 +1,4 @@
 import { Base } from 'discord.js';
-import fs from 'fs-extra';
 import { getManagerStringFromConnection } from '../api/shardingUtils.js';
 
 export default class Connection extends Base {
@@ -9,51 +8,61 @@ export default class Connection extends Base {
      */
 
     /**
+     * @typedef {'serverConnection'|'userConnection'|'serverSettingsConnection'|'userSettingsConnection'} CollectionName - The name of a database collection.
+     */
+    ;
+
+    /**
      * @param {MCLinker} client - The client to create the connection for.
      * @param {ConnectionData} data - The data for the connection.
-     * @param {string} outputPath - The path to write the connection to.
-     * @param {string} outputFile - The name of the file to write the connection data to.
+     * @param {CollectionName} collectionName - The name of the database collection that this connection is stored in.
      * @returns {Connection} - A new Connection instance.
      */
-    constructor(client, data, outputPath, outputFile) {
+    constructor(client, data, collectionName) {
         super(client);
 
         /**
-         * The path to write this connection to.
-         * @type {string}
+         * The name of the database collection that this connection is stored in.
+         * @type {CollectionName}
          */
-        this.outputPath = `${outputPath}/${data.id}`;
-
-        /**
-         * The file name of the connection.
-         * @type {string}
-         */
-        this.outputFile = outputFile;
+        this.collectionName = collectionName;
     }
 
     /**
-     * Writes the data of the connection to the fs.
-     * @returns {Promise<boolean>} - Whether the data was correctly written to the fs.
+     * Writes the data of the connection to the database.
+     * @returns {Promise<boolean>} - Whether the data was correctly written to the database.
      */
     async _output() {
         const data = this.getData();
-        return await fs.outputJson(`${this.outputPath}/${this.outputFile}`, data, { spaces: 2 })
-            .then(() => true)
-            .catch(() => false);
+        console.log(data, this.collectionName, this.client.prisma[this.collectionName]);
+
+        const tempId = data.id;
+        delete data.id; // Prisma does not allow to update the id
+        return await this.client.prisma[this.collectionName].upsert({
+            where: { id: tempId },
+            update: data,
+            create: data,
+        }).then(args => {
+            console.log(args);
+            return true;
+        }).catch(args => {
+            console.log(args);
+            return false;
+        });
     }
 
     /**
-     * Deletes the data of the connection from the fs.
+     * Deletes the data of the connection from the database.
      * @returns {Promise<boolean>} - Whether the deletion was successful.
      */
     async _delete() {
-        return await fs.rm(`${this.outputPath}/${this.outputFile}`)
+        return await this.client.prisma[this.collectionName].delete({ where: { id: this.id } })
             .then(() => true)
             .catch(() => false);
     }
 
     /**
-     * Edits the connection with the given data and writes it to the fs.
+     * Edits the connection with the given data and writes it to the database.
      * @param {Partial<ConnectionData>} data - The data to edit the connection with.
      * @returns {Promise<?Connection>} - The connection instance that has been edited.
      */
@@ -61,6 +70,7 @@ export default class Connection extends Base {
         this._patch(data);
         if(await this._output()) {
             if('socket' in data) delete data.socket;// The socket is not serializable and should not be broadcasted
+
             // Broadcast the patch to all shards
             await this.client.shard.broadcastEval((c, { id, data, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it

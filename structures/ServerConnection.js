@@ -35,7 +35,7 @@ export default class ServerConnection extends Connection {
      * @property {string} token - The connection token used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {ChatChannelData[]} channels - The chatchannels connected to the server.
+     * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statsChannels - The data for stats channels.
      * @property {'http'} protocol - The protocol used to connect to the server.
      */
@@ -65,7 +65,7 @@ export default class ServerConnection extends Connection {
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {ChatChannelData[]} channels - The chatchannels connected to the server.
+     * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statsChannels - The data for stats channels.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
@@ -88,12 +88,11 @@ export default class ServerConnection extends Connection {
     /**
      * @param {MCLinker} client - The client to create the server-connection for.
      * @param {ServerConnectionData} data - The data for the server-connection.
-     * @param {string} outputPath - The path to write the server-connection to.
-     * @param {string} [outputFile='connection.json'] - The file to write the server-connection to.
+     * @param {CollectionName} collectionName - The name of the database collection that this connection is stored in.
      * @returns {ServerConnection} - A new ServerConnection instance.
      */
-    constructor(client, data, outputPath, outputFile = 'connection.json') {
-        super(client, data, outputPath, outputFile);
+    constructor(client, data, collectionName = 'serverConnection') {
+        super(client, data, collectionName);
 
         /**
          * The settings for this server.
@@ -101,7 +100,7 @@ export default class ServerConnection extends Connection {
          */
         this.settings = client.serverSettingsConnections._add(data.id, true, {
             id: data.id,
-            extras: [client.serverSettingsConnections.outputPath],
+            extras: [client.serverSettingsConnections.collectionName],
         });
 
         // Assign the protocol used to communicate with the server.
@@ -213,12 +212,12 @@ export default class ServerConnection extends Connection {
              */
             this.hash = data.hash;
         }
-        if('channels' in data) {
+        if('channels' in data || 'chatChannels' in data) {
             /**
              * The chatchannels connected to this server.
              * @type {ChatChannelData[]}
              * */
-            this.channels = data.channels;
+            this.chatChannels = data.chatChannels ?? data.channels;
         }
         if('stats-channels' in data || 'statsChannels' in data) {
             /**
@@ -295,7 +294,7 @@ export default class ServerConnection extends Connection {
                 ...baseData,
                 port: this.port,
                 token: this.token,
-                channels: this.channels ?? [],
+                chatChannels: this.chatChannels ?? [],
                 statsChannels: this.statsChannels ?? [],
                 protocol: 'http',
             };
@@ -313,7 +312,7 @@ export default class ServerConnection extends Connection {
             return {
                 ...baseData,
                 hash: this.hash,
-                channels: this.channels ?? [],
+                chatChannels: this.chatChannels ?? [],
                 statsChannels: this.statsChannels ?? [],
                 protocol: 'websocket',
             };

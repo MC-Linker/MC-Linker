@@ -261,7 +261,7 @@ export default class BotAPI extends EventEmitter {
         //Check whether command is blocked
         if(['player_command', 'console_command', 'block_command'].includes(type)) {
             const commandName = message.replace(/^\//, '').split(/\s+/)[0];
-            if(server.settings.isDisabled('chat-commands', commandName)) return;
+            if(server.settings.isDisabled('chatCommands', commandName)) return;
         }
 
         const guild = await this.client.guilds.fetch(guildId);
@@ -287,7 +287,7 @@ export default class BotAPI extends EventEmitter {
         const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), ph.colors(), { 'timestamp_now': Date.now() });
         if(type !== 'chat') {
             for(const channel of channels) {
-                if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
+                if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
                 /** @type {?Discord.TextChannel} */
                 let discordChannel;
@@ -300,7 +300,7 @@ export default class BotAPI extends EventEmitter {
                     if(err.code === 10003) {
                         const regChannel = await server.protocol.removeChatChannel(channel);
                         if(!regChannel) continue;
-                        await server.edit({ channels: regChannel.data });
+                        await server.edit({ chatChannels: regChannel.data });
                     }
                 }
             }
@@ -331,7 +331,7 @@ export default class BotAPI extends EventEmitter {
                 if(err.code === 10003) {
                     const regChannel = await server.protocol.removeChatChannel(channel);
                     if(!regChannel) continue;
-                    await server.edit({ channels: regChannel.data });
+                    await server.edit({ chatChannels: regChannel.data });
                 }
                 continue;
             }
@@ -370,7 +370,7 @@ export default class BotAPI extends EventEmitter {
                         return;
                     }
 
-                    await server.edit({ channels: regChannel.data });
+                    await server.edit({ chatChannels: regChannel.data });
                 }
 
                 //Edit webhook if name doesnt match
@@ -393,8 +393,6 @@ export default class BotAPI extends EventEmitter {
             }
         }
     }
-
-    //TODO TEST CHATCHANNELS
 
     /**
      * Handles stats channel updates

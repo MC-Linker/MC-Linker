@@ -16,12 +16,11 @@ export default class UserSettingsConnection extends Connection {
     /**
      * @param {MCLinker} client - The client to create the settings for.
      * @param {UserSettingsConnectionData|string} data - The data for the settings connection.
-     * @param {string} outputPath - The path to write the settings to.
-     * @param {string} [outputFile='settings.json'] - The name of the file to write the settings to.
+     * @param {CollectionName} collectionName - The name of the database collection that this connection is stored in.
      * @returns {UserSettingsConnection} - A new UserSettingsConnection instance.
      */
-    constructor(client, data, outputPath, outputFile = 'settings.json') {
-        super(client, data, outputPath, outputFile);
+    constructor(client, data, collectionName = 'userSettingsConnection') {
+        super(client, data, collectionName);
 
         this._patch(data);
     }

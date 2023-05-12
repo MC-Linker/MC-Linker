@@ -11,6 +11,7 @@ import Command from './Command.js';
 import Button from './Button.js';
 import BotAPI from '../api/BotAPI.js';
 import * as utils from '../api/utils.js';
+import { PrismaClient } from '@prisma/client';
 
 export default class MCLinker extends Discord.Client {
 
@@ -43,6 +44,12 @@ export default class MCLinker extends Discord.Client {
      * @type {Discord.Collection<string, Button>}
      */
     buttons = new Discord.Collection();
+
+    /**
+     * The prisma database client.
+     * @type {PrismaClient}
+     */
+    prisma = new PrismaClient();
 
     /**
      * Creates a new MCLinker client instance.

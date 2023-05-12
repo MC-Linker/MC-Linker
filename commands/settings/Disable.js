@@ -46,10 +46,12 @@ export default class Disable extends AutocompleteCommand {
         if(!await super.execute(interaction, client, args, server)) return;
 
         const settings = await client.serverSettingsConnections.getOrConnect(interaction.guildId);
-        const type = args?.shift();
+        const type = args.shift()
+            .replace('bot-commands', 'botCommands')
+            .replace('chat-commands', 'chatCommands');
 
         if(type === 'list') {
-            const toList = args?.join(' ').toLowerCase();
+            const toList = args.join(' ').toLowerCase();
 
             const disabled = settings.disabled[toList];
             if(!disabled?.length) {
@@ -76,10 +78,10 @@ export default class Disable extends AutocompleteCommand {
             return interaction.replyOptions({ embeds: [listEmbed] });
         }
         else {
-            let toDisable = args?.join(' ').toLowerCase();
+            let toDisable = args.join(' ').toLowerCase();
             const argPlaceholder = { disable: toDisable, type };
 
-            if(type === 'bot-commands' && this.disabledCommands.includes(toDisable)) {
+            if(type === 'botCommands' && this.disabledCommands.includes(toDisable)) {
                 return interaction.replyTl(keys.commands.disable.warnings.disabled_command, argPlaceholder);
             }
 
@@ -87,7 +89,7 @@ export default class Disable extends AutocompleteCommand {
             if(!formattedToDisable) {
                 return interaction.replyTl(keys.commands.disable.warnings.command_does_not_exist, argPlaceholder);
             }
-            if(type === 'bot-commands') toDisable = formattedToDisable.toLowerCase();
+            if(type === 'botCommands') toDisable = formattedToDisable.toLowerCase();
 
             if(!await settings.disable(type, toDisable)) {
                 return interaction.replyTl(keys.commands.disable.errors.could_not_disable, {
@@ -100,7 +102,7 @@ export default class Disable extends AutocompleteCommand {
         }
 
         function getFormattedName(type, name) {
-            if(type === 'bot-commands') {
+            if(type === 'botCommands') {
                 const command = client.commands.get(name);
                 if(!command) return;
 

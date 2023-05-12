@@ -14,7 +14,7 @@ export const FilePath = {
      */
     Advancements: (worldPath, uuid, userId = null) => {
         const advancementPath = `${worldPath}/advancements/${uuid}.json`;
-        return userId ? [advancementPath, `./userdata/connections/${userId}/advancements.json`] : advancementPath;
+        return userId ? [advancementPath, `./download-cache/userConnection/${userId}/advancements.json`] : advancementPath;
     },
     /**
      * Constructs the path to the user's stats file.
@@ -25,7 +25,7 @@ export const FilePath = {
      */
     Stats: (worldPath, uuid, userId) => {
         const statPath = `${worldPath}/stats/${uuid}.json`;
-        return userId ? [statPath, `./userdata/connections/${userId}/stats.json`] : statPath;
+        return userId ? [statPath, `./download-cache/userConnection/${userId}/stats.json`] : statPath;
     },
     /**
      * Constructs the path to the user's playerdata folder.
@@ -36,7 +36,7 @@ export const FilePath = {
      */
     PlayerData: (worldPath, uuid, userId) => {
         const playerdataPath = `${worldPath}/playerdata/${uuid}.dat`;
-        return userId ? [playerdataPath, `./userdata/connections/${userId}/playerdata.dat`] : playerdataPath;
+        return userId ? [playerdataPath, `./download-cache/userConnection/${userId}/playerdata.dat`] : playerdataPath;
     },
 
     /**
@@ -47,7 +47,7 @@ export const FilePath = {
      */
     LevelDat: (worldPath, serverId) => {
         const levelDatPath = `${worldPath}/level.dat`;
-        return serverId ? [levelDatPath, `./serverdata/connections/${serverId}/level.dat`] : levelDatPath;
+        return serverId ? [levelDatPath, `./download-cache/serverConnection/${serverId}/level.dat`] : levelDatPath;
     },
 
     /**
@@ -58,7 +58,7 @@ export const FilePath = {
      */
     Scoreboards: (worldPath, serverId) => {
         const scoreboardsPath = `${worldPath}/data/scoreboard.dat`;
-        return serverId ? [scoreboardsPath, `./serverdata/connections/${serverId}/scoreboard.dat`] : scoreboardsPath;
+        return serverId ? [scoreboardsPath, `./download-cache/serverConnection/${serverId}/scoreboard.dat`] : scoreboardsPath;
     },
 
     /**
@@ -69,7 +69,7 @@ export const FilePath = {
      */
     ServerProperties: (serverPath, serverId) => {
         const serverPropertiesPath = `${serverPath}/server.properties`;
-        return serverId ? [serverPropertiesPath, `./serverdata/connections/${serverId}/server.properties`] : serverPropertiesPath;
+        return serverId ? [serverPropertiesPath, `./download-cache/serverConnection/${serverId}/server.properties`] : serverPropertiesPath;
     },
 
     /**
@@ -80,7 +80,7 @@ export const FilePath = {
      */
     ServerIcon: (serverPath, serverId) => {
         const serverIconPath = `${serverPath}/server-icon.png`;
-        return serverId ? [serverIconPath, `./serverdata/connections/${serverId}/server-icon.png`] : serverIconPath;
+        return serverId ? [serverIconPath, `./download-cache/serverConnection/${serverId}/server-icon.png`] : serverIconPath;
     },
 
     /**
@@ -91,7 +91,7 @@ export const FilePath = {
      */
     Whitelist: (serverPath, serverId) => {
         const whitelistPath = `${serverPath}/whitelist.json`;
-        return serverId ? [whitelistPath, `./serverdata/connections/${serverId}/whitelist.json`] : whitelistPath;
+        return serverId ? [whitelistPath, `./download-cache/serverConnection/${serverId}/whitelist.json`] : whitelistPath;
     },
 
     /**
@@ -102,7 +102,7 @@ export const FilePath = {
      */
     Operators: (serverPath, serverId) => {
         const operatorsPath = `${serverPath}/ops.json`;
-        return serverId ? [operatorsPath, `./serverdata/connections/${serverId}/ops.json`] : operatorsPath;
+        return serverId ? [operatorsPath, `./download-cache/serverConnection/${serverId}/ops.json`] : operatorsPath;
     },
 
     /**
@@ -113,7 +113,7 @@ export const FilePath = {
      */
     BannedPlayers: (serverPath, serverId) => {
         const bannedPlayersPath = `${serverPath}/banned-players.json`;
-        return serverId ? [bannedPlayersPath, `./serverdata/connections/${serverId}/banned-players.json`] : bannedPlayersPath;
+        return serverId ? [bannedPlayersPath, `./download-cache/serverConnection/${serverId}/banned-players.json`] : bannedPlayersPath;
     },
 
     /**
@@ -124,7 +124,7 @@ export const FilePath = {
      */
     BannedIPs: (serverPath, serverId) => {
         const bannedIpsPath = `${serverPath}/banned-ips.json`;
-        return serverId ? [bannedIpsPath, `./serverdata/connections/${serverId}/banned-ips.json`] : bannedIpsPath;
+        return serverId ? [bannedIpsPath, `./download-cache/serverConnection/${serverId}/banned-ips.json`] : bannedIpsPath;
     },
 
     /**
@@ -135,7 +135,7 @@ export const FilePath = {
      */
     Plugins: (serverPath, serverId) => {
         const pluginsPath = `${serverPath}/plugins`;
-        return serverId ? [pluginsPath, `./serverdata/connections/${serverId}/plugins`] : pluginsPath;
+        return serverId ? [pluginsPath, `./download-cache/serverConnection/${serverId}/plugins`] : pluginsPath;
     },
 
     /**
@@ -146,7 +146,7 @@ export const FilePath = {
      */
     Mods: (serverPath, serverId) => {
         const modsPath = `${serverPath}/mods`;
-        return serverId ? [modsPath, `./serverdata/connections/${serverId}/mods`] : modsPath;
+        return serverId ? [modsPath, `./download-cache/serverConnection/${serverId}/mods`] : modsPath;
     },
 
     /**
@@ -157,7 +157,7 @@ export const FilePath = {
      */
     DataPacks: (worldPath, serverId) => {
         const datapacksPath = `${worldPath}/datapacks`;
-        return serverId ? [datapacksPath, `./serverdata/connections/${serverId}/datapacks`] : datapacksPath;
+        return serverId ? [datapacksPath, `./download-cache/serverConnection/${serverId}/datapacks`] : datapacksPath;
     },
     /**
      * Constructs the path to the server's floodgate config file.
@@ -167,7 +167,7 @@ export const FilePath = {
      */
     FloodgateConfig: (serverPath, serverId) => {
         const floodgateConfigPath = `${serverPath}/plugins/floodgate/config.yml`;
-        return serverId ? [floodgateConfigPath, `./serverdata/connections/${serverId}/floodgate-config.yml`] : floodgateConfigPath;
+        return serverId ? [floodgateConfigPath, `./download-cache/serverConnection/${serverId}/floodgate-config.yml`] : floodgateConfigPath;
     },
 };
 

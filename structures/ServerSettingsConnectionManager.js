@@ -6,11 +6,11 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
     /**
      * Creates a new ServerConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
-     * @param {string} outputPath - The path to write server data to.
+     * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ServerSettingsConnectionManager} - A new ServerSettingsConnectionManager instance.
      */
-    constructor(client, outputPath = './serverdata/connections') {
-        super(client, ServerSettingsConnection, outputPath, 'settings.json');
+    constructor(client, collectionName = 'serverSettingsConnection') {
+        super(client, ServerSettingsConnection, collectionName);
     }
 
     /**
@@ -40,10 +40,10 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
         //Default settings
         return await this.connect({
             disabled: {
-                'bot-commands': [],
+                botCommands: [],
                 advancements: [],
                 stats: [],
-                'chat-commands': [],
+                chatCommands: [],
             },
             language: 'en_us',
             id: guildId,

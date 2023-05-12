@@ -16,12 +16,12 @@ export default class UserConnection extends Connection {
     /**
      * @param {MCLinker} client - The client to create the user connection for.
      * @param {UserConnectionData} data - The data for the user connection.
-     * @param {string} outputPath - The path to write the user connection to.
-     * @param {string} [outputFile='connection.json'] - The file to write the user connection to.
+     * @param {CollectionName} collectionName - The name of the database collection that this connection is stored in.
      * @returns {UserConnection} - A new UserConnection instance.
      */
-    constructor(client, data, outputPath, outputFile = 'connection.json') {
-        super(client, data, outputPath, outputFile);
+    constructor(client, data, collectionName = 'userConnection') {
+        super(client, data, collectionName);
+
         this._patch(data);
     }
 

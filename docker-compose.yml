@@ -8,8 +8,14 @@ services:
       - "${BOT_PORT}:${BOT_PORT}"
     volumes:
       - type: bind
-        source: ./serverdata
-        target: /usr/src/app/serverdata
+        source: ./download-cache
+        target: /usr/src/app/download-cache
+  mongodb:
+    image: mongo
+    restart: on-failure
+    ports:
+      - "27017:27017"
+    volumes:
       - type: bind
-        source: ./userdata
-        target: /usr/src/app/userdata
+        source: ./mongodb
+        target: /data/db
