@@ -9,7 +9,7 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ServerSettingsConnectionManager} - A new ServerSettingsConnectionManager instance.
      */
-    constructor(client, collectionName = 'serverSettingsConnection') {
+    constructor(client, collectionName = 'ServerSettingsConnection') {
         super(client, ServerSettingsConnection, collectionName);
     }
 
@@ -38,15 +38,6 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
         if(connection) return connection;
 
         //Default settings
-        return await this.connect({
-            disabled: {
-                botCommands: [],
-                advancements: [],
-                stats: [],
-                chatCommands: [],
-            },
-            language: 'en_us',
-            id: guildId,
-        });
+        return await this.connect(guildId);
     }
 }

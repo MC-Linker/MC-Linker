@@ -2,6 +2,17 @@ import Connection from './Connection.js';
 
 export default class ServerSettingsConnection extends Connection {
 
+    /** @type {Omit<ServerSettingsConnectionData, 'id'>} */
+    static defaultSettingsData = {
+        disabled: {
+            botCommands: [],
+            advancements: [],
+            stats: [],
+            chatCommands: [],
+        },
+        language: 'en_us',
+    };
+
     /**
      * @typedef {object} ServerSettingsConnectionData - The data for the server settings.
      * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
@@ -23,14 +34,14 @@ export default class ServerSettingsConnection extends Connection {
 
     /**
      * @param {MCLinker} client - The client to create the settings for.
-     * @param {ServerSettingsConnectionData} data - The data for the settings.
+     * @param {ServerSettingsConnectionData|string} dataOrId - The data for the settings or the id of the server, the settings are connected to.
      * @param {CollectionName} collectionName - The name of the database collection that this connection is stored in.
      * @returns {ServerSettingsConnection} - A new ServerSettingsConnection instance.
      */
-    constructor(client, data, collectionName = 'serverSettingsConnection') {
-        super(client, data, collectionName);
+    constructor(client, dataOrId, collectionName = 'ServerSettingsConnection') {
+        super(client, dataOrId, collectionName);
 
-        this._patch(data);
+        this._patch(dataOrId);
     }
 
     _patch(data) {

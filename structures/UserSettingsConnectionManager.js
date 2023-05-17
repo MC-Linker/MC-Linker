@@ -9,7 +9,7 @@ export default class UserSettingsConnectionManager extends ConnectionManager {
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {UserSettingsConnectionManager} - A new UserSettingsConnectionManager instance.
      */
-    constructor(client, collectionName = 'userSettingsConnection') {
+    constructor(client, collectionName = 'UserSettingsConnection') {
         super(client, UserSettingsConnection, collectionName);
     }
 }

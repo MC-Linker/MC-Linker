@@ -36,7 +36,7 @@ export default class ServerConnection extends Connection {
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} statsChannels - The data for stats channels.
+     * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {'http'} protocol - The protocol used to connect to the server.
      */
 
@@ -66,7 +66,7 @@ export default class ServerConnection extends Connection {
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} statsChannels - The data for stats channels.
+     * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
      */
@@ -91,7 +91,7 @@ export default class ServerConnection extends Connection {
      * @param {CollectionName} collectionName - The name of the database collection that this connection is stored in.
      * @returns {ServerConnection} - A new ServerConnection instance.
      */
-    constructor(client, data, collectionName = 'serverConnection') {
+    constructor(client, data, collectionName = 'ServerConnection') {
         super(client, data, collectionName);
 
         /**
@@ -219,12 +219,12 @@ export default class ServerConnection extends Connection {
              * */
             this.chatChannels = data.chatChannels ?? data.channels;
         }
-        if('stats-channels' in data || 'statsChannels' in data) {
+        if('stats-channels' in data || 'statChannels' in data) {
             /**
              * The data for stats channels.
              * @type {StatsChannelData[]}
              */
-            this.statsChannels = data.statsChannels ?? data['stats-channels'];
+            this.statChannels = data.statChannels ?? data.statsChannels ?? data['stats-channels'];
         }
 
         //Switch protocols if needed
@@ -295,7 +295,7 @@ export default class ServerConnection extends Connection {
                 port: this.port,
                 token: this.token,
                 chatChannels: this.chatChannels ?? [],
-                statsChannels: this.statsChannels ?? [],
+                statChannels: this.statChannels ?? [],
                 protocol: 'http',
             };
         }
@@ -313,7 +313,7 @@ export default class ServerConnection extends Connection {
                 ...baseData,
                 hash: this.hash,
                 chatChannels: this.chatChannels ?? [],
-                statsChannels: this.statsChannels ?? [],
+                statChannels: this.statChannels ?? [],
                 protocol: 'websocket',
             };
         }

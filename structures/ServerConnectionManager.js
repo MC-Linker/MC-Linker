@@ -9,7 +9,7 @@ export default class ServerConnectionManager extends ConnectionManager {
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ServerConnectionManager} - A new ServerConnectionManager instance.
      */
-    constructor(client, collectionName = 'serverConnection') {
+    constructor(client, collectionName = 'ServerConnection') {
         super(client, ServerConnection, collectionName);
     }
 

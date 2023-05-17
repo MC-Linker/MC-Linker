@@ -90,20 +90,7 @@ export default class ConnectionManager extends CachedManager {
      * @returns {Promise<void>}
      */
     async _load() {
-        /** @type {ServerConnectionFindManyArgs} */
-        const findManyOptions = {};
-        if(this.collectionName === 'serverConnection') findManyOptions.include = {
-            chatChannels: true,
-            statsChannels: true,
-            serverSettings: true,
-        };
-        else if(this.collectionName === 'serverSettingsConnection') findManyOptions.include = {
-            server: true,
-            disabled: true,
-        };
-        else if(this.collectionName === 'userSettingsConnection') findManyOptions.include = { tokens: true };
-
-        const connections = await this.client.prisma[this.collectionName].findMany(findManyOptions);
+        const connections = await this.client.mongo.models[this.collectionName].find({});
         for(const connection of connections) {
             await this._add(connection, true, { extras: [this.collectionName] });
         }

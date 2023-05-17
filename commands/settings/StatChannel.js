@@ -43,7 +43,7 @@ export default class StatChannel extends Command {
             const resp = await server.protocol.addStatsChannel(statChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            await server.edit({ statsChannels: resp.data });
+            await server.edit({ statChannels: resp.data });
 
             let message;
             if(statChannel.type === 'member-counter') {
@@ -58,27 +58,27 @@ export default class StatChannel extends Command {
         else if(subcommand === 'remove') {
             const channel = args[1];
 
-            const statsChannels = server.statsChannels;
-            const index = statsChannels.findIndex(c => c.id === channel.id);
+            const statChannels = server.statChannels;
+            const index = statChannels.findIndex(c => c.id === channel.id);
             if(index === -1) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
             }
 
-            const response = await server.protocol.removeStatsChannel(statsChannels[index]);
+            const response = await server.protocol.removeStatsChannel(statChannels[index]);
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
-            statsChannels.splice(index, 1);
-            await server.edit({ statsChannels: statsChannels });
+            statChannels.splice(index, 1);
+            await server.edit({ statChannels: statChannels });
 
             await interaction.replyTl(keys.commands.statchannel.success.remove);
         }
         else if(subcommand === 'list') {
             const filter = args[1];
 
-            let statsChannels = server.statsChannels;
-            if(filter && statsChannels) statsChannels = statsChannels.filter(c => c.type === filter);
+            let statChannels = server.statChannels;
+            if(filter && statChannels) statChannels = statChannels.filter(c => c.type === filter);
 
-            if(!statsChannels?.length) {
+            if(!statChannels?.length) {
                 await interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
                 return;
             }
@@ -86,7 +86,7 @@ export default class StatChannel extends Command {
             /** @type {PaginationPages} */
             const pages = {};
 
-            for(const channel of statsChannels) {
+            for(const channel of statChannels) {
                 const channelEmbed = getEmbed(
                     keys.commands.statchannel.success[`${channel.type}_list`],
                     ph.std(interaction),
@@ -98,7 +98,7 @@ export default class StatChannel extends Command {
                     },
                 );
 
-                const index = statsChannels.indexOf(channel);
+                const index = statChannels.indexOf(channel);
                 const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
                     index1: index + 1,
                     index: index,

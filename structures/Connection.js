@@ -8,9 +8,8 @@ export default class Connection extends Base {
      */
 
     /**
-     * @typedef {'serverConnection'|'userConnection'|'serverSettingsConnection'|'userSettingsConnection'} CollectionName - The name of a database collection.
+     * @typedef {'ServerConnection'|'UserConnection'|'ServerSettingsConnection'|'UserSettingsConnection'} CollectionName - The name of a database collection.
      */
-    ;
 
     /**
      * @param {MCLinker} client - The client to create the connection for.
@@ -34,21 +33,16 @@ export default class Connection extends Base {
      */
     async _output() {
         const data = this.getData();
-        console.log(data, this.collectionName, this.client.prisma[this.collectionName]);
 
-        const tempId = data.id;
-        delete data.id; // Prisma does not allow to update the id
-        return await this.client.prisma[this.collectionName].upsert({
-            where: { id: tempId },
-            update: data,
-            create: data,
-        }).then(args => {
-            console.log(args);
-            return true;
-        }).catch(args => {
-            console.log(args);
-            return false;
-        });
+        return await this.client.mongo.models[this.collectionName].updateOne({ id: this.id }, data, { upsert: true })
+            .then(res => {
+                console.log(res);
+                return true;
+            })
+            .catch(err => {
+                console.error(err);
+                return false;
+            });
     }
 
     /**
@@ -56,7 +50,7 @@ export default class Connection extends Base {
      * @returns {Promise<boolean>} - Whether the deletion was successful.
      */
     async _delete() {
-        return await this.client.prisma[this.collectionName].delete({ where: { id: this.id } })
+        return await this.client.mongo.models[this.collectionName].deleteOne({ id: this.id })
             .then(() => true)
             .catch(() => false);
     }

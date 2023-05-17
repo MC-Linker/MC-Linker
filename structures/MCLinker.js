@@ -11,7 +11,7 @@ import Command from './Command.js';
 import Button from './Button.js';
 import BotAPI from '../api/BotAPI.js';
 import * as utils from '../api/utils.js';
-import { PrismaClient } from '@prisma/client';
+import mongoose, { Mongoose, Schema } from 'mongoose';
 
 export default class MCLinker extends Discord.Client {
 
@@ -44,12 +44,6 @@ export default class MCLinker extends Discord.Client {
      * @type {Discord.Collection<string, Button>}
      */
     buttons = new Discord.Collection();
-
-    /**
-     * The prisma database client.
-     * @type {PrismaClient}
-     */
-    prisma = new PrismaClient();
 
     /**
      * Creates a new MCLinker client instance.
@@ -188,6 +182,9 @@ export default class MCLinker extends Discord.Client {
      * @returns {Promise<void>} - A promise that resolves when all commands, user and server connections are loaded.
      */
     async loadEverything() {
+        await this.loadMongoose();
+        console.log(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
+
         await this.serverConnections._load();
         console.log(`[${this.shard.ids[0]}] Loaded all server connections.`);
         await this.userConnections._load();
@@ -196,9 +193,86 @@ export default class MCLinker extends Discord.Client {
         console.log(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
         await this.userSettingsConnections._load();
         console.log(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
+
         await this._loadCommands();
         console.log(`[${this.shard.ids[0]}] Loaded all commands.`);
         await this._loadButtons();
         console.log(`[${this.shard.ids[0]}] Loaded all buttons.`);
+    }
+
+    async loadMongoose() {
+        /**
+         * The mongoose database client.
+         * @type {Mongoose}
+         */
+        this.mongo = await mongoose.connect(process.env.DATABASE_URL);
+
+        const serverConnectionSchema = new Schema({
+            id: { type: String, required: true, unique: true },
+            ip: String,
+            version: Number,
+            path: String,
+            worldPath: String,
+            online: Boolean,
+            floodgatePrefix: String,
+            protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
+            port: Number,
+            username: String,
+            password: String,
+            token: String,
+            hash: String,
+            chatChannels: [{
+                id: { type: String, required: true },
+                types: [{
+                    type: String,
+                    enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
+                }],
+                allowDiscordToMinecraft: Boolean,
+                webhook: String,
+            }],
+            statChannels: [{
+                id: { type: String, required: true },
+                type: { type: String, enum: ['online', 'max', 'members'] },
+                names: {
+                    online: String,
+                    offline: String,
+                    members: String,
+                },
+            }],
+            serverSettings: { type: Schema.Types.ObjectId, ref: 'ServerSettingsConnections' },
+        });
+
+        const serverSettingsConnectionSchema = new Schema({
+            id: { type: String, required: true, unique: true },
+            disabled: {
+                botCommands: [String],
+                advancements: [String],
+                stats: [String],
+                chatCommands: [String],
+            },
+            language: String,
+            server: { type: Schema.Types.ObjectId, ref: 'ServerConnection' },
+        });
+
+        const userSettingsConnectionSchema = new Schema({
+            id: { type: String, required: true, unique: true },
+            tokens: {
+                accessToken: String,
+                refreshToken: String,
+                expires: Number,
+            },
+        });
+
+        const userConnectionSchema = new Schema({
+            id: { type: String, required: true, unique: true },
+            uuid: { type: Schema.Types.UUID, unique: true },
+            username: String,
+        });
+
+        this.mongo.model('ServerConnection', serverConnectionSchema);
+        this.mongo.model('UserConnection', userConnectionSchema);
+        this.mongo.model('ServerSettingsConnection', serverSettingsConnectionSchema);
+        this.mongo.model('UserSettingsConnection', userSettingsConnectionSchema);
+        console.log(this.mongo.models);
     }
 }

@@ -49,7 +49,7 @@ export default class Connect extends Command {
                             ip: socket.handshake.address,
                             path: socket.handshake.query.path,
                             chatChannels: [],
-                            statsChannels: [],
+                            statChannels: [],
                             online: socket.handshake.query.online === 'true',
                             floodgatePrefix: socket.handshake.query.floodgatePrefix,
                             version: Number(socket.handshake.query.version.split('.')[1]),
@@ -250,7 +250,7 @@ export default class Connect extends Command {
                         online: resp.data.online,
                         protocol: 'http',
                         chatChannels: [],
-                        statsChannels: [],
+                        statChannels: [],
                         id: interaction.guildId,
                     };
 

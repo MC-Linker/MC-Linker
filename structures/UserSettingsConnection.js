@@ -19,7 +19,7 @@ export default class UserSettingsConnection extends Connection {
      * @param {CollectionName} collectionName - The name of the database collection that this connection is stored in.
      * @returns {UserSettingsConnection} - A new UserSettingsConnection instance.
      */
-    constructor(client, data, collectionName = 'userSettingsConnection') {
+    constructor(client, data, collectionName = 'UserSettingsConnection') {
         super(client, data, collectionName);
 
         this._patch(data);
