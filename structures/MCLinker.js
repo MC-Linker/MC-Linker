@@ -178,7 +178,7 @@ export default class MCLinker extends Discord.Client {
     }
 
     /**
-     * Loads all commands, user and server connections into the cache
+     * Loads the mongodb database and all commands, user and server connections into the cache.
      * @returns {Promise<void>} - A promise that resolves when all commands, user and server connections are loaded.
      */
     async loadEverything() {

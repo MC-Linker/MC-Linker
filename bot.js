@@ -52,7 +52,7 @@ client.once(Discord.Events.ClientReady, async () => {
 });
 
 client.on('allShardsReady', async () => {
-    //Load all connections and commands
+    //Load all connections and commands and the database
     await client.loadEverything();
 
     //Set Activity
