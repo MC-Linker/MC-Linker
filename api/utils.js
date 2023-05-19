@@ -373,7 +373,7 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
 
 /**
  * Gets the live player nbt data from the server.
- * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise it will download the nbt file.
+ * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise (or if previous method fails) it will download the nbt file.
  * @param {ServerConnection} server - The server to get the nbt data from.
  * @param {UserResponse} user - The uuid of the player.
  * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
@@ -385,7 +385,11 @@ export async function getLivePlayerNbt(server, user, interaction) {
         const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
         if(onlinePlayers.includes(user.username)) {
             const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
-            if(playerNbtResponse?.status === 200) return nbtStringToObject(playerNbtResponse.data.data, interaction);
+            if(playerNbtResponse?.status === 200) {
+                const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
+                if(parsed) return parsed;
+                // else fall back to downloading the nbt file
+            }
         }
     }
 
@@ -437,7 +441,7 @@ export function createUUIDv3(username) {
 /**
  * Creates a JS object from an nbt buffer.
  * @param {Buffer} buffer - The nbt buffer to create the object from.
- * @param {TranslatedResponses} interaction - The interaction to respond to in case of an error.
+ * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
  * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
  */
 export async function nbtBufferToObject(buffer, interaction) {
@@ -454,7 +458,7 @@ export async function nbtBufferToObject(buffer, interaction) {
 /**
  * Creates a JS object from a snbt string. This will also strip extra color codes from the string.
  * @param {string} string - The snbt string to create the object from.
- * @param {TranslatedResponses} interaction - The interaction to respond to in case of an error.
+ * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
  * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
  */
 export function nbtStringToObject(string, interaction) {
