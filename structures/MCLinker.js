@@ -273,6 +273,5 @@ export default class MCLinker extends Discord.Client {
         this.mongo.model('UserConnection', userConnectionSchema);
         this.mongo.model('ServerSettingsConnection', serverSettingsConnectionSchema);
         this.mongo.model('UserSettingsConnection', userSettingsConnectionSchema);
-        console.log(this.mongo.models);
     }
 }
