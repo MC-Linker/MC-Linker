@@ -10,6 +10,8 @@ services:
       - type: bind
         source: ./download-cache
         target: /usr/src/app/download-cache
+    networks:
+      - mongo-network
   mongodb:
     image: mongo
     container_name: mongodb
