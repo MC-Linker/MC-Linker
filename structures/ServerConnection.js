@@ -219,7 +219,7 @@ export default class ServerConnection extends Connection {
              * */
             this.chatChannels = data.chatChannels ?? data.channels;
         }
-        if('stats-channels' in data || 'statChannels' in data) {
+        if('stats-channels' in data || 'statChannels' in data || 'statsChannels' in data) {
             /**
              * The data for stats channels.
              * @type {StatsChannelData[]}

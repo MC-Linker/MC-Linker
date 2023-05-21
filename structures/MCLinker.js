@@ -208,7 +208,7 @@ export default class MCLinker extends Discord.Client {
         this.mongo = await mongoose.connect(process.env.DATABASE_URL);
 
         const serverConnectionSchema = new Schema({
-            _id: { type: String, required: true, unique: true },
+            _id: { type: String },
             ip: String,
             version: Number,
             path: String,
@@ -222,7 +222,7 @@ export default class MCLinker extends Discord.Client {
             token: String,
             hash: String,
             chatChannels: [{
-                _id: { type: String, required: true, unique: true },
+                _id: { type: String },
                 types: [{
                     type: String,
                     enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
@@ -231,7 +231,7 @@ export default class MCLinker extends Discord.Client {
                 webhook: String,
             }],
             statChannels: [{
-                _id: { type: String, required: true, unique: true },
+                _id: { type: String },
                 type: { type: String, enum: ['online', 'max', 'members'] },
                 names: {
                     online: String,
@@ -243,7 +243,7 @@ export default class MCLinker extends Discord.Client {
         });
 
         const serverSettingsConnectionSchema = new Schema({
-            _id: { type: String, required: true, unique: true },
+            _id: { type: String },
             disabled: {
                 botCommands: [String],
                 advancements: [String],
@@ -255,7 +255,7 @@ export default class MCLinker extends Discord.Client {
         });
 
         const userSettingsConnectionSchema = new Schema({
-            _id: { type: String, required: true, unique: true },
+            _id: { type: String },
             tokens: {
                 accessToken: String,
                 refreshToken: String,
@@ -265,7 +265,7 @@ export default class MCLinker extends Discord.Client {
         });
 
         const userConnectionSchema = new Schema({
-            _id: { type: String, required: true, unique: true },
+            _id: { type: String },
             uuid: { type: Schema.Types.UUID, unique: true },
             username: String,
             userSettings: { type: String, ref: 'UserSettingsConnection' },
