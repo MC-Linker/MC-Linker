@@ -92,6 +92,9 @@ export default class ConnectionManager extends CachedManager {
     async _load() {
         const connections = await this.client.mongo.models[this.collectionName].find({});
         for(const connection of connections) {
+            //map _id to id
+            connection.id = connection._id;
+            delete connection._id;
             await this._add(connection, true, { extras: [this.collectionName] });
         }
     }

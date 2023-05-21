@@ -34,7 +34,11 @@ export default class Connection extends Base {
     async _output() {
         const data = this.getData();
 
-        return await this.client.mongo.models[this.collectionName].updateOne({ id: this.id }, data, { upsert: true })
+        //map id to _id
+        data._id = data.id;
+        delete data.id;
+
+        return await this.client.mongo.models[this.collectionName].updateOne({ _id: this.id }, data, { upsert: true })
             .then(res => {
                 console.log(res);
                 return true;
@@ -50,7 +54,7 @@ export default class Connection extends Base {
      * @returns {Promise<boolean>} - Whether the deletion was successful.
      */
     async _delete() {
-        return await this.client.mongo.models[this.collectionName].deleteOne({ id: this.id })
+        return await this.client.mongo.models[this.collectionName].deleteOne({ _id: this.id })
             .then(() => true)
             .catch(() => false);
     }
