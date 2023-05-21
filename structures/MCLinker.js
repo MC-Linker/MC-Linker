@@ -208,7 +208,7 @@ export default class MCLinker extends Discord.Client {
         this.mongo = await mongoose.connect(process.env.DATABASE_URL);
 
         const serverConnectionSchema = new Schema({
-            id: { type: String, required: true, unique: true },
+            _id: { type: String, required: true, unique: true },
             ip: String,
             version: Number,
             path: String,
@@ -239,11 +239,11 @@ export default class MCLinker extends Discord.Client {
                     members: String,
                 },
             }],
-            serverSettings: { type: Schema.Types.ObjectId, ref: 'ServerSettingsConnections' },
+            serverSettings: { type: String, ref: 'ServerSettingsConnections' },
         });
 
         const serverSettingsConnectionSchema = new Schema({
-            id: { type: String, required: true, unique: true },
+            _id: { type: String, required: true, unique: true },
             disabled: {
                 botCommands: [String],
                 advancements: [String],
@@ -251,22 +251,24 @@ export default class MCLinker extends Discord.Client {
                 chatCommands: [String],
             },
             language: String,
-            server: { type: Schema.Types.ObjectId, ref: 'ServerConnection' },
+            server: { type: String, ref: 'ServerConnection' },
         });
 
         const userSettingsConnectionSchema = new Schema({
-            id: { type: String, required: true, unique: true },
+            _id: { type: String, required: true, unique: true },
             tokens: {
                 accessToken: String,
                 refreshToken: String,
                 expires: Number,
             },
+            user: { type: String, ref: 'UserConnection' },
         });
 
         const userConnectionSchema = new Schema({
-            id: { type: String, required: true, unique: true },
+            _id: { type: String, required: true, unique: true },
             uuid: { type: Schema.Types.UUID, unique: true },
             username: String,
+            userSettings: { type: String, ref: 'UserSettingsConnection' },
         });
 
         this.mongo.model('ServerConnection', serverConnectionSchema);
