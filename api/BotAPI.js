@@ -19,12 +19,12 @@ export default class BotAPI extends EventEmitter {
     websocket;
 
     /**
-     * The rate limiter for chat-channel endpoints.
+     * The rate limiter for chat-channel endpoints that are not of type chat.
      * @type {RateLimiterMemory}
      */
     rateLimiterChatChannels = new RateLimiterMemory({
         keyPrefix: 'chatchannels',
-        points: 2, // 1 points
+        points: 2, // 1 updates
         duration: 1, // per second
     });
 
@@ -34,7 +34,7 @@ export default class BotAPI extends EventEmitter {
      */
     rateLimiterChats = new RateLimiterMemory({
         keyPrefix: 'chats',
-        points: 20, // 20 points
+        points: 20, // 20 messages
         duration: 10, // per 10 seconds
     });
 
