@@ -222,7 +222,7 @@ export default class MCLinker extends Discord.Client {
             token: String,
             hash: String,
             chatChannels: [{
-                id: { type: String, required: true },
+                _id: { type: String, required: true, unique: true },
                 types: [{
                     type: String,
                     enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
@@ -231,7 +231,7 @@ export default class MCLinker extends Discord.Client {
                 webhook: String,
             }],
             statChannels: [{
-                id: { type: String, required: true },
+                _id: { type: String, required: true, unique: true },
                 type: { type: String, enum: ['online', 'max', 'members'] },
                 names: {
                     online: String,

@@ -1,5 +1,6 @@
 import { Base } from 'discord.js';
 import { getManagerStringFromConnection } from '../api/shardingUtils.js';
+import ServerConnection from './ServerConnection.js';
 
 export default class Connection extends Base {
 
@@ -33,6 +34,18 @@ export default class Connection extends Base {
      */
     async _output() {
         const data = this.getData();
+
+        if(this instanceof ServerConnection) {
+            // map chatchannel and statchannel id to _id
+            data.chatChannels.forEach((channel, index) => {
+                data.chatChannels[index]._id = channel.id;
+                delete data.chatChannels[index].id;
+            });
+            data.statChannels.forEach((channel, index) => {
+                data.statChannels[index]._id = channel.id;
+                delete data.statChannels[index].id;
+            });
+        }
 
         //map id to _id
         data._id = data.id;
