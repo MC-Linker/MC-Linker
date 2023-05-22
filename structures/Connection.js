@@ -33,7 +33,8 @@ export default class Connection extends Base {
      * @returns {Promise<boolean>} - Whether the data was correctly written to the database.
      */
     async _output() {
-        const data = this.getData();
+        // Clone the data to prevent modification of the original data
+        const data = JSON.parse(JSON.stringify(this.getData()));
 
         if(this instanceof ServerConnection) {
             // map chatchannel and statchannel id to _id
