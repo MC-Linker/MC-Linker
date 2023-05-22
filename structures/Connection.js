@@ -51,6 +51,7 @@ export default class Connection extends Base {
         data._id = data.id;
         delete data.id;
 
+        //TODO remove logs
         return await this.client.mongo.models[this.collectionName].updateOne({ _id: this.id }, data, { upsert: true })
             .then(res => {
                 console.log(res);

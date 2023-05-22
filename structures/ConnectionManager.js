@@ -65,7 +65,7 @@ export default class ConnectionManager extends CachedManager {
     }
 
     /**
-     * Removes a connection from the cache and deletes the data from the file system.
+     * Removes a connection from the cache and deletes the data from the database.
      * @param {ConnectionResolvable} connection - The connection to disconnect.
      * @returns {Promise<boolean>} - Whether the disconnection was successful.
      */
@@ -86,12 +86,15 @@ export default class ConnectionManager extends CachedManager {
     }
 
     /**
-     * Loads all connections from the file system.
+     * Loads all connections from the database.
      * @returns {Promise<void>}
      */
     async _load() {
         const connections = await this.client.mongo.models[this.collectionName].find({});
-        for(const connection of connections) {
+        for(const mongoConnection of connections) {
+            // Clone the connection so we can map _id to id without violating the schema
+            const connection = { ...mongoConnection };
+
             //map _id to id
             connection.id = connection._id;
             delete connection._id;
