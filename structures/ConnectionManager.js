@@ -93,7 +93,7 @@ export default class ConnectionManager extends CachedManager {
         const connections = await this.client.mongo.models[this.collectionName].find({});
         for(const mongoConnection of connections) {
             // Clone the connection so we can map _id to id without violating the schema
-            const connection = { ...mongoConnection };
+            const connection = JSON.parse(JSON.stringify(mongoConnection));
 
             //map _id to id
             connection.id = connection._id;
