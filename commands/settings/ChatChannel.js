@@ -61,7 +61,7 @@ export default class ChatChannel extends Command {
                     });
                 }
                 catch(_) {
-                    return interaction.replyTl(keys.commands.chatchannel.errors.no_webhook);
+                    return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook);
                 }
             }
 
