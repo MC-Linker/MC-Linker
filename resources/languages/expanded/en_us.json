@@ -1246,6 +1246,15 @@
             }
           ],
           "console": "Channel not sendable"
+        },
+        "could_not_create_webhook": {
+          "embeds": [
+            {
+              "title": "Could not Create Webhook",
+              "description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel."
+            }
+          ],
+          "console": "Could not create webhook"
         }
       },
       "step": {
@@ -3065,7 +3074,7 @@
       "options": [
         {
           "type": "Subcommand",
-          "name": "botCommands",
+          "name": "bot-commands",
           "description": "Disable a bot-command preventing it from being used.",
           "options": [
             {
@@ -3131,7 +3140,7 @@
               "choices": [
                 {
                   "name": "Bot Commands",
-                  "value": "botCommands"
+                  "value": "bot-commands"
                 },
                 {
                   "name": "Chat Commands",

@@ -691,6 +691,10 @@
   "commands.chatchannel.errors.not_sendable.embeds.0.description": "I do not have permission to send messages in this channel.",
   "commands.chatchannel.errors.not_sendable.console": "Channel not sendable",
 
+  "commands.chatchannel.errors.could_not_create_webhook.embeds.0.title": "Could not Create Webhook",
+  "commands.chatchannel.errors.could_not_create_webhook.embeds.0.description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel.",
+  "commands.chatchannel.errors.could_not_create_webhook.console": "Could not create webhook",
+
 
   "commands.chatchannel.step.choose.embeds.0.title": "Select Message Types",
   "commands.chatchannel.step.choose.embeds.0.description": "%emoji_step% Select all message types you want the bot to send. (You have 3 minutes to select)",

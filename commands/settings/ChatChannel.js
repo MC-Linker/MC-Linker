@@ -30,6 +30,9 @@ export default class ChatChannel extends Command {
             if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) {
                 return interaction.replyTl(keys.commands.chatchannel.errors.not_sendable);
             }
+            else if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.ManageWebhooks) && useWebhooks) {
+                return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
+            }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
             let menu;
@@ -47,14 +50,19 @@ export default class ChatChannel extends Command {
             //Create webhook for channel
             let webhook;
             if(useWebhooks && menu.values.includes('chat')) {
-                if(channel.isThread()) webhook = await channel.parent.createWebhook({
-                    name: 'ChatChannel',
-                    reason: 'ChatChannel to Minecraft',
-                });
-                else webhook = await channel.createWebhook({
-                    name: 'ChatChannel',
-                    reason: 'ChatChannel to Minecraft',
-                });
+                try {
+                    if(channel.isThread()) webhook = await channel.parent.createWebhook({
+                        name: 'ChatChannel',
+                        reason: 'ChatChannel to Minecraft',
+                    });
+                    else webhook = await channel.createWebhook({
+                        name: 'ChatChannel',
+                        reason: 'ChatChannel to Minecraft',
+                    });
+                }
+                catch(_) {
+                    return interaction.replyTl(keys.commands.chatchannel.errors.no_webhook);
+                }
             }
 
             const resp = await server.protocol.addChatChannel({
