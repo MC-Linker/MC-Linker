@@ -33,6 +33,9 @@ export default class ChatChannel extends Command {
             else if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.ManageWebhooks) && useWebhooks) {
                 return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
             }
+            else if(channel.isThread() && !channel.parent.permissionsFor(client.user).has(PermissionFlagsBits.SendMessagesInThreads)) {
+                return interaction.replyTl(keys.commands.chatchannel.errors.not_sendable_thread);
+            }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
             let menu;
