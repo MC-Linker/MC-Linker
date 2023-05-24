@@ -319,7 +319,7 @@ export default class BotAPI extends EventEmitter {
         const allWebhooks = await guild.fetchWebhooks().catch(() => {});
 
         for(const channel of channels) {
-            if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
+            if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
             /** @type {?Discord.TextChannel} */
             let discordChannel;

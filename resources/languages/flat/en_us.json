@@ -630,7 +630,7 @@
 
 
   "commands.statchannel.errors.not_manageable.embeds.0.title": "Cannot Change Name",
-  "commands.statchannel.errors.not_manageable.embeds.0.description": "I do not have permission to edit this channel's name.",
+  "commands.statchannel.errors.not_manageable.embeds.0.description": "The bot does not have the `Manage Channels` permission to edit the channel's name.",
   "commands.statchannel.errors.not_manageable.console": "Channel not manageable",
 
   "commands.statchannel.success.add.embeds.0.title": "Added Stat Channel",
@@ -688,12 +688,13 @@
   "commands.chatchannel.warnings.already_responded.embeds.0.description": "Select all message types you want the bot to send. (Already responded)",
 
   "commands.chatchannel.errors.not_sendable.embeds.0.title": "Cannot Send Messages",
-  "commands.chatchannel.errors.not_sendable.embeds.0.description": "I do not have permission to send messages in this channel.",
+  "commands.chatchannel.errors.not_sendable.embeds.0.description": "The bot does not have the `Send Messages` permission in this channel.",
   "commands.chatchannel.errors.not_sendable.console": "Channel not sendable",
 
   "commands.chatchannel.errors.could_not_create_webhook.embeds.0.title": "Could not Create Webhook",
   "commands.chatchannel.errors.could_not_create_webhook.embeds.0.description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel.",
   "commands.chatchannel.errors.could_not_create_webhook.console": "Could not create webhook",
+  "commands.chatchannel.errors.could_not_create_webhook.components": [],
 
 
   "commands.chatchannel.step.choose.embeds.0.title": "Select Message Types",

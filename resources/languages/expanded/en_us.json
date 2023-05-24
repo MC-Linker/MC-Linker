@@ -1110,7 +1110,7 @@
           "embeds": [
             {
               "title": "Cannot Change Name",
-              "description": "I do not have permission to edit this channel's name."
+              "description": "The bot does not have the `Manage Channels` permission to edit the channel's name."
             }
           ],
           "console": "Channel not manageable"
@@ -1242,7 +1242,7 @@
           "embeds": [
             {
               "title": "Cannot Send Messages",
-              "description": "I do not have permission to send messages in this channel."
+              "description": "The bot does not have the `Send Messages` permission in this channel."
             }
           ],
           "console": "Channel not sendable"
@@ -1254,7 +1254,8 @@
               "description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel."
             }
           ],
-          "console": "Could not create webhook"
+          "console": "Could not create webhook",
+          "components": []
         }
       },
       "step": {
