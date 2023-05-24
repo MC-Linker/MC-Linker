@@ -1247,6 +1247,15 @@
           ],
           "console": "Channel not sendable"
         },
+        "not_sendable_thread": {
+          "embeds": [
+            {
+              "title": "Cannot Send Messages",
+              "description": "The bot does not have the `Send Messages in Threads` permission in this thread."
+            }
+          ],
+          "console": "Thread not sendable"
+        },
         "could_not_create_webhook": {
           "embeds": [
             {
@@ -1920,10 +1929,10 @@
             "embeds": [
               {
                 "author": {
-                  "name": "%username%",
-                  "icon_url": "%author_url%"
+                  "name": "Command Block",
+                  "icon_url": "https://cdn.discordapp.com/emojis/976452589166166037.webp"
                 },
-                "description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
+                "description": "**%username%** has executed the command: [**%message%**]",
                 "color": "DarkGold"
               }
             ]

@@ -119,12 +119,13 @@ export default class Inventory extends Command {
             const skinUrl = `https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`;
             const skinJson = await fetch(skinUrl);
             const { skin: skinBase64 } = await skinJson.json();
-            return await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+            const image = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+            //check dimensions of skinImg
+            if(image.width !== 195 || image.height !== 353) return await getSkin('MHF_Steve');
+            return image;
         }
 
-        let skinImg = await getSkin(user.uuid);
-        //check dimensions of skinImg
-        if(skinImg.width !== 195 || skinImg.height !== 353) skinImg = await getSkin('MHF_Steve');
+        const skinImg = await getSkin(server.online ? user.uuid : user.username);
         ctx.drawImage(skinImg, 70, 20, 65, 131);
 
         const invAttach = new Discord.AttachmentBuilder(
@@ -239,7 +240,7 @@ export default class Inventory extends Command {
                 'awkward': `- No Effects (Awkward)`,
                 'water': `- No Effects (Water)`,
             };
-            
+
             const formattedEffects = effectByPotionName[tag?.Potion?.split(':').pop()];
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_potion.embeds[0].fields,

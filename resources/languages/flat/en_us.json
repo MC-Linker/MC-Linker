@@ -691,6 +691,10 @@
   "commands.chatchannel.errors.not_sendable.embeds.0.description": "The bot does not have the `Send Messages` permission in this channel.",
   "commands.chatchannel.errors.not_sendable.console": "Channel not sendable",
 
+  "commands.chatchannel.errors.not_sendable_thread.embeds.0.title": "Cannot Send Messages",
+  "commands.chatchannel.errors.not_sendable_thread.embeds.0.description": "The bot does not have the `Send Messages in Threads` permission in this thread.",
+  "commands.chatchannel.errors.not_sendable_thread.console": "Thread not sendable",
+
   "commands.chatchannel.errors.could_not_create_webhook.embeds.0.title": "Could not Create Webhook",
   "commands.chatchannel.errors.could_not_create_webhook.embeds.0.description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel.",
   "commands.chatchannel.errors.could_not_create_webhook.console": "Could not create webhook",
@@ -1001,9 +1005,9 @@
   "api.plugin.success.messages.console_command.embeds.0.description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
   "api.plugin.success.messages.console_command.embeds.0.color": "DarkGold",
 
-  "api.plugin.success.messages.block_command.embeds.0.author.name": "%username%",
-  "api.plugin.success.messages.block_command.embeds.0.author.icon_url": "%author_url%",
-  "api.plugin.success.messages.block_command.embeds.0.description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
+  "api.plugin.success.messages.block_command.embeds.0.author.name": "Command Block",
+  "api.plugin.success.messages.block_command.embeds.0.author.icon_url": "https://cdn.discordapp.com/emojis/976452589166166037.webp",
+  "api.plugin.success.messages.block_command.embeds.0.description": "**%username%** has executed the command: [**%message%**]",
   "api.plugin.success.messages.block_command.embeds.0.color": "DarkGold",
 
   "api.plugin.success.messages.start.embeds.0.description": "%emoji_startup% **The server has opened!**",
