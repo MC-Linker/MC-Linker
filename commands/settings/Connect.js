@@ -20,6 +20,7 @@ export default class Connect extends Command {
             requiresConnectedServer: false,
             category: 'settings',
             defer: false,
+            ephemeral: true,
         });
 
         // noinspection JSIgnoredPromiseFromCall
@@ -98,7 +99,7 @@ export default class Connect extends Command {
 
         const method = args[0];
         if(method === 'ftp') {
-            await interaction.deferReply({ ephemeral: this.ephemeral });
+            await interaction.deferReply({ ephemeral: this.ephemeral }); //manually defer because we want to show modal in `/connect plugin true`
 
             const host = args[1];
             let username = args[2];
@@ -187,13 +188,14 @@ export default class Connect extends Command {
                 try {
                     await interaction.showModal(getModal(keys.modals.connect_backup));
                     let modal = await interaction.awaitModalSubmit({ time: 180_000 });
-                    await modal.deferReply();
+                    await modal.deferReply({ ephemeral: this.ephemeral });
                     modal = addTranslatedResponses(modal);
 
                     const ip = modal.fields.getTextInputValue('ip').split(':')[0];
                     let port = parseInt(modal.fields.getTextInputValue('port'));
                     if(isNaN(port)) port = process.env.PLUGIN_PORT ?? 11111;
 
+                    //TODO disconnect if new connection is successful
                     await this._disconnectOldPlugin(modal, server);
 
                     const token = crypto.randomBytes(32).toString('hex');
@@ -263,7 +265,7 @@ export default class Connect extends Command {
                 catch(_) {}
             }
             else {
-                await interaction.deferReply({ ephemeral: this.ephemeral });
+                await interaction.deferReply({ ephemeral: this.ephemeral }); //manually defer because we want to show modal in `/connect plugin true`
                 await this._disconnectOldPlugin(interaction, server);
 
                 const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
