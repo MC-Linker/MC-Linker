@@ -116,12 +116,11 @@ export default class Inventory extends Command {
         );
 
         async function getSkin(uuidOrUsername) {
-            const skinUrl = `https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`;
-            const skinJson = await fetch(skinUrl);
-            const { skin: skinBase64 } = await skinJson.json();
-            const image = await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+            const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`);
+            const { skin } = await skinJson.json();
+            const image = await Canvas.loadImage(`data:image/png;base64, ${skin}`);
             //check dimensions of skinImg
-            if(image.width !== 195 || image.height !== 353) return await getSkin('MHF_Steve');
+            if(image.width !== 195 || image.height !== 393) return await getSkin('MHF_Steve');
             return image;
         }
 
