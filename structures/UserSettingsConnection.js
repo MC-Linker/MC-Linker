@@ -63,6 +63,7 @@ export default class UserSettingsConnection extends Connection {
                     platform_name: 'Minecraft',
                     metadata,
                 },
+                auth: false, // Bots cannot use this endpoint, we set our own Authorization header
                 headers: {
                     Authorization: `Bearer ${this.tokens.accessToken}`,
                 },
@@ -71,7 +72,7 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            console.log(`Error updating role connections: ${err}`);
+            console.log('Error updating role connections:', err);
             return false;
         }
     }
@@ -88,6 +89,7 @@ export default class UserSettingsConnection extends Connection {
 
         try {
             const response = await this.client.rest.post(Routes.oauth2TokenExchange(), {
+                auth: false, // Bots cannot use this endpoint, we set our own Authorization header
                 body: new URLSearchParams({
                     client_id: process.env.CLIENT_ID,
                     client_secret: process.env.CLIENT_SECRET,
@@ -106,7 +108,7 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            console.log(`Error refreshing access tokens: ${err}`);
+            console.log('Error refreshing access tokens:', err);
             return null;
         }
     }
