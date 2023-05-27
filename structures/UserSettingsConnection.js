@@ -1,5 +1,5 @@
 import Connection from './Connection.js';
-import Discord from 'discord.js';
+import { Routes } from 'discord.js';
 
 export default class UserSettingsConnection extends Connection {
 
@@ -57,24 +57,16 @@ export default class UserSettingsConnection extends Connection {
         await this._refreshToken();
 
         try {
-            //TODO use client rest and use types
-            const response = await fetch(`https://discord.com/api/v10/users/@me/applications/${process.env.CLIENT_ID}/role-connection`, {
-                body: JSON.stringify({
+            await this.client.rest.put(Routes.userApplicationRoleConnection(process.env.CLIENT_ID), {
+                body: {
                     platform_username: username,
                     platform_name: 'Minecraft',
                     metadata,
-                }),
-                method: 'PUT',
+                },
                 headers: {
                     Authorization: `Bearer ${this.tokens.accessToken}`,
-                    'Content-Type': 'application/json',
                 },
             });
-
-            if(!response.ok) {
-                console.log(`Error updating role connection: [${response.status}] ${response.statusText}`);
-                return false;
-            }
 
             return true;
         }
@@ -95,31 +87,20 @@ export default class UserSettingsConnection extends Connection {
         }
 
         try {
-            //TODO use client rest
-            const response = await fetch(`https://discord.com/api/${Discord.Routes.oauth2TokenExchange()}`, {
+            const response = await this.client.rest.post(Routes.oauth2TokenExchange(), {
                 body: new URLSearchParams({
                     client_id: process.env.CLIENT_ID,
                     client_secret: process.env.CLIENT_SECRET,
                     grant_type: 'refresh_token',
                     refresh_token: this.tokens.refreshToken,
                 }),
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
             });
 
-            if(!response.ok) {
-                console.log(`Error refreshing access tokens: [${response.status}] ${response.statusText}`);
-                return null;
-            }
-
-            const json = await response.json();
             await this.edit({
                 tokens: {
-                    accessToken: json.access_token,
-                    refreshToken: json.refresh_token,
-                    expires: Date.now() + json.expires_in * 1000,
+                    accessToken: response.access_token,
+                    refreshToken: response.refresh_token,
+                    expires: Date.now() + response.expires_in * 1000,
                 },
             });
             return true;
