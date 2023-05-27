@@ -266,7 +266,7 @@ export default class MCLinker extends Discord.Client {
 
         const userConnectionSchema = new Schema({
             _id: { type: String },
-            uuid: { type: Schema.Types.UUID, unique: true },
+            uuid: { type: String, unique: true },
             username: String,
             userSettings: { type: String, ref: 'UserSettingsConnection' },
         });
