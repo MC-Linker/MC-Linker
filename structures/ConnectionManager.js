@@ -1,6 +1,7 @@
 import { CachedManager } from 'discord.js';
 import fs from 'fs-extra';
 import { getManagerString } from '../api/shardingUtils.js';
+import ServerConnection from './ServerConnection.js';
 
 export default class ConnectionManager extends CachedManager {
 
@@ -72,6 +73,16 @@ export default class ConnectionManager extends CachedManager {
     async disconnect(connection) {
         /** @type {?Connection} */
         const instance = this.resolve(connection);
+
+        if(instance instanceof ServerConnection) {
+            for(const channel of instance.chatChannels) {
+                if(channel.webhook) {
+                    const webhook = await this.client.fetchWebhook(channel.webhook);
+                    if(webhook) await webhook.delete();
+                }
+            }
+        }
+
         if(instance && await instance._delete()) {
             //Broadcast to all shards
             await this.client.shard.broadcastEval((c, { instanceId, manager, shard }) => {
