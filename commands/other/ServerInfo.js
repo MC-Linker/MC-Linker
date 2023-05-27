@@ -57,7 +57,7 @@ export default class ServerInfo extends Command {
             whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString()) : null;
             bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString()) : null;
             bannedIPs = bannedIPs?.status === 200 ? JSON.parse(bannedIPs.data.toString()) : null;
-            plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory).map(plugin => plugin.name.replace('.jar', '')) : [];
+            plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory && !file.name.endsWith('.jar')).map(plugin => plugin.name.replace('.jar', '')) : [];
             mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
 
             datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').cap()) ?? [];
