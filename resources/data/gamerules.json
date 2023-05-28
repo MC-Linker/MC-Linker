@@ -256,5 +256,11 @@
     "description": "Whether new sources of water are allowed to form",
     "default": true,
     "type": "bool"
+  },
+  {
+    "name": "doVinesSpread",
+    "description": "Whether vines can spread to other blocks. Cave vines, weeping vines, and twisting vines are not affected.",
+    "default": true,
+    "type": "bool"
   }
 ]
