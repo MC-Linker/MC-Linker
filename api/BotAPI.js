@@ -83,7 +83,9 @@ export default class BotAPI extends EventEmitter {
                 const port = request.body.ip.split(':')[1];
 
                 /** @type {ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === port);
+                const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === parseInt(port));
+                //If no connection on that guild send disconnection status
+                if(!server) reply.status(403).send();
 
                 //check authorization: Bearer <token>
                 if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization?.split(' ')[1]) {
@@ -91,9 +93,7 @@ export default class BotAPI extends EventEmitter {
                     return;
                 }
 
-                //If no connection on that guild send disconnection status
-                if(!server) reply.status(403).send();
-                else reply.send({});
+                reply.send({});
                 return server;
             }
             catch(rateLimiterRes) {

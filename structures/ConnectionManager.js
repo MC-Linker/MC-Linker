@@ -15,7 +15,7 @@ export default class ConnectionManager extends CachedManager {
 
     /**
      * The server connection cache of this manager.
-     * @type {import('discord.js').Collection<string, Connection>}
+     * @type {import('discord.js').Collection<string, import('./Connection.js').default>}
      */
     cache;
 
