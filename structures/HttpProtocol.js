@@ -427,6 +427,11 @@ export default class HttpProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeChatChannel(channel) {
+        if(channel.webhook) {
+            const webhook = await this.client.fetchWebhook(channel.webhook);
+            await webhook.delete();
+        }
+
         const response = await this._fetch(...PluginRoutes.RemoveChannel(channel));
         return fetchToProtocolResponse(response);
     }
