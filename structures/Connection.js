@@ -48,8 +48,7 @@ export default class Connection extends Base {
             });
         }
 
-        //map id to _id
-        data._id = data.id;
+        //Remove id, otherwise duplicate key error, if object does not exist, it will use id from query (this.id)
         delete data.id;
 
         //TODO remove logs
