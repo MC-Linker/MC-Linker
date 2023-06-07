@@ -112,7 +112,7 @@ export default class ServerConnection extends Connection {
                 token: data.token,
             });
         }
-        else if(data.protocol === 'ftp') {
+        else if(data.protocol === 'ftp' || data.protocol === 'sftp') {
             this.protocol = new FtpProtocol(client, {
                 ip: data.ip,
                 port: data.port,

@@ -10,6 +10,7 @@ import {
 import DefaultButton from './DefaultButton.js';
 import { createActionRows, getComponent } from '../../api/messages.js';
 import keys from '../../api/keys.js';
+import { disableComponents } from '../../api/utils.js';
 
 export default class Pagination {
 
@@ -182,14 +183,7 @@ export default class Pagination {
         this.collector.on('end', () => {
             if(!message?.components) return;
 
-            //Disable all components in current message
-            const components = message.components.map(row => {
-                row = ActionRowBuilder.from(row);
-                const disabledComponents = row.components.map(component => component.setDisabled(true));
-                row.setComponents(...disabledComponents);
-                return row;
-            });
-            message.edit({ components });
+            message.edit({ components: disableComponents(message.components) });
         });
     }
 
