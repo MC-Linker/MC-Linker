@@ -37,12 +37,11 @@
     "ssh2-sftp-client": "^9.0.4",
     "topgg-autoposter": "^2.0.1",
     "unraw": "^2.0.1",
-    "utf-8-validate": "^5.0.10",
+    "utf-8-validate": "^6.0.3",
     "zlib-sync": "^0.1.8"
   },
   "devDependencies": {
     "lodash": "^4.17.21",
-    "prisma": "^4.14.0",
     "typescript": "^5.0.4",
     "yargs": "^17.6.2"
   }
