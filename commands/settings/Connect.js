@@ -299,9 +299,7 @@ export default class Connect extends Command {
 
 
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
-            console.log(server);
             if(server) {
-                console.log('test');
                 const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.ip });
                 await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed] });
             }
