@@ -120,6 +120,12 @@ export default class BotAPI extends EventEmitter {
             await this._updateStatsChannel(request.body, server);
         });
 
+        this.fastify.post('/disconnect-force', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client);
+            if(!server) return;
+            await this.client.serverConnections.disconnect(server);
+        });
+
         this.fastify.get('/linked-role', async (request, reply) => {
             // Generate state
             const { state, url } = getOAuthURL();
@@ -205,7 +211,15 @@ export default class BotAPI extends EventEmitter {
         return this.fastify;
     }
 
-    addListeners(socket, server, hash) {
+    /**
+     * Adds websocket listeners to the provided socket instance.
+     * @param {Socket} socket - The socket to add the listeners to.
+     * @param {ServerConnectionResolvable} serverResolvable - The server-connection related to the socket.
+     * @param {string} hash - The hash to use for verifying server-connections.
+     */
+    addListeners(socket, serverResolvable, hash) {
+        /** @type {ServerConnection<WebSocketProtocol>} */
+        const server = this.client.serverConnections.resolve(serverResolvable);
         socket.on('chat', async data => {
             data = JSON.parse(data);
             const rateLimiter = data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
@@ -219,6 +233,10 @@ export default class BotAPI extends EventEmitter {
             const server = await getServerWebsocket(this.client, rateLimiter);
             if(!server) return;
             await this._updateStatsChannel(data, server);
+        });
+        socket.on('disconnect-force', async () => {
+            // `/linker disconnect` was executed in minecraft, disconnect the server from discord
+            await this.client.serverConnections.disconnect(server);
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
@@ -284,7 +302,7 @@ export default class BotAPI extends EventEmitter {
             argPlaceholder.advancement_description = advancementDesc;
         }
 
-        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), ph.colors(), { 'timestamp_now': Date.now() });
+        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojisAndColors(), { 'timestamp_now': Date.now() });
         if(type !== 'chat') {
             for(const channel of channels) {
                 if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
@@ -337,7 +355,7 @@ export default class BotAPI extends EventEmitter {
             }
 
             if(!allWebhooks) {
-                await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
+                await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
                 return;
             }
 
@@ -365,7 +383,7 @@ export default class BotAPI extends EventEmitter {
                         id: channel.id,
                     });
                     if(!regChannel) {
-                        await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis(), ph.colors())] });
+                        await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojisAndColors())] });
                         await webhook.delete();
                         return;
                     }
@@ -389,7 +407,7 @@ export default class BotAPI extends EventEmitter {
                 });
             }
             catch(_) {
-                await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
+                await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
             }
         }
     }
