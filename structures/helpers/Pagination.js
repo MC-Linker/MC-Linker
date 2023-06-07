@@ -153,18 +153,10 @@ export default class Pagination {
         //Set last page and message options
         this.lastPage = { button: startingButton, page: startingPage };
 
-        const allComponents = [];
-        allComponents.push(...buttons);
-        startingPage.components?.forEach(component => allComponents.push(...component.components));
-
-        //Add exit button if this is a nested pagination
-        if(this.parent) allComponents.unshift(this.options.exitButton);
-        //Add next button if there are too many components
-        if(allComponents.length > 25) allComponents.splice(24, 1, this.options.nextButton);
-
         //Send starting message
         const oldComponents = startingPage.components ?? []; //Save old components
-        startingPage.components = createActionRows(allComponents.slice(0, 25));
+        startingPage.components = this.combineComponents(startingPage, buttons);
+
         this.lastMessageOptions = { ...startingPage };
         const message = await this.interaction.replyOptions(startingPage);
         startingPage.components = oldComponents; //Reset components
@@ -205,29 +197,26 @@ export default class Pagination {
         else page = page.page;
 
         //Edit message with new page
-        const allComponents = [];
+        const navComponents = [];
         //Push all page buttons of the current page
         interaction.message.components?.forEach(row => {
             row = ActionRowBuilder.from(row);
             row.components.forEach(b => {
-                if(this.buttons.has(b.data.custom_id)) allComponents.push(b);
+                if(this.buttons.has(b.data.custom_id)) navComponents.push(b);
             });
         });
 
         if(!this.options.showSelectedButton) {
             //Replace current page button with requested page button
-            const requestedPageButton = allComponents.findIndex(b => b.data.custom_id === interaction.customId);
-            allComponents.splice(requestedPageButton, 1, this.lastPage.button);
+            const requestedPageButton = navComponents.findIndex(b => b.data.custom_id === interaction.customId);
+            navComponents.splice(requestedPageButton, 1, this.lastPage.button);
         }
 
         //Set last page
         this.lastPage = this.pages[interaction.customId];
 
-        //Push all page buttons of the requested page
-        page.components?.forEach(component => allComponents.push(...component.components));
-
         const oldComponents = page.components ?? []; //Save old components
-        page.components = createActionRows(allComponents);
+        page.components = this.combineComponents(page, navComponents);
         // page.files ??= [];
         this.lastMessageOptions = { ...page };
         await interaction.update(page);
@@ -280,5 +269,21 @@ export default class Pagination {
         //Re-add component collector when going back to parent pagination
         const message = await interaction.update(this.lastMessageOptions);
         this._createComponentCollector(message);
+    }
+
+    combineComponents(page, navComponents) {
+        const pageComponents = page.components?.map(component => component.components).flat() ?? [];
+        const pageComponentRows = createActionRows(pageComponents);
+        const maxNavComponents = (5 - pageComponentRows.length) * 5;
+
+        //Add exit button if this is a nested pagination
+        if(this.parent) navComponents.unshift(this.options.exitButton);
+        //Add next button if there are too many components
+        if(navComponents.length > maxNavComponents) navComponents.splice(maxNavComponents.length - 1, 0, this.options.nextButton);
+
+        // Slice navComponent so that they don't override the page components
+        navComponents = navComponents.slice(0, maxNavComponents);
+
+        return [...createActionRows(navComponents), ...pageComponentRows];
     }
 }

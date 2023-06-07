@@ -164,7 +164,10 @@ export default class Inventory extends Command {
         if(tag?.display?.Lore) {
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_lore.embeds[0].fields,
-                { lore_json: tag.display.Lore, lore: JSON.parse(tag.display.Lore).text },
+                {
+                    lore_json: tag.display.Lore,
+                    lore: JSON.parse(tag.display.Lore).text ?? tag.display.Lore.replace(/"/g, ''),
+                },
             ));
 
             addedInfo = true;
@@ -174,7 +177,10 @@ export default class Inventory extends Command {
         if(tag?.display?.Name) {
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_custom_name.embeds[0].fields,
-                { custom_name_json: tag.display.Name, custom_name: JSON.parse(tag.display.Name).text },
+                {
+                    custom_name_json: tag.display.Name,
+                    custom_name: JSON.parse(tag.display.Name).text ?? tag.display.Name.replace(/"/g, ''),
+                },
             ));
 
             addedInfo = true;

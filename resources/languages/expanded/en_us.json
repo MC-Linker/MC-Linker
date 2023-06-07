@@ -860,7 +860,7 @@
               "fields": [
                 {
                   "name": "Status",
-                  "value": "%status% %status_emoji%",
+                  "value": "%status_emoji% %status%",
                   "inline": true
                 },
                 {

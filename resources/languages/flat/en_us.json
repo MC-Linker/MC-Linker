@@ -465,7 +465,7 @@
   "commands.userinfo.success.general.embeds.0.footer.text": "UUID: %uuid%",
 
   "commands.userinfo.success.general.embeds.0.fields.0.name": "Status",
-  "commands.userinfo.success.general.embeds.0.fields.0.value": "%status% %status_emoji%",
+  "commands.userinfo.success.general.embeds.0.fields.0.value": "%status_emoji% %status%",
   "commands.userinfo.success.general.embeds.0.fields.0.inline": true,
 
   "commands.userinfo.success.general.embeds.0.fields.1.name": "Banned",

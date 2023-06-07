@@ -199,8 +199,8 @@ export default class UserInfo extends Command {
             time: pagination.options.timeout ?? 120_000,
         });
 
-        /** @type {DefaultButton[]} */
-        ['ban', 'unban', 'kick', 'op', 'deop', 'whitelist', 'unwhitelist'].map(k => `userinfo_${k}`)
+        ['ban', 'unban', 'kick', 'op', 'deop', 'whitelist', 'unwhitelist']
+            .map(k => `userinfo_${k}`)
             .forEach(command => {
                 // Create new button triggered by the collector
                 new DefaultButton({
