@@ -34,7 +34,7 @@ export default class Connection extends Base {
      */
     async _output() {
         // Clone the data to prevent modification of the original data
-        const data = JSON.parse(JSON.stringify(this.getData()));
+        const data = structuredClone(this.getData());
 
         if(this instanceof ServerConnection) {
             // map chatchannel and statchannel id to _id
