@@ -795,12 +795,20 @@
   "commands.connect.warnings.version_below_7.embeds.0.title": "Version Below 1.7",
   "commands.connect.warnings.version_below_7.embeds.0.description": "The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet.",
 
-  "commands.connect.warnings.connecting.embeds.0.title": "Connecting...",
-  "commands.connect.warnings.connecting.embeds.0.description": "Connecting to ftp...",
+  "commands.connect.warnings.already_connected.embeds.0.title": "Already Connected",
+  "commands.connect.warnings.already_connected.embeds.0.description": "Already connected with another server (**%ip%**). If you proceed to connect, that server will be automatically disconnected!",
 
-  "commands.connect.warnings.searching_properties.embeds.0.title": "Searching For Server...",
-  "commands.connect.warnings.searching_properties.embeds.0.description": "Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)",
-  "commands.connect.warnings.searching_properties.console": "Searching for server.properties...",
+  "commands.connect.warnings.canceled_connection.embeds.0.title": "Connection Canceled",
+  "commands.connect.warnings.canceled_connection.embeds.0.description": "This connection request was canceled by the user.",
+  "commands.connect.warnings.canceled_connection.console": "Invalid port specified",
+  "commands.connect.warnings.canceled_connection.components": [],
+
+  "commands.connect.step.searching_properties.embeds.0.title": "Searching For Server...",
+  "commands.connect.step.searching_properties.embeds.0.description": "%emoji_step% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)",
+  "commands.connect.step.searching_properties.console": "Searching for server.properties...",
+
+  "commands.connect.step.connecting.embeds.0.title": "Connecting...",
+  "commands.connect.step.connecting.embeds.0.description": "%emoji_step% Trying to connect to the ftp server...",
 
   "commands.connect.step.check_dms.embeds.0.title": "Check Your DMs",
   "commands.connect.step.check_dms.embeds.0.description": "%emoji_step% Please check your DMs to complete the connection.",
@@ -811,10 +819,6 @@
   "commands.connect.warnings.no_reply_in_time.embeds.0.title": "Verification Failed",
   "commands.connect.warnings.no_reply_in_time.embeds.0.description": "You did not reply in time!",
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
-
-  "commands.connect.warnings.verification.embeds.0.title": "Code Verification",
-  "commands.connect.warnings.verification.embeds.0.description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
-  "commands.connect.warnings.verification.embeds.0.color": "DarkGold",
 
   "commands.connect.errors.could_not_connect_ftp.embeds.0.title": "Could Not Connect",
   "commands.connect.errors.could_not_connect_ftp.embeds.0.description": "Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again.",
@@ -840,12 +844,17 @@
   "commands.connect.errors.websocket_error.embeds.0.description": "An unknown error occurred while connecting to the plugin.",
   "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error_stack%",
 
-  "commands.connect.step.verification_info.embeds.0.title": "Server Verification",
-  "commands.connect.step.verification_info.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
+  "commands.connect.step.command_verification.embeds.0.title": "Server Verification",
+  "commands.connect.step.command_verification.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
+
+  "commands.connect.step.code_verification.embeds.0.title": "Server Verification",
+  "commands.connect.step.code_verification.embeds.0.description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
+  "commands.connect.step.code_verification.embeds.0.color": "DarkGold",
 
   "commands.connect.success.ftp.embeds.0.title": "Connected to Server",
   "commands.connect.success.ftp.embeds.0.description": "Successfully connected to the ftp server.",
   "commands.connect.success.ftp.console": "Successfully wrote ftp file",
+  "commands.connect.success.ftp.components": [],
 
   "commands.connect.success.plugin.embeds.0.title": "Connected to Server",
   "commands.connect.success.plugin.embeds.0.description": "Successfully connected to the plugin.",
@@ -930,12 +939,6 @@
   "api.settings.errors.could_not_write_file.console": "Could not read disable file %error_stack%",
 
 
-
-  "api.plugin.warnings.not_completely_disconnected.embeds.0.title": "Not Completely Disconnected",
-  "api.plugin.warnings.not_completely_disconnected.embeds.0.description": "The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely.",
-
-  "api.plugin.warnings.automatically_disconnected.embeds.0.title": "Automatically Disconnected",
-  "api.plugin.warnings.automatically_disconnected.embeds.0.description": "Automatically disconnected from the old server (**%ip%**) to ensure no complications happen.",
 
   "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
   "api.plugin.warnings.no_response_message_short": "No response message! This commonly happens after using `/reload`.",
@@ -1124,6 +1127,17 @@
 
   "buttons.enable.success.help.embeds.0.description": "```diff\n+ [COMMAND ENABLED]```",
   "buttons.enable.success.help.embeds.0.color": "Green",
+
+
+  "buttons.yes_no.components.0.type": "Button",
+  "buttons.yes_no.components.0.style": "Success",
+  "buttons.yes_no.components.0.custom_id": "yes",
+  "buttons.yes_no.components.0.label": "Yes",
+
+  "buttons.yes_no.components.1.type": "Button",
+  "buttons.yes_no.components.1.style": "Danger",
+  "buttons.yes_no.components.1.custom_id": "no",
+  "buttons.yes_no.components.1.label": "No",
 
 
 
@@ -1764,9 +1778,9 @@
   "data.connect.options.1.name": "plugin",
   "data.connect.options.1.description": "Connect your Minecraft server using the Discord-Linker plugin.",
 
-  "data.connect.options.1.options.0.type": "Boolean",
-  "data.connect.options.1.options.0.name": "use_backup_method",
-  "data.connect.options.1.options.0.description": "Use the backup method to connect to your server (requires an extra port for the plugin).",
+  "data.connect.options.2.type": "Subcommand",
+  "data.connect.options.2.name": "backup",
+  "data.connect.options.2.description": "Connect your Minecraft server using the Discord-Linker plugin with backup-mode enabled.",
 
 
 

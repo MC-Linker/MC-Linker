@@ -1,5 +1,6 @@
 import HttpProtocol from '../structures/HttpProtocol.js';
 import Discord, {
+    ActionRowBuilder,
     ApplicationCommandOptionType,
     CommandInteraction,
     MessageMentions,
@@ -277,7 +278,7 @@ export async function getArgs(interaction) {
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
             incrementIndex++;
-            option.options.forEach(opt => addArgs(option.options, opt));
+            option.options.forEach(opt => addArgs(allOptions[optIndex].options, opt));
         }
         else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
         else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;
@@ -744,6 +745,20 @@ export function formatDistance(centimeters) {
     const formattedKilometers = Math.floor(kilometers % 1000);
 
     return `${formattedKilometers}km ${formattedMeters}m`;
+}
+
+/**
+ * Disables all components of an action row and returns a new one.
+ * @param {ActionRow[]} rows - The message to disable the components of.
+ * @returns {ActionRowBuilder[]} - An action row builder array with all components disabled.
+ */
+export function disableComponents(rows) {
+    return rows.map(row => {
+        row = ActionRowBuilder.from(row);
+        const disabledComponents = row.components.map(component => component.setDisabled(true));
+        row.setComponents(...disabledComponents);
+        return row;
+    });
 }
 
 /**
