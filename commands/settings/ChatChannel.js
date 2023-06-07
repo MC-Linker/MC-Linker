@@ -78,7 +78,7 @@ export default class ChatChannel extends Command {
 
             await server.edit({ chatChannels: resp.data });
 
-            return interaction.replyTl(keys.commands.chatchannel.success.add, ph.emojis(), ph.colors());
+            return interaction.replyTl(keys.commands.chatchannel.success.add, ph.emojisAndColors());
         }
         //Remove chatchannel
         else if(method === 'remove') {

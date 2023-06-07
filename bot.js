@@ -64,7 +64,7 @@ client.on('allShardsReady', async () => {
 
 client.on(Discord.Events.GuildCreate, async guild => {
     console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
-    await sendToServer(guild, keys.main.success.invite, ph.colors(), ph.emojis());
+    await sendToServer(guild, keys.main.success.invite, ph.emojisAndColors());
 });
 
 client.on(Discord.Events.GuildDelete, async guild => {
