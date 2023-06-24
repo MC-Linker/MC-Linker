@@ -4,7 +4,6 @@ import {
     ApplicationCommandPermissionType,
     CommandInteraction,
     Message,
-    MessageMentions,
     PermissionFlagsBits,
 } from 'discord.js';
 import { ph } from '../api/messages.js';
@@ -151,7 +150,7 @@ export default class Command {
             args[this.requiresUserIndex] = user;
         }
 
-        const optionName = await getMissingOptionName(args, slashCommand);
+/*        const optionName = await getMissingOptionName(args, slashCommand);
         if(optionName) {
             await interaction.replyTl(
                 keys.api.command.warnings.no_argument,
@@ -169,7 +168,7 @@ export default class Command {
                 const channelId = MessageMentions.ChannelsPattern.exec(item);
                 item = channelId ? await client.channels.fetch(channelId[1]) : item;
             }
-        }
+        }*/
 
         return true;
 
