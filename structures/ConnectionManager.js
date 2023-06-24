@@ -1,6 +1,6 @@
-import { CachedManager } from 'discord.js';
+import {CachedManager} from 'discord.js';
 import fs from 'fs-extra';
-import { getManagerString } from '../api/shardingUtils.js';
+import {getManagerString} from '../api/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
 
 export default class ConnectionManager extends CachedManager {
@@ -104,7 +104,7 @@ export default class ConnectionManager extends CachedManager {
         const connections = await this.client.mongo.models[this.collectionName].find({});
         for(const mongoConnection of connections) {
             // Clone the connection so we can map _id to id without violating the schema
-            const connection = structuredClone(mongoConnection);
+            const connection = JSON.parse(JSON.stringify(mongoConnection));
 
             //map _id to id
             connection.id = connection._id;
