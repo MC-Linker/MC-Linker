@@ -1,5 +1,5 @@
-import { Base } from 'discord.js';
-import { getManagerStringFromConnection } from '../api/shardingUtils.js';
+import {Base} from 'discord.js';
+import {getManagerStringFromConnection} from '../api/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
 
 export default class Connection extends Base {
@@ -51,16 +51,9 @@ export default class Connection extends Base {
         //Remove id, otherwise duplicate key error, if object does not exist, it will use id from query (this.id)
         delete data.id;
 
-        //TODO remove logs
-        return await this.client.mongo.models[this.collectionName].updateOne({ _id: this.id }, data, { upsert: true })
-            .then(res => {
-                console.log(res);
-                return true;
-            })
-            .catch(err => {
-                console.error(err);
-                return false;
-            });
+        return await this.client.mongo.models[this.collectionName].updateOne({_id: this.id}, data, {upsert: true})
+            .then(() => true)
+            .catch(() => false);
     }
 
     /**
