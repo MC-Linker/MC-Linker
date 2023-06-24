@@ -178,6 +178,17 @@ export const ph = {
     },
 
     /**
+     * Color and emoji placeholders.
+     * @returns {object}
+     */
+    emojisAndColors() {
+        return {
+            ...ph.emojis(),
+            ...ph.colors(),
+        };
+    },
+
+    /**
      * Placeholders for a command.
      * @param {ApplicationCommand} command - The command to get placeholders for.
      * @returns {{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}}

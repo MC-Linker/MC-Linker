@@ -116,22 +116,22 @@ export default class Inventory extends Command {
         );
 
         async function getSkin(uuidOrUsername) {
-            const skinUrl = `https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`;
-            const skinJson = await fetch(skinUrl);
-            const { skin: skinBase64 } = await skinJson.json();
-            return await Canvas.loadImage(`data:image/png;base64, ${skinBase64}`);
+            const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`);
+            const { skin } = await skinJson.json();
+            const image = await Canvas.loadImage(`data:image/png;base64, ${skin}`);
+            //check dimensions of skinImg
+            if(image.width !== 195 || image.height !== 393) return await getSkin('MHF_Steve');
+            return image;
         }
 
-        let skinImg = await getSkin(user.uuid);
-        //check dimensions of skinImg
-        if(skinImg.width !== 195 || skinImg.height !== 353) skinImg = await getSkin('MHF_Steve');
+        const skinImg = await getSkin(server.online ? user.uuid : user.username);
         ctx.drawImage(skinImg, 70, 20, 65, 131);
 
         const invAttach = new Discord.AttachmentBuilder(
             await invCanvas.toBuffer('png'),
             { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
         );
-        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.emojis(), ph.colors(), { username: user.username });
+        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.emojisAndColors(), { username: user.username });
         // Send without buttons if showDetails is false
         if(!showDetails) return await interaction.replyOptions({ files: [invAttach], embeds: [invEmbed] });
 
@@ -164,7 +164,10 @@ export default class Inventory extends Command {
         if(tag?.display?.Lore) {
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_lore.embeds[0].fields,
-                { lore_json: tag.display.Lore, lore: JSON.parse(tag.display.Lore).text },
+                {
+                    lore_json: tag.display.Lore,
+                    lore: JSON.parse(tag.display.Lore).text ?? tag.display.Lore.replace(/"/g, ''),
+                },
             ));
 
             addedInfo = true;
@@ -174,7 +177,10 @@ export default class Inventory extends Command {
         if(tag?.display?.Name) {
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_custom_name.embeds[0].fields,
-                { custom_name_json: tag.display.Name, custom_name: JSON.parse(tag.display.Name).text },
+                {
+                    custom_name_json: tag.display.Name,
+                    custom_name: JSON.parse(tag.display.Name).text ?? tag.display.Name.replace(/"/g, ''),
+                },
             ));
 
             addedInfo = true;
@@ -239,7 +245,7 @@ export default class Inventory extends Command {
                 'awkward': `- No Effects (Awkward)`,
                 'water': `- No Effects (Water)`,
             };
-            
+
             const formattedEffects = effectByPotionName[tag?.Potion?.split(':').pop()];
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_potion.embeds[0].fields,
@@ -312,7 +318,7 @@ export default class Inventory extends Command {
                     username: username,
                     avatar: `https://minotar.net/helm/${username}/64.png`,
                 },
-                ph.emojis(), ph.colors(),
+                ph.emojisAndColors(),
             );
             const isSpecialItem = this.addInfo(itemEmbed, item.tag, itemStats);
 
@@ -350,7 +356,7 @@ export default class Inventory extends Command {
                     await shulkerImage.toBuffer('png'),
                     { name: `Shulker_Contents.png`, description: keys.commands.inventory.shulker_description },
                 );
-                const shulkerEmbed = getEmbed(keys.commands.inventory.success.final_shulker, ph.emojis(), ph.colors(), { username });
+                const shulkerEmbed = getEmbed(keys.commands.inventory.success.final_shulker, ph.emojisAndColors(), { username });
 
                 paginationPages[buttonId] = {
                     button,

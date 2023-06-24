@@ -30,6 +30,12 @@ export default class ChatChannel extends Command {
             if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) {
                 return interaction.replyTl(keys.commands.chatchannel.errors.not_sendable);
             }
+            else if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.ManageWebhooks) && useWebhooks) {
+                return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
+            }
+            else if(channel.isThread() && !channel.parent.permissionsFor(client.user).has(PermissionFlagsBits.SendMessagesInThreads)) {
+                return interaction.replyTl(keys.commands.chatchannel.errors.not_sendable_thread);
+            }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
             let menu;
@@ -47,14 +53,19 @@ export default class ChatChannel extends Command {
             //Create webhook for channel
             let webhook;
             if(useWebhooks && menu.values.includes('chat')) {
-                if(channel.isThread()) webhook = await channel.parent.createWebhook({
-                    name: 'ChatChannel',
-                    reason: 'ChatChannel to Minecraft',
-                });
-                else webhook = await channel.createWebhook({
-                    name: 'ChatChannel',
-                    reason: 'ChatChannel to Minecraft',
-                });
+                try {
+                    if(channel.isThread()) webhook = await channel.parent.createWebhook({
+                        name: 'ChatChannel',
+                        reason: 'ChatChannel to Minecraft',
+                    });
+                    else webhook = await channel.createWebhook({
+                        name: 'ChatChannel',
+                        reason: 'ChatChannel to Minecraft',
+                    });
+                }
+                catch(_) {
+                    return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook);
+                }
             }
 
             const resp = await server.protocol.addChatChannel({
@@ -65,9 +76,9 @@ export default class ChatChannel extends Command {
             });
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook?.delete();
 
-            await server.edit({ channels: resp.data });
+            await server.edit({ chatChannels: resp.data });
 
-            return interaction.replyTl(keys.commands.chatchannel.success.add, ph.emojis(), ph.colors());
+            return interaction.replyTl(keys.commands.chatchannel.success.add, ph.emojisAndColors());
         }
         //Remove chatchannel
         else if(method === 'remove') {
@@ -77,25 +88,25 @@ export default class ChatChannel extends Command {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
             }
 
-            const channelIndex = server.channels.findIndex(c => c.id === channel.id);
+            const channelIndex = server.chatChannels.findIndex(c => c.id === channel.id);
             if(channelIndex === -1) {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
             }
 
-            const resp = await server.protocol.removeChatChannel(server.channels[channelIndex]);
+            const resp = await server.protocol.removeChatChannel(server.chatChannels[channelIndex]);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            await server.edit({ channels: resp.data });
+            await server.edit({ chatChannels: resp.data });
 
             return interaction.replyTl(keys.commands.chatchannel.success.remove);
         }
         else if(method === 'list') {
-            if(!server.channels?.length) return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
+            if(!server.chatChannels?.length) return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
 
             /** @type {PaginationPages} */
             const pages = {};
 
-            for(const channel of server.channels) {
+            for(const channel of server.chatChannels) {
                 const options = getLanguageKey(keys.commands.chatchannel.step.choose.components[0].options);
                 const formattedTypes = channel.types.map(type => options.find(o => o.value === type).label).join(',\n');
 
@@ -110,7 +121,7 @@ export default class ChatChannel extends Command {
                     },
                 );
 
-                const index = server.channels.indexOf(channel);
+                const index = server.chatChannels.indexOf(channel);
                 const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
                     index1: index + 1,
                     index: index,

@@ -1,5 +1,6 @@
 import HttpProtocol from '../structures/HttpProtocol.js';
 import Discord, {
+    ActionRowBuilder,
     ApplicationCommandOptionType,
     CommandInteraction,
     MessageMentions,
@@ -277,7 +278,7 @@ export async function getArgs(interaction) {
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
             incrementIndex++;
-            option.options.forEach(opt => addArgs(option.options, opt));
+            option.options.forEach(opt => addArgs(allOptions[optIndex].options, opt));
         }
         else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
         else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;
@@ -373,7 +374,7 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
 
 /**
  * Gets the live player nbt data from the server.
- * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise it will download the nbt file.
+ * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise (or if previous method fails) it will download the nbt file.
  * @param {ServerConnection} server - The server to get the nbt data from.
  * @param {UserResponse} user - The uuid of the player.
  * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
@@ -385,12 +386,16 @@ export async function getLivePlayerNbt(server, user, interaction) {
         const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
         if(onlinePlayers.includes(user.username)) {
             const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
-            if(playerNbtResponse?.status === 200) return nbtStringToObject(playerNbtResponse.data.data, interaction);
+            if(playerNbtResponse?.status === 200) {
+                const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
+                if(parsed) return parsed;
+                // else fall back to downloading the nbt file
+            }
         }
     }
 
     // If the server is not connected using the plugin or the player is not online or the getPlayerNbt endpoint failed, download the nbt file
-    const nbtResponse = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
+    const nbtResponse = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./download-cache/playerdata/${user.uuid}.dat`);
 
     // handProtocolResponse if interaction is set, otherwise manually check the status code
     if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;
@@ -437,7 +442,7 @@ export function createUUIDv3(username) {
 /**
  * Creates a JS object from an nbt buffer.
  * @param {Buffer} buffer - The nbt buffer to create the object from.
- * @param {TranslatedResponses} interaction - The interaction to respond to in case of an error.
+ * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
  * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
  */
 export async function nbtBufferToObject(buffer, interaction) {
@@ -454,7 +459,7 @@ export async function nbtBufferToObject(buffer, interaction) {
 /**
  * Creates a JS object from a snbt string. This will also strip extra color codes from the string.
  * @param {string} string - The snbt string to create the object from.
- * @param {TranslatedResponses} interaction - The interaction to respond to in case of an error.
+ * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
  * @returns {Promise<object|undefined>} - The created object or undefined if an error occurred.
  */
 export function nbtStringToObject(string, interaction) {
@@ -740,6 +745,20 @@ export function formatDistance(centimeters) {
     const formattedKilometers = Math.floor(kilometers % 1000);
 
     return `${formattedKilometers}km ${formattedMeters}m`;
+}
+
+/**
+ * Disables all components of an action row and returns a new one.
+ * @param {ActionRow[]} rows - The message to disable the components of.
+ * @returns {ActionRowBuilder[]} - An action row builder array with all components disabled.
+ */
+export function disableComponents(rows) {
+    return rows.map(row => {
+        row = ActionRowBuilder.from(row);
+        const disabledComponents = row.components.map(component => component.setDisabled(true));
+        row.setComponents(...disabledComponents);
+        return row;
+    });
 }
 
 /**

@@ -5,10 +5,10 @@ export default class ServerSettingsConnection extends Connection {
     /** @type {Omit<ServerSettingsConnectionData, 'id'>} */
     static defaultSettingsData = {
         disabled: {
-            'bot-commands': [],
+            botCommands: [],
             advancements: [],
             stats: [],
-            'chat-commands': [],
+            chatCommands: [],
         },
         language: 'en_us',
     };
@@ -22,10 +22,10 @@ export default class ServerSettingsConnection extends Connection {
 
     /**
      * @typedef {object} DisableData - The data for disabled commands, advancements or stats.
-     * @property {string[]} bot-commands - The disabled bot-commands.
+     * @property {string[]} botCommands - The disabled bot-commands.
      * @property {string[]} advancements - The disabled advancements.
      * @property {string[]} stats - The disabled stats.
-     * @property {string[]} chat-commands - The disabled chatchannel-commands.
+     * @property {string[]} chatCommands - The disabled chatchannel-commands.
      */
 
     /**
@@ -34,20 +34,12 @@ export default class ServerSettingsConnection extends Connection {
 
     /**
      * @param {MCLinker} client - The client to create the settings for.
-     * @param {ServerSettingsConnectionData|string} dataOrId - The data for the settings or the id of the server the settings are connected to.
-     * @param {string} outputPath - The path to write the settings to.
-     * @param {string} [outputFile='settings.json'] - The name of the file to write the settings to.
+     * @param {ServerSettingsConnectionData|string} dataOrId - The data for the settings or the id of the server, the settings are connected to.
+     * @param {CollectionName} collectionName - The name of the database collection that this connection is stored in.
      * @returns {ServerSettingsConnection} - A new ServerSettingsConnection instance.
      */
-    constructor(client, dataOrId, outputPath, outputFile = 'settings.json') {
-        if(typeof dataOrId === 'string') {
-            //Default settings data
-            dataOrId = {
-                ...ServerSettingsConnection.defaultSettingsData,
-                id: dataOrId,
-            };
-        }
-        super(client, dataOrId, outputPath, outputFile);
+    constructor(client, dataOrId, collectionName = 'ServerSettingsConnection') {
+        super(client, dataOrId, collectionName);
 
         this._patch(dataOrId);
     }
@@ -82,7 +74,7 @@ export default class ServerSettingsConnection extends Connection {
 
     /**
      * Disables a command, advancement or stat.
-     * @param {'bot-commands'|'advancements'|'stats'|'chat-commands'} type - The type of the value to disable.
+     * @param {keyof DisableData} type - The type of the value to disable.
      * @param {string} value - The value to disable.
      * @returns {Promise<?ServerSettingsConnection>} - The settings instance that has been edited.
      */
@@ -97,7 +89,7 @@ export default class ServerSettingsConnection extends Connection {
 
     /**
      * Enables a command, advancement or stat.
-     * @param {'bot-commands'|'advancements'|'stats'|'chat-commands'} type - The type of the value to enable.
+     * @param {keyof DisableData} type - The type of the value to enable.
      * @param {string} value - The value to enable.
      * @returns {Promise<ServerSettingsConnection>}
      */
@@ -110,7 +102,7 @@ export default class ServerSettingsConnection extends Connection {
 
     /**
      * Checks whether a command, advancement or stat is disabled.
-     * @param {'bot-commands'|'advancements'|'stats'|'chat-commands'} type - The type of the value to check.
+     * @param {keyof DisableData} type - The type of the value to check.
      * @param {string} value - The value to check.
      * @returns {boolean}
      */

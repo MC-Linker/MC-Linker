@@ -1,11 +1,12 @@
 import crypto from 'crypto';
-import { addPh, addTranslatedResponses, getEmbed, getModal, getReplyOptions, ph } from '../../api/messages.js';
-import keys, { getLanguageKey } from '../../api/keys.js';
+import { addPh, addTranslatedResponses, getActionRows, getEmbed, getModal, ph } from '../../api/messages.js';
+import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../api/utils.js';
+import { disableComponents } from '../../api/utils.js';
 import client from '../../bot.js';
 
 export default class Connect extends Command {
@@ -20,54 +21,57 @@ export default class Connect extends Command {
             requiresConnectedServer: false,
             category: 'settings',
             defer: false,
+            ephemeral: true,
         });
 
+
         // noinspection JSIgnoredPromiseFromCall
-        client.shard.broadcastEval(c => {
-            c.on('apiReady', api => {
-                api.websocket.on('connection', async socket => {
-                    const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
+        client.shard.broadcastEval(
+            /** @param {MCLinker} c */
+            c => {
+                c.on('apiReady', api => {
+                    api.websocket.on('connection', async socket => {
+                        const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
 
-                    const wsVerification = c.commands.get('connect').wsVerification;
-                    if(!wsVerification.has(id)) return;
+                        const wsVerification = c.commands.get('connect').wsVerification;
+                        if(!wsVerification.has(id)) return;
 
-                    const {
-                        code: serverCode,
-                        server,
-                        shard,
-                    } = wsVerification.get(id) ?? {};
-                    try {
-                        if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
+                        const {
+                            code: serverCode,
+                            shard,
+                        } = wsVerification.get(id) ?? {};
+                        try {
+                            if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
 
-                        c.commands.get('connect').wsVerification.delete(id);
-                        socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
+                            c.commands.get('connect').wsVerification.delete(id);
+                            socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
 
-                        const hash = c.utils.createHash(socket.handshake.auth.token);
-                        /** @type {WebSocketServerConnectionData} */
-                        const serverConnectionData = {
-                            id,
-                            ip: socket.handshake.address,
-                            path: socket.handshake.query.path,
-                            channels: [],
-                            statsChannels: [],
-                            online: socket.handshake.query.online === 'true',
-                            floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                            version: Number(socket.handshake.query.version.split('.')[1]),
-                            worldPath: socket.handshake.query.worldPath,
-                            protocol: 'websocket',
-                            socket,
-                            hash,
-                        };
+                            const hash = c.utils.createHash(socket.handshake.auth.token);
+                            /** @type {WebSocketServerConnectionData} */
+                            const serverConnectionData = {
+                                id,
+                                ip: socket.handshake.address,
+                                path: socket.handshake.query.path,
+                                chatChannels: [],
+                                statChannels: [],
+                                online: socket.handshake.query.online === 'true',
+                                floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                                version: Number(socket.handshake.query.version.split('.')[1]),
+                                worldPath: socket.handshake.query.worldPath,
+                                protocol: 'websocket',
+                                socket,
+                                hash,
+                            };
 
-                        if(server) await server.edit(serverConnectionData);
-                        else await c.serverConnections.connect(serverConnectionData);
+                            await c.commands.get('connect').disconnectOldServer(id);
+                            await c.serverConnections.connect(serverConnectionData);
 
-                        c.api.addListeners(socket, c.serverConnections.cache.get(id), hash);
+                            c.api.addListeners(socket, id, hash);
 
-                        await c.shard.broadcastEval((c, { id }) => {
-                            c.emit('editConnectResponse', id, 'success');
-                        }, { context: { id }, shard });
-                    }
+                            await c.shard.broadcastEval((c, { id }) => {
+                                c.emit('editConnectResponse', id, 'success');
+                            }, { context: { id }, shard });
+                        }
                     catch(err) {
                         await c.shard.broadcastEval((c, { id, error }) => {
                             c.emit('editConnectResponse', id, 'error', { error_stack: error });
@@ -85,10 +89,10 @@ export default class Connect extends Command {
             clearTimeout(timeout);
 
             if(responseType === 'success') {
-                await interaction.replyTl(keys.commands.connect.success.websocket, placeholders, ph.emojis(), ph.colors());
+                await interaction.replyTl(keys.commands.connect.success.websocket, placeholders, ph.emojisAndColors());
             }
             else if(responseType === 'error') {
-                await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders, ph.emojis(), ph.colors());
+                await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders, ph.emojisAndColors());
             }
         });
     }
@@ -98,7 +102,7 @@ export default class Connect extends Command {
 
         const method = args[0];
         if(method === 'ftp') {
-            await interaction.deferReply({ ephemeral: this.ephemeral });
+            await interaction.deferReply({ ephemeral: this.ephemeral }); //manually defer because we want to show modal in `/connect plugin true`
 
             const host = args[1];
             let username = args[2];
@@ -124,8 +128,7 @@ export default class Connect extends Command {
             if(version <= 11 && version > 7) interaction.channel.send(addPh(keys.commands.connect.warnings.version_below_11, ph.std(interaction)));
             else if(version <= 7) interaction.channel.send(addPh(keys.commands.connect.warnings.version_below_7, ph.std(interaction)));
 
-            await interaction.replyTl(keys.commands.connect.warnings.connecting);
-            await this._disconnectOldPlugin(interaction, server);
+            await interaction.replyTl(keys.commands.connect.step.connecting);
 
             const ftpProtocol = new FtpProtocol(this.client, {
                 ip: host,
@@ -144,8 +147,8 @@ export default class Connect extends Command {
             const protocol = ftpProtocol.sftp ? 'sftp' : 'ftp';
             //Search for server path if not given
             if(!serverPath) {
-                await interaction.replyTl(keys.commands.connect.warnings.searching_properties);
-                serverPath = await ftpProtocol.find('server.properties', '', 3);
+                await interaction.replyTl(keys.commands.connect.step.searching_properties);
+                serverPath = await ftpProtocol.find('server.properties', '/', 3);
                 serverPath = serverPath?.data;
                 if(typeof serverPath !== 'string') {
                     return interaction.replyTl(keys.commands.connect.errors.could_not_find_properties);
@@ -176,125 +179,153 @@ export default class Connect extends Command {
                 id: interaction.guildId,
             };
 
-            if(client.serverConnections.cache.has(interaction.guildId)) await server.edit(serverConnectionData);
-            else await client.serverConnections.connect(serverConnectionData);
+            // A button that asks the user if they want to override the old connection
+            if(server) {
+                const overrideEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.ip });
+                const buttons = getActionRows(keys.buttons.yes_no, ph.emojisAndColors());
+                const message = await interaction.replyOptions({ embeds: [overrideEmbed], components: buttons });
 
-            await interaction.replyTl(keys.commands.connect.success.ftp);
-        }
-        else if(method === 'plugin') {
-            const usesBackupMethod = args[1] ?? false;
-            if(usesBackupMethod) {
-                try {
-                    await interaction.showModal(getModal(keys.modals.connect_backup));
-                    let modal = await interaction.awaitModalSubmit({ time: 180_000 });
-                    await modal.deferReply();
-                    modal = addTranslatedResponses(modal);
+                const filter = i => i.user.id === interaction.user.id;
+                const collector = message.createMessageComponentCollector({ filter, time: 30_000 });
 
-                    const ip = modal.fields.getTextInputValue('ip').split(':')[0];
-                    let port = parseInt(modal.fields.getTextInputValue('port'));
-                    if(isNaN(port)) port = process.env.PLUGIN_PORT ?? 11111;
+                collector.on('end', async collected => {
+                    if(collected.size === 0) await interaction.editReply({ components: disableComponents(message.components) });
+                });
 
-                    await this._disconnectOldPlugin(modal, server);
+                collector.on('collect',
+                    /** @param {import('discord.js').ButtonInteraction} button */
+                    async button => {
+                        await button.deferUpdate();
 
-                    const token = crypto.randomBytes(32).toString('hex');
-                    const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
+                        if(button.customId === 'yes') {
+                            await this.disconnectOldServer(server);
 
-                    const verify = await httpProtocol.verifyGuild();
-                    if(!await utils.handleProtocolResponse(verify, httpProtocol, modal, {
-                        409: keys.commands.connect.warnings.already_connected,
-                    })) return;
-
-                    await modal.replyTl(keys.commands.connect.step.check_dms);
-
-                    let dmChannel = await interaction.user.createDM();
-                    try {
-                        await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.emojis(), ph.colors())] });
-                    }
-                    catch(err) {
-                        dmChannel = modal.channel;
-                        await modal.replyTl(keys.commands.connect.warnings.could_not_dm);
-                        await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.warnings.verification, ph.emojis(), ph.colors())] });
-                    }
-
-                    const collector = await dmChannel.awaitMessages({
-                        max: 1,
-                        time: 180_000,
-                        filter: message => message.author.id === interaction.user.id,
+                            await client.serverConnections.connect(serverConnectionData);
+                            await interaction.replyTl(keys.commands.connect.success.ftp);
+                        }
+                        else if(button.customId === 'no') {
+                            await interaction.replyTl(keys.commands.connect.warnings.canceled_connection);
+                        }
                     });
-                    const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
-                    if(!message) {
-                        console.log(getLanguageKey(keys.commands.connect.warnings.no_reply_in_time.console));
-                        return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojis(), ph.colors()));
-                    }
-
-                    const resp = await httpProtocol.connect(collector.first().content);
-                    if(!await utils.handleProtocolResponse(resp, httpProtocol, modal, {
-                        401: keys.commands.connect.errors.incorrect_code,
-                    })) {
-                        await message.replyTl(keys.commands.connect.errors.incorrect_code);
-                        return;
-                    }
-
-                    await message.replyTl(keys.commands.connect.success.verification);
-
-                    const serverPath = decodeURIComponent(resp.data.path);
-                    /** @type {HttpServerConnectionData} */
-                    const serverConnectionData = {
-                        ip,
-                        port,
-                        version: parseInt(resp.data.version.split('.')[1]),
-                        path: serverPath,
-                        worldPath: decodeURIComponent(resp.data.worldPath),
-                        floodgatePrefix: resp.data.floodgatePrefix,
-                        token: resp.data.token,
-                        online: resp.data.online,
-                        protocol: 'http',
-                        channels: [],
-                        statsChannels: [],
-                        id: interaction.guildId,
-                    };
-
-                    //If old connection was automatically disconnected, connect a new server connection otherwise edit the old one
-                    if(client.serverConnections.cache.has(interaction.guildId)) await server.edit(serverConnectionData);
-                    else await client.serverConnections.connect(serverConnectionData);
-
-                    return modal.replyTl(keys.commands.connect.success.plugin);
-                }
-                catch(_) {}
             }
             else {
-                await interaction.deferReply({ ephemeral: this.ephemeral });
-                await this._disconnectOldPlugin(interaction, server);
-
-                const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-                await interaction.replyTl(keys.commands.connect.step.verification_info, { code: `${interaction.guildId}:${code}` });
-
-                const timeout = setTimeout(async () => {
-                    await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
-                }, 180_000);
-
-                this.waitingInteractions.set(interaction.guildId, { interaction, timeout });
-                await client.shard.broadcastEval((c, { code, id, shard }) => {
-                    const server = c.serverConnections.cache.get(id);
-                    c.commands.get('connect').wsVerification.set(id, { code, server, shard });
-                }, { context: { code, id: interaction.guildId, shard: client.shard.ids[0] }, shard: 0 });
-
-                //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
+                await client.serverConnections.connect(serverConnectionData);
+                await interaction.replyTl(keys.commands.connect.success.ftp);
             }
+        }
+        else if(method === 'backup') {
+            try {
+                await interaction.showModal(getModal(keys.modals.connect_backup));
+                let modal = await interaction.awaitModalSubmit({ time: 180_000 });
+                await modal.deferReply({ ephemeral: this.ephemeral });
+                modal = addTranslatedResponses(modal);
+
+                const ip = modal.fields.getTextInputValue('ip').split(':')[0];
+                let port = parseInt(modal.fields.getTextInputValue('port'));
+                if(isNaN(port)) port = process.env.PLUGIN_PORT ?? 11111;
+
+                const token = crypto.randomBytes(32).toString('hex');
+                const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
+
+                const verify = await httpProtocol.verifyGuild();
+                if(!await utils.handleProtocolResponse(verify, httpProtocol, modal, {
+                    409: keys.commands.connect.warnings.already_connected,
+                })) return;
+
+                const checkDmsEmbed = getEmbed(keys.commands.connect.step.check_dms, ph.emojisAndColors());
+                if(server) {
+                    const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.ip });
+                    await modal.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed] });
+                }
+                else await modal.replyOptions({ embeds: [checkDmsEmbed] });
+
+                let dmChannel = await interaction.user.createDM();
+                try {
+                    await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.step.code_verification, ph.emojisAndColors())] });
+                }
+                catch(err) {
+                    dmChannel = modal.channel;
+                    await modal.replyTl(keys.commands.connect.warnings.could_not_dm);
+                    await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.step.code_verification, ph.emojisAndColors())] });
+                }
+
+                const collector = await dmChannel.awaitMessages({
+                    max: 1,
+                    time: 180_000,
+                    filter: message => message.author.id === interaction.user.id,
+                });
+                const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
+                if(!message) return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojisAndColors()));
+
+                const resp = await httpProtocol.connect(collector.first().content);
+                if(!await utils.handleProtocolResponse(resp, httpProtocol, modal, {
+                    401: keys.commands.connect.errors.incorrect_code,
+                })) {
+                    await message.replyTl(keys.commands.connect.errors.incorrect_code);
+                    return;
+                }
+
+                await message.replyTl(keys.commands.connect.success.verification);
+
+                const serverPath = decodeURIComponent(resp.data.path);
+                /** @type {HttpServerConnectionData} */
+                const serverConnectionData = {
+                    ip,
+                    port,
+                    version: parseInt(resp.data.version.split('.')[1]),
+                    path: serverPath,
+                    worldPath: decodeURIComponent(resp.data.worldPath),
+                    floodgatePrefix: resp.data.floodgatePrefix,
+                    token: resp.data.token,
+                    online: resp.data.online,
+                    protocol: 'http',
+                    chatChannels: [],
+                    statChannels: [],
+                    id: interaction.guildId,
+                };
+
+                await this.disconnectOldServer(server);
+                await client.serverConnections.connect(serverConnectionData);
+
+                return modal.replyTl(keys.commands.connect.success.plugin);
+            }
+            catch(_) {}
+        }
+        else if(method === 'plugin') {
+            await interaction.deferReply({ ephemeral: this.ephemeral }); //manually defer because we want to show modal in `/connect plugin true`
+            // await this._disconnectOldPlugin(interaction, server);
+
+            const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
+
+
+            const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
+            if(server) {
+                const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.ip });
+                await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed] });
+            }
+            else await interaction.replyOptions({ embeds: [verificationEmbed] });
+
+            const timeout = setTimeout(async () => {
+                await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
+            }, 180_000);
+
+            this.waitingInteractions.set(interaction.guildId, { interaction, timeout });
+            await client.shard.broadcastEval((c, { code, id, shard }) => {
+                c.commands.get('connect').wsVerification.set(id, { code, shard });
+            }, { context: { code, id: interaction.guildId, shard: client.shard.ids[0] }, shard: 0 });
+
+            //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
         }
     }
 
-    async _disconnectOldPlugin(interaction, server) {
-        /** @type {?ProtocolResponse} */
-        let resp;
-        if(server?.protocol?.isPluginProtocol()) resp = await server.protocol.disconnect();
-        else if(server?.protocol?.isFtpProtocol()) return await client.serverConnections.disconnect(server);
-        else return;
-
-        if(!resp || resp.status !== 200) await interaction.channel.send(getReplyOptions(keys.api.plugin.warnings.not_completely_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
-        else {
-            await client.serverConnections.disconnect(server);
-            await interaction.channel.send(getReplyOptions(keys.api.plugin.warnings.automatically_disconnected, ph.emojis(), ph.colors(), { ip: server.ip }));
-        }
+    /**
+     * Disconnects all active connections of this server.
+     * @param {ServerConnectionResolvable} serverResolvable - The server to disconnect.
+     * @returns {Promise<boolean>} - Whether the server was disconnected.
+     */
+    async disconnectOldServer(serverResolvable) {
+        const server = client.serverConnections.resolve(serverResolvable);
+        if(server?.protocol?.isPluginProtocol()) await server.protocol.disconnect();
+        if(server) return await client.serverConnections.disconnect(server);
     }
 }

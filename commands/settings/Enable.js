@@ -38,7 +38,7 @@ export default class Enable extends AutocompleteCommand {
                 const matchingStat = utils.searchAllStats(disable, true, true, 1);
                 formattedDisable = matchingStat.shift()?.name ?? disable.cap();
             }
-            else if(subcommand === 'bot-commands') formattedDisable = disable.cap();
+            else if(subcommand === 'botCommands') formattedDisable = disable.cap();
             else formattedDisable = disable;
 
             respondArray.push({
@@ -64,7 +64,7 @@ export default class Enable extends AutocompleteCommand {
         }
 
         let formattedToEnable;
-        if(type === 'bot-commands') {
+        if(type === 'botCommands') {
             const command = keys.data[toEnable];
 
             if(!command) {

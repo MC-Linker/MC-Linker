@@ -6,10 +6,10 @@ export default class UserSettingsConnectionManager extends ConnectionManager {
     /**
      * Creates a new UserSettingsConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
-     * @param {string} outputPath - The path to write server data to.
+     * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {UserSettingsConnectionManager} - A new UserSettingsConnectionManager instance.
      */
-    constructor(client, outputPath = './userdata/connections') {
-        super(client, UserSettingsConnection, outputPath, 'settings.json');
+    constructor(client, collectionName = 'UserSettingsConnection') {
+        super(client, UserSettingsConnection, collectionName);
     }
 }

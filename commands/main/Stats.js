@@ -42,7 +42,7 @@ export default class Stats extends AutocompleteCommand {
             return interaction.replyTl(keys.commands.stats.no_access.stat_disabled, argPlaceholder);
         }
 
-        const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/stats/${user.uuid}.json`);
+        const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./download-cache/stats/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
             404: keys.api.command.errors.could_not_download_user_files,
         }, { category: 'stats' })) return;

@@ -1,3 +1,13 @@
+import {migrate} from './utilities/convert.js';
+import Discord, {ChannelType} from 'discord.js';
+import {AutoPoster} from 'topgg-autoposter';
+import Canvas from 'skia-canvas';
+import {cleanEmojis, getArgs} from './api/utils.js';
+import keys, {getLanguageKey} from './api/keys.js';
+import {addPh, addTranslatedResponses, getReplyOptions, ph} from './api/messages.js';
+import AutocompleteCommand from './structures/AutocompleteCommand.js';
+import MCLinker from './structures/MCLinker.js';
+
 console.log(
     '\x1b[1m' +     // Bold (1)
     '\x1b[44;37m' + // Blue BG (44); White FG (37)
@@ -5,15 +15,6 @@ console.log(
     '\x1b[0m',      // Reset color (0)
     'Loading...',   // Second argument (%s)
 );
-
-import Discord, { ChannelType } from 'discord.js';
-import { AutoPoster } from 'topgg-autoposter';
-import Canvas from 'skia-canvas';
-import { cleanEmojis, getArgs } from './api/utils.js';
-import keys, { getLanguageKey } from './api/keys.js';
-import { addPh, addTranslatedResponses, getReplyOptions, ph } from './api/messages.js';
-import AutocompleteCommand from './structures/AutocompleteCommand.js';
-import MCLinker from './structures/MCLinker.js';
 
 const client = new MCLinker();
 
@@ -52,19 +53,25 @@ client.once(Discord.Events.ClientReady, async () => {
 });
 
 client.on('allShardsReady', async () => {
-    //Load all connections and commands
+    //Load all connections and commands and the database
     await client.loadEverything();
-    
+
+    if (process.env.MIGRATE === 'true') {
+        console.log('Migrating data...');
+        await migrate(client);
+        console.log('Done');
+    }
+
     //Set Activity
-    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
+    client.user.setActivity({type: Discord.ActivityType.Listening, name: '/help'});
 
     //Start API server if this is the first shard
-    if(client.shard.ids.includes(0)) await client.api.startServer();
+    if (client.shard.ids.includes(0)) await client.api.startServer();
 });
 
 client.on(Discord.Events.GuildCreate, async guild => {
     console.log(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
-    await sendToServer(guild, keys.main.success.invite, ph.colors(), ph.emojis());
+    await sendToServer(guild, keys.main.success.invite, ph.emojisAndColors());
 });
 
 client.on(Discord.Events.GuildDelete, async guild => {
@@ -73,7 +80,7 @@ client.on(Discord.Events.GuildDelete, async guild => {
 
     await client.serverConnections.disconnect(guild.id);
     await client.serverSettingsConnections.disconnect(guild.id);
-    await client.serverConnections.removeDataFolder(guild.id);
+    await client.serverConnections.removeCache(guild.id);
 });
 
 client.on(Discord.Events.MessageCreate, async message => {
@@ -82,7 +89,7 @@ client.on(Discord.Events.MessageCreate, async message => {
 
     if(!message.author.bot && !message.content.startsWith(process.env.PREFIX)) {
         /** @type {ChatChannelData} */
-        const channel = server?.channels?.find(c => c.id === message.channel.id);
+        const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
         //Explicit check for false
         //because it can be undefined (i haven't added the field to already existing connections)
         if(!channel || channel.allowDiscordToMinecraft === false) return;
@@ -125,8 +132,7 @@ client.on(Discord.Events.MessageCreate, async message => {
     try {
         // noinspection JSUnresolvedFunction
         await command.execute(message, client, args, server);
-    }
-    catch(err) {
+    } catch (err) {
         await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
     }
 });
@@ -154,41 +160,36 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         args.forEach(arg => {
             if(arg instanceof Discord.User) interaction.mentions.users.set(arg.id, arg);
             else if(arg instanceof Discord.Role) interaction.mentions.roles.set(arg.id, arg);
-            else if(arg instanceof Discord.BaseChannel) interaction.mentions.channels.set(arg.id, arg);
-            else if(arg instanceof Discord.Attachment) interaction.attachments.set(arg.id, arg);
+            else if (arg instanceof Discord.BaseChannel) interaction.mentions.channels.set(arg.id, arg);
+            else if (arg instanceof Discord.Attachment) interaction.attachments.set(arg.id, arg);
         });
 
         const server = client.serverConnections.cache.get(interaction.guildId);
         try {
             // noinspection JSUnresolvedFunction
             await command.execute(interaction, client, args, server);
-        }
-        catch(err) {
+        } catch (err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction));
         }
-    }
-    else if(interaction.isAutocomplete()) {
+    } else if (interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
 
         try {
-            if(!command || !(command instanceof AutocompleteCommand)) return;
+            if (!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client);
-        }
-        catch(err) {
+        } catch (err) {
             await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.interaction(interaction), ph.error(err)));
         }
-    }
-    else if(interaction.isButton()) {
+    } else if (interaction.isButton()) {
         let button = client.buttons.get(interaction.customId);
-        if(!button) button = client.buttons.find(b => interaction.customId.startsWith(b.id));
+        if (!button) button = client.buttons.find(b => interaction.customId.startsWith(b.id));
 
         try {
-            if(!button) return;
+            if (!button) return;
             // noinspection JSUnresolvedFunction
             await button.execute(interaction, client);
-        }
-        catch(err) {
-            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId });
+        } catch (err) {
+            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), {'button': interaction.customId});
         }
     }
 });
@@ -219,8 +220,7 @@ async function sendToServer(guild, key, ...placeholders) {
         try {
             await channel.send(replyOptions);
             return true;
-        }
-        catch {
+        } catch {
             return false;
         }
     }

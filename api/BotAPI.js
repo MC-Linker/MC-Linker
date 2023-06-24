@@ -19,12 +19,12 @@ export default class BotAPI extends EventEmitter {
     websocket;
 
     /**
-     * The rate limiter for chat-channel endpoints.
+     * The rate limiter for chat-channel endpoints that are not of type chat.
      * @type {RateLimiterMemory}
      */
     rateLimiterChatChannels = new RateLimiterMemory({
         keyPrefix: 'chatchannels',
-        points: 2, // 1 points
+        points: 2, // 1 updates
         duration: 1, // per second
     });
 
@@ -34,7 +34,7 @@ export default class BotAPI extends EventEmitter {
      */
     rateLimiterChats = new RateLimiterMemory({
         keyPrefix: 'chats',
-        points: 20, // 20 points
+        points: 20, // 20 messages
         duration: 10, // per 10 seconds
     });
 
@@ -83,7 +83,9 @@ export default class BotAPI extends EventEmitter {
                 const port = request.body.ip.split(':')[1];
 
                 /** @type {ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === port);
+                const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === parseInt(port));
+                //If no connection on that guild send disconnection status
+                if(!server) reply.status(403).send();
 
                 //check authorization: Bearer <token>
                 if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization?.split(' ')[1]) {
@@ -91,9 +93,7 @@ export default class BotAPI extends EventEmitter {
                     return;
                 }
 
-                //If no connection on that guild send disconnection status
-                if(!server) reply.status(403).send();
-                else reply.send({});
+                reply.send({});
                 return server;
             }
             catch(rateLimiterRes) {
@@ -118,6 +118,12 @@ export default class BotAPI extends EventEmitter {
             const server = await _getServerFastify(request, reply, this.client, rateLimiter);
             if(!server) return;
             await this._updateStatsChannel(request.body, server);
+        });
+
+        this.fastify.post('/disconnect-force', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client);
+            if(!server) return;
+            await this.client.serverConnections.disconnect(server);
         });
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -205,7 +211,15 @@ export default class BotAPI extends EventEmitter {
         return this.fastify;
     }
 
-    addListeners(socket, server, hash) {
+    /**
+     * Adds websocket listeners to the provided socket instance.
+     * @param {Socket} socket - The socket to add the listeners to.
+     * @param {ServerConnectionResolvable} serverResolvable - The server-connection related to the socket.
+     * @param {string} hash - The hash to use for verifying server-connections.
+     */
+    addListeners(socket, serverResolvable, hash) {
+        /** @type {ServerConnection<WebSocketProtocol>} */
+        const server = this.client.serverConnections.resolve(serverResolvable);
         socket.on('chat', async data => {
             data = JSON.parse(data);
             const rateLimiter = data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
@@ -219,6 +233,10 @@ export default class BotAPI extends EventEmitter {
             const server = await getServerWebsocket(this.client, rateLimiter);
             if(!server) return;
             await this._updateStatsChannel(data, server);
+        });
+        socket.on('disconnect-force', async () => {
+            // `/linker disconnect` was executed in minecraft, disconnect the server from discord
+            await this.client.serverConnections.disconnect(server);
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
@@ -261,7 +279,7 @@ export default class BotAPI extends EventEmitter {
         //Check whether command is blocked
         if(['player_command', 'console_command', 'block_command'].includes(type)) {
             const commandName = message.replace(/^\//, '').split(/\s+/)[0];
-            if(server.settings.isDisabled('chat-commands', commandName)) return;
+            if(server.settings.isDisabled('chatCommands', commandName)) return;
         }
 
         const guild = await this.client.guilds.fetch(guildId);
@@ -284,10 +302,10 @@ export default class BotAPI extends EventEmitter {
             argPlaceholder.advancement_description = advancementDesc;
         }
 
-        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojis(), ph.colors(), { 'timestamp_now': Date.now() });
+        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojisAndColors(), { 'timestamp_now': Date.now() });
         if(type !== 'chat') {
             for(const channel of channels) {
-                if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
+                if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
                 /** @type {?Discord.TextChannel} */
                 let discordChannel;
@@ -300,7 +318,7 @@ export default class BotAPI extends EventEmitter {
                     if(err.code === 10003) {
                         const regChannel = await server.protocol.removeChatChannel(channel);
                         if(!regChannel) continue;
-                        await server.edit({ channels: regChannel.data });
+                        await server.edit({ chatChannels: regChannel.data });
                     }
                 }
             }
@@ -319,7 +337,7 @@ export default class BotAPI extends EventEmitter {
         const allWebhooks = await guild.fetchWebhooks().catch(() => {});
 
         for(const channel of channels) {
-            if(!server.channels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
+            if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
 
             /** @type {?Discord.TextChannel} */
             let discordChannel;
@@ -331,13 +349,13 @@ export default class BotAPI extends EventEmitter {
                 if(err.code === 10003) {
                     const regChannel = await server.protocol.removeChatChannel(channel);
                     if(!regChannel) continue;
-                    await server.edit({ channels: regChannel.data });
+                    await server.edit({ chatChannels: regChannel.data });
                 }
                 continue;
             }
 
             if(!allWebhooks) {
-                await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
+                await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
                 return;
             }
 
@@ -365,12 +383,12 @@ export default class BotAPI extends EventEmitter {
                         id: channel.id,
                     });
                     if(!regChannel) {
-                        await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojis(), ph.colors())] });
+                        await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojisAndColors())] });
                         await webhook.delete();
                         return;
                     }
 
-                    await server.edit({ channels: regChannel.data });
+                    await server.edit({ chatChannels: regChannel.data });
                 }
 
                 //Edit webhook if name doesnt match
@@ -389,12 +407,10 @@ export default class BotAPI extends EventEmitter {
                 });
             }
             catch(_) {
-                await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojis(), ph.colors())] });
+                await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
             }
         }
     }
-
-    //TODO TEST CHATCHANNELS
 
     /**
      * Handles stats channel updates
@@ -421,7 +437,7 @@ export default class BotAPI extends EventEmitter {
                 if(err.code === 10003) {
                     const regChannel = await server.protocol.removeStatsChannel(channel);
                     if(!regChannel) continue;
-                    await server.edit({ statsChannels: regChannel.data });
+                    await server.edit({ statChannels: regChannel.data });
                 }
                 continue;
             }

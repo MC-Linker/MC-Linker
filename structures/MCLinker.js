@@ -11,6 +11,7 @@ import Command from './Command.js';
 import Button from './Button.js';
 import BotAPI from '../api/BotAPI.js';
 import * as utils from '../api/utils.js';
+import mongoose, { Mongoose, Schema } from 'mongoose';
 
 export default class MCLinker extends Discord.Client {
 
@@ -177,10 +178,13 @@ export default class MCLinker extends Discord.Client {
     }
 
     /**
-     * Loads all commands, user and server connections into the cache
+     * Loads the mongodb database and all commands, user and server connections into the cache.
      * @returns {Promise<void>} - A promise that resolves when all commands, user and server connections are loaded.
      */
     async loadEverything() {
+        await this.loadMongoose();
+        console.log(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
+
         await this.serverConnections._load();
         console.log(`[${this.shard.ids[0]}] Loaded all server connections.`);
         await this.userConnections._load();
@@ -189,9 +193,87 @@ export default class MCLinker extends Discord.Client {
         console.log(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
         await this.userSettingsConnections._load();
         console.log(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
+
         await this._loadCommands();
         console.log(`[${this.shard.ids[0]}] Loaded all commands.`);
         await this._loadButtons();
         console.log(`[${this.shard.ids[0]}] Loaded all buttons.`);
+    }
+
+    async loadMongoose() {
+        /**
+         * The mongoose database client.
+         * @type {Mongoose}
+         */
+        this.mongo = await mongoose.connect(process.env.DATABASE_URL);
+
+        const serverConnectionSchema = new Schema({
+            _id: { type: String },
+            ip: String,
+            version: Number,
+            path: String,
+            worldPath: String,
+            online: Boolean,
+            floodgatePrefix: String,
+            protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
+            port: Number,
+            username: String,
+            password: String,
+            token: String,
+            hash: String,
+            chatChannels: [{
+                _id: { type: String },
+                types: [{
+                    type: String,
+                    enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
+                }],
+                allowDiscordToMinecraft: Boolean,
+                webhook: String,
+            }],
+            statChannels: [{
+                _id: { type: String },
+                type: { type: String, enum: ['online', 'max', 'members'] },
+                names: {
+                    online: String,
+                    offline: String,
+                    members: String,
+                },
+            }],
+            serverSettings: { type: String, ref: 'ServerSettingsConnections' },
+        });
+
+        const serverSettingsConnectionSchema = new Schema({
+            _id: { type: String },
+            disabled: {
+                botCommands: [String],
+                advancements: [String],
+                stats: [String],
+                chatCommands: [String],
+            },
+            language: String,
+            server: { type: String, ref: 'ServerConnection' },
+        });
+
+        const userSettingsConnectionSchema = new Schema({
+            _id: { type: String },
+            tokens: {
+                accessToken: String,
+                refreshToken: String,
+                expires: Number,
+            },
+            user: { type: String, ref: 'UserConnection' },
+        });
+
+        const userConnectionSchema = new Schema({
+            _id: { type: String },
+            uuid: { type: String, unique: true },
+            username: String,
+            userSettings: { type: String, ref: 'UserSettingsConnection' },
+        });
+
+        this.mongo.model('ServerConnection', serverConnectionSchema);
+        this.mongo.model('UserConnection', userConnectionSchema);
+        this.mongo.model('ServerSettingsConnection', serverSettingsConnectionSchema);
+        this.mongo.model('UserSettingsConnection', userSettingsConnectionSchema);
     }
 }

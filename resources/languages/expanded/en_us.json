@@ -860,7 +860,7 @@
               "fields": [
                 {
                   "name": "Status",
-                  "value": "%status% %status_emoji%",
+                  "value": "%status_emoji% %status%",
                   "inline": true
                 },
                 {
@@ -1110,7 +1110,7 @@
           "embeds": [
             {
               "title": "Cannot Change Name",
-              "description": "I do not have permission to edit this channel's name."
+              "description": "The bot does not have the `Manage Channels` permission to edit the channel's name."
             }
           ],
           "console": "Channel not manageable"
@@ -1242,10 +1242,29 @@
           "embeds": [
             {
               "title": "Cannot Send Messages",
-              "description": "I do not have permission to send messages in this channel."
+              "description": "The bot does not have the `Send Messages` permission in this channel."
             }
           ],
           "console": "Channel not sendable"
+        },
+        "not_sendable_thread": {
+          "embeds": [
+            {
+              "title": "Cannot Send Messages",
+              "description": "The bot does not have the `Send Messages in Threads` permission in this thread."
+            }
+          ],
+          "console": "Thread not sendable"
+        },
+        "could_not_create_webhook": {
+          "embeds": [
+            {
+              "title": "Could not Create Webhook",
+              "description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel."
+            }
+          ],
+          "console": "Could not create webhook",
+          "components": []
         }
       },
       "step": {
@@ -1415,22 +1434,23 @@
             }
           ]
         },
-        "connecting": {
+        "already_connected": {
           "embeds": [
             {
-              "title": "Connecting...",
-              "description": "Connecting to ftp..."
+              "title": "Already Connected",
+              "description": "Already connected with another server (**%ip%**). If you proceed to connect, that server will be automatically disconnected!"
             }
           ]
         },
-        "searching_properties": {
+        "canceled_connection": {
           "embeds": [
             {
-              "title": "Searching For Server...",
-              "description": "Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)"
+              "title": "Connection Canceled",
+              "description": "This connection request was canceled by the user."
             }
           ],
-          "console": "Searching for server.properties..."
+          "console": "Invalid port specified",
+          "components": []
         },
         "could_not_dm": {
           "embeds": [
@@ -1448,18 +1468,26 @@
             }
           ],
           "console": "No reply in time"
-        },
-        "verification": {
-          "embeds": [
-            {
-              "title": "Code Verification",
-              "description": "Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
-              "color": "DarkGold"
-            }
-          ]
         }
       },
       "step": {
+        "searching_properties": {
+          "embeds": [
+            {
+              "title": "Searching For Server...",
+              "description": "%emoji_step% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)"
+            }
+          ],
+          "console": "Searching for server.properties..."
+        },
+        "connecting": {
+          "embeds": [
+            {
+              "title": "Connecting...",
+              "description": "%emoji_step% Trying to connect to the ftp server..."
+            }
+          ]
+        },
         "check_dms": {
           "embeds": [
             {
@@ -1468,11 +1496,20 @@
             }
           ]
         },
-        "verification_info": {
+        "command_verification": {
           "embeds": [
             {
               "title": "Server Verification",
               "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
+            }
+          ]
+        },
+        "code_verification": {
+          "embeds": [
+            {
+              "title": "Server Verification",
+              "description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
+              "color": "DarkGold"
             }
           ]
         }
@@ -1541,7 +1578,8 @@
               "description": "Successfully connected to the ftp server."
             }
           ],
-          "console": "Successfully wrote ftp file"
+          "console": "Successfully wrote ftp file",
+          "components": []
         },
         "plugin": {
           "embeds": [
@@ -1735,22 +1773,6 @@
     },
     "plugin": {
       "warnings": {
-        "not_completely_disconnected": {
-          "embeds": [
-            {
-              "title": "Not Completely Disconnected",
-              "description": "The server (**%ip%**) is not completely disconnected. Please disconnect it manually by **deleting** the following file: `Server Folder/plugins/Discord-Linker/connection.conn` or by **removing** the plugin completely."
-            }
-          ]
-        },
-        "automatically_disconnected": {
-          "embeds": [
-            {
-              "title": "Automatically Disconnected",
-              "description": "Automatically disconnected from the old server (**%ip%**) to ensure no complications happen."
-            }
-          ]
-        },
         "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
         "no_response_message_short": "No response message! This commonly happens after using `/reload`."
       },
@@ -1910,10 +1932,10 @@
             "embeds": [
               {
                 "author": {
-                  "name": "%username%",
-                  "icon_url": "%author_url%"
+                  "name": "Command Block",
+                  "icon_url": "https://cdn.discordapp.com/emojis/976452589166166037.webp"
                 },
-                "description": "%emoji_command_block% **%username%** has executed the command: [**%message%**]",
+                "description": "**%username%** has executed the command: [**%message%**]",
                 "color": "DarkGold"
               }
             ]
@@ -2198,6 +2220,22 @@
           ]
         }
       }
+    },
+    "yes_no": {
+      "components": [
+        {
+          "type": "Button",
+          "style": "Success",
+          "custom_id": "yes",
+          "label": "Yes"
+        },
+        {
+          "type": "Button",
+          "style": "Danger",
+          "custom_id": "no",
+          "label": "No"
+        }
+      ]
     }
   },
   "modals": {
@@ -3029,6 +3067,10 @@
                 {
                   "name": "1.19",
                   "value": "19"
+                },
+                {
+                  "name": "1.20",
+                  "value": "20"
                 }
               ]
             },
@@ -3043,14 +3085,12 @@
         {
           "type": "Subcommand",
           "name": "plugin",
-          "description": "Connect your Minecraft server using the Discord-Linker plugin.",
-          "options": [
-            {
-              "type": "Boolean",
-              "name": "use_backup_method",
-              "description": "Use the backup method to connect to your server (requires an extra port for the plugin)."
-            }
-          ]
+          "description": "Connect your Minecraft server using the Discord-Linker plugin."
+        },
+        {
+          "type": "Subcommand",
+          "name": "backup",
+          "description": "Connect your Minecraft server using the Discord-Linker plugin with backup-mode enabled."
         }
       ]
     },

@@ -138,11 +138,10 @@ if(deployGuild || deployGlobal) {
     commands.push(disableBuilder.toJSON());
     commands.push(helpBuilder.toJSON());
 }
+
 if(deployRoles) {
     //Get linked roles
     for(const role of Object.values(keys.roles)) {
-        //TODO use builder
-
         linkedRoles.push(role);
         console.log(`Loaded linked role: ${role.key}`);
     }
@@ -174,11 +173,9 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
         if(deployRoles) {
             console.log('Started deploying application linked roles.');
-            await rest.put(
-                //TODO use types
-                `/applications/${process.env.CLIENT_ID}/role-connections/metadata`,
-                { body: linkedRoles },
-            );
+            await rest.put(Routes.applicationRoleConnectionMetadata(process.env.CLIENT_ID), {
+                body: linkedRoles,
+            });
             console.log('Successfully deployed application linked roles.');
         }
 
@@ -206,11 +203,9 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
         if(deleteRoles) {
             console.log('Started deleting application linked roles.');
-            await rest.put(
-                //TODO use types
-                `/applications/${process.env.CLIENT_ID}/role-connections/metadata`,
-                { body: {} }, //Put empty body to delete all linked roles
-            );
+            await rest.put(Routes.applicationRoleConnectionMetadata(process.env.CLIENT_ID), {
+                body: {}, //Put empty body to delete all linked roles
+            });
             console.log('Successfully deleted application linked roles.');
         }
     }

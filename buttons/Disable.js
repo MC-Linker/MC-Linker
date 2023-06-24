@@ -26,14 +26,14 @@ export default class Disable extends Button {
         const settings = await client.serverSettingsConnections.getOrConnect(interaction.guildId);
 
 
-        if(await settings.disable('bot-commands', commandName)) {
+        if(await settings.disable('botCommands', commandName)) {
             await interaction.replyTl(keys.buttons.disable.success.response, { 'command_name': commandName.cap() });
         }
         else {
             return interaction.replyTl(keys.commands.disable.errors.could_not_disable, { 'command_name': commandName.cap() });
         }
 
-        const enableRows = getActionRows(keys.commands.help.success.enable_button, { 'command_name': commandName }, ph.emojis(), ph.colors());
+        const enableRows = getActionRows(keys.commands.help.success.enable_button, { 'command_name': commandName }, ph.emojisAndColors());
         const helpEmbed = EmbedBuilder.from(interaction.message.embeds[0])
             .setDescription(keys.buttons.disable.success.help.embeds[0].description)
             .setColor(Discord.Colors[keys.buttons.disable.success.help.embeds[0].color]);

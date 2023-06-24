@@ -8,8 +8,38 @@ services:
       - "${BOT_PORT}:${BOT_PORT}"
     volumes:
       - type: bind
-        source: ./serverdata
-        target: /usr/src/app/serverdata
+        source: ./download-cache
+        target: /usr/src/app/download-cache
+    networks:
+      - mongo-network
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: on-failure
+    ports:
+      - "27017:27017"
+    volumes:
       - type: bind
-        source: ./userdata
-        target: /usr/src/app/userdata
+        source: ./mongodb
+        target: /data/db
+    networks:
+      - mongo-network
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    depends_on:
+      - mongodb
+    networks:
+      - mongo-network
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    ports:
+      - '8081:8081'
+    volumes:
+      - ./data:/data/db
+
+networks:
+  mongo-network:
+    driver: bridge

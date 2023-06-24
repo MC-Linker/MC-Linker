@@ -8,11 +8,11 @@ export default class UserConnectionManager extends ConnectionManager {
     /**
      * Creates a new UserConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
-     * @param {string} outputPath - The path to write user data to.
+     * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {UserConnectionManager} - A new UserConnectionManager instance.
      */
-    constructor(client, outputPath = './userdata/connections') {
-        super(client, UserConnection, outputPath, 'connection.json');
+    constructor(client, collectionName = 'UserConnection') {
+        super(client, UserConnection, collectionName);
     }
 
     /**

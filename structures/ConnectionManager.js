@@ -1,6 +1,7 @@
 import { CachedManager } from 'discord.js';
 import fs from 'fs-extra';
 import { getManagerString } from '../api/shardingUtils.js';
+import ServerConnection from './ServerConnection.js';
 
 export default class ConnectionManager extends CachedManager {
 
@@ -14,7 +15,7 @@ export default class ConnectionManager extends CachedManager {
 
     /**
      * The server connection cache of this manager.
-     * @type {import('discord.js').Collection<string, Connection>}
+     * @type {import('discord.js').Collection<string, import('./Connection.js').default>}
      */
     cache;
 
@@ -22,24 +23,17 @@ export default class ConnectionManager extends CachedManager {
      * Creates a new ConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {typeof Connection} holds - The type of connection the manager holds.
-     * @param {string} outputPath - The path to write server data to.
-     * @param {string} outputFile - The name of the file to write the connection data to.
+     * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ConnectionManager} - A new ConnectionManager instance.
      */
-    constructor(client, holds, outputPath, outputFile) {
+    constructor(client, holds, collectionName) {
         super(client, holds);
 
         /**
-         * The path to write server data to.
-         * @type {string}
+         * The name of the database collection that this manager controls.
+         * @type {CollectionName}
          */
-        this.outputPath = outputPath;
-
-        /**
-         * The name of the file to write the connection data to.
-         * @type {string}
-         */
-        this.outputFile = outputFile;
+        this.collectionName = collectionName;
 
         /**
          * The connection cache of this manager.
@@ -55,13 +49,13 @@ export default class ConnectionManager extends CachedManager {
      */
     async connect(data) {
         /** @type {?Connection} */
-        const connection = this._add(data, true, { extras: [this.outputPath, this.outputFile] });
+        const connection = this._add(data, true, { extras: [this.collectionName] });
         if(connection && await connection._output()) {
             if('socket' in data) delete data.socket;// The socket is not serializable and should not be broadcasted
             //Broadcast to all shards
             await this.client.shard.broadcastEval((c, { data, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
-                c[manager]._add(data, true, { extras: [c[manager].outputPath, c[manager].outputFile] });
+                c[manager]._add(data, true, { extras: [c[manager].collectionName] });
             }, { context: { data, manager: getManagerString(this), shard: this.client.shard.ids[0] } });
             return connection;
         }
@@ -72,13 +66,23 @@ export default class ConnectionManager extends CachedManager {
     }
 
     /**
-     * Removes a connection from the cache and deletes the data from the file system.
+     * Removes a connection from the cache and deletes the data from the database.
      * @param {ConnectionResolvable} connection - The connection to disconnect.
      * @returns {Promise<boolean>} - Whether the disconnection was successful.
      */
     async disconnect(connection) {
         /** @type {?Connection} */
         const instance = this.resolve(connection);
+
+        if(instance instanceof ServerConnection) {
+            for(const channel of instance.chatChannels) {
+                if(channel.webhook) {
+                    const webhook = await this.client.fetchWebhook(channel.webhook);
+                    if(webhook) await webhook.delete();
+                }
+            }
+        }
+
         if(instance && await instance._delete()) {
             //Broadcast to all shards
             await this.client.shard.broadcastEval((c, { instanceId, manager, shard }) => {
@@ -93,19 +97,52 @@ export default class ConnectionManager extends CachedManager {
     }
 
     /**
-     * Loads all connections from the file system.
+     * Loads all connections from the database.
      * @returns {Promise<void>}
      */
     async _load() {
-        await fs.ensureDir(this.outputPath);
+        const connections = await this.client.mongo.models[this.collectionName].find({});
+        for(const mongoConnection of connections) {
+            // Clone the connection so we can map _id to id without violating the schema
+            const connection = structuredClone(mongoConnection);
 
-        const connections = await fs.readdir(this.outputPath);
-        for(const connectionFile of connections) {
-            try {
-                const connection = await fs.readFile(`${this.outputPath}/${connectionFile}/${this.outputFile}`, 'utf8');
-                await this._add(JSON.parse(connection), true, { extras: [this.outputPath] });
+            //map _id to id
+            connection.id = connection._id;
+            delete connection._id;
+
+            if('chatChannels' in connection) {
+                //map chatChannels _id to id
+                connection.chatChannels = connection.chatChannels.map(channel => {
+                    channel.id = channel._id;
+                    delete channel._id;
+                    return channel;
+                });
             }
-            catch(error) {}
+            if('statChannels' in connection) {
+                //map statChannels _id to id
+                connection.statChannels = connection.statChannels.map(channel => {
+                    channel.id = channel._id;
+                    delete channel._id;
+                    return channel;
+                });
+            }
+
+            await this._add(connection, true, { extras: [this.collectionName] });
+        }
+    }
+
+    /**
+     * Removes the download cache folder for a connection.
+     * @param {string} id - The id of the connection.
+     * @returns {Promise<boolean>}
+     */
+    async removeCache(id) {
+        try {
+            await fs.rm(`./download-cache/${this.collectionName}/${id}/`, { recursive: true });
+            return true;
+        }
+        catch(_) {
+            return false;
         }
     }
 }

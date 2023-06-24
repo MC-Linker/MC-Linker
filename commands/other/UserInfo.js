@@ -47,7 +47,7 @@ export default class UserInfo extends Command {
         const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
         const levelDatResponse = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
 
-        let stats = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./userdata/playerdata/${user.uuid}.dat`);
+        let stats = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./download-cache/playerdata/${user.uuid}.dat`);
         let operators = await server.protocol.get(...FilePath.Operators(server.path, server.id));
         let whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.path, server.id));
         let bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.path, server.id));
@@ -199,8 +199,8 @@ export default class UserInfo extends Command {
             time: pagination.options.timeout ?? 120_000,
         });
 
-        /** @type {DefaultButton[]} */
-        ['ban', 'unban', 'kick', 'op', 'deop', 'whitelist', 'unwhitelist'].map(k => `userinfo_${k}`)
+        ['ban', 'unban', 'kick', 'op', 'deop', 'whitelist', 'unwhitelist']
+            .map(k => `userinfo_${k}`)
             .forEach(command => {
                 // Create new button triggered by the collector
                 new DefaultButton({

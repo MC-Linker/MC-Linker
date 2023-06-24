@@ -7,7 +7,7 @@ import {
     MessageMentions,
     PermissionFlagsBits,
 } from 'discord.js';
-import { fetchCommand, ph } from '../api/messages.js';
+import { ph } from '../api/messages.js';
 import keys from '../api/keys.js';
 
 export default class Command {
@@ -104,7 +104,7 @@ export default class Command {
         }
 
         const settings = await client.serverSettingsConnections.cache.get(interaction.guildId);
-        if(settings?.isDisabled('bot-commands', this.name)) {
+        if(settings?.isDisabled('botCommands', this.name)) {
             await interaction.replyTl(keys.api.command.no_access.disabled, await ph.interaction(interaction));
             return false;
         }
@@ -118,20 +118,20 @@ export default class Command {
             return false;
         }
 
-        const slashCommand = await fetchCommand(client.application.commands, this.name);
-        const missingPermission = await canRunCommand(slashCommand);
-        if(missingPermission !== true) {
-            if(typeof missingPermission === 'string') {
-                await interaction.replyTl(
-                    keys.api.command.no_access.no_permission,
-                    { permission: missingPermission },
-                );
-            }
-            else {
-                await interaction.replyTl(keys.api.command.no_access.no_unknown_permission);
-            }
-            return false;
-        }
+        /*        const slashCommand = await fetchCommand(client.application.commands, this.name);
+                const missingPermission = await canRunCommand(slashCommand);
+                if(missingPermission !== true) {
+                    if(typeof missingPermission === 'string') {
+                        await interaction.replyTl(
+                            keys.api.command.no_access.no_permission,
+                            { permission: missingPermission },
+                        );
+                    }
+                    else {
+                        await interaction.replyTl(keys.api.command.no_access.no_unknown_permission);
+                    }
+                    return false;
+                }*/
 
         if(this.requiresUserIndex !== null && (this.requiresUserIndex === 0 || args[this.requiresUserIndex - 1] !== undefined)) {
             const user = await client.userConnections.userFromArgument(args[this.requiresUserIndex], server);
