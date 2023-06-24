@@ -17,7 +17,6 @@
   "type": "module",
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
-    "@prisma/client": "^4.14.0",
     "bufferutil": "^4.0.7",
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.3",
