@@ -428,8 +428,11 @@ export default class HttpProtocol extends Protocol {
      */
     async removeChatChannel(channel) {
         if(channel.webhook) {
-            const webhook = await this.client.fetchWebhook(channel.webhook);
-            await webhook.delete();
+            try {
+                const webhook = await this.client.fetchWebhook(channel.webhook);
+                await webhook.delete();
+            }
+            catch(_) {}
         }
 
         const response = await this._fetch(...PluginRoutes.RemoveChannel(channel));
