@@ -137,8 +137,11 @@ export default class WebSocketProtocol extends Protocol {
      */
     async removeChatChannel(channel) {
         if(channel.webhook) {
-            const webhook = await this.client.fetchWebhook(channel.webhook);
-            await webhook.delete();
+            try {
+                const webhook = await this.client.fetchWebhook(channel.webhook);
+                await webhook.delete();
+            }
+            catch(_) {}
         }
 
         return await this._sendRaw('remove-channel', channel);

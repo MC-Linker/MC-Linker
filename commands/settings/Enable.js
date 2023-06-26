@@ -21,6 +21,7 @@ export default class Enable extends AutocompleteCommand {
         const focused = interaction.options.getFocused().toLowerCase();
 
         const disabled = settings.disabled[subcommand];
+        if(!disabled) return;
         const matchingDisabled = disabled.filter(disable => disable.includes(focused));
         if(matchingDisabled.length >= 25) matchingDisabled.length = 25;
 
