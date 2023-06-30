@@ -74,7 +74,7 @@ export default class ConnectionManager extends CachedManager {
         /** @type {?Connection} */
         const instance = this.resolve(connection);
 
-        if(instance instanceof ServerConnection) {
+        if(instance instanceof ServerConnection && Array.isArray(instance.chatChannels)) {
             for(const channel of instance.chatChannels) {
                 if(channel.webhook) {
                     try {
