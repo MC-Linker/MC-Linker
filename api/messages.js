@@ -349,7 +349,7 @@ export async function replyOptions(interaction, options) {
     function handleError(err) {
         console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { 'interaction': interaction }));
         try {
-            return interaction.channel.send(options);
+            return interaction.channel?.send(options);
         }
         catch(err) {
             console.log(addPh(keys.api.messages.errors.could_not_reply_channel.console, ph.error(err), { 'interaction': interaction }));

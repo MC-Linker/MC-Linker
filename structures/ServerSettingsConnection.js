@@ -95,6 +95,7 @@ export default class ServerSettingsConnection extends Connection {
      */
     async enable(type, value) {
         const currentValues = this.disabled[type];
+        if(currentValues.includes(value)) return this;
         const index = currentValues.indexOf(value);
         if(index !== -1) currentValues.splice(index, 1);
         return await this.edit({ [type]: [currentValues] });
@@ -107,6 +108,7 @@ export default class ServerSettingsConnection extends Connection {
      * @returns {boolean}
      */
     isDisabled(type, value) {
+        if(!this.disabled[type]) return false;
         return this.disabled[type].includes(value);
     }
 

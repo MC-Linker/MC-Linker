@@ -113,6 +113,7 @@ export default class Command extends AutocompleteCommand {
         //"arg2=string & arg1=string2" => 2nd option === string && 1st option === string2
         //"" => any previous option
         function findSuggestionKey(suggestions, previousArgument, allOptions) {
+            if(typeof suggestions !== 'object') return '';
             return Object.keys(suggestions).find(suggestion => {
                 suggestion = suggestion.replaceAll(' ', ''); //Remove all whitespaces
 
