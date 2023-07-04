@@ -687,14 +687,6 @@
   "commands.chatchannel.warnings.already_responded.embeds.0.title": "Select Message Types",
   "commands.chatchannel.warnings.already_responded.embeds.0.description": "Select all message types you want the bot to send. (Already responded)",
 
-  "commands.chatchannel.errors.not_sendable.embeds.0.title": "Cannot Send Messages",
-  "commands.chatchannel.errors.not_sendable.embeds.0.description": "The bot does not have the `Send Messages` permission in this channel.",
-  "commands.chatchannel.errors.not_sendable.console": "Channel not sendable",
-
-  "commands.chatchannel.errors.not_sendable_thread.embeds.0.title": "Cannot Send Messages",
-  "commands.chatchannel.errors.not_sendable_thread.embeds.0.description": "The bot does not have the `Send Messages in Threads` permission in this thread.",
-  "commands.chatchannel.errors.not_sendable_thread.console": "Thread not sendable",
-
   "commands.chatchannel.errors.could_not_create_webhook.embeds.0.title": "Could not Create Webhook",
   "commands.chatchannel.errors.could_not_create_webhook.embeds.0.description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel.",
   "commands.chatchannel.errors.could_not_create_webhook.console": "Could not create webhook",
@@ -1028,12 +1020,19 @@
   "api.ftp.errors.could_not_connect.embeds.0.title": "Could Not Connect",
   "api.ftp.errors.could_not_connect.embeds.0.description": "Could not connect to server with ftp. Please check if the ftp server is online.",
   "api.ftp.errors.could_not_connect.console": "Could not connect with ftp, sftp or ftps.",
+
   "api.ftp.errors.could_not_parse.embeds.0.title": "Could not Read File",
   "api.ftp.errors.could_not_parse.embeds.0.description": "Could not read the NBT file. File may be corrupted.",
   "api.ftp.errors.could_not_parse.console": "Could not read nbt file %error_stack%",
+
   "api.utils.errors.could_not_fetch_uuid.embeds.0.title": "Could Not Fetch UUID",
   "api.utils.errors.could_not_fetch_uuid.embeds.0.description": "**%username%** is not a valid minecraft account name. Geyser/Floodgate usernames need to start with the configured prefix.",
   "api.utils.errors.could_not_fetch_uuid.console": "Could not fetch uuid of %username%",
+
+  "api.utils.errors.not_sendable.embeds.0.title": "Cannot Send Messages",
+  "api.utils.errors.not_sendable.embeds.0.description": "The bot does not have permission to send messages in this channel.",
+  "api.utils.errors.not_sendable.console": "Channel not sendable",
+
   "api.button.clicked.console": "%author_tag% has clicked button %interaction_id% in %guild_name%",
   "api.button.no_access.no_author.embeds.0.title": "No Permission",
   "api.button.no_access.no_author.embeds.0.description": "Only the command sender can use this button.",
@@ -1139,26 +1138,6 @@
   "buttons.yes_no.components.1.custom_id": "no",
   "buttons.yes_no.components.1.label": "No",
 
-
-
-  "modals.connect_backup.title": "Connection Details",
-  "modals.connect_backup.custom_id": "connect_backup",
-
-  "modals.connect_backup.components.0.type": "TextInput",
-  "modals.connect_backup.components.0.style": "Short",
-  "modals.connect_backup.components.0.custom_id": "ip",
-  "modals.connect_backup.components.0.label": "Your Server IP",
-  "modals.connect_backup.components.0.placeholder": "Example: play.mclinker.com",
-  "modals.connect_backup.components.0.required": true,
-
-  "modals.connect_backup.components.1.type": "TextInput",
-  "modals.connect_backup.components.1.style": "Short",
-  "modals.connect_backup.components.1.custom_id": "port",
-  "modals.connect_backup.components.1.label": "Plugin Port",
-  "modals.connect_backup.components.1.placeholder": "Example: 8652",
-  "modals.connect_backup.components.1.required": false,
-  "modals.connect_backup.components.1.min_length": 1,
-  "modals.connect_backup.components.1.max_length": 5,
 
 
   "data.help.name": "help",
@@ -1783,6 +1762,18 @@
   "data.connect.options.2.type": "Subcommand",
   "data.connect.options.2.name": "backup",
   "data.connect.options.2.description": "Connect your Minecraft server using the Discord-Linker plugin with backup-mode enabled.",
+
+  "data.connect.options.2.options.0.type": "String",
+  "data.connect.options.2.options.0.name": "ip",
+  "data.connect.options.2.options.0.description": "Set the ip of your Minecraft server.",
+  "data.connect.options.2.options.0.required": true,
+
+  "data.connect.options.2.options.1.type": "Integer",
+  "data.connect.options.2.options.1.name": "port",
+  "data.connect.options.2.options.1.description": "Set the port of the plugin (Default: 11111).",
+  "data.connect.options.2.options.1.required": false,
+  "data.connect.options.2.options.1.min_value": 1,
+  "data.connect.options.2.options.1.max_value": 65535,
 
 
 
