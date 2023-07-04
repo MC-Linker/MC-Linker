@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { addPh, addTranslatedResponses, getActionRows, getEmbed, getModal, ph } from '../../api/messages.js';
+import { addPh, addTranslatedResponses, getActionRows, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
@@ -20,7 +20,6 @@ export default class Connect extends Command {
             name: 'connect',
             requiresConnectedServer: false,
             category: 'settings',
-            defer: false,
             ephemeral: true,
         });
 
@@ -102,8 +101,6 @@ export default class Connect extends Command {
 
         const method = args[0];
         if(method === 'ftp') {
-            await interaction.deferReply({ ephemeral: this.ephemeral }); //manually defer because we want to show modal in `/connect plugin true`
-
             const host = args[1];
             let username = args[2];
             let password = args[3];
@@ -215,37 +212,31 @@ export default class Connect extends Command {
         }
         else if(method === 'backup') {
             try {
-                await interaction.showModal(getModal(keys.modals.connect_backup));
-                let modal = await interaction.awaitModalSubmit({ time: 180_000 });
-                await modal.deferReply({ ephemeral: this.ephemeral });
-                modal = addTranslatedResponses(modal);
-
-                const ip = modal.fields.getTextInputValue('ip').split(':')[0];
-                let port = parseInt(modal.fields.getTextInputValue('port'));
-                if(isNaN(port)) port = process.env.PLUGIN_PORT ?? 11111;
+                const ip = args[1].split(':')[0];
+                const port = args[1] ?? process.env.PLUGIN_PORT ?? 11111;
 
                 const token = crypto.randomBytes(32).toString('hex');
                 const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
 
                 const verify = await httpProtocol.verifyGuild();
-                if(!await utils.handleProtocolResponse(verify, httpProtocol, modal, {
+                if(!await utils.handleProtocolResponse(verify, httpProtocol, interaction, {
                     409: keys.commands.connect.warnings.already_connected,
                 })) return;
 
                 const checkDmsEmbed = getEmbed(keys.commands.connect.step.check_dms, ph.emojisAndColors());
                 if(server) {
                     const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.ip });
-                    await modal.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed] });
+                    await interaction.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed] });
                 }
-                else await modal.replyOptions({ embeds: [checkDmsEmbed] });
+                else await interaction.replyOptions({ embeds: [checkDmsEmbed] });
 
                 let dmChannel = await interaction.user.createDM();
                 try {
                     await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.step.code_verification, ph.emojisAndColors())] });
                 }
                 catch(err) {
-                    dmChannel = modal.channel;
-                    await modal.replyTl(keys.commands.connect.warnings.could_not_dm);
+                    dmChannel = interaction.channel;
+                    await interaction.replyTl(keys.commands.connect.warnings.could_not_dm);
                     await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.step.code_verification, ph.emojisAndColors())] });
                 }
 
@@ -258,7 +249,7 @@ export default class Connect extends Command {
                 if(!message) return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojisAndColors()));
 
                 const resp = await httpProtocol.connect(collector.first().content);
-                if(!await utils.handleProtocolResponse(resp, httpProtocol, modal, {
+                if(!await utils.handleProtocolResponse(resp, httpProtocol, interaction, {
                     401: keys.commands.connect.errors.incorrect_code,
                 })) {
                     await message.replyTl(keys.commands.connect.errors.incorrect_code);
@@ -287,16 +278,12 @@ export default class Connect extends Command {
                 await this.disconnectOldServer(server);
                 await client.serverConnections.connect(serverConnectionData);
 
-                return modal.replyTl(keys.commands.connect.success.plugin);
+                return interaction.replyTl(keys.commands.connect.success.plugin);
             }
             catch(_) {}
         }
         else if(method === 'plugin') {
-            await interaction.deferReply({ ephemeral: this.ephemeral }); //manually defer because we want to show modal in `/connect plugin true`
-            // await this._disconnectOldPlugin(interaction, server);
-
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-
 
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
             if(server) {
