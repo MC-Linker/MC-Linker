@@ -3,8 +3,10 @@ import Discord, {
     ActionRowBuilder,
     ApplicationCommandOptionType,
     CommandInteraction,
+    GuildChannel,
     MessageMentions,
     MessagePayload,
+    PermissionFlagsBits,
     User,
 } from 'discord.js';
 import crypto from 'crypto';
@@ -22,7 +24,7 @@ import { Authflow } from 'prismarine-auth';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import { FilePath } from '../structures/Protocol.js';
 
-const mcData = McData('1.19.3');
+const mcData = McData('1.20.1');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
@@ -776,4 +778,22 @@ export function memoize(fn, parameters) {
         cache.set(key, result);
         return result;
     };
+}
+
+
+/**
+ * Checks if a member has permission to send messages in a channel.
+ * @param {GuildMember} member - The member to check.
+ * @param {GuildChannel} channel - The channel to check.
+ * @param {Boolean} [sendEmbed=true] - Whether the member needs to be able to send embeds.
+ * @returns {Boolean} - Whether the member can send messages in the channel.
+ */
+export function canSendMessages(member, channel, sendEmbed = true) {
+    const permissions = channel.permissionsFor(member);
+    if(!permissions.has(PermissionFlagsBits.ViewChannel)) return false;
+
+    if(channel.isThread() && !permissions.has(PermissionFlagsBits.SendMessagesInThreads)) return false;
+    else if(!permissions.has(PermissionFlagsBits.SendMessages)) return false;
+    else if(sendEmbed && !permissions.has(PermissionFlagsBits.EmbedLinks)) return false;
+    return true;
 }

@@ -20,6 +20,7 @@ export default class Command extends AutocompleteCommand {
         });
     }
 
+    // noinspection LocalVariableNamingConventionJS
     memoizedGetAutocompleteSuggestions = utils.memoize(this.getAutocompleteSuggestions, 4);
 
     async getAutocompleteSuggestions(focusedOption, allOptions, user, guildId, client) {

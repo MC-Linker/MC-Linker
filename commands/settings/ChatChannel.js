@@ -3,6 +3,7 @@ import { getComponent, getEmbed, ph } from '../../api/messages.js';
 import keys, { getLanguageKey } from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../api/utils.js';
+import { canSendMessages } from '../../api/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 export default class ChatChannel extends Command {
@@ -27,14 +28,9 @@ export default class ChatChannel extends Command {
             const allowDiscordToMinecraft = args[2] ?? true;
             const useWebhooks = args[3] ?? true;
 
-            if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.SendMessages)) {
-                return interaction.replyTl(keys.commands.chatchannel.errors.not_sendable);
-            }
-            else if(!channel.permissionsFor(client.user).has(PermissionFlagsBits.ManageWebhooks) && useWebhooks) {
+            if(!canSendMessages(interaction.guild.members.me, channel)) return interaction.replyTl(keys.api.utils.errors.not_sendable);
+            else if(useWebhooks && !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageWebhooks)) {
                 return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
-            }
-            else if(channel.isThread() && !channel.parent.permissionsFor(client.user).has(PermissionFlagsBits.SendMessagesInThreads)) {
-                return interaction.replyTl(keys.commands.chatchannel.errors.not_sendable_thread);
             }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
