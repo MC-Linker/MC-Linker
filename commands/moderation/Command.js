@@ -8,7 +8,7 @@ import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };
 import { FilePath } from '../../structures/Protocol.js';
 
-const mcData = minecraft_data('1.19.3');
+const mcData = minecraft_data('1.20.1');
 
 export default class Command extends AutocompleteCommand {
 

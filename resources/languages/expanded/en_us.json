@@ -1238,24 +1238,6 @@
         }
       },
       "errors": {
-        "not_sendable": {
-          "embeds": [
-            {
-              "title": "Cannot Send Messages",
-              "description": "The bot does not have the `Send Messages` permission in this channel."
-            }
-          ],
-          "console": "Channel not sendable"
-        },
-        "not_sendable_thread": {
-          "embeds": [
-            {
-              "title": "Cannot Send Messages",
-              "description": "The bot does not have the `Send Messages in Threads` permission in this thread."
-            }
-          ],
-          "console": "Thread not sendable"
-        },
         "could_not_create_webhook": {
           "embeds": [
             {
@@ -1996,6 +1978,15 @@
             }
           ],
           "console": "Could not fetch uuid of %username%"
+        },
+        "not_sendable": {
+          "embeds": [
+            {
+              "title": "Cannot Send Messages",
+              "description": "The bot does not have permission to send messages in this channel."
+            }
+          ],
+          "console": "Channel not sendable"
         }
       }
     },
@@ -2234,32 +2225,6 @@
           "style": "Danger",
           "custom_id": "no",
           "label": "No"
-        }
-      ]
-    }
-  },
-  "modals": {
-    "connect_backup": {
-      "title": "Connection Details",
-      "custom_id": "connect_backup",
-      "components": [
-        {
-          "type": "TextInput",
-          "style": "Short",
-          "custom_id": "ip",
-          "label": "Your Server IP",
-          "placeholder": "Example: play.mclinker.com",
-          "required": true
-        },
-        {
-          "type": "TextInput",
-          "style": "Short",
-          "custom_id": "port",
-          "label": "Plugin Port",
-          "placeholder": "Example: 8652",
-          "required": false,
-          "min_length": 1,
-          "max_length": 5
         }
       ]
     }
@@ -3090,7 +3055,23 @@
         {
           "type": "Subcommand",
           "name": "backup",
-          "description": "Connect your Minecraft server using the Discord-Linker plugin with backup-mode enabled."
+          "description": "Connect your Minecraft server using the Discord-Linker plugin with backup-mode enabled.",
+          "options": [
+            {
+              "type": "String",
+              "name": "ip",
+              "description": "Set the ip of your Minecraft server.",
+              "required": true
+            },
+            {
+              "type": "Integer",
+              "name": "port",
+              "description": "Set the port of the plugin (Default: 11111).",
+              "required": false,
+              "min_value": 1,
+              "max_value": 65535
+            }
+          ]
         }
       ]
     },
