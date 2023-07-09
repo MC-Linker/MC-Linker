@@ -370,9 +370,9 @@ export default class BotAPI extends EventEmitter {
                 //Create new webhook if old one doesn't exist
                 if(!webhook) {
                     const options = {
-                        name: player,
+                        name: 'MC Linker',
                         reason: 'ChatChannel to Minecraft',
-                        avatar: authorURL,
+                        avatar: 'https://i.imgur.com/wJXuuO1.png',
                     };
                     if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
                     else webhook = await discordChannel.createWebhook(options);
@@ -391,18 +391,17 @@ export default class BotAPI extends EventEmitter {
                     await server.edit({ chatChannels: regChannel.data });
                 }
 
-                //Edit webhook if name doesnt match
-                if(webhook.name !== player) {
-                    await webhook.edit({ name: player, avatar: authorURL });
-                }
-
                 if(discordChannel.isThread()) await webhook.send({
                     threadId: discordChannel.id,
                     content: argPlaceholder.message,
+                    username: player,
+                    avatarURL: authorURL,
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
                 });
                 else await webhook.send({
                     content: argPlaceholder.message,
+                    username: player,
+                    avatarURL: authorURL,
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
                 });
             }
