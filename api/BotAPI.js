@@ -372,7 +372,7 @@ export default class BotAPI extends EventEmitter {
                     const options = {
                         name: 'MC Linker',
                         reason: 'ChatChannel to Minecraft',
-                        avatar: 'https://i.imgur.com/wJXuuO1.png',
+                        avatar: 'https://mclinker.com/assets/mclinkerlogo.png',
                     };
                     if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
                     else webhook = await discordChannel.createWebhook(options);
