@@ -84,12 +84,27 @@ client.on(Discord.Events.GuildDelete, async guild => {
 });
 
 client.on(Discord.Events.MessageCreate, async message => {
-    /** @type {ServerConnection} */
-    const server = client.serverConnections.cache.get(message.guildId);
-
     //check if in guild
     message = addTranslatedResponses(message);
-    if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
+    if(!message.inGuild()) {
+        if(client.api.usersAwaitingVerification.has(message.content)) {
+            const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
+
+            await this.client.userConnections.connect({
+                id: message.author.id,
+                username,
+                uuid,
+            });
+
+            client.api.usersAwaitingVerification.delete(message.content);
+            return await message.replyTl(keys.commands.account.success);
+        }
+
+        return message.replyTl(keys.main.no_access.not_in_guild);
+    }
+
+    /** @type {ServerConnection} */
+    const server = client.serverConnections.cache.get(message.guildId);
 
     if(!message.author.bot && !message.content.startsWith(process.env.PREFIX)) {
         /** @type {ChatChannelData} */

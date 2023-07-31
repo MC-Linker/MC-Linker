@@ -2,7 +2,7 @@
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from './oauth.js';
 import { createHash, getMinecraftAvatarURL, searchAdvancements } from './utils.js';
-import { addPh, addTranslatedResponses, getEmbed, ph } from './messages.js';
+import { addPh, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
@@ -47,6 +47,12 @@ export default class BotAPI extends EventEmitter {
         points: 2, // 1 points
         duration: 60 * 5, // per 5 minutes
     });
+
+    /**
+     * A map of users that are awaiting verification. The map consists of verification codes and and their username and uuid.
+     * @type {Map<String, { username: String, uuid: String }>}
+     */
+    usersAwaitingVerification = new Map();
 
     constructor(client) {
         super();
@@ -140,10 +146,11 @@ export default class BotAPI extends EventEmitter {
         });
 
         this.fastify.post('/verify-user', async (request, reply) => {
+            const data = request.body;
             const server = await _getServerFastify(request, reply, this.client);
             if(!server) return;
             reply.send({});
-            await this._verifyUser(request.body, server);
+            this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
         });
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -269,7 +276,7 @@ export default class BotAPI extends EventEmitter {
             data = JSON.parse(data);
             const server = await getServerWebsocket(this.client);
             if(!server) return;
-            await this._verifyUser(data, server);
+            this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
@@ -504,36 +511,5 @@ export default class BotAPI extends EventEmitter {
         if(!role) return 'error';
 
         return member.roles.cache.has(role.id);
-    }
-
-    /**
-     * Listens to a dm message of the user containing the code to verify the user.
-     * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
-     * @returns {Promise<void>}
-     */
-    async _verifyUser(data, server) {
-        const guild = await this.client.guilds.fetch(server.id);
-        if(!guild) return;
-
-        const member = await guild.members.fetch(this.client.userConnections.cache.get(data.uuid)?.id);
-        if(!member) return;
-
-        const dm = await member.createDM();
-        if(!dm) return;
-
-        const collector = dm.createMessageCollector({ time: 180_000, max: 1 });
-        collector.on('collect', async msg => {
-            msg = addTranslatedResponses(msg);
-            if(msg.content === data.code) {
-                await this.client.userConnections.connect({
-                    id: data.id,
-                    username: data.username,
-                    uuid: data.uuid,
-                });
-                await msg.replyTl(keys.commands.account.success);
-            }
-            else await msg.replyTl(keys.commands.connect.errors.incorrect_code);
-        });
     }
 }
