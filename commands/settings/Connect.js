@@ -288,7 +288,7 @@ export default class Connect extends Command {
         }
         else if(method === 'plugin') {
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-            const requiredRoleToJoin = args[2]?.id;
+            const requiredRoleToJoin = args[1]?.id;
 
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
             if(server) {

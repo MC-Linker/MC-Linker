@@ -215,6 +215,7 @@ export default class MCLinker extends Discord.Client {
             worldPath: String,
             online: Boolean,
             floodgatePrefix: String,
+            requiredRoleToJoin: String,
             protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
             port: Number,
             username: String,
