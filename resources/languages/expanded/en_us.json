@@ -3050,7 +3050,15 @@
         {
           "type": "Subcommand",
           "name": "plugin",
-          "description": "Connect your Minecraft server using the Discord-Linker plugin."
+          "description": "Connect your Minecraft server using the Discord-Linker plugin.",
+          "options": [
+            {
+              "type": "Role",
+              "name": "required-role-to-join",
+              "description": "Set the required role to join the server.",
+              "required": false
+            }
+          ]
         },
         {
           "type": "Subcommand",
@@ -3070,6 +3078,12 @@
               "required": false,
               "min_value": 1,
               "max_value": 65535
+            },
+            {
+              "type": "Role",
+              "name": "required-role-to-join",
+              "description": "Set the required role to join the server.",
+              "required": false
             }
           ]
         }

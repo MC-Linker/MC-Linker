@@ -1759,6 +1759,12 @@
   "data.connect.options.1.name": "plugin",
   "data.connect.options.1.description": "Connect your Minecraft server using the Discord-Linker plugin.",
 
+  "data.connect.options.1.options.0.type": "Role",
+  "data.connect.options.1.options.0.name": "required-role-to-join",
+  "data.connect.options.1.options.0.description": "Set the required role to join the server.",
+  "data.connect.options.1.options.0.required": false,
+
+
   "data.connect.options.2.type": "Subcommand",
   "data.connect.options.2.name": "backup",
   "data.connect.options.2.description": "Connect your Minecraft server using the Discord-Linker plugin with backup-mode enabled.",
@@ -1774,6 +1780,11 @@
   "data.connect.options.2.options.1.required": false,
   "data.connect.options.2.options.1.min_value": 1,
   "data.connect.options.2.options.1.max_value": 65535,
+
+  "data.connect.options.2.options.2.type": "Role",
+  "data.connect.options.2.options.2.name": "required-role-to-join",
+  "data.connect.options.2.options.2.description": "Set the required role to join the server.",
+  "data.connect.options.2.options.2.required": false,
 
 
 

@@ -2,7 +2,7 @@
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from './oauth.js';
 import { createHash, getMinecraftAvatarURL, searchAdvancements } from './utils.js';
-import { addPh, getEmbed, ph } from './messages.js';
+import { addPh, addTranslatedResponses, getEmbed, ph } from './messages.js';
 import keys from './keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
@@ -74,7 +74,7 @@ export default class BotAPI extends EventEmitter {
     }
 
     async startServer() {
-        async function _getServerFastify(request, reply, client, rateLimiter) {
+        async function _getServerFastify(request, reply, client, rateLimiter = null) {
             try {
                 if(rateLimiter) await rateLimiter.consume(request.ip);
 
@@ -93,7 +93,6 @@ export default class BotAPI extends EventEmitter {
                     return;
                 }
 
-                reply.send({});
                 return server;
             }
             catch(rateLimiterRes) {
@@ -110,6 +109,8 @@ export default class BotAPI extends EventEmitter {
             const rateLimiter = request.body?.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
             const server = await _getServerFastify(request, reply, this.client, rateLimiter);
             if(!server) return;
+
+            reply.send({});
             await this._chat(request.body, server);
         });
 
@@ -117,13 +118,32 @@ export default class BotAPI extends EventEmitter {
             const rateLimiter = request.body.event === 'members' ? this.rateLimiterMemberCounter : null;
             const server = await _getServerFastify(request, reply, this.client, rateLimiter);
             if(!server) return;
+
+            reply.send({});
             await this._updateStatsChannel(request.body, server);
         });
 
         this.fastify.post('/disconnect-force', async (request, reply) => {
             const server = await _getServerFastify(request, reply, this.client);
             if(!server) return;
+
+            reply.send({});
             await this.client.serverConnections.disconnect(server);
+        });
+
+        this.fastify.post('/has-required-role', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client);
+            if(!server) return;
+            const response = await this._hasRequiredRoleToJoin(request.body.uuid, server);
+            if(response === 'error') return reply.status(500).send();
+            reply.send({ response });
+        });
+
+        this.fastify.post('/verify-user', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client);
+            if(!server) return;
+            reply.send({});
+            await this._verifyUser(request.body, server);
         });
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -238,11 +258,24 @@ export default class BotAPI extends EventEmitter {
             // `/linker disconnect` was executed in minecraft, disconnect the server from discord
             await this.client.serverConnections.disconnect(server);
         });
+        socket.on('has-required-role', async (data, callback) => {
+            data = JSON.parse(data);
+            const server = await getServerWebsocket(this.client);
+            if(!server) return;
+            const response = await this._hasRequiredRoleToJoin(data.uuid, server);
+            callback({ response });
+        });
+        socket.on('verify-user', async data => {
+            data = JSON.parse(data);
+            const server = await getServerWebsocket(this.client);
+            if(!server) return;
+            await this._verifyUser(data, server);
+        });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
         });
 
-        async function getServerWebsocket(client, rateLimiter) {
+        async function getServerWebsocket(client, rateLimiter = null) {
             try {
                 if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
 
@@ -264,9 +297,9 @@ export default class BotAPI extends EventEmitter {
     }
 
     /**
-     * Handles chat messages
-     * @param {Object} data - The chat data
-     * @param {ServerConnection} server - The server connection
+     * Handles chat messages.
+     * @param {Object} data - The request data.
+     * @param {ServerConnection} server - The server connection.
      * @returns {Promise<void>}
      * @private
      */
@@ -412,9 +445,9 @@ export default class BotAPI extends EventEmitter {
     }
 
     /**
-     * Handles stats channel updates
-     * @param {Object} data - The chat data
-     * @param {ServerConnection} server - The server connection
+     * Handles stats-channel updates.
+     * @param {Object} data - The request data.
+     * @param {ServerConnection} server - The server connection.
      * @returns {Promise<void>}
      * @private
      */
@@ -448,5 +481,59 @@ export default class BotAPI extends EventEmitter {
             }
             catch(_) {}
         }
+    }
+
+    /**
+     * Checks whether the minecraft-user has the required role to join the server.
+     * @param {string} uuid - The uuid of the minecraft-user.
+     * @param {ServerConnection} server - The server connection.
+     * @returns {Promise<'not_connected'|'error'|Boolean>} - Whether the user has the required role.
+     */
+    async _hasRequiredRoleToJoin(uuid, server) {
+        if(!server.requiredRoleToJoin) return true;
+        const userId = this.client.userConnections.cache.get(uuid)?.id;
+        if(!userId) return false;
+
+        const guild = await this.client.guilds.fetch(server.id);
+        if(!guild) return 'error';
+
+        const member = await guild.members.fetch(userId);
+        if(!member) return 'error';
+
+        const role = await guild.roles.fetch(server.requiredRoleToJoin);
+        if(!role) return 'error';
+
+        return member.roles.cache.has(role.id);
+    }
+
+    /**
+     * Listens to a dm message of the user containing the code to verify the user.
+     * @param {Object} data - The request data.
+     * @param {ServerConnection} server - The server connection.
+     * @returns {Promise<void>}
+     */
+    async _verifyUser(data, server) {
+        const guild = await this.client.guilds.fetch(server.id);
+        if(!guild) return;
+
+        const member = await guild.members.fetch(this.client.userConnections.cache.get(data.uuid)?.id);
+        if(!member) return;
+
+        const dm = await member.createDM();
+        if(!dm) return;
+
+        const collector = dm.createMessageCollector({ time: 180_000, max: 1 });
+        collector.on('collect', async msg => {
+            msg = addTranslatedResponses(msg);
+            if(msg.content === data.code) {
+                await this.client.userConnections.connect({
+                    id: data.id,
+                    username: data.username,
+                    uuid: data.uuid,
+                });
+                await msg.replyTl(keys.commands.account.success);
+            }
+            else await msg.replyTl(keys.commands.connect.errors.incorrect_code);
+        });
     }
 }
