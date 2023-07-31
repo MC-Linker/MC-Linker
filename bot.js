@@ -88,6 +88,7 @@ client.on(Discord.Events.MessageCreate, async message => {
 
     //check if in guild
     message = addTranslatedResponses(message);
+
     if(!message.inGuild()) {
         if(client.api.usersAwaitingVerification.has(message.content)) {
             const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
@@ -99,7 +100,7 @@ client.on(Discord.Events.MessageCreate, async message => {
             });
 
             client.api.usersAwaitingVerification.delete(message.content);
-            return await message.replyTl(keys.commands.account.success);
+            return await message.replyTl(keys.commands.account.success.verified);
         }
     }
 

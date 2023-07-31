@@ -382,7 +382,7 @@ export function addCompletion(key) {
     if(Object.keys(completions).includes(path[path.length - 1])) completion = completions[path[path.length - 1]];
     else if(Object.keys(completions).includes(path[path.length - 2])) completion = completions[path[path.length - 2]];
 
-    if(completion && message.embeds[0]) message.embeds[0] = { ...completion, ...message.embeds[0] }; // original embeds is last, so it overrides the completion
+    if(completion && message.embeds?.[0]) message.embeds[0] = { ...completion, ...message.embeds[0] }; // original embeds is last, so it overrides the completion
     return message;
 }
 
