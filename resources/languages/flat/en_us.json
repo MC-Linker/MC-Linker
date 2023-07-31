@@ -1783,7 +1783,7 @@
 
   "data.connect.options.2.options.2.type": "Role",
   "data.connect.options.2.options.2.name": "required-role-to-join",
-  "data.connect.options.2.options.2.description": "Set the required role to join the server.",
+  "data.connect.options.2.options.2.description": "Set the role that is required to join the server.",
   "data.connect.options.2.options.2.required": false,
 
 

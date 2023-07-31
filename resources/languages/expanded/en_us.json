@@ -3082,7 +3082,7 @@
             {
               "type": "Role",
               "name": "required-role-to-join",
-              "description": "Set the required role to join the server.",
+              "description": "Set the role that is required to join the server.",
               "required": false
             }
           ]
