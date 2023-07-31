@@ -84,6 +84,8 @@ client.on(Discord.Events.GuildDelete, async guild => {
 });
 
 client.on(Discord.Events.MessageCreate, async message => {
+    if(message.author.bot) return;
+
     //check if in guild
     message = addTranslatedResponses(message);
     if(!message.inGuild()) {
@@ -106,7 +108,7 @@ client.on(Discord.Events.MessageCreate, async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
 
-    if(!message.author.bot && !message.content.startsWith(process.env.PREFIX)) {
+    if(!message.content.startsWith(process.env.PREFIX)) {
         /** @type {ChatChannelData} */
         const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
         //Explicit check for false
