@@ -215,8 +215,8 @@ export default class Connect extends Command {
         else if(method === 'backup') {
             try {
                 const ip = args[1].split(':')[0];
-                const port = args[1] ?? process.env.PLUGIN_PORT ?? 11111;
-                const requiredRoleToJoin = args[2]?.id;
+                const port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
+                const requiredRoleToJoin = args[3]?.id;
 
                 const token = crypto.randomBytes(32).toString('hex');
                 const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });

@@ -141,7 +141,7 @@ export default class BotAPI extends EventEmitter {
             const server = await _getServerFastify(request, reply, this.client);
             if(!server) return;
             const response = await this._hasRequiredRoleToJoin(request.body.uuid, server);
-            if(response === 'error') return reply.status(500).send();
+            if(response === 'error') reply.status(500);
             reply.send({ response });
         });
 
