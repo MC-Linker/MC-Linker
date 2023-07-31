@@ -1,10 +1,10 @@
-import {migrate} from './utilities/convert.js';
-import Discord, {ChannelType} from 'discord.js';
-import {AutoPoster} from 'topgg-autoposter';
+import { migrate } from './utilities/convert.js';
+import Discord, { ChannelType } from 'discord.js';
+import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
-import {cleanEmojis, getArgs} from './api/utils.js';
-import keys, {getLanguageKey} from './api/keys.js';
-import {addPh, addTranslatedResponses, getReplyOptions, ph} from './api/messages.js';
+import { cleanEmojis, getArgs } from './api/utils.js';
+import keys, { getLanguageKey } from './api/keys.js';
+import { addPh, addTranslatedResponses, getReplyOptions, ph } from './api/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
 
@@ -87,6 +87,10 @@ client.on(Discord.Events.MessageCreate, async message => {
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
 
+    //check if in guild
+    message = addTranslatedResponses(message);
+    if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
+
     if(!message.author.bot && !message.content.startsWith(process.env.PREFIX)) {
         /** @type {ChatChannelData} */
         const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
@@ -113,13 +117,8 @@ client.on(Discord.Events.MessageCreate, async message => {
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
     if(!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
-    message = addTranslatedResponses(message);
-
     //Make message compatible with slash commands
     message.user = message.author;
-
-    //check if in guild
-    if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
