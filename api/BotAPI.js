@@ -150,7 +150,7 @@ export default class BotAPI extends EventEmitter {
             const server = await _getServerFastify(request, reply, this.client);
             if(!server) return;
             reply.send({});
-            this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
+            this._verifyUser(data);
         });
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -276,7 +276,7 @@ export default class BotAPI extends EventEmitter {
             data = JSON.parse(data);
             const server = await getServerWebsocket(this.client);
             if(!server) return;
-            this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
+            this._verifyUser(data);
         });
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
@@ -511,5 +511,15 @@ export default class BotAPI extends EventEmitter {
         if(!role) return 'error';
 
         return member.roles.cache.has(role.id);
+    }
+
+    /**
+     * Listens to a dm message of the user containing the code to verify the user.
+     * @param {Object} data - The request data.
+     * @returns {Promise<void>}
+     */
+    _verifyUser(data) {
+        this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
+        setTimeout(() => this.usersAwaitingVerification.delete(data.code), 180_000);
     }
 }

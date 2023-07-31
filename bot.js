@@ -101,8 +101,6 @@ client.on(Discord.Events.MessageCreate, async message => {
             client.api.usersAwaitingVerification.delete(message.content);
             return await message.replyTl(keys.commands.account.success);
         }
-
-        return message.replyTl(keys.main.no_access.not_in_guild);
     }
 
     /** @type {ServerConnection} */
@@ -133,6 +131,8 @@ client.on(Discord.Events.MessageCreate, async message => {
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
     if(!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
+
+    if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
     //Make message compatible with slash commands
     message.user = message.author;
