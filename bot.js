@@ -92,7 +92,7 @@ client.on(Discord.Events.MessageCreate, async message => {
         if(client.api.usersAwaitingVerification.has(message.content)) {
             const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
 
-            await this.client.userConnections.connect({
+            await client.userConnections.connect({
                 id: message.author.id,
                 username,
                 uuid,
