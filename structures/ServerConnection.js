@@ -35,6 +35,7 @@ export default class ServerConnection extends Connection {
      * @property {string} token - The connection token used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
+     * @property {string} [requiredRoleToJoin] - The id of the role required to join the server.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {'http'} protocol - The protocol used to connect to the server.
@@ -65,6 +66,7 @@ export default class ServerConnection extends Connection {
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
+     * @property {string} [requiredRoleToJoin] - The id of the role required to join the server.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
@@ -226,6 +228,13 @@ export default class ServerConnection extends Connection {
              */
             this.statChannels = data.statChannels ?? data.statsChannels ?? data['stats-channels'];
         }
+        if('requiredRoleToJoin' in data) {
+            /**
+             * The role required to join this server.
+             * @type {?string}
+             */
+            this.requiredRoleToJoin = data.requiredRoleToJoin;
+        }
 
         //Switch protocols if needed
         if(!this.protocol.isHttpProtocol() && data.protocol === 'http') {
@@ -294,6 +303,7 @@ export default class ServerConnection extends Connection {
                 ...baseData,
                 port: this.port,
                 token: this.token,
+                requiredRoleToJoin: this.requiredRoleToJoin,
                 chatChannels: this.chatChannels ?? [],
                 statChannels: this.statChannels ?? [],
                 protocol: 'http',
@@ -312,6 +322,7 @@ export default class ServerConnection extends Connection {
             return {
                 ...baseData,
                 hash: this.hash,
+                requiredRoleToJoin: this.requiredRoleToJoin,
                 chatChannels: this.chatChannels ?? [],
                 statChannels: this.statChannels ?? [],
                 protocol: 'websocket',

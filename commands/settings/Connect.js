@@ -38,12 +38,13 @@ export default class Connect extends Command {
                         const {
                             code: serverCode,
                             shard,
+                            requiredRoleToJoin,
                         } = wsVerification.get(id) ?? {};
                         try {
                             if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
 
                             c.commands.get('connect').wsVerification.delete(id);
-                            socket.emit('auth-success', {}); //Tell the plugin that the auth was successful
+                            socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
 
                             const hash = c.utils.createHash(socket.handshake.auth.token);
                             /** @type {WebSocketServerConnectionData} */
@@ -60,6 +61,7 @@ export default class Connect extends Command {
                                 protocol: 'websocket',
                                 socket,
                                 hash,
+                                requiredRoleToJoin,
                             };
 
                             await c.commands.get('connect').disconnectOldServer(id);
@@ -214,6 +216,7 @@ export default class Connect extends Command {
             try {
                 const ip = args[1].split(':')[0];
                 const port = args[1] ?? process.env.PLUGIN_PORT ?? 11111;
+                const requiredRoleToJoin = args[2]?.id;
 
                 const token = crypto.randomBytes(32).toString('hex');
                 const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
@@ -248,7 +251,7 @@ export default class Connect extends Command {
                 const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
                 if(!message) return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojisAndColors()));
 
-                const resp = await httpProtocol.connect(collector.first().content);
+                const resp = await httpProtocol.connect(collector.first().content, requiredRoleToJoin);
                 if(!await utils.handleProtocolResponse(resp, httpProtocol, interaction, {
                     401: keys.commands.connect.errors.incorrect_code,
                 })) {
@@ -270,6 +273,7 @@ export default class Connect extends Command {
                     token: resp.data.token,
                     online: resp.data.online,
                     protocol: 'http',
+                    requiredRoleToJoin,
                     chatChannels: [],
                     statChannels: [],
                     id: interaction.guildId,
@@ -284,6 +288,7 @@ export default class Connect extends Command {
         }
         else if(method === 'plugin') {
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
+            const requiredRoleToJoin = args[2]?.id;
 
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
             if(server) {
@@ -297,9 +302,12 @@ export default class Connect extends Command {
             }, 180_000);
 
             this.waitingInteractions.set(interaction.guildId, { interaction, timeout });
-            await client.shard.broadcastEval((c, { code, id, shard }) => {
-                c.commands.get('connect').wsVerification.set(id, { code, shard });
-            }, { context: { code, id: interaction.guildId, shard: client.shard.ids[0] }, shard: 0 });
+            await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin }) => {
+                c.commands.get('connect').wsVerification.set(id, { code, shard, requiredRoleToJoin });
+            }, {
+                context: { code, id: interaction.guildId, shard: client.shard.ids[0], requiredRoleToJoin },
+                shard: 0,
+            });
 
             //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
         }
