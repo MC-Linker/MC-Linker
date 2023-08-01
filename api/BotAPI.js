@@ -91,11 +91,11 @@ export default class BotAPI extends EventEmitter {
                 /** @type {ServerConnection} */
                 const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === parseInt(port));
                 //If no connection on that guild send disconnection status
-                if(!server) reply.status(403).send();
+                if(!server) reply.status(403).send({});
 
                 //check authorization: Bearer <token>
                 if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization?.split(' ')[1]) {
-                    reply.status(401).send();
+                    reply.status(401).send({});
                     return;
                 }
 
@@ -151,6 +151,14 @@ export default class BotAPI extends EventEmitter {
             if(!server) return;
             reply.send({});
             this._verifyUser(data);
+        });
+
+        this.fastify.post('/invite-url', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client);
+            if(!server) return;
+            const url = await this._getInviteUrl(server.id);
+            if(!url) reply.status(500).send({});
+            reply.send({ url });
         });
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -272,6 +280,11 @@ export default class BotAPI extends EventEmitter {
             const response = await this._hasRequiredRoleToJoin(data.uuid, server);
             callback({ response });
         });
+        socket.on('invite-url', async callback => {
+            const server = await getServerWebsocket(this.client);
+            if(!server) return;
+            callback(await this._getInviteUrl(server.id));
+        });
         socket.on('verify-user', async data => {
             data = JSON.parse(data);
             const server = await getServerWebsocket(this.client);
@@ -311,7 +324,8 @@ export default class BotAPI extends EventEmitter {
      * @private
      */
     async _chat(data, server) {
-        const { message, channels, id: guildId, type, player } = data;
+        const { message, channels, type, player } = data;
+        const guildId = server.id;
         const authorURL = await getMinecraftAvatarURL(player);
 
         const argPlaceholder = { username: player, author_url: authorURL, message };
@@ -460,9 +474,9 @@ export default class BotAPI extends EventEmitter {
      */
     async _updateStatsChannel(data, server) {
         // event can be one of: 'online', 'offline', 'members'
-        const { channels, event, id } = data;
+        const { channels, event } = data;
 
-        const guild = await this.client.guilds.fetch(id);
+        const guild = await this.client.guilds.fetch(server.id);
         for(const channel of channels) {
             if(!channel.names[event]) return;
 
@@ -518,5 +532,28 @@ export default class BotAPI extends EventEmitter {
     _verifyUser(data) {
         this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
         setTimeout(() => this.usersAwaitingVerification.delete(data.code), 180_000);
+    }
+
+    /**
+     * Returns an existing invite url or creates a new one if none exists.
+     * @param {string} id - The id of the guild.
+     * @returns {Promise<?string>} - The invite url.
+     */
+    async _getInviteUrl(id) {
+        const guild = await this.client.guilds.fetch(id);
+        if(!guild) return null;
+
+        const invite = await guild.invites.fetch().catch(() => {
+        });
+        if(invite?.size) return invite.first().url;
+        else {
+            /** @type {?Discord.BaseGuildTextChannel} */
+            const channel = guild.channels.cache.find(c =>
+                c.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.CreateInstantInvite) && c.isTextBased(),
+            );
+            if(!channel) return null;
+            const invite = await channel.createInvite({ maxAge: 0, maxUses: 0, unique: true });
+            return invite.url;
+        }
     }
 }
