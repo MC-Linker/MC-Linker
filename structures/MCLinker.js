@@ -55,6 +55,7 @@ export default class MCLinker extends Discord.Client {
     constructor(commandPath = './commands', buttonPath = './buttons', options = {
         intents: [
             Discord.GatewayIntentBits.GuildMessages,
+            Discord.GatewayIntentBits.GuildMembers,
             Discord.GatewayIntentBits.Guilds,
             Discord.GatewayIntentBits.DirectMessages,
             Discord.GatewayIntentBits.MessageContent,

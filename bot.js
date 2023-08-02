@@ -205,7 +205,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
 });
 
 client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
-    if(oldMember.roles.cache.size !== newMember.roles.cache.size) {
+    if(oldMember.roles.cache.size >= newMember.roles.cache.size) {
         /** @type {ServerConnection} */
         const server = client.serverConnections.cache.get(newMember.guild.id);
         if(!server || !server.requiredRoleToJoin) return;
