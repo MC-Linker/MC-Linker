@@ -1381,6 +1381,7 @@
       }
     },
     "connect": {
+      "unknown": "Unknown",
       "warnings": {
         "invalid_version": {
           "embeds": [

@@ -773,6 +773,8 @@
 
 
 
+  "commands.connect.unknown": "Unknown",
+
   "commands.connect.warnings.invalid_version.embeds.0.title": "Invalid Version Specified",
   "commands.connect.warnings.invalid_version.embeds.0.description": "Please specify a valid minor minecraft version without patch number (e.g. `1.19`, `1.16`).",
   "commands.connect.warnings.invalid_version.console": "Invalid version specified",
