@@ -216,7 +216,7 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
 
         const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
         if(removedRole.id === server.requiredRoleToJoin) {
-            await server.protocol.execute('kick ' + user.uuid + ' §cYou do not have the required role to join this server');
+            await server.protocol.execute('kick ' + user.username + ' §cYou do not have the required role to join this server');
         }
     }
 });
