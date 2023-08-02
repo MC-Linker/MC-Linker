@@ -543,8 +543,7 @@ export default class BotAPI extends EventEmitter {
         const guild = await this.client.guilds.fetch(id);
         if(!guild) return null;
 
-        const invite = await guild.invites.fetch().catch(() => {
-        });
+        const invite = await guild.invites.fetch();
         if(invite?.size) return invite.first().url;
         else {
             /** @type {?Discord.BaseGuildTextChannel} */
