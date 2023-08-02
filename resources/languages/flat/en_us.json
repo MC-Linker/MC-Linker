@@ -793,7 +793,7 @@
   "commands.connect.warnings.already_connected.embeds.0.description": "Already connected with another server (**%ip%**). If you proceed to connect, that server will be automatically disconnected!",
 
   "commands.connect.warnings.plugin_already_connected.embeds.0.title": "Already Connected",
-  "commands.connect.warnings.plugin_already_connected.embeds.0.description": "The plugin is already connected to another server (**%name%**). Please disconnect it first.",
+  "commands.connect.warnings.plugin_already_connected.embeds.0.description": "The plugin is already connected to another server (**%name%**). Please disconnect that server from the plugin first.",
 
   "commands.connect.warnings.canceled_connection.embeds.0.title": "Connection Canceled",
   "commands.connect.warnings.canceled_connection.embeds.0.description": "This connection request was canceled by the user.",

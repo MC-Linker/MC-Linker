@@ -215,7 +215,8 @@ export default class Connect extends Command {
         else if(method === 'backup') {
             try {
                 const ip = args[1].split(':')[0];
-                const port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
+                let port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
+                if(typeof port !== 'number') port = parseInt(port);
                 const requiredRoleToJoin = args[3]?.id;
 
                 const token = crypto.randomBytes(32).toString('hex');

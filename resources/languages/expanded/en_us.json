@@ -1429,7 +1429,7 @@
           "embeds": [
             {
               "title": "Already Connected",
-              "description": "The plugin is already connected to another server (**%name%**). Please disconnect it first."
+              "description": "The plugin is already connected to another server (**%name%**). Please disconnect that server from the plugin first."
             }
           ]
         },
