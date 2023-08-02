@@ -204,6 +204,23 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
     }
 });
 
+client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
+    if(oldMember.roles.cache.size !== newMember.roles.cache.size) {
+        /** @type {ServerConnection} */
+        const server = client.serverConnections.cache.get(newMember.guild.id);
+        if(!server || !server.requiredRoleToJoin) return;
+
+        /** @type {UserConnection} */
+        const user = client.userConnections.cache.get(newMember.id);
+        if(!user) return;
+
+        const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
+        if(removedRole.id === server.requiredRoleToJoin) {
+            await server.protocol.execute('kick ' + user.uuid + ' §cYou do not have the required role to join this server');
+        }
+    }
+});
+
 /**
  * Send a message to a guild with the given key
  * This will try to send the message to the system channel first
