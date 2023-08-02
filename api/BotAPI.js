@@ -518,7 +518,7 @@ export default class BotAPI extends EventEmitter {
         const guild = await this.client.guilds.fetch(server.id);
         if(!guild) return 'error';
 
-        const member = await guild.members.fetch(user.id);
+        const member = await guild.members.fetch({ user: user.id, force: true });
         if(!member) return 'error';
 
         return member.roles.cache.has(server.requiredRoleToJoin);

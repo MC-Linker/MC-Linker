@@ -1,4 +1,3 @@
-import { migrate } from './utilities/convert.js';
 import Discord, { ChannelType } from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
@@ -55,12 +54,6 @@ client.once(Discord.Events.ClientReady, async () => {
 client.on('allShardsReady', async () => {
     //Load all connections and commands and the database
     await client.loadEverything();
-
-    if (process.env.MIGRATE === 'true') {
-        console.log('Migrating data...');
-        await migrate(client);
-        console.log('Done');
-    }
 
     //Set Activity
     client.user.setActivity({type: Discord.ActivityType.Listening, name: '/help'});
