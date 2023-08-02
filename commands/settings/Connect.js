@@ -223,7 +223,7 @@ export default class Connect extends Command {
 
                 const verify = await httpProtocol.verifyGuild();
                 const connectedServer = client.serverConnections.cache.find(s => s.ip === ip && s.port === port);
-                const connectedServerName = connectedServer && verify.status === 409 ? (await client.guilds.fetch(connectedServer.id)).name : keys.commands.connect.unknown;
+                const connectedServerName = connectedServer && verify?.status === 409 ? (await client.guilds.fetch(connectedServer.id)).name : keys.commands.connect.unknown;
                 if(!await utils.handleProtocolResponse(verify, httpProtocol, interaction, {
                     409: keys.commands.connect.warnings.plugin_already_connected,
                 }, { name: connectedServerName })) return;
