@@ -1424,6 +1424,14 @@
             }
           ]
         },
+        "plugin_already_connected": {
+          "embeds": [
+            {
+              "title": "Already Connected",
+              "description": "The plugin is already connected to another server (**%name%**). Please disconnect it first."
+            }
+          ]
+        },
         "canceled_connection": {
           "embeds": [
             {

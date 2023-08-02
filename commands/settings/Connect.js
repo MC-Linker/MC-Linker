@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { addPh, addTranslatedResponses, getActionRows, getEmbed, ph } from '../../api/messages.js';
+import { addPh, addTranslatedResponses, getActionRows, getEmbed, getReplyOptions, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
@@ -222,8 +222,10 @@ export default class Connect extends Command {
                 const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
 
                 const verify = await httpProtocol.verifyGuild();
+                const connectedServer = await client.serverConnections.cache.find(s => s.ip === ip && s.port === port);
+                const connectedServerName = connectedServer ? await client.guilds.fetch(connectedServer.id).then(g => g.name) : keys.commands.serverinfo.unknown;
                 if(!await utils.handleProtocolResponse(verify, httpProtocol, interaction, {
-                    409: keys.commands.connect.warnings.already_connected,
+                    409: getReplyOptions(keys.commands.connect.warnings.already_connected, { name: connectedServerName }),
                 })) return;
 
                 const checkDmsEmbed = getEmbed(keys.commands.connect.step.check_dms, ph.emojisAndColors());
