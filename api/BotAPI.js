@@ -460,7 +460,19 @@ export default class BotAPI extends EventEmitter {
                 });
             }
             catch(_) {
-                await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
+                try {
+                    if(discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.ManageWebhooks)) {
+                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
+                    }
+                    else {
+                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.unknown_chat_error, ph.emojisAndColors())] });
+                    }
+                }
+                catch(_) {
+                    const regChannel = await server.protocol.removeChatChannel(channel);
+                    if(!regChannel) continue;
+                    await server.edit({ chatChannels: regChannel.data });
+                }
             }
         }
     }

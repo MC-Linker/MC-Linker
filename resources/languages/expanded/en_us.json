@@ -1778,6 +1778,15 @@
           "console": "Plugin does not respond",
           "components": []
         },
+        "unknown_chat_error": {
+          "embeds": [
+            {
+              "title": "Unknown Error",
+              "description": "Could not send the message to the chatchannel using webhooks. Please re-add the channel using `/chatchannel add`!"
+            }
+          ],
+          "console": "Unknown chat error"
+        },
         "no_webhook_permission": {
           "embeds": [
             {
