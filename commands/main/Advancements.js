@@ -2,7 +2,7 @@ import * as utils from '../../api/utils.js';
 import { getMinecraftAvatarURL } from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import { time } from 'discord.js';
-import { getReplyOptions, ph } from '../../api/messages.js';
+import { ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
@@ -65,8 +65,8 @@ export default class Advancements extends AutocompleteCommand {
 
         const amFile = await server.protocol.get(FilePath.Advancements(server.worldPath, user.uuid), `./download-cache/advancements/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
-            404: getReplyOptions(keys.api.command.errors.could_not_download_user_files, { category: 'advancements' }, ph.colors()),
-        })) return;
+            404: keys.api.command.errors.could_not_download_user_files,
+        }, { category: 'advancements' }, ph.colors())) return;
         const advancementData = JSON.parse(amFile.data.toString());
 
         const advancementCriteria = [];

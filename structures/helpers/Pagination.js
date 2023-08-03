@@ -279,7 +279,7 @@ export default class Pagination {
         //Add exit button if this is a nested pagination
         if(this.parent) navComponents.unshift(this.options.exitButton);
         //Add next button if there are too many components
-        if(navComponents.length > maxNavComponents) navComponents.splice(maxNavComponents.length - 1, 0, this.options.nextButton);
+        if(navComponents.length > maxNavComponents) navComponents.splice(maxNavComponents - 1, 0, this.options.nextButton);
 
         // Slice navComponent so that they don't override the page components
         navComponents = navComponents.slice(0, maxNavComponents);

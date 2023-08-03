@@ -1,10 +1,9 @@
-import {migrate} from './utilities/convert.js';
-import Discord, {ChannelType} from 'discord.js';
-import {AutoPoster} from 'topgg-autoposter';
+import Discord, { ChannelType } from 'discord.js';
+import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
-import {cleanEmojis, getArgs} from './api/utils.js';
-import keys, {getLanguageKey} from './api/keys.js';
-import {addPh, addTranslatedResponses, getReplyOptions, ph} from './api/messages.js';
+import { cleanEmojis, getArgs } from './api/utils.js';
+import keys, { getLanguageKey } from './api/keys.js';
+import { addPh, addTranslatedResponses, getReplyOptions, ph } from './api/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
 
@@ -56,12 +55,6 @@ client.on('allShardsReady', async () => {
     //Load all connections and commands and the database
     await client.loadEverything();
 
-    if (process.env.MIGRATE === 'true') {
-        console.log('Migrating data...');
-        await migrate(client);
-        console.log('Done');
-    }
-
     //Set Activity
     client.user.setActivity({type: Discord.ActivityType.Listening, name: '/help'});
 
@@ -84,10 +77,30 @@ client.on(Discord.Events.GuildDelete, async guild => {
 });
 
 client.on(Discord.Events.MessageCreate, async message => {
+    if(message.author.bot) return;
+
+    //check if in guild
+    message = addTranslatedResponses(message);
+
+    if(!message.inGuild()) {
+        if(client.api.usersAwaitingVerification.has(message.content)) {
+            const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
+
+            await client.userConnections.connect({
+                id: message.author.id,
+                username,
+                uuid,
+            });
+
+            client.api.usersAwaitingVerification.delete(message.content);
+            return await message.replyTl(keys.commands.account.success.verified);
+        }
+    }
+
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(message.guildId);
 
-    if(!message.author.bot && !message.content.startsWith(process.env.PREFIX)) {
+    if(!message.content.startsWith(process.env.PREFIX)) {
         /** @type {ChatChannelData} */
         const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
         //Explicit check for false
@@ -113,13 +126,10 @@ client.on(Discord.Events.MessageCreate, async message => {
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
     if(!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
 
-    message = addTranslatedResponses(message);
+    if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
     //Make message compatible with slash commands
     message.user = message.author;
-
-    //check if in guild
-    if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
     const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
@@ -190,6 +200,23 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
             await button.execute(interaction, client);
         } catch (err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), {'button': interaction.customId});
+        }
+    }
+});
+
+client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
+    if(oldMember.roles.cache.size >= newMember.roles.cache.size) {
+        /** @type {ServerConnection} */
+        const server = client.serverConnections.cache.get(newMember.guild.id);
+        if(!server || !server.requiredRoleToJoin) return;
+
+        /** @type {UserConnection} */
+        const user = client.userConnections.cache.get(newMember.id);
+        if(!user) return;
+
+        const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
+        if(removedRole.id === server.requiredRoleToJoin) {
+            await server.protocol.execute('kick ' + user.username + ' §cYou do not have the required role to join this server');
         }
     }
 });

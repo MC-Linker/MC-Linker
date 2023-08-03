@@ -1381,6 +1381,7 @@
       }
     },
     "connect": {
+      "unknown": "Unknown",
       "warnings": {
         "invalid_version": {
           "embeds": [
@@ -1421,6 +1422,14 @@
             {
               "title": "Already Connected",
               "description": "Already connected with another server (**%ip%**). If you proceed to connect, that server will be automatically disconnected!"
+            }
+          ]
+        },
+        "plugin_already_connected": {
+          "embeds": [
+            {
+              "title": "Already Connected",
+              "description": "The plugin is already connected to another server (**%name%**). Please disconnect that server from the plugin first."
             }
           ]
         },
@@ -1768,6 +1777,15 @@
           ],
           "console": "Plugin does not respond",
           "components": []
+        },
+        "unknown_chat_error": {
+          "embeds": [
+            {
+              "title": "Unknown Error",
+              "description": "Could not send the message to the chatchannel using webhooks. Please re-add the channel using `/chatchannel add`!"
+            }
+          ],
+          "console": "Unknown chat error"
         },
         "no_webhook_permission": {
           "embeds": [
@@ -3050,7 +3068,15 @@
         {
           "type": "Subcommand",
           "name": "plugin",
-          "description": "Connect your Minecraft server using the Discord-Linker plugin."
+          "description": "Connect your Minecraft server using the Discord-Linker plugin.",
+          "options": [
+            {
+              "type": "Role",
+              "name": "required-role-to-join",
+              "description": "Set the required role to join the server.",
+              "required": false
+            }
+          ]
         },
         {
           "type": "Subcommand",
@@ -3070,6 +3096,12 @@
               "required": false,
               "min_value": 1,
               "max_value": 65535
+            },
+            {
+              "type": "Role",
+              "name": "required-role-to-join",
+              "description": "Set the role that is required to join the server.",
+              "required": false
             }
           ]
         }

@@ -55,9 +55,13 @@ export default class MCLinker extends Discord.Client {
     constructor(commandPath = './commands', buttonPath = './buttons', options = {
         intents: [
             Discord.GatewayIntentBits.GuildMessages,
+            Discord.GatewayIntentBits.GuildMembers,
             Discord.GatewayIntentBits.Guilds,
             Discord.GatewayIntentBits.DirectMessages,
             Discord.GatewayIntentBits.MessageContent,
+        ],
+        partials: [
+            Discord.Partials.Channel,
         ],
         // Disable @everyone and @here mentions
         allowedMentions: { parse: [Discord.AllowedMentionsTypes.Role, Discord.AllowedMentionsTypes.User] },
@@ -215,6 +219,7 @@ export default class MCLinker extends Discord.Client {
             worldPath: String,
             online: Boolean,
             floodgatePrefix: String,
+            requiredRoleToJoin: String,
             protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
             port: Number,
             username: String,

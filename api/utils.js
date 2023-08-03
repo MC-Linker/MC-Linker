@@ -48,10 +48,15 @@ const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
 export async function getMinecraftAvatarURL(username) {
     const url = `https://minotar.net/helm/${username}/64.png?rnd=${Math.random()}`; //Random query to prevent caching
     //fetch the url to check if the user exists
-    const res = await fetch(url);
-    //If the user doesn't exist, return steve
-    if(res.status === 404) return url.replace(username, 'MHF_STEVE');
-    return url;
+    try {
+        const res = await fetch(url);
+        //If the user doesn't exist, return steve
+        if(res.status === 404) return url.replace(username, 'MHF_STEVE');
+        return url;
+    }
+    catch(err) {
+        return url.replace(username, 'MHF_STEVE');
+    }
 }
 
 /**
@@ -329,7 +334,7 @@ const defaultStatusRespones = {
  * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
- * @param {...Object.<string, string>[]} [placeholders=[] - The placeholders to use in the response.
+ * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether the response was successful.
  */
 export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}, ...placeholders) {
@@ -364,7 +369,7 @@ export async function handleProtocolResponse(response, protocol, interaction, st
  * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
- * @param {...Object.<string, string>[]} [placeholders=[] - The placeholders to use in the response.
+ * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether all responses were successful.
  */
 export async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}, ...placeholders) {
