@@ -57,6 +57,14 @@ export default class ServerConnection extends Connection {
      */
 
     /**
+     * @typedef {object} SyncedRoleData - The data for a synced-role.
+     * @property {string} id - The id of the role.
+     * @property {string} name - The name of the group/team.
+     * @property {boolean} isGroup - Whether the role is a luckperms group or a Minecraft team.
+     * @property {string[]} players - The player's uuids that are in the team/group.
+     */
+
+    /**
      * @typedef {object} WebSocketServerConnectionData - The data for a server-connection established by a websocket.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
@@ -69,6 +77,7 @@ export default class ServerConnection extends Connection {
      * @property {string} [requiredRoleToJoin] - The id of the role required to join the server.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
+     * @property {SyncedRoleData[]} syncedRoles - The data for syncedRoles.
      * @property {'websocket'} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
      */

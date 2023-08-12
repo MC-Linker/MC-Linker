@@ -154,7 +154,7 @@ const PluginRoutes = {
     ],
     /**
      * Adds a chatchannel to the server.
-     * @param {ChatChannelData} channel - The chat channel to add.
+     * @param {ChatChannelData} channel - The chatchannel to add.
      * @returns {HttpProtocolFetchData}
      */
     AddChannel: channel => [
@@ -164,7 +164,7 @@ const PluginRoutes = {
     ],
     /**
      * Removes a chatchannel from the server.
-     * @param {ChatChannelData} channel - The chat channel to remove.
+     * @param {ChatChannelData} channel - The chatchannel to remove.
      * @returns {HttpProtocolFetchData}
      */
     RemoveChannel: channel => [
@@ -174,7 +174,7 @@ const PluginRoutes = {
     ],
     /**
      * Adds a stats-channel to the server.
-     * @param {StatsChannelData} channel - The stats channel to add.
+     * @param {StatsChannelData} channel - The stats-channel to add.
      * @returns {HttpProtocolFetchData}
      */
     AddStatsChannel: channel => [
@@ -184,13 +184,43 @@ const PluginRoutes = {
     ],
     /**
      * Removes a stats-channel from the server.
-     * @param {StatsChannelData} channel - The stats channel to remove.
+     * @param {StatsChannelData} channel - The stats-channel to remove.
      * @returns {HttpProtocolFetchData}
      */
     RemoveStatsChannel: channel => [
         'POST',
         '/stats-channel/remove',
         channel,
+    ],
+    /**
+     * Adds a synced-role to the server.
+     * @param {SyncedRoleData} role - The synced-role to add.
+     * @returns {HttpProtocolFetchData}
+     */
+    AddSyncedRole: role => [
+        'POST',
+        '/synced-role/add',
+        role,
+    ],
+    /**
+     * Removes a synced-role from the server.
+     * @param {SyncedRoleData} role - The synced-role to remove.
+     * @returns {HttpProtocolFetchData}
+     */
+    RemoveSyncedRole: role => [
+        'POST',
+        '/synced-role/remove',
+        role,
+    ],
+    /**
+     * Updates a synced-role on the server.
+     * @param {SyncedRoleData} role - The new synced-role data.
+     * @returns {HttpProtocolFetchData}
+     */
+    UpdateSyncedRole: role => [
+        'POST',
+        '/synced-role/update',
+        role,
     ],
     /**
      * Lists the online players on the server.
@@ -414,8 +444,8 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Adds a chat channel to the server.
-     * @param {ChatChannelData} channel - The chat channel to add.
+     * Adds a chatchannel to the server.
+     * @param {ChatChannelData} channel - The chatchannel to add.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async addChatChannel(channel) {
@@ -424,8 +454,8 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Removes a chat channel from the server.
-     * @param {ChatChannelData} channel - The chat channel to remove.
+     * Removes a chatchannel from the server.
+     * @param {ChatChannelData} channel - The chatchannel to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeChatChannel(channel) {
@@ -442,8 +472,8 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Adds a stats channel to the server.
-     * @param {StatsChannelData} channel - The stats channel to add.
+     * Adds a stats-channel to the server.
+     * @param {StatsChannelData} channel - The stats-channel to add.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async addStatsChannel(channel) {
@@ -452,12 +482,42 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Removes a stats channel from the server.
-     * @param {StatsChannelData} channel - The stats channel to remove.
+     * Removes a stats-channel from the server.
+     * @param {StatsChannelData} channel - The stats-channel to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeStatsChannel(channel) {
         const response = await this._fetch(...PluginRoutes.RemoveStatsChannel(channel));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Adds a synced-role to the server.
+     * @param {SyncedRoleData} role - The synced-role to add.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async addSyncedRole(role) {
+        const response = await this._fetch(...PluginRoutes.AddSyncedRole(role));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Removes a synced-role from the server.
+     * @param {SyncedRoleData} role - The synced-role to remove.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async removeSyncedRole(role) {
+        const response = await this._fetch(...PluginRoutes.RemoveSyncedRole(role));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Updates a synced-role on the server.
+     * @param {SyncedRoleData} role - The new synced-role data.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async updateSyncedRole(role) {
+        const response = await this._fetch(...PluginRoutes.UpdateSyncedRole(role));
         return fetchToProtocolResponse(response);
     }
 

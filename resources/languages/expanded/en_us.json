@@ -1201,15 +1201,6 @@
           ],
           "console": "No channels added"
         },
-        "no_text_channel": {
-          "embeds": [
-            {
-              "title": "No Text Channel Specified",
-              "description": "Please mention a text, thread or news channel."
-            }
-          ],
-          "console": "No text channel specified"
-        },
         "channel_not_added": {
           "embeds": [
             {
@@ -1375,9 +1366,7 @@
               "style": "Success"
             }
           ]
-        },
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        }
       }
     },
     "connect": {
@@ -1721,6 +1710,111 @@
         ],
         "console": "Successfully enabled %type% %enable%"
       }
+    },
+    "rolesync": {
+      "warnings": {
+        "no_roles": {
+          "embeds": [
+            {
+              "title": "No Synced Roles Added",
+              "description": "There are no added synced roles."
+            }
+          ],
+          "console": "No synced roles added"
+        },
+        "role_not_added": {
+          "embeds": [
+            {
+              "title": "Role Not Added",
+              "description": "The specified role is not added."
+            }
+          ],
+          "console": "Role not added"
+        }
+      },
+      "errors": {
+        "group_not_found": {
+          "embeds": [
+            {
+              "title": "Group Or Team Not Found",
+              "description": "Could not find a group or team with the name **%name%**."
+            }
+          ],
+          "console": "Group or team not found"
+        },
+        "not_editable": {
+          "embeds": [
+            {
+              "title": "Role Not Editable",
+              "description": "I do not have permission to edit members of the role **%role%**."
+            }
+          ],
+          "console": "Role not editable"
+        },
+        "luckperms_not_loaded": {
+          "embeds": [
+            {
+              "title": "Luckperms Not Loaded",
+              "description": "Please install luckperms or sync to a team instead."
+            }
+          ],
+          "console": "Luckperms not loaded"
+        }
+      },
+      "success": {
+        "add": {
+          "embeds": [
+            {
+              "title": "Added Synced Role",
+              "description": "Successfully added the synced role."
+            }
+          ],
+          "console": "Successfully added synced role"
+        },
+        "remove": {
+          "embeds": [
+            {
+              "title": "Removed Synced Role",
+              "description": "Successfully removed the synced role."
+            }
+          ],
+          "console": "Successfully removed synced role"
+        },
+        "list": {
+          "embeds": [
+            {
+              "title": "List Synced Roles",
+              "fields": [
+                {
+                  "name": "Role",
+                  "value": "%role%"
+                },
+                {
+                  "name": "%group_or_team%",
+                  "value": "%group_or_team_value%"
+                },
+                {
+                  "name": "Members",
+                  "value": "%member_count%"
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed chat channels"
+        },
+        "role_button": {
+          "components": [
+            {
+              "type": "Button",
+              "label": "Role #%index1%",
+              "custom_id": "role_%index%",
+              "style": "Success"
+            }
+          ]
+        }
+      },
+      "group": "Group",
+      "team": "Team"
     }
   },
   "api": {
@@ -2879,13 +2973,13 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
-      "description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+      "long_description": "Manage channels in which the bot will send minecraft chat messages and logs.",
+      "description": "Manage channels in which the bot will send minecraft chat messages and logs.",
       "options": [
         {
           "type": "Subcommand",
           "name": "add",
-          "description": "Set a chatchannel.",
+          "description": "Add a chatchannel.",
           "options": [
             {
               "type": "Channel",
@@ -3277,6 +3371,71 @@
               "autocomplete": true
             }
           ]
+        }
+      ]
+    },
+    "rolesync": {
+      "name": "rolesync",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
+      "description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "add",
+          "description": "Add a synced role.",
+          "options": [
+            {
+              "type": "Role",
+              "name": "role",
+              "description": "Set the role you want to sync.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "group_or_team",
+              "description": "Set the minecraft team or luckperms group you want to sync to.",
+              "autocomplete": true,
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "override",
+              "description": "Set whether you want to override the current role's or group's members.",
+              "choices": [
+                {
+                  "name": "Override Discord Role's Members",
+                  "value": "role"
+                },
+                {
+                  "name": "Override Minecraft Group's Members",
+                  "value": "group"
+                }
+              ],
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "remove",
+          "description": "Remove an existing synced role.",
+          "options": [
+            {
+              "type": "Role",
+              "name": "role",
+              "description": "Set the role you want to remove.",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "List all synced roles."
         }
       ]
     }

@@ -129,6 +129,14 @@ export default class ConnectionManager extends CachedManager {
                     return channel;
                 });
             }
+            if('syncedRoles' in connection) {
+                //map syncedRoles _id to id
+                connection.syncedRoles = connection.syncedRoles.map(role => {
+                    role.id = role._id;
+                    delete role._id;
+                    return role;
+                });
+            }
 
             await this._add(connection, true, { extras: [this.collectionName] });
         }

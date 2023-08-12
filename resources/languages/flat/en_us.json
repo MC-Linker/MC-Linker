@@ -672,10 +672,6 @@
   "commands.chatchannel.warnings.no_channels.embeds.0.description": "There are no added channels.",
   "commands.chatchannel.warnings.no_channels.console": "No channels added",
 
-  "commands.chatchannel.warnings.no_text_channel.embeds.0.title": "No Text Channel Specified",
-  "commands.chatchannel.warnings.no_text_channel.embeds.0.description": "Please mention a text, thread or news channel.",
-  "commands.chatchannel.warnings.no_text_channel.console": "No text channel specified",
-
   "commands.chatchannel.warnings.channel_not_added.embeds.0.title": "Channel Not Added",
   "commands.chatchannel.warnings.channel_not_added.embeds.0.description": "The specified channel is not added.",
   "commands.chatchannel.warnings.channel_not_added.console": "Channel not added",
@@ -767,9 +763,6 @@
   "commands.chatchannel.success.channel_button.components.0.label": "Channel #%index1%",
   "commands.chatchannel.success.channel_button.components.0.custom_id": "channel_%index%",
   "commands.chatchannel.success.channel_button.components.0.style": "Success",
-
-  "commands.chatchannel.success.enabled": "Enabled",
-  "commands.chatchannel.success.disabled": "Disabled",
 
 
 
@@ -917,6 +910,53 @@
   "commands.enable.success.embeds.0.title": "Successfully Enabled",
   "commands.enable.success.embeds.0.description": "Successfully enabled %type% **%enable%**.",
   "commands.enable.success.console": "Successfully enabled %type% %enable%",
+
+
+
+  "commands.rolesync.warnings.no_roles.embeds.0.title": "No Synced Roles Added",
+  "commands.rolesync.warnings.no_roles.embeds.0.description": "There are no added synced roles.",
+  "commands.rolesync.warnings.no_roles.console": "No synced roles added",
+
+  "commands.rolesync.warnings.role_not_added.embeds.0.title": "Role Not Added",
+  "commands.rolesync.warnings.role_not_added.embeds.0.description": "The specified role is not added.",
+  "commands.rolesync.warnings.role_not_added.console": "Role not added",
+
+  "commands.rolesync.errors.group_not_found.embeds.0.title": "Group Or Team Not Found",
+  "commands.rolesync.errors.group_not_found.embeds.0.description": "Could not find a group or team with the name **%name%**.",
+  "commands.rolesync.errors.group_not_found.console": "Group or team not found",
+
+  "commands.rolesync.errors.not_editable.embeds.0.title": "Role Not Editable",
+  "commands.rolesync.errors.not_editable.embeds.0.description": "I do not have permission to edit members of the role **%role%**.",
+  "commands.rolesync.errors.not_editable.console": "Role not editable",
+
+  "commands.rolesync.errors.luckperms_not_loaded.embeds.0.title": "Luckperms Not Loaded",
+  "commands.rolesync.errors.luckperms_not_loaded.embeds.0.description": "Please install luckperms or sync to a team instead.",
+  "commands.rolesync.errors.luckperms_not_loaded.console": "Luckperms not loaded",
+
+  "commands.rolesync.success.add.embeds.0.title": "Added Synced Role",
+  "commands.rolesync.success.add.embeds.0.description": "Successfully added the synced role.",
+  "commands.rolesync.success.add.console": "Successfully added synced role",
+
+  "commands.rolesync.success.remove.embeds.0.title": "Removed Synced Role",
+  "commands.rolesync.success.remove.embeds.0.description": "Successfully removed the synced role.",
+  "commands.rolesync.success.remove.console": "Successfully removed synced role",
+
+  "commands.rolesync.success.list.embeds.0.title": "List Synced Roles",
+  "commands.rolesync.success.list.embeds.0.fields.0.name": "Role",
+  "commands.rolesync.success.list.embeds.0.fields.0.value": "%role%",
+  "commands.rolesync.success.list.embeds.0.fields.1.name": "%group_or_team%",
+  "commands.rolesync.success.list.embeds.0.fields.1.value": "%group_or_team_value%",
+  "commands.rolesync.success.list.embeds.0.fields.2.name": "Members",
+  "commands.rolesync.success.list.embeds.0.fields.2.value": "%member_count%",
+  "commands.rolesync.success.list.console": "Successfully listed chat channels",
+
+  "commands.rolesync.group": "Group",
+  "commands.rolesync.team": "Team",
+
+  "commands.rolesync.success.role_button.components.0.type": "Button",
+  "commands.rolesync.success.role_button.components.0.label": "Role #%index1%",
+  "commands.rolesync.success.role_button.components.0.custom_id": "role_%index%",
+  "commands.rolesync.success.role_button.components.0.style": "Success",
 
 
 
@@ -1634,13 +1674,13 @@
   "data.chatchannel.name": "chatchannel",
   "data.chatchannel.type": "ChatInput",
   "data.chatchannel.default_member_permissions.0": "Administrator",
-  "data.chatchannel.long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
-  "data.chatchannel.description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+  "data.chatchannel.long_description": "Manage channels in which the bot will send minecraft chat messages and logs.",
+  "data.chatchannel.description": "Manage channels in which the bot will send minecraft chat messages and logs.",
 
 
   "data.chatchannel.options.0.type": "Subcommand",
   "data.chatchannel.options.0.name": "add",
-  "data.chatchannel.options.0.description": "Set a chatchannel.",
+  "data.chatchannel.options.0.description": "Add a chatchannel.",
 
   "data.chatchannel.options.0.options.0.type": "Channel",
   "data.chatchannel.options.0.options.0.name": "channel",
@@ -1921,6 +1961,53 @@
   "data.enable.options.3.options.0.description": "Set the command you want to enable",
   "data.enable.options.3.options.0.required": true,
   "data.enable.options.3.options.0.autocomplete": true,
+
+
+
+  "data.rolesync.name": "rolesync",
+  "data.rolesync.type": "ChatInput",
+  "data.rolesync.default_member_permissions.0": "Administrator",
+  "data.rolesync.long_description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
+  "data.rolesync.description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
+
+
+  "data.rolesync.options.0.type": "Subcommand",
+  "data.rolesync.options.0.name": "add",
+  "data.rolesync.options.0.description": "Add a synced role.",
+
+  "data.rolesync.options.0.options.0.type": "Role",
+  "data.rolesync.options.0.options.0.name": "role",
+  "data.rolesync.options.0.options.0.description": "Set the role you want to sync.",
+  "data.rolesync.options.0.options.0.required": true,
+
+  "data.rolesync.options.0.options.1.type": "String",
+  "data.rolesync.options.0.options.1.name": "group_or_team",
+  "data.rolesync.options.0.options.1.description": "Set the minecraft team or luckperms group you want to sync to.",
+  "data.rolesync.options.0.options.1.autocomplete": true,
+  "data.rolesync.options.0.options.1.required": true,
+
+  "data.rolesync.options.0.options.2.type": "String",
+  "data.rolesync.options.0.options.2.name": "override",
+  "data.rolesync.options.0.options.2.description": "Set whether you want to override the current role's or group's members.",
+  "data.rolesync.options.0.options.2.choices.0.name": "Override Discord Role's Members",
+  "data.rolesync.options.0.options.2.choices.0.value": "role",
+  "data.rolesync.options.0.options.2.choices.1.name": "Override Minecraft Group's Members",
+  "data.rolesync.options.0.options.2.choices.1.value": "group",
+  "data.rolesync.options.0.options.2.required": true,
+
+
+  "data.rolesync.options.1.type": "Subcommand",
+  "data.rolesync.options.1.name": "remove",
+  "data.rolesync.options.1.description": "Remove an existing synced role.",
+
+  "data.rolesync.options.1.options.0.type": "Role",
+  "data.rolesync.options.1.options.0.name": "role",
+  "data.rolesync.options.1.options.0.description": "Set the role you want to remove.",
+  "data.rolesync.options.1.options.0.required": true,
+
+  "data.rolesync.options.2.type": "Subcommand",
+  "data.rolesync.options.2.name": "list",
+  "data.rolesync.options.2.description": "List all synced roles.",
 
 
 

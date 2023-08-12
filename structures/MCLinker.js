@@ -244,6 +244,12 @@ export default class MCLinker extends Discord.Client {
                     members: String,
                 },
             }],
+            syncedRoles: [{
+                _id: { type: String },
+                name: String,
+                isGroup: Boolean,
+                players: [String],
+            }],
             serverSettings: { type: String, ref: 'ServerSettingsConnections' },
         });
 

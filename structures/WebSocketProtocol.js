@@ -166,6 +166,33 @@ export default class WebSocketProtocol extends Protocol {
     }
 
     /**
+     * Adds a synced role to the server.
+     * @param {SyncedRoleData} role - The synced role to add.
+     * @returns {Promise<?ProtocolResponse>}
+     */
+    async addSyncedRole(role) {
+        return await this._sendRaw('add-synced-role', role);
+    }
+
+    /**
+     * Removes a synced role from the server.
+     * @param {SyncedRoleData} role - The synced role to remove.
+     * @returns {Promise<?ProtocolResponse>}
+     */
+    async removeSyncedRole(role) {
+        return await this._sendRaw('remove-synced-role', role);
+    }
+
+    /**
+     * Updates a synced role.
+     * @param {SyncedRoleData} role - The new synced role data.
+     * @returns {Promise<?ProtocolResponse>}
+     */
+    async updateSyncedRole(role) {
+        return await this._sendRaw('update-synced-role', role);
+    }
+
+    /**
      * Executes a command on the server.
      * @param {string} command - The command to execute.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.

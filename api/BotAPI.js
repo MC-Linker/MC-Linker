@@ -168,6 +168,13 @@ export default class BotAPI extends EventEmitter {
             reply.redirect(url);
         });
 
+        this.fastify.get('/update-synced-role-players', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client);
+            if(!server) return;
+            reply.send({});
+            await this._updateSyncedRolePlayers(request.body, server);
+        });
+
         this.fastify.get('/linked-role/callback', async (request, reply) => {
             const { code, state: discordState } = request.query;
 
@@ -565,6 +572,31 @@ export default class BotAPI extends EventEmitter {
             if(!channel) return null;
             const invite = await channel.createInvite({ maxAge: 0, maxUses: 0, unique: true });
             return invite.url;
+        }
+    }
+
+    async _updateSyncedRolePlayers(data, server) {
+        const guild = await this.client.guilds.fetch(server.id);
+        if(!guild) return;
+
+        const users = data.players.map(uuid => {
+            const id = this.client.userConnections.cache.find(conn => conn.uuid === uuid)?.id;
+            if(!id) return;
+            return id;
+        }).filter(id => id);
+        for(const user of users) await guild.members.fetch(user);
+
+        const role = guild.roles.cache.get(data.id);
+        if(!role) return;
+
+        const membersToRemove = role.members.map(m => m.id).filter(id => !users.includes(id));
+        const membersToAdd = users.filter(id => !role.members.has(id));
+
+        for(const member of membersToRemove) {
+            await role.members.get(member).roles.remove(role);
+        }
+        for(const member of membersToAdd) {
+            await role.members.get(member).roles.add(role);
         }
     }
 }

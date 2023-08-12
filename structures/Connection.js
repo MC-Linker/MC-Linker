@@ -1,5 +1,5 @@
-import {Base} from 'discord.js';
-import {getManagerStringFromConnection} from '../api/shardingUtils.js';
+import { Base } from 'discord.js';
+import { getManagerStringFromConnection } from '../api/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
 
 export default class Connection extends Base {
@@ -45,6 +45,10 @@ export default class Connection extends Base {
             data.statChannels?.forEach((channel, index) => {
                 data.statChannels[index]._id = channel.id;
                 delete data.statChannels[index].id;
+            });
+            data.syncedRoles?.forEach((role, index) => {
+                data.syncedRoles[index]._id = role.id;
+                delete data.syncedRoles[index].id;
             });
         }
 
