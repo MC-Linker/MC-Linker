@@ -45,10 +45,12 @@ export default class RoleSync extends AutocompleteCommand {
 
             if(override === 'role') {
                 const respRole = resp.data.find(r => r.id === role.id);
+                //Map uuids to discord ids
+                const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.uuid === p)?.id).filter(u => u);
 
                 // Override role members with the group members
-                const membersToRemove = role.members.map(m => m.id).filter(id => !respRole.players.includes(id));
-                const membersToAdd = respRole.players.filter(p => !role.members.has(p));
+                const membersToRemove = role.members.map(m => m.id).filter(id => !userIds.includes(id));
+                const membersToAdd = userIds.filter(id => !role.members.has(id));
 
                 for(const member of membersToRemove) await role.members.get(member).roles.remove(role);
                 for(const member of membersToAdd) await role.members.get(member).roles.add(role);
