@@ -237,6 +237,13 @@ export default class ServerConnection extends Connection {
              */
             this.statChannels = data.statChannels ?? data.statsChannels ?? data['stats-channels'];
         }
+        if('syncedRoles' in data) {
+            /**
+             * The data for syncedRoles.
+             * @type {SyncedRoleData[]}
+             */
+            this.syncedRoles = data.syncedRoles;
+        }
         if('requiredRoleToJoin' in data) {
             /**
              * The role required to join this server.
