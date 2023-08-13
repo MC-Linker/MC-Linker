@@ -53,7 +53,7 @@ export default class RoleSync extends AutocompleteCommand {
                 const membersToAdd = userIds.filter(id => !role.members.has(id));
 
                 for(const member of membersToRemove) await role.members.get(member).roles.remove(role);
-                for(const member of membersToAdd) await role.members.get(member).roles.add(role);
+                for(const member of membersToAdd) await interaction.guild.members.cache.get(member).roles.add(role);
             }
 
             await server.edit({ syncedRoles: resp.data });
