@@ -63,7 +63,7 @@ export default class RoleSync extends AutocompleteCommand {
         else if(subcommand === 'remove') {
             const role = args[1];
 
-            const syncedRole = server.syncedRoles.find(c => c.id === role.id);
+            const syncedRole = server.syncedRoles?.find(c => c.id === role.id);
             if(!syncedRole) return interaction.replyTl(keys.commands.rolesync.warnings.role_not_added);
 
             const resp = await server.protocol.removeSyncedRole(syncedRole);

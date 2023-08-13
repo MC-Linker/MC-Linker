@@ -315,6 +315,7 @@ export default class ServerConnection extends Connection {
                 requiredRoleToJoin: this.requiredRoleToJoin,
                 chatChannels: this.chatChannels ?? [],
                 statChannels: this.statChannels ?? [],
+                syncedRoles: this.syncedRoles ?? [],
                 protocol: 'http',
             };
         }
@@ -334,6 +335,7 @@ export default class ServerConnection extends Connection {
                 requiredRoleToJoin: this.requiredRoleToJoin,
                 chatChannels: this.chatChannels ?? [],
                 statChannels: this.statChannels ?? [],
+                syncedRoles: this.syncedRoles ?? [],
                 protocol: 'websocket',
             };
         }
