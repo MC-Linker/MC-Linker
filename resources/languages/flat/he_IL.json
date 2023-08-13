@@ -255,7 +255,7 @@
   "commands.serverinfo.success.world.embeds.0.fields.0.value": "Players will spawn at `%spawn_x%, %spawn_y%, %spawn_z%` in world: `%spawn_world%`",
   "commands.serverinfo.success.world.embeds.0.fields.1.name": "אפשר אנד/נדר",
   "commands.serverinfo.success.world.embeds.0.fields.1.value": "אנד: `%allow_end%`\nנדר: `%allow_nether%`",
-  "commands.serverinfo.success.world.embeds.0.fields.2.name": "רמת קושי",
+  "commands.serverinfo.success.world.embeds.0.fields.2.name": "Difficulty",
   "commands.serverinfo.success.world.embeds.0.fields.2.value": "%difficulty%",
   "commands.serverinfo.success.world.embeds.0.fields.2.inline": true,
   "commands.serverinfo.success.world.embeds.0.fields.3.name": "Gamerules (only non-default values)",
