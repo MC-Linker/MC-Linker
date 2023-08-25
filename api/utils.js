@@ -279,19 +279,21 @@ export async function getArgs(interaction) {
     let incrementIndex = 0;
 
     function addArgs(allOptions, option) {
-        //we use optIndex instead of push because users can select options in any order they want
-        const optIndex = allOptions.findIndex(opt => opt.name === option.name) + incrementIndex;
+        //we use an index instead of push because users can select options in any order they want
+        const allOptionsIndex = allOptions.findIndex(opt => opt.name === option.name);
+        // Option has to be pushed further back if there are subcommands or subcommand groups before it
+        const argOptionIndex = allOptions.findIndex(opt => opt.name === option.name) + incrementIndex;
 
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
             incrementIndex++;
-            option.options.forEach(opt => addArgs(allOptions[optIndex].options, opt));
+            option.options.forEach(opt => addArgs(allOptions[allOptionsIndex].options, opt));
         }
-        else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
-        else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;
-        else if(option.type === ApplicationCommandOptionType.Role) args[optIndex] = option.role;
-        else if(option.type === ApplicationCommandOptionType.Attachment) args[optIndex] = option.attachment;
-        else args[optIndex] = option.value;
+        else if(option.type === ApplicationCommandOptionType.Channel) args[argOptionIndex] = option.channel;
+        else if(option.type === ApplicationCommandOptionType.User) args[argOptionIndex] = option.user;
+        else if(option.type === ApplicationCommandOptionType.Role) args[argOptionIndex] = option.role;
+        else if(option.type === ApplicationCommandOptionType.Attachment) args[argOptionIndex] = option.attachment;
+        else args[argOptionIndex] = option.value;
     }
 
     interaction.options.data.forEach(option => addArgs(slashCommand.options, option));
