@@ -84,7 +84,6 @@ export default class Eval extends Command {
                     }
                 })()`),
             );
-            Fixed;
 
             //Auto-add return if no console.log or return present
             if(command.includes('return') || !command.includes('console.log')) out += evalOut._read();

@@ -84,8 +84,8 @@ export default class RoleSync extends AutocompleteCommand {
                     ph.std(interaction),
                     {
                         role: await interaction.guild.roles.fetch(role.id),
-                        group_or_team: role.is_group ? keys.commands.rolesync.group : keys.commands.rolesync.team,
-                        group_or_team_value: role.group_or_team,
+                        group_or_team: role.isGroup ? keys.commands.rolesync.group : keys.commands.rolesync.team,
+                        group_or_team_value: role.name,
                         member_count: role.players.length,
                     },
                 );
