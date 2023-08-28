@@ -64,10 +64,10 @@ export default class Eval extends Command {
                         const evalOut2 = new ConsoleOutput();
                         const console2 = new Console({ stdout: evalOut2 });
 
+                        console2.log(arg);
+
                         if(i > 0) out = `${out.slice(0, -1)} ${evalOut2._read()}`;
                         else out += evalOut2._read();
-
-                        console2.log(arg);
                     }
                 },
             };
@@ -75,13 +75,16 @@ export default class Eval extends Command {
             outputConsole.log(
                 await eval(`(async () => {
                     try {
-                        ${command.includes('return') || command.includes('console.log') ? command : `return ${command}`};
+                        return await (async () => {
+                            ${command.includes('return') || command.includes('console.log') ? command : `return ${command}`};
+                        })();
                     }
                     catch(err) {
                         return err;
                     }
                 })()`),
             );
+            Fixed;
 
             //Auto-add return if no console.log or return present
             if(command.includes('return') || !command.includes('console.log')) out += evalOut._read();
