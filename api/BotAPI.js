@@ -129,6 +129,13 @@ export default class BotAPI extends EventEmitter {
             await this._updateStatsChannel(request.body, server);
         });
 
+        this.fastify.get('/update-synced-role', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client);
+            if(!server) return;
+            reply.send({});
+            await this._updateSyncedRole(request.body, server);
+        });
+
         this.fastify.post('/disconnect-force', async (request, reply) => {
             const server = await _getServerFastify(request, reply, this.client);
             if(!server) return;
@@ -166,13 +173,6 @@ export default class BotAPI extends EventEmitter {
             const { state, url } = getOAuthURL();
             reply.setCookie('state', state, { maxAge: 1000 * 60 * 5, signed: true });
             reply.redirect(url);
-        });
-
-        this.fastify.get('/update-synced-role-players', async (request, reply) => {
-            const server = await _getServerFastify(request, reply, this.client);
-            if(!server) return;
-            reply.send({});
-            await this._updateSyncedRolePlayers(request.body, server);
         });
 
         this.fastify.get('/linked-role/callback', async (request, reply) => {
@@ -275,6 +275,12 @@ export default class BotAPI extends EventEmitter {
             const server = await getServerWebsocket(this.client, rateLimiter);
             if(!server) return;
             await this._updateStatsChannel(data, server);
+        });
+        socket.on('update-synced-role', async data => {
+            data = JSON.parse(data);
+            const server = await getServerWebsocket(this.client);
+            if(!server) return;
+            await this._updateSyncedRole(data, server);
         });
         socket.on('disconnect-force', async () => {
             // `/linker disconnect` was executed in minecraft, disconnect the server from discord
@@ -575,7 +581,7 @@ export default class BotAPI extends EventEmitter {
         }
     }
 
-    async _updateSyncedRolePlayers(data, server) {
+    async _updateSyncedRole(data, server) {
         const guild = await this.client.guilds.fetch(server.id);
         if(!guild) return;
 
