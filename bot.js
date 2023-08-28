@@ -222,7 +222,14 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
         else if(server.syncedRoles?.some(role => role.id === addedRole?.id || role.id === removedRole?.id)) {
             const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
             const discordRole = newMember.guild.roles.cache.get(role.id);
-            role.players = discordRole.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
+            const newPlayers = discordRole.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
+
+            //Prevent feedback from bot changing roles by checking if the players actually changed
+            let arraysContainSameElements = newPlayers.every(a => role.players.some(b => a === b));
+            let sameLength = newPlayers.length === role.players.length;
+            if(!arraysContainSameElements || !sameLength) return;
+
+            role.players = newPlayers;
             const resp = await server.protocol.updateSyncedRole(role);
             if(resp.status === 200) {
                 await server.edit({ syncedRoles: resp.data });

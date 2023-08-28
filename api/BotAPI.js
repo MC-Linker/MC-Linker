@@ -595,6 +595,10 @@ export default class BotAPI extends EventEmitter {
         const role = guild.roles.cache.get(data.id);
         if(!role) return;
 
+        const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
+        server.syncedRoles[roleIndex].players = data.players;
+        server.edit({ syncedRoles: server.syncedRoles });
+
         const membersToRemove = role.members.map(m => m.id).filter(id => !users.includes(id));
         const membersToAdd = users.filter(id => !role.members.has(id));
 
