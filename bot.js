@@ -205,7 +205,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
 });
 
 client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
-    if(oldMember.roles.cache.size >= newMember.roles.cache.size) {
+    if(oldMember.roles.cache.size !== newMember.roles.cache.size) {
         /** @type {ServerConnection} */
         const server = client.serverConnections.cache.get(newMember.guild.id);
         if(!server || !server.requiredRoleToJoin) return;
@@ -215,8 +215,18 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
         if(!user) return;
 
         const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
-        if(removedRole.id === server.requiredRoleToJoin) {
+        const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
+        if(removedRole?.id === server.requiredRoleToJoin) {
             await server.protocol.execute('kick ' + user.username + ' §cYou do not have the required role to join this server');
+        }
+        else if(server.syncedRoles?.some(role => role.id === addedRole?.id || role.id === removedRole?.id)) {
+            const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
+            const discordRole = newMember.guild.roles.cache.get(role.id);
+            role.players = discordRole.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
+            const resp = await server.protocol.updateSyncedRole(role);
+            if(resp.status === 200) {
+                await server.edit({ syncedRoles: resp.data });
+            }
         }
     }
 });
