@@ -211,8 +211,6 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
     const server = client.serverConnections.cache.get(newMember.guild.id);
     if(!server) return;
 
-    server.syncedRoles?.some(role => role.id === addedRole?.id || role.id === removedRole?.id);
-
     /** @type {UserConnection} */
     const user = client.userConnections.cache.get(newMember.id);
     if(!user) {
