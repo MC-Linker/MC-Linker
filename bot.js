@@ -205,35 +205,42 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
 });
 
 client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
-    if(oldMember.roles.cache.size !== newMember.roles.cache.size) {
-        /** @type {ServerConnection} */
-        const server = client.serverConnections.cache.get(newMember.guild.id);
-        if(!server) return;
+    if(oldMember.roles.cache.size === newMember.roles.cache.size) return;
 
-        /** @type {UserConnection} */
-        const user = client.userConnections.cache.get(newMember.id);
-        if(!user) return;
+    /** @type {ServerConnection} */
+    const server = client.serverConnections.cache.get(newMember.guild.id);
+    if(!server) return;
 
-        const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
+    const isSyncedRole = server.syncedRoles?.some(role => role.id === addedRole?.id || role.id === removedRole?.id);
+
+    /** @type {UserConnection} */
+    const user = client.userConnections.cache.get(newMember.id);
+    if(!user) {
+        //Prevent adding synced role to user that is not connected
         const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
-        if(server.requiredRoleToJoin && removedRole?.id === server.requiredRoleToJoin) {
-            await server.protocol.execute('kick ' + user.username + ' §cYou do not have the required role to join this server');
-        }
-        else if(server.syncedRoles?.some(role => role.id === addedRole?.id || role.id === removedRole?.id)) {
-            const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
-            const discordRole = newMember.guild.roles.cache.get(role.id);
-            const newPlayers = discordRole.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
+        if(addedRole && isSyncedRole) await newMember.roles.remove(addedRole);
+        return;
+    }
 
-            //Prevent feedback from bot changing roles by checking if the players actually changed
-            const arraysContainSameElements = newPlayers.every(a => role.players.some(b => a === b));
-            const sameLength = newPlayers.length === role.players.length;
-            if(!arraysContainSameElements || !sameLength) return;
+    const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
+    const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
+    if(server.requiredRoleToJoin && removedRole?.id === server.requiredRoleToJoin) {
+        await server.protocol.execute('kick ' + user.username + ' §cYou do not have the required role to join this server');
+    }
+    else if(isSyncedRole) {
+        const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
+        const discordRole = newMember.guild.roles.cache.get(role.id);
+        const newPlayers = discordRole.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
 
-            role.players = newPlayers;
-            const resp = await server.protocol.updateSyncedRole(role);
-            if(resp.status === 200) {
-                await server.edit({ syncedRoles: resp.data });
-            }
+        //Prevent feedback from bot changing roles by checking if the players actually changed
+        const arraysContainSameElements = newPlayers.every(a => role.players.some(b => a === b));
+        const sameLength = newPlayers.length === role.players.length;
+        if(!arraysContainSameElements || !sameLength) return;
+
+        role.players = newPlayers;
+        const resp = await server.protocol.updateSyncedRole(role);
+        if(resp.status === 200) {
+            await server.edit({ syncedRoles: resp.data });
         }
     }
 });
