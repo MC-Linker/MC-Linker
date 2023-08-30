@@ -90,7 +90,7 @@ export default class RoleSync extends AutocompleteCommand {
                     },
                 );
 
-                const index = server.chatChannels.indexOf(role);
+                const index = server.syncedRoles.indexOf(role);
                 const roleButton = getComponent(keys.commands.rolesync.success.role_button, {
                     index1: index + 1,
                     index: index,
