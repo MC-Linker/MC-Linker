@@ -136,6 +136,13 @@ export default class BotAPI extends EventEmitter {
             await this._updateSyncedRole(request.body, server);
         });
 
+        this.fastify.get('/remove-synced-role', async (request, reply) => {
+            const server = await _getServerFastify(request, reply, this.client);
+            if(!server) return;
+            reply.send({});
+            await this._removeSyncedRole(request.body, server);
+        });
+
         this.fastify.post('/disconnect-force', async (request, reply) => {
             const server = await _getServerFastify(request, reply, this.client);
             if(!server) return;
@@ -281,6 +288,12 @@ export default class BotAPI extends EventEmitter {
             const server = await getServerWebsocket(this.client);
             if(!server) return;
             await this._updateSyncedRole(data, server);
+        });
+        socket.on('remove-synced-role', async data => {
+            data = JSON.parse(data);
+            const server = await getServerWebsocket(this.client);
+            if(!server) return;
+            await this._removeSyncedRole(data, server);
         });
         socket.on('disconnect-force', async () => {
             // `/linker disconnect` was executed in minecraft, disconnect the server from discord
@@ -610,5 +623,12 @@ export default class BotAPI extends EventEmitter {
             const member = await guild.members.fetch(id);
             await member.roles.add(role);
         }
+    }
+
+    async _removeSyncedRole(data, server) {
+        const roleIndex = server.syncedRoles?.findIndex(role => role.id === data.id);
+        if(!roleIndex) return;
+
+        await server.edit({ syncedRoles: server.syncedRoles.splice(roleIndex, 1) });
     }
 }
