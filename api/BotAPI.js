@@ -309,7 +309,7 @@ export default class BotAPI extends EventEmitter {
         socket.on('invite-url', async callback => {
             const server = await getServerWebsocket(this.client);
             if(!server) return;
-            callback(await this._getInviteUrl(server.id));
+            callback({ url: await this._getInviteUrl(server.id) });
         });
         socket.on('verify-user', async data => {
             data = JSON.parse(data);
@@ -581,8 +581,13 @@ export default class BotAPI extends EventEmitter {
         const guild = await this.client.guilds.fetch(id);
         if(!guild) return null;
 
-        const invite = await guild.invites.fetch();
-        if(invite?.size) return invite.first().url;
+        let invites;
+        try {
+            invites = await guild.invites.fetch();
+        }
+        catch(ignored) {}
+
+        if(invites?.size) return invites.first().url;
         else {
             /** @type {?Discord.BaseGuildTextChannel} */
             const channel = guild.channels.cache.find(c =>
