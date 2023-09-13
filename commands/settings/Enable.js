@@ -1,4 +1,5 @@
 import * as utils from '../../api/utils.js';
+import { MaxAutoCompleteChoices } from '../../api/utils.js';
 import { ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
@@ -23,7 +24,7 @@ export default class Enable extends AutocompleteCommand {
         const disabled = settings.disabled[subcommand];
         if(!disabled) return;
         const matchingDisabled = disabled.filter(disable => disable.includes(focused));
-        if(matchingDisabled.length >= 25) matchingDisabled.length = 25;
+        if(matchingDisabled.length > MaxAutoCompleteChoices) matchingDisabled.length = 25;
 
         const respondArray = [];
         for(let disable of matchingDisabled) {

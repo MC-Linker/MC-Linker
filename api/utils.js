@@ -28,6 +28,7 @@ const mcData = McData('1.20.1');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
+export const MaxAutoCompleteChoices = 25;
 
 // Password Auth:
 const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {

@@ -2,7 +2,7 @@
 import { addPh, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import * as utils from '../../api/utils.js';
-import { codeBlockFromCommandResponse } from '../../api/utils.js';
+import { codeBlockFromCommandResponse, MaxAutoCompleteChoices } from '../../api/utils.js';
 import minecraft_data from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };
@@ -139,7 +139,7 @@ export default class Command extends AutocompleteCommand {
 
         const mutableOptions = [...interaction.options.data];
         const respondArray = await this.memoizedGetAutocompleteSuggestions(focused, mutableOptions, interaction.user, interaction.guildId, client);
-        if(respondArray.length >= 25) respondArray.length = 25;
+        if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = 25;
         interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
     }
 

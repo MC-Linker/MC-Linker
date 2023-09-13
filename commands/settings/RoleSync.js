@@ -1,6 +1,7 @@
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import keys from '../../api/keys.js';
 import * as utils from '../../api/utils.js';
+import { MaxAutoCompleteChoices } from '../../api/utils.js';
 import { getComponent, getEmbed, ph } from '../../api/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
@@ -25,18 +26,21 @@ export default class RoleSync extends AutocompleteCommand {
 
         const commandResponse = [];
         for(const group of response.data.groups) {
+            if(!interaction.options.getFocused().includes(group)) continue;
             commandResponse.push({
                 name: `${group} (Group)`,
                 value: `${group} group`,
             });
         }
         for(const team of response.data.teams) {
+            if(!interaction.options.getFocused().includes(team)) continue;
             commandResponse.push({
                 name: `${team} (Team)`,
                 value: `${team} team`,
             });
         }
 
+        if(commandResponse.length > MaxAutoCompleteChoices) commandResponse.length = 25;
         await interaction.respond(commandResponse);
     }
 

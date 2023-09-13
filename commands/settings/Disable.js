@@ -1,4 +1,5 @@
 import * as utils from '../../api/utils.js';
+import { MaxAutoCompleteChoices } from '../../api/utils.js';
 import { addPh, getEmbed, ph } from '../../api/messages.js';
 import keys from '../../api/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
@@ -35,7 +36,7 @@ export default class Disable extends AutocompleteCommand {
                 });
             }
 
-            if(matchingKeys.length >= 25) matchingKeys.length = 25;
+            if(matchingKeys.length > MaxAutoCompleteChoices) matchingKeys.length = 25;
         }
 
         interaction.respond(matchingKeys)
