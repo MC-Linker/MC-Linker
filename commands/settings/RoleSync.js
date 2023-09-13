@@ -15,7 +15,29 @@ export default class RoleSync extends AutocompleteCommand {
     }
 
     async autocomplete(interaction, client) {
+        if(interaction.options.getSubcommand() !== 'add') return;
 
+        const server = client.serverConnections.cache.get(interaction.guildId);
+        if(!server || !server.protocol.isPluginProtocol()) return;
+
+        const response = await server.protocol.getTeamsAndGroups();
+        if(response?.status !== 200) return;
+
+        const commandResponse = [];
+        for(const group of response.data.groups) {
+            commandResponse.push({
+                name: `${group} (Group)`,
+                value: `${group} group`,
+            });
+        }
+        for(const team of response.data.teams) {
+            commandResponse.push({
+                name: `${team} (Team)`,
+                value: `${team} team`,
+            });
+        }
+
+        await interaction.respond(commandResponse);
     }
 
     async execute(interaction, client, args, server) {

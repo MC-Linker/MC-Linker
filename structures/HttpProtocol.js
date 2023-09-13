@@ -230,6 +230,14 @@ const PluginRoutes = {
         'GET',
         '/players',
     ],
+    /**
+     * Lists the teams and luckperms groups on the server.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
+     */
+    ListTeamsAndGroups: () => [
+        'GET',
+        '/teams-and-groups',
+    ],
 };
 
 
@@ -547,6 +555,15 @@ export default class HttpProtocol extends Protocol {
      */
     async getOnlinePlayers() {
         const response = await this._fetch(...PluginRoutes.ListOnlinePlayers());
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Gets a list of teams and luckperms groups on the server.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async getTeamsAndGroups() {
+        const response = await this._fetch(...PluginRoutes.ListTeamsAndGroups());
         return fetchToProtocolResponse(response);
     }
 

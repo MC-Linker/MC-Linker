@@ -219,6 +219,14 @@ export default class WebSocketProtocol extends Protocol {
     }
 
     /**
+     * Gets a list of all teams and luckperms groups on the server.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async getTeamsAndGroups() {
+        return await this._sendRaw('list-teams-and-groups', {});
+    }
+
+    /**
      * Sends a verification request to the server. Users can verify using `/verify <code>`.
      * @param {string} code - The verification code to send.
      * @param {string} uuid - The uuid of the user that sent the request.
