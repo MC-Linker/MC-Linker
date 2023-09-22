@@ -615,7 +615,7 @@ export default class BotAPI extends EventEmitter {
 
         const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
         if(!roleIndex || roleIndex === -1) return;
-        server.syncedRoles[roleIndex].players = data.players;
+        server.syncedRoles[roleIndex].players = users;
         server.edit({ syncedRoles: server.syncedRoles });
 
         const membersToRemove = role.members.map(m => m.id).filter(id => !users.includes(id));
