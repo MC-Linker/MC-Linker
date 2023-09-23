@@ -614,7 +614,7 @@ export default class BotAPI extends EventEmitter {
         if(!role) return;
 
         const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
-        if(!roleIndex || roleIndex === -1) return;
+        if(roleIndex === undefined || roleIndex === -1) return;
         server.syncedRoles[roleIndex].players = users;
         server.edit({ syncedRoles: server.syncedRoles });
 
@@ -633,7 +633,7 @@ export default class BotAPI extends EventEmitter {
 
     async _removeSyncedRole(data, server) {
         const roleIndex = server.syncedRoles?.findIndex(role => role.id === data.id);
-        if(!roleIndex || roleIndex === -1) return;
+        if(roleIndex === undefined || roleIndex === -1) return;
 
         server.syncedRoles.splice(roleIndex, 1);
         await server.edit({ syncedRoles: server.syncedRoles });
