@@ -563,7 +563,7 @@ export default class BotAPI extends EventEmitter {
             return member.roles.cache.has(server.requiredRoleToJoin);
         }
         catch(err) {
-            if(err.code === 10007) return 'not_connected'; // Member not in server
+            if(err.code === 10007) return false; // Member not in server
             else return 'error';
         }
     }
