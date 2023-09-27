@@ -26,7 +26,7 @@ export default class RoleSync extends AutocompleteCommand {
 
         const commandResponse = [];
         for(const group of response.data.groups) {
-            if(!interaction.options.getFocused().includes(group)) continue;
+            if(!group.includes(interaction.options.getFocused())) continue;
             commandResponse.push({
                 name: `${group} (Group)`,
                 value: `${group} group`,

@@ -553,13 +553,19 @@ export default class BotAPI extends EventEmitter {
         const user = this.client.userConnections.cache.find(u => u.uuid === uuid);
         if(!user) return 'not_connected';
 
-        const guild = await this.client.guilds.fetch(server.id);
-        if(!guild) return 'error';
+        try {
+            const guild = await this.client.guilds.fetch(server.id);
+            if(!guild) return 'error';
 
-        const member = await guild.members.fetch({ user: user.id, force: true });
-        if(!member) return 'error';
+            const member = await guild.members.fetch({ user: user.id, force: true });
+            if(!member) return 'error';
 
-        return member.roles.cache.has(server.requiredRoleToJoin);
+            return member.roles.cache.has(server.requiredRoleToJoin);
+        }
+        catch(err) {
+            if(err.code === 10007) return 'not_connected'; // Member not in server
+            else return 'error';
+        }
     }
 
     /**
