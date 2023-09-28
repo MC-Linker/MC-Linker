@@ -2358,7 +2358,7 @@
     "advancements": {
       "name": "advancements",
       "type": "ChatInput",
-      "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
+      "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
       "description": "Look up your and other member's minecraft advancements.",
       "options": [
         {
@@ -2399,7 +2399,7 @@
     "stats": {
       "name": "stats",
       "type": "ChatInput",
-      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
+      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
       "description": "Look at your and other member's minecraft server stats.",
       "options": [
         {
@@ -2806,7 +2806,7 @@
     "message": {
       "name": "message",
       "type": "ChatInput",
-      "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).",
+      "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.wiki/w/Formatting_codes#Color_codes).",
       "description": "Send private chat messages to members on the server.",
       "options": [
         {
