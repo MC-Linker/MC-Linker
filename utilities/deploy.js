@@ -93,14 +93,10 @@ await yargs(hideBin(process.argv))
     .help()
     .parse();
 
-const excludedDisable = ['enable', 'disable', 'help'];
 const excludedHelp = ['help'];
 
 const helpChoices = [];
 let helpBuilder;
-
-const disableChoices = [];
-let disableBuilder;
 
 const commands = [];
 const linkedRoles = [];
@@ -110,13 +106,10 @@ if(deployGuild || deployGlobal) {
     for(const command of Object.values(keys.data)) {
         const builder = getCommand(command);
 
-        if(builder.name === 'disable') disableBuilder = builder;
-        else if(builder.name === 'help') helpBuilder = builder;
+        if(builder.name === 'help') helpBuilder = builder;
         else commands.push(builder.toJSON()); //Push all commands to `commands`
 
-        //Push command choices
-        if(!excludedDisable.includes(builder.name))
-            disableChoices.push({ name: builder.name.cap(), value: builder.name });
+        //Push help-command choices
         if(!excludedHelp.includes(builder.name))
             helpChoices.push({ name: builder.name.cap(), value: builder.name });
 
@@ -131,11 +124,8 @@ if(deployGuild || deployGlobal) {
         console.log(`Loaded category: ${folder}`);
     }
 
-    //Push command choices
-    disableBuilder.options[0].options[0].choices = disableChoices; //Set command choices
-    helpBuilder.options[0].choices = helpChoices; //Set command and category choices
-
-    commands.push(disableBuilder.toJSON());
+    //Set command and category choices
+    helpBuilder.options[0].choices = helpChoices;
     commands.push(helpBuilder.toJSON());
 }
 

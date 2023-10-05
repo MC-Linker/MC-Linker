@@ -3230,7 +3230,6 @@
             }
           ]
         },
-        null,
         {
           "type": "Subcommand",
           "name": "list",
@@ -3309,6 +3308,7 @@
         {
           "type": "Subcommand",
           "name": "chat-commands",
+          "description": "Enable a disabled chat-command allowing it to be sent again.",
           "options": [
             {
               "type": "String",
@@ -3318,9 +3318,6 @@
               "autocomplete": true
             }
           ]
-        },
-        {
-          "description": "Enable a disabled chat-command allowing it to be sent again."
         }
       ]
     },

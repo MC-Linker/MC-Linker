@@ -1861,20 +1861,20 @@
   "data.disable.options.2.options.0.autocomplete": true,
 
 
-  "data.disable.options.4.type": "Subcommand",
-  "data.disable.options.4.name": "list",
-  "data.disable.options.4.description": "Get a list of all disabled commands/stats/advancements",
+  "data.disable.options.3.type": "Subcommand",
+  "data.disable.options.3.name": "list",
+  "data.disable.options.3.description": "Get a list of all disabled commands/stats/advancements",
 
-  "data.disable.options.4.options.0.type": "String",
-  "data.disable.options.4.options.0.name": "category",
-  "data.disable.options.4.options.0.description": "Set the category which you want to list",
-  "data.disable.options.4.options.0.required": true,
-  "data.disable.options.4.options.0.choices.0.name": "Chat Commands",
-  "data.disable.options.4.options.0.choices.0.value": "chat-commands",
-  "data.disable.options.4.options.0.choices.1.name": "Advancements",
-  "data.disable.options.4.options.0.choices.1.value": "advancements",
-  "data.disable.options.4.options.0.choices.2.name": "Stats",
-  "data.disable.options.4.options.0.choices.2.value": "stats",
+  "data.disable.options.3.options.0.type": "String",
+  "data.disable.options.3.options.0.name": "category",
+  "data.disable.options.3.options.0.description": "Set the category which you want to list",
+  "data.disable.options.3.options.0.required": true,
+  "data.disable.options.3.options.0.choices.0.name": "Chat Commands",
+  "data.disable.options.3.options.0.choices.0.value": "chat-commands",
+  "data.disable.options.3.options.0.choices.1.name": "Advancements",
+  "data.disable.options.3.options.0.choices.1.value": "advancements",
+  "data.disable.options.3.options.0.choices.2.name": "Stats",
+  "data.disable.options.3.options.0.choices.2.value": "stats",
 
 
 
@@ -1916,7 +1916,7 @@
 
   "data.enable.options.2.type": "Subcommand",
   "data.enable.options.2.name": "chat-commands",
-  "data.enable.options.3.description": "Enable a disabled chat-command allowing it to be sent again.",
+  "data.enable.options.2.description": "Enable a disabled chat-command allowing it to be sent again.",
 
   "data.enable.options.2.options.0.type": "String",
   "data.enable.options.2.options.0.name": "command",
