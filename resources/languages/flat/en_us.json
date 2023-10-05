@@ -141,20 +141,6 @@
   "commands.help.success.command.embeds.0.fields.0.name": "%command_mention%",
   "commands.help.success.command.embeds.0.fields.0.value": "%command_long_description%\n\n**Usage**:\n%command_usage%",
 
-
-  "commands.help.success.disable_button.components.0.type": "Button",
-  "commands.help.success.disable_button.components.0.style": "Danger",
-  "commands.help.success.disable_button.components.0.custom_id": "disable_%command_name%",
-  "commands.help.success.disable_button.components.0.label": "Disable this command!",
-  "commands.help.success.disable_button.components.0.emoji": "%emoji_error%",
-
-  "commands.help.success.enable_button.components.0.type": "Button",
-  "commands.help.success.enable_button.components.0.style": "Success",
-  "commands.help.success.enable_button.components.0.custom_id": "enable_%command_name%",
-  "commands.help.success.enable_button.components.0.label": "Enable this command!",
-  "commands.help.success.enable_button.components.0.emoji": "%emoji_success%",
-
-
   "commands.help.success.disabled.embeds.0.description": "You can find helpful information here.\n```diff\n- [COMMAND DISABLED]```",
 
 
@@ -1840,50 +1826,39 @@
   "data.disable.name": "disable",
   "data.disable.type": "ChatInput",
   "data.disable.default_member_permissions.0": "Administrator",
-  "data.disable.long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.\nBot-commands can also be disabled through buttons in `/help <command>`.",
+  "data.disable.long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.",
   "data.disable.description": "Disable a specific command/stat/advancement.",
 
-
   "data.disable.options.0.type": "Subcommand",
-  "data.disable.options.0.name": "bot-commands",
-  "data.disable.options.0.description": "Disable a bot-command preventing it from being used.",
+  "data.disable.options.0.name": "advancements",
+  "data.disable.options.0.description": "Disable an advancement",
 
   "data.disable.options.0.options.0.type": "String",
-  "data.disable.options.0.options.0.name": "command",
-  "data.disable.options.0.options.0.description": "Set the command you want to disable",
+  "data.disable.options.0.options.0.name": "advancement",
+  "data.disable.options.0.options.0.description": "Set the advancement you want to disable",
   "data.disable.options.0.options.0.required": true,
+  "data.disable.options.0.options.0.autocomplete": true,
 
 
   "data.disable.options.1.type": "Subcommand",
-  "data.disable.options.1.name": "advancements",
-  "data.disable.options.1.description": "Disable an advancement",
+  "data.disable.options.1.name": "stats",
+  "data.disable.options.1.description": "Disable a stat",
 
   "data.disable.options.1.options.0.type": "String",
-  "data.disable.options.1.options.0.name": "advancement",
-  "data.disable.options.1.options.0.description": "Set the advancement you want to disable",
+  "data.disable.options.1.options.0.name": "stat",
+  "data.disable.options.1.options.0.description": "Set the stat you want to disable",
   "data.disable.options.1.options.0.required": true,
   "data.disable.options.1.options.0.autocomplete": true,
 
-
   "data.disable.options.2.type": "Subcommand",
-  "data.disable.options.2.name": "stats",
-  "data.disable.options.2.description": "Disable a stat",
+  "data.disable.options.2.name": "chat-commands",
+  "data.disable.options.2.description": "Disable a command preventing it from being sent in any chatchannel.",
 
   "data.disable.options.2.options.0.type": "String",
-  "data.disable.options.2.options.0.name": "stat",
-  "data.disable.options.2.options.0.description": "Set the stat you want to disable",
+  "data.disable.options.2.options.0.name": "command",
+  "data.disable.options.2.options.0.description": "Set the command you want to disable",
   "data.disable.options.2.options.0.required": true,
   "data.disable.options.2.options.0.autocomplete": true,
-
-  "data.disable.options.3.type": "Subcommand",
-  "data.disable.options.3.name": "chat-commands",
-  "data.disable.options.3.description": "Disable a command preventing it from being sent in any chatchannel.",
-
-  "data.disable.options.3.options.0.type": "String",
-  "data.disable.options.3.options.0.name": "command",
-  "data.disable.options.3.options.0.description": "Set the command you want to disable",
-  "data.disable.options.3.options.0.required": true,
-  "data.disable.options.3.options.0.autocomplete": true,
 
 
   "data.disable.options.4.type": "Subcommand",
@@ -1894,14 +1869,12 @@
   "data.disable.options.4.options.0.name": "category",
   "data.disable.options.4.options.0.description": "Set the category which you want to list",
   "data.disable.options.4.options.0.required": true,
-  "data.disable.options.4.options.0.choices.0.name": "Bot Commands",
-  "data.disable.options.4.options.0.choices.0.value": "bot-commands",
-  "data.disable.options.4.options.0.choices.1.name": "Chat Commands",
-  "data.disable.options.4.options.0.choices.1.value": "chat-commands",
-  "data.disable.options.4.options.0.choices.2.name": "Advancements",
-  "data.disable.options.4.options.0.choices.2.value": "advancements",
-  "data.disable.options.4.options.0.choices.3.name": "Stats",
-  "data.disable.options.4.options.0.choices.3.value": "stats",
+  "data.disable.options.4.options.0.choices.0.name": "Chat Commands",
+  "data.disable.options.4.options.0.choices.0.value": "chat-commands",
+  "data.disable.options.4.options.0.choices.1.name": "Advancements",
+  "data.disable.options.4.options.0.choices.1.value": "advancements",
+  "data.disable.options.4.options.0.choices.2.name": "Stats",
+  "data.disable.options.4.options.0.choices.2.value": "stats",
 
 
 
@@ -1916,51 +1889,40 @@
   "data.enable.name": "enable",
   "data.enable.type": "ChatInput",
   "data.enable.default_member_permissions.0": "Administrator",
-  "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Bot-Commands can also be enabled through buttons in `/help <command>`.",
+  "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default).",
   "data.enable.description": "Enable a disabled command/stat/advancement (All enabled by default)",
 
 
   "data.enable.options.0.type": "Subcommand",
-  "data.enable.options.0.name": "bot-commands",
-  "data.enable.options.0.description": "Enable a disabled bot-command allowing it to be used again.",
+  "data.enable.options.0.name": "stats",
+  "data.enable.options.0.description": "Enable a disabled stat",
 
   "data.enable.options.0.options.0.type": "String",
-  "data.enable.options.0.options.0.name": "command",
-  "data.enable.options.0.options.0.description": "Set the command you want to enable",
+  "data.enable.options.0.options.0.name": "stat",
+  "data.enable.options.0.options.0.description": "Set the stat you want to enable",
   "data.enable.options.0.options.0.required": true,
   "data.enable.options.0.options.0.autocomplete": true,
 
 
   "data.enable.options.1.type": "Subcommand",
-  "data.enable.options.1.name": "stats",
-  "data.enable.options.1.description": "Enable a disabled stat",
+  "data.enable.options.1.name": "advancements",
+  "data.enable.options.1.description": "Enable a disabled advancement",
 
   "data.enable.options.1.options.0.type": "String",
-  "data.enable.options.1.options.0.name": "stat",
-  "data.enable.options.1.options.0.description": "Set the stat you want to enable",
+  "data.enable.options.1.options.0.name": "advancement",
+  "data.enable.options.1.options.0.description": "Set the advancement you want to enable",
   "data.enable.options.1.options.0.required": true,
   "data.enable.options.1.options.0.autocomplete": true,
 
-
   "data.enable.options.2.type": "Subcommand",
-  "data.enable.options.2.name": "advancements",
-  "data.enable.options.2.description": "Enable a disabled advancement",
-
-  "data.enable.options.2.options.0.type": "String",
-  "data.enable.options.2.options.0.name": "advancement",
-  "data.enable.options.2.options.0.description": "Set the advancement you want to enable",
-  "data.enable.options.2.options.0.required": true,
-  "data.enable.options.2.options.0.autocomplete": true,
-
-  "data.enable.options.3.type": "Subcommand",
-  "data.enable.options.3.name": "chat-commands",
+  "data.enable.options.2.name": "chat-commands",
   "data.enable.options.3.description": "Enable a disabled chat-command allowing it to be sent again.",
 
-  "data.enable.options.3.options.0.type": "String",
-  "data.enable.options.3.options.0.name": "command",
-  "data.enable.options.3.options.0.description": "Set the command you want to enable",
-  "data.enable.options.3.options.0.required": true,
-  "data.enable.options.3.options.0.autocomplete": true,
+  "data.enable.options.2.options.0.type": "String",
+  "data.enable.options.2.options.0.name": "command",
+  "data.enable.options.2.options.0.description": "Set the command you want to enable",
+  "data.enable.options.2.options.0.required": true,
+  "data.enable.options.2.options.0.autocomplete": true,
 
 
 

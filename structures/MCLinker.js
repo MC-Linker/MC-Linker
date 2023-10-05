@@ -256,7 +256,6 @@ export default class MCLinker extends Discord.Client {
         const serverSettingsConnectionSchema = new Schema({
             _id: { type: String },
             disabled: {
-                botCommands: [String],
                 advancements: [String],
                 stats: [String],
                 chatCommands: [String],

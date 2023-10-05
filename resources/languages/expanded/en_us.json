@@ -268,28 +268,6 @@
             }
           ]
         },
-        "disable_button": {
-          "components": [
-            {
-              "type": "Button",
-              "style": "Danger",
-              "custom_id": "disable_%command_name%",
-              "label": "Disable this command!",
-              "emoji": "%emoji_error%"
-            }
-          ]
-        },
-        "enable_button": {
-          "components": [
-            {
-              "type": "Button",
-              "style": "Success",
-              "custom_id": "enable_%command_name%",
-              "label": "Enable this command!",
-              "emoji": "%emoji_success%"
-            }
-          ]
-        },
         "disabled": {
           "embeds": [
             {
@@ -3207,22 +3185,9 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.\nBot-commands can also be disabled through buttons in `/help <command>`.",
+      "long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.",
       "description": "Disable a specific command/stat/advancement.",
       "options": [
-        {
-          "type": "Subcommand",
-          "name": "bot-commands",
-          "description": "Disable a bot-command preventing it from being used.",
-          "options": [
-            {
-              "type": "String",
-              "name": "command",
-              "description": "Set the command you want to disable",
-              "required": true
-            }
-          ]
-        },
         {
           "type": "Subcommand",
           "name": "advancements",
@@ -3265,6 +3230,7 @@
             }
           ]
         },
+        null,
         {
           "type": "Subcommand",
           "name": "list",
@@ -3276,10 +3242,6 @@
               "description": "Set the category which you want to list",
               "required": true,
               "choices": [
-                {
-                  "name": "Bot Commands",
-                  "value": "bot-commands"
-                },
                 {
                   "name": "Chat Commands",
                   "value": "chat-commands"
@@ -3313,23 +3275,9 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Bot-Commands can also be enabled through buttons in `/help <command>`.",
+      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default).",
       "description": "Enable a disabled command/stat/advancement (All enabled by default)",
       "options": [
-        {
-          "type": "Subcommand",
-          "name": "bot-commands",
-          "description": "Enable a disabled bot-command allowing it to be used again.",
-          "options": [
-            {
-              "type": "String",
-              "name": "command",
-              "description": "Set the command you want to enable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
         {
           "type": "Subcommand",
           "name": "stats",
@@ -3361,7 +3309,6 @@
         {
           "type": "Subcommand",
           "name": "chat-commands",
-          "description": "Enable a disabled chat-command allowing it to be sent again.",
           "options": [
             {
               "type": "String",
@@ -3371,6 +3318,9 @@
               "autocomplete": true
             }
           ]
+        },
+        {
+          "description": "Enable a disabled chat-command allowing it to be sent again."
         }
       ]
     },

@@ -40,7 +40,6 @@ export default class Enable extends AutocompleteCommand {
                 const matchingStat = utils.searchAllStats(disable, true, true, 1);
                 formattedDisable = matchingStat.shift()?.name ?? disable.cap();
             }
-            else if(subcommand === 'botCommands') formattedDisable = disable.cap();
             else formattedDisable = disable;
 
             respondArray.push({
@@ -66,17 +65,7 @@ export default class Enable extends AutocompleteCommand {
         }
 
         let formattedToEnable;
-        if(type === 'botCommands') {
-            const command = keys.data[toEnable];
-
-            if(!command) {
-                return interaction.replyTl(keys.commands.enable.warnings.command_does_not_exist, argPlaceholder);
-            }
-
-            toEnable = command.name;
-            formattedToEnable = toEnable.cap();
-        }
-        else if(type === 'advancements') {
+        if(type === 'advancements') {
             const matchingTitle = utils.searchAllAdvancements(toEnable, true, true, 1);
             formattedToEnable = matchingTitle.shift()?.name ?? toEnable.cap();
 

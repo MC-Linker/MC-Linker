@@ -9,8 +9,6 @@ const commandNames = Object.keys(commands);
 
 export default class Disable extends AutocompleteCommand {
 
-    disabledCommands = ['enable', 'disable', 'help'];
-
     constructor() {
         super({
             name: 'disable',
@@ -48,7 +46,6 @@ export default class Disable extends AutocompleteCommand {
 
         const settings = await client.serverSettingsConnections.getOrConnect(interaction.guildId);
         const type = args.shift()
-            .replace('bot-commands', 'botCommands')
             .replace('chat-commands', 'chatCommands');
 
         if(type === 'list') {
@@ -79,18 +76,13 @@ export default class Disable extends AutocompleteCommand {
             return interaction.replyOptions({ embeds: [listEmbed] });
         }
         else {
-            let toDisable = args.join(' ').toLowerCase();
+            const toDisable = args.join(' ').toLowerCase();
             const argPlaceholder = { disable: toDisable, type };
-
-            if(type === 'botCommands' && this.disabledCommands.includes(toDisable)) {
-                return interaction.replyTl(keys.commands.disable.warnings.disabled_command, argPlaceholder);
-            }
 
             const formattedToDisable = getFormattedName(type, toDisable);
             if(!formattedToDisable) {
                 return interaction.replyTl(keys.commands.disable.warnings.command_does_not_exist, argPlaceholder);
             }
-            if(type === 'botCommands') toDisable = formattedToDisable.toLowerCase();
 
             if(!await settings.disable(type, toDisable)) {
                 return interaction.replyTl(keys.commands.disable.errors.could_not_disable, {
@@ -103,13 +95,7 @@ export default class Disable extends AutocompleteCommand {
         }
 
         function getFormattedName(type, name) {
-            if(type === 'botCommands') {
-                const command = client.commands.get(name);
-                if(!command) return;
-
-                return command.name.cap();
-            }
-            else if(type === 'advancements') {
+            if(type === 'advancements') {
                 const matchingTitle = utils.searchAllAdvancements(name, true, true, 1);
                 return matchingTitle.shift()?.name ?? name;
             }

@@ -6,7 +6,6 @@ import {
     Message,
     PermissionFlagsBits,
 } from 'discord.js';
-import { ph } from '../api/messages.js';
 import keys from '../api/keys.js';
 
 export default class Command {
@@ -100,12 +99,6 @@ export default class Command {
 
         if(this.ownerOnly) {
             return interaction.user.id === process.env.OWNER_ID;
-        }
-
-        const settings = await client.serverSettingsConnections.cache.get(interaction.guildId);
-        if(settings?.isDisabled('botCommands', this.name)) {
-            await interaction.replyTl(keys.api.command.no_access.disabled, await ph.interaction(interaction));
-            return false;
         }
 
         if(this.requiresConnectedPlugin && !server?.protocol?.isPluginProtocol()) {

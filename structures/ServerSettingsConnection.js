@@ -5,7 +5,6 @@ export default class ServerSettingsConnection extends Connection {
     /** @type {Omit<ServerSettingsConnectionData, 'id'>} */
     static defaultSettingsData = {
         disabled: {
-            botCommands: [],
             advancements: [],
             stats: [],
             chatCommands: [],
@@ -22,7 +21,6 @@ export default class ServerSettingsConnection extends Connection {
 
     /**
      * @typedef {object} DisableData - The data for disabled commands, advancements or stats.
-     * @property {string[]} botCommands - The disabled bot-commands.
      * @property {string[]} advancements - The disabled advancements.
      * @property {string[]} stats - The disabled stats.
      * @property {string[]} chatCommands - The disabled chatchannel-commands.
