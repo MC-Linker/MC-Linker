@@ -15,7 +15,7 @@ To use most of the commands you’ll have to connect your Minecraft Java Edition
 This can be done by following these steps:
 
 + Add the "Discord-Linker" plugin to your Minecraft server
-  here: https://www.spigotmc.org/resources/discord-linker.98749/
+  from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.80691/)
 + Restart your Minecraft server or execute `/reload confirm` on your Minecraft server
 + Execute `/connect plugin` in Discord
 + Follow the instructions in the embed
