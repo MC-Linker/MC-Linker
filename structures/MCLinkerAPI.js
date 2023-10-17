@@ -638,7 +638,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * Checks whether the minecraft-user has the required role to join the server.
      * @param {Object} data - The request data.
      * @param {ServerConnection} server - The server connection.
-     * @returns {Promise<RouteResponse>|RouteResponse} - Whether the user has the required role.
+     * @returns {RouteResponse} - Whether the user has the required role.
      * @private
      */
     async hasRequiredRoleToJoin(data, server) {
@@ -664,11 +664,10 @@ export default class MCLinkerAPI extends EventEmitter {
     /**
      * Listens to a dm message of the user containing the code to verify the user.
      * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
      * @returns {Promise<void>}
      * @private
      */
-    verifyUser(data, server) {
+    verifyUser(data) {
         this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
         setTimeout(() => this.usersAwaitingVerification.delete(data.code), 180_000);
     }
@@ -677,7 +676,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * Returns an existing invite url or creates a new one if none exists.
      * @param {data} data - The request data.
      * @param {ServerConnection} server - The server connection.
-     * @returns {Promise<RouteResponse>|RouteResponse} - The invite url.
+     * @returns {RouteResponse} - The invite url.
      * @private
      */
     async getInviteUrl(data, server) {
