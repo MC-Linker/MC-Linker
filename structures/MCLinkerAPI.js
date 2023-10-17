@@ -95,7 +95,7 @@ export default class MCLinkerAPI extends EventEmitter {
             method: 'POST',
             endpoint: '/disconnect-force',
             event: 'disconnect-force',
-            handler: this.client.serverConnections.disconnect,
+            handler: (data, server) => this.client.serverConnections.disconnect(server),
         },
         {
             method: 'POST',
