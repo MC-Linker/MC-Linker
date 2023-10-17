@@ -345,7 +345,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {string} hash - The hash to use for verifying server-connections.
      */
     addWebsocketListeners(socket, serverResolvable, hash) {
-        async function getServerWebsocket(client, rateLimiter = null, callback = () => {}) {
+        async function getServerWebsocket(client, rateLimiter = null, callback) {
             try {
                 if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
 
@@ -361,7 +361,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 return server;
             }
             catch(rejRes) {
-                callback({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
+                callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
             }
         }
 
@@ -726,7 +726,7 @@ export default class MCLinkerAPI extends EventEmitter {
         const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
         if(roleIndex === undefined || roleIndex === -1) return;
         server.syncedRoles[roleIndex].players = users;
-        server.edit({ syncedRoles: server.syncedRoles });
+        await server.edit({ syncedRoles: server.syncedRoles });
 
         const membersToRemove = role.members.map(m => m.id).filter(id => !users.includes(id));
         const membersToAdd = users.filter(id => !role.members.has(id));
