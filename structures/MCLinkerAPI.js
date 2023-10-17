@@ -60,69 +60,6 @@ export default class MCLinkerAPI extends EventEmitter {
      */
     usersAwaitingVerification = new Map();
 
-    /**
-     * The routes for the rest and ws api.
-     * @type {{handler: ((Object, ServerConnection) => ?RouteResponse|Promise<?RouteResponse>), endpoint: string, method: string, event: string, rateLimiter?: RateLimiterMemory|((Object) => ?RateLimiterMemory)}[]}
-     */
-    routes = [
-        {
-            method: 'POST',
-            endpoint: '/chat',
-            event: 'chat',
-            handler: this.chat,
-            rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
-        },
-        {
-            method: 'POST',
-            endpoint: '/update-stats-channels',
-            event: 'update-stats-channels',
-            handler: this.updateStatsChannel,
-            rateLimiter: data => data.event === 'members' ? this.rateLimiterMemberCounter : null,
-        },
-        {
-            method: 'GET',
-            endpoint: '/update-synced-role',
-            event: 'update-synced-role',
-            handler: this.updateSyncedRole,
-        },
-        {
-            method: 'GET',
-            endpoint: '/remove-synced-role',
-            event: 'remove-synced-role',
-            handler: this.removeSyncedRole,
-        },
-        {
-            method: 'POST',
-            endpoint: '/disconnect-force',
-            event: 'disconnect-force',
-            handler: (data, server) => this.client.serverConnections.disconnect(server),
-        },
-        {
-            method: 'POST',
-            endpoint: '/has-required-role',
-            event: 'has-required-role',
-            handler: this.hasRequiredRoleToJoin,
-        },
-        {
-            method: 'POST',
-            endpoint: '/verify-user',
-            event: 'verify-user',
-            handler: this.verifyUser,
-        },
-        {
-            method: 'POST',
-            endpoint: '/invite-url',
-            event: 'invite-url',
-            handler: this.getInviteUrl,
-        },
-        {
-            method: 'GET',
-            endpoint: '/version',
-            event: 'version',
-            handler: () => process.env.PLUGIN_VERSION,
-        },
-    ];
-
     constructor(client) {
         super();
         super.setMaxListeners(0); // Set unlimited listeners
@@ -132,6 +69,69 @@ export default class MCLinkerAPI extends EventEmitter {
          * @type {MCLinker}
          */
         this.client = client;
+
+        /**
+         * The routes for the rest and ws api.
+         * @type {{handler: ((Object, ServerConnection) => ?RouteResponse|Promise<?RouteResponse>), endpoint: string, method: string, event: string, rateLimiter?: RateLimiterMemory|((Object) => ?RateLimiterMemory)}[]}
+         */
+        this.routes = [
+            {
+                method: 'POST',
+                endpoint: '/chat',
+                event: 'chat',
+                handler: this.chat,
+                rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
+            },
+            {
+                method: 'POST',
+                endpoint: '/update-stats-channels',
+                event: 'update-stats-channels',
+                handler: this.updateStatsChannel,
+                rateLimiter: data => data.event === 'members' ? this.rateLimiterMemberCounter : null,
+            },
+            {
+                method: 'GET',
+                endpoint: '/update-synced-role',
+                event: 'update-synced-role',
+                handler: this.updateSyncedRole,
+            },
+            {
+                method: 'GET',
+                endpoint: '/remove-synced-role',
+                event: 'remove-synced-role',
+                handler: this.removeSyncedRole,
+            },
+            {
+                method: 'POST',
+                endpoint: '/disconnect-force',
+                event: 'disconnect-force',
+                handler: (data, server) => this.client.serverConnections.disconnect(server),
+            },
+            {
+                method: 'POST',
+                endpoint: '/has-required-role',
+                event: 'has-required-role',
+                handler: this.hasRequiredRoleToJoin,
+            },
+            {
+                method: 'POST',
+                endpoint: '/verify-user',
+                event: 'verify-user',
+                handler: this.verifyUser,
+            },
+            {
+                method: 'POST',
+                endpoint: '/invite-url',
+                event: 'invite-url',
+                handler: this.getInviteUrl,
+            },
+            {
+                method: 'GET',
+                endpoint: '/version',
+                event: 'version',
+                handler: () => process.env.PLUGIN_VERSION,
+            },
+        ];
 
         /**
          * The fastify instance for the api.
