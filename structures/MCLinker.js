@@ -69,12 +69,6 @@ export default class MCLinker extends Discord.Client {
         super(options);
 
         /**
-         * The API instance of the bot.
-         * @type {MCLinkerAPI}
-         */
-        this.api = new MCLinkerAPI(this);
-
-        /**
          * The server-connection manager for the bot.
          * @type {ServerConnectionManager}
          */
@@ -127,6 +121,12 @@ export default class MCLinker extends Discord.Client {
          * @type {typeof utils}
          */
         this.utils = { ...utils };
+
+        /**
+         * The API instance of the bot.
+         * @type {MCLinkerAPI}
+         */
+        this.api = new MCLinkerAPI(this);
     }
 
     async _loadCommands() {
