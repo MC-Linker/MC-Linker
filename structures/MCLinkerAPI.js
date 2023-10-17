@@ -1,16 +1,22 @@
 // noinspection HttpUrlsUsage
 import Fastify from 'fastify';
-import { getOAuthURL, getTokens, getUser } from './oauth.js';
-import { createHash, getMinecraftAvatarURL, searchAdvancements } from './utils.js';
-import { addPh, getEmbed, ph } from './messages.js';
-import keys from './keys.js';
+import { getOAuthURL, getTokens, getUser } from '../api/oauth.js';
+import { createHash, getMinecraftAvatarURL, searchAdvancements } from '../api/utils.js';
+import { addPh, getEmbed, ph } from '../api/messages.js';
+import keys from '../api/keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
 import Discord from 'discord.js';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
-export default class BotAPI extends EventEmitter {
+export default class MCLinkerAPI extends EventEmitter {
+
+    /**
+     * @typedef {Object} RouteResponse
+     * @property {number} status - The status code of the response.
+     * @property {Object} body - The body of the response.
+     */
 
     /**
      * The websocket instance for the api.
@@ -24,7 +30,7 @@ export default class BotAPI extends EventEmitter {
      */
     rateLimiterChatChannels = new RateLimiterMemory({
         keyPrefix: 'chatchannels',
-        points: 2, // 1 updates
+        points: 2, // 2 updates
         duration: 1, // per second
     });
 
@@ -44,15 +50,78 @@ export default class BotAPI extends EventEmitter {
      */
     rateLimiterMemberCounter = new RateLimiterMemory({
         keyPrefix: 'member-counters',
-        points: 2, // 1 points
+        points: 2, // 2 updates
         duration: 60 * 5, // per 5 minutes
     });
 
     /**
-     * A map of users that are awaiting verification. The map consists of verification codes and and their username and uuid.
+     * A map of users that are awaiting verification. The map consists of verification codes and their username and uuid.
      * @type {Map<String, { username: String, uuid: String }>}
      */
     usersAwaitingVerification = new Map();
+
+    /**
+     * The routes for the rest and ws api.
+     * @type {{handler: ((Object, ServerConnection) => ?RouteResponse|Promise<?RouteResponse>), endpoint: string, method: string, event: string, rateLimiter?: RateLimiterMemory|((Object) => ?RateLimiterMemory)}[]}
+     */
+    routes = [
+        {
+            method: 'POST',
+            endpoint: '/chat',
+            event: 'chat',
+            handler: this.chat,
+            rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
+        },
+        {
+            method: 'POST',
+            endpoint: '/update-stats-channels',
+            event: 'update-stats-channels',
+            handler: this.updateStatsChannel,
+            rateLimiter: data => data.event === 'members' ? this.rateLimiterMemberCounter : null,
+        },
+        {
+            method: 'GET',
+            endpoint: '/update-synced-role',
+            event: 'update-synced-role',
+            handler: this.updateSyncedRole,
+        },
+        {
+            method: 'GET',
+            endpoint: '/remove-synced-role',
+            event: 'remove-synced-role',
+            handler: this.removeSyncedRole,
+        },
+        {
+            method: 'POST',
+            endpoint: '/disconnect-force',
+            event: 'disconnect-force',
+            handler: this.client.serverConnections.disconnect,
+        },
+        {
+            method: 'POST',
+            endpoint: '/has-required-role',
+            event: 'has-required-role',
+            handler: this.hasRequiredRoleToJoin,
+        },
+        {
+            method: 'POST',
+            endpoint: '/verify-user',
+            event: 'verify-user',
+            handler: this.verifyUser,
+        },
+        {
+            method: 'POST',
+            endpoint: '/invite-url',
+            event: 'invite-url',
+            handler: this.getInviteUrl,
+        },
+        {
+            method: 'GET',
+            endpoint: '/version',
+            event: 'version',
+            handler: () => process.env.PLUGIN_VERSION,
+        },
+    ];
 
     constructor(client) {
         super();
@@ -111,7 +180,19 @@ export default class BotAPI extends EventEmitter {
             }
         }
 
-        this.fastify.post('/chat', async (request, reply) => {
+        for(const route of this.routes) {
+            this.fastify[route.method.toLowerCase()](route.endpoint, async (request, reply) => {
+                const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(request.body) : route.rateLimiter;
+                const server = await _getServerFastify(request, reply, this.client, rateLimiter);
+                if(!server) return;
+
+                const response = await route.handler(request.body, server);
+                if(!response) reply.send({});
+                else reply.status(response.status ?? 200).send(response.body ?? {});
+            });
+        }
+
+        /*this.fastify.post('/chat', async (request, reply) => {
             const rateLimiter = request.body?.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
             const server = await _getServerFastify(request, reply, this.client, rateLimiter);
             if(!server) return;
@@ -155,7 +236,7 @@ export default class BotAPI extends EventEmitter {
             const server = await _getServerFastify(request, reply, this.client);
             if(!server) return;
             const response = await this._hasRequiredRoleToJoin(request.body.uuid, server);
-            if(response === 'error') reply.status(500);
+            if(response === 'error') reply.status(500).send({});
             reply.send({ response });
         });
 
@@ -164,7 +245,7 @@ export default class BotAPI extends EventEmitter {
             const server = await _getServerFastify(request, reply, this.client);
             if(!server) return;
             reply.send({});
-            this._verifyUser(data);
+            await this._verifyUser(data);
         });
 
         this.fastify.post('/invite-url', async (request, reply) => {
@@ -173,7 +254,7 @@ export default class BotAPI extends EventEmitter {
             const url = await this._getInviteUrl(server.id);
             if(!url) reply.status(500).send({});
             reply.send({ url });
-        });
+        });*/
 
         this.fastify.get('/linked-role', async (request, reply) => {
             // Generate state
@@ -198,7 +279,7 @@ export default class BotAPI extends EventEmitter {
             if(!user) return reply.status(403).send();
 
             let settings = this.client.userSettingsConnections.cache.get(user.id);
-            if(settings) settings.edit({
+            if(settings) await settings.edit({
                 tokens: {
                     accessToken: tokens.accessToken,
                     refreshToken: tokens.refreshToken,
@@ -222,9 +303,6 @@ export default class BotAPI extends EventEmitter {
             reply.send(`You have been authorized as ${user.tag}! You can now close this window and go back to Discord.`);
         });
 
-        //Returns latest version
-        this.fastify.get('/version', () => process.env.PLUGIN_VERSION);
-        //Root endpoint
         this.fastify.get('/', (request, reply) => {
             reply.redirect('https://mclinker.com');
         });
@@ -253,7 +331,7 @@ export default class BotAPI extends EventEmitter {
             socket.emit('auth-success', {}); //Tell the client that the auth was successful
 
             server.protocol.updateSocket(socket);
-            this.addListeners(socket, server, hash);
+            this.addWebsocketListeners(socket, server, hash);
         });
 
         this.client.emit('apiReady', this);
@@ -266,62 +344,8 @@ export default class BotAPI extends EventEmitter {
      * @param {ServerConnectionResolvable} serverResolvable - The server-connection related to the socket.
      * @param {string} hash - The hash to use for verifying server-connections.
      */
-    addListeners(socket, serverResolvable, hash) {
-        /** @type {ServerConnection<WebSocketProtocol>} */
-        const server = this.client.serverConnections.resolve(serverResolvable);
-        socket.on('chat', async data => {
-            data = JSON.parse(data);
-            const rateLimiter = data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
-            const server = await getServerWebsocket(this.client, rateLimiter);
-            if(!server) return;
-            await this._chat(data, server);
-        });
-        socket.on('update-stats-channels', async data => {
-            data = JSON.parse(data);
-            const rateLimiter = data.event === 'members' ? this.rateLimiterMemberCounter : null;
-            const server = await getServerWebsocket(this.client, rateLimiter);
-            if(!server) return;
-            await this._updateStatsChannel(data, server);
-        });
-        socket.on('update-synced-role', async data => {
-            data = JSON.parse(data);
-            const server = await getServerWebsocket(this.client);
-            if(!server) return;
-            await this._updateSyncedRole(data, server);
-        });
-        socket.on('remove-synced-role', async data => {
-            data = JSON.parse(data);
-            const server = await getServerWebsocket(this.client);
-            if(!server) return;
-            await this._removeSyncedRole(data, server);
-        });
-        socket.on('disconnect-force', async () => {
-            // `/linker disconnect` was executed in minecraft, disconnect the server from discord
-            await this.client.serverConnections.disconnect(server);
-        });
-        socket.on('has-required-role', async (data, callback) => {
-            data = JSON.parse(data);
-            const server = await getServerWebsocket(this.client);
-            if(!server) return;
-            const response = await this._hasRequiredRoleToJoin(data.uuid, server);
-            callback({ response });
-        });
-        socket.on('invite-url', async callback => {
-            const server = await getServerWebsocket(this.client);
-            if(!server) return;
-            callback({ url: await this._getInviteUrl(server.id) });
-        });
-        socket.on('verify-user', async data => {
-            data = JSON.parse(data);
-            const server = await getServerWebsocket(this.client);
-            if(!server) return;
-            this._verifyUser(data);
-        });
-        socket.on('disconnect', () => {
-            server.protocol.updateSocket(null);
-        });
-
-        async function getServerWebsocket(client, rateLimiter = null) {
+    addWebsocketListeners(socket, serverResolvable, hash) {
+        async function getServerWebsocket(client, rateLimiter = null, callback = () => {}) {
             try {
                 if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
 
@@ -337,9 +361,77 @@ export default class BotAPI extends EventEmitter {
                 return server;
             }
             catch(rejRes) {
-                socket.emit('blocked', { 'retry-ms': rejRes.msBeforeNext });
+                callback({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
             }
         }
+
+        for(const route of this.routes) {
+            socket.on(route.event, async (data, callback) => {
+                data = JSON.parse(data);
+                const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
+                const server = await getServerWebsocket(this.client, rateLimiter, callback);
+                if(!server) return;
+
+                const response = await route.handler(data, server);
+                if(response) callback(response.body ?? {});
+            });
+        }
+
+        /** @type {ServerConnection<WebSocketProtocol>} */
+        const server = this.client.serverConnections.resolve(serverResolvable);
+
+        socket.on('disconnect', () => {
+            server.protocol.updateSocket(null);
+        });
+
+        /*        socket.on('chat', async data => {
+                    data = JSON.parse(data);
+                    const rateLimiter = data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
+                    const server = await getServerWebsocket(this.client, rateLimiter);
+                    if(!server) return;
+                    await this._chat(data, server);
+                });
+                socket.on('update-stats-channels', async data => {
+                    data = JSON.parse(data);
+                    const rateLimiter = data.event === 'members' ? this.rateLimiterMemberCounter : null;
+                    const server = await getServerWebsocket(this.client, rateLimiter);
+                    if(!server) return;
+                    await this._updateStatsChannel(data, server);
+                });
+                socket.on('update-synced-role', async data => {
+                    data = JSON.parse(data);
+                    const server = await getServerWebsocket(this.client);
+                    if(!server) return;
+                    await this._updateSyncedRole(data, server);
+                });
+                socket.on('remove-synced-role', async data => {
+                    data = JSON.parse(data);
+                    const server = await getServerWebsocket(this.client);
+                    if(!server) return;
+                    await this._removeSyncedRole(data, server);
+                });
+                socket.on('disconnect-force', async () => {
+                    // `/linker disconnect` was executed in minecraft, disconnect the server from discord
+                    await this.client.serverConnections.disconnect(server);
+                });
+                socket.on('has-required-role', async (data, callback) => {
+                    data = JSON.parse(data);
+                    const server = await getServerWebsocket(this.client);
+                    if(!server) return;
+                    const response = await this._hasRequiredRoleToJoin(data.uuid, server);
+                    callback({ response });
+                });
+                socket.on('invite-url', async callback => {
+                    const server = await getServerWebsocket(this.client);
+                    if(!server) return;
+                    callback({ url: await this._getInviteUrl(server.id) });
+                });
+                socket.on('verify-user', async data => {
+                    data = JSON.parse(data);
+                    const server = await getServerWebsocket(this.client);
+                    if(!server) return;
+                    this._verifyUser(data);
+                });*/
     }
 
     /**
@@ -349,7 +441,7 @@ export default class BotAPI extends EventEmitter {
      * @returns {Promise<void>}
      * @private
      */
-    async _chat(data, server) {
+    async chat(data, server) {
         const { message, channels, type, player } = data;
         const guildId = server.id;
         const authorURL = await getMinecraftAvatarURL(player);
@@ -510,7 +602,7 @@ export default class BotAPI extends EventEmitter {
      * @returns {Promise<void>}
      * @private
      */
-    async _updateStatsChannel(data, server) {
+    async updateStatsChannel(data, server) {
         // event can be one of: 'online', 'offline', 'members'
         const { channels, event } = data;
 
@@ -544,68 +636,81 @@ export default class BotAPI extends EventEmitter {
 
     /**
      * Checks whether the minecraft-user has the required role to join the server.
-     * @param {string} uuid - The uuid of the minecraft-user.
+     * @param {Object} data - The request data.
      * @param {ServerConnection} server - The server connection.
-     * @returns {Promise<'not_connected'|'error'|Boolean>} - Whether the user has the required role.
+     * @returns {Promise<RouteResponse>|RouteResponse} - Whether the user has the required role.
+     * @private
      */
-    async _hasRequiredRoleToJoin(uuid, server) {
+    async hasRequiredRoleToJoin(data, server) {
         if(!server.requiredRoleToJoin) return true;
-        const user = this.client.userConnections.cache.find(u => u.uuid === uuid);
-        if(!user) return 'not_connected';
+        const user = this.client.userConnections.cache.find(u => u.uuid === data.uuid);
+        if(!user) return { body: { response: 'not_connected' } };
 
         try {
             const guild = await this.client.guilds.fetch(server.id);
-            if(!guild) return 'error';
+            if(!guild) return { body: { response: 'error', status: 500 } };
 
             const member = await guild.members.fetch({ user: user.id, force: true });
-            if(!member) return 'error';
+            if(!member) return { body: { response: 'error', status: 500 } };
 
             return member.roles.cache.has(server.requiredRoleToJoin);
         }
         catch(err) {
             if(err.code === 10007) return false; // Member not in server
-            else return 'error';
+            else return { body: { response: 'error', status: 500 } };
         }
     }
 
     /**
      * Listens to a dm message of the user containing the code to verify the user.
      * @param {Object} data - The request data.
+     * @param {ServerConnection} server - The server connection.
      * @returns {Promise<void>}
+     * @private
      */
-    _verifyUser(data) {
+    verifyUser(data, server) {
         this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
         setTimeout(() => this.usersAwaitingVerification.delete(data.code), 180_000);
     }
 
     /**
      * Returns an existing invite url or creates a new one if none exists.
-     * @param {string} id - The id of the guild.
-     * @returns {Promise<?string>} - The invite url.
+     * @param {data} data - The request data.
+     * @param {ServerConnection} server - The server connection.
+     * @returns {Promise<RouteResponse>|RouteResponse} - The invite url.
+     * @private
      */
-    async _getInviteUrl(id) {
-        const guild = await this.client.guilds.fetch(id);
-        if(!guild) return null;
-
+    async getInviteUrl(data, server) {
         let invites;
+        let guild;
         try {
+            guild = await this.client.guilds.fetch(server.id);
             invites = await guild.invites.fetch();
         }
         catch(ignored) {}
 
-        if(invites?.size) return invites.first().url;
+        if(!guild) return { status: 500 };
+
+        if(invites?.size) return { body: { url: invites.first().url } };
         else {
             /** @type {?Discord.BaseGuildTextChannel} */
             const channel = guild.channels.cache.find(c =>
-                c.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.CreateInstantInvite) && c.isTextBased(),
+                c.isTextBased() && c.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.CreateInstantInvite),
             );
-            if(!channel) return null;
+            if(!channel) return { status: 500 };
             const invite = await channel.createInvite({ maxAge: 0, maxUses: 0, unique: true });
-            return invite.url;
+            return { body: { url: invite.url } };
         }
     }
 
-    async _updateSyncedRole(data, server) {
+    /**
+     * Updates the members of the synced role in the discord server.
+     * @param {Object} data - The request data.
+     * @param {ServerConnection} server - The server connection.
+     * @returns {Promise<void>}
+     * @private
+     */
+    async updateSyncedRole(data, server) {
         const guild = await this.client.guilds.fetch(server.id);
         if(!guild) return;
 
@@ -637,7 +742,14 @@ export default class BotAPI extends EventEmitter {
         }
     }
 
-    async _removeSyncedRole(data, server) {
+    /**
+     * Removes the synced role from the discord server.
+     * @param {Object} data - The request data.
+     * @param {ServerConnection} server - The server connection.
+     * @returns {Promise<void>}
+     * @private
+     */
+    async removeSyncedRole(data, server) {
         const roleIndex = server.syncedRoles?.findIndex(role => role.id === data.id);
         if(roleIndex === undefined || roleIndex === -1) return;
 

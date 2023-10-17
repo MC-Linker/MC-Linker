@@ -67,7 +67,7 @@ export default class Connect extends Command {
                             await c.commands.get('connect').disconnectOldServer(id);
                             await c.serverConnections.connect(serverConnectionData);
 
-                            c.api.addListeners(socket, id, hash);
+                            c.api.addWebsocketListeners(socket, id, hash);
 
                             await c.shard.broadcastEval((c, { id }) => {
                                 c.emit('editConnectResponse', id, 'success');

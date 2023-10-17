@@ -9,7 +9,7 @@ import keys from '../api/keys.js';
 import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';
-import BotAPI from '../api/BotAPI.js';
+import MCLinkerAPI from './MCLinkerAPI.js';
 import * as utils from '../api/utils.js';
 import mongoose, { Mongoose, Schema } from 'mongoose';
 
@@ -70,9 +70,9 @@ export default class MCLinker extends Discord.Client {
 
         /**
          * The API instance of the bot.
-         * @type {BotAPI}
+         * @type {MCLinkerAPI}
          */
-        this.api = new BotAPI(this);
+        this.api = new MCLinkerAPI(this);
 
         /**
          * The server-connection manager for the bot.
