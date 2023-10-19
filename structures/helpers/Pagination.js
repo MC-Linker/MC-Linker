@@ -8,9 +8,9 @@ import {
     Message,
 } from 'discord.js';
 import DefaultButton from './DefaultButton.js';
-import { createActionRows, getComponent } from '../../api/messages.js';
-import keys from '../../api/keys.js';
-import { disableComponents } from '../../api/utils.js';
+import { createActionRows, getComponent } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
+import { disableComponents } from '../../utilities/utils.js';
 
 export default class Pagination {
 

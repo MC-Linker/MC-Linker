@@ -1,10 +1,4 @@
-import {
-    InteractionReplyOptions,
-    InteractionResponse,
-    Message,
-    MessagePayload,
-    MessageReplyOptions,
-} from 'discord.js';
+import {InteractionReplyOptions, InteractionResponse, Message, MessagePayload, MessageReplyOptions} from 'discord.js';
 
 export interface TranslatedResponses {
     replyTl(key: string, ...placeholders: Object[]): Promise<Message | InteractionResponse>,

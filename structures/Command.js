@@ -6,7 +6,7 @@ import {
     Message,
     PermissionFlagsBits,
 } from 'discord.js';
-import keys from '../api/keys.js';
+import keys from '../utilities/keys.js';
 
 export default class Command {
 

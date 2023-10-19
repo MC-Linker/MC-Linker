@@ -1,12 +1,12 @@
 import crypto from 'crypto';
-import { addPh, addTranslatedResponses, getActionRows, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import { addPh, addTranslatedResponses, getActionRows, getEmbed, ph } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
-import * as utils from '../../api/utils.js';
-import { disableComponents } from '../../api/utils.js';
+import * as utils from '../../utilities/utils.js';
+import { disableComponents } from '../../utilities/utils.js';
 import client from '../../bot.js';
 
 export default class Connect extends Command {

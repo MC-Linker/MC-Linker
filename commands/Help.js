@@ -1,5 +1,5 @@
-import { addPh, fetchCommand, getEmbed, ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { addPh, fetchCommand, getEmbed, ph } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import Command from '../structures/Command.js';
 import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
 

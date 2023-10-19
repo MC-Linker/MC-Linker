@@ -1,6 +1,6 @@
 import { CachedManager } from 'discord.js';
 import fs from 'fs-extra';
-import { getManagerString } from '../api/shardingUtils.js';
+import { getManagerString } from '../utilities/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
 
 export default class ConnectionManager extends CachedManager {

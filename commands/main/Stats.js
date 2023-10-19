@@ -1,8 +1,8 @@
 import fs from 'fs-extra';
-import * as utils from '../../api/utils.js';
-import { formatDistance, formatDuration } from '../../api/utils.js';
-import { addPh, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import * as utils from '../../utilities/utils.js';
+import { formatDistance, formatDuration } from '../../utilities/utils.js';
+import { addPh, getEmbed, ph } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
 

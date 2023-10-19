@@ -4,10 +4,10 @@ import Discord from 'discord.js';
 // noinspection ES6CheckImport
 import { Console } from 'console';
 import { Duplex } from 'stream';
-import { ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { ph } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import Command from '../structures/Command.js';
-import { MaxEmbedFieldValueLength } from '../api/utils.js';
+import { MaxEmbedFieldValueLength } from '../utilities/utils.js';
 
 // noinspection FunctionNamingConventionJS
 class ConsoleOutput extends Duplex {

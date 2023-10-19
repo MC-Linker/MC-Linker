@@ -1,8 +1,8 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
-import { getComponent, getEmbed, ph } from '../../api/messages.js';
+import keys from '../../utilities/keys.js';
+import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import * as utils from '../../api/utils.js';
+import * as utils from '../../utilities/utils.js';
 import { GuildChannel } from 'discord.js';
 
 export default class StatChannel extends Command {

@@ -1,8 +1,8 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
+import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
-import * as utils from '../../api/utils.js';
-import { codeBlockFromCommandResponse, formatDuration, getMinecraftAvatarURL } from '../../api/utils.js';
+import * as utils from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse, formatDuration, getMinecraftAvatarURL } from '../../utilities/utils.js';
 import {
     addPh,
     addTranslatedResponses,
@@ -10,7 +10,7 @@ import {
     getComponent,
     getReplyOptions,
     ph,
-} from '../../api/messages.js';
+} from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
 import minecraft_data from 'minecraft-data';

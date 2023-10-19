@@ -1,9 +1,9 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
+import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
-import * as utils from '../../api/utils.js';
-import { addPh, getComponent, getEmbed } from '../../api/messages.js';
+import * as utils from '../../utilities/utils.js';
+import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
 import gamerules from '../../resources/data/gamerules.json' assert { type: 'json' };
 import { unraw } from 'unraw';
 import Pagination from '../../structures/helpers/Pagination.js';

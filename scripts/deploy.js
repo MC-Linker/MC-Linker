@@ -1,8 +1,8 @@
 //noinspection JSUnresolvedVariable
 import dotenv from 'dotenv';
 import { REST, Routes } from 'discord.js';
-import { getCommand } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { getCommand } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import fs from 'fs-extra';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';

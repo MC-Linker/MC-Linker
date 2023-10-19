@@ -1,4 +1,4 @@
-import { createUUIDv3 } from '../api/utils.js';
+import { createUUIDv3 } from '../utilities/utils.js';
 import Connection from './Connection.js';
 
 export default class UserConnection extends Connection {

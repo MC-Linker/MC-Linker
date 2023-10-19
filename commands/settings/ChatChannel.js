@@ -1,9 +1,9 @@
 import Discord, { PermissionFlagsBits } from 'discord.js';
-import { getComponent, getEmbed, ph } from '../../api/messages.js';
-import keys, { getLanguageKey } from '../../api/keys.js';
+import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
+import keys, { getLanguageKey } from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
-import * as utils from '../../api/utils.js';
-import { canSendMessages } from '../../api/utils.js';
+import * as utils from '../../utilities/utils.js';
+import { canSendMessages } from '../../utilities/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 export default class ChatChannel extends Command {

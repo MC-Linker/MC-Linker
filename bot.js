@@ -1,9 +1,9 @@
 import Discord, { ChannelType } from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
-import { cleanEmojis, getArgs } from './api/utils.js';
-import keys, { getLanguageKey } from './api/keys.js';
-import { addPh, addTranslatedResponses, getReplyOptions, ph } from './api/messages.js';
+import { cleanEmojis, getArgs } from './utilities/utils.js';
+import keys, { getLanguageKey } from './utilities/keys.js';
+import { addPh, addTranslatedResponses, getReplyOptions, ph } from './utilities/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
 

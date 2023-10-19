@@ -1,9 +1,9 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
-import * as utils from '../../api/utils.js';
+import keys from '../../utilities/keys.js';
+import * as utils from '../../utilities/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
-import { ph } from '../../api/messages.js';
+import { ph } from '../../utilities/messages.js';
 import client from '../../bot.js';
 
 export default class Account extends Command {

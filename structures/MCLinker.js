@@ -4,13 +4,13 @@ import UserConnectionManager from './UserConnectionManager.js';
 import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.js';
 import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
 import fs from 'fs-extra';
-import { addPh } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { addPh } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';
 import MCLinkerAPI from './MCLinkerAPI.js';
-import * as utils from '../api/utils.js';
+import * as utils from '../utilities/utils.js';
 import mongoose, { Mongoose, Schema } from 'mongoose';
 
 export default class MCLinker extends Discord.Client {

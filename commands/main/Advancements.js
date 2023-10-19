@@ -1,9 +1,9 @@
-import * as utils from '../../api/utils.js';
-import { getMinecraftAvatarURL } from '../../api/utils.js';
+import * as utils from '../../utilities/utils.js';
+import { getMinecraftAvatarURL } from '../../utilities/utils.js';
 import minecraft_data from 'minecraft-data';
 import { time } from 'discord.js';
-import { ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import { ph } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import { FilePath } from '../../structures/Protocol.js';
 

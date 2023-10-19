@@ -1,8 +1,8 @@
 // noinspection JSUnresolvedVariable
-import { addPh, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
-import * as utils from '../../api/utils.js';
-import { codeBlockFromCommandResponse, MaxAutoCompleteChoices } from '../../api/utils.js';
+import { addPh, ph } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
+import * as utils from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse, MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import minecraft_data from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };

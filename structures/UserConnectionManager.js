@@ -1,6 +1,6 @@
 import UserConnection from './UserConnection.js';
 import ConnectionManager from './ConnectionManager.js';
-import * as utils from '../api/utils.js';
+import * as utils from '../utilities/utils.js';
 import Discord from 'discord.js';
 
 export default class UserConnectionManager extends ConnectionManager {

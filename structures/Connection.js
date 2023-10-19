@@ -1,5 +1,5 @@
 import { Base } from 'discord.js';
-import { getManagerStringFromConnection } from '../api/shardingUtils.js';
+import { getManagerStringFromConnection } from '../utilities/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
 
 export default class Connection extends Base {

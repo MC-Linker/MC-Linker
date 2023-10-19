@@ -1,7 +1,7 @@
-import * as utils from '../../api/utils.js';
-import { MaxAutoCompleteChoices } from '../../api/utils.js';
-import { addPh, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import * as utils from '../../utilities/utils.js';
+import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
+import { addPh, getEmbed, ph } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };
 
