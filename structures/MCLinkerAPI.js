@@ -1,9 +1,10 @@
 // noinspection HttpUrlsUsage
+
 import Fastify from 'fastify';
-import { getOAuthURL, getTokens, getUser } from '../api/oauth.js';
-import { createHash, getMinecraftAvatarURL, searchAdvancements } from '../api/utils.js';
-import { addPh, getEmbed, ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { getOAuthURL, getTokens, getUser } from '../utilities/oauth.js';
+import { createHash, getMinecraftAvatarURL, searchAdvancements } from '../utilities/utils.js';
+import { addPh, getEmbed, ph } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
@@ -55,6 +56,70 @@ export default class MCLinkerAPI extends EventEmitter {
     });
 
     /**
+     * The routes for the rest and ws api.
+     * @type {{handler: ((Object, ServerConnection) => ?RouteResponse|Promise<?RouteResponse>), endpoint: string, method: string, event: string, rateLimiter?: RateLimiterMemory|((Object) => ?RateLimiterMemory)}[]}
+     */
+    routes = [
+        {
+            method: 'POST',
+            endpoint: '/chat',
+            event: 'chat',
+            // Direct method reference not possible because client is not loaded when routes are loaded
+            handler: (data, server) => this.chat(data, server),
+            rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
+        },
+        {
+            method: 'POST',
+            endpoint: '/update-stats-channels',
+            event: 'update-stats-channels',
+            handler: (data, server) => this.updateStatsChannel(data, server),
+            rateLimiter: data => data.event === 'members' ? this.rateLimiterMemberCounter : null,
+        },
+        {
+            method: 'GET',
+            endpoint: '/update-synced-role',
+            event: 'update-synced-role',
+            handler: (data, server) => this.updateSyncedRole(data, server),
+        },
+        {
+            method: 'GET',
+            endpoint: '/remove-synced-role',
+            event: 'remove-synced-role',
+            handler: (data, server) => this.removeSyncedRole(data, server),
+        },
+        {
+            method: 'POST',
+            endpoint: '/disconnect-force',
+            event: 'disconnect-force',
+            handler: (data, server) => this.client.serverConnections.disconnect(server),
+        },
+        {
+            method: 'POST',
+            endpoint: '/has-required-role',
+            event: 'has-required-role',
+            handler: (data, server) => this.hasRequiredRoleToJoin(data, server),
+        },
+        {
+            method: 'POST',
+            endpoint: '/verify-user',
+            event: 'verify-user',
+            handler: data => this.verifyUser(data),
+        },
+        {
+            method: 'POST',
+            endpoint: '/invite-url',
+            event: 'invite-url',
+            handler: (data, server) => this.getInviteUrl(data, server),
+        },
+        {
+            method: 'GET',
+            endpoint: '/version',
+            event: 'version',
+            handler: () => process.env.PLUGIN_VERSION,
+        },
+    ];
+
+    /**
      * A map of users that are awaiting verification. The map consists of verification codes and their username and uuid.
      * @type {Map<String, { username: String, uuid: String }>}
      */
@@ -69,69 +134,6 @@ export default class MCLinkerAPI extends EventEmitter {
          * @type {MCLinker}
          */
         this.client = client;
-
-        /**
-         * The routes for the rest and ws api.
-         * @type {{handler: ((Object, ServerConnection) => ?RouteResponse|Promise<?RouteResponse>), endpoint: string, method: string, event: string, rateLimiter?: RateLimiterMemory|((Object) => ?RateLimiterMemory)}[]}
-         */
-        this.routes = [
-            {
-                method: 'POST',
-                endpoint: '/chat',
-                event: 'chat',
-                handler: this.chat,
-                rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
-            },
-            {
-                method: 'POST',
-                endpoint: '/update-stats-channels',
-                event: 'update-stats-channels',
-                handler: this.updateStatsChannel,
-                rateLimiter: data => data.event === 'members' ? this.rateLimiterMemberCounter : null,
-            },
-            {
-                method: 'GET',
-                endpoint: '/update-synced-role',
-                event: 'update-synced-role',
-                handler: this.updateSyncedRole,
-            },
-            {
-                method: 'GET',
-                endpoint: '/remove-synced-role',
-                event: 'remove-synced-role',
-                handler: this.removeSyncedRole,
-            },
-            {
-                method: 'POST',
-                endpoint: '/disconnect-force',
-                event: 'disconnect-force',
-                handler: (data, server) => this.client.serverConnections.disconnect(server),
-            },
-            {
-                method: 'POST',
-                endpoint: '/has-required-role',
-                event: 'has-required-role',
-                handler: this.hasRequiredRoleToJoin,
-            },
-            {
-                method: 'POST',
-                endpoint: '/verify-user',
-                event: 'verify-user',
-                handler: this.verifyUser,
-            },
-            {
-                method: 'POST',
-                endpoint: '/invite-url',
-                event: 'invite-url',
-                handler: this.getInviteUrl,
-            },
-            {
-                method: 'GET',
-                endpoint: '/version',
-                event: 'version',
-                handler: () => process.env.PLUGIN_VERSION,
-            },
-        ];
 
         /**
          * The fastify instance for the api.
@@ -328,8 +330,6 @@ export default class MCLinkerAPI extends EventEmitter {
             const server = this.client.serverConnections.cache.find(server => server.protocol.isWebSocketProtocol() && server.hash === hash);
             if(!server) return socket.disconnect();
 
-            socket.emit('auth-success', {}); //Tell the client that the auth was successful
-
             server.protocol.updateSocket(socket);
             this.addWebsocketListeners(socket, server, hash);
         });
@@ -373,7 +373,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 if(!server) return;
 
                 const response = await route.handler(data, server);
-                if(response) callback(response.body ?? {});
+                if(response) callback?.(response.body ?? {});
             });
         }
 
@@ -653,7 +653,7 @@ export default class MCLinkerAPI extends EventEmitter {
             const member = await guild.members.fetch({ user: user.id, force: true });
             if(!member) return { body: { response: 'error', status: 500 } };
 
-            return member.roles.cache.has(server.requiredRoleToJoin);
+            return { body: { response: member.roles.cache.has(server.requiredRoleToJoin) } };
         }
         catch(err) {
             if(err.code === 10007) return false; // Member not in server
@@ -674,7 +674,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
     /**
      * Returns an existing invite url or creates a new one if none exists.
-     * @param {data} data - The request data.
+     * @param {Object} data - The request data.
      * @param {ServerConnection} server - The server connection.
      * @returns {RouteResponse} - The invite url.
      * @private
