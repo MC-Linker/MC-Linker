@@ -473,6 +473,7 @@ export default class MCLinkerAPI extends EventEmitter {
             argPlaceholder.advancement_title = advancementTitle;
             argPlaceholder.advancement_description = advancementDesc;
         }
+        else if(type === 'death' && (!message || message === '')) argPlaceholder.message = keys.api.plugin.success.default_death_message;
 
         const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojisAndColors(), { 'timestamp_now': Date.now() });
         if(type !== 'chat') {

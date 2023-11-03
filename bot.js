@@ -231,7 +231,7 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
         const discordRole = newMember.guild.roles.cache.get(role.id);
         const newPlayers = discordRole.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
 
-        //Prevent feedback from bot changing roles by checking if the players actually changed
+        //Prevent loop from bot changing roles by checking if the players actually changed
         const arraysContainSameElements = newPlayers.size === 0 ? false : newPlayers.every(a => role.players.includes(a));
         const sameLength = newPlayers.length === role.players.length;
         if(arraysContainSameElements && sameLength) return;

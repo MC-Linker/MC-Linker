@@ -1000,6 +1000,8 @@
   "api.plugin.errors.status_500.console": "500: Unknown server error, %data%",
 
 
+  "api.plugin.success.default_death_message": "%username% died",
+
   "api.plugin.success.messages.chat.embeds.0.author.name": "%username%",
   "api.plugin.success.messages.chat.embeds.0.author.icon_url": "%author_url%",
   "api.plugin.success.messages.chat.embeds.0.description": "%message%",

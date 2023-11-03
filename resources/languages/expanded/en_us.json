@@ -1915,6 +1915,7 @@
         }
       },
       "success": {
+        "default_death_message": "%username% died",
         "messages": {
           "chat": {
             "embeds": [
