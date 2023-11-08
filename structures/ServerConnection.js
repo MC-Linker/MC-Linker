@@ -2,6 +2,7 @@ import Connection from './Connection.js';
 import HttpProtocol from './HttpProtocol.js';
 import FtpProtocol from './FtpProtocol.js';
 import WebSocketProtocol from './WebSocketProtocol.js';
+import ServerSettingsConnection from './ServerSettingsConnection.js';
 
 /** @template {Protocol} T */
 export default class ServerConnection extends Connection {
@@ -109,8 +110,7 @@ export default class ServerConnection extends Connection {
          * The settings for this server.
          * @type {ServerSettingsConnection}
          */
-        this.settings = client.serverSettingsConnections._add(data.id, true, {
-            id: data.id,
+        this.settings = client.serverSettingsConnections._add(ServerSettingsConnection.defaultSettingsData, true, {
             extras: [client.serverSettingsConnections.collectionName],
         });
 
