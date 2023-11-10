@@ -76,6 +76,7 @@ export default class ServerConnection extends Connection {
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
      * @property {string} [requiredRoleToJoin] - The id of the role required to join the server.
+     * @property {string} [displayIp] - The ip address that the bot should show users for joining the server.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {SyncedRoleData[]} syncedRoles - The data for syncedRoles.
@@ -143,6 +144,18 @@ export default class ServerConnection extends Connection {
         this._patch(data);
     }
 
+    /**
+     * Returns the ip that should be displayed to users to connect to this server.
+     * This returns the displayIp if it is set, otherwise it returns ip:port if port is set and not 25565, otherwise it returns just the ip.
+     * @returns {string}
+     */
+    getDisplayIp() {
+        // Either display ip, or ip:port, or (if port is 25565) just ip
+        const serverIp = this.displayIp ?? this.ip;
+        if(typeof this.port === 'number' && this.port !== 25565) return `${serverIp}:${this.port}`;
+        else return serverIp;
+    }
+
     _patch(data) {
 
         /**
@@ -184,63 +197,63 @@ export default class ServerConnection extends Connection {
 
         /**
          * The floodgate prefix of this server.
-         * @type {?string}
+         * @type {string}
          */
         this.floodgatePrefix = data.floodgatePrefix ?? data['floodgate-prefix'] ?? this.floodgatePrefix;
 
         if('port' in data) {
             /**
              * The port of this server.
-             * @type {number}
+             * @type {?number}
              * */
             this.port = data.port;
         }
         if('username' in data) {
             /**
              * The ftp username used to connect to this server.
-             * @type {string}
+             * @type {?string}
              * */
             this.username = data.username;
         }
         if('password' in data) {
             /**
              * The ftp password used to connect to this server.
-             * @type {string}
+             * @type {?string}
              * */
             this.password = data.password;
         }
         if('token' in data) {
             /**
              * The token used to authenticate the bot for http connections.
-             * @type {string}
+             * @type {?string}
              * */
             this.token = data.token;
         }
         if('hash' in data) {
             /**
              * The connection hash used to authenticate the plugin for websocket connections.
-             * @type {string}
+             * @type {?string}
              */
             this.hash = data.hash;
         }
         if('channels' in data || 'chatChannels' in data) {
             /**
              * The chatchannels connected to this server.
-             * @type {ChatChannelData[]}
+             * @type {?ChatChannelData[]}
              * */
             this.chatChannels = data.chatChannels ?? data.channels;
         }
         if('stats-channels' in data || 'statChannels' in data || 'statsChannels' in data) {
             /**
              * The data for stats channels.
-             * @type {StatsChannelData[]}
+             * @type {?StatsChannelData[]}
              */
             this.statChannels = data.statChannels ?? data.statsChannels ?? data['stats-channels'];
         }
         if('syncedRoles' in data) {
             /**
              * The data for syncedRoles.
-             * @type {SyncedRoleData[]}
+             * @type {?SyncedRoleData[]}
              */
             this.syncedRoles = data.syncedRoles;
         }
@@ -250,6 +263,13 @@ export default class ServerConnection extends Connection {
              * @type {?string}
              */
             this.requiredRoleToJoin = data.requiredRoleToJoin;
+        }
+        if('displayIp' in data) {
+            /**
+             * The ip that will be displayed to users to connect to this server.
+             * @type {?string}
+             */
+            this.displayIp = data.displayIp;
         }
 
         //Switch protocols if needed
@@ -283,6 +303,7 @@ export default class ServerConnection extends Connection {
                 id: this.id,
                 ip: this.ip,
                 hash: this.hash,
+                displayIp: this.displayIp,
             });
 
             delete this.token;

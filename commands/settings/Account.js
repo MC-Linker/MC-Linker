@@ -59,7 +59,7 @@ export default class Account extends Command {
 
             await interaction.replyTl(keys.commands.account.step.verification_info, {
                 code,
-                ip: server.ip,
+                ip: server.getDisplayIp(),
             }, ph.emojisAndColors());
 
             const timeout = setTimeout(async () => {

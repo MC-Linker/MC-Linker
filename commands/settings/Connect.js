@@ -39,6 +39,7 @@ export default class Connect extends Command {
                             code: serverCode,
                             shard,
                             requiredRoleToJoin,
+                            displayIp,
                         } = wsVerification.get(id) ?? {};
                         try {
                             if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
@@ -62,6 +63,7 @@ export default class Connect extends Command {
                                 socket,
                                 hash,
                                 requiredRoleToJoin,
+                                displayIp,
                             };
 
                             await c.commands.get('connect').disconnectOldServer(id);
@@ -180,7 +182,7 @@ export default class Connect extends Command {
 
             // A button that asks the user if they want to override the old connection
             if(server) {
-                const overrideEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.ip });
+                const overrideEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
                 const buttons = getActionRows(keys.buttons.yes_no, ph.emojisAndColors());
                 const message = await interaction.replyOptions({ embeds: [overrideEmbed], components: buttons });
 
@@ -231,7 +233,7 @@ export default class Connect extends Command {
 
                 const checkDmsEmbed = getEmbed(keys.commands.connect.step.check_dms, ph.emojisAndColors());
                 if(server) {
-                    const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.ip });
+                    const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
                     await interaction.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed] });
                 }
                 else await interaction.replyOptions({ embeds: [checkDmsEmbed] });
@@ -292,10 +294,11 @@ export default class Connect extends Command {
         else if(method === 'plugin') {
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
             const requiredRoleToJoin = args[1]?.id;
+            const displayIp = args[2];
 
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
             if(server) {
-                const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.ip });
+                const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
                 await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed] });
             }
             else await interaction.replyOptions({ embeds: [verificationEmbed] });
@@ -305,10 +308,10 @@ export default class Connect extends Command {
             }, 180_000);
 
             this.waitingInteractions.set(interaction.guildId, { interaction, timeout });
-            await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin }) => {
-                c.commands.get('connect').wsVerification.set(id, { code, shard, requiredRoleToJoin });
+            await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin, displayIp }) => {
+                c.commands.get('connect').wsVerification.set(id, { code, shard, requiredRoleToJoin, displayIp });
             }, {
-                context: { code, id: interaction.guildId, shard: client.shard.ids[0], requiredRoleToJoin },
+                context: { code, id: interaction.guildId, shard: client.shard.ids[0], requiredRoleToJoin, displayIp },
                 shard: 0,
             });
 

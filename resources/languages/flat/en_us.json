@@ -1801,6 +1801,11 @@
   "data.connect.options.1.options.0.description": "Set the required role to join the server.",
   "data.connect.options.1.options.0.required": false,
 
+  "data.connect.options.1.options.1.type": "String",
+  "data.connect.options.1.options.1.name": "display-ip",
+  "data.connect.options.1.options.1.description": "Set the ip address that the bot should show users for joining the server.",
+  "data.connect.options.1.options.1.required": false,
+
 
   "data.connect.options.2.type": "Subcommand",
   "data.connect.options.2.name": "backup",
