@@ -194,70 +194,6 @@ export default class MCLinkerAPI extends EventEmitter {
             });
         }
 
-        /*this.fastify.post('/chat', async (request, reply) => {
-            const rateLimiter = request.body?.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
-            const server = await _getServerFastify(request, reply, this.client, rateLimiter);
-            if(!server) return;
-
-            reply.send({});
-            await this._chat(request.body, server);
-        });
-
-        this.fastify.post('/update-stats-channels', async (request, reply) => {
-            const rateLimiter = request.body.event === 'members' ? this.rateLimiterMemberCounter : null;
-            const server = await _getServerFastify(request, reply, this.client, rateLimiter);
-            if(!server) return;
-
-            reply.send({});
-            await this._updateStatsChannel(request.body, server);
-        });
-
-        this.fastify.get('/update-synced-role', async (request, reply) => {
-            const server = await _getServerFastify(request, reply, this.client);
-            if(!server) return;
-            reply.send({});
-            await this._updateSyncedRole(request.body, server);
-        });
-
-        this.fastify.get('/remove-synced-role', async (request, reply) => {
-            const server = await _getServerFastify(request, reply, this.client);
-            if(!server) return;
-            reply.send({});
-            await this._removeSyncedRole(request.body, server);
-        });
-
-        this.fastify.post('/disconnect-force', async (request, reply) => {
-            const server = await _getServerFastify(request, reply, this.client);
-            if(!server) return;
-
-            reply.send({});
-            await this.client.serverConnections.disconnect(server);
-        });
-
-        this.fastify.post('/has-required-role', async (request, reply) => {
-            const server = await _getServerFastify(request, reply, this.client);
-            if(!server) return;
-            const response = await this._hasRequiredRoleToJoin(request.body.uuid, server);
-            if(response === 'error') reply.status(500).send({});
-            reply.send({ response });
-        });
-
-        this.fastify.post('/verify-user', async (request, reply) => {
-            const data = request.body;
-            const server = await _getServerFastify(request, reply, this.client);
-            if(!server) return;
-            reply.send({});
-            await this._verifyUser(data);
-        });
-
-        this.fastify.post('/invite-url', async (request, reply) => {
-            const server = await _getServerFastify(request, reply, this.client);
-            if(!server) return;
-            const url = await this._getInviteUrl(server.id);
-            if(!url) reply.status(500).send({});
-            reply.send({ url });
-        });*/
-
         this.fastify.get('/linked-role', async (request, reply) => {
             // Generate state
             const { state, url } = getOAuthURL();
@@ -330,6 +266,16 @@ export default class MCLinkerAPI extends EventEmitter {
             const server = this.client.serverConnections.cache.find(server => server.protocol.isWebSocketProtocol() && server.hash === hash);
             if(!server) return socket.disconnect();
 
+            //Update data
+            server.edit({
+                ip: socket.handshake.address,
+                path: socket.handshake.query.path,
+                online: socket.handshake.query.online === 'true',
+                floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                version: Number(socket.handshake.query.version.split('.')[1]),
+                worldPath: socket.handshake.query.worldPath,
+            });
+
             server.protocol.updateSocket(socket);
             this.addWebsocketListeners(socket, server, hash);
         });
@@ -383,55 +329,6 @@ export default class MCLinkerAPI extends EventEmitter {
         socket.on('disconnect', () => {
             server.protocol.updateSocket(null);
         });
-
-        /*        socket.on('chat', async data => {
-                    data = JSON.parse(data);
-                    const rateLimiter = data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels;
-                    const server = await getServerWebsocket(this.client, rateLimiter);
-                    if(!server) return;
-                    await this._chat(data, server);
-                });
-                socket.on('update-stats-channels', async data => {
-                    data = JSON.parse(data);
-                    const rateLimiter = data.event === 'members' ? this.rateLimiterMemberCounter : null;
-                    const server = await getServerWebsocket(this.client, rateLimiter);
-                    if(!server) return;
-                    await this._updateStatsChannel(data, server);
-                });
-                socket.on('update-synced-role', async data => {
-                    data = JSON.parse(data);
-                    const server = await getServerWebsocket(this.client);
-                    if(!server) return;
-                    await this._updateSyncedRole(data, server);
-                });
-                socket.on('remove-synced-role', async data => {
-                    data = JSON.parse(data);
-                    const server = await getServerWebsocket(this.client);
-                    if(!server) return;
-                    await this._removeSyncedRole(data, server);
-                });
-                socket.on('disconnect-force', async () => {
-                    // `/linker disconnect` was executed in minecraft, disconnect the server from discord
-                    await this.client.serverConnections.disconnect(server);
-                });
-                socket.on('has-required-role', async (data, callback) => {
-                    data = JSON.parse(data);
-                    const server = await getServerWebsocket(this.client);
-                    if(!server) return;
-                    const response = await this._hasRequiredRoleToJoin(data.uuid, server);
-                    callback({ response });
-                });
-                socket.on('invite-url', async callback => {
-                    const server = await getServerWebsocket(this.client);
-                    if(!server) return;
-                    callback({ url: await this._getInviteUrl(server.id) });
-                });
-                socket.on('verify-user', async data => {
-                    data = JSON.parse(data);
-                    const server = await getServerWebsocket(this.client);
-                    if(!server) return;
-                    this._verifyUser(data);
-                });*/
     }
 
     /**
