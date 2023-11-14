@@ -33,7 +33,7 @@ export default class RoleSync extends AutocompleteCommand {
             });
         }
         for(const team of response.data.teams) {
-            if(!interaction.options.getFocused().includes(team)) continue;
+            if(!team.includes(interaction.options.getFocused())) continue;
             commandResponse.push({
                 name: `${team} (Team)`,
                 value: `${team} team`,
