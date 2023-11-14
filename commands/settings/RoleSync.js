@@ -70,22 +70,13 @@ export default class RoleSync extends AutocompleteCommand {
                 501: keys.commands.rolesync.errors.luckperms_not_loaded,
             }, { name })) return;
 
-            if(override === 'discord') {
-                const respRole = resp.data.find(r => r.id === role.id);
-                //Map uuids to discord ids
-                const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.uuid === p)?.id).filter(u => u);
-
-                // Override role members with the group members
-                const membersToRemove = role.members.map(m => m.id).filter(id => !userIds.includes(id));
+            const respRole = resp.data.find(r => r.id === role.id);
+            //Map uuids to discord ids
+            const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.uuid === p)?.id).filter(u => u);
+            
+            if(override === 'discord' || !override) {
+                //Only add the role to the members that are in the group
                 const membersToAdd = userIds.filter(id => !role.members.has(id));
-
-                for(const member of membersToRemove) {
-                    try {
-                        const discordMember = await interaction.guild.members.fetch(member);
-                        await discordMember.roles.remove(role);
-                    }
-                    catch(ignored) {}
-                }
                 for(const member of membersToAdd) {
                     try {
                         const discordMember = await interaction.guild.members.fetch(member);
@@ -94,13 +85,14 @@ export default class RoleSync extends AutocompleteCommand {
                     catch(ignored) {}
                 }
             }
-            else if(!override) {
-                //Only add the role to the members that are in the group
-                const membersToAdd = role.members.map(m => m.id).filter(id => resp.data.players.includes(client.userConnections.cache.find(u => u.id === id)?.uuid));
-                for(const member of membersToAdd) {
+            if(override === 'discord') {
+                // Override role members with the group members
+                const membersToRemove = role.members.map(m => m.id).filter(id => !userIds.includes(id));
+
+                for(const member of membersToRemove) {
                     try {
                         const discordMember = await interaction.guild.members.fetch(member);
-                        await discordMember.roles.add(role);
+                        await discordMember.roles.remove(role);
                     }
                     catch(ignored) {}
                 }
