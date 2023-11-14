@@ -3358,18 +3358,18 @@
             {
               "type": "String",
               "name": "override",
-              "description": "Set whether you want to override the current role's or group's members.",
+              "description": "Set whether you want to override the current role's or team/group's members.",
               "choices": [
                 {
-                  "name": "Override Discord Role's Members",
-                  "value": "role"
+                  "name": "Override Discord's Members",
+                  "value": "discord"
                 },
                 {
-                  "name": "Override Minecraft Group's Members",
-                  "value": "group"
+                  "name": "Override Minecraft's Members",
+                  "value": "minecraft"
                 }
               ],
-              "required": true
+              "required": false
             }
           ]
         },

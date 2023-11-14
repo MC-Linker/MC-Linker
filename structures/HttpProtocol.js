@@ -501,7 +501,7 @@ export default class HttpProtocol extends Protocol {
 
     /**
      * Adds a synced-role to the server.
-     * @param {SyncedRoleData} role - The synced-role to add.
+     * @param {SyncedRoleData & { override?: 'discord'|'minecraft' }} role - The synced-role to add.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async addSyncedRole(role) {

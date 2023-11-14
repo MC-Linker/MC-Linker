@@ -1957,12 +1957,12 @@
 
   "data.rolesync.options.0.options.2.type": "String",
   "data.rolesync.options.0.options.2.name": "override",
-  "data.rolesync.options.0.options.2.description": "Set whether you want to override the current role's or group's members.",
-  "data.rolesync.options.0.options.2.choices.0.name": "Override Discord Role's Members",
-  "data.rolesync.options.0.options.2.choices.0.value": "role",
-  "data.rolesync.options.0.options.2.choices.1.name": "Override Minecraft Group's Members",
-  "data.rolesync.options.0.options.2.choices.1.value": "group",
-  "data.rolesync.options.0.options.2.required": true,
+  "data.rolesync.options.0.options.2.description": "Set whether you want to override the current role's or team/group's members.",
+  "data.rolesync.options.0.options.2.choices.0.name": "Override Discord's Members",
+  "data.rolesync.options.0.options.2.choices.0.value": "discord",
+  "data.rolesync.options.0.options.2.choices.1.name": "Override Minecraft's Members",
+  "data.rolesync.options.0.options.2.choices.1.value": "minecraft",
+  "data.rolesync.options.0.options.2.required": false,
 
 
   "data.rolesync.options.1.type": "Subcommand",
