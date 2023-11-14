@@ -4,11 +4,11 @@ View minecraft stats, advancements and inventories inside Discord, execute comma
 
 ## Description
 
-Moderiere und verbinde deinen Minecraft-Server mit Discord! This bot allows you to view minecraft stats, advancements, and even inventories of any member in Discord. Also supports a powerful two-way chat with Minecraft, command execution and many other helpful features.
+Moderiere und verbinde deinen Minecraft-Server mit Discord! Dieser Bot erlaubt dir, Minecraft-Statistiken, Fortschritte und sogar Inventare von jedem Mitglied in Discord anzuzeigen. Unterstützt auch einen umfangreichen Zwei-Wege-Chat mit Minecraft, Befehlsausführung und viele andere hilfreiche Funktionen.
 
-## Setup
+## Einrichtung
 
-To use most of the commands you’ll have to connect your Minecraft **java-edition** server with the bot. There are two methods to connect:
+Um die meisten Befehle nutzen zu können, musst du deinen Minecraft **Java-Edition** Server mit dem Bot verbinden. There are two methods to connect:
 
 + Plugin (recommended)
     + Add the "Discord-Linker" plugin to your Minecraft server using [this link](https://www.spigotmc.org/resources/discord-linker.98749/)
