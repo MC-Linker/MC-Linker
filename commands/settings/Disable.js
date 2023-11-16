@@ -49,7 +49,7 @@ export default class Disable extends AutocompleteCommand {
             .replace('chat-commands', 'chatCommands');
 
         if(type === 'list') {
-            const toList = args.join(' ').toLowerCase();
+            const toList = args[1];
 
             const disabled = settings.disabled[toList];
             if(!disabled?.length) {

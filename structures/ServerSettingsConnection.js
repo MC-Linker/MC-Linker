@@ -80,7 +80,8 @@ export default class ServerSettingsConnection extends Connection {
         const currentValues = this.disabled[type];
         if(!currentValues.includes(value)) {
             currentValues.push(value);
-            return await this.edit({ [type]: [currentValues] });
+            this.disabled[type] = currentValues;
+            return await this.edit({ disabled: this.disabled });
         }
         return this;
     }
@@ -96,7 +97,9 @@ export default class ServerSettingsConnection extends Connection {
         if(currentValues.includes(value)) return this;
         const index = currentValues.indexOf(value);
         if(index !== -1) currentValues.splice(index, 1);
-        return await this.edit({ [type]: [currentValues] });
+
+        this.disabled[type] = currentValues;
+        return await this.edit({ disabled: this.disabled });
     }
 
     /**
