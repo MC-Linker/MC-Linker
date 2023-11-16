@@ -3250,7 +3250,7 @@
               "choices": [
                 {
                   "name": "Chat Commands",
-                  "value": "chat-commands"
+                  "value": "chatCommands"
                 },
                 {
                   "name": "Advancements",
