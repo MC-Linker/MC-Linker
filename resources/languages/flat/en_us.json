@@ -1877,7 +1877,7 @@
   "data.disable.options.3.options.0.description": "Set the category which you want to list",
   "data.disable.options.3.options.0.required": true,
   "data.disable.options.3.options.0.choices.0.name": "Chat Commands",
-  "data.disable.options.3.options.0.choices.0.value": "chat-commands",
+  "data.disable.options.3.options.0.choices.0.value": "chatCommands",
   "data.disable.options.3.options.0.choices.1.name": "Advancements",
   "data.disable.options.3.options.0.choices.1.value": "advancements",
   "data.disable.options.3.options.0.choices.2.name": "Stats",
