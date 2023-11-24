@@ -62,6 +62,7 @@ export default class MCLinker extends Discord.Client {
         ],
         partials: [
             Discord.Partials.Channel,
+            Discord.Partials.GuildMember,
         ],
         // Disable @everyone and @here mentions
         allowedMentions: { parse: [Discord.AllowedMentionsTypes.Role, Discord.AllowedMentionsTypes.User] },

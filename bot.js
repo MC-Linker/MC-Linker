@@ -205,6 +205,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
 });
 
 client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
+    if(!oldMember.roles) return; //Prevent errors from oldMember being a partial
     if(oldMember.roles.cache.size === newMember.roles.cache.size) return;
 
     /** @type {ServerConnection} */
