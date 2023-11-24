@@ -73,7 +73,7 @@ export default class RoleSync extends AutocompleteCommand {
             const respRole = resp.data.find(r => r.id === role.id);
             //Map uuids to discord ids
             const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.uuid === p)?.id).filter(u => u);
-            
+
             if(override === 'discord' || !override) {
                 //Only add the role to the members that are in the group
                 const membersToAdd = userIds.filter(id => !role.members.has(id));
@@ -86,9 +86,8 @@ export default class RoleSync extends AutocompleteCommand {
                 }
             }
             if(override === 'discord') {
-                // Override role members with the group members
+                // Remove role members if they're not in the group
                 const membersToRemove = role.members.map(m => m.id).filter(id => !userIds.includes(id));
-
                 for(const member of membersToRemove) {
                     try {
                         const discordMember = await interaction.guild.members.fetch(member);
@@ -97,6 +96,10 @@ export default class RoleSync extends AutocompleteCommand {
                     catch(ignored) {}
                 }
             }
+
+            const respRoleIndex = resp.data.indexOf(respRole);
+            respRole.players = role.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
+            resp.data[respRoleIndex] = respRole;
 
             await server.edit({ syncedRoles: resp.data });
             return interaction.replyTl(keys.commands.rolesync.success.add, ph.emojisAndColors());
