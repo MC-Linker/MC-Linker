@@ -194,7 +194,7 @@ const PluginRoutes = {
     ],
     /**
      * Adds a synced-role to the server.
-     * @param {SyncedRoleData} role - The synced-role to add.
+     * @param {SyncedRoleData & { override: 'minecraft'|'discord'|null }} role - The synced-role to add.
      * @returns {HttpProtocolFetchData}
      */
     AddSyncedRole: role => [

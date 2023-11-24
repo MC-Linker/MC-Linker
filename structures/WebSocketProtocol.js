@@ -167,7 +167,7 @@ export default class WebSocketProtocol extends Protocol {
 
     /**
      * Adds a synced role to the server.
-     * @param {SyncedRoleData} role - The synced role to add.
+     * @param {SyncedRoleData & { override: 'minecraft'|'discord'|null }} role - The synced role to add.
      * @returns {Promise<?ProtocolResponse>}
      */
     async addSyncedRole(role) {
@@ -250,7 +250,7 @@ export default class WebSocketProtocol extends Protocol {
                 /** @type {WebSocketProtocol} */
                 const protocol = c.serverConnections.cache.get(id).protocol;
                 if(!protocol.socket) return resolve(null);
-                protocol.socket.timeout(5000).emit(name, ...data, (err, response) => {
+                protocol.socket.timeout(10_000).emit(name, ...data, (err, response) => {
                     if(err) return resolve(null);
                     if(typeof response === 'string') resolve(JSON.parse(response));
                     else resolve(response);
