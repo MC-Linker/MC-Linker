@@ -58,6 +58,9 @@ export default class RoleSync extends AutocompleteCommand {
 
             if(!role.editable) return interaction.replyTl(keys.commands.rolesync.errors.not_editable, { role });
 
+            // Fetch all members to ensure their roles are cached
+            await interaction.guild.members.fetch();
+
             const resp = await server.protocol.addSyncedRole({
                 id: role.id,
                 name,

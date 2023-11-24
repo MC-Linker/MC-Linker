@@ -626,6 +626,9 @@ export default class MCLinkerAPI extends EventEmitter {
         server.syncedRoles[roleIndex].players = users;
         await server.edit({ syncedRoles: server.syncedRoles });
 
+        // Fetch all members to ensure their roles are cached
+        await guild.members.fetch();
+
         const membersToRemove = role.members.map(m => m.id).filter(id => !users.includes(id));
         const membersToAdd = users.filter(id => !role.members.has(id));
 
