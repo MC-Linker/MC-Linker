@@ -604,27 +604,20 @@ export default class MCLinkerAPI extends EventEmitter {
      * Updates the members of the synced role in the discord server.
      * @param {Object} data - The request data.
      * @param {ServerConnection} server - The server connection.
-     * @returns {Promise<void>}
+     * @returns {?RouteResponse}
      * @private
      */
     async updateSyncedRole(data, server) {
         const guild = await this.client.guilds.fetch(server.id);
         if(!guild) return;
 
-        const users = data.players.map(uuid => {
-            const id = this.client.userConnections.cache.find(conn => conn.uuid === uuid)?.id;
-            if(!id) return;
-            return id;
-        }).filter(id => id);
+        const userConnections = data.players.map(uuid =>
+            this.client.userConnections.cache.find(conn => conn.uuid === uuid)).filter(conn => conn);
+        const users = userConnections.map(connection => connection.id);
         for(const user of users) await guild.members.fetch(user);
 
         const role = guild.roles.cache.get(data.id);
         if(!role) return;
-
-        const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
-        if(roleIndex === undefined || roleIndex === -1) return;
-        server.syncedRoles[roleIndex].players = users;
-        await server.edit({ syncedRoles: server.syncedRoles });
 
         // Fetch all members to ensure their roles are cached
         await guild.members.fetch();
@@ -633,13 +626,29 @@ export default class MCLinkerAPI extends EventEmitter {
         const membersToAdd = users.filter(id => !role.members.has(id));
 
         for(const id of membersToRemove) {
-            const member = await guild.members.fetch(id);
-            await member.roles.remove(role);
+            try {
+                const member = await guild.members.fetch(id);
+                await member.roles.remove(role);
+            }
+            catch(_) {}
         }
         for(const id of membersToAdd) {
-            const member = await guild.members.fetch(id);
-            await member.roles.add(role);
+            try {
+                const member = await guild.members.fetch(id);
+                await member.roles.add(role);
+            }
+            catch(_) {}
         }
+
+        const players = role.members.map(m =>
+            this.client.userConnections.cache.find(conn => conn.id === m.id)?.uuid).filter(uuid => uuid);
+
+        const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
+        if(roleIndex === undefined || roleIndex === -1) return;
+        server.syncedRoles[roleIndex].players = players;
+        await server.edit({ syncedRoles: server.syncedRoles });
+
+        return { status: 200, body: { players } };
     }
 
     /**
