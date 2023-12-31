@@ -210,38 +210,24 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
 
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(newMember.guild.id);
-    if(!server) return;
-
-    /** @type {UserConnection} */
-    const user = client.userConnections.cache.get(newMember.id);
-    if(!user) {
-        //Prevent adding synced role to user that is not connected
-        const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
-        if(addedRole && server.syncedRoles?.some(role => role.id === addedRole?.id)) await newMember.roles.remove(addedRole);
-        return;
-    }
+    if(!server || !server.protocol.isPluginProtocol()) return;
 
     const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
     const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
     if(server.requiredRoleToJoin && removedRole?.id === server.requiredRoleToJoin) {
+        /** @type {UserConnection} */
+        const user = client.userConnections.cache.get(newMember.id);
         await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
     }
     else {
         const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
         if(!role) return;
-        const discordRole = newMember.guild.roles.cache.get(role.id);
-        const newPlayers = discordRole.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
 
-        //Prevent loop from bot changing roles by checking if the players actually changed
-        const arraysContainSameElements = newPlayers.size === 0 ? false : newPlayers.every(a => role.players.includes(a));
-        const sameLength = newPlayers.length === role.players.length;
-        if(arraysContainSameElements && sameLength) return;
+        let resp;
+        if(addedRole) resp = await server.protocol.addSyncedRoleMember(role.id, role.name, user.uuid);
+        else if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role.id, role.name, user.uuid);
 
-        role.players = newPlayers;
-        const resp = await server.protocol.updateSyncedRole(role);
-        if(resp.status === 200) {
-            await server.edit({ syncedRoles: resp.data });
-        }
+        if(resp.status === 200) await server.edit({ syncedRoles: resp.data });
     }
 });
 

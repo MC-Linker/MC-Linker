@@ -77,11 +77,16 @@ export default class MCLinkerAPI extends EventEmitter {
         },
         {
             method: 'GET',
-            endpoint: '/update-synced-role',
-            event: 'update-synced-role',
-            handler: (data, server) => this.updateSyncedRole(data, server),
+            endpoint: '/add-synced-role-member',
+            event: 'add-synced-role-member',
+            handler: (data, server) => this.addSyncedRoleMember(data, server),
         },
         {
+            method: 'GET',
+            endpoint: '/remove-synced-role-member',
+            event: 'remove-synced-role-member',
+            handler: (data, server) => this.removeSyncedRoleMember(data, server),
+        }, {
             method: 'GET',
             endpoint: '/remove-synced-role',
             event: 'remove-synced-role',
@@ -189,8 +194,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 if(!server) return;
 
                 const response = await route.handler(request.body, server);
-                if(!response) reply.send({});
-                else reply.status(response.status ?? 200).send(response.body ?? {});
+                reply.status(response?.status ?? 200).send(response?.body ?? {});
             });
         }
 
@@ -264,7 +268,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
             /** @type {?ServerConnection} */
             const server = this.client.serverConnections.cache.find(server => server.protocol.isWebSocketProtocol() && server.hash === hash);
-            if(!server) return socket.disconnect();
+            if(!server || !server.protocol.isWebSocketProtocol()) return socket.disconnect();
 
             //Update data
             server.edit({
@@ -319,7 +323,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 if(!server) return;
 
                 const response = await route.handler(data, server);
-                if(response) callback?.(response.body ?? {});
+                callback?.(response?.body ?? {});
             });
         }
 
@@ -601,54 +605,25 @@ export default class MCLinkerAPI extends EventEmitter {
     }
 
     /**
-     * Updates the members of the synced role in the discord server.
+     * Adds a member to the synced role in the discord server.
      * @param {Object} data - The request data.
      * @param {ServerConnection} server - The server connection.
      * @returns {?RouteResponse}
      * @private
      */
-    async updateSyncedRole(data, server) {
-        const guild = await this.client.guilds.fetch(server.id);
-        if(!guild) return;
+    async addSyncedRoleMember(data, server) {
+        await this.updateSyncedRoleMember(data.id, data.uuid, server, 'add');
+    }
 
-        const userConnections = data.players.map(uuid =>
-            this.client.userConnections.cache.find(conn => conn.uuid === uuid)).filter(conn => conn);
-        const users = userConnections.map(connection => connection.id);
-        for(const user of users) await guild.members.fetch(user);
-
-        const role = guild.roles.cache.get(data.id);
-        if(!role) return;
-
-        // Fetch all members to ensure their roles are cached
-        await guild.members.fetch();
-
-        const membersToRemove = role.members.map(m => m.id).filter(id => !users.includes(id));
-        const membersToAdd = users.filter(id => !role.members.has(id));
-
-        for(const id of membersToRemove) {
-            try {
-                const member = await guild.members.fetch(id);
-                await member.roles.remove(role);
-            }
-            catch(_) {}
-        }
-        for(const id of membersToAdd) {
-            try {
-                const member = await guild.members.fetch(id);
-                await member.roles.add(role);
-            }
-            catch(_) {}
-        }
-
-        const players = role.members.map(m =>
-            this.client.userConnections.cache.find(conn => conn.id === m.id)?.uuid).filter(uuid => uuid);
-
-        const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
-        if(roleIndex === undefined || roleIndex === -1) return;
-        server.syncedRoles[roleIndex].players = players;
-        await server.edit({ syncedRoles: server.syncedRoles });
-
-        return { status: 200, body: { players } };
+    /**
+     * Removes a member from the synced role in the discord server.
+     * @param {Object} data - The request data.
+     * @param {ServerConnection} server - The server connection.
+     * @returns {?RouteResponse}
+     * @private
+     */
+    async removeSyncedRoleMember(data, server) {
+        await this.updateSyncedRoleMember(data.id, data.uuid, server, 'remove');
     }
 
     /**
@@ -661,8 +636,39 @@ export default class MCLinkerAPI extends EventEmitter {
     async removeSyncedRole(data, server) {
         const roleIndex = server.syncedRoles?.findIndex(role => role.id === data.id);
         if(roleIndex === undefined || roleIndex === -1) return;
-
         server.syncedRoles.splice(roleIndex, 1);
         await server.edit({ syncedRoles: server.syncedRoles });
+    }
+
+    /**
+     * Updates a member in the synced role in the discord server.
+     * @param {string} roleId - The id of the role.
+     * @param {string} uuid - The uuid of the member.
+     * @param {ServerConnection} server - The server connection.
+     * @param {'add'|'remove'} addOrRemove - Whether to add or remove the member.
+     * @returns {Promise<?RouteResponse>}
+     */
+    async updateSyncedRoleMember(roleId, uuid, server, addOrRemove) {
+        const guild = await this.client.guilds.fetch(server.id);
+        if(!guild) return { status: 500 };
+
+        const role = guild.roles.cache.get(roleId);
+        if(!role) return { status: 500 };
+
+        const connection = this.client.userConnections.cache.find(conn => conn.uuid === data.uuid);
+        if(!connection) return { status: 404 };
+
+        const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
+        if(roleIndex === undefined || roleIndex === -1) return;
+        if(addOrRemove === 'add') server.syncedRoles[roleIndex].players.push(connection.uuid);
+        else if(addOrRemove === 'remove') server.syncedRoles[roleIndex].players.splice(server.syncedRoles[roleIndex].players.indexOf(connection.uuid), 1);
+        await server.edit({ syncedRoles: server.syncedRoles });
+
+        try {
+            const member = await guild.members.fetch(connection.id);
+            if(addOrRemove === 'add') await member.roles.add(role);
+            else if(addOrRemove === 'remove') await member.roles.remove(role);
+        }
+        catch(_) {}
     }
 }

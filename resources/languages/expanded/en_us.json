@@ -3354,22 +3354,6 @@
               "description": "Set the minecraft team or luckperms group you want to sync to.",
               "autocomplete": true,
               "required": true
-            },
-            {
-              "type": "String",
-              "name": "override",
-              "description": "Set whether you want to override the current role's or team/group's members.",
-              "choices": [
-                {
-                  "name": "Override Discord's Members",
-                  "value": "discord"
-                },
-                {
-                  "name": "Override Minecraft's Members",
-                  "value": "minecraft"
-                }
-              ],
-              "required": false
             }
           ]
         },

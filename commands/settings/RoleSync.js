@@ -54,7 +54,6 @@ export default class RoleSync extends AutocompleteCommand {
             const role = args[1];
             const name = args[2].split(' ')[0];
             const isGroup = args[2].split(' ')[1] === 'group'; //If nothing is specified, default to team
-            const override = args[3];
 
             if(!role.editable) return interaction.replyTl(keys.commands.rolesync.errors.not_editable, { role });
 
@@ -66,7 +65,6 @@ export default class RoleSync extends AutocompleteCommand {
                 name,
                 isGroup,
                 players: role.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u),
-                override,
             });
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction, {
                 404: keys.commands.rolesync.errors.group_not_found,
@@ -77,27 +75,14 @@ export default class RoleSync extends AutocompleteCommand {
             //Map uuids to discord ids
             const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.uuid === p)?.id).filter(u => u);
 
-            if(override === 'discord' || !override) {
-                //Only add the role to the members that are in the group
-                const membersToAdd = userIds.filter(id => !role.members.has(id));
-                for(const member of membersToAdd) {
-                    try {
-                        const discordMember = await interaction.guild.members.fetch(member);
-                        await discordMember.roles.add(role);
-                    }
-                    catch(ignored) {}
+            //Add the role to the members that are in the group
+            const membersToAdd = userIds.filter(id => !role.members.has(id));
+            for(const member of membersToAdd) {
+                try {
+                    const discordMember = await interaction.guild.members.fetch(member);
+                    await discordMember.roles.add(role);
                 }
-            }
-            if(override === 'discord') {
-                // Remove role members if they're not in the group
-                const membersToRemove = role.members.map(m => m.id).filter(id => !userIds.includes(id));
-                for(const member of membersToRemove) {
-                    try {
-                        const discordMember = await interaction.guild.members.fetch(member);
-                        await discordMember.roles.remove(role);
-                    }
-                    catch(ignored) {}
-                }
+                catch(ignored) {}
             }
 
             const respRoleIndex = resp.data.indexOf(respRole);
