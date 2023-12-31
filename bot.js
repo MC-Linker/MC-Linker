@@ -234,8 +234,8 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
 /**
  * Send a message to a guild with the given key
  * This will try to send the message to the system channel first
- * If that also fails, it will try to send it to the public updates channel
- * If that fails, it will try to send it to the first text channel it finds
+ * If that fails, it will try to send it to the public updates channel
+ * If that also fails, it will try to send it to the first text channel it finds
  * @param {Discord.Guild} guild - The guild to send the message to
  * @param {any} key - The key of the message to send
  * @param {...Object} placeholders - The placeholders to use in the message
