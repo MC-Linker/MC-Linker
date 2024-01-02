@@ -15,8 +15,8 @@ export default class MCLinkerAPI extends EventEmitter {
 
     /**
      * @typedef {Object} RouteResponse
-     * @property {number} status - The status code of the response.
-     * @property {Object} body - The body of the response.
+     * @property {number?} status - The status code of the response.
+     * @property {Object?} body - The body of the response.
      */
 
     /**
@@ -637,7 +637,7 @@ export default class MCLinkerAPI extends EventEmitter {
         const roleIndex = server.syncedRoles?.findIndex(role => role.id === data.id);
         if(roleIndex === undefined || roleIndex === -1) return;
         server.syncedRoles.splice(roleIndex, 1);
-        await server.edit({ syncedRoles: server.syncedRoles });
+        await server.edit({});
     }
 
     /**
@@ -662,7 +662,7 @@ export default class MCLinkerAPI extends EventEmitter {
         if(roleIndex === undefined || roleIndex === -1) return;
         if(addOrRemove === 'add') server.syncedRoles[roleIndex].players.push(connection.uuid);
         else if(addOrRemove === 'remove') server.syncedRoles[roleIndex].players.splice(server.syncedRoles[roleIndex].players.indexOf(connection.uuid), 1);
-        await server.edit({ syncedRoles: server.syncedRoles });
+        await server.edit({});
 
         try {
             const member = await guild.members.fetch(connection.id);

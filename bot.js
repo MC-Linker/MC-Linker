@@ -229,7 +229,14 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
         if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
         else if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
 
-        if(resp.status === 200) await server.edit({ syncedRoles: resp.data });
+        const roleIndex = server.syncedRoles.indexOf(role);
+
+        //Update players of role
+        role.players = resp.data;
+        server.syncedRoles[roleIndex] = role;
+
+        //Update server
+        if(resp.status === 200) await server.edit({});
     }
 });
 
