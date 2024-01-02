@@ -214,27 +214,25 @@ const PluginRoutes = {
     ],
     /**
      * Removes a member from a synced-role.
-     * @param {string} id - The id of the synced-role.
-     * @param {string} name - The name of the team/group.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
      * @param {string} uuid - The UUID of the member to remove.
      * @returns {HttpProtocolFetchData}
      */
-    RemoveSyncedRoleMember: (id, name, uuid) => [
+    RemoveSyncedRoleMember: (role, uuid) => [
         'POST',
         '/synced-role/remove-member',
-        { id, name, uuid },
+        { ...role, uuid },
     ],
     /**
      * Adds a member to a synced-role.
-     * @param {string} id - The id of the synced-role.
-     * @param {string} name - The name of the team/group.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
      * @param {string} uuid - The UUID of the member to add.
      * @returns {HttpProtocolFetchData}
      */
-    AddSyncedRoleMember: (id, name, uuid) => [
+    AddSyncedRoleMember: (role, uuid) => [
         'POST',
         '/synced-role/add-member',
-        { id, name, uuid },
+        { ...role, uuid },
     ],
     /**
      * Lists the online players on the server.
@@ -535,25 +533,23 @@ export default class HttpProtocol extends Protocol {
 
     /**
      * Adds a member to a synced-role.
-     * @param {string} id - The id of the synced-role.
-     * @param {string} name - The name of the team/group.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
      * @param {string} uuid - The UUID of the member to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async addSyncedRoleMember(id, name, uuid) {
-        const response = await this._fetch(...PluginRoutes.AddSyncedRoleMember(id, name, uuid));
+    async addSyncedRoleMember(role, uuid) {
+        const response = await this._fetch(...PluginRoutes.AddSyncedRoleMember(role, uuid));
         return fetchToProtocolResponse(response);
     }
 
     /**
      * Removes a member from a synced-role.
-     * @param {string} id - The id of the synced-role.
-     * @param {string} name - The name of the team/group.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
      * @param {string} uuid - The UUID of the member to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async removeSyncedRoleMember(id, name, uuid) {
-        const response = await this._fetch(...PluginRoutes.RemoveSyncedRoleMember(id, name, uuid));
+    async removeSyncedRoleMember(role, uuid) {
+        const response = await this._fetch(...PluginRoutes.RemoveSyncedRoleMember(role, uuid));
         return fetchToProtocolResponse(response);
     }
 

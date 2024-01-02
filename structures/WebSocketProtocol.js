@@ -185,24 +185,22 @@ export default class WebSocketProtocol extends Protocol {
 
     /**
      * Adds a member to a synced-role.
-     * @param {string} id - The id of the synced-role.
-     * @param {string} name - The name of the synced-role.
+     * @param {SyncedRoleData} role - The synced role to add the member to.
      * @param {string} uuid - The UUID of the member to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async addSyncedRoleMember(id, name, uuid) {
-        return await this._sendRaw('add-synced-role-member', { id, name, uuid });
+    async addSyncedRoleMember(role, uuid) {
+        return await this._sendRaw('add-synced-role-member', { ...role, uuid });
     }
 
     /**
      * Removes a member from a synced-role.
-     * @param {string} id - The id of the synced-role.
-     * @param {string} name - The name of the team/group.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
      * @param {string} uuid - The UUID of the member to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async removeSyncedRoleMember(id, name, uuid) {
-        return await this._sendRaw('remove-synced-role-member', { id, name, uuid });
+    async removeSyncedRoleMember(role, uuid) {
+        return await this._sendRaw('remove-synced-role-member', { ...role, uuid });
     }
 
     /**
