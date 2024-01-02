@@ -37,7 +37,7 @@ export default class Connection extends Base {
         const data = JSON.parse(JSON.stringify(this.getData()));
 
         if(this instanceof ServerConnection) {
-            // map chatchannel and statchannel id to _id
+            // map id to _id
             data.chatChannels?.forEach((channel, index) => {
                 data.chatChannels[index]._id = channel.id;
                 delete data.chatChannels[index].id;
