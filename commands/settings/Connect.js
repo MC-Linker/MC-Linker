@@ -304,6 +304,12 @@ export default class Connect extends Command {
             else await interaction.replyOptions({ embeds: [verificationEmbed] });
 
             const timeout = setTimeout(async () => {
+                await client.shard.broadcastEval((c, { id }) => {
+                    c.commands.get('connect').wsVerification.delete(id);
+                }, {
+                    context: { id: interaction.guildId },
+                    shard: 0,
+                });
                 await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
             }, 180_000);
 
