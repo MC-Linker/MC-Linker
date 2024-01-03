@@ -135,7 +135,7 @@ export default class MCLinker extends Discord.Client {
 
         const commandCategories = commands.filter(command => !command.endsWith('.js'));
         const commandFiles = commands.filter(command => command.endsWith('.js'));
-        commandFiles.forEach(file => loadCommand.call(this, file));
+        for(const file of commandFiles) await loadCommand.call(this, file);
 
         for(const category of commandCategories) {
             const commandFiles = (await fs.readdir(`${this.commandPath}/${category}`))
