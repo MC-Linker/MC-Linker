@@ -29,7 +29,7 @@ export default class SystemStats extends Command {
 
         const memoryUsage = ((os.totalmem() - os.freemem()) / this.gigabyte).toFixed(2);
         const maxMemory = (os.totalmem() / this.gigabyte).toFixed(2);
-        await stats.edit(getReplyOptions(keys.commands.systemstats.success, {
+        return await stats.edit(getReplyOptions(keys.commands.systemstats.success, {
             platform: `${os.platform()} ${os.release()}`,
             os_uptime: `${durationString(os.uptime() * 1000)}`,
             bot_uptime: `${durationString(client.uptime)},
