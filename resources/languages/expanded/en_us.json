@@ -295,27 +295,27 @@
             "fields": [
               {
                 "name": "Platform",
-                "value": "%platform%"
+                "value": "`%platform%`"
               },
               {
                 "name": "OS Uptime",
-                "value": "%os_uptime%"
+                "value": "`%os_uptime%`"
               },
               {
                 "name": "Bot Uptime",
-                "value": "%bot_uptime%"
+                "value": "`%bot_uptime%`"
               },
               {
                 "name": "CPU (Usage)",
-                "value": "%cpu% (%cpu_usage_percent%)"
+                "value": "`%cpu%` (`%cpu_usage_percent%`)"
               },
               {
                 "name": "Memory Usage",
-                "value": "%memory_usage%/%max_memory% (%memory_usage_percent%)"
+                "value": "`%memory_usage%/%max_memory%`GB (`%memory_usage_percent%`)"
               },
               {
                 "name": "Library",
-                "value": "%library%"
+                "value": "`%library%`"
               }
             ]
           }
