@@ -805,3 +805,32 @@ export function canSendMessages(member, channel, sendEmbed = true) {
     else if(sendEmbed && !permissions.has(PermissionFlagsBits.EmbedLinks)) return false;
     return true;
 }
+
+/**
+ * Formats a duration in milliseconds to a string.
+ * @param {Number} ms - The duration in milliseconds.
+ * @returns {String} - The formatted duration.
+ * @example 1000 -> "1 second"
+ * @example 1000000 -> "16 minutes, 40 seconds"
+ * @example 1000000000 -> "11 days, 13 hours, 46 minutes, 40 seconds"
+ */
+export function durationString(ms) {
+    if(Number.isNaN(ms)) return 'Invalid duration';
+    let seconds = ms / 1000;
+    let minutes = seconds / 60;
+    let hours = minutes / 60;
+    let days = hours / 24;
+    let weeks = days / 7;
+    let years = days / 365.25; // .25 for leap years
+
+    seconds = Math.round(seconds) % 60;
+    minutes = Math.round(minutes) % 60;
+    hours = Math.round(hours) % 24;
+    days = Math.round(days) % 7;
+    weeks = Math.round(weeks) % 52;
+    years = Math.round(years);
+
+    return `${years} year${years === 1 ? '' : 's'}, ${weeks} week${weeks === 1 ? '' : 's'}, ${days} day${days === 1 ? '' : 's'}, ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+        //Remove 0 values
+        .replace(/(?<!\d)0\s[a-z]+,\s/g, '').replace(/(, 00:00:00)/, '');
+}

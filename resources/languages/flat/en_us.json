@@ -145,6 +145,31 @@
 
 
 
+  "commands.systemstats.step.measuring.embeds.0.title": "Measuring System Stats",
+  "commands.systemstats.step.measuring.embeds.0.description": "Please wait while I measure the system stats...",
+
+
+  "commands.systemstats.success.embeds.0.title": "System Stats",
+  "commands.systemstats.success.embeds.0.fields.0.name": "Platform",
+  "commands.systemstats.success.embeds.0.fields.0.value": "%platform%",
+
+  "commands.systemstats.success.embeds.0.fields.1.name": "OS Uptime",
+  "commands.systemstats.success.embeds.0.fields.1.value": "%os_uptime%",
+
+  "commands.systemstats.success.embeds.0.fields.2.name": "Bot Uptime",
+  "commands.systemstats.success.embeds.0.fields.2.value": "%bot_uptime%",
+
+  "commands.systemstats.success.embeds.0.fields.3.name": "CPU (Usage)",
+  "commands.systemstats.success.embeds.0.fields.3.value": "%cpu% (%cpu_usage_percent%)",
+
+  "commands.systemstats.success.embeds.0.fields.4.name": "Memory Usage",
+  "commands.systemstats.success.embeds.0.fields.4.value": "%memory_usage%/%max_memory% (%memory_usage_percent%)",
+
+  "commands.systemstats.success.embeds.0.fields.5.name": "Library",
+  "commands.systemstats.success.embeds.0.fields.5.value": "%library%",
+
+
+
   "commands.advancements.no_description_available": "No description available...",
   "commands.advancements.acquired": "Acquired",
   "commands.advancements.not_acquired": "Not Acquired",

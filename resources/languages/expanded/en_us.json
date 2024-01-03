@@ -277,6 +277,51 @@
         }
       }
     },
+    "systemstats": {
+      "step": {
+        "measuring": {
+          "embeds": [
+            {
+              "title": "Measuring System Stats",
+              "description": "Please wait while I measure the system stats..."
+            }
+          ]
+        }
+      },
+      "success": {
+        "embeds": [
+          {
+            "title": "System Stats",
+            "fields": [
+              {
+                "name": "Platform",
+                "value": "%platform%"
+              },
+              {
+                "name": "OS Uptime",
+                "value": "%os_uptime%"
+              },
+              {
+                "name": "Bot Uptime",
+                "value": "%bot_uptime%"
+              },
+              {
+                "name": "CPU (Usage)",
+                "value": "%cpu% (%cpu_usage_percent%)"
+              },
+              {
+                "name": "Memory Usage",
+                "value": "%memory_usage%/%max_memory% (%memory_usage_percent%)"
+              },
+              {
+                "name": "Library",
+                "value": "%library%"
+              }
+            ]
+          }
+        ]
+      }
+    },
     "advancements": {
       "no_description_available": "No description available...",
       "acquired": "Acquired",

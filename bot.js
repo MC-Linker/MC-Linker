@@ -221,24 +221,23 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
     if(server.requiredRoleToJoin && removedRole?.id === server.requiredRoleToJoin) {
         await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
     }
-    else {
-        const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
-        if(!role) return;
 
-        let resp;
-        if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
-        else if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
+    const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
+    if(!role) return;
 
-        const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
-        if(roleIndex === -1) return;
+    let resp;
+    if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
+    if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
 
-        //Update players of role
-        role.players = resp.data;
-        server.syncedRoles[roleIndex] = role;
+    const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
+    if(roleIndex === -1) return;
 
-        //Update server
-        if(resp.status === 200) await server.edit({});
-    }
+    //Update players of role
+    role.players = resp.data;
+    server.syncedRoles[roleIndex] = role;
+
+    //Update server
+    if(resp.status === 200) await server.edit({});
 });
 
 /**
