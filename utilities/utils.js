@@ -823,6 +823,7 @@ export function durationString(ms) {
     let weeks = days / 7;
     let years = days / 365.25; // .25 for leap years
 
+    // Round values and get remainder
     seconds = Math.round(seconds) % 60;
     minutes = Math.round(minutes) % 60;
     hours = Math.round(hours) % 24;

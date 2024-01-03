@@ -1,7 +1,7 @@
 import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import os from 'os';
-import { getReplyOptions } from '../utilities/messages.js';
+import { getReplyOptions, ph } from '../utilities/messages.js';
 import Discord from 'discord.js';
 import { durationString } from '../utilities/utils.js';
 
@@ -39,7 +39,7 @@ export default class SystemStats extends Command {
             max_memory: maxMemory,
             memory_usage_percent: `\`${(memoryUsage / maxMemory * 100).toFixed(2)}%\``,
             library: `\`discord.js ${Discord.version}\``,
-        }));
+        }, ph.colors()));
     }
 
     getCPUUsage() {
