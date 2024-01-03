@@ -311,7 +311,7 @@
               },
               {
                 "name": "Memory Usage",
-                "value": "`%memory_usage%/%max_memory%`GB (`%memory_usage_percent%`)"
+                "value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%`)"
               },
               {
                 "name": "Library",

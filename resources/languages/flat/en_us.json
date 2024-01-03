@@ -163,7 +163,7 @@
   "commands.systemstats.success.embeds.0.fields.3.value": "`%cpu%` (`%cpu_usage_percent%`)",
 
   "commands.systemstats.success.embeds.0.fields.4.name": "Memory Usage",
-  "commands.systemstats.success.embeds.0.fields.4.value": "`%memory_usage%/%max_memory%`GB (`%memory_usage_percent%`)",
+  "commands.systemstats.success.embeds.0.fields.4.value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%`)",
 
   "commands.systemstats.success.embeds.0.fields.5.name": "Library",
   "commands.systemstats.success.embeds.0.fields.5.value": "`%library%`",
