@@ -1,6 +1,6 @@
 import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
-import os from 'os';
+import os from 'node:os';
 import { getReplyOptions, ph } from '../utilities/messages.js';
 import Discord from 'discord.js';
 import { durationString } from '../utilities/utils.js';
@@ -24,7 +24,7 @@ export default class SystemStats extends Command {
         const stats = await interaction.replyTl(keys.commands.systemstats.step.measuring);
 
         for(const [key, value] of Object.entries(process.memoryUsage())) {
-            console.log(`Memory usage by ${key}, ${value / 1000000}MB `);
+            console.log(`Memory usage by ${key}, ${value / 1000000}MB`);
         }
 
         const memoryUsage = ((os.totalmem() - os.freemem()) / this.gigabyte).toFixed(2);
