@@ -89,7 +89,7 @@ export default class Eval extends Command {
             if(command.includes('return') || !command.includes('console.log')) out += evalOut._read();
 
             //Redact tokens
-            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET];
+            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET, process.env.MICROSOFT_EMAIL, process.env.MICROSOFT_PASSWORD];
             if(process.env.TOPGG_TOKEN) tokens.push(process.env.TOPGG_TOKEN);
             for(const token of tokens) {
                 out = out.replace(new RegExp(token, 'g'), 'REDACTED');
