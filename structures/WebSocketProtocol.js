@@ -46,21 +46,7 @@ export default class WebSocketProtocol extends Protocol {
          */
         this.socket = data.socket ?? this.socket;
     }
-
-    /**
-     * Disconnects from the plugin.
-     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
-     */
-    async disconnect() {
-        return await this.client.shard.broadcastEval(async (c, { id }) => {
-            /** @type {WebSocketProtocol} */
-            const protocol = c.serverConnections.cache.get(id).protocol;
-            if(!protocol.socket) return { status: 200 };
-            await protocol.socket.disconnect(true);
-            return { status: 200 };
-        }, { context: { id: this.id }, shard: 0 });
-    }
-
+    
     /**
      * @inheritDoc
      */
@@ -81,10 +67,24 @@ export default class WebSocketProtocol extends Protocol {
     }
 
     /**
+     * Disconnects from the plugin.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    disconnect() {
+        return this.client.shard.broadcastEval(async (c, { id }) => {
+            /** @type {WebSocketProtocol} */
+            const protocol = c.serverConnections.cache.get(id).protocol;
+            if(!protocol.socket) return { status: 200 };
+            await protocol.socket.disconnect(true);
+            return { status: 200 };
+        }, { context: { id: this.id }, shard: 0 });
+    }
+
+    /**
      * @inheritDoc
      */
-    async list(folder) {
-        return await this._sendRaw('list-file', { folder });
+    list(folder) {
+        return this._sendRaw('list-file', { folder });
     }
 
     /**
@@ -95,7 +95,7 @@ export default class WebSocketProtocol extends Protocol {
      * @param {?string=null} replyUsername - The username of the user who sent the message that was replied to.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async chat(message, username, replyMessage = null, replyUsername = null) {
+    chat(message, username, replyMessage = null, replyUsername = null) {
         const data = {
             msg: message,
             username,
@@ -106,7 +106,7 @@ export default class WebSocketProtocol extends Protocol {
             data.reply_username = replyUsername;
         }
 
-        return await this._sendRaw('chat', data);
+        return this._sendRaw('chat', data);
     }
 
     /**
@@ -116,9 +116,9 @@ export default class WebSocketProtocol extends Protocol {
      * @param {string} target - The username of the player to send the message to.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async chatPrivate(message, username, target) {
+    chatPrivate(message, username, target) {
         const data = { msg: message, username, target, private: true };
-        return await this._sendRaw('chat', data);
+        return this._sendRaw('chat', data);
     }
 
     /**
@@ -126,8 +126,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {ChatChannelData} channel - The chat channel to add.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async addChatChannel(channel) {
-        return await this._sendRaw('add-channel', channel);
+    addChatChannel(channel) {
+        return this._sendRaw('add-channel', channel);
     }
 
     /**
@@ -152,8 +152,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {StatsChannelData} channel - The stats channel to add.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async addStatsChannel(channel) {
-        return await this._sendRaw('add-stats-channel', channel);
+    addStatsChannel(channel) {
+        return this._sendRaw('add-stats-channel', channel);
     }
 
     /**
@@ -161,8 +161,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {StatsChannelData} channel - The chat channel to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async removeStatsChannel(channel) {
-        return await this._sendRaw('remove-stats-channel', channel);
+    removeStatsChannel(channel) {
+        return this._sendRaw('remove-stats-channel', channel);
     }
 
     /**
@@ -170,8 +170,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {SyncedRoleData} role - The synced role to add.
      * @returns {Promise<?ProtocolResponse>}
      */
-    async addSyncedRole(role) {
-        return await this._sendRaw('add-synced-role', role);
+    addSyncedRole(role) {
+        return this._sendRaw('add-synced-role', role);
     }
 
     /**
@@ -179,8 +179,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {SyncedRoleData} role - The synced role to remove.
      * @returns {Promise<?ProtocolResponse>}
      */
-    async removeSyncedRole(role) {
-        return await this._sendRaw('remove-synced-role', role);
+    removeSyncedRole(role) {
+        return this._sendRaw('remove-synced-role', role);
     }
 
     /**
@@ -189,8 +189,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {string} uuid - The UUID of the member to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async addSyncedRoleMember(role, uuid) {
-        return await this._sendRaw('add-synced-role-member', { ...role, uuid });
+    addSyncedRoleMember(role, uuid) {
+        return this._sendRaw('add-synced-role-member', { ...role, uuid });
     }
 
     /**
@@ -199,8 +199,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {string} uuid - The UUID of the member to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async removeSyncedRoleMember(role, uuid) {
-        return await this._sendRaw('remove-synced-role-member', { ...role, uuid });
+    removeSyncedRoleMember(role, uuid) {
+        return this._sendRaw('remove-synced-role-member', { ...role, uuid });
     }
 
     /**
@@ -208,8 +208,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {string} command - The command to execute.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async execute(command) {
-        return await this._sendRaw('command', { cmd: encodeURIComponent(command) });
+    execute(command) {
+        return this._sendRaw('command', { cmd: encodeURIComponent(command) });
     }
 
     /**
@@ -217,24 +217,24 @@ export default class WebSocketProtocol extends Protocol {
      * @param {string} uuid - The uuid of the player to get the snbt-data of.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async getPlayerNbt(uuid) {
-        return await this._sendRaw('get-player-nbt', { uuid });
+    getPlayerNbt(uuid) {
+        return this._sendRaw('get-player-nbt', { uuid });
     }
 
     /**
      * Gets a list of online players on the server.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async getOnlinePlayers() {
-        return await this._sendRaw('list-players', {});
+    getOnlinePlayers() {
+        return this._sendRaw('list-players', {});
     }
 
     /**
      * Gets a list of all teams and luckperms groups on the server.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async getTeamsAndGroups() {
-        return await this._sendRaw('list-teams-and-groups', {});
+    getTeamsAndGroups() {
+        return this._sendRaw('list-teams-and-groups', {});
     }
 
     /**
@@ -243,8 +243,8 @@ export default class WebSocketProtocol extends Protocol {
      * @param {string} uuid - The uuid of the user that sent the request.
      * @returns {Promise<?ProtocolResponse>} - The response from the websocket client.
      */
-    async verifyUser(code, uuid) {
-        return await this._sendRaw('verify-user', { code, uuid });
+    verifyUser(code, uuid) {
+        return this._sendRaw('verify-user', { code, uuid });
     }
 
     /**
@@ -254,9 +254,9 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>}
      * @private
      */
-    async _sendRaw(name, ...data) {
+    _sendRaw(name, ...data) {
         // Broadcast the event to shard 0 where the websocket server is running
-        return await this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+        return this.client.shard.broadcastEval(async (c, { id, name, data }) => {
             return await new Promise(resolve => {
                 /** @type {WebSocketProtocol} */
                 const protocol = c.serverConnections.cache.get(id).protocol;

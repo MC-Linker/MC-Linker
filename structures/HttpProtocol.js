@@ -601,7 +601,7 @@ export default class HttpProtocol extends Protocol {
      * @returns {Promise<?Response>} - The response of the request.
      * @private
      */
-    async _fetch(method, route, body = {}, queries = {}, authorization = null) {
+    _fetch(method, route, body = {}, queries = {}, authorization = null) {
         try {
             // noinspection HttpUrlsUsage
             const url = new URL(`http://${this.ip}:${this.port}`);
@@ -610,7 +610,7 @@ export default class HttpProtocol extends Protocol {
                 url.searchParams.append(key, queries[key]);
             }
 
-            return await HttpProtocol.fetch(method, url, this.token, body, authorization);
+            return HttpProtocol.fetch(method, url, this.token, body, authorization);
         }
         catch(_) {
             return null;
