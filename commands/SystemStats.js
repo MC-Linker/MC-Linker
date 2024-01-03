@@ -30,15 +30,15 @@ export default class SystemStats extends Command {
         const memoryUsage = ((os.totalmem() - os.freemem()) / this.gigabyte).toFixed(2);
         const maxMemory = (os.totalmem() / this.gigabyte).toFixed(2);
         await stats.edit(getReplyOptions(keys.commands.systemstats.success, {
-            platform: `\`${os.platform()} ${os.release()}\``,
-            os_uptime: `\`${durationString(os.uptime() * 1000)}\``,
-            bot_uptime: `\`${durationString(client.uptime)}\``,
-            cpu: `\`${os.cpus()[0].model}\``,
-            cpu_usage_percent: `\`${(await this.getCPUUsage() * 100).toFixed(2)}%\``,
+            platform: `${os.platform()} ${os.release()}`,
+            os_uptime: `${durationString(os.uptime() * 1000)}`,
+            bot_uptime: `${durationString(client.uptime)},
+            cpu: `${os.cpus()[0].model},
+            cpu_usage_percent: `${(await this.getCPUUsage() * 100).toFixed(2)}%`,
             memory_usage: memoryUsage,
             max_memory: maxMemory,
-            memory_usage_percent: `\`${(memoryUsage / maxMemory * 100).toFixed(2)}%\``,
-            library: `\`discord.js ${Discord.version}\``,
+            memory_usage_percent: `${(memoryUsage / maxMemory * 100).toFixed(2)}%`,
+            library: `discord.js ${Discord.version}`,
         }, ph.colors()));
     }
 
