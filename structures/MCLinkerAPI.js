@@ -655,7 +655,7 @@ export default class MCLinkerAPI extends EventEmitter {
         const role = guild.roles.cache.get(roleId);
         if(!role) return { status: 500 };
 
-        const connection = this.client.userConnections.cache.find(conn => conn.uuid === data.uuid);
+        const connection = this.client.userConnections.cache.find(conn => conn.uuid === uuid);
         if(!connection) return { status: 404 };
 
         const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
