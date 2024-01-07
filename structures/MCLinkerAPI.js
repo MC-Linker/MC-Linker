@@ -659,7 +659,7 @@ export default class MCLinkerAPI extends EventEmitter {
         if(!connection) return { status: 404 };
 
         const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
-        if(roleIndex === undefined || roleIndex === -1) return;
+        if(roleIndex === undefined || roleIndex === -1) return { status: 400 };
         if(addOrRemove === 'add') server.syncedRoles[roleIndex].players.push(connection.uuid);
         else if(addOrRemove === 'remove') server.syncedRoles[roleIndex].players.splice(server.syncedRoles[roleIndex].players.indexOf(connection.uuid), 1);
         await server.edit({});
@@ -669,6 +669,8 @@ export default class MCLinkerAPI extends EventEmitter {
             if(addOrRemove === 'add') await member.roles.add(role);
             else if(addOrRemove === 'remove') await member.roles.remove(role);
         }
-        catch(_) {}
+        catch(_) {
+            return { status: 500 };
+        }
     }
 }
