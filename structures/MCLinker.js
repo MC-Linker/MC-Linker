@@ -11,6 +11,7 @@ import Command from './Command.js';
 import Button from './Button.js';
 import MCLinkerAPI from './MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
+import { convert } from '../scripts/convert.js';
 import mongoose, { Mongoose, Schema } from 'mongoose';
 
 export default class MCLinker extends Discord.Client {
@@ -190,6 +191,11 @@ export default class MCLinker extends Discord.Client {
         await this.loadMongoose();
         console.log(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
+        if(process.env.CONVERT === 'true' && this.shard.ids[0] === 0) {
+            await convert(this.mongo);
+            console.log('Converted database.');
+        }
+
         await this.serverConnections._load();
         console.log(`[${this.shard.ids[0]}] Loaded all server connections.`);
         await this.userConnections._load();
@@ -220,7 +226,7 @@ export default class MCLinker extends Discord.Client {
             worldPath: String,
             online: Boolean,
             floodgatePrefix: String,
-            requiredRoleToJoin: String,
+            requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
             displayIp: String,
             protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
             port: Number,
