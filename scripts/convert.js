@@ -11,7 +11,8 @@ export async function convert(mongoose) {
     const docs = await serverConnectionModel.find({ requiredRoleToJoin: { $type: 2 } }).exec();
     for(const doc of docs) {
         console.log(`Converting ${doc._id}...`);
-        doc.requiredRoleToJoin = { method: 'any', roles: [doc.requiredRoleToJoin] };
+        const roleId = JSON.parse(JSON.stringify(doc.requiredRoleToJoin)); // Clone the data because mongoose stupid and idk maan
+        doc.requiredRoleToJoin = { method: 'any', roles: [roleId] };
         await serverConnectionModel.updateOne({ _id: doc._id }, doc);
         console.log(`Converted ${doc._id}!`);
     }
