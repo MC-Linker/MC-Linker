@@ -439,7 +439,7 @@ export function getActionRows(key, ...placeholders) {
 
     const allComponents = key.components
         ?.map(component => getComponent(component, ...placeholders))
-        ?.filter(component => component !== undefined);
+        ?.filter(component => component);
 
     return createActionRows(allComponents);
 }
@@ -508,7 +508,7 @@ export function getComponent(key, ...placeholders) {
 
             break;
         case Discord.ComponentType.RoleSelect:
-            if(!component.options || !component.custom_id) return null;
+            if(!component.custom_id) return null;
 
             componentBuilder = new Discord.RoleSelectMenuBuilder()
                 .setCustomId(component.custom_id)
@@ -521,7 +521,7 @@ export function getComponent(key, ...placeholders) {
 
             break;
         case Discord.ComponentType.ChannelSelect:
-            if(!component.options || !component.custom_id) return null;
+            if(!component.custom_id) return null;
 
             componentBuilder = new Discord.ChannelSelectMenuBuilder()
                 .setCustomId(component.custom_id)
@@ -534,7 +534,7 @@ export function getComponent(key, ...placeholders) {
 
             break;
         case Discord.ComponentType.UserSelect:
-            if(!component.options || !component.custom_id) return null;
+            if(!component.custom_id) return null;
 
             componentBuilder = new Discord.UserSelectMenuBuilder()
                 .setCustomId(component.custom_id)
@@ -547,7 +547,7 @@ export function getComponent(key, ...placeholders) {
 
             break;
         case Discord.ComponentType.MentionableSelect:
-            if(!component.options || !component.custom_id) return null;
+            if(!component.custom_id) return null;
 
             componentBuilder = new Discord.MentionableSelectMenuBuilder()
                 .setCustomId(component.custom_id)
