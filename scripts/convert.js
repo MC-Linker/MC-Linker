@@ -4,21 +4,15 @@ import { Mongoose } from 'mongoose';
  * Convert a mongoose model to the new schema
  * @param {Mongoose} mongoose
  */
-export function convert(mongoose) {
+export async function convert(mongoose) {
     const serverConnectionModel = mongoose.models.ServerConnection;
 
     // Convert all requiredRoleToJoin fields to arrays
-    serverConnectionModel.find({ requiredRoleToJoin: { $type: 2 } }, (err, docs) => {
-        if(err) {
-            console.error(err);
-            return;
-        }
-
-        docs.forEach(doc => {
-            console.log(`Converting ${doc.id}...`);
-            doc.requiredRoleToJoin = { method: 'any', roles: [doc.requiredRoleToJoin] };
-            doc.save();
-            console.log(`Converted ${doc.id}!`);
-        });
-    });
+    const docs = await serverConnectionModel.find({ requiredRoleToJoin: { $type: 2 } }).exec();
+    for(const doc of docs) {
+        console.log(`Converting ${doc._id}...`);
+        doc.requiredRoleToJoin = { method: 'any', roles: [doc.requiredRoleToJoin] };
+        await serverConnectionModel.updateOne({ _id: doc._id }, doc);
+        console.log(`Converted ${doc._id}!`);
+    }
 }

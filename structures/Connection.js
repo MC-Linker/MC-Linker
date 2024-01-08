@@ -55,7 +55,7 @@ export default class Connection extends Base {
         //Remove id, otherwise duplicate key error, if object does not exist, it will use id from query (this.id)
         delete data.id;
 
-        return await this.client.mongo.models[this.collectionName].updateOne({_id: this.id}, data, {upsert: true})
+        return await this.client.mongo.models[this.collectionName].updateOne({ _id: this.id }, data, { upsert: true })
             .then(() => true)
             .catch(() => false);
     }
