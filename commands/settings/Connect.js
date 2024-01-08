@@ -8,6 +8,7 @@ import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../utilities/utils.js';
 import { disableComponents } from '../../utilities/utils.js';
 import client from '../../bot.js';
+import Discord from 'discord.js';
 
 export default class Connect extends Command {
 
@@ -215,86 +216,89 @@ export default class Connect extends Command {
             }
         }
         else if(method === 'backup') {
-            try {
-                const ip = args[1].split(':')[0];
-                let port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
-                if(typeof port !== 'number') port = parseInt(port);
-                const requiredRoleToJoin = args[3]?.id;
+            const ip = args[1].split(':')[0];
+            let port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
+            if(typeof port !== 'number') port = parseInt(port);
+            const requiresRoleToJoin = args[3]?.id;
 
-                const token = crypto.randomBytes(32).toString('hex');
-                const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
+            const selectResponse = requiresRoleToJoin ? await this.askForRequiredRolesToJoin(interaction) : null;
+            if(!selectResponse && requiresRoleToJoin) return; //User didn't respond in time
 
-                const verify = await httpProtocol.verifyGuild();
-                const connectedServer = client.serverConnections.cache.find(s => s.ip === ip && s.port === port);
-                const connectedServerName = connectedServer && verify?.status === 409 ? (await client.guilds.fetch(connectedServer.id)).name : keys.commands.connect.unknown;
-                if(!await utils.handleProtocolResponse(verify, httpProtocol, interaction, {
-                    409: keys.commands.connect.warnings.plugin_already_connected,
-                }, { name: connectedServerName })) return;
+            const token = crypto.randomBytes(32).toString('hex');
+            const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
 
-                const checkDmsEmbed = getEmbed(keys.commands.connect.step.check_dms, ph.emojisAndColors());
-                if(server) {
-                    const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
-                    await interaction.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed] });
-                }
-                else await interaction.replyOptions({ embeds: [checkDmsEmbed] });
+            const verify = await httpProtocol.verifyGuild();
+            const connectedServer = client.serverConnections.cache.find(s => s.ip === ip && s.port === port);
+            const connectedServerName = connectedServer && verify?.status === 409 ? (await client.guilds.fetch(connectedServer.id)).name : keys.commands.connect.unknown;
+            if(!await utils.handleProtocolResponse(verify, httpProtocol, interaction, {
+                409: keys.commands.connect.warnings.plugin_already_connected,
+            }, { name: connectedServerName ?? keys.commands.connect.unknown })) return;
 
-                let dmChannel = await interaction.user.createDM();
-                try {
-                    await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.step.code_verification, ph.emojisAndColors())] });
-                }
-                catch(err) {
-                    dmChannel = interaction.channel;
-                    await interaction.replyTl(keys.commands.connect.warnings.could_not_dm);
-                    await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.step.code_verification, ph.emojisAndColors())] });
-                }
-
-                const collector = await dmChannel.awaitMessages({
-                    max: 1,
-                    time: 180_000,
-                    filter: message => message.author.id === interaction.user.id,
-                });
-                const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
-                if(!message) return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojisAndColors()));
-
-                const resp = await httpProtocol.connect(collector.first().content, requiredRoleToJoin);
-                if(!await utils.handleProtocolResponse(resp, httpProtocol, interaction, {
-                    401: keys.commands.connect.errors.incorrect_code,
-                })) {
-                    await message.replyTl(keys.commands.connect.errors.incorrect_code);
-                    return;
-                }
-
-                await message.replyTl(keys.commands.connect.success.verification);
-
-                const serverPath = decodeURIComponent(resp.data.path);
-                /** @type {HttpServerConnectionData} */
-                const serverConnectionData = {
-                    ip,
-                    port,
-                    version: parseInt(resp.data.version.split('.')[1]),
-                    path: serverPath,
-                    worldPath: decodeURIComponent(resp.data.worldPath),
-                    floodgatePrefix: resp.data.floodgatePrefix,
-                    token: resp.data.token,
-                    online: resp.data.online,
-                    protocol: 'http',
-                    requiredRoleToJoin,
-                    chatChannels: [],
-                    statChannels: [],
-                    id: interaction.guildId,
-                };
-
-                await this.disconnectOldServer(server);
-                await client.serverConnections.connect(serverConnectionData);
-
-                return interaction.replyTl(keys.commands.connect.success.plugin);
+            const checkDmsEmbed = getEmbed(keys.commands.connect.step.check_dms, ph.emojisAndColors());
+            if(server) {
+                const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
+                await interaction.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed] });
             }
-            catch(_) {}
+            else await interaction.replyOptions({ embeds: [checkDmsEmbed] });
+
+            let dmChannel = await interaction.user.createDM();
+            try {
+                await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.step.code_verification, ph.emojisAndColors())] });
+            }
+            catch(err) {
+                dmChannel = interaction.channel;
+                await interaction.replyTl(keys.commands.connect.warnings.could_not_dm);
+                await dmChannel.send({ embeds: [getEmbed(keys.commands.connect.step.code_verification, ph.emojisAndColors())] });
+            }
+
+            const collector = await dmChannel.awaitMessages({
+                max: 1,
+                time: 180_000,
+                filter: message => message.author.id === interaction.user.id,
+            });
+            const message = collector.size !== 0 ? addTranslatedResponses(collector.first()) : null;
+            if(!message) return dmChannel.send(addPh(keys.commands.connect.warnings.no_reply_in_time, ph.emojisAndColors()));
+
+            const resp = await httpProtocol.connect(collector.first().content, selectResponse);
+            if(!await utils.handleProtocolResponse(resp, httpProtocol, interaction, {
+                401: keys.commands.connect.errors.incorrect_code,
+            })) {
+                await message.replyTl(keys.commands.connect.errors.incorrect_code);
+                return;
+            }
+
+            await message.replyTl(keys.commands.connect.success.verification);
+
+            const serverPath = decodeURIComponent(resp.data.path);
+            /** @type {HttpServerConnectionData} */
+            const serverConnectionData = {
+                ip,
+                port,
+                version: parseInt(resp.data.version.split('.')[1]),
+                path: serverPath,
+                worldPath: decodeURIComponent(resp.data.worldPath),
+                floodgatePrefix: resp.data.floodgatePrefix,
+                token: resp.data.token,
+                online: resp.data.online,
+                protocol: 'http',
+                requiredRoleToJoin: selectResponse,
+                chatChannels: [],
+                statChannels: [],
+                id: interaction.guildId,
+            };
+
+            await this.disconnectOldServer(server);
+            await client.serverConnections.connect(serverConnectionData);
+
+            return interaction.replyTl(keys.commands.connect.success.plugin);
         }
         else if(method === 'plugin') {
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-            const requiredRoleToJoin = args[1]?.id;
+            const requiresRoleToJoin = args[1]?.id;
             const displayIp = args[2];
+
+            const selectResponse = requiresRoleToJoin ? await this.askForRequiredRolesToJoin(interaction) : null;
+            if(!selectResponse && requiresRoleToJoin) return; //User didn't respond in time
 
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
             if(server) {
@@ -306,10 +310,7 @@ export default class Connect extends Command {
             const timeout = setTimeout(async () => {
                 await client.shard.broadcastEval((c, { id }) => {
                     c.commands.get('connect').wsVerification.delete(id);
-                }, {
-                    context: { id: interaction.guildId },
-                    shard: 0,
-                });
+                }, { context: { id: interaction.guildId }, shard: 0 });
                 await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
             }, 180_000);
 
@@ -317,7 +318,13 @@ export default class Connect extends Command {
             await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin, displayIp }) => {
                 c.commands.get('connect').wsVerification.set(id, { code, shard, requiredRoleToJoin, displayIp });
             }, {
-                context: { code, id: interaction.guildId, shard: client.shard.ids[0], requiredRoleToJoin, displayIp },
+                context: {
+                    code,
+                    id: interaction.guildId,
+                    shard: client.shard.ids[0],
+                    requiredRoleToJoin: selectResponse,
+                    displayIp,
+                },
                 shard: 0,
             });
 
@@ -334,5 +341,33 @@ export default class Connect extends Command {
         const server = client.serverConnections.resolve(serverResolvable);
         if(server?.protocol?.isPluginProtocol()) await server.protocol.disconnect();
         if(server) return await client.serverConnections.disconnect(server);
+    }
+
+    /**
+     * This will send a select menu to the user asking for the required roles to join the server and the method to check them.
+     * @param {Discord.CommandInteraction & TranslatedResponses} interaction - The interaction to reply to.
+     * @returns {Promise<?RequiredRoleToJoinData>} - The roles and the method or null if the user didn't respond in time.
+     */
+    async askForRequiredRolesToJoin(interaction) {
+        const logChooserMsg = await interaction.replyTl(keys.commands.connect.step.choose_roles);
+        try {
+            const [menu, method] = Promise.all([
+                logChooserMsg.awaitMessageComponent({
+                    componentType: Discord.ComponentType.RoleSelect,
+                    time: 180_000,
+                    filter: m => m.user.id === interaction.user.id && m.customId === 'required_roles_to_join',
+                }),
+                logChooserMsg.awaitMessageComponent({
+                    componentType: Discord.ComponentType.StringSelect,
+                    time: 180_000,
+                    filter: m => m.user.id === interaction.user.id && m.customId === 'check_method',
+                }),
+            ]);
+            return { roles: menu.values, method: method.values[0] };
+        }
+        catch(_) {
+            await interaction.replyTl(keys.commands.connect.warnings.not_collected);
+            return null;
+        }
     }
 }

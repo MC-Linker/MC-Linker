@@ -821,6 +821,10 @@
   "commands.connect.warnings.no_reply_in_time.embeds.0.description": "You did not reply in time!",
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
 
+  "commands.connect.warnings.not_collected.embeds.0.title": "Choose Required Roles To Join",
+  "commands.connect.warnings.not_collected.embeds.0.description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)",
+  "commands.connect.warnings.not_collected.components": [],
+
   "commands.connect.errors.could_not_connect_ftp.embeds.0.title": "Could Not Connect",
   "commands.connect.errors.could_not_connect_ftp.embeds.0.description": "Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again.",
   "commands.connect.errors.could_not_connect_ftp.console": "Could not connect with ftp, sftp or ftps.",
@@ -850,7 +854,30 @@
 
   "commands.connect.step.code_verification.embeds.0.title": "Server Verification",
   "commands.connect.step.code_verification.embeds.0.description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
-  "commands.connect.step.code_verification.embeds.0.color": "DarkGold",
+
+
+  "commands.connect.step.choose_roles.embeds.0.title": "Choose Required Roles To Join",
+  "commands.connect.step.choose_roles.embeds.0.description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (You have 3 minutes to select)",
+
+  "commands.connect.step.choose_roles.components.0.type": "StringSelect",
+  "commands.connect.step.choose_roles.components.0.custom_id": "check_method",
+  "commands.connect.step.choose_roles.components.0.placeholder": "Select which method to use to determine whether the player has the required roles.",
+
+  "commands.connect.step.choose_roles.components.0.options.0.label": "Any",
+  "commands.connect.step.choose_roles.components.0.options.0.description": "The player only needs to have one of the selected roles to join.",
+  "commands.connect.step.choose_roles.components.0.options.0.value": "any",
+
+  "commands.connect.step.choose_roles.components.0.options.1.label": "All",
+  "commands.connect.step.choose_roles.components.0.options.1.description": "The player needs to have all of the selected roles to join.",
+  "commands.connect.step.choose_roles.components.0.options.1.value": "all",
+
+  "commands.connect.step.choose_roles.components.1.type": "RoleSelect",
+  "commands.connect.step.choose_roles.components.1.custom_id": "required_roles_to_join",
+  "commands.connect.step.choose_roles.components.1.placeholder": "Select up to 25 roles.",
+  "commands.connect.step.choose_roles.components.1.min_values": 1,
+  "commands.connect.step.choose_roles.components.1.max_values": 25,
+
+
 
   "commands.connect.success.ftp.embeds.0.title": "Connected to Server",
   "commands.connect.success.ftp.embeds.0.description": "Successfully connected to the ftp server.",
@@ -1821,9 +1848,9 @@
   "data.connect.options.1.name": "plugin",
   "data.connect.options.1.description": "Connect your Minecraft server using the Discord-Linker plugin.",
 
-  "data.connect.options.1.options.0.type": "Role",
-  "data.connect.options.1.options.0.name": "required-role-to-join",
-  "data.connect.options.1.options.0.description": "Set the required role to join the server.",
+  "data.connect.options.1.options.0.type": "Boolean",
+  "data.connect.options.1.options.0.name": "requires-role-to-join",
+  "data.connect.options.1.options.0.description": "If set to true, you'll be able to choose the required roles to join the server in the next step.",
   "data.connect.options.1.options.0.required": false,
 
   "data.connect.options.1.options.1.type": "String",

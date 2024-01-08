@@ -135,7 +135,7 @@ const PluginRoutes = {
      * @param {string} ip - The IP address of the server.
      * @param {number} guildId - The Id of the guild that tries to connect.
      * @param {string} verifyCode - The verification code to use.
-     * @param {?string} requiredRoleToJoin - The role id that is required to have for joining the server.
+     * @param {?RequiredRoleToJoinData} requiredRoleToJoin - The data for the required roles to join the server.
      * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     Connect: (ip, guildId, verifyCode, requiredRoleToJoin) => [
@@ -369,7 +369,7 @@ export default class HttpProtocol extends Protocol {
     /**
      * Tests the connection to the server with the given credentials.
      * @param {string} verifyCode - The verification code to use.
-     * @param {?string} requiredRoleToJoin - The role id that is required to have for joining the server.
+     * @param {?RequiredRoleToJoinData} requiredRoleToJoin - The data for the required roles to join the server.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async connect(verifyCode, requiredRoleToJoin = null) {

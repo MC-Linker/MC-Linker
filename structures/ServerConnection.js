@@ -26,6 +26,20 @@ export default class ServerConnection extends Connection {
      */
 
     /**
+     * @typedef {object} SyncedRoleData - The data for a synced-role.
+     * @property {string} id - The id of the role.
+     * @property {string} name - The name of the group/team.
+     * @property {boolean} isGroup - Whether the role is a luckperms group or a Minecraft team.
+     * @property {string[]} players - The player's uuids that are in the team/group.
+     */
+
+    /**
+     * @typedef {object} RequiredRoleToJoinData - The data for required roles to join the server.
+     * @property {'any'|'all'} method - The method used to determine if a user can join the server.
+     * @property {string[]} roles - The ids of the roles required to join the server.
+     */
+
+    /**
      * @typedef {object} HttpServerConnectionData - The data for a server-connection established by the plugin.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
@@ -36,7 +50,7 @@ export default class ServerConnection extends Connection {
      * @property {string} token - The connection token used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {string} [requiredRoleToJoin] - The id of the role required to join the server.
+     * @property {RequiredRoleToJoinData} [requiredRoleToJoin] - The id of the role required to join the server.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {'http'} protocol - The protocol used to connect to the server.
@@ -58,14 +72,6 @@ export default class ServerConnection extends Connection {
      */
 
     /**
-     * @typedef {object} SyncedRoleData - The data for a synced-role.
-     * @property {string} id - The id of the role.
-     * @property {string} name - The name of the group/team.
-     * @property {boolean} isGroup - Whether the role is a luckperms group or a Minecraft team.
-     * @property {string[]} players - The player's uuids that are in the team/group.
-     */
-
-    /**
      * @typedef {object} WebSocketServerConnectionData - The data for a server-connection established by a websocket.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
@@ -75,8 +81,8 @@ export default class ServerConnection extends Connection {
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {string} [requiredRoleToJoin] - The id of the role required to join the server.
      * @property {string} [displayIp] - The ip address that the bot should show users for joining the server.
+     * @property {RequiredRoleToJoinData} [requiredRoleToJoin] - An array of role ids, at least one of which is required to join the server.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {SyncedRoleData[]} syncedRoles - The data for syncedRoles.
@@ -260,7 +266,7 @@ export default class ServerConnection extends Connection {
         if('requiredRoleToJoin' in data) {
             /**
              * The role required to join this server.
-             * @type {?string}
+             * @type {?RequiredRoleToJoinData}
              */
             this.requiredRoleToJoin = data.requiredRoleToJoin;
         }
@@ -296,7 +302,11 @@ export default class ServerConnection extends Connection {
 
             delete this.token;
             delete this.hash;
-            delete this.channels;
+            delete this.syncedRoles;
+            delete this.chatChannels;
+            delete this.statChannels;
+            delete this.requiredRoleToJoin;
+            delete this.displayIp;
         }
         else if(!this.protocol.isWebSocketProtocol() && data.protocol === 'websocket') {
             this.protocol = new WebSocketProtocol(this.client, {

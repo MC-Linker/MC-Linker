@@ -218,8 +218,11 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
 
     const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
     const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
-    if(server.requiredRoleToJoin && removedRole?.id === server.requiredRoleToJoin) {
-        await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
+    if(server.requiredRoleToJoin) {
+        if(
+            server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
+            server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
+        ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
     }
 
     const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);

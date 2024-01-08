@@ -1471,6 +1471,15 @@
             }
           ],
           "console": "No reply in time"
+        },
+        "not_collected": {
+          "embeds": [
+            {
+              "title": "Choose Required Roles To Join",
+              "description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)"
+            }
+          ],
+          "components": []
         }
       },
       "step": {
@@ -1511,8 +1520,41 @@
           "embeds": [
             {
               "title": "Server Verification",
-              "description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
-              "color": "DarkGold"
+              "description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**"
+            }
+          ]
+        },
+        "choose_roles": {
+          "embeds": [
+            {
+              "title": "Choose Required Roles To Join",
+              "description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (You have 3 minutes to select)"
+            }
+          ],
+          "components": [
+            {
+              "type": "StringSelect",
+              "custom_id": "check_method",
+              "placeholder": "Select which method to use to determine whether the player has the required roles.",
+              "options": [
+                {
+                  "label": "Any",
+                  "description": "The player only needs to have one of the selected roles to join.",
+                  "value": "any"
+                },
+                {
+                  "label": "All",
+                  "description": "The player needs to have all of the selected roles to join.",
+                  "value": "all"
+                }
+              ]
+            },
+            {
+              "type": "RoleSelect",
+              "custom_id": "required_roles_to_join",
+              "placeholder": "Select up to 25 roles.",
+              "min_values": 1,
+              "max_values": 25
             }
           ]
         }
@@ -3189,9 +3231,9 @@
           "description": "Connect your Minecraft server using the Discord-Linker plugin.",
           "options": [
             {
-              "type": "Role",
-              "name": "required-role-to-join",
-              "description": "Set the required role to join the server.",
+              "type": "Boolean",
+              "name": "requires-role-to-join",
+              "description": "If set to true, you'll be able to choose the required roles to join the server in the next step.",
               "required": false
             },
             {

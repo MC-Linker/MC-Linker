@@ -507,6 +507,58 @@ export function getComponent(key, ...placeholders) {
             }
 
             break;
+        case Discord.ComponentType.RoleSelect:
+            if(!component.options || !component.custom_id) return null;
+
+            componentBuilder = new Discord.RoleSelectMenuBuilder()
+                .setCustomId(component.custom_id)
+                .setDisabled(component.disabled ?? false);
+
+            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            if(component.max_values) componentBuilder.setMaxValues(component.max_values);
+            if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
+            if(component.default_values) componentBuilder.setDefaultRoles(component.default_values.map(value => value.id));
+
+            break;
+        case Discord.ComponentType.ChannelSelect:
+            if(!component.options || !component.custom_id) return null;
+
+            componentBuilder = new Discord.ChannelSelectMenuBuilder()
+                .setCustomId(component.custom_id)
+                .setDisabled(component.disabled ?? false);
+
+            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            if(component.max_values) componentBuilder.setMaxValues(component.max_values);
+            if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
+            if(component.default_values) componentBuilder.setDefaultChannels(component.default_values.map(value => value.id));
+
+            break;
+        case Discord.ComponentType.UserSelect:
+            if(!component.options || !component.custom_id) return null;
+
+            componentBuilder = new Discord.UserSelectMenuBuilder()
+                .setCustomId(component.custom_id)
+                .setDisabled(component.disabled ?? false);
+
+            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            if(component.max_values) componentBuilder.setMaxValues(component.max_values);
+            if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
+            if(component.default_values) componentBuilder.setDefaultUsers(component.default_values.map(value => value.id));
+
+            break;
+        case Discord.ComponentType.MentionableSelect:
+            if(!component.options || !component.custom_id) return null;
+
+            componentBuilder = new Discord.MentionableSelectMenuBuilder()
+                .setCustomId(component.custom_id)
+                .setDisabled(component.disabled ?? false);
+
+            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            if(component.max_values) componentBuilder.setMaxValues(component.max_values);
+            if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
+            if(component.default_values) componentBuilder.setDefaultValues(component.default_values);
+
+            break;
         case Discord.ComponentType.TextInput:
             if(!component.style || !component.custom_id || !component.label) return null;
 
@@ -617,7 +669,7 @@ export function getCommand(key) {
 
 /**
  * Get a modal builder from a language key.
- * @param {Discord.ModalData} key - The language key to get the modal builder from.
+ * @param {Discord.APIModalInteractionResponseCallbackData} key - The language key to get the modal builder from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
  * @returns {?ModalBuilder}
  */
