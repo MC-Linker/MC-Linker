@@ -351,7 +351,7 @@ export default class Connect extends Command {
     async askForRequiredRolesToJoin(interaction) {
         const logChooserMsg = await interaction.replyTl(keys.commands.connect.step.choose_roles);
         try {
-            const [menu, method] = Promise.all([
+            const [menu, method] = await Promise.all([
                 logChooserMsg.awaitMessageComponent({
                     componentType: Discord.ComponentType.RoleSelect,
                     time: 180_000,
