@@ -237,9 +237,9 @@ export default class Connect extends Command {
             const checkDmsEmbed = getEmbed(keys.commands.connect.step.check_dms, ph.emojisAndColors());
             if(server) {
                 const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
-                await interaction.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed] });
+                await interaction.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed], components: [] });
             }
-            else await interaction.replyOptions({ embeds: [checkDmsEmbed] });
+            else await interaction.replyOptions({ embeds: [checkDmsEmbed], components: [] });
 
             let dmChannel = await interaction.user.createDM();
             try {
@@ -303,9 +303,9 @@ export default class Connect extends Command {
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
             if(server) {
                 const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
-                await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed] });
+                await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed], components: [] });
             }
-            else await interaction.replyOptions({ embeds: [verificationEmbed] });
+            else await interaction.replyOptions({ embeds: [verificationEmbed], components: [] });
 
             const timeout = setTimeout(async () => {
                 await client.shard.broadcastEval((c, { id }) => {
@@ -351,18 +351,22 @@ export default class Connect extends Command {
     async askForRequiredRolesToJoin(interaction) {
         const logChooserMsg = await interaction.replyTl(keys.commands.connect.step.choose_roles);
         try {
-            const [menu, method] = await Promise.all([
-                logChooserMsg.awaitMessageComponent({
-                    componentType: Discord.ComponentType.RoleSelect,
-                    time: 180_000,
-                    filter: m => m.user.id === interaction.user.id && m.customId === 'required_roles_to_join',
-                }),
-                logChooserMsg.awaitMessageComponent({
-                    componentType: Discord.ComponentType.StringSelect,
-                    time: 180_000,
-                    filter: m => m.user.id === interaction.user.id && m.customId === 'check_method',
-                }),
-            ]);
+            const menuPromise = logChooserMsg.awaitMessageComponent({
+                componentType: Discord.ComponentType.RoleSelect,
+                time: 180_000,
+                filter: m => m.user.id === interaction.user.id && m.customId === 'required_roles_to_join',
+            });
+            const methodPromise = logChooserMsg.awaitMessageComponent({
+                componentType: Discord.ComponentType.StringSelect,
+                time: 180_000,
+                filter: m => m.user.id === interaction.user.id && m.customId === 'check_method',
+            });
+
+            menuPromise.then(m => m.deferUpdate());
+            methodPromise.then(m => m.deferUpdate());
+
+            const [menu, method] = await Promise.all([menuPromise, methodPromise]);
+
             return { roles: menu.values, method: method.values[0] };
         }
         catch(_) {
