@@ -822,7 +822,7 @@
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
 
   "commands.connect.warnings.not_collected.embeds.0.title": "Choose Required Roles To Join",
-  "commands.connect.warnings.not_collected.embeds.0.description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)",
+  "commands.connect.warnings.not_collected.embeds.0.description": "Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)",
   "commands.connect.warnings.not_collected.components": [],
 
   "commands.connect.errors.could_not_connect_ftp.embeds.0.title": "Could Not Connect",

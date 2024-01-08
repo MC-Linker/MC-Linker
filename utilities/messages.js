@@ -846,6 +846,8 @@ export function createActionRows(components) {
     let currentRow = new Discord.ActionRowBuilder();
 
     for(const component of components) {
+        currentRow.addComponents(component);
+
         const maxAmount = maxComponentsInActionRow[component.data.type];
 
         //If the same component type is already in the row more than the max amount, create a new row.
@@ -853,8 +855,6 @@ export function createActionRows(components) {
             actionRows.push(currentRow);
             currentRow = new Discord.ActionRowBuilder();
         }
-
-        currentRow.addComponents(component);
     }
     if(currentRow.components.length > 0) actionRows.push(currentRow);
 

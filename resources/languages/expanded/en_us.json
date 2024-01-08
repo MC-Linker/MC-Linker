@@ -1476,7 +1476,7 @@
           "embeds": [
             {
               "title": "Choose Required Roles To Join",
-              "description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)"
+              "description": "Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)"
             }
           ],
           "components": []
