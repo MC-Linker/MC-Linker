@@ -881,6 +881,10 @@
   "commands.connect.step.choose_roles.components.1.min_values": 0,
   "commands.connect.step.choose_roles.components.1.max_values": 25,
 
+  "commands.connect.step.choose_roles.components.2.type": "Button",
+  "commands.connect.step.choose_roles.components.2.label": "Require Only Linked Account (No Roles)",
+  "commands.connect.step.choose_roles.components.2.custom_id": "skip_roles",
+  "commands.connect.step.choose_roles.components.2.style": "Secondary",
 
 
   "commands.connect.success.ftp.embeds.0.title": "Connected to Server",

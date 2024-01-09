@@ -362,6 +362,11 @@ export default class Connect extends Command {
                 time: 180_000,
             });
 
+            const buttonCollector = logChooserMsg.createMessageComponentCollector({
+                componentType: Discord.ComponentType.Button,
+                time: 180_000,
+            });
+
             roleCollector.on('collect', async menu => {
                 menu = addTranslatedResponses(menu);
                 if(menu.user.id !== interaction.user.id) return menu.replyTl(keys.main.no_access.no_permission_component);
@@ -386,6 +391,18 @@ export default class Connect extends Command {
                 }
             });
 
+            buttonCollector.on('collect', async button => {
+                button = addTranslatedResponses(button);
+                if(button.user.id !== interaction.user.id) return button.replyTl(keys.api.button.no_access.no_author);
+                else if(button.customId !== 'skip_roles') return;
+
+                await button.deferUpdate();
+                roleCollector.stop();
+                methodCollector.stop();
+                buttonCollector.stop();
+                resolve({ roles: [], method: 'any' });
+            });
+
             //Only one of the collectors should listen to the end event
             roleCollector.on('end', async collected => {
                 if(collected.size === 0 || methodCollector.total === 0) {
@@ -399,7 +416,8 @@ export default class Connect extends Command {
                 resolve({ roles, method });
             });
 
-            methodCollector.on('end', async () => {});
+            methodCollector.on('end', async () => {}); // Will throw an error if not defined (i think)
+            buttonCollector.on('end', async () => {});
         });
     }
 }

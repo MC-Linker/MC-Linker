@@ -1564,6 +1564,12 @@
               "placeholder": "Select up to 25 roles.",
               "min_values": 0,
               "max_values": 25
+            },
+            {
+              "type": "Button",
+              "label": "Require Only Linked Account (No Roles)",
+              "custom_id": "skip_roles",
+              "style": "Secondary"
             }
           ]
         }
