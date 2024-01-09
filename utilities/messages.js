@@ -488,7 +488,8 @@ export function getComponent(key, ...placeholders) {
                 .setCustomId(component.custom_id)
                 .setDisabled(component.disabled ?? false);
 
-            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            // Prevent 0 from being interpreted as false
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
 
@@ -514,7 +515,7 @@ export function getComponent(key, ...placeholders) {
                 .setCustomId(component.custom_id)
                 .setDisabled(component.disabled ?? false);
 
-            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultRoles(component.default_values.map(value => value.id));
@@ -527,7 +528,7 @@ export function getComponent(key, ...placeholders) {
                 .setCustomId(component.custom_id)
                 .setDisabled(component.disabled ?? false);
 
-            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultChannels(component.default_values.map(value => value.id));
@@ -540,7 +541,7 @@ export function getComponent(key, ...placeholders) {
                 .setCustomId(component.custom_id)
                 .setDisabled(component.disabled ?? false);
 
-            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultUsers(component.default_values.map(value => value.id));
@@ -553,7 +554,7 @@ export function getComponent(key, ...placeholders) {
                 .setCustomId(component.custom_id)
                 .setDisabled(component.disabled ?? false);
 
-            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultValues(component.default_values);
@@ -569,7 +570,7 @@ export function getComponent(key, ...placeholders) {
                 .setRequired(component.required ?? false);
 
             if(component.max_length) componentBuilder.setMaxLength(component.max_length);
-            if(component.min_length) componentBuilder.setMinLength(component.min_length);
+            if(typeof component.min_length === 'number') componentBuilder.setMinLength(component.min_length);
             if(component.value) componentBuilder.setValue(component.value);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.label) componentBuilder.setLabel(component.label);
@@ -704,7 +705,7 @@ function addSlashCommandOption(builder, key) {
                 .setAutocomplete(key.autocomplete ?? false);
 
             if(key.max_length) optionBuilder.setMaxLength(key.max_length);
-            if(key.min_length) optionBuilder.setMinLength(key.max_length);
+            if(typeof key.min_length === 'number') optionBuilder.setMinLength(key.min_length);
 
             for(const choice of key.choices ?? []) {
                 if(!choice.name || !choice.value) continue;
@@ -730,7 +731,7 @@ function addSlashCommandOption(builder, key) {
                 .setRequired(key.required ?? false)
                 .setAutocomplete(key.autocomplete ?? false);
 
-            if(key.min_value) optionBuilder.setMinValue(key.min_value);
+            if(typeof key.min_value === 'number') optionBuilder.setMinValue(key.min_value);
             if(key.max_value) optionBuilder.setMaxValue(key.max_value);
 
             for(const choice of key.choices ?? []) {
@@ -757,7 +758,7 @@ function addSlashCommandOption(builder, key) {
                 .setRequired(key.required ?? false)
                 .setAutocomplete(key.autocomplete ?? false);
 
-            if(key.min_value) optionBuilder.setMinValue(key.min_value);
+            if(typeof key.min_value === 'number') optionBuilder.setMinValue(key.min_value);
             if(key.max_value) optionBuilder.setMaxValue(key.max_value);
 
             for(const choice of key.choices ?? []) {
