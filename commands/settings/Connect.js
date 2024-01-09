@@ -398,6 +398,8 @@ export default class Connect extends Command {
                 const method = methodCollector.collected.last().values[0];
                 resolve({ roles, method });
             });
+
+            methodCollector.on('end', async () => {});
         });
     }
 }

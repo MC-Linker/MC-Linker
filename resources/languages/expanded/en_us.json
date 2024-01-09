@@ -1561,8 +1561,8 @@
             {
               "type": "RoleSelect",
               "custom_id": "required_roles",
-              "placeholder": "Select up to 25 roles.",
-              "min_values": 1,
+              "placeholder": "Select up to 25 roles. Select none to just require a linked account to join.",
+              "min_values": 0,
               "max_values": 25
             }
           ]
