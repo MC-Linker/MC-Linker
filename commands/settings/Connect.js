@@ -348,30 +348,56 @@ export default class Connect extends Command {
      * @param {Discord.CommandInteraction & TranslatedResponses} interaction - The interaction to reply to.
      * @returns {Promise<?RequiredRoleToJoinData>} - The roles and the method or null if the user didn't respond in time.
      */
-    async askForRequiredRolesToJoin(interaction) {
-        const logChooserMsg = await interaction.replyTl(keys.commands.connect.step.choose_roles);
-        try {
-            const menuPromise = logChooserMsg.awaitMessageComponent({
+    askForRequiredRolesToJoin(interaction) {
+        return new Promise(async resolve => {
+            const logChooserMsg = await interaction.replyTl(keys.commands.connect.step.choose_roles);
+
+            const roleCollector = logChooserMsg.createMessageComponentCollector({
                 componentType: Discord.ComponentType.RoleSelect,
                 time: 180_000,
-                filter: m => m.user.id === interaction.user.id && m.customId === 'required_roles_to_join',
             });
-            const methodPromise = logChooserMsg.awaitMessageComponent({
+
+            const methodCollector = logChooserMsg.createMessageComponentCollector({
                 componentType: Discord.ComponentType.StringSelect,
                 time: 180_000,
-                filter: m => m.user.id === interaction.user.id && m.customId === 'check_method',
             });
 
-            menuPromise.then(m => m.deferUpdate());
-            methodPromise.then(m => m.deferUpdate());
+            roleCollector.on('collect', async menu => {
+                menu = addTranslatedResponses(menu);
+                if(menu.user.id !== interaction.user.id) return menu.replyTl(keys.main.no_access.no_permission_component);
+                else if(menu.customId !== 'required_roles') return;
 
-            const [menu, method] = await Promise.all([menuPromise, methodPromise]);
+                await menu.deferUpdate();
+                if(methodCollector.total >= 1) {
+                    roleCollector.stop();
+                    methodCollector.stop();
+                }
+            });
 
-            return { roles: menu.values, method: method.values[0] };
-        }
-        catch(_) {
-            await interaction.replyTl(keys.commands.connect.warnings.not_collected);
-            return null;
-        }
+            methodCollector.on('collect', async menu => {
+                menu = addTranslatedResponses(menu);
+                if(menu.user.id !== interaction.user.id) return menu.replyTl(keys.main.no_access.no_permission_component);
+                else if(menu.customId !== 'required_roles_method') return;
+
+                await menu.deferUpdate();
+                if(roleCollector.total >= 1) {
+                    roleCollector.stop();
+                    methodCollector.stop();
+                }
+            });
+
+            //Only one of the collectors should listen to the end event
+            roleCollector.on('end', async collected => {
+                if(collected.size === 0 || methodCollector.total === 0) {
+                    await interaction.replyTl(keys.commands.connect.warnings.not_collected);
+                    return resolve(null);
+                }
+
+                // Resolve with last collected
+                const roles = collected.last().values;
+                const method = methodCollector.collected.last().values[0];
+                resolve({ roles, method });
+            });
+        });
     }
 }

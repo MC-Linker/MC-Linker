@@ -60,6 +60,10 @@
   "main.no_access.no_prefix_commands.embeds.0.description": "Prefixed commands are disabled. Please use [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) instead by typing `/` in a server channel followed by the command name.",
   "main.no_access.no_prefix_commands.console": "%author_username% used prefix command %interaction_name%",
 
+  "main.no_access.no_permission_component.embeds.0.title": "No Permission",
+  "main.no_access.no_permission_component.embeds.0.description": "Only the command sender can use this!",
+  "main.no_access.no_permission_component.ephemeral": true,
+
   "main.errors.unknown_rejection.console": "Unknown promise rejection %error_stack%",
   "main.errors.could_not_post_stats.console": "Could not post stats to Top.gg",
   "main.errors.no_connection_file.console": "No connection file found for guild: %guild_name%",
@@ -860,7 +864,7 @@
   "commands.connect.step.choose_roles.embeds.0.description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (You have 3 minutes to select)",
 
   "commands.connect.step.choose_roles.components.0.type": "StringSelect",
-  "commands.connect.step.choose_roles.components.0.custom_id": "check_method",
+  "commands.connect.step.choose_roles.components.0.custom_id": "required_roles_method",
   "commands.connect.step.choose_roles.components.0.placeholder": "Select which method to use to determine whether the player has the required roles.",
 
   "commands.connect.step.choose_roles.components.0.options.0.label": "Any",
@@ -872,7 +876,7 @@
   "commands.connect.step.choose_roles.components.0.options.1.value": "all",
 
   "commands.connect.step.choose_roles.components.1.type": "RoleSelect",
-  "commands.connect.step.choose_roles.components.1.custom_id": "required_roles_to_join",
+  "commands.connect.step.choose_roles.components.1.custom_id": "required_roles",
   "commands.connect.step.choose_roles.components.1.placeholder": "Select up to 25 roles.",
   "commands.connect.step.choose_roles.components.1.min_values": 1,
   "commands.connect.step.choose_roles.components.1.max_values": 25,

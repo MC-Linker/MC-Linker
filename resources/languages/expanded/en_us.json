@@ -79,6 +79,15 @@
           }
         ],
         "console": "%author_username% used prefix command %interaction_name%"
+      },
+      "no_permission_component": {
+        "embeds": [
+          {
+            "title": "No Permission",
+            "description": "Only the command sender can use this!"
+          }
+        ],
+        "ephemeral": true
       }
     },
     "errors": {
@@ -1534,7 +1543,7 @@
           "components": [
             {
               "type": "StringSelect",
-              "custom_id": "check_method",
+              "custom_id": "required_roles_method",
               "placeholder": "Select which method to use to determine whether the player has the required roles.",
               "options": [
                 {
@@ -1551,7 +1560,7 @@
             },
             {
               "type": "RoleSelect",
-              "custom_id": "required_roles_to_join",
+              "custom_id": "required_roles",
               "placeholder": "Select up to 25 roles.",
               "min_values": 1,
               "max_values": 25
