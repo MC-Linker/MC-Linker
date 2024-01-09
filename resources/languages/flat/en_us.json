@@ -865,7 +865,7 @@
 
   "commands.connect.step.choose_roles.components.0.type": "StringSelect",
   "commands.connect.step.choose_roles.components.0.custom_id": "required_roles_method",
-  "commands.connect.step.choose_roles.components.0.placeholder": "Select which method to use to determine whether the player has the required roles.",
+  "commands.connect.step.choose_roles.components.0.placeholder": "Select the method to check the roles.",
 
   "commands.connect.step.choose_roles.components.0.options.0.label": "Any",
   "commands.connect.step.choose_roles.components.0.options.0.description": "The player only needs to have one of the selected roles to join.",
@@ -877,7 +877,7 @@
 
   "commands.connect.step.choose_roles.components.1.type": "RoleSelect",
   "commands.connect.step.choose_roles.components.1.custom_id": "required_roles",
-  "commands.connect.step.choose_roles.components.1.placeholder": "Select none to just require a linked account to join.",
+  "commands.connect.step.choose_roles.components.1.placeholder": "Select up to 25 roles.",
   "commands.connect.step.choose_roles.components.1.min_values": 0,
   "commands.connect.step.choose_roles.components.1.max_values": 25,
 

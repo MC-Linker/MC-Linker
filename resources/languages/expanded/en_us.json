@@ -1544,7 +1544,7 @@
             {
               "type": "StringSelect",
               "custom_id": "required_roles_method",
-              "placeholder": "Select which method to use to determine whether the player has the required roles.",
+              "placeholder": "Select the method to check the roles.",
               "options": [
                 {
                   "label": "Any",
@@ -1561,7 +1561,7 @@
             {
               "type": "RoleSelect",
               "custom_id": "required_roles",
-              "placeholder": "Select none to just require a linked account to join.",
+              "placeholder": "Select up to 25 roles.",
               "min_values": 0,
               "max_values": 25
             }
