@@ -219,7 +219,7 @@ export default class Connect extends Command {
             const ip = args[1].split(':')[0];
             let port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
             if(typeof port !== 'number') port = parseInt(port);
-            const requiresRoleToJoin = args[3];
+            const requiresRoleToJoin = args[3] ?? false;
 
             const selectResponse = requiresRoleToJoin ? await this.askForRequiredRolesToJoin(interaction) : null;
             if(!selectResponse && requiresRoleToJoin) return; //User didn't respond in time
@@ -294,7 +294,7 @@ export default class Connect extends Command {
         }
         else if(method === 'plugin') {
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-            const requiresRoleToJoin = args[1];
+            const requiresRoleToJoin = args[1] ?? false;
             const displayIp = args[2];
 
             const selectResponse = requiresRoleToJoin ? await this.askForRequiredRolesToJoin(interaction) : null;

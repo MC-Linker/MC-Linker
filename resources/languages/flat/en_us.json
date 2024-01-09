@@ -877,7 +877,7 @@
 
   "commands.connect.step.choose_roles.components.1.type": "RoleSelect",
   "commands.connect.step.choose_roles.components.1.custom_id": "required_roles",
-  "commands.connect.step.choose_roles.components.1.placeholder": "Select up to 25 roles. Select none to just require a linked account to join.",
+  "commands.connect.step.choose_roles.components.1.placeholder": "Select none to just require a linked account to join.",
   "commands.connect.step.choose_roles.components.1.min_values": 0,
   "commands.connect.step.choose_roles.components.1.max_values": 25,
 
@@ -1879,9 +1879,9 @@
   "data.connect.options.2.options.1.min_value": 1,
   "data.connect.options.2.options.1.max_value": 65535,
 
-  "data.connect.options.2.options.2.type": "Role",
-  "data.connect.options.2.options.2.name": "required-role-to-join",
-  "data.connect.options.2.options.2.description": "Set the role that is required to join the server.",
+  "data.connect.options.2.options.2.type": "Boolean",
+  "data.connect.options.2.options.2.name": "requires-role-to-join",
+  "data.connect.options.2.options.2.description": "If set to true, you'll be able to choose the required roles to join the server in the next step.",
   "data.connect.options.2.options.2.required": false,
 
 
