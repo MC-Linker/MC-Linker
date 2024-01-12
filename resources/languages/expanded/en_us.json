@@ -1562,14 +1562,8 @@
               "type": "RoleSelect",
               "custom_id": "required_roles",
               "placeholder": "Select up to 25 roles.",
-              "min_values": 0,
+              "min_values": 1,
               "max_values": 25
-            },
-            {
-              "type": "Button",
-              "label": "Require Only Linked Account (No Roles)",
-              "custom_id": "skip_roles",
-              "style": "Secondary"
             }
           ]
         }
@@ -3246,10 +3240,24 @@
           "description": "Connect your Minecraft server using the Discord-Linker plugin.",
           "options": [
             {
-              "type": "Boolean",
-              "name": "requires-role-to-join",
-              "description": "If set to true, you'll be able to choose the required roles to join the server in the next step.",
-              "required": false
+              "type": "String",
+              "name": "join-requirement",
+              "description": "Set which requirements a user needs to join the server.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "None",
+                  "value": "none"
+                },
+                {
+                  "name": "Require Role(s)",
+                  "value": "roles"
+                },
+                {
+                  "name": "Require Linked Account",
+                  "value": "link"
+                }
+              ]
             },
             {
               "type": "String",
@@ -3279,10 +3287,24 @@
               "max_value": 65535
             },
             {
-              "type": "Boolean",
-              "name": "requires-role-to-join",
-              "description": "If set to true, you'll be able to choose the required roles to join the server in the next step.",
-              "required": false
+              "type": "String",
+              "name": "join-requirement",
+              "description": "Set which requirements a user needs to join the server.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "None",
+                  "value": "none"
+                },
+                {
+                  "name": "Require Role(s)",
+                  "value": "roles"
+                },
+                {
+                  "name": "Require Linked Account",
+                  "value": "link"
+                }
+              ]
             }
           ]
         }

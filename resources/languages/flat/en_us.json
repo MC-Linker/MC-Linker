@@ -878,13 +878,8 @@
   "commands.connect.step.choose_roles.components.1.type": "RoleSelect",
   "commands.connect.step.choose_roles.components.1.custom_id": "required_roles",
   "commands.connect.step.choose_roles.components.1.placeholder": "Select up to 25 roles.",
-  "commands.connect.step.choose_roles.components.1.min_values": 0,
+  "commands.connect.step.choose_roles.components.1.min_values": 1,
   "commands.connect.step.choose_roles.components.1.max_values": 25,
-
-  "commands.connect.step.choose_roles.components.2.type": "Button",
-  "commands.connect.step.choose_roles.components.2.label": "Require Only Linked Account (No Roles)",
-  "commands.connect.step.choose_roles.components.2.custom_id": "skip_roles",
-  "commands.connect.step.choose_roles.components.2.style": "Secondary",
 
 
   "commands.connect.success.ftp.embeds.0.title": "Connected to Server",
@@ -1856,10 +1851,16 @@
   "data.connect.options.1.name": "plugin",
   "data.connect.options.1.description": "Connect your Minecraft server using the Discord-Linker plugin.",
 
-  "data.connect.options.1.options.0.type": "Boolean",
-  "data.connect.options.1.options.0.name": "requires-role-to-join",
-  "data.connect.options.1.options.0.description": "If set to true, you'll be able to choose the required roles to join the server in the next step.",
+  "data.connect.options.1.options.0.type": "String",
+  "data.connect.options.1.options.0.name": "join-requirement",
+  "data.connect.options.1.options.0.description": "Set which requirements a user needs to join the server.",
   "data.connect.options.1.options.0.required": false,
+  "data.connect.options.1.options.0.choices.0.name": "None",
+  "data.connect.options.1.options.0.choices.0.value": "none",
+  "data.connect.options.1.options.0.choices.1.name": "Require Role(s)",
+  "data.connect.options.1.options.0.choices.1.value": "roles",
+  "data.connect.options.1.options.0.choices.2.name": "Require Linked Account",
+  "data.connect.options.1.options.0.choices.2.value": "link",
 
   "data.connect.options.1.options.1.type": "String",
   "data.connect.options.1.options.1.name": "display-ip",
@@ -1883,10 +1884,16 @@
   "data.connect.options.2.options.1.min_value": 1,
   "data.connect.options.2.options.1.max_value": 65535,
 
-  "data.connect.options.2.options.2.type": "Boolean",
-  "data.connect.options.2.options.2.name": "requires-role-to-join",
-  "data.connect.options.2.options.2.description": "If set to true, you'll be able to choose the required roles to join the server in the next step.",
+  "data.connect.options.2.options.2.type": "String",
+  "data.connect.options.2.options.2.name": "join-requirement",
+  "data.connect.options.2.options.2.description": "Set which requirements a user needs to join the server.",
   "data.connect.options.2.options.2.required": false,
+  "data.connect.options.2.options.2.choices.0.name": "None",
+  "data.connect.options.2.options.2.choices.0.value": "none",
+  "data.connect.options.2.options.2.choices.1.name": "Require Role(s)",
+  "data.connect.options.2.options.2.choices.1.value": "roles",
+  "data.connect.options.2.options.2.choices.2.name": "Require Linked Account",
+  "data.connect.options.2.options.2.choices.2.value": "link",
 
 
 

@@ -219,10 +219,11 @@ export default class Connect extends Command {
             const ip = args[1].split(':')[0];
             let port = args[2] ?? process.env.PLUGIN_PORT ?? 11111;
             if(typeof port !== 'number') port = parseInt(port);
-            const requiresRoleToJoin = args[3] ?? false;
+            const joinRequirement = args[3];
 
-            const selectResponse = requiresRoleToJoin ? await this.askForRequiredRolesToJoin(interaction) : null;
-            if(!selectResponse && requiresRoleToJoin) return; //User didn't respond in time
+            let selectResponse = joinRequirement === 'roles' ? await this.askForRequiredRolesToJoin(interaction) : null;
+            if(!selectResponse && joinRequirement === 'roles') return; //User didn't respond in time
+            else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'any' }; //No roles still requires linked account
 
             const token = crypto.randomBytes(32).toString('hex');
             const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
@@ -294,11 +295,12 @@ export default class Connect extends Command {
         }
         else if(method === 'plugin') {
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
-            const requiresRoleToJoin = args[1] ?? false;
+            const joinRequirement = args[1];
             const displayIp = args[2];
 
-            const selectResponse = requiresRoleToJoin ? await this.askForRequiredRolesToJoin(interaction) : null;
-            if(!selectResponse && requiresRoleToJoin) return; //User didn't respond in time
+            let selectResponse = joinRequirement === 'roles' ? await this.askForRequiredRolesToJoin(interaction) : null;
+            if(!selectResponse && joinRequirement === 'roles') return; //User didn't respond in time
+            else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'any' }; //No roles still requires linked account
 
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
             if(server) {
@@ -362,15 +364,8 @@ export default class Connect extends Command {
                 time: 180_000,
             });
 
-            const buttonCollector = logChooserMsg.createMessageComponentCollector({
-                componentType: Discord.ComponentType.Button,
-                time: 180_000,
-            });
-
             roleCollector.on('collect', async menu => {
-                menu = addTranslatedResponses(menu);
-                if(menu.user.id !== interaction.user.id) return menu.replyTl(keys.main.no_access.no_permission_component);
-                else if(menu.customId !== 'required_roles') return;
+                if(menu.customId !== 'required_roles') return;
 
                 await menu.deferUpdate();
                 if(methodCollector.total >= 1) {
@@ -380,27 +375,13 @@ export default class Connect extends Command {
             });
 
             methodCollector.on('collect', async menu => {
-                menu = addTranslatedResponses(menu);
-                if(menu.user.id !== interaction.user.id) return menu.replyTl(keys.main.no_access.no_permission_component);
-                else if(menu.customId !== 'required_roles_method') return;
+                if(menu.customId !== 'required_roles_method') return;
 
                 await menu.deferUpdate();
                 if(roleCollector.total >= 1) {
                     roleCollector.stop();
                     methodCollector.stop();
                 }
-            });
-
-            buttonCollector.on('collect', async button => {
-                button = addTranslatedResponses(button);
-                if(button.user.id !== interaction.user.id) return button.replyTl(keys.api.button.no_access.no_author);
-                else if(button.customId !== 'skip_roles') return;
-
-                await button.deferUpdate();
-                roleCollector.stop();
-                methodCollector.stop();
-                buttonCollector.stop();
-                resolve({ roles: [], method: 'any' });
             });
 
             //Only one of the collectors should listen to the end event
@@ -417,7 +398,6 @@ export default class Connect extends Command {
             });
 
             methodCollector.on('end', async () => {}); // Will throw an error if not defined (i think)
-            buttonCollector.on('end', async () => {});
         });
     }
 }
