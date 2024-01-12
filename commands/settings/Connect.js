@@ -223,7 +223,7 @@ export default class Connect extends Command {
 
             let selectResponse = joinRequirement === 'roles' ? await this.askForRequiredRolesToJoin(interaction) : null;
             if(!selectResponse && joinRequirement === 'roles') return; //User didn't respond in time
-            else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'any' }; //No roles still requires linked account
+            else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'all' }; //No roles still requires linked account
 
             const token = crypto.randomBytes(32).toString('hex');
             const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
@@ -300,7 +300,7 @@ export default class Connect extends Command {
 
             let selectResponse = joinRequirement === 'roles' ? await this.askForRequiredRolesToJoin(interaction) : null;
             if(!selectResponse && joinRequirement === 'roles') return; //User didn't respond in time
-            else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'any' }; //No roles still requires linked account
+            else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'all' }; //No roles still requires linked account
 
             const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
             if(server) {

@@ -550,10 +550,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
         try {
             const guild = await this.client.guilds.fetch(server.id);
-            if(!guild) return { body: { response: 'error', status: 500 } };
-
             const member = await guild.members.fetch({ user: user.id, force: true });
-            if(!member) return { body: { response: 'error', status: 500 } };
 
             const canJoin = server.requiredRoleToJoin.method === 'any' && server.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id)) ||
                 server.requiredRoleToJoin.method === 'all' && server.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id));
