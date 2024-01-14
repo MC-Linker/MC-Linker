@@ -40,7 +40,11 @@ export default class Account extends Command {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 
-            const { uuid, username, error } = await client.userConnections.userFromArgument(args[1], server);
+            const {
+                uuid,
+                username,
+                error,
+            } = await client.userConnections.userFromArgument(args[1], server, interaction);
             if(error) return;
 
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);

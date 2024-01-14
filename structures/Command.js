@@ -104,19 +104,8 @@ export default class Command {
         }
 
         if(this.requiresUserIndex !== null && (this.requiresUserIndex === 0 || args[this.requiresUserIndex - 1] !== undefined)) {
-            const user = await client.userConnections.userFromArgument(args[this.requiresUserIndex], server);
-            if(user.error === 'nullish') {
-                await interaction.replyTl(keys.api.command.warnings.no_user);
-                return false;
-            }
-            else if(user.error === 'cache') {
-                await interaction.replyTl(keys.api.command.errors.user_not_connected);
-                return false;
-            }
-            else if(user.error === 'fetch') {
-                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: args[this.requiresUserIndex] });
-                return false;
-            }
+            const user = await client.userConnections.userFromArgument(args[this.requiresUserIndex], server, interaction);
+            if(!user) return false;
 
             args[this.requiresUserIndex] = user;
         }
