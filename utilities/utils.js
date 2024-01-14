@@ -29,7 +29,7 @@ const mcData = McData('1.20.1');
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
 export const MaxAutoCompleteChoices = 25;
-export const UUIDRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
 
 // Password Auth:
 const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
