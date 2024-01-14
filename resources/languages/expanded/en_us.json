@@ -2157,14 +2157,14 @@
     },
     "utils": {
       "errors": {
-        "could_not_fetch_uuid": {
+        "could_not_fetch_user": {
           "embeds": [
             {
-              "title": "Could Not Fetch UUID",
-              "description": "**%username%** is not a valid minecraft account name. Geyser/Floodgate usernames need to start with the configured prefix."
+              "title": "Could Not Fetch User",
+              "description": "**%user%** is not a valid minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
             }
           ],
-          "console": "Could not fetch uuid of %username%"
+          "console": "Could not fetch uuid/username of %user%"
         },
         "not_sendable": {
           "embeds": [

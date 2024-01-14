@@ -1,10 +1,4 @@
-import {
-    ApplicationCommandOptionType,
-    ApplicationCommandPermissionType,
-    CommandInteraction,
-    Message,
-    PermissionFlagsBits,
-} from 'discord.js';
+import { CommandInteraction, Message } from 'discord.js';
 import keys from '../utilities/keys.js';
 
 export default class Command {
@@ -120,7 +114,7 @@ export default class Command {
                 return false;
             }
             else if(user.error === 'fetch') {
-                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username: args[this.requiresUserIndex] });
+                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: args[this.requiresUserIndex] });
                 return false;
             }
 

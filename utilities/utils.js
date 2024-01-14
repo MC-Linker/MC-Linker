@@ -29,6 +29,7 @@ const mcData = McData('1.20.1');
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
 export const MaxAutoCompleteChoices = 25;
+export const UUIDRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 // Password Auth:
 const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
@@ -225,6 +226,18 @@ export async function fetchUUID(username) {
 
         if(!data.id) return undefined;
         return addHyphen(data.id);
+    }
+    catch(err) {
+        return undefined;
+    }
+}
+
+export async function fetchUsername(uuid) {
+    try {
+        const data = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`)
+            .then(data => data.json());
+
+        return data?.name;
     }
     catch(err) {
         return undefined;

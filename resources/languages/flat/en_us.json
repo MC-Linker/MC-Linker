@@ -1117,9 +1117,9 @@
   "api.ftp.errors.could_not_parse.embeds.0.description": "Could not read the NBT file. File may be corrupted.",
   "api.ftp.errors.could_not_parse.console": "Could not read nbt file %error_stack%",
 
-  "api.utils.errors.could_not_fetch_uuid.embeds.0.title": "Could Not Fetch UUID",
-  "api.utils.errors.could_not_fetch_uuid.embeds.0.description": "**%username%** is not a valid minecraft account name. Geyser/Floodgate usernames need to start with the configured prefix.",
-  "api.utils.errors.could_not_fetch_uuid.console": "Could not fetch uuid of %username%",
+  "api.utils.errors.could_not_fetch_user.embeds.0.title": "Could Not Fetch User",
+  "api.utils.errors.could_not_fetch_user.embeds.0.description": "**%user%** is not a valid minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix.",
+  "api.utils.errors.could_not_fetch_user.console": "Could not fetch uuid/username of %user%",
 
   "api.utils.errors.not_sendable.embeds.0.title": "Cannot Send Messages",
   "api.utils.errors.not_sendable.embeds.0.description": "The bot does not have permission to send messages in this channel.",
