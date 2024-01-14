@@ -49,7 +49,7 @@ export default class UserConnectionManager extends ConnectionManager {
 
         if(arg.match(utils.UUIDRegex)) {
             const username = await utils.fetchUsername(arg);
-            if(username && server.online) return { uuid: arg, username: username, error: null };
+            if(username && server.online) return { uuid: arg, username, error: null };
             else if(username) arg = username; // If the server is offline, we'll calculate the uuid from the username.
             else return { error: 'fetch', uuid: null, username: null };
         }
