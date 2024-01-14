@@ -55,6 +55,7 @@ export default class UserConnectionManager extends ConnectionManager {
         server = this.client.serverConnections.resolve(server);
 
         if(arg.match(utils.UUIDRegex)) {
+            arg = utils.addHyphen(arg);
             const username = await utils.fetchUsername(arg);
             if(username && server.online) return { uuid: arg, username, error: null };
             else if(username) arg = username; // If the server is offline, we'll calculate the uuid from the username.

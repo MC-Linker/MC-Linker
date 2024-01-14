@@ -272,7 +272,8 @@ export async function fetchFloodgateUUID(username) {
 }
 
 
-function addHyphen(uuid) {
+export function addHyphen(uuid) {
+    if(uuid.length !== 32) return uuid; //Already has hyphens
     uuid = [...uuid];
     for(let i = 8; i <= 23; i += 5) uuid.splice(i, 0, '-');
     return uuid.join('');
