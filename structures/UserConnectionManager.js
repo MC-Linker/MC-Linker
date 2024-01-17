@@ -60,7 +60,7 @@ export default class UserConnectionManager extends ConnectionManager {
             if(username && server.online) return { uuid: arg, username, error: null };
             else if(username) arg = username; // If the server is offline, we'll calculate the uuid from the username.
             else {
-                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: args[this.requiresUserIndex] });
+                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
                 return { error: 'fetch', uuid: null, username: null };
             }
         }
@@ -72,7 +72,7 @@ export default class UserConnectionManager extends ConnectionManager {
         } else uuid = server.online ? await utils.fetchUUID(arg) : utils.createUUIDv3(arg);
 
         if(uuid) return { uuid: uuid, username: arg, error: null };
-        await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: args[this.requiresUserIndex] });
+        await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
         return { error: 'fetch', uuid: null, username: null };
     }
 }
