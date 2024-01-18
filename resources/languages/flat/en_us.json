@@ -854,7 +854,7 @@
   "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error_stack%",
 
   "commands.connect.step.command_verification.embeds.0.title": "Server Verification",
-  "commands.connect.step.command_verification.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
+  "commands.connect.step.command_verification.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server as an operator and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
 
   "commands.connect.step.code_verification.embeds.0.title": "Server Verification",
   "commands.connect.step.code_verification.embeds.0.description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
