@@ -8,29 +8,26 @@ Moderate and connect your Minecraft server with Discord! This bot allows you to 
 
 ## Setup
 
-To use most of the commands you’ll have to connect your Minecraft **java-edition** server with the bot. There are two methods to connect:
+To use most of the commands you’ll have to connect your Minecraft Java Edition server with the bot. This can be done by following these steps:
 
-+ Plugin (recommended)
-    + Add the "Discord-Linker" plugin to your Minecraft server using [this link](https://www.spigotmc.org/resources/discord-linker.98749/)
-    + Επανεκκινήστε τον διακομιστή Minecraft ή εκτελέστε `/reload επιβεβαιώστε` στον διακομιστή σας Minecraft
-    + Execute `/connect plugin` in Discord
-    + Follow the instructions in the embed
-+ FTP (no minecraft chat or commands)
-    + Get the ftp credentials from your Minecraft server’s dashboard. Join the [Support Server](https://discord.gg/rX36kZUGNK) or ask your host's support team if you need help getting the credentials
-    + Εκτέλεση του `/connect ftp` στο Discord και εισαγωγή των διαπιστευτηρίων σας
++ Add the "Discord-Linker" plugin to your Minecraft server from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.80691/)
++ Επανεκκινήστε τον διακομιστή Minecraft ή εκτελέστε `/reload επιβεβαιώστε` στον διακομιστή σας Minecraft
++ Execute `/connect plugin` in Discord
++ Follow the instructions in the embed
 
 ## Important Commands
 
 + `/help`: Detailed description and usage of every command
 + `/inventory`: Look in the inventory of any member
 + `/chatchannel`: Set a channel in which the bot will send the minecraft chat
++ `/statchannel`: Set a channel that will display the current online status or member count
 + `/command`: Execute any Minecraft command on your server
 + `/stats`: Look up Minecraft stats of any member
 + `/advancements`: Look up Minecraft advancements of any member
 + `/account connect`: Connect your Discord Account with your Minecraft Account
-+ `/connect plugin` OR `/connect ftp`: Connect your Minecraft server with the bot
++ `/connect`: Connect your Minecraft server with the bot
 + `/ban`: Ban a player directly from the Minecraft server
-+ `/op`: OP a player on the Minecraft server
++ `/serverinfo` or `/userinfo`: DIsplay information about your server or a connected user
 
 ### [Πολιτική Απορρήτου](https://mclinker.com/privacy)
 
