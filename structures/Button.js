@@ -1,6 +1,6 @@
 import { ButtonInteraction, PermissionsBitField, User } from 'discord.js';
-import { ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { ph } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 
 export default class Button {
 

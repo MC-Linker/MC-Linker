@@ -37,7 +37,6 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
         const connection = await this.cache.get(guildId);
         if(connection) return connection;
 
-        //Default settings
-        return await this.connect(guildId);
+        return await this.connect(ServerSettingsConnection.defaultSettingsData);
     }
 }

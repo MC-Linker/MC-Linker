@@ -1,9 +1,9 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
+import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Discord from 'discord.js';
-import * as utils from '../../api/utils.js';
-import { addPh, getComponent, getEmbed } from '../../api/messages.js';
+import * as utils from '../../utilities/utils.js';
+import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
 import gamerules from '../../resources/data/gamerules.json' assert { type: 'json' };
 import { unraw } from 'unraw';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -75,9 +75,8 @@ export default class ServerInfo extends Command {
         if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;
         else onlinePlayers = onlinePlayers.data.length;
 
-        const serverName = propertiesObject['server-name'] ?? server.protocol.ip;
-        const serverPort = propertiesObject['server-port'] ?? 25565;
-        const serverIp = serverPort !== 25565 ? `${server.protocol.ip}:${serverPort}` : server.protocol.ip;
+        const serverName = propertiesObject['server-name'] ?? server.getDisplayIp();
+        const serverIp = server.getDisplayIp();
 
         let motd;
         try {

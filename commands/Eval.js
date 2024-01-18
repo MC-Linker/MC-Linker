@@ -4,10 +4,10 @@ import Discord from 'discord.js';
 // noinspection ES6CheckImport
 import { Console } from 'console';
 import { Duplex } from 'stream';
-import { ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { ph } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import Command from '../structures/Command.js';
-import { MaxEmbedFieldValueLength } from '../api/utils.js';
+import { MaxEmbedFieldValueLength } from '../utilities/utils.js';
 
 // noinspection FunctionNamingConventionJS
 class ConsoleOutput extends Duplex {
@@ -64,10 +64,10 @@ export default class Eval extends Command {
                         const evalOut2 = new ConsoleOutput();
                         const console2 = new Console({ stdout: evalOut2 });
 
+                        console2.log(arg);
+
                         if(i > 0) out = `${out.slice(0, -1)} ${evalOut2._read()}`;
                         else out += evalOut2._read();
-
-                        console2.log(arg);
                     }
                 },
             };
@@ -75,7 +75,9 @@ export default class Eval extends Command {
             outputConsole.log(
                 await eval(`(async () => {
                     try {
-                        ${command.includes('return') || command.includes('console.log') ? command : `return ${command}`};
+                        return await (async () => {
+                            ${command.includes('return') || command.includes('console.log') ? command : `return ${command}`};
+                        })();
                     }
                     catch(err) {
                         return err;
@@ -87,7 +89,7 @@ export default class Eval extends Command {
             if(command.includes('return') || !command.includes('console.log')) out += evalOut._read();
 
             //Redact tokens
-            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET];
+            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET, process.env.MICROSOFT_EMAIL, process.env.MICROSOFT_PASSWORD];
             if(process.env.TOPGG_TOKEN) tokens.push(process.env.TOPGG_TOKEN);
             for(const token of tokens) {
                 out = out.replace(new RegExp(token, 'g'), 'REDACTED');

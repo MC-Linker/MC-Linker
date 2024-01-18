@@ -1,9 +1,9 @@
 import Discord, { ChannelType } from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
-import { cleanEmojis, getArgs } from './api/utils.js';
-import keys, { getLanguageKey } from './api/keys.js';
-import { addPh, addTranslatedResponses, getReplyOptions, ph } from './api/messages.js';
+import { cleanEmojis, getArgs } from './utilities/utils.js';
+import keys, { getLanguageKey } from './utilities/keys.js';
+import { addPh, addTranslatedResponses, getReplyOptions, ph } from './utilities/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
 
@@ -205,27 +205,49 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
 });
 
 client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
-    if(oldMember.roles.cache.size >= newMember.roles.cache.size) {
-        /** @type {ServerConnection} */
-        const server = client.serverConnections.cache.get(newMember.guild.id);
-        if(!server || !server.requiredRoleToJoin) return;
+    if(!oldMember.roles) return; //Prevent errors from oldMember being a partial
+    if(oldMember.roles.cache.size === newMember.roles.cache.size) return;
 
-        /** @type {UserConnection} */
-        const user = client.userConnections.cache.get(newMember.id);
-        if(!user) return;
+    /** @type {ServerConnection} */
+    const server = client.serverConnections.cache.get(newMember.guild.id);
+    if(!server || !server.protocol.isPluginProtocol()) return;
 
-        const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
-        if(removedRole.id === server.requiredRoleToJoin) {
-            await server.protocol.execute('kick ' + user.username + ' §cYou do not have the required role to join this server');
-        }
+    /** @type {UserConnection} */
+    const user = client.userConnections.cache.get(newMember.id);
+    if(!user) return;
+
+    const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
+    const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
+    if(server.requiredRoleToJoin) {
+        if(
+            server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
+            server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
+        ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
     }
+
+    const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
+    if(!role) return;
+
+    let resp;
+    if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
+    if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
+
+    const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
+    if(roleIndex === -1) return;
+
+    //Update players of role
+    role.players = resp.data;
+    server.syncedRoles[roleIndex] = role;
+
+    //Update server
+    if(resp.status === 200) await server.edit({});
 });
 
 /**
  * Send a message to a guild with the given key
  * This will try to send the message to the system channel first
- * If that also fails, it will try to send it to the public updates channel
- * If that fails, it will try to send it to the first text channel it finds
+ * If that fails, it will try to send it to the public updates channel
+ * If that also fails, it will try to send it to the first text channel it finds
  * @param {Discord.Guild} guild - The guild to send the message to
  * @param {any} key - The key of the message to send
  * @param {...Object} placeholders - The placeholders to use in the message

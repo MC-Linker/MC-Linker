@@ -1,6 +1,6 @@
 import { CachedManager } from 'discord.js';
 import fs from 'fs-extra';
-import { getManagerString } from '../api/shardingUtils.js';
+import { getManagerString } from '../utilities/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
 
 export default class ConnectionManager extends CachedManager {
@@ -127,6 +127,14 @@ export default class ConnectionManager extends CachedManager {
                     channel.id = channel._id;
                     delete channel._id;
                     return channel;
+                });
+            }
+            if('syncedRoles' in connection) {
+                //map syncedRoles _id to id
+                connection.syncedRoles = connection.syncedRoles.map(role => {
+                    role.id = role._id;
+                    delete role._id;
+                    return role;
                 });
             }
 

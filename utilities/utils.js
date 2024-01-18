@@ -28,6 +28,8 @@ const mcData = McData('1.20.1');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
+export const MaxAutoCompleteChoices = 25;
+export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
 
 // Password Auth:
 const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
@@ -230,6 +232,18 @@ export async function fetchUUID(username) {
     }
 }
 
+export async function fetchUsername(uuid) {
+    try {
+        const data = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`)
+            .then(data => data.json());
+
+        return data?.name;
+    }
+    catch(err) {
+        return undefined;
+    }
+}
+
 /**
  * Fetches the floodgate (geyser) uuid of the given username from the XBL API.
  * @param {string} username - The username to fetch the uuid for.
@@ -258,7 +272,8 @@ export async function fetchFloodgateUUID(username) {
 }
 
 
-function addHyphen(uuid) {
+export function addHyphen(uuid) {
+    if(uuid.length !== 32) return uuid; //Already has hyphens
     uuid = [...uuid];
     for(let i = 8; i <= 23; i += 5) uuid.splice(i, 0, '-');
     return uuid.join('');
@@ -279,19 +294,21 @@ export async function getArgs(interaction) {
     let incrementIndex = 0;
 
     function addArgs(allOptions, option) {
-        //we use optIndex instead of push because users can select options in any order they want
-        const optIndex = allOptions.findIndex(opt => opt.name === option.name) + incrementIndex;
+        //we use an index instead of push because users can select options in any order they want
+        const allOptionsIndex = allOptions.findIndex(opt => opt.name === option.name);
+        // Option has to be pushed further back if there are subcommands or subcommand groups before it
+        const argOptionIndex = allOptions.findIndex(opt => opt.name === option.name) + incrementIndex;
 
         if(option.type === ApplicationCommandOptionType.SubcommandGroup || option.type === ApplicationCommandOptionType.Subcommand) {
             args.push(option.name);
             incrementIndex++;
-            option.options.forEach(opt => addArgs(allOptions[optIndex].options, opt));
+            option.options.forEach(opt => addArgs(allOptions[allOptionsIndex].options, opt));
         }
-        else if(option.type === ApplicationCommandOptionType.Channel) args[optIndex] = option.channel;
-        else if(option.type === ApplicationCommandOptionType.User) args[optIndex] = option.user;
-        else if(option.type === ApplicationCommandOptionType.Role) args[optIndex] = option.role;
-        else if(option.type === ApplicationCommandOptionType.Attachment) args[optIndex] = option.attachment;
-        else args[optIndex] = option.value;
+        else if(option.type === ApplicationCommandOptionType.Channel) args[argOptionIndex] = option.channel;
+        else if(option.type === ApplicationCommandOptionType.User) args[argOptionIndex] = option.user;
+        else if(option.type === ApplicationCommandOptionType.Role) args[argOptionIndex] = option.role;
+        else if(option.type === ApplicationCommandOptionType.Attachment) args[argOptionIndex] = option.attachment;
+        else args[argOptionIndex] = option.value;
     }
 
     interaction.options.data.forEach(option => addArgs(slashCommand.options, option));
@@ -801,4 +818,34 @@ export function canSendMessages(member, channel, sendEmbed = true) {
     else if(!permissions.has(PermissionFlagsBits.SendMessages)) return false;
     else if(sendEmbed && !permissions.has(PermissionFlagsBits.EmbedLinks)) return false;
     return true;
+}
+
+/**
+ * Formats a duration in milliseconds to a string.
+ * @param {Number} ms - The duration in milliseconds.
+ * @returns {String} - The formatted duration.
+ * @example 1000 -> "1 second"
+ * @example 1000000 -> "16 minutes, 40 seconds"
+ * @example 1000000000 -> "11 days, 13 hours, 46 minutes, 40 seconds"
+ */
+export function durationString(ms) {
+    if(Number.isNaN(ms)) return 'Invalid duration';
+    let seconds = ms / 1000;
+    let minutes = seconds / 60;
+    let hours = minutes / 60;
+    let days = hours / 24;
+    let weeks = days / 7;
+    let years = days / 365.25; // .25 for leap years
+
+    // Round values and get remainder
+    seconds = Math.round(seconds) % 60;
+    minutes = Math.round(minutes) % 60;
+    hours = Math.round(hours) % 24;
+    days = Math.round(days) % 7;
+    weeks = Math.round(weeks) % 52;
+    years = Math.round(years);
+
+    return `${years} year${years === 1 ? '' : 's'}, ${weeks} week${weeks === 1 ? '' : 's'}, ${days} day${days === 1 ? '' : 's'}, ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+        //Remove 0 values
+        .replace(/(?<!\d)0\s[a-z]+,\s/g, '').replace(/(, 00:00:00)/, '');
 }

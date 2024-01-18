@@ -439,7 +439,7 @@ export function getActionRows(key, ...placeholders) {
 
     const allComponents = key.components
         ?.map(component => getComponent(component, ...placeholders))
-        ?.filter(component => component !== undefined);
+        ?.filter(component => component);
 
     return createActionRows(allComponents);
 }
@@ -488,7 +488,8 @@ export function getComponent(key, ...placeholders) {
                 .setCustomId(component.custom_id)
                 .setDisabled(component.disabled ?? false);
 
-            if(component.min_values) componentBuilder.setMinValues(component.min_values);
+            // Prevent 0 from being interpreted as false
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
 
@@ -507,6 +508,58 @@ export function getComponent(key, ...placeholders) {
             }
 
             break;
+        case Discord.ComponentType.RoleSelect:
+            if(!component.custom_id) return null;
+
+            componentBuilder = new Discord.RoleSelectMenuBuilder()
+                .setCustomId(component.custom_id)
+                .setDisabled(component.disabled ?? false);
+
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
+            if(component.max_values) componentBuilder.setMaxValues(component.max_values);
+            if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
+            if(component.default_values) componentBuilder.setDefaultRoles(component.default_values.map(value => value.id));
+
+            break;
+        case Discord.ComponentType.ChannelSelect:
+            if(!component.custom_id) return null;
+
+            componentBuilder = new Discord.ChannelSelectMenuBuilder()
+                .setCustomId(component.custom_id)
+                .setDisabled(component.disabled ?? false);
+
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
+            if(component.max_values) componentBuilder.setMaxValues(component.max_values);
+            if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
+            if(component.default_values) componentBuilder.setDefaultChannels(component.default_values.map(value => value.id));
+
+            break;
+        case Discord.ComponentType.UserSelect:
+            if(!component.custom_id) return null;
+
+            componentBuilder = new Discord.UserSelectMenuBuilder()
+                .setCustomId(component.custom_id)
+                .setDisabled(component.disabled ?? false);
+
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
+            if(component.max_values) componentBuilder.setMaxValues(component.max_values);
+            if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
+            if(component.default_values) componentBuilder.setDefaultUsers(component.default_values.map(value => value.id));
+
+            break;
+        case Discord.ComponentType.MentionableSelect:
+            if(!component.custom_id) return null;
+
+            componentBuilder = new Discord.MentionableSelectMenuBuilder()
+                .setCustomId(component.custom_id)
+                .setDisabled(component.disabled ?? false);
+
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
+            if(component.max_values) componentBuilder.setMaxValues(component.max_values);
+            if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
+            if(component.default_values) componentBuilder.setDefaultValues(component.default_values);
+
+            break;
         case Discord.ComponentType.TextInput:
             if(!component.style || !component.custom_id || !component.label) return null;
 
@@ -517,7 +570,7 @@ export function getComponent(key, ...placeholders) {
                 .setRequired(component.required ?? false);
 
             if(component.max_length) componentBuilder.setMaxLength(component.max_length);
-            if(component.min_length) componentBuilder.setMinLength(component.min_length);
+            if(typeof component.min_length === 'number') componentBuilder.setMinLength(component.min_length);
             if(component.value) componentBuilder.setValue(component.value);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.label) componentBuilder.setLabel(component.label);
@@ -617,7 +670,7 @@ export function getCommand(key) {
 
 /**
  * Get a modal builder from a language key.
- * @param {Discord.ModalData} key - The language key to get the modal builder from.
+ * @param {Discord.APIModalInteractionResponseCallbackData} key - The language key to get the modal builder from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
  * @returns {?ModalBuilder}
  */
@@ -652,7 +705,7 @@ function addSlashCommandOption(builder, key) {
                 .setAutocomplete(key.autocomplete ?? false);
 
             if(key.max_length) optionBuilder.setMaxLength(key.max_length);
-            if(key.min_length) optionBuilder.setMinLength(key.max_length);
+            if(typeof key.min_length === 'number') optionBuilder.setMinLength(key.min_length);
 
             for(const choice of key.choices ?? []) {
                 if(!choice.name || !choice.value) continue;
@@ -678,7 +731,7 @@ function addSlashCommandOption(builder, key) {
                 .setRequired(key.required ?? false)
                 .setAutocomplete(key.autocomplete ?? false);
 
-            if(key.min_value) optionBuilder.setMinValue(key.min_value);
+            if(typeof key.min_value === 'number') optionBuilder.setMinValue(key.min_value);
             if(key.max_value) optionBuilder.setMaxValue(key.max_value);
 
             for(const choice of key.choices ?? []) {
@@ -705,7 +758,7 @@ function addSlashCommandOption(builder, key) {
                 .setRequired(key.required ?? false)
                 .setAutocomplete(key.autocomplete ?? false);
 
-            if(key.min_value) optionBuilder.setMinValue(key.min_value);
+            if(typeof key.min_value === 'number') optionBuilder.setMinValue(key.min_value);
             if(key.max_value) optionBuilder.setMaxValue(key.max_value);
 
             for(const choice of key.choices ?? []) {
@@ -794,6 +847,8 @@ export function createActionRows(components) {
     let currentRow = new Discord.ActionRowBuilder();
 
     for(const component of components) {
+        currentRow.addComponents(component);
+
         const maxAmount = maxComponentsInActionRow[component.data.type];
 
         //If the same component type is already in the row more than the max amount, create a new row.
@@ -801,8 +856,6 @@ export function createActionRows(components) {
             actionRows.push(currentRow);
             currentRow = new Discord.ActionRowBuilder();
         }
-
-        currentRow.addComponents(component);
     }
     if(currentRow.components.length > 0) actionRows.push(currentRow);
 

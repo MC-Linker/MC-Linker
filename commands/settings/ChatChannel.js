@@ -1,9 +1,9 @@
 import Discord, { PermissionFlagsBits } from 'discord.js';
-import { getComponent, getEmbed, ph } from '../../api/messages.js';
-import keys, { getLanguageKey } from '../../api/keys.js';
+import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
+import keys, { getLanguageKey } from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
-import * as utils from '../../api/utils.js';
-import { canSendMessages } from '../../api/utils.js';
+import * as utils from '../../utilities/utils.js';
+import { canSendMessages } from '../../utilities/utils.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 export default class ChatChannel extends Command {
@@ -19,10 +19,10 @@ export default class ChatChannel extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const method = args[0];
+        const subcommand = args[0];
 
         //Add chatchannel
-        if(method === 'add') {
+        if(subcommand === 'add') {
             /** @type {Discord.BaseGuildTextChannel} */
             const channel = args[1];
             const allowDiscordToMinecraft = args[2] ?? true;
@@ -76,27 +76,19 @@ export default class ChatChannel extends Command {
 
             return interaction.replyTl(keys.commands.chatchannel.success.add, ph.emojisAndColors());
         }
-        //Remove chatchannel
-        else if(method === 'remove') {
+        else if(subcommand === 'remove') {
             const channel = args[1];
 
-            if(!channel.isTextBased()) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.no_text_channel);
-            }
+            const chatChannel = server.chatChannels.find(c => c.id === channel.id);
+            if(!chatChannel) return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
 
-            const channelIndex = server.chatChannels.findIndex(c => c.id === channel.id);
-            if(channelIndex === -1) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
-            }
-
-            const resp = await server.protocol.removeChatChannel(server.chatChannels[channelIndex]);
+            const resp = await server.protocol.removeChatChannel(chatChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
             await server.edit({ chatChannels: resp.data });
-
             return interaction.replyTl(keys.commands.chatchannel.success.remove);
         }
-        else if(method === 'list') {
+        else if(subcommand === 'list') {
             if(!server.chatChannels?.length) return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
 
             /** @type {PaginationPages} */
@@ -111,8 +103,8 @@ export default class ChatChannel extends Command {
                     ph.std(interaction),
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
-                        webhooks: channel.webhook ? keys.commands.chatchannel.success.enabled : keys.commands.chatchannel.success.disabled,
-                        discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.commands.chatchannel.success.enabled : keys.commands.chatchannel.success.disabled,
+                        webhooks: channel.webhook ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
+                        discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
                         channel_types: formattedTypes,
                     },
                 );

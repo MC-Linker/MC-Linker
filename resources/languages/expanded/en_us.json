@@ -79,6 +79,15 @@
           }
         ],
         "console": "%author_username% used prefix command %interaction_name%"
+      },
+      "no_permission_component": {
+        "embeds": [
+          {
+            "title": "No Permission",
+            "description": "Only the command sender can use this!"
+          }
+        ],
+        "ephemeral": true
       }
     },
     "errors": {
@@ -268,28 +277,6 @@
             }
           ]
         },
-        "disable_button": {
-          "components": [
-            {
-              "type": "Button",
-              "style": "Danger",
-              "custom_id": "disable_%command_name%",
-              "label": "Disable this command!",
-              "emoji": "%emoji_error%"
-            }
-          ]
-        },
-        "enable_button": {
-          "components": [
-            {
-              "type": "Button",
-              "style": "Success",
-              "custom_id": "enable_%command_name%",
-              "label": "Enable this command!",
-              "emoji": "%emoji_success%"
-            }
-          ]
-        },
         "disabled": {
           "embeds": [
             {
@@ -297,6 +284,51 @@
             }
           ]
         }
+      }
+    },
+    "systemstats": {
+      "step": {
+        "measuring": {
+          "embeds": [
+            {
+              "title": "Measuring System Stats",
+              "description": "Please wait while I measure the system stats..."
+            }
+          ]
+        }
+      },
+      "success": {
+        "embeds": [
+          {
+            "title": "System Stats",
+            "fields": [
+              {
+                "name": "Platform",
+                "value": "`%platform%`"
+              },
+              {
+                "name": "OS Uptime",
+                "value": "`%os_uptime%`"
+              },
+              {
+                "name": "Bot Uptime",
+                "value": "`%bot_uptime%`"
+              },
+              {
+                "name": "CPU (Usage)",
+                "value": "`%cpu%` (`%cpu_usage_percent%`)"
+              },
+              {
+                "name": "Memory Usage",
+                "value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%`)"
+              },
+              {
+                "name": "Library",
+                "value": "`%library%`"
+              }
+            ]
+          }
+        ]
       }
     },
     "advancements": {
@@ -1201,15 +1233,6 @@
           ],
           "console": "No channels added"
         },
-        "no_text_channel": {
-          "embeds": [
-            {
-              "title": "No Text Channel Specified",
-              "description": "Please mention a text, thread or news channel."
-            }
-          ],
-          "console": "No text channel specified"
-        },
         "channel_not_added": {
           "embeds": [
             {
@@ -1375,9 +1398,7 @@
               "style": "Success"
             }
           ]
-        },
-        "enabled": "Enabled",
-        "disabled": "Disabled"
+        }
       }
     },
     "connect": {
@@ -1459,6 +1480,15 @@
             }
           ],
           "console": "No reply in time"
+        },
+        "not_collected": {
+          "embeds": [
+            {
+              "title": "Choose Required Roles To Join",
+              "description": "Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)"
+            }
+          ],
+          "components": []
         }
       },
       "step": {
@@ -1491,7 +1521,7 @@
           "embeds": [
             {
               "title": "Server Verification",
-              "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
+              "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server as an operator and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
             }
           ]
         },
@@ -1499,8 +1529,41 @@
           "embeds": [
             {
               "title": "Server Verification",
-              "description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
-              "color": "DarkGold"
+              "description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**"
+            }
+          ]
+        },
+        "choose_roles": {
+          "embeds": [
+            {
+              "title": "Choose Required Roles To Join",
+              "description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (You have 3 minutes to select)"
+            }
+          ],
+          "components": [
+            {
+              "type": "StringSelect",
+              "custom_id": "required_roles_method",
+              "placeholder": "Select the method to check the roles.",
+              "options": [
+                {
+                  "label": "Any",
+                  "description": "The player only needs to have one of the selected roles to join.",
+                  "value": "any"
+                },
+                {
+                  "label": "All",
+                  "description": "The player needs to have all of the selected roles to join.",
+                  "value": "all"
+                }
+              ]
+            },
+            {
+              "type": "RoleSelect",
+              "custom_id": "required_roles",
+              "placeholder": "Select up to 25 roles.",
+              "min_values": 1,
+              "max_values": 25
             }
           ]
         }
@@ -1721,6 +1784,111 @@
         ],
         "console": "Successfully enabled %type% %enable%"
       }
+    },
+    "rolesync": {
+      "warnings": {
+        "no_roles": {
+          "embeds": [
+            {
+              "title": "No Synced Roles Added",
+              "description": "There are no added synced roles."
+            }
+          ],
+          "console": "No synced roles added"
+        },
+        "role_not_added": {
+          "embeds": [
+            {
+              "title": "Role Not Added",
+              "description": "The specified role is not added."
+            }
+          ],
+          "console": "Role not added"
+        }
+      },
+      "errors": {
+        "group_not_found": {
+          "embeds": [
+            {
+              "title": "Group Or Team Not Found",
+              "description": "Could not find a group or team with the name **%name%**."
+            }
+          ],
+          "console": "Group or team not found"
+        },
+        "not_editable": {
+          "embeds": [
+            {
+              "title": "Role Not Editable",
+              "description": "I do not have permission to edit members of the role **%role%**."
+            }
+          ],
+          "console": "Role not editable"
+        },
+        "luckperms_not_loaded": {
+          "embeds": [
+            {
+              "title": "Luckperms Not Loaded",
+              "description": "Please install luckperms or sync to a team instead."
+            }
+          ],
+          "console": "Luckperms not loaded"
+        }
+      },
+      "success": {
+        "add": {
+          "embeds": [
+            {
+              "title": "Added Synced Role",
+              "description": "Successfully added the synced role."
+            }
+          ],
+          "console": "Successfully added synced role"
+        },
+        "remove": {
+          "embeds": [
+            {
+              "title": "Removed Synced Role",
+              "description": "Successfully removed the synced role."
+            }
+          ],
+          "console": "Successfully removed synced role"
+        },
+        "list": {
+          "embeds": [
+            {
+              "title": "List Synced Roles",
+              "fields": [
+                {
+                  "name": "Role",
+                  "value": "%role%"
+                },
+                {
+                  "name": "%group_or_team%",
+                  "value": "%group_or_team_value%"
+                },
+                {
+                  "name": "Members",
+                  "value": "%member_count%"
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed chat channels"
+        },
+        "role_button": {
+          "components": [
+            {
+              "type": "Button",
+              "label": "Role #%index1%",
+              "custom_id": "role_%index%",
+              "style": "Success"
+            }
+          ]
+        }
+      },
+      "group": "Group",
+      "team": "Team"
     }
   },
   "api": {
@@ -1843,6 +2011,7 @@
         }
       },
       "success": {
+        "default_death_message": "%username% died",
         "messages": {
           "chat": {
             "embeds": [
@@ -1988,14 +2157,14 @@
     },
     "utils": {
       "errors": {
-        "could_not_fetch_uuid": {
+        "could_not_fetch_user": {
           "embeds": [
             {
-              "title": "Could Not Fetch UUID",
-              "description": "**%username%** is not a valid minecraft account name. Geyser/Floodgate usernames need to start with the configured prefix."
+              "title": "Could Not Fetch User",
+              "description": "**%user%** is not a valid minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
             }
           ],
-          "console": "Could not fetch uuid of %username%"
+          "console": "Could not fetch uuid/username of %user%"
         },
         "not_sendable": {
           "embeds": [
@@ -2264,7 +2433,7 @@
     "advancements": {
       "name": "advancements",
       "type": "ChatInput",
-      "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.fandom.com/wiki/Advancement#List_of_advancements).",
+      "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
       "description": "Look up your and other member's minecraft advancements.",
       "options": [
         {
@@ -2305,7 +2474,7 @@
     "stats": {
       "name": "stats",
       "type": "ChatInput",
-      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.fandom.com/wiki/Statistics#Statistic_types_and_names).",
+      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
       "description": "Look at your and other member's minecraft server stats.",
       "options": [
         {
@@ -2712,7 +2881,7 @@
     "message": {
       "name": "message",
       "type": "ChatInput",
-      "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.fandom.com/wiki/Formatting_codes#Color_codes).",
+      "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.wiki/w/Formatting_codes#Color_codes).",
       "description": "Send private chat messages to members on the server.",
       "options": [
         {
@@ -2879,13 +3048,13 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
-      "description": "Add or remove a channel in which the bot will send minecraft chat messages and logs.",
+      "long_description": "Manage channels in which the bot will send minecraft chat messages and logs.",
+      "description": "Manage channels in which the bot will send minecraft chat messages and logs.",
       "options": [
         {
           "type": "Subcommand",
           "name": "add",
-          "description": "Set a chatchannel.",
+          "description": "Add a chatchannel.",
           "options": [
             {
               "type": "Channel",
@@ -3071,9 +3240,29 @@
           "description": "Connect your Minecraft server using the Discord-Linker plugin.",
           "options": [
             {
-              "type": "Role",
-              "name": "required-role-to-join",
-              "description": "Set the required role to join the server.",
+              "type": "String",
+              "name": "join-requirement",
+              "description": "Set which requirements a user needs to join the server.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "None",
+                  "value": "none"
+                },
+                {
+                  "name": "Require Role(s)",
+                  "value": "roles"
+                },
+                {
+                  "name": "Require Linked Account",
+                  "value": "link"
+                }
+              ]
+            },
+            {
+              "type": "String",
+              "name": "display-ip",
+              "description": "Set the public IP address that will be displayed in some of the bot's commands.",
               "required": false
             }
           ]
@@ -3098,10 +3287,24 @@
               "max_value": 65535
             },
             {
-              "type": "Role",
-              "name": "required-role-to-join",
-              "description": "Set the role that is required to join the server.",
-              "required": false
+              "type": "String",
+              "name": "join-requirement",
+              "description": "Set which requirements a user needs to join the server.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "None",
+                  "value": "none"
+                },
+                {
+                  "name": "Require Role(s)",
+                  "value": "roles"
+                },
+                {
+                  "name": "Require Linked Account",
+                  "value": "link"
+                }
+              ]
             }
           ]
         }
@@ -3113,22 +3316,9 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.\nBot-commands can also be disabled through buttons in `/help <command>`.",
+      "long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.",
       "description": "Disable a specific command/stat/advancement.",
       "options": [
-        {
-          "type": "Subcommand",
-          "name": "bot-commands",
-          "description": "Disable a bot-command preventing it from being used.",
-          "options": [
-            {
-              "type": "String",
-              "name": "command",
-              "description": "Set the command you want to disable",
-              "required": true
-            }
-          ]
-        },
         {
           "type": "Subcommand",
           "name": "advancements",
@@ -3183,12 +3373,8 @@
               "required": true,
               "choices": [
                 {
-                  "name": "Bot Commands",
-                  "value": "bot-commands"
-                },
-                {
                   "name": "Chat Commands",
-                  "value": "chat-commands"
+                  "value": "chatCommands"
                 },
                 {
                   "name": "Advancements",
@@ -3219,23 +3405,9 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default). Bot-Commands can also be enabled through buttons in `/help <command>`.",
+      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default).",
       "description": "Enable a disabled command/stat/advancement (All enabled by default)",
       "options": [
-        {
-          "type": "Subcommand",
-          "name": "bot-commands",
-          "description": "Enable a disabled bot-command allowing it to be used again.",
-          "options": [
-            {
-              "type": "String",
-              "name": "command",
-              "description": "Set the command you want to enable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
         {
           "type": "Subcommand",
           "name": "stats",
@@ -3277,6 +3449,55 @@
               "autocomplete": true
             }
           ]
+        }
+      ]
+    },
+    "rolesync": {
+      "name": "rolesync",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
+      "description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "add",
+          "description": "Add a synced role.",
+          "options": [
+            {
+              "type": "Role",
+              "name": "role",
+              "description": "Set the role you want to sync.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "group_or_team",
+              "description": "Set the minecraft team or luckperms group you want to sync to.",
+              "autocomplete": true,
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "remove",
+          "description": "Remove an existing synced role.",
+          "options": [
+            {
+              "type": "Role",
+              "name": "role",
+              "description": "Set the role you want to remove.",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "List all synced roles."
         }
       ]
     }

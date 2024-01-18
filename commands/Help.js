@@ -1,5 +1,5 @@
-import { addPh, fetchCommand, getActionRows, getEmbed, ph } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { addPh, fetchCommand, getEmbed, ph } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import Command from '../structures/Command.js';
 import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
 
@@ -14,8 +14,6 @@ export default class Help extends Command {
 
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
-
-        const settings = client.serverSettingsConnections.cache.get(interaction.guildId);
 
         const commandName = args[0]?.toLowerCase();
 
@@ -69,24 +67,7 @@ export default class Help extends Command {
                 },
                 await ph.commandName(commandName, client),
             ));
-
-            if(settings && settings.isDisabled('botCommands', command.name)) {
-                const enableRows = getActionRows(
-                    keys.commands.help.success.enable_button,
-                    { 'command_name': command.name }, ph.emojisAndColors(),
-                );
-
-                helpEmbed.setDescription(keys.commands.help.success.disabled.embeds[0].description);
-                return interaction.replyOptions({ embeds: [helpEmbed], components: enableRows });
-            }
-            else {
-                const disableRows = getActionRows(
-                    keys.commands.help.success.disable_button,
-                    { 'command_name': command.name }, ph.emojisAndColors(),
-                );
-
-                return interaction.replyOptions({ embeds: [helpEmbed], components: disableRows });
-            }
+            return interaction.replyOptions({ embeds: [helpEmbed] });
 
             /**
              * @param {ApplicationCommand|import('discord.js').ApplicationCommandSubCommand} command

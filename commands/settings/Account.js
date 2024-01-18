@@ -1,9 +1,9 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
-import * as utils from '../../api/utils.js';
+import keys from '../../utilities/keys.js';
+import * as utils from '../../utilities/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
-import { ph } from '../../api/messages.js';
+import { ph } from '../../utilities/messages.js';
 import client from '../../bot.js';
 
 export default class Account extends Command {
@@ -32,25 +32,20 @@ export default class Account extends Command {
 
         const subcommand = args[0];
         if(subcommand === 'connect') {
-            const username = args[1];
-
             if(!server?.protocol?.isPluginProtocol()) {
                 return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             }
 
-            if(username.match(Discord.MessageMentions.UsersPattern)) {
+            if(args[1].match(Discord.MessageMentions.UsersPattern)) {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 
-            let uuid;
-            if(server.floodgatePrefix && username.startsWith(server.floodgatePrefix)) {
-                const usernameWithoutPrefix = username.slice(server.floodgatePrefix.length);
-                uuid = await utils.fetchFloodgateUUID(usernameWithoutPrefix);
-            } else uuid = server.online ? await utils.fetchUUID(username) : utils.createUUIDv3(username);
-
-            if(!uuid) {
-                return interaction.replyTl(keys.api.utils.errors.could_not_fetch_uuid, { username });
-            }
+            const {
+                uuid,
+                username,
+                error,
+            } = await client.userConnections.userFromArgument(args[1], server, interaction);
+            if(error) return;
 
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
 
@@ -59,7 +54,7 @@ export default class Account extends Command {
 
             await interaction.replyTl(keys.commands.account.step.verification_info, {
                 code,
-                ip: server.ip,
+                ip: server.getDisplayIp(),
             }, ph.emojisAndColors());
 
             const timeout = setTimeout(async () => {

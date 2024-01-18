@@ -1,11 +1,11 @@
 import Canvas from 'skia-canvas';
 import Discord from 'discord.js';
 import minecraft_data from 'minecraft-data';
-import { addPh, getComponent, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import * as utils from '../../api/utils.js';
+import * as utils from '../../utilities/utils.js';
 
 const mcData = minecraft_data('1.20.1');
 

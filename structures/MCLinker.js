@@ -4,13 +4,14 @@ import UserConnectionManager from './UserConnectionManager.js';
 import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.js';
 import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
 import fs from 'fs-extra';
-import { addPh } from '../api/messages.js';
-import keys from '../api/keys.js';
+import { addPh } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';
-import BotAPI from '../api/BotAPI.js';
-import * as utils from '../api/utils.js';
+import MCLinkerAPI from './MCLinkerAPI.js';
+import * as utils from '../utilities/utils.js';
+import { convert } from '../scripts/convert.js';
 import mongoose, { Mongoose, Schema } from 'mongoose';
 
 export default class MCLinker extends Discord.Client {
@@ -62,17 +63,12 @@ export default class MCLinker extends Discord.Client {
         ],
         partials: [
             Discord.Partials.Channel,
+            Discord.Partials.GuildMember,
         ],
         // Disable @everyone and @here mentions
-        allowedMentions: { parse: [Discord.AllowedMentionsTypes.Role, Discord.AllowedMentionsTypes.User] },
+        allowedMentions: { parse: ['users', 'roles'] },
     }) {
         super(options);
-
-        /**
-         * The API instance of the bot.
-         * @type {BotAPI}
-         */
-        this.api = new BotAPI(this);
 
         /**
          * The server-connection manager for the bot.
@@ -127,6 +123,12 @@ export default class MCLinker extends Discord.Client {
          * @type {typeof utils}
          */
         this.utils = { ...utils };
+
+        /**
+         * The API instance of the bot.
+         * @type {MCLinkerAPI}
+         */
+        this.api = new MCLinkerAPI(this);
     }
 
     async _loadCommands() {
@@ -134,7 +136,7 @@ export default class MCLinker extends Discord.Client {
 
         const commandCategories = commands.filter(command => !command.endsWith('.js'));
         const commandFiles = commands.filter(command => command.endsWith('.js'));
-        commandFiles.forEach(file => loadCommand.call(this, file));
+        for(const file of commandFiles) await loadCommand.call(this, file);
 
         for(const category of commandCategories) {
             const commandFiles = (await fs.readdir(`${this.commandPath}/${category}`))
@@ -189,6 +191,11 @@ export default class MCLinker extends Discord.Client {
         await this.loadMongoose();
         console.log(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
+        if(process.env.CONVERT === 'true' && this.shard.ids[0] === 0) {
+            await convert(this.mongo);
+            console.log('Converted database.');
+        }
+
         await this.serverConnections._load();
         console.log(`[${this.shard.ids[0]}] Loaded all server connections.`);
         await this.userConnections._load();
@@ -219,7 +226,8 @@ export default class MCLinker extends Discord.Client {
             worldPath: String,
             online: Boolean,
             floodgatePrefix: String,
-            requiredRoleToJoin: String,
+            requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
+            displayIp: String,
             protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
             port: Number,
             username: String,
@@ -244,13 +252,18 @@ export default class MCLinker extends Discord.Client {
                     members: String,
                 },
             }],
+            syncedRoles: [{
+                _id: { type: String },
+                name: String,
+                isGroup: Boolean,
+                players: [String],
+            }],
             serverSettings: { type: String, ref: 'ServerSettingsConnections' },
         });
 
         const serverSettingsConnectionSchema = new Schema({
             _id: { type: String },
             disabled: {
-                botCommands: [String],
                 advancements: [String],
                 stats: [String],
                 chatCommands: [String],

@@ -1,8 +1,8 @@
 import Command from '../../structures/Command.js';
-import keys from '../../api/keys.js';
+import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
-import * as utils from '../../api/utils.js';
-import { codeBlockFromCommandResponse, formatDuration, getMinecraftAvatarURL } from '../../api/utils.js';
+import * as utils from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse, formatDuration, getMinecraftAvatarURL } from '../../utilities/utils.js';
 import {
     addPh,
     addTranslatedResponses,
@@ -10,7 +10,7 @@ import {
     getComponent,
     getReplyOptions,
     ph,
-} from '../../api/messages.js';
+} from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
 import minecraft_data from 'minecraft-data';
@@ -41,7 +41,7 @@ export default class UserInfo extends Command {
         let onlinePlayers = [];
         if(server.protocol.isPluginProtocol()) {
             const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-            if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data;
+            if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
         }
 
         const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
@@ -75,8 +75,8 @@ export default class UserInfo extends Command {
             name: user.username,
             uuid: user.uuid,
             icon_url: await getMinecraftAvatarURL(user.username),
-            status: onlinePlayers.includes(user.username) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
-            status_emoji: onlinePlayers.includes(user.username) ? ':green_circle:' : ':red_circle:',
+            status: onlinePlayers.includes(user.username.toLowerCase()) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
+            status_emoji: onlinePlayers.includes(user.username.toLowerCase()) ? ':green_circle:' : ':red_circle:',
             operator: matchingOp ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
             operator_level: matchingOp?.level ?? 0,
             whitelisted: matchingWhitelist ? keys.commands.userinfo.yes : keys.commands.userinfo.no,
@@ -166,7 +166,7 @@ export default class UserInfo extends Command {
             matchingOp ? getComponent(keys.commands.userinfo.success.buttons.deop) : getComponent(keys.commands.userinfo.success.buttons.op),
             matchingWhitelist ? getComponent(keys.commands.userinfo.success.buttons.unwhitelist) : getComponent(keys.commands.userinfo.success.buttons.whitelist),
         ];
-        if(onlinePlayers.includes(user.username)) adminButtons.unshift(getComponent(keys.commands.userinfo.success.buttons.kick));
+        if(onlinePlayers.includes(user.username.toLowerCase())) adminButtons.unshift(getComponent(keys.commands.userinfo.success.buttons.kick));
 
         // FTP does not support commands
         if(!server.protocol.isFtpProtocol()) adminMessage.components = createActionRows(adminButtons);

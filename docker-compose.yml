@@ -10,6 +10,9 @@ services:
       - type: bind
         source: ./download-cache
         target: /usr/src/app/download-cache
+    environment:
+      - DEBUG=$DEBUG
+      - CONVERT=$CONVERT # true or false
     networks:
       - mongo-network
 

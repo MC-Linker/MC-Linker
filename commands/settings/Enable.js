@@ -1,6 +1,7 @@
-import * as utils from '../../api/utils.js';
-import { ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import * as utils from '../../utilities/utils.js';
+import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
+import { ph } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 
 export default class Enable extends AutocompleteCommand {
@@ -23,7 +24,7 @@ export default class Enable extends AutocompleteCommand {
         const disabled = settings.disabled[subcommand];
         if(!disabled) return;
         const matchingDisabled = disabled.filter(disable => disable.includes(focused));
-        if(matchingDisabled.length >= 25) matchingDisabled.length = 25;
+        if(matchingDisabled.length > MaxAutoCompleteChoices) matchingDisabled.length = 25;
 
         const respondArray = [];
         for(let disable of matchingDisabled) {
@@ -39,7 +40,6 @@ export default class Enable extends AutocompleteCommand {
                 const matchingStat = utils.searchAllStats(disable, true, true, 1);
                 formattedDisable = matchingStat.shift()?.name ?? disable.cap();
             }
-            else if(subcommand === 'botCommands') formattedDisable = disable.cap();
             else formattedDisable = disable;
 
             respondArray.push({
@@ -65,17 +65,7 @@ export default class Enable extends AutocompleteCommand {
         }
 
         let formattedToEnable;
-        if(type === 'botCommands') {
-            const command = keys.data[toEnable];
-
-            if(!command) {
-                return interaction.replyTl(keys.commands.enable.warnings.command_does_not_exist, argPlaceholder);
-            }
-
-            toEnable = command.name;
-            formattedToEnable = toEnable.cap();
-        }
-        else if(type === 'advancements') {
+        if(type === 'advancements') {
             const matchingTitle = utils.searchAllAdvancements(toEnable, true, true, 1);
             formattedToEnable = matchingTitle.shift()?.name ?? toEnable.cap();
 

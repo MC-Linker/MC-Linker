@@ -1,14 +1,13 @@
-import * as utils from '../../api/utils.js';
-import { addPh, getEmbed, ph } from '../../api/messages.js';
-import keys from '../../api/keys.js';
+import * as utils from '../../utilities/utils.js';
+import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
+import { addPh, getEmbed, ph } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };
 
 const commandNames = Object.keys(commands);
 
 export default class Disable extends AutocompleteCommand {
-
-    disabledCommands = ['enable', 'disable', 'help'];
 
     constructor() {
         super({
@@ -35,7 +34,7 @@ export default class Disable extends AutocompleteCommand {
                 });
             }
 
-            if(matchingKeys.length >= 25) matchingKeys.length = 25;
+            if(matchingKeys.length > MaxAutoCompleteChoices) matchingKeys.length = 25;
         }
 
         interaction.respond(matchingKeys)
@@ -47,11 +46,10 @@ export default class Disable extends AutocompleteCommand {
 
         const settings = await client.serverSettingsConnections.getOrConnect(interaction.guildId);
         const type = args.shift()
-            .replace('bot-commands', 'botCommands')
             .replace('chat-commands', 'chatCommands');
 
         if(type === 'list') {
-            const toList = args.join(' ').toLowerCase();
+            const toList = args[1];
 
             const disabled = settings.disabled[toList];
             if(!disabled?.length) {
@@ -78,18 +76,13 @@ export default class Disable extends AutocompleteCommand {
             return interaction.replyOptions({ embeds: [listEmbed] });
         }
         else {
-            let toDisable = args.join(' ').toLowerCase();
+            const toDisable = args.join(' ').toLowerCase();
             const argPlaceholder = { disable: toDisable, type };
-
-            if(type === 'botCommands' && this.disabledCommands.includes(toDisable)) {
-                return interaction.replyTl(keys.commands.disable.warnings.disabled_command, argPlaceholder);
-            }
 
             const formattedToDisable = getFormattedName(type, toDisable);
             if(!formattedToDisable) {
                 return interaction.replyTl(keys.commands.disable.warnings.command_does_not_exist, argPlaceholder);
             }
-            if(type === 'botCommands') toDisable = formattedToDisable.toLowerCase();
 
             if(!await settings.disable(type, toDisable)) {
                 return interaction.replyTl(keys.commands.disable.errors.could_not_disable, {
@@ -102,13 +95,7 @@ export default class Disable extends AutocompleteCommand {
         }
 
         function getFormattedName(type, name) {
-            if(type === 'botCommands') {
-                const command = client.commands.get(name);
-                if(!command) return;
-
-                return command.name.cap();
-            }
-            else if(type === 'advancements') {
+            if(type === 'advancements') {
                 const matchingTitle = utils.searchAllAdvancements(name, true, true, 1);
                 return matchingTitle.shift()?.name ?? name;
             }

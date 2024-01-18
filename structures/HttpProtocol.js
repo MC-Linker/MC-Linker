@@ -135,7 +135,7 @@ const PluginRoutes = {
      * @param {string} ip - The IP address of the server.
      * @param {number} guildId - The Id of the guild that tries to connect.
      * @param {string} verifyCode - The verification code to use.
-     * @param {?string} requiredRoleToJoin - The role id that is required to have for joining the server.
+     * @param {?RequiredRoleToJoinData} requiredRoleToJoin - The data for the required roles to join the server.
      * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     Connect: (ip, guildId, verifyCode, requiredRoleToJoin) => [
@@ -154,7 +154,7 @@ const PluginRoutes = {
     ],
     /**
      * Adds a chatchannel to the server.
-     * @param {ChatChannelData} channel - The chat channel to add.
+     * @param {ChatChannelData} channel - The chatchannel to add.
      * @returns {HttpProtocolFetchData}
      */
     AddChannel: channel => [
@@ -164,7 +164,7 @@ const PluginRoutes = {
     ],
     /**
      * Removes a chatchannel from the server.
-     * @param {ChatChannelData} channel - The chat channel to remove.
+     * @param {ChatChannelData} channel - The chatchannel to remove.
      * @returns {HttpProtocolFetchData}
      */
     RemoveChannel: channel => [
@@ -174,7 +174,7 @@ const PluginRoutes = {
     ],
     /**
      * Adds a stats-channel to the server.
-     * @param {StatsChannelData} channel - The stats channel to add.
+     * @param {StatsChannelData} channel - The stats-channel to add.
      * @returns {HttpProtocolFetchData}
      */
     AddStatsChannel: channel => [
@@ -184,7 +184,7 @@ const PluginRoutes = {
     ],
     /**
      * Removes a stats-channel from the server.
-     * @param {StatsChannelData} channel - The stats channel to remove.
+     * @param {StatsChannelData} channel - The stats-channel to remove.
      * @returns {HttpProtocolFetchData}
      */
     RemoveStatsChannel: channel => [
@@ -193,12 +193,62 @@ const PluginRoutes = {
         channel,
     ],
     /**
+     * Adds a synced-role to the server.
+     * @param {SyncedRoleData & { override: 'minecraft'|'discord'|null }} role - The synced-role to add.
+     * @returns {HttpProtocolFetchData}
+     */
+    AddSyncedRole: role => [
+        'POST',
+        '/synced-role/add',
+        role,
+    ],
+    /**
+     * Removes a synced-role from the server.
+     * @param {SyncedRoleData} role - The synced-role to remove.
+     * @returns {HttpProtocolFetchData}
+     */
+    RemoveSyncedRole: role => [
+        'POST',
+        '/synced-role/remove',
+        role,
+    ],
+    /**
+     * Removes a member from a synced-role.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
+     * @param {string} uuid - The UUID of the member to remove.
+     * @returns {HttpProtocolFetchData}
+     */
+    RemoveSyncedRoleMember: (role, uuid) => [
+        'POST',
+        '/synced-role/remove-member',
+        { ...role, uuid },
+    ],
+    /**
+     * Adds a member to a synced-role.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
+     * @param {string} uuid - The UUID of the member to add.
+     * @returns {HttpProtocolFetchData}
+     */
+    AddSyncedRoleMember: (role, uuid) => [
+        'POST',
+        '/synced-role/add-member',
+        { ...role, uuid },
+    ],
+    /**
      * Lists the online players on the server.
      * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
     ListOnlinePlayers: () => [
         'GET',
         '/players',
+    ],
+    /**
+     * Lists the teams and luckperms groups on the server.
+     * @returns {HttpProtocolFetchData} - The data to send to the plugin.
+     */
+    ListTeamsAndGroups: () => [
+        'GET',
+        '/teams-and-groups',
     ],
 };
 
@@ -319,7 +369,7 @@ export default class HttpProtocol extends Protocol {
     /**
      * Tests the connection to the server with the given credentials.
      * @param {string} verifyCode - The verification code to use.
-     * @param {?string} requiredRoleToJoin - The role id that is required to have for joining the server.
+     * @param {?RequiredRoleToJoinData} requiredRoleToJoin - The data for the required roles to join the server.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async connect(verifyCode, requiredRoleToJoin = null) {
@@ -414,8 +464,8 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Adds a chat channel to the server.
-     * @param {ChatChannelData} channel - The chat channel to add.
+     * Adds a chatchannel to the server.
+     * @param {ChatChannelData} channel - The chatchannel to add.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async addChatChannel(channel) {
@@ -424,8 +474,8 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Removes a chat channel from the server.
-     * @param {ChatChannelData} channel - The chat channel to remove.
+     * Removes a chatchannel from the server.
+     * @param {ChatChannelData} channel - The chatchannel to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeChatChannel(channel) {
@@ -442,8 +492,8 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Adds a stats channel to the server.
-     * @param {StatsChannelData} channel - The stats channel to add.
+     * Adds a stats-channel to the server.
+     * @param {StatsChannelData} channel - The stats-channel to add.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async addStatsChannel(channel) {
@@ -452,12 +502,54 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Removes a stats channel from the server.
-     * @param {StatsChannelData} channel - The stats channel to remove.
+     * Removes a stats-channel from the server.
+     * @param {StatsChannelData} channel - The stats-channel to remove.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     async removeStatsChannel(channel) {
         const response = await this._fetch(...PluginRoutes.RemoveStatsChannel(channel));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Adds a synced-role to the server.
+     * @param {SyncedRoleData} role - The synced-role to add.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async addSyncedRole(role) {
+        const response = await this._fetch(...PluginRoutes.AddSyncedRole(role));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Removes a synced-role from the server.
+     * @param {SyncedRoleData} role - The synced-role to remove.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async removeSyncedRole(role) {
+        const response = await this._fetch(...PluginRoutes.RemoveSyncedRole(role));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Adds a member to a synced-role.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
+     * @param {string} uuid - The UUID of the member to remove.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async addSyncedRoleMember(role, uuid) {
+        const response = await this._fetch(...PluginRoutes.AddSyncedRoleMember(role, uuid));
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
+     * Removes a member from a synced-role.
+     * @param {SyncedRoleData} role - The synced role to remove the member from.
+     * @param {string} uuid - The UUID of the member to remove.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async removeSyncedRoleMember(role, uuid) {
+        const response = await this._fetch(...PluginRoutes.RemoveSyncedRoleMember(role, uuid));
         return fetchToProtocolResponse(response);
     }
 
@@ -491,6 +583,15 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
+     * Gets a list of teams and luckperms groups on the server.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    async getTeamsAndGroups() {
+        const response = await this._fetch(...PluginRoutes.ListTeamsAndGroups());
+        return fetchToProtocolResponse(response);
+    }
+
+    /**
      * Fetches data from the plugin.
      * @param {string} method - The http method to use.
      * @param {string} route - The route to fetch from.
@@ -500,7 +601,7 @@ export default class HttpProtocol extends Protocol {
      * @returns {Promise<?Response>} - The response of the request.
      * @private
      */
-    async _fetch(method, route, body = {}, queries = {}, authorization = null) {
+    _fetch(method, route, body = {}, queries = {}, authorization = null) {
         try {
             // noinspection HttpUrlsUsage
             const url = new URL(`http://${this.ip}:${this.port}`);
@@ -509,7 +610,7 @@ export default class HttpProtocol extends Protocol {
                 url.searchParams.append(key, queries[key]);
             }
 
-            return await HttpProtocol.fetch(method, url, this.token, body, authorization);
+            return HttpProtocol.fetch(method, url, this.token, body, authorization);
         }
         catch(_) {
             return null;

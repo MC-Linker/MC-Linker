@@ -1,5 +1,5 @@
-import {Base} from 'discord.js';
-import {getManagerStringFromConnection} from '../api/shardingUtils.js';
+import { Base } from 'discord.js';
+import { getManagerStringFromConnection } from '../utilities/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
 
 export default class Connection extends Base {
@@ -37,7 +37,7 @@ export default class Connection extends Base {
         const data = JSON.parse(JSON.stringify(this.getData()));
 
         if(this instanceof ServerConnection) {
-            // map chatchannel and statchannel id to _id
+            // map id to _id
             data.chatChannels?.forEach((channel, index) => {
                 data.chatChannels[index]._id = channel.id;
                 delete data.chatChannels[index].id;
@@ -46,12 +46,16 @@ export default class Connection extends Base {
                 data.statChannels[index]._id = channel.id;
                 delete data.statChannels[index].id;
             });
+            data.syncedRoles?.forEach((role, index) => {
+                data.syncedRoles[index]._id = role.id;
+                delete data.syncedRoles[index].id;
+            });
         }
 
         //Remove id, otherwise duplicate key error, if object does not exist, it will use id from query (this.id)
         delete data.id;
 
-        return await this.client.mongo.models[this.collectionName].updateOne({_id: this.id}, data, {upsert: true})
+        return await this.client.mongo.models[this.collectionName].updateOne({ _id: this.id }, data, { upsert: true })
             .then(() => true)
             .catch(() => false);
     }
