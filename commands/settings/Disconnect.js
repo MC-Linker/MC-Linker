@@ -8,7 +8,6 @@ export default class Disconnect extends Command {
         super({
             name: 'disconnect',
             category: 'settings',
-            ephemeral: true,
         });
     }
 
