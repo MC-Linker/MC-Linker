@@ -317,7 +317,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
         for(const route of this.routes) {
             socket.on(route.event, async (data, callback) => {
-                data = JSON.parse(data);
+                data = typeof data === 'string' ? JSON.parse(data) : {};
                 const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
                 const server = await getServerWebsocket(this.client, rateLimiter, callback);
                 if(!server) return;
