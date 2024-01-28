@@ -1953,7 +1953,7 @@
               "description": "Could not send the message to the chatchannel using webhooks. Please re-add the channel using `/chatchannel add`!"
             }
           ],
-          "console": "Unknown chat error"
+          "console": "Unknown chat error %error_stack%"
         },
         "no_webhook_permission": {
           "embeds": [
