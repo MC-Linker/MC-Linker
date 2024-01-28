@@ -343,6 +343,8 @@ export default class MCLinkerAPI extends EventEmitter {
      * @private
      */
     async chat(data, server) {
+        if(!server.protocol.isPluginProtocol()) return;
+
         const { message, channels, type, player } = data;
         const guildId = server.id;
         const authorURL = await getMinecraftAvatarURL(player);
@@ -479,13 +481,13 @@ export default class MCLinkerAPI extends EventEmitter {
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
                 });
             }
-            catch(_) {
+            catch(err) {
                 try {
                     if(discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.ManageWebhooks)) {
                         await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
                     }
                     else {
-                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.unknown_chat_error, ph.emojisAndColors())] });
+                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.unknown_chat_error, ph.emojisAndColors(), ph.error(err))] });
                     }
                 }
                 catch(_) {

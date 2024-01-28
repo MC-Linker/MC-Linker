@@ -105,7 +105,7 @@ export default class Command {
 
         if(this.requiresUserIndex !== null && (this.requiresUserIndex === 0 || args[this.requiresUserIndex - 1] !== undefined)) {
             const user = await client.userConnections.userFromArgument(args[this.requiresUserIndex], server, interaction);
-            if(!user) return false;
+            if(!user || user.error) return false;
 
             args[this.requiresUserIndex] = user;
         }

@@ -225,7 +225,7 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
         ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
     }
 
-    const role = server.syncedRoles.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
+    const role = server.syncedRoles?.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
     if(!role) return;
 
     let resp;

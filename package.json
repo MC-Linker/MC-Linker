@@ -33,7 +33,7 @@
     "rate-limiter-flexible": "^4.0.0",
     "skia-canvas": "1.0.0",
     "socket.io": "^4.7.2",
-    "ssh2-sftp-client": "^9.1.0",
+    "ssh2-sftp-client": "^10.0.3",
     "topgg-autoposter": "^2.0.1",
     "unraw": "^3.0.0",
     "utf-8-validate": "^6.0.3",
