@@ -723,7 +723,7 @@
   "api.plugin.errors.no_response.components": [],
   "api.plugin.errors.unknown_chat_error.embeds.0.title": "Error Desconocido",
   "api.plugin.errors.unknown_chat_error.embeds.0.description": "Could not send the message to the chatchannel using webhooks. Please re-add the channel using `/chatchannel add`!",
-  "api.plugin.errors.unknown_chat_error.console": "Unknown chat error",
+  "api.plugin.errors.unknown_chat_error.console": "Unknown chat error %error_stack%",
   "api.plugin.errors.no_webhook_permission.embeds.0.title": "No Webhook Permission",
   "api.plugin.errors.no_webhook_permission.embeds.0.description": "The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission.",
   "api.plugin.errors.no_webhook_permission.console": "No webhook permission",
