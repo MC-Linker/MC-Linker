@@ -80,7 +80,8 @@ export default class ServerInfo extends Command {
 
         let motd;
         try {
-            motd = unraw(propertiesObject['motd']).split('\n');
+            if(!propertiesObject['motd']) motd = ['', ''];
+            else motd = unraw(propertiesObject['motd']).split('\n');
         }
         catch(e) {
             motd = propertiesObject['motd'].split('\n');

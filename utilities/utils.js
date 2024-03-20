@@ -442,9 +442,7 @@ export async function getFloodgatePrefix(protocol, path, id) {
         const lines = response.data.toString().split('\n');
         for(const line of lines) {
             if(line.startsWith(searchKey)) {
-                return line
-                    .substring(searchKey.length)
-                    .trim()
+                return line.substring(searchKey.length).trim()
                     // Remove quotes at the start and end of the string
                     .replace(/^["'](.+(?=["']$))["']$/, '$1');
             }
@@ -744,9 +742,7 @@ export function cleanEmojis(message) {
 }
 
 export function createHash(token) {
-    return crypto.createHash('sha256')
-        .update(token)
-        .digest('hex');
+    return crypto.createHash('sha256').update(token).digest('hex');
 }
 
 export function formatDuration(milliseconds) {
