@@ -17,6 +17,7 @@
   "type": "module",
   "dependencies": {
     "@fastify/cookie": "^9.2.0",
+    "@leftsquarebracket/minecraft-render": "^2.0.0-alpha.6",
     "bufferutil": "^4.0.7",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",

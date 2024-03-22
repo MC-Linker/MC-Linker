@@ -1,112 +1,114 @@
-import fs from 'fs-extra';
 import * as utils from '../../utilities/utils.js';
-import { formatDistance, formatDuration } from '../../utilities/utils.js';
-import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
-import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
+import Command from '../../structures/Command.js';
 import { FilePath } from '../../structures/Protocol.js';
+import Canvas from 'skia-canvas';
+import { addPh, getEmbed, ph } from '../../utilities/messages.js';
+import minecraft_data from 'minecraft-data';
+import Discord from 'discord.js';
 
-export default class Stats extends AutocompleteCommand {
+const mcData = minecraft_data('1.20.1');
+
+const startCoords = [41, 135];
+const yPadding = 7;
+const numberPadding = [22, 9];
+const maxItemAmounts = [8, 11];
+const headerSize = 80;
+const itemSize = 70;
+const numberSize = [45, 60];
+
+export default class Stats extends Command {
+
     constructor() {
         super({
             name: 'stats',
-            requiresUserIndex: 2,
+            requiresUserIndex: 1,
             category: 'main',
         });
-    }
-
-    autocomplete(interaction, client) {
-        const subcommand = interaction.options.getSubcommand();
-        const focused = interaction.options.getFocused().toLowerCase();
-
-        const stats = utils.searchStats(focused, subcommand);
-        interaction.respond(stats).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        let category = args[0];
-        let stat = args[1];
-        const user = args[2];
+        const category = args[0];
+        const user = args[1];
 
         const argPlaceholder = { 'stat_category': category, 'username': user.username };
 
-        const statName = utils.searchStats(stat, category, true, true, 1);
-        argPlaceholder.stat_name = statName[0]?.name ?? stat;
-
         if(server.settings.isDisabled('stats', category)) {
             return interaction.replyTl(keys.commands.stats.no_access.category_disabled, argPlaceholder);
-        }
-        else if(server.settings.isDisabled('stats', stat)) {
-            return interaction.replyTl(keys.commands.stats.no_access.stat_disabled, argPlaceholder);
         }
 
         const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./download-cache/stats/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
             404: keys.api.command.errors.could_not_download_user_files,
         }, { category: 'stats' })) return;
-        const statData = JSON.parse(statFile.data.toString());
 
+        let stats;
         try {
-            let statMatch;
-            if(server.version <= 12) {
-                if(!stat.includes('.')) stat = `minecraft.${stat}`;
-                statMatch = statData[`stat.${category}.${stat}`];
-                stat = stat.split('.').pop();
-            }
-            else {
-                const filteredCategory = Object.keys(statData.stats)?.find(key => key.endsWith(category));
-                const filteredStat = Object.keys(statData.stats?.[filteredCategory]).find(key => key.endsWith(stat));
-                statMatch = statData.stats?.[filteredCategory]?.[filteredStat];
-
-                stat = stat.split(':').pop();
-                category = category.split(':').pop();
-            }
-
-            if(!statMatch) {
-                return interaction.replyTl(keys.commands.stats.warnings.no_match, argPlaceholder);
-            }
-
-            let statMessage;
-            statMessage = addPh(keys.commands.stats.success.stat_message[category], argPlaceholder, { 'stat_value': statMatch });
-            if(stat.includes('time')) {
-                statMessage = addPh(
-                    keys.commands.stats.success.stat_message.time,
-                    argPlaceholder, { 'stat_value': formatDuration(statMatch / 20) }, //Convert ticks to hours
-                );
-            }
-            else if(stat.includes('_one_cm')) {
-                statMessage = addPh(
-                    keys.commands.stats.success.stat_message.distance,
-                    argPlaceholder, { 'stat_value': formatDistance(statMatch) },
-                );
-            }
-
-            const statEmbed = getEmbed(
-                keys.commands.stats.success.final,
-                ph.std(interaction),
-                argPlaceholder, { 'stat_message': statMessage, 'stat_value': stat },
-            );
-
-            let imgType;
-            if(category === 'killed' || category === 'killed_by') imgType = 'entities';
-            else imgType = 'items';
-
-            fs.access(`./resources/images/${imgType}/${stat}.png`, err => {
-                if(err) {
-                    console.log(addPh(keys.commands.stats.warnings.no_image.console, { 'stat_name': stat }));
-                    interaction.replyOptions({ embeds: [statEmbed] });
-                    return;
-                }
-                interaction.replyOptions({
-                    embeds: [statEmbed],
-                    files: [`./resources/images/${imgType}/${stat}.png`],
-                });
-            });
+            const statData = JSON.parse(statFile.data.toString());
+            stats = statData.stats[`minecraft:${category}`];
+            if(!stats) return interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
         catch(err) {
             await interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
+
+        const background = await Canvas.loadImage('./resources/images/backgrounds/stats_background.png');
+        const statsCanvas = new Canvas.Canvas(background.width, background.height);
+        const ctx = statsCanvas.getContext('2d');
+        ctx.drawImage(background, 0, 0, statsCanvas.width, statsCanvas.height);
+
+        if(category === 'custom') {
+            //TODO
+            return;
+        }
+
+        let x = startCoords[0];
+        let y = startCoords[1];
+        const currentItemAmounts = [0, 0];
+        for(let [itemId, value] of Object.entries(stats)) {
+            if(currentItemAmounts[1] >= maxItemAmounts[1]) break;
+
+            itemId = itemId.replace('minecraft:', '');
+
+            //Draw header
+            const headerImg = await Canvas.loadImage(`./resources/images/statistics/header.png`);
+            ctx.drawImage(headerImg, x, y, headerSize, headerSize);
+
+            //TODO make this a function with rendering
+            try {
+                //Draw image
+                const itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
+                ctx.drawImage(itemImg, x, y, itemSize, itemSize);
+            }
+            catch(err) {
+                //Draw name
+                console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
+                ctx.font = '8px Minecraft';
+                ctx.fillStyle = '#000';
+                const lines = utils.wrapText(ctx, mcData.itemsByName[itemId].displayName, 32);
+                lines.forEach((line, i) => ctx.fillText(line, x, y + 8 + i * 8));
+            }
+
+            //Draw number
+            utils.drawMinecraftNumber(ctx, value, x + numberPadding[0], y + numberPadding[1], numberSize[0], numberSize[1]);
+
+            currentItemAmounts[0]++;
+            if(currentItemAmounts[0] >= maxItemAmounts[0]) {
+                x += numberPadding[0] * 2 + numberSize[0];
+                y = startCoords[1];
+                currentItemAmounts[0] = 0;
+                currentItemAmounts[1]++;
+            }
+            else y += yPadding;
+        }
+
+        const statsAttach = new Discord.AttachmentBuilder(
+            await statsCanvas.toBuffer('png'),
+            { name: 'Statistics_Player.png', description: keys.commands.stats.stats_description },
+        );
+        const statsEmbed = getEmbed(keys.commands.stats.success.final, ph.emojisAndColors(), { username: user.username });
+        return await interaction.replyOptions({ files: [statsAttach], embeds: [statsEmbed] });
     }
 }

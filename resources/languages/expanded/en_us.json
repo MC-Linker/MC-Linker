@@ -525,6 +525,7 @@
       "shulker_description": "Image of shulker contents"
     },
     "stats": {
+      "stats_description": "Image of player's statistics",
       "no_access": {
         "category_disabled": {
           "embeds": [
@@ -587,14 +588,9 @@
         "final": {
           "embeds": [
             {
-              "title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
-              "fields": [
-                {
-                  "name": "%username%",
-                  "value": "%stat_message%"
-                }
-              ],
-              "thumbnail": "attachment://%stat_value%.png"
+              "title": "Player Statistics",
+              "description": "Here are the statistics of **%username%**:\n",
+              "image": "attachment://Statistics_Player.png"
             }
           ]
         }
@@ -2484,13 +2480,6 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set a custom stat. All stats of the custom category => /help stats",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -2502,13 +2491,6 @@
           "name": "mined",
           "description": "Statistic related to the number of blocks a player mined.",
           "options": [
-            {
-              "type": "String",
-              "name": "stat",
-              "description": "Set a block (id)",
-              "required": true,
-              "autocomplete": true
-            },
             {
               "type": "String",
               "name": "user",
@@ -2524,13 +2506,6 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an item (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -2542,13 +2517,6 @@
           "name": "crafted",
           "description": "Statistics related to the number of items crafted, smelted, etc.",
           "options": [
-            {
-              "type": "String",
-              "name": "stat",
-              "description": "Set an item (id)",
-              "required": true,
-              "autocomplete": true
-            },
             {
               "type": "String",
               "name": "user",
@@ -2564,13 +2532,6 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an item or block (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -2582,13 +2543,6 @@
           "name": "picked_up",
           "description": "Statistics related to the number of dropped items a player picked up.",
           "options": [
-            {
-              "type": "String",
-              "name": "stat",
-              "description": "Set an item (id)",
-              "required": true,
-              "autocomplete": true
-            },
             {
               "type": "String",
               "name": "user",
@@ -2604,13 +2558,6 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an item (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -2624,13 +2571,6 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an entity (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
@@ -2642,13 +2582,6 @@
           "name": "killed_by",
           "description": "Statistics related to the times of a player being killed by entities.",
           "options": [
-            {
-              "type": "String",
-              "name": "stat",
-              "description": "Set an entity (id)",
-              "required": true,
-              "autocomplete": true
-            },
             {
               "type": "String",
               "name": "user",
