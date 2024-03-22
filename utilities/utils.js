@@ -546,7 +546,7 @@ const colorCodes = {
     e: '#FF5',
     f: '#FFF',
 };
-const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k'];
+const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k', 'x'];
 
 /**
  * Parses a string with minecraft color codes and formatting and draws it on a canvas.
@@ -562,7 +562,7 @@ export function drawMinecraftText(ctx, text, x, y) {
     for(let i = 0; i < text.length; i++) {
         let char = text.charAt(i);
 
-        const colorCodeRegex = /§([0-9a-fk-or])/i;
+        const colorCodeRegex = /§([0-9a-fk-orx])/i;
         const match = (char + text.charAt(i + 1)).match(colorCodeRegex);
         if(match) {
             const [_, color] = match;
@@ -575,19 +575,38 @@ export function drawMinecraftText(ctx, text, x, y) {
                 obfuscated = false;
             }
             else if(formattingCodes.includes(color.toLowerCase())) {
-                //Bold and italic
-                if(color === 'l' || color === 'o') ctx.font = `${color === 'l' ? 'bold ' : ''}${color === 'o' ? 'italic ' : ''}${ctx.font}`;
-                else if(color === 'm') {
-                    strikethrough = true;
-                    underline = false;
+                switch(color) {
+                    case 'l':
+                        ctx.font = `bold ${originalFont}`;
+                        break;
+                    case 'o':
+                        ctx.font = `italic ${originalFont}`;
+                        break;
+                    case 'm':
+                        strikethrough = true;
+                        underline = false;
+                        break;
+                    case 'n':
+                        underline = true;
+                        strikethrough = false;
+                        break;
+                    case 'k':
+                        obfuscated = true;
+                        break;
+                    case 'r':
+                        ctx.fillStyle = '#AAA';
+                        ctx.font = `normal ${originalFont}`;
+                        strikethrough = false;
+                        underline = false;
+                        obfuscated = false;
+                        break;
+                    case 'x':
+                        //Get the next 12 characters, remove the § and parse the hex color
+                        // §x§f§f§0§0§0§0
+                        const hex = text.substring(i + 2, i + 14).replace(/§/g, '');
+                        ctx.fillStyle = `#${hex}`;
+                        i += 12;
                 }
-                else if(color === 'n') {
-                    underline = true;
-                    strikethrough = false;
-                }
-                else if(color === 'k') obfuscated = true;
-                //Reset
-                else if(color === 'r') ctx.fillStyle = '#AAA';
             }
 
             i++; //Skip next char
