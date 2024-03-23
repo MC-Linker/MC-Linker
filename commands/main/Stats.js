@@ -92,16 +92,21 @@ export default class Stats extends Command {
             }
 
             //Draw number
-            utils.drawMinecraftNumber(ctx, value, x + numberPadding[0], y + numberPadding[1], numberSize[0], numberSize[1]);
+            utils.drawMinecraftNumber(
+                ctx, value,
+                x + headerSize + numberPadding[0],
+                y + numberPadding[1],
+                numberSize[0], numberSize[1],
+            );
 
             currentItemAmounts[0]++;
             if(currentItemAmounts[0] >= maxItemAmounts[0]) {
-                x += numberPadding[0] * 2 + numberSize[0];
+                x += headerSize + numberPadding[0] * 2 + numberSize[0];
                 y = startCoords[1];
                 currentItemAmounts[0] = 0;
                 currentItemAmounts[1]++;
             }
-            else y += yPadding;
+            else y += headerSize + yPadding;
         }
 
         const statsAttach = new Discord.AttachmentBuilder(
