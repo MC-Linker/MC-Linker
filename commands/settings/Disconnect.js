@@ -23,6 +23,9 @@ export default class Disconnect extends Command {
         else if(server.protocol.isFtpProtocol()) protocol = 'ftp';
 
         await client.serverConnections.disconnect(server);
-        return interaction.replyTl(keys.commands.disconnect.success, { protocol, protocol_cap: protocol.cap() });
+        return interaction.replyTl(keys.commands.disconnect.success, {
+            protocol,
+            protocol_cap: protocol.toTitleCase(),
+        });
     }
 }

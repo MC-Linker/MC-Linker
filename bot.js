@@ -29,7 +29,8 @@ process.on('uncaughtException', async err => {
  * Converts the first letter of a string to uppercase.
  * @returns {String} - The formatted string.
  */
-String.prototype.cap = function() {
+//TODO add multi-words support
+String.prototype.toTitleCase = function() {
     return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 

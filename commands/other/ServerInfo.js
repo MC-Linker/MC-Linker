@@ -60,7 +60,7 @@ export default class ServerInfo extends Command {
             plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory && file.name.endsWith('.jar')).map(plugin => plugin.name.replace('.jar', '')) : [];
             mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
 
-            datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').cap()) ?? [];
+            datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').toTitleCase()) ?? [];
 
             //Reduce plugins, mods and datapacks array so that it doesn't exceed max embed field value length
             for(const array of [plugins, mods, datapacks]) {
@@ -129,7 +129,7 @@ export default class ServerInfo extends Command {
 
         const difficulty = typeof propertiesObject['difficulty'] === 'number' ?
             keys.commands.serverinfo.difficulty[propertiesObject['difficulty']] :
-            propertiesObject['difficulty'].cap();
+            propertiesObject['difficulty'].toTitleCase();
 
         const filteredGamerules = Object.entries(datObject.Data.GameRules)
             .filter(([key, value]) => {

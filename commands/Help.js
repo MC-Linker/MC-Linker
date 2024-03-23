@@ -32,7 +32,7 @@ export default class Help extends Command {
 
             //Show command list of category
             if(!commands.size) {
-                return interaction.replyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName.cap() });
+                return interaction.replyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName.toTitleCase() });
             }
 
             for(let command of commands.values()) {

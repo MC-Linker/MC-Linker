@@ -456,7 +456,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
         }
 
         //Draw count
-        if(count > 1) utils.drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
+        if(count > 1) await utils.drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
 
         const maxDurability = mcData.itemsByName[itemId]?.maxDurability;
         if(damage && maxDurability) {

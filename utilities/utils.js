@@ -635,33 +635,35 @@ const mcNumbers = await loadImage('./resources/images/misc/numbers.png');
 
 /**
  * Draws a minecraft number on a canvas.
- * @param {CanvasRenderingContext2D} context - The canvas context to draw on.
+ * @param {import('skia-canvas').CanvasRenderingContext2D} context - The canvas context to draw on.
  * @param {int|string} num - The number to draw.
  * @param {int} x - The x position to start drawing at.
  * @param {int} y - The y position to start drawing at.
  * @param {int} width - The width of the number.
  * @param {int} height - The height of the number.
  */
-export function drawMinecraftNumber(context, num, x = 0, y = 0, width, height) {
+export async function drawMinecraftNumber(context, num, x = 0, y = 0, width, height) {
     num = num.toString();
+
     const canvas = new Canvas(12 * num.length);
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
 
-    for(let i = 0; i < num.length; i++) {
+    //Draw shadow
+    for(let i = 0; i < num.length; i++)
         ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * 12 + 2, 2, width, height);
-    }
 
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = '#3E3E3E';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.globalCompositeOperation = 'source-over';
-    for(let i = 0; i < num.length; i++) {
+    //Draw number
+    for(let i = 0; i < num.length; i++)
         ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * 12, 0, width, height);
-    }
 
-    context.drawImage(canvas, x, y);
+    const image = await loadImage(canvas.toBufferSync('png'));
+    context.drawImage(image, x, y);
 }
 
 /**

@@ -91,14 +91,14 @@ export default class Stats extends Command {
             catch(err) {
                 //Draw name
                 console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
-                ctx.font = '8px Minecraft';
+                ctx.font = 'spx Minecraft';
                 ctx.fillStyle = '#000';
                 const lines = utils.wrapText(ctx, mcData.itemsByName[itemId].displayName, itemSize);
                 lines.forEach((line, i) => ctx.fillText(line, x + itemPadding, y + itemPadding + 8 + i * 8));
             }
 
             //Draw number
-            utils.drawMinecraftNumber(
+            await utils.drawMinecraftNumber(
                 ctx, value,
                 x + headerSize + numberPadding[0],
                 y + numberPadding[1],

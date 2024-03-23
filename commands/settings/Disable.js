@@ -56,7 +56,7 @@ export default class Disable extends AutocompleteCommand {
                 return interaction.replyTl(keys.commands.disable.success.nothing_disabled, { 'type': toList });
             }
 
-            const listEmbed = getEmbed(keys.commands.disable.success.list.base, { 'type': toList.cap() }, ph.emojisAndColors());
+            const listEmbed = getEmbed(keys.commands.disable.success.list.base, { 'type': toList.toTitleCase() }, ph.emojisAndColors());
 
             let listString = '';
             for(let i = 0; i < disabled.length; i++) {

@@ -25,7 +25,7 @@ export default class Gamemode extends Command {
         const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
         return interaction.replyTl(keys.commands.gamemode.success, {
             username: user.username,
-            gamemode: gamemode.cap(),
+            gamemode: gamemode.toTitleCase(),
             warning,
         });
     }

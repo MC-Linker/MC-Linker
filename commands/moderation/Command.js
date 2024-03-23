@@ -652,7 +652,7 @@ async function getPlaceholder(key, args) {
                 'swamp_hut',
                 'village',
             ].forEach(structure => {
-                let formattedStructure = structure.replaceAll('_', ' ').cap();
+                let formattedStructure = structure.replaceAll('_', ' ').toTitleCase();
                 if(structure === 'mansion') formattedStructure = 'Woodland Mansion';
                 else if(structure === 'monument') formattedStructure = 'Ocean Monument';
                 else if(structure === 'ocean_ruin') formattedStructure = 'Ocean Ruins';
@@ -770,7 +770,7 @@ async function getPlaceholder(key, args) {
                 'village/village_temple',
                 'village/village_toolsmith',
             ].forEach(loot => {
-                const formattedLoot = loot.split('/').pop().split('_').map(word => word.cap()).join(' ');
+                const formattedLoot = loot.split('/').pop().split('_').map(word => word.toTitleCase()).join(' ');
                 placeholder[formattedLoot] = `chests/${loot}`;
             });
 
@@ -796,7 +796,7 @@ async function getPlaceholder(key, args) {
                 'hero_of_the_village/weaponsmith_gift',
                 'piglin_bartering',
             ].forEach(loot => {
-                const formattedLoot = loot.split('/').pop().split('_').map(word => word.cap()).join(' ');
+                const formattedLoot = loot.split('/').pop().split('_').map(word => word.toTitleCase()).join(' ');
                 placeholder[formattedLoot] = `gameplay/${loot}`;
             });
             break;

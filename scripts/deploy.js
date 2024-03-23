@@ -12,7 +12,7 @@ dotenv.config();
  * Converts the first letter of a string to uppercase.
  * @returns {String} The formatted string.
  */
-String.prototype.cap = function() {
+String.prototype.toTitleCase = function() {
     return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
 };
 
@@ -111,7 +111,7 @@ if(deployGuild || deployGlobal) {
 
         //Push help-command choices
         if(!excludedHelp.includes(builder.name))
-            helpChoices.push({ name: builder.name.cap(), value: builder.name });
+            helpChoices.push({ name: builder.name.toTitleCase(), value: builder.name });
 
         console.log(`Loaded command: ${builder.name}`);
     }
@@ -120,7 +120,7 @@ if(deployGuild || deployGlobal) {
     const commandFolders = fs.readdirSync('./commands/')
         .filter(file => fs.statSync(`./commands/${file}`).isDirectory());
     for(const folder of commandFolders) {
-        helpChoices.push({ name: folder.cap(), value: folder });
+        helpChoices.push({ name: folder.toTitleCase(), value: folder });
         console.log(`Loaded category: ${folder}`);
     }
 
