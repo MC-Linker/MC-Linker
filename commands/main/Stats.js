@@ -16,6 +16,7 @@ const maxItemAmounts = [8, 11];
 const headerSize = 80;
 const itemSize = 70;
 const numberSize = [45, 60];
+const itemPadding = (headerSize - itemSize) / 2;
 
 export default class Stats extends Command {
 
@@ -82,8 +83,8 @@ export default class Stats extends Command {
                 const itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
                 ctx.drawImage(
                     itemImg,
-                    x + headerSize - itemSize,
-                    y + headerSize - itemSize,
+                    x + itemPadding,
+                    y + itemPadding,
                     itemSize, itemSize,
                 );
             }
@@ -92,8 +93,8 @@ export default class Stats extends Command {
                 console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
                 ctx.font = '8px Minecraft';
                 ctx.fillStyle = '#000';
-                const lines = utils.wrapText(ctx, mcData.itemsByName[itemId].displayName, 32);
-                lines.forEach((line, i) => ctx.fillText(line, x, y + 8 + i * 8));
+                const lines = utils.wrapText(ctx, mcData.itemsByName[itemId].displayName, itemSize);
+                lines.forEach((line, i) => ctx.fillText(line, x + itemPadding, y + itemPadding + 8 + i * 8));
             }
 
             //Draw number
