@@ -80,7 +80,12 @@ export default class Stats extends Command {
             try {
                 //Draw image
                 const itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
-                ctx.drawImage(itemImg, x, y, itemSize, itemSize);
+                ctx.drawImage(
+                    itemImg,
+                    x + headerSize - itemSize,
+                    y + headerSize - itemSize,
+                    itemSize, itemSize,
+                );
             }
             catch(err) {
                 //Draw name

@@ -556,7 +556,7 @@ const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k', 'x'];
  * @param {number} y - The y position to start drawing at.
  */
 export function drawMinecraftText(ctx, text, x, y) {
-    const originalFont = ctx.font;
+    ctx.save();
 
     let strikethrough = false;
     let underline = false;
@@ -628,7 +628,7 @@ export function drawMinecraftText(ctx, text, x, y) {
         x += ctx.measureText(char).width;
     }
 
-    ctx.font = originalFont;
+    ctx.restore();
 }
 
 const mcNumbers = await loadImage('./resources/images/misc/numbers.png');
