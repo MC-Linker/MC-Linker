@@ -675,13 +675,12 @@ export function drawMinecraftNumber(context, num, x = 0, y = 0, width, height) {
 export function wrapText(ctx, text, maxWidth) {
     const words = text.split(' ');
     const lines = [];
-    let currentLine = words[0];
 
+    let currentLine = words[0];
     for(const word of words) {
+        if(word === words[0]) continue; //Skip first word
         const width = ctx.measureText(`${currentLine} ${word}`).width;
-        if(width < maxWidth) {
-            currentLine += ` ${word}`;
-        }
+        if(width < maxWidth) currentLine += ` ${word}`;
         else {
             lines.push(currentLine);
             currentLine = word;
