@@ -17,7 +17,7 @@ import advancementData from '../resources/data/advancements.json' assert { type:
 import customStats from '../resources/data/stats_custom.json' assert { type: 'json' };
 import nbt from 'prismarine-nbt';
 import { ph } from './messages.js';
-import { loadImage } from 'skia-canvas';
+import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import mojangson from 'mojangson';
 import { Authflow } from 'prismarine-auth';
@@ -635,18 +635,18 @@ const mcNumbers = await loadImage('./resources/images/misc/numbers.png');
 
 /**
  * Draws a minecraft number on a canvas.
- * @param {import('skia-canvas').CanvasRenderingContext2D} ctx - The canvas context to draw on.
+ * @param {import('skia-canvas').CanvasRenderingContext2D} context - The canvas context to draw on.
  * @param {int|string} num - The number to draw.
  * @param {int} x - The x position to start drawing at.
  * @param {int} y - The y position to start drawing at.
  * @param {int} width - The width of the number.
  * @param {int} height - The height of the number.
  */
-export async function drawMinecraftNumber(ctx, num, x = 0, y = 0, width, height) {
-    ctx.save();
-
+export async function drawMinecraftNumber(context, num, x = 0, y = 0, width, height) {
     num = num.toString();
 
+    const canvas = new Canvas(width * num.length);
+    const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
 
     //Draw shadow
@@ -655,14 +655,14 @@ export async function drawMinecraftNumber(ctx, num, x = 0, y = 0, width, height)
 
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = '#3E3E3E';
-    ctx.fillRect(x, y, width * num.length, height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    //Draw number
     ctx.globalCompositeOperation = 'source-over';
+    //Draw number
     for(let i = 0; i < num.length; i++)
         ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * width, 0, width, height);
 
-    ctx.restore();
+    context.drawImage(canvas, x, y);
 }
 
 /**
