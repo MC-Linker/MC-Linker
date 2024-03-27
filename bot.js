@@ -27,11 +27,15 @@ process.on('uncaughtException', async err => {
 
 /*
  * Converts the first letter of a string to uppercase.
+ * @param {boolean} c - Whether the string is camelCase or snake_case.
+ * @param {boolean} n - Whether to add a space before numbers.
  * @returns {String} - The formatted string.
  */
-//TODO add multi-words support
-String.prototype.toTitleCase = function() {
-    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
+String.prototype.toTitleCase = function(c, n) {
+    let t;
+    if(c) t = this.replace(/\s/g, '').replace(n ? /([A-Z])/g : /([A-Z0-9])/g, ' $1').replace(/[_-]/g, ' ');
+    else t = this;
+    return t.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()).trim();
 };
 
 if(process.env.TOPGG_TOKEN) {

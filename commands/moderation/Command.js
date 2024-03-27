@@ -652,7 +652,7 @@ async function getPlaceholder(key, args) {
                 'swamp_hut',
                 'village',
             ].forEach(structure => {
-                let formattedStructure = structure.replaceAll('_', ' ').toTitleCase();
+                let formattedStructure = structure.replaceAll('_', ' ').toTitleCase(true);
                 if(structure === 'mansion') formattedStructure = 'Woodland Mansion';
                 else if(structure === 'monument') formattedStructure = 'Ocean Monument';
                 else if(structure === 'ocean_ruin') formattedStructure = 'Ocean Ruins';

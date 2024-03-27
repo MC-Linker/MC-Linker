@@ -572,19 +572,7 @@
         }
       },
       "success": {
-        "stat_message": {
-          "custom": "**%stat_name%**: **%stat_value%**",
-          "mined": "has mined **%stat_value% %stat_name%**",
-          "broken": "has broken **%stat_value% %stat_name%**",
-          "crafted": "has crafted **%stat_value% %stat_name%**",
-          "used": "has used **%stat_value% %stat_name%**",
-          "picked_up": "has picked up **%stat_value% %stat_name%**",
-          "dropped": "has dropped **%stat_value% %stat_name%**",
-          "killed": "has killed **%stat_value% %stat_name%**",
-          "killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
-          "time": "**%stat_name%**: **%stat_value%**",
-          "distance": "**%stat_name%**: **%stat_value%**"
-        },
+        "title": "%category% Statistics",
         "final": {
           "embeds": [
             {

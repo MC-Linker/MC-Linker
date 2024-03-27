@@ -556,6 +556,7 @@ const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k', 'x'];
  * @param {number} y - The y position to start drawing at.
  */
 export function drawMinecraftText(ctx, text, x, y) {
+    const originalFont = ctx.font;
     ctx.save();
 
     let strikethrough = false;
@@ -632,6 +633,7 @@ export function drawMinecraftText(ctx, text, x, y) {
 }
 
 const mcNumbers = await loadImage('./resources/images/misc/numbers.png');
+const mcDigitSize = [5, 7];
 
 /**
  * Draws a minecraft number on a canvas.
@@ -639,19 +641,21 @@ const mcNumbers = await loadImage('./resources/images/misc/numbers.png');
  * @param {int|string} num - The number to draw.
  * @param {int} x - The x position to start drawing at.
  * @param {int} y - The y position to start drawing at.
- * @param {int} width - The width of the number.
- * @param {int} height - The height of the number.
+ * @param {int} width - The width of each digit.
+ * @param {int} height - The height of each digit.
  */
-export async function drawMinecraftNumber(context, num, x = 0, y = 0, width, height) {
+export function drawMinecraftNumber(context, num, x = 0, y = 0, width, height) {
     num = num.toString();
 
-    const canvas = new Canvas(width * num.length);
+    const shadowOffset = width / mcDigitSize[0];
+
+    const canvas = new Canvas((width + shadowOffset) * num.length, height + shadowOffset);
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
 
     //Draw shadow
     for(let i = 0; i < num.length; i++)
-        ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * width + 2, 2, width, height);
+        ctx.drawImage(mcNumbers, num[i] * mcDigitSize[0], 0, mcDigitSize[0], mcDigitSize[1], i * (width + shadowOffset) + shadowOffset, shadowOffset, width, height);
 
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = '#3E3E3E';
@@ -660,7 +664,7 @@ export async function drawMinecraftNumber(context, num, x = 0, y = 0, width, hei
     ctx.globalCompositeOperation = 'source-over';
     //Draw number
     for(let i = 0; i < num.length; i++)
-        ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * width, 0, width, height);
+        ctx.drawImage(mcNumbers, num[i] * mcDigitSize[0], 0, mcDigitSize[0], mcDigitSize[1], i * (width + shadowOffset), 0, width, height);
 
     context.drawImage(canvas, x, y);
 }

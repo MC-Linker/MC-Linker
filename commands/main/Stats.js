@@ -12,10 +12,10 @@ const mcData = minecraft_data('1.20.1');
 const startCoords = [41, 135];
 const yPadding = 7;
 const numberPadding = [32, 19];
-const maxItemAmounts = [11, 8];
+const maxItemAmountsY = 8;
 const headerSize = 80;
 const itemSize = 70;
-const numberSize = [45, 60];
+const numberSize = [30, 45];
 const itemPadding = (headerSize - itemSize) / 2;
 
 export default class Stats extends Command {
@@ -68,7 +68,14 @@ export default class Stats extends Command {
         let x = startCoords[0];
         let y = startCoords[1];
         const currentItemAmounts = [0, 0];
+        const maxDigitsInColumn = columnIndex => {
+            const numbersInColumn = Object.values(stats).slice(columnIndex * maxItemAmountsY, (columnIndex + 1) * maxItemAmountsY);
+            return Math.max(...numbersInColumn.map(num => num.toString().length));
+        };
         for(let [itemId, value] of Object.entries(stats)) {
+            // Break if the next item will go out of bounds
+            if(x + headerSize + numberPadding[0] * 2 + numberSize[0] * value.toString().length >= statsCanvas.width) break;
+
             itemId = itemId.replace('minecraft:', '');
 
             //Draw header
@@ -96,7 +103,7 @@ export default class Stats extends Command {
                 lines.forEach((line, i) => ctx.fillText(line, x + itemPadding, y + itemPadding + fontSize + i * fontSize));
             }
 
-            //Draw number
+            // Draw number
             await utils.drawMinecraftNumber(
                 ctx, value,
                 x + headerSize + numberPadding[0],
@@ -105,15 +112,25 @@ export default class Stats extends Command {
             );
 
             currentItemAmounts[1]++;
-            if(currentItemAmounts[1] >= maxItemAmounts[1]) {
-                x += headerSize + numberPadding[0] * 2 + numberSize[0];
+            if(currentItemAmounts[1] >= maxItemAmountsY) {
                 y = startCoords[1];
+                x += headerSize + numberPadding[0] * 2 + numberSize[0] * maxDigitsInColumn(currentItemAmounts[0]);
+
                 currentItemAmounts[1] = 0;
                 currentItemAmounts[0]++;
-                if(currentItemAmounts[0] >= maxItemAmounts[0]) break;
             }
             else y += headerSize + yPadding;
         }
+
+        // Draw statistics text
+        ctx.font = '30px Minecraft';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText(addPh(keys.commands.stats.success.title, { category: category.toTitleCase(true) }), statsCanvas.width / 2, 50);
+
+        // Draw icon
+        const statsIcon = await Canvas.loadImage(`./resources/images/statistics/${category}.png`);
+        ctx.drawImage(statsIcon, 20, 20, 50, 50);
 
         const statsAttach = new Discord.AttachmentBuilder(
             await statsCanvas.toBuffer('png'),

@@ -13,7 +13,10 @@ dotenv.config();
  * @returns {String} The formatted string.
  */
 String.prototype.toTitleCase = function() {
-    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
+    let t;
+    if(c) t = this.replace(/\s/g, '').replace(n ? /([A-Z])/g : /([A-Z0-9])/g, ' $1').replace(/[_-]/g, ' ');
+    else t = this;
+    return t.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()).trim();
 };
 
 const demandOneOf = (...options) => argv => {
