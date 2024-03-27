@@ -11,8 +11,8 @@ const mcData = minecraft_data('1.20.1');
 
 const startCoords = [41, 135];
 const yPadding = 7;
-const numberPadding = [22, 9];
-const maxItemAmounts = [8, 11];
+const numberPadding = [32, 19];
+const maxItemAmounts = [11, 8];
 const headerSize = 80;
 const itemSize = 70;
 const numberSize = [45, 60];
@@ -69,8 +69,6 @@ export default class Stats extends Command {
         let y = startCoords[1];
         const currentItemAmounts = [0, 0];
         for(let [itemId, value] of Object.entries(stats)) {
-            if(currentItemAmounts[1] >= maxItemAmounts[1]) break;
-
             itemId = itemId.replace('minecraft:', '');
 
             //Draw header
@@ -106,12 +104,13 @@ export default class Stats extends Command {
                 numberSize[0], numberSize[1],
             );
 
-            currentItemAmounts[0]++;
-            if(currentItemAmounts[0] >= maxItemAmounts[0]) {
+            currentItemAmounts[1]++;
+            if(currentItemAmounts[1] >= maxItemAmounts[1]) {
                 x += headerSize + numberPadding[0] * 2 + numberSize[0];
                 y = startCoords[1];
-                currentItemAmounts[0] = 0;
-                currentItemAmounts[1]++;
+                currentItemAmounts[1] = 0;
+                currentItemAmounts[0]++;
+                if(currentItemAmounts[0] >= maxItemAmounts[0]) break;
             }
             else y += headerSize + yPadding;
         }
