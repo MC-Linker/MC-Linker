@@ -573,6 +573,16 @@
       },
       "success": {
         "title": "%category% Statistics",
+        "stats_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Primary",
+              "custom_id": "stats_%index%",
+              "label": "Stats %min%-%max%"
+            }
+          ]
+        },
         "final": {
           "embeds": [
             {
@@ -2471,6 +2481,30 @@
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2484,6 +2518,30 @@
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2497,6 +2555,30 @@
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2510,6 +2592,30 @@
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2523,6 +2629,30 @@
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats (Default: Descending).",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2536,6 +2666,30 @@
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2562,6 +2716,30 @@
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2575,6 +2753,30 @@
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         }

@@ -12,7 +12,7 @@ dotenv.config();
  * Converts the first letter of a string to uppercase.
  * @returns {String} The formatted string.
  */
-String.prototype.toTitleCase = function() {
+String.prototype.toTitleCase = function(c, n) {
     let t;
     if(c) t = this.replace(/\s/g, '').replace(n ? /([A-Z])/g : /([A-Z0-9])/g, ' $1').replace(/[_-]/g, ' ');
     else t = this;

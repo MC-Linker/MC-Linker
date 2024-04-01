@@ -554,8 +554,9 @@ const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k', 'x'];
  * @param {string} text - The text to draw.
  * @param {number} x - The x position to start drawing at.
  * @param {number} y - The y position to start drawing at.
+ * @param {boolean} [drawShadow=false] - Whether to draw a shadow.
  */
-export function drawMinecraftText(ctx, text, x, y) {
+export function drawMinecraftText(ctx, text, x, y, drawShadow = false) {
     const originalFont = ctx.font;
     ctx.save();
 
@@ -617,14 +618,20 @@ export function drawMinecraftText(ctx, text, x, y) {
         }
 
         if(obfuscated && char !== ' ') char = '?';
+
+        if(drawShadow) {
+            const previousFillStyle = ctx.fillStyle;
+            const shadowOffset = ctx.measureText(char).width / 5;
+
+            ctx.fillStyle = '#3E3E3E';
+            ctx.fillText(char, x + shadowOffset, y + shadowOffset);
+            ctx.fillStyle = previousFillStyle;
+        }
+
         ctx.fillText(char, x, y);
 
-        if(strikethrough) {
-            ctx.fillRect(x, y - 8, ctx.measureText(char).width, 4);
-        }
-        if(underline) {
-            ctx.fillRect(x, y + 4, ctx.measureText(char).width, 4);
-        }
+        if(strikethrough) ctx.fillRect(x, y - 8, ctx.measureText(char).width, 4);
+        if(underline) ctx.fillRect(x, y + 4, ctx.measureText(char).width, 4);
 
         x += ctx.measureText(char).width;
     }
