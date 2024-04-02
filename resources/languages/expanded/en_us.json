@@ -405,7 +405,7 @@
           "components": [
             {
               "type": "Button",
-              "style": "Primary",
+              "style": "Secondary",
               "custom_id": "slot_%index%",
               "label": "%slot%: %name%"
             }
@@ -577,7 +577,7 @@
           "components": [
             {
               "type": "Button",
-              "style": "Primary",
+              "style": "Secondary",
               "custom_id": "stats_%index%",
               "label": "Stats %min%-%max%"
             }

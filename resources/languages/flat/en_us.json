@@ -207,7 +207,7 @@
   "commands.inventory.errors.no_image.console": "Could not find item image %item_name%. Applying text...",
 
   "commands.inventory.success.item_button.components.0.type": "Button",
-  "commands.inventory.success.item_button.components.0.style": "Primary",
+  "commands.inventory.success.item_button.components.0.style": "Secondary",
   "commands.inventory.success.item_button.components.0.custom_id": "slot_%index%",
   "commands.inventory.success.item_button.components.0.label": "%slot%: %name%",
 
@@ -279,7 +279,7 @@
 
   "commands.stats.success.title": "%category% Statistics",
   "commands.stats.success.stats_button.components.0.type": "Button",
-  "commands.stats.success.stats_button.components.0.style": "Primary",
+  "commands.stats.success.stats_button.components.0.style": "Secondary",
   "commands.stats.success.stats_button.components.0.custom_id": "stats_%index%",
   "commands.stats.success.stats_button.components.0.label": "Stats %min%-%max%",
   "commands.stats.success.final.embeds.0.title": "Player Statistics",

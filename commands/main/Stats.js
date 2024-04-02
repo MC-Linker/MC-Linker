@@ -10,12 +10,12 @@ import Pagination from '../../structures/helpers/Pagination.js';
 
 const mcData = minecraft_data('1.20.1');
 
-const startCoords = [41, 135];
+const startCoords = [41, 152];
 const yPadding = 7;
 const numberPadding = [32, 19];
 const maxItemAmountsY = 8;
-const headerSize = 80;
-const itemSize = 70;
+const headerSize = 74;
+const itemSize = headerSize - 10;
 const numberSize = [30, 45];
 const itemPadding = (headerSize - itemSize) / 2;
 
