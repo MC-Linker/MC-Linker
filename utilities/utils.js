@@ -781,26 +781,44 @@ export function createHash(token) {
     return crypto.createHash('sha256').update(token).digest('hex');
 }
 
+/**
+ * Formats a duration in milliseconds to a string.
+ * @param {Number} milliseconds - The duration in milliseconds.
+ * @returns {String} - The formatted duration.
+ * @example 1000 -> "1s"
+ * @example 6006000600 -> "1h 40m 6s"
+ */
 export function formatDuration(milliseconds) {
-    const seconds = milliseconds / 1000;
-    const minutes = seconds / 60;
-    const hours = minutes / 60;
+    let seconds = milliseconds / 1000;
+    let minutes = seconds / 60;
+    let hours = minutes / 60;
+    let days = hours / 24;
 
-    const formattedSeconds = Math.floor(seconds % 60);
-    const formattedMinutes = Math.floor(minutes % 60);
-    const formattedHours = Math.floor(hours % 60);
+    // Round values and get remainder
+    seconds = Math.floor(seconds) % 60;
+    minutes = Math.floor(minutes) % 60;
+    hours = Math.floor(hours) % 24;
+    days = Math.floor(days);
 
-    return `${formattedHours}h ${formattedMinutes}m ${formattedSeconds}s`;
+    return `${days ? `${days}d ` : ''}${hours ? `${hours}h ` : ''}${minutes ? `${minutes}m ` : ''}${seconds}s`;
 }
 
+/**
+ * Formats a distance in centimeters to a string.
+ * @param {Number} centimeters - The distance in centimeters.
+ * @returns {String} - The formatted distance.
+ * @example 1000 -> "1m"
+ * @example 1234567 -> "1km 234m 567cm"
+ */
 export function formatDistance(centimeters) {
-    const meters = centimeters / 100;
-    const kilometers = meters / 1000;
+    let meters = centimeters / 100;
+    let kilometers = meters / 1000;
 
-    const formattedMeters = Math.floor(meters % 1000);
-    const formattedKilometers = Math.floor(kilometers % 1000);
+    // Round values and get remainder
+    meters = Math.floor(meters) % 1000;
+    kilometers = Math.floor(kilometers);
 
-    return `${formattedKilometers}km ${formattedMeters}m`;
+    return `${kilometers ? `${kilometers}km ` : ''}${meters ? `${meters}m ` : ''}${centimeters % 100}cm`;
 }
 
 /**
@@ -819,16 +837,17 @@ export function disableComponents(rows) {
 
 /**
  * Memoizes a function.
- * @param {Function} fn - The function to memoize.
- * @param {Number} parameters - The number of parameters to use as key.
- * @returns {Function} - The memoized function.
+ * @template {Function} K
+ * @param {K} fn - The function to memoize.
+ * @param {Number=undefined} parameters - The number of parameters to use as key. Defaults to all parameters.
+ * @returns {K} - The memoized function.
  */
-export function memoize(fn, parameters) {
+export function memoize(fn, parameters = undefined) {
     const cache = new Map();
     return async function(...args) {
         const key = JSON.stringify(args.slice(0, parameters));
         if(cache.has(key)) return cache.get(key);
-        const result = await fn.apply(this, args);
+        const result = await fn(args);
         cache.set(key, result);
         return result;
     };

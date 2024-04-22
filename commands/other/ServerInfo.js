@@ -99,7 +99,7 @@ export default class ServerInfo extends Command {
         ctx.drawImage(iconImage, 0, 0, 128, 128);
 
         ctx.font = '28px Minecraft';
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = '#fcfcfc';
 
         //Draw server name
         ctx.fillText(serverName, 134, 32);
