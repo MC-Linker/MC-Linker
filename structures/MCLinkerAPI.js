@@ -590,7 +590,7 @@ export default class MCLinkerAPI extends EventEmitter {
             guild = await this.client.guilds.fetch(server.id);
             invites = await guild.invites.fetch();
         }
-        catch(ignored) {}
+        catch(_) {}
 
         if(!guild) return { status: 500 };
 

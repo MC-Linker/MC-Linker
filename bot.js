@@ -6,6 +6,7 @@ import keys, { getLanguageKey } from './utilities/keys.js';
 import { addPh, addTranslatedResponses, getReplyOptions, ph } from './utilities/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
+import ServerConnection from './structures/ServerConnection.js';
 
 console.log(
     '\x1b[1m' +     // Bold (1)
@@ -91,11 +92,21 @@ client.on(Discord.Events.MessageCreate, async message => {
         if(client.api.usersAwaitingVerification.has(message.content)) {
             const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
 
-            await client.userConnections.connect({
+            /** @type {UserConnection} */
+            const userConnection = await client.userConnections.connect({
                 id: message.author.id,
                 username,
                 uuid,
             });
+
+            //Sync roles in all servers the user is in (does this work with sharding?)
+            for(const [conn, guild, member] of client.serverConnections.cache.map(async conn => {
+                if(!(conn instanceof ServerConnection) || !conn.protocol.isPluginProtocol() || !conn.syncedRoles) return null;
+                if(!conn.syncedRoles || !conn.syncedRoles.length) return null;
+                const guild = await client.guilds.fetch(conn.id);
+                const member = await guild.members.fetch(message.author.id);
+                return member ? [conn, guild, member] : null;
+            }).filter(c => c)) await conn.syncRoles(guild, member, userConnection);
 
             client.api.usersAwaitingVerification.delete(message.content);
             return await message.replyTl(keys.commands.account.success.verified);

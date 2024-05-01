@@ -66,7 +66,7 @@ export default class Account extends Command {
                 const listener = async data => {
                     if(data.uuid !== uuid || data.code !== code) return;
 
-                    await c.userConnections.connect({
+                    const connection = await c.userConnections.connect({
                         id: userId,
                         uuid,
                         username,
@@ -76,6 +76,8 @@ export default class Account extends Command {
                     if(settings) await settings.updateRoleConnection(username, {
                         'connectedaccount': 1,
                     });
+
+                    await client.serverConnections.cache.get(serverId).syncRoles(interaction.guild, interaction.member, connection);
 
                     await c.shard.broadcastEval((c, { id }) => c.emit('accountVerificationResponse', id), {
                         context: { id: userId },
@@ -118,6 +120,8 @@ export default class Account extends Command {
             });
 
             await client.userConnections.disconnect(interaction.user.id);
+
+            if(server.protocol.isPluginProtocol() && server.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
             await interaction.replyTl(keys.commands.disconnect.success, {
                 protocol: 'account',
                 protocol_cap: 'Account',
