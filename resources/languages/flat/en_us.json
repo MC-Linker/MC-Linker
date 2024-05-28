@@ -1935,51 +1935,26 @@
   "data.disable.description": "Disable a specific command/stat/advancement.",
 
   "data.disable.options.0.type": "Subcommand",
-  "data.disable.options.0.name": "advancements",
-  "data.disable.options.0.description": "Disable an advancement",
+  "data.disable.options.0.name": "chat-commands",
+  "data.disable.options.0.description": "Disable a command preventing it from being sent in any chatchannel.",
 
   "data.disable.options.0.options.0.type": "String",
-  "data.disable.options.0.options.0.name": "advancement",
-  "data.disable.options.0.options.0.description": "Set the advancement you want to disable",
+  "data.disable.options.0.options.0.name": "command",
+  "data.disable.options.0.options.0.description": "Set the command you want to disable",
   "data.disable.options.0.options.0.required": true,
   "data.disable.options.0.options.0.autocomplete": true,
 
 
   "data.disable.options.1.type": "Subcommand",
-  "data.disable.options.1.name": "stats",
-  "data.disable.options.1.description": "Disable a stat",
+  "data.disable.options.1.name": "list",
+  "data.disable.options.1.description": "Get a list of all disabled commands/stats/advancements",
 
   "data.disable.options.1.options.0.type": "String",
-  "data.disable.options.1.options.0.name": "stat",
-  "data.disable.options.1.options.0.description": "Set the stat you want to disable",
+  "data.disable.options.1.options.0.name": "category",
+  "data.disable.options.1.options.0.description": "Set the category which you want to list",
   "data.disable.options.1.options.0.required": true,
-  "data.disable.options.1.options.0.autocomplete": true,
-
-  "data.disable.options.2.type": "Subcommand",
-  "data.disable.options.2.name": "chat-commands",
-  "data.disable.options.2.description": "Disable a command preventing it from being sent in any chatchannel.",
-
-  "data.disable.options.2.options.0.type": "String",
-  "data.disable.options.2.options.0.name": "command",
-  "data.disable.options.2.options.0.description": "Set the command you want to disable",
-  "data.disable.options.2.options.0.required": true,
-  "data.disable.options.2.options.0.autocomplete": true,
-
-
-  "data.disable.options.3.type": "Subcommand",
-  "data.disable.options.3.name": "list",
-  "data.disable.options.3.description": "Get a list of all disabled commands/stats/advancements",
-
-  "data.disable.options.3.options.0.type": "String",
-  "data.disable.options.3.options.0.name": "category",
-  "data.disable.options.3.options.0.description": "Set the category which you want to list",
-  "data.disable.options.3.options.0.required": true,
-  "data.disable.options.3.options.0.choices.0.name": "Chat Commands",
-  "data.disable.options.3.options.0.choices.0.value": "chatCommands",
-  "data.disable.options.3.options.0.choices.1.name": "Advancements",
-  "data.disable.options.3.options.0.choices.1.value": "advancements",
-  "data.disable.options.3.options.0.choices.2.name": "Stats",
-  "data.disable.options.3.options.0.choices.2.value": "stats",
+  "data.disable.options.1.options.0.choices.0.name": "Chat Commands",
+  "data.disable.options.1.options.0.choices.0.value": "chatCommands",
 
 
 

@@ -41,10 +41,6 @@ export default class Stats extends Command {
 
         const argPlaceholder = { 'stat_category': category, 'username': user.username };
 
-        if(server.settings.isDisabled('stats', category)) {
-            return interaction.replyTl(keys.commands.stats.no_access.category_disabled, argPlaceholder);
-        }
-
         const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./download-cache/stats/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
             404: keys.api.command.errors.could_not_download_user_files,

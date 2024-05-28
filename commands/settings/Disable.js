@@ -21,10 +21,8 @@ export default class Disable extends AutocompleteCommand {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        let matchingKeys = [];
-        if(subcommand === 'advancements') matchingKeys = utils.searchAllAdvancements(focused);
-        else if(subcommand === 'stats') matchingKeys = utils.searchAllStats(focused);
-        else if(subcommand === 'chat-commands') {
+        const matchingKeys = [];
+        if(subcommand === 'chat-commands') {
             for(const name of commandNames) {
                 if(!name.includes(focused)) continue;
 

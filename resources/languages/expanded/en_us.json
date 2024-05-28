@@ -3444,34 +3444,6 @@
       "options": [
         {
           "type": "Subcommand",
-          "name": "advancements",
-          "description": "Disable an advancement",
-          "options": [
-            {
-              "type": "String",
-              "name": "advancement",
-              "description": "Set the advancement you want to disable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
-        {
-          "type": "Subcommand",
-          "name": "stats",
-          "description": "Disable a stat",
-          "options": [
-            {
-              "type": "String",
-              "name": "stat",
-              "description": "Set the stat you want to disable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
-        {
-          "type": "Subcommand",
           "name": "chat-commands",
           "description": "Disable a command preventing it from being sent in any chatchannel.",
           "options": [
@@ -3498,14 +3470,6 @@
                 {
                   "name": "Chat Commands",
                   "value": "chatCommands"
-                },
-                {
-                  "name": "Advancements",
-                  "value": "advancements"
-                },
-                {
-                  "name": "Stats",
-                  "value": "stats"
                 }
               ]
             }
