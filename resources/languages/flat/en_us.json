@@ -486,6 +486,9 @@
   "commands.userinfo.success.general.embeds.0.fields.3.value": "%operator% (Level: %operator_level%)",
   "commands.userinfo.success.general.embeds.0.fields.3.inline": true,
 
+  "commands.userinfo.success.connected_account.embeds.0.fields.0.name": "Linked Discord Account",
+  "commands.userinfo.success.connected_account.embeds.0.fields.0.value": "%connection%",
+  "commands.userinfo.success.connected_account.embeds.0.fields.0.inline": true,
 
   "commands.userinfo.success.survival.embeds.0.title": "User Information",
 

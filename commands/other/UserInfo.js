@@ -14,7 +14,7 @@ import {
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
 import minecraft_data from 'minecraft-data';
-import Discord, { ComponentType, time } from 'discord.js';
+import Discord, { ComponentType, time, userMention } from 'discord.js';
 
 const mcData = minecraft_data('1.20.1');
 
@@ -85,6 +85,11 @@ export default class UserInfo extends Command {
         const generalMessage = getReplyOptions(keys.commands.userinfo.success.general, placeholders, ph.colors());
         const adminMessage = getReplyOptions(keys.commands.userinfo.success.admin, placeholders, ph.colors());
         const survivalMessage = getReplyOptions(keys.commands.userinfo.success.survival, placeholders, ph.colors());
+
+        const id = client.userConnections.cache.find(c => c.uuid === user.uuid)?.id;
+        if(id) {
+            generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { account: userMention(id) }));
+        }
 
         const newAdminFields = [];
         const newSurvivalFields = [];

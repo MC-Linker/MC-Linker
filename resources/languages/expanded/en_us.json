@@ -908,6 +908,19 @@
             }
           ]
         },
+        "connected_account": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Linked Discord Account",
+                  "value": "%connection%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
         "survival": {
           "embeds": [
             {
