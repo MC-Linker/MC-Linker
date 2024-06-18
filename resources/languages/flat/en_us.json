@@ -174,6 +174,8 @@
 
 
 
+  "commands.advancements.advancements_description": "Image of player's advancements",
+
   "commands.advancements.no_description_available": "No description available...",
   "commands.advancements.acquired": "Acquired",
   "commands.advancements.not_acquired": "Not Acquired",
@@ -190,17 +192,21 @@
   "commands.advancements.warnings.not_completed.embeds.0.description": "Advancement **%advancement_title%** not completed/unlocked or misspelled!",
   "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
 
-  "commands.advancements.success.embeds.0.title": "Advancement",
-  "commands.advancements.success.embeds.0.description": "**%advancement_title%**\n*%advancement_description%*",
-  "commands.advancements.success.embeds.0.fields.0.name": "Requirements",
-  "commands.advancements.success.embeds.0.fields.0.value": "%advancement_criteria%",
-  "commands.advancements.success.embeds.0.fields.0.inline": true,
-  "commands.advancements.success.embeds.0.fields.1.name": "Acquired on",
-  "commands.advancements.success.embeds.0.fields.1.value": "%advancement_timestamps%",
-  "commands.advancements.success.embeds.0.fields.1.inline": true,
-  "commands.advancements.success.embeds.0.footer.text": "Advancement %is_done%",
-  "commands.advancements.success.embeds.0.author.name": "%username%",
-  "commands.advancements.success.embeds.0.author.icon_url": "%user_icon%",
+  "commands.advancements.success.final.embeds.0.title": "Player Advancements",
+  "commands.advancements.success.final.embeds.0.description": "Here are the advancements of **%username%**:\n",
+  "commands.advancements.success.final.embeds.0.image": "attachment://Advancements_Player.png",
+
+  "commands.advancements.success.details.embeds.0.title": "Advancement",
+  "commands.advancements.success.details.embeds.0.description": "**%advancement_title%**\n*%advancement_description%*",
+  "commands.advancements.success.details.embeds.0.fields.0.name": "Requirements",
+  "commands.advancements.success.details.embeds.0.fields.0.value": "%advancement_criteria%",
+  "commands.advancements.success.details.embeds.0.fields.0.inline": true,
+  "commands.advancements.success.details.embeds.0.fields.1.name": "Acquired on",
+  "commands.advancements.success.details.embeds.0.fields.1.value": "%advancement_timestamps%",
+  "commands.advancements.success.details.embeds.0.fields.1.inline": true,
+  "commands.advancements.success.details.embeds.0.footer.text": "Advancement %is_done%",
+  "commands.advancements.success.details.embeds.0.author.name": "%username%",
+  "commands.advancements.success.details.embeds.0.author.icon_url": "%user_icon%",
 
 
 
@@ -257,6 +263,9 @@
 
   "commands.inventory.inventory_description": "Image of player's inventory",
   "commands.inventory.shulker_description": "Image of shulker contents",
+
+
+
   "commands.stats.stats_description": "Image of player's statistics",
 
   "commands.stats.no_access.category_disabled.embeds.0.title": "Category Disabled",
@@ -1242,16 +1251,79 @@
   "data.advancements.long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
   "data.advancements.description": "Look up your and other member's minecraft advancements.",
 
-  "data.advancements.options.0.type": "String",
-  "data.advancements.options.0.name": "advancement",
-  "data.advancements.options.0.description": "Set the advancement",
-  "data.advancements.options.0.required": true,
-  "data.advancements.options.0.autocomplete": true,
+  "data.advancements.options.0.type": "Subcommand",
+  "data.advancements.options.0.name": "minecraft",
+  "data.advancements.options.0.description": "The heart and story of the game",
 
-  "data.advancements.options.1.type": "String",
-  "data.advancements.options.1.name": "user",
-  "data.advancements.options.1.description": "Set the user you want to get the advancement from.",
-  "data.advancements.options.1.required": true,
+  "data.advancements.options.0.options.0.type": "String",
+  "data.advancements.options.0.options.0.name": "user",
+  "data.advancements.options.0.options.0.description": "Set the user you want to get the advancement from.",
+  "data.advancements.options.0.options.0.required": true,
+
+  "data.advancements.options.0.options.1.type": "Boolean",
+  "data.advancements.options.0.options.1.name": "show_details",
+  "data.advancements.options.0.options.1.description": "Set whether to display buttons that show details about advancements.",
+  "data.advancements.options.0.options.1.required": false,
+
+
+  "data.advancements.options.1.type": "Subcommand",
+  "data.advancements.options.1.name": "nether",
+  "data.advancements.options.1.description": "Bring summer clothes",
+
+  "data.advancements.options.1.options.0.type": "String",
+  "data.advancements.options.1.options.0.name": "user",
+  "data.advancements.options.1.options.0.description": "Set the user you want to get the advancement from.",
+  "data.advancements.options.1.options.0.required": true,
+
+  "data.advancements.options.1.options.1.type": "Boolean",
+  "data.advancements.options.1.options.1.name": "show_details",
+  "data.advancements.options.1.options.1.description": "Set whether to display buttons that show details about advancements.",
+  "data.advancements.options.1.options.1.required": false,
+
+
+  "data.advancements.options.2.type": "Subcommand",
+  "data.advancements.options.2.name": "end",
+  "data.advancements.options.2.description": "Or the beginning?",
+
+  "data.advancements.options.2.options.0.type": "String",
+  "data.advancements.options.2.options.0.name": "user",
+  "data.advancements.options.2.options.0.description": "Set the user you want to get the advancement from.",
+  "data.advancements.options.2.options.0.required": true,
+
+  "data.advancements.options.2.options.1.type": "Boolean",
+  "data.advancements.options.2.options.1.name": "show_details",
+  "data.advancements.options.2.options.1.description": "Set whether to display buttons that show details about advancements.",
+  "data.advancements.options.2.options.1.required": false,
+
+
+  "data.advancements.options.3.type": "Subcommand",
+  "data.advancements.options.3.name": "adventure",
+  "data.advancements.options.3.description": "Adventure, exploration, and combat",
+
+  "data.advancements.options.3.options.0.type": "String",
+  "data.advancements.options.3.options.0.name": "user",
+  "data.advancements.options.3.options.0.description": "Set the user you want to get the advancement from.",
+  "data.advancements.options.3.options.0.required": true,
+
+  "data.advancements.options.3.options.1.type": "Boolean",
+  "data.advancements.options.3.options.1.name": "show_details",
+  "data.advancements.options.3.options.1.description": "Set whether to display buttons that show details about advancements.",
+  "data.advancements.options.3.options.1.required": false,
+
+
+  "data.advancements.options.4.type": "Subcommand",
+  "data.advancements.options.4.name": "husbandry",
+  "data.advancements.options.4.description": "The world is full of friends and food",
+
+  "data.advancements.options.4.options.0.type": "String",
+  "data.advancements.options.4.options.0.name": "user",
+  "data.advancements.options.4.options.0.description": "Set the user you want to get the advancement from.",
+  "data.advancements.options.4.options.0.required": true,
+
+  "data.advancements.options.4.options.1.type": "Boolean",
+  "data.advancements.options.4.options.1.name": "show_details",
+  "data.advancements.options.4.options.1.description": "Set whether to display buttons that show details about advancements.",
+  "data.advancements.options.4.options.1.required": false,
 
 
 
@@ -1285,6 +1357,7 @@
   "data.stats.options.0.options.0.name": "user",
   "data.stats.options.0.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.0.options.0.required": true,
+
   "data.stats.options.0.options.1.type": "String",
   "data.stats.options.0.options.1.name": "sort",
   "data.stats.options.0.options.1.description": "Set how you want to sort the stats.",
@@ -1307,6 +1380,7 @@
   "data.stats.options.1.options.0.name": "user",
   "data.stats.options.1.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.1.options.0.required": true,
+
   "data.stats.options.1.options.1.type": "String",
   "data.stats.options.1.options.1.name": "sort",
   "data.stats.options.1.options.1.description": "Set how you want to sort the stats.",
@@ -1329,6 +1403,7 @@
   "data.stats.options.2.options.0.name": "user",
   "data.stats.options.2.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.2.options.0.required": true,
+
   "data.stats.options.2.options.1.type": "String",
   "data.stats.options.2.options.1.name": "sort",
   "data.stats.options.2.options.1.description": "Set how you want to sort the stats.",
@@ -1351,6 +1426,7 @@
   "data.stats.options.3.options.0.name": "user",
   "data.stats.options.3.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.3.options.0.required": true,
+
   "data.stats.options.3.options.1.type": "String",
   "data.stats.options.3.options.1.name": "sort",
   "data.stats.options.3.options.1.description": "Set how you want to sort the stats.",
@@ -1373,6 +1449,7 @@
   "data.stats.options.4.options.0.name": "user",
   "data.stats.options.4.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.4.options.0.required": true,
+
   "data.stats.options.4.options.1.type": "String",
   "data.stats.options.4.options.1.name": "sort",
   "data.stats.options.4.options.1.description": "Set how you want to sort the stats (Default: Descending).",
@@ -1395,6 +1472,7 @@
   "data.stats.options.5.options.0.name": "user",
   "data.stats.options.5.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.5.options.0.required": true,
+
   "data.stats.options.5.options.1.type": "String",
   "data.stats.options.5.options.1.name": "sort",
   "data.stats.options.5.options.1.description": "Set how you want to sort the stats.",
@@ -1417,6 +1495,7 @@
   "data.stats.options.6.options.0.name": "user",
   "data.stats.options.6.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.6.options.0.required": true,
+
   "data.stats.options.7.type": "Subcommand",
   "data.stats.options.7.name": "killed",
   "data.stats.options.7.description": "Statistics related to the number of entities a player killed.",
@@ -1425,6 +1504,7 @@
   "data.stats.options.7.options.0.name": "user",
   "data.stats.options.7.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.7.options.0.required": true,
+
   "data.stats.options.7.options.1.type": "String",
   "data.stats.options.7.options.1.name": "sort",
   "data.stats.options.7.options.1.description": "Set how you want to sort the stats.",
@@ -1447,6 +1527,7 @@
   "data.stats.options.8.options.0.name": "user",
   "data.stats.options.8.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.8.options.0.required": true,
+
   "data.stats.options.8.options.1.type": "String",
   "data.stats.options.8.options.1.name": "sort",
   "data.stats.options.8.options.1.description": "Set how you want to sort the stats.",
@@ -1497,41 +1578,49 @@
   "data.command.options.1.description": "Set the first command argument.",
   "data.command.options.1.required": false,
   "data.command.options.1.autocomplete": true,
+
   "data.command.options.2.type": "String",
   "data.command.options.2.name": "argument2",
   "data.command.options.2.description": "Set the second command argument.",
   "data.command.options.2.required": false,
   "data.command.options.2.autocomplete": true,
+
   "data.command.options.3.type": "String",
   "data.command.options.3.name": "argument3",
   "data.command.options.3.description": "Set the third command argument.",
   "data.command.options.3.required": false,
   "data.command.options.3.autocomplete": true,
+
   "data.command.options.4.type": "String",
   "data.command.options.4.name": "argument4",
   "data.command.options.4.description": "Set the fourth command argument.",
   "data.command.options.4.required": false,
   "data.command.options.4.autocomplete": true,
+
   "data.command.options.5.type": "String",
   "data.command.options.5.name": "argument5",
   "data.command.options.5.description": "Set the fifth command argument.",
   "data.command.options.5.required": false,
   "data.command.options.5.autocomplete": true,
+
   "data.command.options.6.type": "String",
   "data.command.options.6.name": "argument6",
   "data.command.options.6.description": "Set the sixth command argument.",
   "data.command.options.6.required": false,
   "data.command.options.6.autocomplete": true,
+
   "data.command.options.7.type": "String",
   "data.command.options.7.name": "argument7",
   "data.command.options.7.description": "Set the seventh command argument.",
   "data.command.options.7.required": false,
   "data.command.options.7.autocomplete": true,
+
   "data.command.options.8.type": "String",
   "data.command.options.8.name": "argument8",
   "data.command.options.8.description": "Set the eighth command argument.",
   "data.command.options.8.required": false,
   "data.command.options.8.autocomplete": true,
+
   "data.command.options.9.type": "String",
   "data.command.options.9.name": "argument9",
   "data.command.options.9.description": "Set the ninth command argument.",

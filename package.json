@@ -18,6 +18,7 @@
   "dependencies": {
     "@fastify/cookie": "^9.2.0",
     "bufferutil": "^4.0.7",
+    "d3-hierarchy": "^3.1.2",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
     "emojione": "^4.5.0",
