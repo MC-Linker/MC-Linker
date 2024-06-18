@@ -7,7 +7,7 @@ import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
 
-const mcData = minecraft_data('1.20.1');
+const mcData = minecraft_data('1.20.4');
 
 const armorSlotCoords = {
     5: [16, 16],

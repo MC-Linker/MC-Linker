@@ -10,7 +10,7 @@ import Discord, {
     User,
 } from 'discord.js';
 import crypto from 'crypto';
-import McData from 'minecraft-data';
+import minecraft_data from 'minecraft-data';
 import FtpProtocol from '../structures/FtpProtocol.js';
 import keys from './keys.js';
 import advancementData from '../resources/data/advancements.json' assert { type: 'json' };
@@ -24,7 +24,7 @@ import { Authflow } from 'prismarine-auth';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import { FilePath } from '../structures/Protocol.js';
 
-const mcData = McData('1.20.1');
+const mcData = minecraft_data('1.20.4');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
@@ -33,6 +33,7 @@ export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0
 
 // Password Auth:
 const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
+    authTitle: process.env.AZURE_CLIENT_ID,
     flow: 'msal', // required, but will be ignored because password field is set
     password: process.env.MICROSOFT_PASSWORD,
 });
@@ -847,7 +848,7 @@ export function memoize(fn, parameters = undefined) {
     return async function(...args) {
         const key = JSON.stringify(args.slice(0, parameters));
         if(cache.has(key)) return cache.get(key);
-        const result = await fn(args);
+        const result = await fn(...args);
         cache.set(key, result);
         return result;
     };

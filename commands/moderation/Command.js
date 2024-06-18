@@ -8,7 +8,7 @@ import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };
 import { FilePath } from '../../structures/Protocol.js';
 
-const mcData = minecraft_data('1.20.1');
+const mcData = minecraft_data('1.20.4');
 
 export default class Command extends AutocompleteCommand {
 
@@ -161,7 +161,8 @@ export default class Command extends AutocompleteCommand {
             arg = arg.replace(arg, username);
         }
 
-        const resp = await server.protocol.execute(`${command} ${args.join(' ')}`);
+        const userConnection = client.userConnections.cache.get(interaction.user.id);
+        const resp = await server.protocol.execute(`${command} ${args.join(' ')}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;

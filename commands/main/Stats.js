@@ -10,7 +10,7 @@ import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' assert { type: 'json' };
 
-const mcData = minecraft_data('1.20.1');
+const mcData = minecraft_data('1.20.4');
 
 const startCoords = [41, 152];
 const yPadding = 7;

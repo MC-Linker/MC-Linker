@@ -16,7 +16,7 @@ import DefaultButton from '../../structures/helpers/DefaultButton.js';
 import minecraft_data from 'minecraft-data';
 import Discord, { ComponentType, time, userMention } from 'discord.js';
 
-const mcData = minecraft_data('1.20.1');
+const mcData = minecraft_data('1.20.4');
 
 export default class UserInfo extends Command {
 
