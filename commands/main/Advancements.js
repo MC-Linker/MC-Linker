@@ -1,13 +1,14 @@
 import minecraft_data from 'minecraft-data';
-import Discord from 'discord.js';
-import { addPh, getEmbed, ph } from '../../utilities/messages.js';
+import Discord, { time } from 'discord.js';
+import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as d3 from 'd3-hierarchy';
 import Canvas from 'skia-canvas';
-import data from '../../resources/data/advancements.json' assert { type: 'json' };
+import allAdvancements from '../../resources/data/advancements.json' assert { type: 'json' };
 import Command from '../../structures/Command.js';
+import Pagination from '../../structures/helpers/Pagination.js';
 
 const mcData = minecraft_data('1.20.4');
 
@@ -73,6 +74,7 @@ export default class Advancements extends Command {
         //Center tree
         ctx.translate((frameSize + framePadding) / 2 + 0.5, (advancementCanvas.height - height) / 2);
 
+        const advancementDataList = [];
         // Draw tree
         for(const node of treeResult.descendants()) {
             // Draw connection
@@ -116,6 +118,23 @@ export default class Advancements extends Command {
                 const lines = utils.wrapText(ctx, mcData.itemsByName[node.data.icon]?.displayName ?? node.data.icon, frameSize);
                 lines.forEach((line, i) => ctx.fillText(line, node.x - iconSize / 2, node.y - iconSize / 2 + 8 + i * 8));
             }
+
+            //Push advancement data
+            const advancementCriteria = [];
+            const advancementTimestamps = [];
+            for(const [criteria, date] of Object.entries(node.data.criteria)) {
+                let formattedCriteria = criteria.split(':').pop();
+                formattedCriteria = mcData.itemsByName[formattedCriteria]?.displayName ?? formattedCriteria.toTitleCase(true);
+
+                advancementCriteria.push(formattedCriteria);
+                advancementTimestamps.push(time(new Date(date)));
+            }
+
+            advancementDataList.push({
+                ...node.data,
+                criteria: advancementCriteria.join('\n'),
+                timestamps: advancementTimestamps.join('\n'),
+            });
         }
 
         const advancementsAttach = new Discord.AttachmentBuilder(
@@ -124,19 +143,74 @@ export default class Advancements extends Command {
         );
         const advancementsEmbed = getEmbed(keys.commands.advancements.success.final, ph.emojisAndColors(), { username: user.username });
 
-        await interaction.replyOptions({ embeds: [advancementsEmbed], files: [advancementsAttach] });
+        if(!showDetails) return await interaction.replyOptions({
+            embeds: [advancementsEmbed],
+            files: [advancementsAttach],
+        });
+
+        const paginationPages = await this.getAdvancementPages(advancementDataList, user.username, advancementsEmbed, advancementsAttach);
+        const pagination = new Pagination(client, interaction, paginationPages, {
+            showSelectedButton: true,
+            showStartPageOnce: true,
+        });
+        await pagination.start();
     }
 
     getTreeData(category, completedAdvancements) {
         function toNestedObject(advancement) {
             if(!advancement) return null;
+
+            const completedAdvancement = completedAdvancements[`minecraft:${category}/${advancement.value}`];
             return {
                 ...advancement,
-                obtained: completedAdvancements[`minecraft:${category}/${advancement.value}`]?.done ?? false,
-                children: advancement.children.map(c => toNestedObject(data[category].find(a => a.value === c))),
+                obtained: completedAdvancement?.done ?? false,
+                children: advancement.children.map(c => toNestedObject(allAdvancements[category].find(a => a.value === c))),
+                criteria: completedAdvancement?.criteria ?? [],
             };
         }
 
-        return toNestedObject(data[category].find(a => a.value === 'root'));
+        return toNestedObject(allAdvancements[category].find(a => a.value === 'root'));
+    }
+
+    async getAdvancementPages(advancementDataList, username, advancementsEmbed, advancementsAttach) {
+        const paginationPages = {};
+
+        for(const advancement of advancementDataList) {
+            const prefixedPlaceholders = Object.fromEntries(Object.entries(advancement).map(([key, value]) => [`advancement_${key}`, value]));
+            const allPlaceholders = {
+                ...prefixedPlaceholders,
+                advancement_type: advancement.type.toTitleCase(),
+                advancement_icon: mcData.itemsByName[advancement.icon]?.displayName ?? advancement.icon.toTitleCase(true),
+                advancement_obtained: advancement.obtained ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
+                username,
+                user_icon: await utils.getMinecraftAvatarURL(username),
+                ...ph.emojisAndColors(),
+            };
+
+            const advancementEmbed = getEmbed(keys.commands.advancements.success.details, allPlaceholders);
+            const advancementButton = getComponent(keys.commands.advancements.success.details_button, allPlaceholders);
+
+            if(advancement.value === 'root') {
+                paginationPages[advancementButton.data.custom_id] = {
+                    button: advancementButton,
+                    startPage: true,
+                    page: {
+                        embeds: [advancementsEmbed],
+                        files: [advancementsAttach],
+                    },
+                };
+                continue;
+            }
+
+            paginationPages[advancementButton.data.custom_id] = {
+                button: advancementButton,
+                startPage: advancement.value === 'root',
+                page: {
+                    embeds: [advancementsEmbed, advancementEmbed],
+                },
+            };
+        }
+
+        return paginationPages;
     }
 }

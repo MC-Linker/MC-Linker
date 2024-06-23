@@ -336,37 +336,6 @@
       "no_description_available": "No description available...",
       "acquired": "Acquired",
       "not_acquired": "Not Acquired",
-      "no_access": {
-        "category_disabled": {
-          "embeds": [
-            {
-              "title": "Category Disabled",
-              "description": "Advancement category **%advancement_category%** disabled!"
-            }
-          ],
-          "console": "Advancement category %advancement_category% disabled."
-        },
-        "advancement_disabled": {
-          "embeds": [
-            {
-              "title": "Advancement Disabled",
-              "description": "Advancement **%advancement_title%** disabled!"
-            }
-          ],
-          "console": "Advancement %advancement_title% disabled."
-        }
-      },
-      "warnings": {
-        "not_completed": {
-          "embeds": [
-            {
-              "title": "Advancement Not Completed",
-              "description": "Advancement **%advancement_title%** not completed/unlocked or misspelled!"
-            }
-          ],
-          "console": "Advancement %advancement_title% not completed."
-        }
-      },
       "success": {
         "final": {
           "embeds": [
@@ -377,11 +346,21 @@
             }
           ]
         },
+        "details_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "advancement_%advancement_value%",
+              "label": "%advancement_name%"
+            }
+          ]
+        },
         "details": {
           "embeds": [
             {
-              "title": "Advancement",
-              "description": "**%advancement_title%**\n*%advancement_description%*",
+              "title": "%advancement_name%",
+              "description": "*%advancement_description%*",
               "fields": [
                 {
                   "name": "Requirements",
@@ -392,10 +371,20 @@
                   "name": "Acquired on",
                   "value": "%advancement_timestamps%",
                   "inline": true
+                },
+                {
+                  "name": "Icon Item",
+                  "value": "%advancement_icon%",
+                  "inline": false
+                },
+                {
+                  "name": "Type",
+                  "value": "%advancement_type%",
+                  "inline": true
                 }
               ],
               "footer": {
-                "text": "Advancement %is_done%"
+                "text": "Advancement %advancement_obtained%\nId: %advancement_value%"
               },
               "author": {
                 "name": "%username%",
@@ -538,36 +527,7 @@
     },
     "stats": {
       "stats_description": "Image of player's statistics",
-      "no_access": {
-        "category_disabled": {
-          "embeds": [
-            {
-              "title": "Category Disabled",
-              "description": "Stat category **%stat_category%** disabled!"
-            }
-          ],
-          "console": "Stat category %stat_category% disabled."
-        },
-        "stat_disabled": {
-          "embeds": [
-            {
-              "title": "Stat Disabled",
-              "description": "Stat **%stat_name%** disabled!"
-            }
-          ],
-          "console": "Stat %stat_name% disabled"
-        }
-      },
       "warnings": {
-        "no_match": {
-          "embeds": [
-            {
-              "title": "Could Not Find Stat",
-              "description": "Stat is either 0 or misspelled!"
-            }
-          ],
-          "console": "Could not find stat"
-        },
         "no_image": {
           "console": "No Image available for %stat_name%"
         }

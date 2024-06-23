@@ -28,7 +28,7 @@ process.on('uncaughtException', async err => {
 
 /*
  * Converts the first letter of a string to uppercase.
- * @param {boolean} c - Whether the string is camelCase or snake_case.
+ * @param {boolean} c - True for snake_case, false for camelCase.
  * @param {boolean} n - Whether to add a space before numbers.
  * @returns {String} - The formatted string.
  */

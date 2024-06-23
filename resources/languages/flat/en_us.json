@@ -180,31 +180,30 @@
   "commands.advancements.acquired": "Acquired",
   "commands.advancements.not_acquired": "Not Acquired",
 
-  "commands.advancements.no_access.category_disabled.embeds.0.title": "Category Disabled",
-  "commands.advancements.no_access.category_disabled.embeds.0.description": "Advancement category **%advancement_category%** disabled!",
-  "commands.advancements.no_access.category_disabled.console": "Advancement category %advancement_category% disabled.",
-
-  "commands.advancements.no_access.advancement_disabled.embeds.0.title": "Advancement Disabled",
-  "commands.advancements.no_access.advancement_disabled.embeds.0.description": "Advancement **%advancement_title%** disabled!",
-  "commands.advancements.no_access.advancement_disabled.console": "Advancement %advancement_title% disabled.",
-
-  "commands.advancements.warnings.not_completed.embeds.0.title": "Advancement Not Completed",
-  "commands.advancements.warnings.not_completed.embeds.0.description": "Advancement **%advancement_title%** not completed/unlocked or misspelled!",
-  "commands.advancements.warnings.not_completed.console": "Advancement %advancement_title% not completed.",
-
   "commands.advancements.success.final.embeds.0.title": "Player Advancements",
   "commands.advancements.success.final.embeds.0.description": "Here are the advancements of **%username%**:\n",
   "commands.advancements.success.final.embeds.0.image": "attachment://Advancements_Player.png",
 
-  "commands.advancements.success.details.embeds.0.title": "Advancement",
-  "commands.advancements.success.details.embeds.0.description": "**%advancement_title%**\n*%advancement_description%*",
+  "commands.advancements.success.details_button.components.0.type": "Button",
+  "commands.advancements.success.details_button.components.0.style": "Secondary",
+  "commands.advancements.success.details_button.components.0.custom_id": "advancement_%advancement_value%",
+  "commands.advancements.success.details_button.components.0.label": "%advancement_name%",
+
+  "commands.advancements.success.details.embeds.0.title": "%advancement_name%",
+  "commands.advancements.success.details.embeds.0.description": "*%advancement_description%*",
   "commands.advancements.success.details.embeds.0.fields.0.name": "Requirements",
   "commands.advancements.success.details.embeds.0.fields.0.value": "%advancement_criteria%",
   "commands.advancements.success.details.embeds.0.fields.0.inline": true,
   "commands.advancements.success.details.embeds.0.fields.1.name": "Acquired on",
   "commands.advancements.success.details.embeds.0.fields.1.value": "%advancement_timestamps%",
   "commands.advancements.success.details.embeds.0.fields.1.inline": true,
-  "commands.advancements.success.details.embeds.0.footer.text": "Advancement %is_done%",
+  "commands.advancements.success.details.embeds.0.fields.2.name": "Icon Item",
+  "commands.advancements.success.details.embeds.0.fields.2.value": "%advancement_icon%",
+  "commands.advancements.success.details.embeds.0.fields.2.inline": false,
+  "commands.advancements.success.details.embeds.0.fields.3.name": "Type",
+  "commands.advancements.success.details.embeds.0.fields.3.value": "%advancement_type%",
+  "commands.advancements.success.details.embeds.0.fields.3.inline": true,
+  "commands.advancements.success.details.embeds.0.footer.text": "Advancement %advancement_obtained%\nId: %advancement_value%",
   "commands.advancements.success.details.embeds.0.author.name": "%username%",
   "commands.advancements.success.details.embeds.0.author.icon_url": "%user_icon%",
 
@@ -267,18 +266,6 @@
 
 
   "commands.stats.stats_description": "Image of player's statistics",
-
-  "commands.stats.no_access.category_disabled.embeds.0.title": "Category Disabled",
-  "commands.stats.no_access.category_disabled.embeds.0.description": "Stat category **%stat_category%** disabled!",
-  "commands.stats.no_access.category_disabled.console": "Stat category %stat_category% disabled.",
-
-  "commands.stats.no_access.stat_disabled.embeds.0.title": "Stat Disabled",
-  "commands.stats.no_access.stat_disabled.embeds.0.description": "Stat **%stat_name%** disabled!",
-  "commands.stats.no_access.stat_disabled.console": "Stat %stat_name% disabled",
-
-  "commands.stats.warnings.no_match.embeds.0.title": "Could Not Find Stat",
-  "commands.stats.warnings.no_match.embeds.0.description": "Stat is either 0 or misspelled!",
-  "commands.stats.warnings.no_match.console": "Could not find stat",
 
   "commands.stats.warnings.no_image.console": "No Image available for %stat_name%",
 

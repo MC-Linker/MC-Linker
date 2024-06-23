@@ -1,4 +1,3 @@
-import * as utils from '../../utilities/utils.js';
 import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
@@ -93,15 +92,6 @@ export default class Disable extends AutocompleteCommand {
         }
 
         function getFormattedName(type, name) {
-            if(type === 'advancements') {
-                const matchingTitle = utils.searchAllAdvancements(name, true, true, 1);
-                return matchingTitle.shift()?.name ?? name;
-            }
-            else if(type === 'stats') {
-                const matchingStat = utils.searchAllStats(name, true, true, 1);
-                return matchingStat?.shift()?.name ?? name;
-            }
-
             return name;
         }
     }

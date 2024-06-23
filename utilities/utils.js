@@ -88,7 +88,7 @@ export async function getMinecraftAvatarURL(username) {
  * @returns {AdvancementData[]} - An array of matching advancements.
  */
 export function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
-    const matchingCategory = advancementData.categories[category];
+    const matchingCategory = advancementData[category];
     if(!matchingCategory) return [];
 
     let matchingTitles = matchingCategory.filter(advancement => {
@@ -101,7 +101,7 @@ export function searchAdvancements(searchString, category, shouldSearchNames = t
     });
 
     //Add category field
-    const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === matchingCategory);
+    const categoryKey = Object.keys(advancementData).find(key => advancementData[key] === matchingCategory);
     matchingTitles.map(title => title.category = categoryKey);
 
     matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
@@ -120,7 +120,7 @@ export function searchAdvancements(searchString, category, shouldSearchNames = t
 export function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let matchingTitles = [];
 
-    for(const category of Object.keys(advancementData.categories)) {
+    for(const category of Object.keys(advancementData)) {
         const matchingKeys = searchAdvancements(searchString, category, shouldSearchNames, shouldSearchValues, maxLength);
         matchingKeys.forEach(key => matchingTitles.push(key));
     }

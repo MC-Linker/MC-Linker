@@ -8,9 +8,12 @@ import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
 dotenv.config();
+
 /*
  * Converts the first letter of a string to uppercase.
- * @returns {String} The formatted string.
+ * @param {boolean} c - True for snake_case, false for camelCase.
+ * @param {boolean} n - Whether to add a space before numbers.
+ * @returns {String} - The formatted string.
  */
 String.prototype.toTitleCase = function(c, n) {
     let t;
