@@ -88,7 +88,7 @@ export default class UserInfo extends Command {
 
         const id = client.userConnections.cache.find(c => c.uuid === user.uuid)?.id;
         if(id) {
-            generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { account: userMention(id) }));
+            generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));
         }
 
         const newAdminFields = [];

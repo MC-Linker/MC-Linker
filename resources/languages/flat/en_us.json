@@ -164,13 +164,19 @@
   "commands.systemstats.success.embeds.0.fields.2.value": "`%bot_uptime%`",
 
   "commands.systemstats.success.embeds.0.fields.3.name": "CPU (Usage)",
-  "commands.systemstats.success.embeds.0.fields.3.value": "`%cpu%` (`%cpu_usage_percent%`)",
+  "commands.systemstats.success.embeds.0.fields.3.value": "`%cpu%` (`%cpu_usage_percent%%`)",
 
   "commands.systemstats.success.embeds.0.fields.4.name": "Memory Usage",
-  "commands.systemstats.success.embeds.0.fields.4.value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%`)",
+  "commands.systemstats.success.embeds.0.fields.4.value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%%`)",
 
-  "commands.systemstats.success.embeds.0.fields.5.name": "Library",
-  "commands.systemstats.success.embeds.0.fields.5.value": "`%library%`",
+  "commands.systemstats.success.embeds.0.fields.5.name": "Storage Usage",
+  "commands.systemstats.success.embeds.0.fields.5.value": "`%storage_usage%GB/%max_storage%GB` (`%storage_usage_percent%%`)",
+
+  "commands.systemstats.success.embeds.0.fields.6.name": "Library",
+  "commands.systemstats.success.embeds.0.fields.6.value": "`%library%`",
+
+  "commands.systemstats.success.embeds.0.fields.7.name": "Node.js",
+  "commands.systemstats.success.embeds.0.fields.7.value": "`%node_version%`",
 
 
 

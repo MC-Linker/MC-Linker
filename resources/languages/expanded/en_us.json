@@ -316,15 +316,23 @@
               },
               {
                 "name": "CPU (Usage)",
-                "value": "`%cpu%` (`%cpu_usage_percent%`)"
+                "value": "`%cpu%` (`%cpu_usage_percent%%`)"
               },
               {
                 "name": "Memory Usage",
-                "value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%`)"
+                "value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%%`)"
+              },
+              {
+                "name": "Storage Usage",
+                "value": "`%storage_usage%GB/%max_storage%GB` (`%storage_usage_percent%%`)"
               },
               {
                 "name": "Library",
                 "value": "`%library%`"
+              },
+              {
+                "name": "Node.js",
+                "value": "`%node_version%`"
               }
             ]
           }
