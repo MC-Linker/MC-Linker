@@ -176,9 +176,12 @@ export default class Advancements extends Command {
         const paginationPages = {};
 
         for(const advancement of advancementDataList) {
-            const prefixedPlaceholders = Object.fromEntries(Object.entries(advancement).map(([key, value]) => [`advancement_${key}`, value]));
             const allPlaceholders = {
-                ...prefixedPlaceholders,
+                advancement_name: advancement.name,
+                advancement_description: advancement.description,
+                advancement_criteria: advancement.criteria,
+                advancement_timestamps: advancement.timestamps,
+                advancement_value: advancement.value,
                 advancement_type: advancement.type.toTitleCase(),
                 advancement_icon: mcData.itemsByName[advancement.icon]?.displayName ?? advancement.icon.toTitleCase(true),
                 advancement_obtained: advancement.obtained ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
@@ -188,7 +191,7 @@ export default class Advancements extends Command {
             };
 
             const advancementEmbed = getEmbed(keys.commands.advancements.success.details, allPlaceholders);
-            const advancementButton = getComponent(keys.commands.advancements.success.details_button, allPlaceholders);
+            const advancementButton = getComponent(keys.commands.advancements.success.details_button, allPlaceholders, { style: advancement.obtained ? 'Primary' : 'Secondary' });
 
             if(advancement.value === 'root') {
                 paginationPages[advancementButton.data.custom_id] = {
