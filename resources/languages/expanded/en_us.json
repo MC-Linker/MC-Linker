@@ -358,7 +358,7 @@
           "components": [
             {
               "type": "Button",
-              "style": "Secondary",
+              "style": "%style%",
               "custom_id": "advancement_%advancement_value%",
               "label": "%advancement_name%"
             }

@@ -602,7 +602,7 @@
       "value": "whos_the_pillager_now",
       "description": "Give a Pillager a taste of their own medicine",
       "icon": "crossbow",
-      "task": "task",
+        "type": "task",
       "children": []
     },
     {

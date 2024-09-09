@@ -191,7 +191,7 @@
   "commands.advancements.success.final.embeds.0.image": "attachment://Advancements_Player.png",
 
   "commands.advancements.success.details_button.components.0.type": "Button",
-  "commands.advancements.success.details_button.components.0.style": "Secondary",
+  "commands.advancements.success.details_button.components.0.style": "%style%",
   "commands.advancements.success.details_button.components.0.custom_id": "advancement_%advancement_value%",
   "commands.advancements.success.details_button.components.0.label": "%advancement_name%",
 
