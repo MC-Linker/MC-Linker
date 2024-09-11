@@ -219,6 +219,7 @@ async function getPlaceholder(key, args) {
                 '@p': '@p',
                 '@r': '@r',
                 '@e': '@e',
+                '@n': '@n',
             };
 
             const username = userConn?.username;
@@ -4420,6 +4421,58 @@ async function getPlaceholder(key, args) {
             placeholder = colors;
             placeholder.push('reset');
             break;
+        case 'damage_sources':
+            placeholder = [
+                'arrow',
+                'bad_respawn_point',
+                'cactus',
+                'campfire',
+                'cramming',
+                'dragon_breath',
+                'drown',
+                'dry_out',
+                'ender_pearl',
+                'explosion',
+                'fall',
+                'falling_anvil',
+                'falling_block',
+                'falling_stalactite',
+                'fireball',
+                'fireworks',
+                'fly_into_wall',
+                'freeze',
+                'generic',
+                'generic_kill',
+                'hot_floor',
+                'in_fire',
+                'in_wall',
+                'indirect_magic',
+                'lava',
+                'lightning_bolt',
+                'mace_smash',
+                'magic',
+                'mob_attack',
+                'mob_attack_no_aggro',
+                'mob_projectile',
+                'on_fire',
+                'out_of_world',
+                'outside_border',
+                'player_attack',
+                'player_explosion',
+                'sonic_boom',
+                'spit',
+                'stalagmite',
+                'starve',
+                'sting',
+                'sweet_burry_bush',
+                'thorns',
+                'thrown',
+                'trident',
+                'unattributed_fireball',
+                'wind_charge',
+                'wither',
+                'wither_skull',
+            ];
         case key.endsWith('_criteria') ? key : null:
             //TODO get advancement criteria
             break;

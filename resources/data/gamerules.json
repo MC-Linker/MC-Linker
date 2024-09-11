@@ -114,6 +114,12 @@
     "type": "bool"
   },
   {
+      "name": "enderPearlsVanishOnDeath",
+      "description": "Controls whether thrown ender pearls vanish when the player diess",
+      "default": true,
+      "type": "bool"
+  },
+    {
     "name": "fallDamage",
     "description": "Whether the player should take fall damage",
     "default": true,
@@ -167,6 +173,12 @@
     "default": 65536,
     "type": "int"
   },
+    {
+        "name": "maxCommandForkCount",
+        "description": "The maximum number of forks (contexts) that can be created during one tick. Applies to command blocks and functions.",
+        "default": 65536,
+        "type": "int"
+  },
   {
     "name": "maxEntityCramming",
     "description": "The maximum number of pushable entities a mob or player can push, before taking 6 suffocation damage per half-second.  Setting to 0 or lower disables the rule.  Damage affects survival-mode or adventure-mode players, and all mobs but bats. Pushable entities include non-spectator-mode players, any mob except bats, as well as boats and minecarts.",
@@ -174,6 +186,12 @@
     "type": "int"
   },
   {
+      "name": "minecartMaxSpeed",
+      "description": "The maximum speed a minecart may reach.",
+      "default": 8,
+      "type": "int"
+  },
+    {
     "name": "mobExplosionDropDecay",
     "description": "Whether mob loot is dropped by all mobs (true) or randomly (false) depending on how far the mob is from the center of the explosion",
     "default": true,
@@ -192,12 +210,30 @@
     "type": "bool"
   },
   {
+      "name": "playersNetherPortalDefaultDelay",
+      "description": "Controls the time that a creative player needs to stand in a nether portal before changing dimensions.",
+      "default": 80,
+      "type": "int"
+  },
+    {
+        "name": "playersNetherPortalCreativeDelay",
+        "description": "Controls the time that a non-creative player needs to stand in a nether portal before changing dimensions.",
+        "default": 1,
+        "type": "int"
+    },
+    {
     "name": "playersSleepingPercentage",
     "description": "What percentage of players must sleep to skip the night.",
     "default": 100,
     "type": "int"
   },
   {
+      "name": "projectilesCanBreakBlocks",
+      "description": "Whether impact projectiles destroy blocks that are destructible by them, i.e. chorus flowers, pointed dripstone, and decorated pots.",
+      "default": true,
+      "type": "bool"
+  },
+    {
     "name": "randomTickSpeed",
     "description": "How often a random block tick occurs (such as plant growth, leaf decay, etc.) per chunk section per game tick. 0 and negative values disables random ticks, higher numbers increase random ticks. Setting to a high integer results in high speeds of decay and growth. Numbers over 4096 make plant growth or leaf decay instantaneous.",
     "default": 3,
@@ -226,6 +262,12 @@
     "description": "The maximum number of snow layers that can be accumulated on each block",
     "default": 1,
     "type": "int"
+  },
+    {
+        "name": "spawnChunkRadius",
+        "description": "The size of the spawn chunks of the world.",
+        "default": 2,
+        "type": "int"
   },
   {
     "name": "spawnRadius",

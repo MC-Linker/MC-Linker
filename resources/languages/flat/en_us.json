@@ -1017,6 +1017,10 @@
   "api.plugin.warnings.no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
   "api.plugin.warnings.no_response_message_short": "No response message! This commonly happens after using `/reload`.",
 
+  "api.plugin.warnings.server_disconnected.embeds.0.title": "Server Disconnected",
+  "api.plugin.warnings.server_disconnected.embeds.0.description": "The server has disconnected from the plugin. No more messages will be sent to the discord server until the server reconnects.",
+
+
   "api.plugin.errors.no_response.embeds.0.title": "Plugin Does Not Respond",
   "api.plugin.errors.no_response.embeds.0.description": "[Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled.",
   "api.plugin.errors.no_response.console": "Plugin does not respond",

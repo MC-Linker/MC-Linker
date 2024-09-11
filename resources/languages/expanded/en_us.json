@@ -1920,7 +1920,15 @@
     "plugin": {
       "warnings": {
         "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
-        "no_response_message_short": "No response message! This commonly happens after using `/reload`."
+        "no_response_message_short": "No response message! This commonly happens after using `/reload`.",
+        "server_disconnected": {
+          "embeds": [
+            {
+              "title": "Server Disconnected",
+              "description": "The server has disconnected from the plugin. No more messages will be sent to the discord server until the server reconnects."
+            }
+          ]
+        }
       },
       "errors": {
         "no_response": {
