@@ -1077,7 +1077,7 @@
           "embeds": [
             {
               "title": "No Username Specified",
-              "description": "Don't ping someone. Specify your **minecraft java-edition account name** instead."
+              "description": "Don't ping someone. Specify your **Minecraft Java-Edition account name** instead."
             }
           ],
           "console": "No username specified"
@@ -1086,7 +1086,7 @@
           "embeds": [
             {
               "title": "Account Not Connected",
-              "description": "Your minecraft account is not connected."
+              "description": "Your Minecraft account is not connected."
             }
           ],
           "console": "Account not connected"
@@ -1395,7 +1395,7 @@
           "embeds": [
             {
               "title": "Invalid Version Specified",
-              "description": "Please specify a valid minor minecraft version without patch number (e.g. `1.19`, `1.16`)."
+              "description": "Please specify a valid minor Minecraft version without patch number (e.g. `1.19`, `1.16`)."
             }
           ],
           "console": "Invalid version specified"
@@ -1413,7 +1413,7 @@
           "embeds": [
             {
               "title": "Version Below 1.11",
-              "description": "The advancement command might not work because advancements don't exist in your minecraft version yet."
+              "description": "The advancement command might not work because advancements don't exist in your Minecraft version yet."
             }
           ]
         },
@@ -1421,7 +1421,7 @@
           "embeds": [
             {
               "title": "Version Below 1.7",
-              "description": "The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet."
+              "description": "The stat and advancement commands might not work because stats and advancements don't exist in your Minecraft version yet."
             }
           ]
         },
@@ -1516,7 +1516,7 @@
           "embeds": [
             {
               "title": "Server Verification",
-              "description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**"
+              "description": "%emoji_step% Please check the console of your Minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**"
             }
           ]
         },
@@ -1925,7 +1925,7 @@
           "embeds": [
             {
               "title": "Server Disconnected",
-              "description": "The server has disconnected from the plugin. No more messages will be sent to the discord server until the server reconnects."
+              "description": "The server has lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
             }
           ]
         }
@@ -2156,7 +2156,7 @@
           "embeds": [
             {
               "title": "Could Not Fetch User",
-              "description": "**%user%** is not a valid minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
+              "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
             }
           ],
           "console": "Could not fetch uuid/username of %user%"
@@ -2247,7 +2247,7 @@
           "embeds": [
             {
               "title": "User Not Connected",
-              "description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **minecraft-username**."
+              "description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **Minecraft username**."
             }
           ],
           "console": "User not connected"
@@ -2332,7 +2332,7 @@
           "embeds": [
             {
               "title": "No User Specified",
-              "description": "Please ping a user or specify a minecraft-username."
+              "description": "Please ping a user or specify a Minecraft username."
             }
           ],
           "console": "No user specified"
@@ -2429,7 +2429,7 @@
       "name": "advancements",
       "type": "ChatInput",
       "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
-      "description": "Look up your and other member's minecraft advancements.",
+      "description": "Look up your and other member's Minecraft advancements.",
       "options": [
         {
           "type": "Subcommand",
@@ -2551,8 +2551,8 @@
     "stats": {
       "name": "stats",
       "type": "ChatInput",
-      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
-      "description": "Look at your and other member's minecraft server stats.",
+      "long_description": "Look at your and other member's Minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
+      "description": "Look at your and other member's Minecraft server stats.",
       "options": [
         {
           "type": "Subcommand",
@@ -2871,8 +2871,8 @@
       "default_member_permissions": [
         "BanMembers"
       ],
-      "long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
-      "description": "Ban a player from the minecraft server.",
+      "long_description": "Ban a player from the **Minecraft server**. Can only be used with `Ban member` permission!",
+      "description": "Ban a player from the Minecraft server.",
       "options": [
         {
           "type": "String",
@@ -2894,8 +2894,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
-      "description": "Execute any command on the minecraft-server.",
+      "long_description": "Execute any command on the **Minecraft-server**. Can only be executed by admins.",
+      "description": "Execute any command on the Minecraft-server.",
       "options": [
         {
           "type": "String",
@@ -2975,8 +2975,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
-      "description": "Deop players on the minecraft-server.",
+      "long_description": "Deop players on the **Minecraft-server**. Can only be used by admins.",
+      "description": "Deop players on the Minecraft-server.",
       "options": [
         {
           "type": "String",
@@ -2992,8 +2992,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
-      "description": "Change the gamemode of a player on the minecraft-server.",
+      "long_description": "Change the gamemode of a player on the **Minecraft server**. Can only be used by admins.",
+      "description": "Change the gamemode of a player on the Minecraft-server.",
       "options": [
         {
           "type": "String",
@@ -3033,8 +3033,8 @@
       "default_member_permissions": [
         "KickMembers"
       ],
-      "long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
-      "description": "Kick a player from the minecraft server.",
+      "long_description": "Kick a player from the **Minecraft server**. Can only be used with `Kick member` permission!",
+      "description": "Kick a player from the Minecraft server.",
       "options": [
         {
           "type": "String",
@@ -3056,8 +3056,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "OP players on the **minecraft-server**. Can only be used by admins.",
-      "description": "OP players on the minecraft-server.",
+      "long_description": "OP players on the **Minecraft server**. Can only be used by admins.",
+      "description": "OP players on the Minecraft server.",
       "options": [
         {
           "type": "String",
@@ -3073,8 +3073,8 @@
       "default_member_permissions": [
         "BanMembers"
       ],
-      "long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
-      "description": "Unban a banned player from the minecraft-server.",
+      "long_description": "Unban a banned player from the **Minecraft server**. Can only be used with `Ban member` permissions.",
+      "description": "Unban a banned player from the Minecraft server.",
       "options": [
         {
           "type": "String",
@@ -3107,14 +3107,14 @@
     "serverinfo": {
       "name": "serverinfo",
       "type": "ChatInput",
-      "long_description": "View information about the connected **minecraft server**.",
-      "description": "View information about the connected minecraft server."
+      "long_description": "View information about the connected **Minecraft server**.",
+      "description": "View information about the connected Minecraft server."
     },
     "userinfo": {
       "name": "userinfo",
       "type": "ChatInput",
-      "long_description": "View information about the specified **minecraft user**.",
-      "description": "View information about the specified minecraft user.",
+      "long_description": "View information about the specified **Minecraft user**.",
+      "description": "View information about the specified Minecraft user.",
       "options": [
         {
           "type": "String",
@@ -3127,13 +3127,13 @@
     "account": {
       "name": "account",
       "type": "ChatInput",
-      "long_description": "Connect or disconnect your minecraft java-edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
-      "description": "Connect your minecraft account with the bot.",
+      "long_description": "Connect or disconnect your Minecraft Java-Edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
+      "description": "Connect your Minecraft account with the bot.",
       "options": [
         {
           "type": "Subcommand",
           "name": "connect",
-          "description": "Connect your minecraft-account.",
+          "description": "Connect your Minecraft-account.",
           "options": [
             {
               "type": "String",
@@ -3156,7 +3156,7 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Manage statchannels in the server that will show the current player count of the minecraft server or it's online status.",
+      "long_description": "Manage statchannels in the server that will show the current player count of the Minecraft server or it's online status.",
       "description": "Manage statchannels in the server.",
       "options": [
         {
@@ -3167,7 +3167,7 @@
             {
               "type": "Subcommand",
               "name": "status",
-              "description": "Add a statchannel that will show the online status of the minecraft server.",
+              "description": "Add a statchannel that will show the online status of the Minecraft server.",
               "options": [
                 {
                   "type": "Channel",
@@ -3192,7 +3192,7 @@
             {
               "type": "Subcommand",
               "name": "member-counter",
-              "description": "Add a statchannel that will show the current player count of the minecraft server.",
+              "description": "Add a statchannel that will show the current player count of the Minecraft server.",
               "options": [
                 {
                   "type": "Channel",
@@ -3254,8 +3254,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Manage channels in which the bot will send minecraft chat messages and logs.",
-      "description": "Manage channels in which the bot will send minecraft chat messages and logs.",
+      "long_description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
+      "description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
       "options": [
         {
           "type": "Subcommand",
@@ -3280,7 +3280,7 @@
             {
               "type": "Boolean",
               "name": "discord-to-minecraft",
-              "description": "Enable chat messages from discord to minecraft. (Default: true)",
+              "description": "Enable chat messages from Discord to Minecraft. (Default: true)",
               "required": false
             },
             {
@@ -3326,8 +3326,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Connect your minecraft java-edition server with the bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
-      "description": "Connect your minecraft server with the bot.",
+      "long_description": "Connect your Minecraft Java-Edition server with the bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
+      "description": "Connect your Minecraft server with the bot.",
       "options": [
         {
           "type": "Subcommand",
@@ -3429,6 +3429,10 @@
                 {
                   "name": "1.20",
                   "value": "20"
+                },
+                {
+                  "name": "1.21",
+                  "value": "21"
                 }
               ]
             },
@@ -3566,8 +3570,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Disconnect your minecraft java-edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
-      "description": "Disconnect your minecraft server from the bot."
+      "long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
+      "description": "Disconnect your Minecraft server from the bot."
     },
     "enable": {
       "name": "enable",
@@ -3628,8 +3632,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
-      "description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
+      "long_description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
+      "description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
       "options": [
         {
           "type": "Subcommand",
@@ -3645,7 +3649,7 @@
             {
               "type": "String",
               "name": "group_or_team",
-              "description": "Set the minecraft team or luckperms group you want to sync to.",
+              "description": "Set the Minecraft team or Luckperms group you want to sync to.",
               "autocomplete": true,
               "required": true
             }
