@@ -1493,6 +1493,20 @@
   "data.stats.options.6.options.0.description": "Set the user you want to get the stats from.",
   "data.stats.options.6.options.0.required": true,
 
+  "data.stats.options.6.options.1.type": "String",
+  "data.stats.options.6.options.1.name": "sort",
+  "data.stats.options.6.options.1.description": "Set how you want to sort the stats.",
+  "data.stats.options.6.options.1.required": false,
+  "data.stats.options.6.options.1.choices.0.name": "Ascending",
+  "data.stats.options.6.options.1.choices.0.value": "ascending",
+  "data.stats.options.6.options.1.choices.1.name": "Descending",
+  "data.stats.options.6.options.1.choices.1.value": "descending",
+  "data.stats.options.6.options.1.choices.2.name": "Alphabetically",
+  "data.stats.options.6.options.1.choices.3.value": "none",
+  "data.stats.options.6.options.1.choices.2.value": "alphabetically",
+  "data.stats.options.6.options.1.choices.3.name": "None",
+
+
   "data.stats.options.7.type": "Subcommand",
   "data.stats.options.7.name": "killed",
   "data.stats.options.7.description": "Statistics related to the number of entities a player killed.",
