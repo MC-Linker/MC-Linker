@@ -5,7 +5,7 @@ import { FilePath } from '../../structures/Protocol.js';
 import Canvas from 'skia-canvas';
 import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import minecraft_data from 'minecraft-data';
-import Discord from 'discord.js';
+import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' assert { type: 'json' };
@@ -243,6 +243,8 @@ export default class Stats extends Command {
 
         const pagination = new Pagination(client, interaction, paginationPages, {
             showSelectedButton: true,
+            highlightSelectedButton: ButtonStyle.Primary,
+            timeout: 60000 * 5, // 5 minutes
         });
         await pagination.start();
     }
