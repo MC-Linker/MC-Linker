@@ -155,7 +155,7 @@ export default class Pagination {
         this.lastPage = { button: startingButton, page: startingPage };
 
         // Change selected button style if needed
-        let tempStartingButtonStyle = startingButton.data.style;
+        const tempStartingButtonStyle = startingButton.data.style;
         if(this.options.showSelectedButton && this.options.highlightSelectedButton) startingButton.setStyle(this.options.highlightSelectedButton);
 
 
@@ -181,7 +181,8 @@ export default class Pagination {
             time: this.options.timeout ?? 120_000,
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
-        this.collector.on('end', () => {
+        this.collector.on('end', async () => {
+            message = await message.fetch(); // Get the latest components
             if(!message?.components) return;
 
             message.edit({ components: disableComponents(message.components) });
