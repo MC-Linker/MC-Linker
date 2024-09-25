@@ -147,6 +147,9 @@ export default class Stats extends Command {
                 let y = startCoords[1];
 
                 for(let [id, value] of Object.entries(stats).slice(startIndex)) {
+                    // make negative numbers positive (its how minecraft does it)
+                    if(value < 0) value = Math.abs(value);
+
                     // Break if the next item will go out of bounds
                     if(x + sizeOfStat(value.toString().length) >= statsCanvas.width) break;
 
