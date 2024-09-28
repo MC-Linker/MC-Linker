@@ -33,12 +33,12 @@ export default class Enable extends AutocompleteCommand {
             let formattedDisable;
             if(subcommand === 'advancements') {
                 const matchingTitle = utils.searchAllAdvancements(disable, true, true, 1);
-                formattedDisable = matchingTitle.shift()?.name ?? disable.cap();
+                formattedDisable = matchingTitle.shift()?.name ?? disable.toTitleCase();
 
             }
             else if(subcommand === 'stats') {
                 const matchingStat = utils.searchAllStats(disable, true, true, 1);
-                formattedDisable = matchingStat.shift()?.name ?? disable.cap();
+                formattedDisable = matchingStat.shift()?.name ?? disable.toTitleCase();
             }
             else formattedDisable = disable;
 
@@ -67,17 +67,17 @@ export default class Enable extends AutocompleteCommand {
         let formattedToEnable;
         if(type === 'advancements') {
             const matchingTitle = utils.searchAllAdvancements(toEnable, true, true, 1);
-            formattedToEnable = matchingTitle.shift()?.name ?? toEnable.cap();
+            formattedToEnable = matchingTitle.shift()?.name ?? toEnable.toTitleCase();
 
         }
         else if(type === 'stats') {
-            formattedToEnable = toEnable.split('_').map(word => word.cap()).join(' ');
+            formattedToEnable = toEnable.split('_').map(word => word.toTitleCase()).join(' ');
         }
         else formattedToEnable = toEnable;
 
         if(!settings?.isDisabled(type, toEnable)) {
             return interaction.replyTl(keys.commands.enable.warnings.already_enabled, {
-                'type': type.cap(),
+                'type': type.toTitleCase(),
                 'enable': formattedToEnable,
             });
         }

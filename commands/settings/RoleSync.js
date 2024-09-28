@@ -82,7 +82,7 @@ export default class RoleSync extends AutocompleteCommand {
                     const discordMember = await interaction.guild.members.fetch(member);
                     await discordMember.roles.add(role);
                 }
-                catch(ignored) {}
+                catch(_) {}
             }
 
             const respRoleIndex = resp.data.indexOf(respRole);

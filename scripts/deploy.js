@@ -8,12 +8,18 @@ import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
 dotenv.config();
+
 /*
  * Converts the first letter of a string to uppercase.
- * @returns {String} The formatted string.
+ * @param {boolean} c - True for snake_case, false for camelCase.
+ * @param {boolean} n - Whether to add a space before numbers.
+ * @returns {String} - The formatted string.
  */
-String.prototype.cap = function() {
-    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
+String.prototype.toTitleCase = function(c, n) {
+    let t;
+    if(c) t = this.replace(/\s/g, '').replace(n ? /([A-Z])/g : /([A-Z0-9])/g, ' $1').replace(/[_-]/g, ' ');
+    else t = this;
+    return t.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()).trim();
 };
 
 const demandOneOf = (...options) => argv => {
@@ -111,7 +117,7 @@ if(deployGuild || deployGlobal) {
 
         //Push help-command choices
         if(!excludedHelp.includes(builder.name))
-            helpChoices.push({ name: builder.name.cap(), value: builder.name });
+            helpChoices.push({ name: builder.name.toTitleCase(), value: builder.name });
 
         console.log(`Loaded command: ${builder.name}`);
     }
@@ -120,7 +126,7 @@ if(deployGuild || deployGlobal) {
     const commandFolders = fs.readdirSync('./commands/')
         .filter(file => fs.statSync(`./commands/${file}`).isDirectory());
     for(const folder of commandFolders) {
-        helpChoices.push({ name: folder.cap(), value: folder });
+        helpChoices.push({ name: folder.toTitleCase(), value: folder });
         console.log(`Loaded category: ${folder}`);
     }
 

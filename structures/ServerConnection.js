@@ -324,6 +324,34 @@ export default class ServerConnection extends Connection {
         else this.protocol._patch({ ...data, sftp: data.protocol === 'sftp' });
     }
 
+    /**
+     * Syncs the roles of a user with the server.
+     * @param {Guild} guild - The guild to sync the roles of the user in.
+     * @param {import('discord.js').GuildMember} member - The user to sync the roles of.
+     * @param {UserConnection} userConnection - The user connection to sync the roles of.
+     * @returns {Promise<void>}
+     */
+    async syncRoles(guild, member, userConnection) {
+        if(this.protocol.isPluginProtocol() && this.syncedRoles && this.syncedRoles.length > 0) {
+            //If user has a synced-role, tell the plugin
+            for(const syncedRole of this.syncedRoles.filter(r =>
+                !r.players.includes(userConnection.uuid) && member.roles.cache.has(r.id))) {
+                await this.protocol.addSyncedRoleMember(syncedRole, userConnection.uuid)
+            }
+
+            // Add missing synced roles
+            for(const syncedRole of this.syncedRoles.filter(r =>
+                r.players.includes(userConnection.uuid) && !member.roles.cache.has(r.id))) {
+                try {
+                    const discordMember = await guild.members.fetch(userConnection.id);
+                    const role = await guild.roles.fetch(syncedRole.id);
+                    await discordMember.roles.add(role);
+                }
+                catch(_) {}
+            }
+        }
+    }
+
     async _output() {
         if(await super._output()) {
             return await this.settings._output();

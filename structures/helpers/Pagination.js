@@ -22,7 +22,8 @@ export default class Pagination {
      * @property {boolean} [showSelectedButton=false] - Whether the currently selected button should be shown
      * @property {boolean} [showStartPageOnce=false] - Whether the starting page should only be shown once (removes the button)
      * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
-     * @property {Pagination} [parent=null] - The parent of this pagination (only used for nested paginations)
+     * @property {Pagination} [parent] - The parent of this pagination (only used for nested paginations)
+     * @property {ButtonStyle} [highlightSelectedButton] - The style to use for the selected button
      */
 
     /**
@@ -153,6 +154,11 @@ export default class Pagination {
         //Set last page and message options
         this.lastPage = { button: startingButton, page: startingPage };
 
+        // Change selected button style if needed
+        const tempStartingButtonStyle = startingButton.data.style;
+        if(this.options.showSelectedButton && this.options.highlightSelectedButton) startingButton.setStyle(this.options.highlightSelectedButton);
+
+
         //Send starting message
         const oldComponents = startingPage.components ?? []; //Save old components
         startingPage.components = this.combineComponents(startingPage, buttons);
@@ -160,6 +166,9 @@ export default class Pagination {
         this.lastMessageOptions = { ...startingPage };
         const message = await this.interaction.replyOptions(startingPage);
         startingPage.components = oldComponents; //Reset components
+
+        //Reset starting button style
+        if(this.options.showSelectedButton && this.options.highlightSelectedButton) startingButton.setStyle(tempStartingButtonStyle);
 
         //Create button collector
         this._createComponentCollector(message);
@@ -172,7 +181,8 @@ export default class Pagination {
             time: this.options.timeout ?? 120_000,
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
-        this.collector.on('end', () => {
+        this.collector.on('end', async () => {
+            message = await message.fetch(); // Get the latest components
             if(!message?.components) return;
 
             message.edit({ components: disableComponents(message.components) });
@@ -211,6 +221,15 @@ export default class Pagination {
             const requestedPageButton = navComponents.findIndex(b => b.data.custom_id === interaction.customId);
             navComponents.splice(requestedPageButton, 1, this.lastPage.button);
         }
+        else if(this.options.highlightSelectedButton) {
+            //Remove highlight of previous button
+            const lastButton = navComponents.find(b => b.data.custom_id === this.lastPage.button.data.custom_id);
+            lastButton?.setStyle(this.lastPage.button.data.style);
+
+            //Change style of requested page button
+            const requestedPageButton = navComponents.find(b => b.data.custom_id === interaction.customId);
+            requestedPageButton.setStyle(this.options.highlightSelectedButton);
+        }
 
         //Set last page
         this.lastPage = this.pages[interaction.customId];
@@ -220,6 +239,7 @@ export default class Pagination {
         // page.files ??= [];
         this.lastMessageOptions = { ...page };
         await interaction.update(page);
+
         page.components = oldComponents; //Reset components
     }
 

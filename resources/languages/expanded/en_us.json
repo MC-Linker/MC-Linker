@@ -316,15 +316,23 @@
               },
               {
                 "name": "CPU (Usage)",
-                "value": "`%cpu%` (`%cpu_usage_percent%`)"
+                "value": "`%cpu%` (`%cpu_usage_percent%%`)"
               },
               {
                 "name": "Memory Usage",
-                "value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%`)"
+                "value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%%`)"
+              },
+              {
+                "name": "Storage Usage",
+                "value": "`%storage_usage%GB/%max_storage%GB` (`%storage_usage_percent%%`)"
               },
               {
                 "name": "Library",
                 "value": "`%library%`"
+              },
+              {
+                "name": "Node.js",
+                "value": "`%node_version%`"
               }
             ]
           }
@@ -332,66 +340,67 @@
       }
     },
     "advancements": {
+      "advancements_description": "Image of player's advancements",
       "no_description_available": "No description available...",
       "acquired": "Acquired",
       "not_acquired": "Not Acquired",
-      "no_access": {
-        "category_disabled": {
-          "embeds": [
-            {
-              "title": "Category Disabled",
-              "description": "Advancement category **%advancement_category%** disabled!"
-            }
-          ],
-          "console": "Advancement category %advancement_category% disabled."
-        },
-        "advancement_disabled": {
-          "embeds": [
-            {
-              "title": "Advancement Disabled",
-              "description": "Advancement **%advancement_title%** disabled!"
-            }
-          ],
-          "console": "Advancement %advancement_title% disabled."
-        }
-      },
-      "warnings": {
-        "not_completed": {
-          "embeds": [
-            {
-              "title": "Advancement Not Completed",
-              "description": "Advancement **%advancement_title%** not completed/unlocked or misspelled!"
-            }
-          ],
-          "console": "Advancement %advancement_title% not completed."
-        }
-      },
       "success": {
-        "embeds": [
-          {
-            "title": "Advancement",
-            "description": "**%advancement_title%**\n*%advancement_description%*",
-            "fields": [
-              {
-                "name": "Requirements",
-                "value": "%advancement_criteria%",
-                "inline": true
-              },
-              {
-                "name": "Acquired on",
-                "value": "%advancement_timestamps%",
-                "inline": true
-              }
-            ],
-            "footer": {
-              "text": "Advancement %is_done%"
-            },
-            "author": {
-              "name": "%username%",
-              "icon_url": "%user_icon%"
+        "final": {
+          "embeds": [
+            {
+              "title": "Player Advancements",
+              "description": "Here are the advancements of **%username%**:\n",
+              "image": "attachment://Advancements_Player.png"
             }
-          }
-        ]
+          ]
+        },
+        "details_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "%style%",
+              "custom_id": "advancement_%advancement_value%",
+              "label": "%advancement_name%"
+            }
+          ]
+        },
+        "details": {
+          "embeds": [
+            {
+              "title": "%advancement_name%",
+              "description": "*%advancement_description%*",
+              "fields": [
+                {
+                  "name": "Requirements",
+                  "value": "%advancement_criteria%",
+                  "inline": true
+                },
+                {
+                  "name": "Acquired on",
+                  "value": "%advancement_timestamps%",
+                  "inline": true
+                },
+                {
+                  "name": "Icon Item",
+                  "value": "%advancement_icon%",
+                  "inline": false
+                },
+                {
+                  "name": "Type",
+                  "value": "%advancement_type%",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Advancement %advancement_obtained%\nId: %advancement_value%"
+              },
+              "author": {
+                "name": "%username%",
+                "icon_url": "%user_icon%"
+              }
+            }
+          ]
+        }
       }
     },
     "inventory": {
@@ -405,7 +414,7 @@
           "components": [
             {
               "type": "Button",
-              "style": "Primary",
+              "style": "Secondary",
               "custom_id": "slot_%index%",
               "label": "%slot%: %name%"
             }
@@ -525,36 +534,8 @@
       "shulker_description": "Image of shulker contents"
     },
     "stats": {
-      "no_access": {
-        "category_disabled": {
-          "embeds": [
-            {
-              "title": "Category Disabled",
-              "description": "Stat category **%stat_category%** disabled!"
-            }
-          ],
-          "console": "Stat category %stat_category% disabled."
-        },
-        "stat_disabled": {
-          "embeds": [
-            {
-              "title": "Stat Disabled",
-              "description": "Stat **%stat_name%** disabled!"
-            }
-          ],
-          "console": "Stat %stat_name% disabled"
-        }
-      },
+      "stats_description": "Image of player's statistics",
       "warnings": {
-        "no_match": {
-          "embeds": [
-            {
-              "title": "Could Not Find Stat",
-              "description": "Stat is either 0 or misspelled!"
-            }
-          ],
-          "console": "Could not find stat"
-        },
         "no_image": {
           "console": "No Image available for %stat_name%"
         }
@@ -571,30 +552,23 @@
         }
       },
       "success": {
-        "stat_message": {
-          "custom": "**%stat_name%**: **%stat_value%**",
-          "mined": "has mined **%stat_value% %stat_name%**",
-          "broken": "has broken **%stat_value% %stat_name%**",
-          "crafted": "has crafted **%stat_value% %stat_name%**",
-          "used": "has used **%stat_value% %stat_name%**",
-          "picked_up": "has picked up **%stat_value% %stat_name%**",
-          "dropped": "has dropped **%stat_value% %stat_name%**",
-          "killed": "has killed **%stat_value% %stat_name%**",
-          "killed_by": "has been killed **%stat_value%** times by a **%stat_name%**",
-          "time": "**%stat_name%**: **%stat_value%**",
-          "distance": "**%stat_name%**: **%stat_value%**"
+        "title": "%category% Statistics",
+        "stats_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "stats_%index%",
+              "label": "Stats %min%-%max%"
+            }
+          ]
         },
         "final": {
           "embeds": [
             {
-              "title": "%emoji_mc_s%%emoji_mc_t%%emoji_mc_a%%emoji_mc_t%%emoji_mc_s%",
-              "fields": [
-                {
-                  "name": "%username%",
-                  "value": "%stat_message%"
-                }
-              ],
-              "thumbnail": "attachment://%stat_value%.png"
+              "title": "Player Statistics",
+              "description": "Here are the statistics of **%username%**:\n",
+              "image": "attachment://Statistics_Player.png"
             }
           ]
         }
@@ -914,6 +888,19 @@
             }
           ]
         },
+        "connected_account": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Linked Discord Account",
+                  "value": "%connection%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
         "survival": {
           "embeds": [
             {
@@ -1090,7 +1077,7 @@
           "embeds": [
             {
               "title": "No Username Specified",
-              "description": "Don't ping someone. Specify your **minecraft java-edition account name** instead."
+              "description": "Don't ping someone. Specify your **Minecraft Java-Edition account name** instead."
             }
           ],
           "console": "No username specified"
@@ -1099,7 +1086,7 @@
           "embeds": [
             {
               "title": "Account Not Connected",
-              "description": "Your minecraft account is not connected."
+              "description": "Your Minecraft account is not connected."
             }
           ],
           "console": "Account not connected"
@@ -1408,7 +1395,7 @@
           "embeds": [
             {
               "title": "Invalid Version Specified",
-              "description": "Please specify a valid minor minecraft version without patch number (e.g. `1.19`, `1.16`)."
+              "description": "Please specify a valid minor Minecraft version without patch number (e.g. `1.19`, `1.16`)."
             }
           ],
           "console": "Invalid version specified"
@@ -1426,7 +1413,7 @@
           "embeds": [
             {
               "title": "Version Below 1.11",
-              "description": "The advancement command might not work because advancements don't exist in your minecraft version yet."
+              "description": "The advancement command might not work because advancements don't exist in your Minecraft version yet."
             }
           ]
         },
@@ -1434,7 +1421,7 @@
           "embeds": [
             {
               "title": "Version Below 1.7",
-              "description": "The stat and advancement commands might not work because stats and advancements don't exist in your minecraft version yet."
+              "description": "The stat and advancement commands might not work because stats and advancements don't exist in your Minecraft version yet."
             }
           ]
         },
@@ -1529,7 +1516,7 @@
           "embeds": [
             {
               "title": "Server Verification",
-              "description": "%emoji_step% Please check the console of your minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**"
+              "description": "%emoji_step% Please check the console of your Minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**"
             }
           ]
         },
@@ -1933,7 +1920,15 @@
     "plugin": {
       "warnings": {
         "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
-        "no_response_message_short": "No response message! This commonly happens after using `/reload`."
+        "no_response_message_short": "No response message! This commonly happens after using `/reload`.",
+        "server_disconnected": {
+          "embeds": [
+            {
+              "title": "Server Disconnected",
+              "description": "The server has lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
+            }
+          ]
+        }
       },
       "errors": {
         "no_response": {
@@ -2161,7 +2156,7 @@
           "embeds": [
             {
               "title": "Could Not Fetch User",
-              "description": "**%user%** is not a valid minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
+              "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
             }
           ],
           "console": "Could not fetch uuid/username of %user%"
@@ -2252,7 +2247,7 @@
           "embeds": [
             {
               "title": "User Not Connected",
-              "description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **minecraft-username**."
+              "description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **Minecraft username**."
             }
           ],
           "console": "User not connected"
@@ -2337,7 +2332,7 @@
           "embeds": [
             {
               "title": "No User Specified",
-              "description": "Please ping a user or specify a minecraft-username."
+              "description": "Please ping a user or specify a Minecraft username."
             }
           ],
           "console": "No user specified"
@@ -2434,20 +2429,102 @@
       "name": "advancements",
       "type": "ChatInput",
       "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
-      "description": "Look up your and other member's minecraft advancements.",
+      "description": "Look up your and other member's Minecraft advancements.",
       "options": [
         {
-          "type": "String",
-          "name": "advancement",
-          "description": "Set the advancement",
-          "required": true,
-          "autocomplete": true
+          "type": "Subcommand",
+          "name": "minecraft",
+          "description": "The heart and story of the game",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
         },
         {
-          "type": "String",
-          "name": "user",
-          "description": "Set the user you want to get the advancement from.",
-          "required": true
+          "type": "Subcommand",
+          "name": "nether",
+          "description": "Bring summer clothes",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "end",
+          "description": "Or the beginning?",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "adventure",
+          "description": "Adventure, exploration, and combat",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "husbandry",
+          "description": "The world is full of friends and food",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
         }
       ]
     },
@@ -2474,8 +2551,8 @@
     "stats": {
       "name": "stats",
       "type": "ChatInput",
-      "long_description": "Look at your and other member's minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
-      "description": "Look at your and other member's minecraft server stats.",
+      "long_description": "Look at your and other member's Minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
+      "description": "Look at your and other member's Minecraft server stats.",
       "options": [
         {
           "type": "Subcommand",
@@ -2484,16 +2561,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set a custom stat. All stats of the custom category => /help stats",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2504,16 +2598,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set a block (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2524,16 +2635,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an item (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2544,16 +2672,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an item (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2564,16 +2709,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an item or block (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats (Default: Descending).",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2584,16 +2746,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an item (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2604,16 +2783,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an item (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "value": "none",
+                  "name": "None"
+                }
+              ]
             }
           ]
         },
@@ -2624,16 +2820,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an entity (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         },
@@ -2644,16 +2857,33 @@
           "options": [
             {
               "type": "String",
-              "name": "stat",
-              "description": "Set an entity (id)",
-              "required": true,
-              "autocomplete": true
-            },
-            {
-              "type": "String",
               "name": "user",
               "description": "Set the user you want to get the stats from.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
             }
           ]
         }
@@ -2665,8 +2895,8 @@
       "default_member_permissions": [
         "BanMembers"
       ],
-      "long_description": "Ban a player from the **minecraft server**. Can only be used with `Ban member` permission!",
-      "description": "Ban a player from the minecraft server.",
+      "long_description": "Ban a player from the **Minecraft server**. Can only be used with `Ban member` permission!",
+      "description": "Ban a player from the Minecraft server.",
       "options": [
         {
           "type": "String",
@@ -2688,8 +2918,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Execute any command on the **minecraft-server**. Can only be executed by admins.",
-      "description": "Execute any command on the minecraft-server.",
+      "long_description": "Execute any command on the **Minecraft-server**. Can only be executed by admins.",
+      "description": "Execute any command on the Minecraft-server.",
       "options": [
         {
           "type": "String",
@@ -2769,8 +2999,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Deop players on the **minecraft-server**. Can only be used by admins.",
-      "description": "Deop players on the minecraft-server.",
+      "long_description": "Deop players on the **Minecraft-server**. Can only be used by admins.",
+      "description": "Deop players on the Minecraft-server.",
       "options": [
         {
           "type": "String",
@@ -2786,8 +3016,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Change the gamemode of a player on the **minecraft server**. Can only be used by admins.",
-      "description": "Change the gamemode of a player on the minecraft-server.",
+      "long_description": "Change the gamemode of a player on the **Minecraft server**. Can only be used by admins.",
+      "description": "Change the gamemode of a player on the Minecraft-server.",
       "options": [
         {
           "type": "String",
@@ -2827,8 +3057,8 @@
       "default_member_permissions": [
         "KickMembers"
       ],
-      "long_description": "Kick a player from the **minecraft server**. Can only be used with `Kick member` permission!",
-      "description": "Kick a player from the minecraft server.",
+      "long_description": "Kick a player from the **Minecraft server**. Can only be used with `Kick member` permission!",
+      "description": "Kick a player from the Minecraft server.",
       "options": [
         {
           "type": "String",
@@ -2850,8 +3080,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "OP players on the **minecraft-server**. Can only be used by admins.",
-      "description": "OP players on the minecraft-server.",
+      "long_description": "OP players on the **Minecraft server**. Can only be used by admins.",
+      "description": "OP players on the Minecraft server.",
       "options": [
         {
           "type": "String",
@@ -2867,8 +3097,8 @@
       "default_member_permissions": [
         "BanMembers"
       ],
-      "long_description": "Unban a banned player from the **minecraft-server**. Can only be used with `Ban member` permissions.",
-      "description": "Unban a banned player from the minecraft-server.",
+      "long_description": "Unban a banned player from the **Minecraft server**. Can only be used with `Ban member` permissions.",
+      "description": "Unban a banned player from the Minecraft server.",
       "options": [
         {
           "type": "String",
@@ -2901,14 +3131,14 @@
     "serverinfo": {
       "name": "serverinfo",
       "type": "ChatInput",
-      "long_description": "View information about the connected **minecraft server**.",
-      "description": "View information about the connected minecraft server."
+      "long_description": "View information about the connected **Minecraft server**.",
+      "description": "View information about the connected Minecraft server."
     },
     "userinfo": {
       "name": "userinfo",
       "type": "ChatInput",
-      "long_description": "View information about the specified **minecraft user**.",
-      "description": "View information about the specified minecraft user.",
+      "long_description": "View information about the specified **Minecraft user**.",
+      "description": "View information about the specified Minecraft user.",
       "options": [
         {
           "type": "String",
@@ -2921,13 +3151,13 @@
     "account": {
       "name": "account",
       "type": "ChatInput",
-      "long_description": "Connect or disconnect your minecraft java-edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
-      "description": "Connect your minecraft account with the bot.",
+      "long_description": "Connect or disconnect your Minecraft Java-Edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
+      "description": "Connect your Minecraft account with the bot.",
       "options": [
         {
           "type": "Subcommand",
           "name": "connect",
-          "description": "Connect your minecraft-account.",
+          "description": "Connect your Minecraft-account.",
           "options": [
             {
               "type": "String",
@@ -2950,7 +3180,7 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Manage statchannels in the server that will show the current player count of the minecraft server or it's online status.",
+      "long_description": "Manage statchannels in the server that will show the current player count of the Minecraft server or it's online status.",
       "description": "Manage statchannels in the server.",
       "options": [
         {
@@ -2961,7 +3191,7 @@
             {
               "type": "Subcommand",
               "name": "status",
-              "description": "Add a statchannel that will show the online status of the minecraft server.",
+              "description": "Add a statchannel that will show the online status of the Minecraft server.",
               "options": [
                 {
                   "type": "Channel",
@@ -2986,7 +3216,7 @@
             {
               "type": "Subcommand",
               "name": "member-counter",
-              "description": "Add a statchannel that will show the current player count of the minecraft server.",
+              "description": "Add a statchannel that will show the current player count of the Minecraft server.",
               "options": [
                 {
                   "type": "Channel",
@@ -3048,8 +3278,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Manage channels in which the bot will send minecraft chat messages and logs.",
-      "description": "Manage channels in which the bot will send minecraft chat messages and logs.",
+      "long_description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
+      "description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
       "options": [
         {
           "type": "Subcommand",
@@ -3074,7 +3304,7 @@
             {
               "type": "Boolean",
               "name": "discord-to-minecraft",
-              "description": "Enable chat messages from discord to minecraft. (Default: true)",
+              "description": "Enable chat messages from Discord to Minecraft. (Default: true)",
               "required": false
             },
             {
@@ -3120,8 +3350,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Connect your minecraft java-edition server with the bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
-      "description": "Connect your minecraft server with the bot.",
+      "long_description": "Connect your Minecraft Java-Edition server with the bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
+      "description": "Connect your Minecraft server with the bot.",
       "options": [
         {
           "type": "Subcommand",
@@ -3223,6 +3453,10 @@
                 {
                   "name": "1.20",
                   "value": "20"
+                },
+                {
+                  "name": "1.21",
+                  "value": "21"
                 }
               ]
             },
@@ -3321,34 +3555,6 @@
       "options": [
         {
           "type": "Subcommand",
-          "name": "advancements",
-          "description": "Disable an advancement",
-          "options": [
-            {
-              "type": "String",
-              "name": "advancement",
-              "description": "Set the advancement you want to disable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
-        {
-          "type": "Subcommand",
-          "name": "stats",
-          "description": "Disable a stat",
-          "options": [
-            {
-              "type": "String",
-              "name": "stat",
-              "description": "Set the stat you want to disable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
-        {
-          "type": "Subcommand",
           "name": "chat-commands",
           "description": "Disable a command preventing it from being sent in any chatchannel.",
           "options": [
@@ -3375,14 +3581,6 @@
                 {
                   "name": "Chat Commands",
                   "value": "chatCommands"
-                },
-                {
-                  "name": "Advancements",
-                  "value": "advancements"
-                },
-                {
-                  "name": "Stats",
-                  "value": "stats"
                 }
               ]
             }
@@ -3396,8 +3594,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Disconnect your minecraft java-edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
-      "description": "Disconnect your minecraft server from the bot."
+      "long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
+      "description": "Disconnect your Minecraft server from the bot."
     },
     "enable": {
       "name": "enable",
@@ -3458,8 +3656,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
-      "description": "Manage roles that will sync their members to a minecraft team or luckperms group.",
+      "long_description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
+      "description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
       "options": [
         {
           "type": "Subcommand",
@@ -3475,7 +3673,7 @@
             {
               "type": "String",
               "name": "group_or_team",
-              "description": "Set the minecraft team or luckperms group you want to sync to.",
+              "description": "Set the Minecraft team or Luckperms group you want to sync to.",
               "autocomplete": true,
               "required": true
             }

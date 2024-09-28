@@ -1,4 +1,3 @@
-import * as utils from '../../utilities/utils.js';
 import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
@@ -21,10 +20,8 @@ export default class Disable extends AutocompleteCommand {
         const subcommand = interaction.options.getSubcommand();
         const focused = interaction.options.getFocused().toLowerCase();
 
-        let matchingKeys = [];
-        if(subcommand === 'advancements') matchingKeys = utils.searchAllAdvancements(focused);
-        else if(subcommand === 'stats') matchingKeys = utils.searchAllStats(focused);
-        else if(subcommand === 'chat-commands') {
+        const matchingKeys = [];
+        if(subcommand === 'chat-commands') {
             for(const name of commandNames) {
                 if(!name.includes(focused)) continue;
 
@@ -56,7 +53,7 @@ export default class Disable extends AutocompleteCommand {
                 return interaction.replyTl(keys.commands.disable.success.nothing_disabled, { 'type': toList });
             }
 
-            const listEmbed = getEmbed(keys.commands.disable.success.list.base, { 'type': toList.cap() }, ph.emojisAndColors());
+            const listEmbed = getEmbed(keys.commands.disable.success.list.base, { 'type': toList.toTitleCase() }, ph.emojisAndColors());
 
             let listString = '';
             for(let i = 0; i < disabled.length; i++) {
@@ -95,15 +92,6 @@ export default class Disable extends AutocompleteCommand {
         }
 
         function getFormattedName(type, name) {
-            if(type === 'advancements') {
-                const matchingTitle = utils.searchAllAdvancements(name, true, true, 1);
-                return matchingTitle.shift()?.name ?? name;
-            }
-            else if(type === 'stats') {
-                const matchingStat = utils.searchAllStats(name, true, true, 1);
-                return matchingStat?.shift()?.name ?? name;
-            }
-
             return name;
         }
     }

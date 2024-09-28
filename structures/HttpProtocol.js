@@ -75,13 +75,14 @@ const PluginRoutes = {
     /**
      * Executes a command on the server.
      * @param {string} cmd - The command to execute.
+     * @param {?string} uuid - The uuid of the user to execute the command as.
      * @returns {HttpProtocolFetchData} - The data to send to the plugin.
      */
-    Command: cmd => [
+    Command: (cmd, uuid) => [
         'GET',
         '/command',
         {},
-        { cmd },
+        { cmd, uuid },
     ],
     /**
      * Gets the live snbt-data of a player. The Player has to be online for this endpoint to work.
@@ -556,10 +557,11 @@ export default class HttpProtocol extends Protocol {
     /**
      * Executes a command on the server.
      * @param {string} command - The command to execute.
+     * @param {?string} uuid - The uuid of the user to execute the command as.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    async execute(command) {
-        const response = await this._fetch(...PluginRoutes.Command(command));
+    async execute(command, uuid = null) {
+        const response = await this._fetch(...PluginRoutes.Command(command, uuid));
         return fetchToProtocolResponse(response);
     }
 

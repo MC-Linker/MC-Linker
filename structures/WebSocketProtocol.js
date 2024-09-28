@@ -206,10 +206,11 @@ export default class WebSocketProtocol extends Protocol {
     /**
      * Executes a command on the server.
      * @param {string} command - The command to execute.
+     * @param {?string} uuid - The uuid of the user who sent the command.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
-    execute(command) {
-        return this._sendRaw('command', { cmd: encodeURIComponent(command) });
+    execute(command, uuid = null) {
+        return this._sendRaw('command', { cmd: encodeURIComponent(command), uuid });
     }
 
     /**

@@ -10,7 +10,7 @@ import Discord, {
     User,
 } from 'discord.js';
 import crypto from 'crypto';
-import McData from 'minecraft-data';
+import minecraft_data from 'minecraft-data';
 import FtpProtocol from '../structures/FtpProtocol.js';
 import keys from './keys.js';
 import advancementData from '../resources/data/advancements.json' assert { type: 'json' };
@@ -24,7 +24,7 @@ import { Authflow } from 'prismarine-auth';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import { FilePath } from '../structures/Protocol.js';
 
-const mcData = McData('1.20.1');
+const mcData = minecraft_data('1.20.4');
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
@@ -33,6 +33,7 @@ export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0
 
 // Password Auth:
 const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
+    authTitle: process.env.AZURE_CLIENT_ID,
     flow: 'msal', // required, but will be ignored because password field is set
     password: process.env.MICROSOFT_PASSWORD,
 });
@@ -87,7 +88,7 @@ export async function getMinecraftAvatarURL(username) {
  * @returns {AdvancementData[]} - An array of matching advancements.
  */
 export function searchAdvancements(searchString, category, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
-    const matchingCategory = advancementData.categories[category];
+    const matchingCategory = advancementData[category];
     if(!matchingCategory) return [];
 
     let matchingTitles = matchingCategory.filter(advancement => {
@@ -100,7 +101,7 @@ export function searchAdvancements(searchString, category, shouldSearchNames = t
     });
 
     //Add category field
-    const categoryKey = Object.keys(advancementData.categories).find(key => advancementData.categories[key] === matchingCategory);
+    const categoryKey = Object.keys(advancementData).find(key => advancementData[key] === matchingCategory);
     matchingTitles.map(title => title.category = categoryKey);
 
     matchingTitles = [...new Set(matchingTitles)]; //Remove duplicates
@@ -119,7 +120,7 @@ export function searchAdvancements(searchString, category, shouldSearchNames = t
 export function searchAllAdvancements(searchString, shouldSearchNames = true, shouldSearchValues = true, maxLength = 25) {
     let matchingTitles = [];
 
-    for(const category of Object.keys(advancementData.categories)) {
+    for(const category of Object.keys(advancementData)) {
         const matchingKeys = searchAdvancements(searchString, category, shouldSearchNames, shouldSearchValues, maxLength);
         matchingKeys.forEach(key => matchingTitles.push(key));
     }
@@ -442,9 +443,7 @@ export async function getFloodgatePrefix(protocol, path, id) {
         const lines = response.data.toString().split('\n');
         for(const line of lines) {
             if(line.startsWith(searchKey)) {
-                return line
-                    .substring(searchKey.length)
-                    .trim()
+                return line.substring(searchKey.length).trim()
                     // Remove quotes at the start and end of the string
                     .replace(/^["'](.+(?=["']$))["']$/, '$1');
             }
@@ -556,9 +555,11 @@ const formattingCodes = ['l', 'm', 'n', 'o', 'r', 'k', 'x'];
  * @param {string} text - The text to draw.
  * @param {number} x - The x position to start drawing at.
  * @param {number} y - The y position to start drawing at.
+ * @param {boolean} [drawShadow=false] - Whether to draw a shadow.
  */
-export function drawMinecraftText(ctx, text, x, y) {
+export function drawMinecraftText(ctx, text, x, y, drawShadow = false) {
     const originalFont = ctx.font;
+    ctx.save();
 
     let strikethrough = false;
     let underline = false;
@@ -618,46 +619,60 @@ export function drawMinecraftText(ctx, text, x, y) {
         }
 
         if(obfuscated && char !== ' ') char = '?';
+
+        if(drawShadow) {
+            const previousFillStyle = ctx.fillStyle;
+            const shadowOffset = ctx.measureText(char).width / 5;
+
+            ctx.fillStyle = '#3E3E3E';
+            ctx.fillText(char, x + shadowOffset, y + shadowOffset);
+            ctx.fillStyle = previousFillStyle;
+        }
+
         ctx.fillText(char, x, y);
 
-        if(strikethrough) {
-            ctx.fillRect(x, y - 8, ctx.measureText(char).width, 4);
-        }
-        if(underline) {
-            ctx.fillRect(x, y + 4, ctx.measureText(char).width, 4);
-        }
+        if(strikethrough) ctx.fillRect(x, y - 8, ctx.measureText(char).width, 4);
+        if(underline) ctx.fillRect(x, y + 4, ctx.measureText(char).width, 4);
 
         x += ctx.measureText(char).width;
     }
+
+    ctx.restore();
 }
 
 const mcNumbers = await loadImage('./resources/images/misc/numbers.png');
+const mcDigitSize = [5, 7];
 
 /**
  * Draws a minecraft number on a canvas.
- * @param {CanvasRenderingContext2D} context - The canvas context to draw on.
+ * @param {import('skia-canvas').CanvasRenderingContext2D} context - The canvas context to draw on.
  * @param {int|string} num - The number to draw.
  * @param {int} x - The x position to start drawing at.
  * @param {int} y - The y position to start drawing at.
+ * @param {int} width - The width of each digit.
+ * @param {int} height - The height of each digit.
  */
-export function drawMinecraftNumber(context, num, x = 0, y = 0) {
+export function drawMinecraftNumber(context, num, x = 0, y = 0, width, height) {
     num = num.toString();
-    const canvas = new Canvas(12 * num.length);
+
+    const shadowOffset = width / mcDigitSize[0];
+
+    const canvas = new Canvas((width + shadowOffset) * num.length, height + shadowOffset);
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
 
-    for(let i = 0; i < num.length; i++) {
-        ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * 12 + 2, 2, 10, 14);
-    }
+    //Draw shadow
+    for(let i = 0; i < num.length; i++)
+        ctx.drawImage(mcNumbers, num[i] * mcDigitSize[0], 0, mcDigitSize[0], mcDigitSize[1], i * (width + shadowOffset) + shadowOffset, shadowOffset, width, height);
 
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = '#3E3E3E';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.globalCompositeOperation = 'source-over';
-    for(let i = 0; i < num.length; i++) {
-        ctx.drawImage(mcNumbers, num[i] * 5, 0, 5, 7, i * 12, 0, 10, 14);
-    }
+    //Draw number
+    for(let i = 0; i < num.length; i++)
+        ctx.drawImage(mcNumbers, num[i] * mcDigitSize[0], 0, mcDigitSize[0], mcDigitSize[1], i * (width + shadowOffset), 0, width, height);
 
     context.drawImage(canvas, x, y);
 }
@@ -673,13 +688,12 @@ export function drawMinecraftNumber(context, num, x = 0, y = 0) {
 export function wrapText(ctx, text, maxWidth) {
     const words = text.split(' ');
     const lines = [];
-    let currentLine = words[0];
 
+    let currentLine = words[0];
     for(const word of words) {
+        if(word === words[0]) continue; //Skip first word
         const width = ctx.measureText(`${currentLine} ${word}`).width;
-        if(width < maxWidth) {
-            currentLine += ` ${word}`;
-        }
+        if(width < maxWidth) currentLine += ` ${word}`;
         else {
             lines.push(currentLine);
             currentLine = word;
@@ -765,31 +779,47 @@ export function cleanEmojis(message) {
 }
 
 export function createHash(token) {
-    return crypto.createHash('sha256')
-        .update(token)
-        .digest('hex');
+    return crypto.createHash('sha256').update(token).digest('hex');
 }
 
+/**
+ * Formats a duration in milliseconds to a string.
+ * @param {Number} milliseconds - The duration in milliseconds.
+ * @returns {String} - The formatted duration.
+ * @example 1000 -> "1s"
+ * @example 6006000600 -> "1h 40m 6s"
+ */
 export function formatDuration(milliseconds) {
-    const seconds = milliseconds / 1000;
-    const minutes = seconds / 60;
-    const hours = minutes / 60;
+    let seconds = milliseconds / 1000;
+    let minutes = seconds / 60;
+    let hours = minutes / 60;
+    let days = hours / 24;
 
-    const formattedSeconds = Math.floor(seconds % 60);
-    const formattedMinutes = Math.floor(minutes % 60);
-    const formattedHours = Math.floor(hours % 60);
+    // Round values and get remainder
+    seconds = Math.floor(seconds) % 60;
+    minutes = Math.floor(minutes) % 60;
+    hours = Math.floor(hours) % 24;
+    days = Math.floor(days);
 
-    return `${formattedHours}h ${formattedMinutes}m ${formattedSeconds}s`;
+    return `${days ? `${days}d ` : ''}${hours ? `${hours}h ` : ''}${minutes ? `${minutes}m ` : ''}${seconds}s`;
 }
 
+/**
+ * Formats a distance in centimeters to a string.
+ * @param {Number} centimeters - The distance in centimeters.
+ * @returns {String} - The formatted distance.
+ * @example 1000 -> "1m"
+ * @example 1234567 -> "1km 234m 567cm"
+ */
 export function formatDistance(centimeters) {
-    const meters = centimeters / 100;
-    const kilometers = meters / 1000;
+    let meters = centimeters / 100;
+    let kilometers = meters / 1000;
 
-    const formattedMeters = Math.floor(meters % 1000);
-    const formattedKilometers = Math.floor(kilometers % 1000);
+    // Round values and get remainder
+    meters = Math.floor(meters) % 1000;
+    kilometers = Math.floor(kilometers);
 
-    return `${formattedKilometers}km ${formattedMeters}m`;
+    return `${kilometers ? `${kilometers}km ` : ''}${meters ? `${meters}m ` : ''}${centimeters % 100}cm`;
 }
 
 /**
@@ -808,16 +838,17 @@ export function disableComponents(rows) {
 
 /**
  * Memoizes a function.
- * @param {Function} fn - The function to memoize.
- * @param {Number} parameters - The number of parameters to use as key.
- * @returns {Function} - The memoized function.
+ * @template {Function} K
+ * @param {K} fn - The function to memoize.
+ * @param {Number=undefined} parameters - The number of parameters to use as key. Defaults to all parameters.
+ * @returns {K} - The memoized function.
  */
-export function memoize(fn, parameters) {
+export function memoize(fn, parameters = undefined) {
     const cache = new Map();
     return async function(...args) {
         const key = JSON.stringify(args.slice(0, parameters));
         if(cache.has(key)) return cache.get(key);
-        const result = await fn.apply(this, args);
+        const result = await fn(...args);
         cache.set(key, result);
         return result;
     };

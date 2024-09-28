@@ -8,7 +8,7 @@ import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' assert { type: 'json' };
 import { FilePath } from '../../structures/Protocol.js';
 
-const mcData = minecraft_data('1.20.1');
+const mcData = minecraft_data('1.20.4');
 
 export default class Command extends AutocompleteCommand {
 
@@ -161,7 +161,8 @@ export default class Command extends AutocompleteCommand {
             arg = arg.replace(arg, username);
         }
 
-        const resp = await server.protocol.execute(`${command} ${args.join(' ')}`);
+        const userConnection = client.userConnections.cache.get(interaction.user.id);
+        const resp = await server.protocol.execute(`${command} ${args.join(' ')}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
@@ -218,6 +219,7 @@ async function getPlaceholder(key, args) {
                 '@p': '@p',
                 '@r': '@r',
                 '@e': '@e',
+                '@n': '@n',
             };
 
             const username = userConn?.username;
@@ -652,7 +654,7 @@ async function getPlaceholder(key, args) {
                 'swamp_hut',
                 'village',
             ].forEach(structure => {
-                let formattedStructure = structure.replaceAll('_', ' ').cap();
+                let formattedStructure = structure.replaceAll('_', ' ').toTitleCase(true);
                 if(structure === 'mansion') formattedStructure = 'Woodland Mansion';
                 else if(structure === 'monument') formattedStructure = 'Ocean Monument';
                 else if(structure === 'ocean_ruin') formattedStructure = 'Ocean Ruins';
@@ -770,7 +772,7 @@ async function getPlaceholder(key, args) {
                 'village/village_temple',
                 'village/village_toolsmith',
             ].forEach(loot => {
-                const formattedLoot = loot.split('/').pop().split('_').map(word => word.cap()).join(' ');
+                const formattedLoot = loot.split('/').pop().split('_').map(word => word.toTitleCase()).join(' ');
                 placeholder[formattedLoot] = `chests/${loot}`;
             });
 
@@ -796,7 +798,7 @@ async function getPlaceholder(key, args) {
                 'hero_of_the_village/weaponsmith_gift',
                 'piglin_bartering',
             ].forEach(loot => {
-                const formattedLoot = loot.split('/').pop().split('_').map(word => word.cap()).join(' ');
+                const formattedLoot = loot.split('/').pop().split('_').map(word => word.toTitleCase()).join(' ');
                 placeholder[formattedLoot] = `gameplay/${loot}`;
             });
             break;
@@ -4419,6 +4421,58 @@ async function getPlaceholder(key, args) {
             placeholder = colors;
             placeholder.push('reset');
             break;
+        case 'damage_sources':
+            placeholder = [
+                'arrow',
+                'bad_respawn_point',
+                'cactus',
+                'campfire',
+                'cramming',
+                'dragon_breath',
+                'drown',
+                'dry_out',
+                'ender_pearl',
+                'explosion',
+                'fall',
+                'falling_anvil',
+                'falling_block',
+                'falling_stalactite',
+                'fireball',
+                'fireworks',
+                'fly_into_wall',
+                'freeze',
+                'generic',
+                'generic_kill',
+                'hot_floor',
+                'in_fire',
+                'in_wall',
+                'indirect_magic',
+                'lava',
+                'lightning_bolt',
+                'mace_smash',
+                'magic',
+                'mob_attack',
+                'mob_attack_no_aggro',
+                'mob_projectile',
+                'on_fire',
+                'out_of_world',
+                'outside_border',
+                'player_attack',
+                'player_explosion',
+                'sonic_boom',
+                'spit',
+                'stalagmite',
+                'starve',
+                'sting',
+                'sweet_burry_bush',
+                'thorns',
+                'thrown',
+                'trident',
+                'unattributed_fireball',
+                'wind_charge',
+                'wither',
+                'wither_skull',
+            ];
         case key.endsWith('_criteria') ? key : null:
             //TODO get advancement criteria
             break;

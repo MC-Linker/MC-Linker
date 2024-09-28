@@ -7,7 +7,7 @@ import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
 
-const mcData = minecraft_data('1.20.1');
+const mcData = minecraft_data('1.20.4');
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -129,7 +129,7 @@ export default class Inventory extends Command {
 
         const invAttach = new Discord.AttachmentBuilder(
             await invCanvas.toBuffer('png'),
-            { name: `Inventory_Player.png`, description: keys.commands.inventory.inventory_description },
+            { name: 'Inventory_Player.png', description: keys.commands.inventory.inventory_description },
         );
         const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.emojisAndColors(), { username: user.username });
         // Send without buttons if showDetails is false
@@ -427,9 +427,9 @@ export default class Inventory extends Command {
 
 // noinspection JSUnusedLocalSymbols
 async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
-    const canvas = new Canvas.Canvas(352, 332);
-    const ctx = canvas.getContext('2d');
     const background = await Canvas.loadImage(backgroundPath);
+    const canvas = new Canvas.Canvas(background.width, background.height);
+    const ctx = canvas.getContext('2d');
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
     for(let i = 0; i < items.length; i++) {
@@ -456,7 +456,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
         }
 
         //Draw count
-        if(count > 1) utils.drawMinecraftNumber(ctx, count, x, y + 16);
+        if(count > 1) utils.drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
 
         const maxDurability = mcData.itemsByName[itemId]?.maxDurability;
         if(damage && maxDurability) {

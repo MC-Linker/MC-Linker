@@ -24,7 +24,7 @@ class ConsoleOutput extends Duplex {
         this.output += str;
     }
 
-    _read(ignored) {
+    _read(_) {
         // noinspection JSValidateTypes
         return this.output;
     }

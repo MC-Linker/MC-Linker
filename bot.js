@@ -6,6 +6,7 @@ import keys, { getLanguageKey } from './utilities/keys.js';
 import { addPh, addTranslatedResponses, getReplyOptions, ph } from './utilities/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
+import ServerConnection from './structures/ServerConnection.js';
 
 console.log(
     '\x1b[1m' +     // Bold (1)
@@ -27,10 +28,15 @@ process.on('uncaughtException', async err => {
 
 /*
  * Converts the first letter of a string to uppercase.
+ * @param {boolean} c - True for snake_case, false for camelCase.
+ * @param {boolean} n - Whether to add a space before numbers.
  * @returns {String} - The formatted string.
  */
-String.prototype.cap = function() {
-    return this[0].toUpperCase() + this.slice(1, this.length).toLowerCase();
+String.prototype.toTitleCase = function(c, n) {
+    let t;
+    if(c) t = this.replace(/\s/g, '').replace(n ? /([A-Z])/g : /([A-Z0-9])/g, ' $1').replace(/[_-]/g, ' ');
+    else t = this;
+    return t.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()).trim();
 };
 
 if(process.env.TOPGG_TOKEN) {
@@ -86,11 +92,21 @@ client.on(Discord.Events.MessageCreate, async message => {
         if(client.api.usersAwaitingVerification.has(message.content)) {
             const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
 
-            await client.userConnections.connect({
+            /** @type {UserConnection} */
+            const userConnection = await client.userConnections.connect({
                 id: message.author.id,
                 username,
                 uuid,
             });
+
+            //Sync roles in all servers the user is in (does this work with sharding?)
+            for(const [conn, guild, member] of client.serverConnections.cache.map(async conn => {
+                if(!(conn instanceof ServerConnection) || !conn.protocol.isPluginProtocol() || !conn.syncedRoles) return null;
+                if(!conn.syncedRoles || !conn.syncedRoles.length) return null;
+                const guild = await client.guilds.fetch(conn.id);
+                const member = await guild.members.fetch(message.author.id);
+                return member ? [conn, guild, member] : null;
+            }).filter(c => c)) await conn.syncRoles(guild, member, userConnection);
 
             client.api.usersAwaitingVerification.delete(message.content);
             return await message.replyTl(keys.commands.account.success.verified);
