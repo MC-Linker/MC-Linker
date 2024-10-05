@@ -430,6 +430,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
     const background = await Canvas.loadImage(backgroundPath);
     const canvas = new Canvas.Canvas(background.width, background.height);
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
     for(let i = 0; i < items.length; i++) {
