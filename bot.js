@@ -134,7 +134,7 @@ client.on(Discord.Events.MessageCreate, async message => {
             const firstAttach = repliedMessage.attachments.first();
             repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
         }
-        const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? message.author.username : null;
+        const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? repliedMessage.author.username : null;
         // noinspection ES6MissingAwait
         server.protocol.chat(content, message.member?.nickname ?? message.author.username, repliedContent, repliedUser);
     }
