@@ -3498,6 +3498,12 @@
               "name": "display-ip",
               "description": "Set the public IP address that will be displayed in some of the bot's commands.",
               "required": false
+            },
+            {
+              "type": "Boolean",
+              "name": "online",
+              "description": "Manually set the configured online-mode of the server. For BungeeCord servers, set this to \"True\"",
+              "required": false
             }
           ]
         },

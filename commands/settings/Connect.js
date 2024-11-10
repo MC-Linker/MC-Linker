@@ -41,6 +41,7 @@ export default class Connect extends Command {
                             shard,
                             requiredRoleToJoin,
                             displayIp,
+                            online,
                         } = wsVerification.get(id) ?? {};
                         try {
                             if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
@@ -56,7 +57,8 @@ export default class Connect extends Command {
                                 path: socket.handshake.query.path,
                                 chatChannels: [],
                                 statChannels: [],
-                                online: socket.handshake.query.online === 'true',
+                                online: online ?? socket.handshake.query.online === 'true',
+                                forceOnlineMode: online !== undefined,
                                 floodgatePrefix: socket.handshake.query.floodgatePrefix,
                                 version: Number(socket.handshake.query.version.split('.')[1]),
                                 worldPath: socket.handshake.query.worldPath,
@@ -297,6 +299,7 @@ export default class Connect extends Command {
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
             const joinRequirement = args[1];
             const displayIp = args[2];
+            const online = args[3];
 
             let selectResponse = joinRequirement === 'roles' ? await this.askForRequiredRolesToJoin(interaction) : null;
             if(!selectResponse && joinRequirement === 'roles') return; //User didn't respond in time
@@ -317,8 +320,14 @@ export default class Connect extends Command {
             }, 180_000);
 
             this.waitingInteractions.set(interaction.guildId, { interaction, timeout });
-            await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin, displayIp }) => {
-                c.commands.get('connect').wsVerification.set(id, { code, shard, requiredRoleToJoin, displayIp });
+            await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin, displayIp, online }) => {
+                c.commands.get('connect').wsVerification.set(id, {
+                    code,
+                    shard,
+                    requiredRoleToJoin,
+                    displayIp,
+                    online,
+                });
             }, {
                 context: {
                     code,
@@ -326,6 +335,7 @@ export default class Connect extends Command {
                     shard: client.shard.ids[0],
                     requiredRoleToJoin: selectResponse,
                     displayIp,
+                    online,
                 },
                 shard: 0,
             });

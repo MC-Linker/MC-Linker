@@ -274,7 +274,7 @@ export default class MCLinkerAPI extends EventEmitter {
             server.edit({
                 ip: socket.handshake.address,
                 path: socket.handshake.query.path,
-                online: socket.handshake.query.online === 'true',
+                online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
                 floodgatePrefix: socket.handshake.query.floodgatePrefix,
                 version: Number(socket.handshake.query.version.split('.')[1]),
                 worldPath: socket.handshake.query.worldPath,

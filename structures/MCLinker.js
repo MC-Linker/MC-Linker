@@ -225,6 +225,7 @@ export default class MCLinker extends Discord.Client {
             path: String,
             worldPath: String,
             online: Boolean,
+            forceOnlineMode: Boolean,
             floodgatePrefix: String,
             requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
             displayIp: String,

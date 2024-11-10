@@ -80,6 +80,7 @@ export default class ServerConnection extends Connection {
      * @property {string} path - The path to the server folder of the server.
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
      * @property {boolean} online - Whether online mode is enabled on this server.
+     * @property {boolean} forceOnlineMode - Whether to update the online mode when the server reconnects.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
      * @property {string} [displayIp] - The ip address that the bot should show users for joining the server.
      * @property {RequiredRoleToJoinData} [requiredRoleToJoin] - An array of role ids, at least one of which is required to join the server.
@@ -200,6 +201,13 @@ export default class ServerConnection extends Connection {
          * @type {boolean}
          * */
         this.online = data.online ?? this.online ?? true;
+
+        /**
+         * Whether to update the online mode when the server reconnects.
+         * @default true
+         * @type {boolean}
+         * */
+        this.forceOnlineMode = data.forceOnlineMode ?? this.forceOnlineMode ?? true;
 
         /**
          * The floodgate prefix of this server.
@@ -370,6 +378,7 @@ export default class ServerConnection extends Connection {
             path: this.path,
             worldPath: this.worldPath,
             online: this.online,
+            forceOnlineMode: this.forceOnlineMode,
             floodgatePrefix: this.floodgatePrefix,
         };
 
