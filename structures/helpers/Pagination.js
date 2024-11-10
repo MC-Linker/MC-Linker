@@ -155,7 +155,7 @@ export default class Pagination {
         this.lastPage = { button: startingButton, page: startingPage };
 
         // Change selected button style if needed
-        const tempStartingButtonStyle = startingButton.data.style;
+        const tempStartingButtonStyle = startingButton?.data?.style;
         if(this.options.showSelectedButton && this.options.highlightSelectedButton) startingButton.setStyle(this.options.highlightSelectedButton);
 
 
@@ -181,7 +181,9 @@ export default class Pagination {
             time: this.options.timeout ?? 120_000,
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
-        this.collector.on('end', async () => {
+        this.collector.on('end', async (_, reason) => {
+            if(reason === 'nested_pagination') return;
+
             message = await message.fetch(); // Get the latest components
             if(!message?.components) return;
 
@@ -189,18 +191,25 @@ export default class Pagination {
         });
     }
 
+    /**
+     * Handles a button interaction
+     * @param {ButtonInteraction} interaction - The interaction to handle
+     * @private
+     */
     async _handleButton(interaction) {
         let page = this.pages[interaction.customId];
         if(!page) return;
 
         if(page.pages) {
+            await interaction.deferUpdate();
+
             const pagination = new Pagination(this.client, this.interaction, page.pages, {
-                ...page.pageOptions ?? this.options,
+                ...(page.pageOptions ?? this.options),
                 parent: this,
             });
 
             //Temporarily remove collector to avoid conflicts
-            this.collector.stop();
+            this.collector.stop('nested_pagination');
             this.collector = null;
             return await pagination.start();
         }
@@ -212,6 +221,10 @@ export default class Pagination {
         interaction.message.components?.forEach(row => {
             row = ActionRowBuilder.from(row);
             row.components.forEach(b => {
+                //Ignore navigation buttons
+                if(this.options.nextButton.data.custom_id === b.data.custom_id ||
+                    this.options.backButton.data.custom_id === b.data.custom_id ||
+                    this.options.exitButton.data.custom_id === b.data.custom_id) return;
                 if(this.buttons.has(b.data.custom_id)) navComponents.push(b);
             });
         });
@@ -236,8 +249,7 @@ export default class Pagination {
 
         const oldComponents = page.components ?? []; //Save old components
         page.components = this.combineComponents(page, navComponents);
-        // page.files ??= [];
-        this.lastMessageOptions = { ...page };
+        Object.assign(this.lastMessageOptions, page);
         await interaction.update(page);
 
         page.components = oldComponents; //Reset components
@@ -281,7 +293,7 @@ export default class Pagination {
 
     async _handleExitButton(interaction, client, forceNoExit = false) {
         if(!forceNoExit && this.parent) {
-            this.collector?.stop(); //Stop child collector
+            this.collector.stop('nested_pagination'); //Stop child collector
             //Force prevent exit of parent so we dont exit the whole pagination but only go one step back
             return await this.parent._handleExitButton(interaction, client, true);
         }

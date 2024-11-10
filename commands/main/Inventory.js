@@ -6,6 +6,7 @@ import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
+import potionColors from '../../resources/data/potion_colors.json' assert { type: 'json' };
 
 const mcData = minecraft_data('1.20.4');
 
@@ -111,7 +112,7 @@ export default class Inventory extends Command {
             './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-            showDetails ? this.pushInvButton.bind(null, itemButtons, Infinity) : () => {
+            showDetails ? this.pushInvButton.bind(null, itemButtons, 44, true) : () => {
             }, //Push itemButtons if showDetails is set to true
         );
 
@@ -147,12 +148,16 @@ export default class Inventory extends Command {
     addInfo(embed, tag, itemStats) {
         let addedInfo = false;
 
+        if(!tag) return addedInfo;
+
         //Add durability info
-        if(tag?.Damage && itemStats?.maxDurability) {
+        if((tag['minecraft:damage'] || tag.Damage) && itemStats?.maxDurability) {
+            const damage = tag['minecraft:damage'] ?? tag.Damage;
+
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_durability.embeds[0].fields,
                 {
-                    durability: itemStats.maxDurability - tag.Damage,
+                    durability: itemStats.maxDurability - damage,
                     max_durability: itemStats.maxDurability,
                 },
             ));
@@ -161,12 +166,19 @@ export default class Inventory extends Command {
         }
 
         //Add lore info
-        if(tag?.display?.Lore) {
+        if(tag['minecraft:lore'] || tag.display?.Lore) {
+            const lore = tag['minecraft:lore'] ?? tag.display.Lore;
+
+            let loreString = JSON.parse(lore);
+            if(Array.isArray(loreString))
+                loreString = loreString.map(line => line.text ?? line.replace(/"/g, '')).join('\n');
+            else loreString = loreString.text ?? loreString.replace(/"/g, '');
+
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_lore.embeds[0].fields,
                 {
-                    lore_json: tag.display.Lore,
-                    lore: JSON.parse(tag.display.Lore).text ?? tag.display.Lore.replace(/"/g, ''),
+                    lore_json: lore,
+                    lore: loreString,
                 },
             ));
 
@@ -174,12 +186,14 @@ export default class Inventory extends Command {
         }
 
         //Add custom name info
-        if(tag?.display?.Name) {
+        if(tag['minecraft:custom_name'] || tag.display?.Name) {
+            const customName = tag['minecraft:custom_name'] ?? tag.display.Name;
+
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_custom_name.embeds[0].fields,
                 {
-                    custom_name_json: tag.display.Name,
-                    custom_name: JSON.parse(tag.display.Name).text ?? tag.display.Name.replace(/"/g, ''),
+                    custom_name_json: customName,
+                    custom_name: JSON.parse(customName).text ?? customName.replace(/"/g, ''),
                 },
             ));
 
@@ -187,11 +201,20 @@ export default class Inventory extends Command {
         }
 
         //Add enchantments info
-        if(tag?.Enchantments || tag?.StoredEnchantments) {
-            const allEnchantments = tag?.Enchantments ?? tag.StoredEnchantments;
-            const formattedEnchantments = allEnchantments.map(ench => {
-                return `- ${mcData.enchantmentsByName[ench.id.split(':').pop()]?.displayName ?? ench.id} ${this.romanNumber(ench.lvl)}`;
-            }).join('\n');
+        if(tag['minecraft:enchantments'] || tag['minecraft:stored_enchantments'] || tag.Enchantments || tag.StoredEnchantments) {
+            const enchantments = tag['minecraft:enchantments']?.levels ?? tag['minecraft:stored_enchantments']?.levels ?? tag.Enchantments ?? tag.StoredEnchantments;
+
+            let formattedEnchantments;
+            if(tag['minecraft:enchantments'] || tag['minecraft:stored_enchantments']) {
+                formattedEnchantments = Object.entries(enchantments).map(([id, lvl]) => {
+                    return `- ${mcData.enchantmentsByName[id.split(':').pop()]?.displayName ?? id} ${this.romanNumber(lvl)}`;
+                }).join('\n');
+            }
+            else {
+                formattedEnchantments = enchantments.map(ench => {
+                    return `- ${mcData.enchantmentsByName[ench.id.split(':').pop()]?.displayName ?? ench.id} ${this.romanNumber(ench.lvl)}`;
+                }).join('\n');
+            }
 
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_enchantments.embeds[0].fields,
@@ -201,8 +224,8 @@ export default class Inventory extends Command {
             addedInfo = true;
         }
 
-        if(tag?.Potion) {
-            const effectByPotionName = {
+        if(tag['minecraft:potion_contents'] || tag?.Potion) {
+            const effectByPotionId = {
                 'fire_resistance': `- ${mcData.effectsByName['FireResistance'].displayName} (3:00)`,
                 'long_fire_resistance': `- ${mcData.effectsByName['FireResistance'].displayName} (8:00)`,
                 'healing': `- ${mcData.effectsByName['InstantHealth'].displayName}`,
@@ -240,13 +263,19 @@ export default class Inventory extends Command {
                 'turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:20)`,
                 'strong_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} VI (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} IV (0:20)`,
                 'long_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:40)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:40)`,
+                //TODO replace with mcData
+                'infestation': `- Infestation (3:00)`,
+                'oozing': `- Oozing (3:00)`,
+                'weaving': `- Weaving (3:00)`,
+                'wind_charging': `- Wind Charging (3:00)`,
                 'mundane': `- No Effects (Mundane)`,
                 'thick': `- No Effects (Thick)`,
                 'awkward': `- No Effects (Awkward)`,
                 'water': `- No Effects (Water)`,
             };
 
-            const formattedEffects = effectByPotionName[tag?.Potion?.split(':').pop()];
+            const potionId = tag['minecraft:potion_contents']?.potion ?? tag.Potion;
+            const formattedEffects = effectByPotionId[potionId.split(':').pop()];
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_potion.embeds[0].fields,
                 { effects: formattedEffects },
@@ -258,7 +287,7 @@ export default class Inventory extends Command {
         return addedInfo;
     }
 
-    pushInvButton(buttons, maxSlot, item, index) {
+    pushInvButton(buttons, maxSlot, doUseArmorSlots, item, index) {
         if(item.Slot > maxSlot) return;
 
         //Push button for each item in the inventory
@@ -267,7 +296,7 @@ export default class Inventory extends Command {
         buttons.push(getComponent(
             keys.commands.inventory.success.item_button,
             {
-                slot: armorSlotNames[slot] ?? `#${slot}`,
+                slot: doUseArmorSlots && armorSlotNames[slot] ? armorSlotNames[slot] : `#${slot}`,
                 index: item.parentIndex ? `${item.parentIndex}_${index}` : index,
                 name: mcData.itemsByName[itemId]?.displayName ?? itemId,
             },
@@ -299,7 +328,7 @@ export default class Inventory extends Command {
             //If parent item is a shulker, get item from shulker inventory
             const indexes = buttonId.split('_').slice(2);
             for(const i of indexes) {
-                item = item.tag.BlockEntityTag.Items[i];
+                item = (item.components?.['minecraft:block_entity_data'] ?? item.tag.BlockEntityTag).Items[i];
                 indexOfIndex++;
             }
 
@@ -313,17 +342,19 @@ export default class Inventory extends Command {
                     slot_name: armorSlotNames[slot] ?? addPh(keys.commands.inventory.slots.default, { slot }),
                     name: itemStats?.displayName ?? formattedId,
                     id: item.id,
-                    count: item.Count,
+                    count: item.count ?? item.Count,
                     max_count: itemStats?.stackSize ?? 64,
                     username: username,
                     avatar: `https://minotar.net/helm/${username}/64.png`,
                 },
                 ph.emojisAndColors(),
             );
-            const isSpecialItem = this.addInfo(itemEmbed, item.tag, itemStats);
+            const isSpecialItem = this.addInfo(itemEmbed, item.components ?? item.tag, itemStats);
 
             //If item is a shulker, render shulker inventory
-            if(item.tag?.BlockEntityTag?.Items && formattedId.endsWith('shulker_box')) {
+            if((item.components?.['minecraft:block_entity_data'] ?? item.tag?.BlockEntityTag)?.Items && formattedId.endsWith('shulker_box')) {
+                const shulkerItems = (item.components?.['minecraft:block_entity_data'] ?? item.tag.BlockEntityTag).Items;
+
                 //Increase slot numbers by 18 in inventory
                 const mappedInvItems = inventory.map(item => {
                     if(armorSlotCoords[item.Slot]) return; //Exclude armor slots
@@ -334,7 +365,7 @@ export default class Inventory extends Command {
                 }).filter(i => i); //Remove undefined items
 
                 //Add parentIndex to shulker items to add in customId on buttons
-                const mappedShulkerItems = item.tag.BlockEntityTag.Items.map(childItem => {
+                const mappedShulkerItems = shulkerItems.map(childItem => {
                     return {
                         ...childItem,
                         parentIndex: buttonId.split(/slot_?/).pop(),
@@ -349,7 +380,7 @@ export default class Inventory extends Command {
                     './resources/images/containers/shulker_blank.png',
                     allItems,
                     shulkerSlotCoords,
-                    this.pushInvButton.bind(null, shulkerButtons, 26),
+                    this.pushInvButton.bind(null, shulkerButtons, 26, false),
                 );
 
                 const shulkerAttach = new Discord.AttachmentBuilder(
@@ -442,9 +473,36 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
         const [x, y] = slotCoords[slot] ?? [];
         if(!x || !y) continue; //Continue for modded slots
 
-        try {
-            //Draw image
-            const itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
+        drawImage: try {
+            if(itemId === 'air') break drawImage;
+
+            let itemImg;
+            if(itemId === 'potion' || itemId === 'splash_potion' || itemId === 'lingering_potion') {
+                const potionId = items[i].components?.['minecraft:potion_contents']?.potion ?? items[i].tag?.Potion;
+                const potionImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
+                const potionOverlayImg = await Canvas.loadImage(`./resources/images/items/potion_overlay.png`);
+                const potionColor = potionColors[potionId.replace(/(minecraft:)?(long_|strong_)?/, '')] ?? potionColors['uncraftable'];
+
+                const potionCanvas = new Canvas.Canvas(32, 32);
+                const potionCtx = potionCanvas.getContext('2d');
+
+                potionCtx.drawImage(potionOverlayImg, 0, 0, 32, 32);
+
+                potionCtx.imageSmoothingEnabled = false;
+                potionCtx.globalCompositeOperation = 'multiply';
+                potionCtx.fillStyle = potionColor;
+                potionCtx.fillRect(0, 0, 32, 32);
+
+                potionCtx.globalCompositeOperation = 'destination-in';
+                potionCtx.drawImage(potionOverlayImg, 0, 0, 32, 32);
+
+                potionCtx.globalCompositeOperation = 'source-over';
+                potionCtx.drawImage(potionImg, 0, 0, 32, 32);
+
+                itemImg = potionCanvas;
+            }
+            else itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
+
             ctx.drawImage(itemImg, x, y, 32, 32);
         }
         catch(err) {
@@ -452,7 +510,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
             console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
             ctx.font = '8px Minecraft';
             ctx.fillStyle = '#000';
-            const lines = utils.wrapText(ctx, mcData.itemsByName[itemId].displayName, 32);
+            const lines = utils.wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);
             lines.forEach((line, i) => ctx.fillText(line, x, y + 8 + i * 8));
         }
 
