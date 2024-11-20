@@ -1,4 +1,4 @@
-import keysJson from '../resources/languages/expanded/en_us.json' assert { type: 'json' };
+import keysJson from '../resources/languages/expanded/en_us.json';
 import util from 'util';
 
 const pathSymbol = Symbol('Object path');

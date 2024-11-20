@@ -6,7 +6,7 @@ import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
-import potionColors from '../../resources/data/potion_colors.json' assert { type: 'json' };
+import potionColors from '../../resources/data/potion_colors.json';
 
 const mcData = minecraft_data('1.20.4');
 

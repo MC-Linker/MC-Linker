@@ -660,9 +660,9 @@
   "commands.statchannel.success.status_list.embeds.0.fields.1.value": "Status",
   "commands.statchannel.success.status_list.embeds.0.fields.1.inline": true,
   "commands.statchannel.success.status_list.embeds.0.fields.2.name": "Offline Text",
-  "commands.statchannel.success.status_list.embeds.0.fields.2.value": "%online_name%",
+  "commands.statchannel.success.status_list.embeds.0.fields.2.value": "%offline_name%",
   "commands.statchannel.success.status_list.embeds.0.fields.3.name": "Online Text",
-  "commands.statchannel.success.status_list.embeds.0.fields.3.value": "%offline_name%",
+  "commands.statchannel.success.status_list.embeds.0.fields.3.value": "%online_name%",
   "commands.statchannel.success.status_list.console": "Successfully listed stat channels",
 
   "commands.statchannel.success.member-counter_list.embeds.0.title": "List Stat Channels",

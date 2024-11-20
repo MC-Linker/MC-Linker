@@ -1171,11 +1171,11 @@
                 },
                 {
                   "name": "Offline Text",
-                  "value": "%online_name%"
+                  "value": "%offline_name%"
                 },
                 {
                   "name": "Online Text",
-                  "value": "%offline_name%"
+                  "value": "%online_name%"
                 }
               ]
             }
@@ -2853,7 +2853,7 @@
         {
           "type": "Subcommand",
           "name": "killed_by",
-          "description": "Statistics related to the times of a player being killed by entities.",
+          "description": "Statistics related to the times off a player being killed by entities.",
           "options": [
             {
               "type": "String",

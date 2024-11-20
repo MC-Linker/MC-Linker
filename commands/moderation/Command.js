@@ -5,7 +5,7 @@ import * as utils from '../../utilities/utils.js';
 import { codeBlockFromCommandResponse, MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import minecraft_data from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
-import commands from '../../resources/data/commands.json' assert { type: 'json' };
+import commands from '../../resources/data/commands.json';
 import { FilePath } from '../../structures/Protocol.js';
 
 const mcData = minecraft_data('1.20.4');
