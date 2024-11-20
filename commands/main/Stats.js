@@ -8,7 +8,7 @@ import minecraft_data from 'minecraft-data';
 import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
-import customStats from '../../resources/data/stats_custom.json';
+import customStats from '../../resources/data/stats_custom.json' assert { type: 'json' };
 
 const mcData = minecraft_data('1.20.4');
 
