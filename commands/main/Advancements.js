@@ -6,7 +6,7 @@ import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as d3 from 'd3-hierarchy';
 import Canvas from 'skia-canvas';
-import allAdvancements from '../../resources/data/advancements.json' assert { type: 'json' };
+import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
