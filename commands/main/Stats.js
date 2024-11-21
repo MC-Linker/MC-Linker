@@ -27,7 +27,7 @@ export default class Stats extends Command {
     constructor() {
         super({
             name: 'stats',
-            requiresUserIndex: 1,
+            userIndex: 1,
             category: 'main',
         });
     }

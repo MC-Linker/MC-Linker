@@ -8,7 +8,7 @@ export default class Unban extends Command {
         super({
             name: 'unban',
             requiresConnectedPlugin: true,
-            requiresUserIndex: 0,
+            userIndex: 0,
             category: 'moderation',
         });
     }

@@ -660,9 +660,9 @@
   "commands.statchannel.success.status_list.embeds.0.fields.1.value": "Status",
   "commands.statchannel.success.status_list.embeds.0.fields.1.inline": true,
   "commands.statchannel.success.status_list.embeds.0.fields.2.name": "Offline Text",
-  "commands.statchannel.success.status_list.embeds.0.fields.2.value": "%online_name%",
+  "commands.statchannel.success.status_list.embeds.0.fields.2.value": "%offline_name%",
   "commands.statchannel.success.status_list.embeds.0.fields.3.name": "Online Text",
-  "commands.statchannel.success.status_list.embeds.0.fields.3.value": "%offline_name%",
+  "commands.statchannel.success.status_list.embeds.0.fields.3.value": "%online_name%",
   "commands.statchannel.success.status_list.console": "Successfully listed stat channels",
 
   "commands.statchannel.success.member-counter_list.embeds.0.title": "List Stat Channels",
@@ -1262,6 +1262,12 @@
   "data.advancements.options.0.options.1.description": "Set whether to display buttons that show details about advancements.",
   "data.advancements.options.0.options.1.required": false,
 
+  "data.advancements.options.0.options.2.type": "String",
+  "data.advancements.options.0.options.2.name": "server",
+  "data.advancements.options.0.options.2.description": "Set which server you want to get the advancement from.",
+  "data.advancements.options.0.options.2.required": false,
+  "data.advancements.options.0.options.2.autocomplete": true,
+
 
   "data.advancements.options.1.type": "Subcommand",
   "data.advancements.options.1.name": "nether",
@@ -1276,6 +1282,12 @@
   "data.advancements.options.1.options.1.name": "show_details",
   "data.advancements.options.1.options.1.description": "Set whether to display buttons that show details about advancements.",
   "data.advancements.options.1.options.1.required": false,
+
+  "data.advancements.options.1.options.2.type": "String",
+  "data.advancements.options.1.options.2.name": "server",
+  "data.advancements.options.1.options.2.description": "Set which server you want to get the advancement from.",
+  "data.advancements.options.1.options.2.required": false,
+  "data.advancements.options.1.options.2.autocomplete": true,
 
 
   "data.advancements.options.2.type": "Subcommand",
@@ -1292,6 +1304,12 @@
   "data.advancements.options.2.options.1.description": "Set whether to display buttons that show details about advancements.",
   "data.advancements.options.2.options.1.required": false,
 
+  "data.advancements.options.2.options.2.type": "String",
+  "data.advancements.options.2.options.2.name": "server",
+  "data.advancements.options.2.options.2.description": "Set which server you want to get the advancement from.",
+  "data.advancements.options.2.options.2.required": false,
+  "data.advancements.options.2.options.2.autocomplete": true,
+
 
   "data.advancements.options.3.type": "Subcommand",
   "data.advancements.options.3.name": "adventure",
@@ -1307,6 +1325,13 @@
   "data.advancements.options.3.options.1.description": "Set whether to display buttons that show details about advancements.",
   "data.advancements.options.3.options.1.required": false,
 
+  "data.advancements.options.3.options.2.type": "String",
+  "data.advancements.options.3.options.2.name": "server",
+  "data.advancements.options.3.options.2.description": "Set which server you want to get the advancement from.",
+  "data.advancements.options.3.options.2.required": false,
+  "data.advancements.options.3.options.2.autocomplete": true,
+
+
 
   "data.advancements.options.4.type": "Subcommand",
   "data.advancements.options.4.name": "husbandry",
@@ -1321,6 +1346,13 @@
   "data.advancements.options.4.options.1.name": "show_details",
   "data.advancements.options.4.options.1.description": "Set whether to display buttons that show details about advancements.",
   "data.advancements.options.4.options.1.required": false,
+
+  "data.advancements.options.4.options.2.type": "String",
+  "data.advancements.options.4.options.2.name": "server",
+  "data.advancements.options.4.options.2.description": "Set which server you want to get the advancement from.",
+  "data.advancements.options.4.options.2.required": false,
+  "data.advancements.options.4.options.2.autocomplete": true,
+
 
 
 
@@ -1339,6 +1371,11 @@
   "data.inventory.options.1.description": "Set whether to display buttons that show more details about items.",
   "data.inventory.options.1.required": false,
 
+  "data.inventory.options.2.type": "String",
+  "data.inventory.options.2.name": "server",
+  "data.inventory.options.2.description": "Set which server you want to get the inventory from.",
+  "data.inventory.options.2.required": false,
+  "data.inventory.options.2.autocomplete": true,
 
 
   "data.stats.name": "stats",
@@ -1368,6 +1405,12 @@
   "data.stats.options.0.options.1.choices.3.name": "None",
   "data.stats.options.0.options.1.choices.3.value": "none",
 
+  "data.stats.options.0.options.2.type": "String",
+  "data.stats.options.0.options.2.name": "server",
+  "data.stats.options.0.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.0.options.2.required": false,
+  "data.stats.options.0.options.2.autocomplete": true,
+
 
   "data.stats.options.1.type": "Subcommand",
   "data.stats.options.1.name": "mined",
@@ -1390,6 +1433,12 @@
   "data.stats.options.1.options.1.choices.2.value": "alphabetically",
   "data.stats.options.1.options.1.choices.3.name": "None",
   "data.stats.options.1.options.1.choices.3.value": "none",
+
+  "data.stats.options.1.options.2.type": "String",
+  "data.stats.options.1.options.2.name": "server",
+  "data.stats.options.1.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.1.options.2.required": false,
+  "data.stats.options.1.options.2.autocomplete": true,
 
 
   "data.stats.options.2.type": "Subcommand",
@@ -1414,6 +1463,12 @@
   "data.stats.options.2.options.1.choices.3.name": "None",
   "data.stats.options.2.options.1.choices.3.value": "none",
 
+  "data.stats.options.2.options.2.type": "String",
+  "data.stats.options.2.options.2.name": "server",
+  "data.stats.options.2.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.2.options.2.required": false,
+  "data.stats.options.2.options.2.autocomplete": true,
+
 
   "data.stats.options.3.type": "Subcommand",
   "data.stats.options.3.name": "crafted",
@@ -1437,6 +1492,12 @@
   "data.stats.options.3.options.1.choices.3.name": "None",
   "data.stats.options.3.options.1.choices.3.value": "none",
 
+  "data.stats.options.3.options.2.type": "String",
+  "data.stats.options.3.options.2.name": "server",
+  "data.stats.options.3.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.3.options.2.required": false,
+  "data.stats.options.3.options.2.autocomplete": true,
+
 
   "data.stats.options.4.type": "Subcommand",
   "data.stats.options.4.name": "used",
@@ -1449,7 +1510,7 @@
 
   "data.stats.options.4.options.1.type": "String",
   "data.stats.options.4.options.1.name": "sort",
-  "data.stats.options.4.options.1.description": "Set how you want to sort the stats (Default: Descending).",
+  "data.stats.options.4.options.1.description": "Set how you want to sort the stats.",
   "data.stats.options.4.options.1.required": false,
   "data.stats.options.4.options.1.choices.0.name": "Ascending",
   "data.stats.options.4.options.1.choices.0.value": "ascending",
@@ -1459,6 +1520,12 @@
   "data.stats.options.4.options.1.choices.2.value": "alphabetically",
   "data.stats.options.4.options.1.choices.3.name": "None",
   "data.stats.options.4.options.1.choices.3.value": "none",
+
+  "data.stats.options.4.options.2.type": "String",
+  "data.stats.options.4.options.2.name": "server",
+  "data.stats.options.4.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.4.options.2.required": false,
+  "data.stats.options.4.options.2.autocomplete": true,
 
 
   "data.stats.options.5.type": "Subcommand",
@@ -1483,6 +1550,12 @@
   "data.stats.options.5.options.1.choices.3.name": "None",
   "data.stats.options.5.options.1.choices.3.value": "none",
 
+  "data.stats.options.5.options.2.type": "String",
+  "data.stats.options.5.options.2.name": "server",
+  "data.stats.options.5.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.5.options.2.required": false,
+  "data.stats.options.5.options.2.autocomplete": true,
+
 
   "data.stats.options.6.type": "Subcommand",
   "data.stats.options.6.name": "dropped",
@@ -1502,9 +1575,15 @@
   "data.stats.options.6.options.1.choices.1.name": "Descending",
   "data.stats.options.6.options.1.choices.1.value": "descending",
   "data.stats.options.6.options.1.choices.2.name": "Alphabetically",
-  "data.stats.options.6.options.1.choices.3.value": "none",
   "data.stats.options.6.options.1.choices.2.value": "alphabetically",
   "data.stats.options.6.options.1.choices.3.name": "None",
+  "data.stats.options.6.options.1.choices.3.value": "none",
+
+  "data.stats.options.6.options.2.type": "String",
+  "data.stats.options.6.options.2.name": "server",
+  "data.stats.options.6.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.6.options.2.required": false,
+  "data.stats.options.6.options.2.autocomplete": true,
 
 
   "data.stats.options.7.type": "Subcommand",
@@ -1529,6 +1608,12 @@
   "data.stats.options.7.options.1.choices.3.name": "None",
   "data.stats.options.7.options.1.choices.3.value": "none",
 
+  "data.stats.options.7.options.2.type": "String",
+  "data.stats.options.7.options.2.name": "server",
+  "data.stats.options.7.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.7.options.2.required": false,
+  "data.stats.options.7.options.2.autocomplete": true,
+
 
   "data.stats.options.8.type": "Subcommand",
   "data.stats.options.8.name": "killed_by",
@@ -1552,6 +1637,12 @@
   "data.stats.options.8.options.1.choices.3.name": "None",
   "data.stats.options.8.options.1.choices.3.value": "none",
 
+  "data.stats.options.8.options.2.type": "String",
+  "data.stats.options.8.options.2.name": "server",
+  "data.stats.options.8.options.2.description": "Set which server you want to get the stats from.",
+  "data.stats.options.8.options.2.required": false,
+  "data.stats.options.8.options.2.autocomplete": true,
+
 
 
   "data.ban.name": "ban",
@@ -1569,6 +1660,12 @@
   "data.ban.options.1.name": "reason",
   "data.ban.options.1.description": "Set a reason for the ban.",
   "data.ban.options.1.required": false,
+
+  "data.ban.options.2.type": "String",
+  "data.ban.options.2.name": "server",
+  "data.ban.options.2.description": "Set which server you want to ban the user from.",
+  "data.ban.options.2.required": false,
+  "data.ban.options.2.autocomplete": true,
 
 
 
@@ -1633,11 +1730,10 @@
   "data.command.options.8.autocomplete": true,
 
   "data.command.options.9.type": "String",
-  "data.command.options.9.name": "argument9",
-  "data.command.options.9.description": "Set the ninth command argument.",
+  "data.command.options.9.name": "server",
+  "data.command.options.9.description": "Set which server you want the command to execute.",
   "data.command.options.9.required": false,
   "data.command.options.9.autocomplete": true,
-
 
 
   "data.deop.name": "deop",
@@ -1650,6 +1746,12 @@
   "data.deop.options.0.name": "user",
   "data.deop.options.0.description": "Set the user you want to deop.",
   "data.deop.options.0.required": true,
+
+  "data.deop.options.1.type": "String",
+  "data.deop.options.1.name": "server",
+  "data.deop.options.1.description": "Set in which server you want to deop the user.",
+  "data.deop.options.1.required": false,
+  "data.deop.options.1.autocomplete": true,
 
 
   "data.gamemode.name": "gamemode",
@@ -1676,6 +1778,11 @@
   "data.gamemode.options.1.choices.3.name": "Spectator",
   "data.gamemode.options.1.choices.3.value": "spectator",
 
+  "data.gamemode.options.2.type": "String",
+  "data.gamemode.options.2.name": "server",
+  "data.gamemode.options.2.description": "Set which server you want to ban the user from.",
+  "data.gamemode.options.2.required": false,
+  "data.gamemode.options.2.autocomplete": true,
 
 
   "data.kick.name": "kick",
@@ -1694,6 +1801,12 @@
   "data.kick.options.1.description": "Set a reason for the kick.",
   "data.kick.options.1.required": false,
 
+  "data.kick.options.2.type": "String",
+  "data.kick.options.2.name": "server",
+  "data.kick.options.2.description": "Set which server you want to kick the user from.",
+  "data.kick.options.2.required": false,
+  "data.kick.options.2.autocomplete": true,
+
 
 
   "data.op.name": "op",
@@ -1706,6 +1819,12 @@
   "data.op.options.0.name": "user",
   "data.op.options.0.description": "Set the user you want to OP.",
   "data.op.options.0.required": true,
+
+  "data.op.options.1.type": "String",
+  "data.op.options.1.name": "server",
+  "data.op.options.1.description": "Set in which server you want to op the user.",
+  "data.op.options.1.required": false,
+  "data.op.options.1.autocomplete": true,
 
 
 
@@ -1720,6 +1839,12 @@
   "data.unban.options.0.description": "Set the user you want to unban.",
   "data.unban.options.0.required": true,
 
+  "data.unban.options.1.type": "String",
+  "data.unban.options.1.name": "server",
+  "data.unban.options.1.description": "Set which server you want to unban the user from.",
+  "data.unban.options.1.required": false,
+  "data.unban.options.1.autocomplete": true,
+
 
 
   "data.message.name": "message",
@@ -1729,7 +1854,7 @@
 
   "data.message.options.0.type": "String",
   "data.message.options.0.name": "user",
-  "data.message.options.0.description": "Set the user you want to send a (private) message to.",
+  "data.message.options.0.description": "Set the user you want to (privately) message to.",
   "data.message.options.0.required": true,
 
   "data.message.options.1.type": "String",
@@ -1737,12 +1862,24 @@
   "data.message.options.1.description": "Set the (private) message you want to send to the user.",
   "data.message.options.1.required": true,
 
+  "data.message.options.2.type": "String",
+  "data.message.options.2.name": "server",
+  "data.message.options.2.description": "Set in which server you want to (privately) message the user.",
+  "data.message.options.2.required": false,
+  "data.message.options.2.autocomplete": true,
+
 
 
   "data.serverinfo.name": "serverinfo",
   "data.serverinfo.type": "ChatInput",
   "data.serverinfo.long_description": "View information about the connected **Minecraft server**.",
   "data.serverinfo.description": "View information about the connected Minecraft server.",
+
+  "data.serverinfo.options.0.type": "String",
+  "data.serverinfo.options.0.name": "server",
+  "data.serverinfo.options.0.description": "Set which server you want to view information about.",
+  "data.serverinfo.options.0.required": false,
+  "data.serverinfo.options.0.autocomplete": true,
 
 
 
@@ -1807,6 +1944,12 @@
   "data.statchannel.options.0.options.0.options.2.description": "Set the message that will be shown when the server is offline.",
   "data.statchannel.options.0.options.0.options.2.required": true,
 
+  "data.statchannel.options.0.options.0.options.3.type": "String",
+  "data.statchannel.options.0.options.0.options.3.name": "server",
+  "data.statchannel.options.0.options.0.options.3.description": "Set which server you want to add the statchannel to.",
+  "data.statchannel.options.0.options.0.options.3.required": false,
+  "data.statchannel.options.0.options.0.options.3.autocomplete": true,
+
 
   "data.statchannel.options.0.options.1.type": "Subcommand",
   "data.statchannel.options.0.options.1.name": "member-counter",
@@ -1822,6 +1965,12 @@
   "data.statchannel.options.0.options.1.options.1.description": "Set the message that will be shown for the player count. Use %count% for the player count.",
   "data.statchannel.options.0.options.1.options.1.required": true,
 
+  "data.statchannel.options.0.options.1.options.2.type": "String",
+  "data.statchannel.options.0.options.1.options.2.name": "server",
+  "data.statchannel.options.0.options.1.options.2.description": "Set which server you want to add the statchannel to.",
+  "data.statchannel.options.0.options.1.options.2.required": false,
+  "data.statchannel.options.0.options.1.options.2.autocomplete": true,
+
 
   "data.statchannel.options.1.type": "Subcommand",
   "data.statchannel.options.1.name": "remove",
@@ -1832,6 +1981,12 @@
   "data.statchannel.options.1.options.0.description": "Set the channel you want to remove.",
   "data.statchannel.options.1.options.0.required": true,
 
+  "data.statchannel.options.1.options.1.type": "String",
+  "data.statchannel.options.1.options.1.name": "server",
+  "data.statchannel.options.1.options.1.description": "Set which server you want to remove the statchannel from.",
+  "data.statchannel.options.1.options.1.required": false,
+  "data.statchannel.options.1.options.1.autocomplete": true,
+
 
   "data.statchannel.options.2.type": "Subcommand",
   "data.statchannel.options.2.name": "list",
@@ -1841,10 +1996,16 @@
   "data.statchannel.options.2.options.0.name": "filter",
   "data.statchannel.options.2.options.0.description": "Set a filter to only show statchannels of a specific type.",
   "data.statchannel.options.2.options.0.required": false,
-  "data.statchannel.options.2.options.0.choices.0.name": "Status",
   "data.statchannel.options.2.options.0.choices.0.value": "status",
+  "data.statchannel.options.2.options.0.choices.0.name": "Status",
   "data.statchannel.options.2.options.0.choices.1.name": "Member Counter",
   "data.statchannel.options.2.options.0.choices.1.value": "member-counter",
+
+  "data.statchannel.options.2.options.1.type": "String",
+  "data.statchannel.options.2.options.1.name": "server",
+  "data.statchannel.options.2.options.1.description": "Set which server you want to list the statchannels of.",
+  "data.statchannel.options.2.options.1.required": false,
+  "data.statchannel.options.2.options.1.autocomplete": true,
 
 
 
@@ -1881,6 +2042,12 @@
   "data.chatchannel.options.0.options.2.description": "Enable webhook mode for chat messages. (Default: true)",
   "data.chatchannel.options.0.options.2.required": false,
 
+  "data.chatchannel.options.0.options.3.type": "String",
+  "data.chatchannel.options.0.options.3.name": "server",
+  "data.chatchannel.options.0.options.3.description": "Set which server you want to add the chatchannel to.",
+  "data.chatchannel.options.0.options.3.required": false,
+  "data.chatchannel.options.0.options.3.autocomplete": true,
+
 
   "data.chatchannel.options.1.type": "Subcommand",
   "data.chatchannel.options.1.name": "remove",
@@ -1898,9 +2065,22 @@
   "data.chatchannel.options.1.options.0.channel_types.5": "GuildVoice",
   "data.chatchannel.options.1.options.0.channel_types.6": "GuildStageVoice",
 
+  "data.chatchannel.options.1.options.1.type": "String",
+  "data.chatchannel.options.1.options.1.name": "server",
+  "data.chatchannel.options.1.options.1.description": "Set which server you want to remove the chatchannel from.",
+  "data.chatchannel.options.1.options.1.required": false,
+  "data.chatchannel.options.1.options.1.autocomplete": true,
+
+
   "data.chatchannel.options.2.type": "Subcommand",
   "data.chatchannel.options.2.name": "list",
   "data.chatchannel.options.2.description": "List all chatchannels.",
+
+  "data.chatchannel.options.2.options.0.type": "String",
+  "data.chatchannel.options.2.options.0.name": "server",
+  "data.chatchannel.options.2.options.0.description": "Set which server you want to list the chatchannels of.",
+  "data.chatchannel.options.2.options.0.required": false,
+  "data.chatchannel.options.2.options.0.autocomplete": true,
 
 
 
@@ -2074,6 +2254,12 @@
   "data.disconnect.long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
   "data.disconnect.description": "Disconnect your Minecraft server from the bot.",
 
+  "data.disconnect.options.0.type": "String",
+  "data.disconnect.options.0.name": "server",
+  "data.disconnect.options.0.description": "Set which server you want to disconnect",
+  "data.disconnect.options.0.required": false,
+  "data.disconnect.options.0.autocomplete": true,
+
 
 
   "data.enable.name": "enable",
@@ -2138,6 +2324,12 @@
   "data.rolesync.options.0.options.1.autocomplete": true,
   "data.rolesync.options.0.options.1.required": true,
 
+  "data.rolesync.options.0.options.2.type": "String",
+  "data.rolesync.options.0.options.2.name": "server",
+  "data.rolesync.options.0.options.2.description": "Set which server you want to add the synced role to.",
+  "data.rolesync.options.0.options.2.required": false,
+  "data.rolesync.options.0.options.2.autocomplete": true,
+
 
   "data.rolesync.options.1.type": "Subcommand",
   "data.rolesync.options.1.name": "remove",
@@ -2148,9 +2340,22 @@
   "data.rolesync.options.1.options.0.description": "Set the role you want to remove.",
   "data.rolesync.options.1.options.0.required": true,
 
+  "data.rolesync.options.1.options.1.type": "String",
+  "data.rolesync.options.1.options.1.name": "server",
+  "data.rolesync.options.1.options.1.description": "Set which server you want to remove the synced role from.",
+  "data.rolesync.options.1.options.1.required": false,
+  "data.rolesync.options.1.options.1.autocomplete": true,
+
+
   "data.rolesync.options.2.type": "Subcommand",
   "data.rolesync.options.2.name": "list",
   "data.rolesync.options.2.description": "List all synced roles.",
+
+  "data.rolesync.options.2.options.0.type": "String",
+  "data.rolesync.options.2.options.0.name": "server",
+  "data.rolesync.options.2.options.0.description": "Set which server you want to list the synced roles of.",
+  "data.rolesync.options.2.options.0.required": false,
+  "data.rolesync.options.2.options.0.autocomplete": true,
 
 
 

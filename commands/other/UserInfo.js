@@ -24,8 +24,8 @@ export default class UserInfo extends Command {
         super({
             name: 'userinfo',
             category: 'other',
-            requiresUserIndex: 0,
-            requiresConnectedServer: true,
+            userIndex: 0,
+            requiresConnectedServer: true, //TODO make this a global command
         });
     }
 

@@ -8,12 +8,20 @@ export async function convert(mongoose) {
     const serverConnectionModel = mongoose.models.ServerConnection;
 
     // Convert all requiredRoleToJoin fields to arrays
-    const docs = await serverConnectionModel.find({ requiredRoleToJoin: { $type: 2 } }).exec();
+    const docs = await serverConnectionModel.find({}).exec();
     for(const doc of docs) {
         console.log(`Converting ${doc._id}...`);
-        const roleId = JSON.parse(JSON.stringify(doc.requiredRoleToJoin)); // Clone the data because mongoose stupid and idk maan
-        doc.requiredRoleToJoin = { method: 'any', roles: [roleId] };
-        await serverConnectionModel.updateOne({ _id: doc._id }, doc);
+
+        const newDoc = {
+            _id: doc._id,
+            serverSettings: doc.serverSettings,
+            servers: [{ ...doc }],
+        };
+        delete newDoc.servers[0]._id;
+        delete newDoc.servers[0].serverSettings;
+
+        await serverConnectionModel.updateOne({ _id: doc }, newDoc).exec();
+
         console.log(`Converted ${doc._id}!`);
     }
 }

@@ -1171,11 +1171,11 @@
                 },
                 {
                   "name": "Offline Text",
-                  "value": "%online_name%"
+                  "value": "%offline_name%"
                 },
                 {
                   "name": "Online Text",
-                  "value": "%offline_name%"
+                  "value": "%online_name%"
                 }
               ]
             }
@@ -2447,6 +2447,13 @@
               "name": "show_details",
               "description": "Set whether to display buttons that show details about advancements.",
               "required": false
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the advancement from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2466,6 +2473,13 @@
               "name": "show_details",
               "description": "Set whether to display buttons that show details about advancements.",
               "required": false
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the advancement from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2485,6 +2499,13 @@
               "name": "show_details",
               "description": "Set whether to display buttons that show details about advancements.",
               "required": false
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the advancement from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2504,6 +2525,13 @@
               "name": "show_details",
               "description": "Set whether to display buttons that show details about advancements.",
               "required": false
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the advancement from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2523,6 +2551,13 @@
               "name": "show_details",
               "description": "Set whether to display buttons that show details about advancements.",
               "required": false
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the advancement from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         }
@@ -2545,6 +2580,13 @@
           "name": "show_details",
           "description": "Set whether to display buttons that show more details about items.",
           "required": false
+        },
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set which server you want to get the inventory from.",
+          "required": false,
+          "autocomplete": true
         }
       ]
     },
@@ -2588,6 +2630,13 @@
                   "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2625,6 +2674,13 @@
                   "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2662,6 +2718,13 @@
                   "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2699,6 +2762,13 @@
                   "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2716,7 +2786,7 @@
             {
               "type": "String",
               "name": "sort",
-              "description": "Set how you want to sort the stats (Default: Descending).",
+              "description": "Set how you want to sort the stats.",
               "required": false,
               "choices": [
                 {
@@ -2736,6 +2806,13 @@
                   "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2773,6 +2850,13 @@
                   "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2806,10 +2890,17 @@
                   "value": "alphabetically"
                 },
                 {
-                  "value": "none",
-                  "name": "None"
+                  "name": "None",
+                  "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -2847,13 +2938,20 @@
                   "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
         {
           "type": "Subcommand",
           "name": "killed_by",
-          "description": "Statistics related to the times of a player being killed by entities.",
+          "description": "Statistics related to the times off a player being killed by entities.",
           "options": [
             {
               "type": "String",
@@ -2884,6 +2982,13 @@
                   "value": "none"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to get the stats from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         }
@@ -2909,6 +3014,13 @@
           "name": "reason",
           "description": "Set a reason for the ban.",
           "required": false
+        },
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set which server you want to ban the user from.",
+          "required": false,
+          "autocomplete": true
         }
       ]
     },
@@ -2986,8 +3098,8 @@
         },
         {
           "type": "String",
-          "name": "argument9",
-          "description": "Set the ninth command argument.",
+          "name": "server",
+          "description": "Set which server you want the command to execute.",
           "required": false,
           "autocomplete": true
         }
@@ -3007,6 +3119,13 @@
           "name": "user",
           "description": "Set the user you want to deop.",
           "required": true
+        },
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set in which server you want to deop the user.",
+          "required": false,
+          "autocomplete": true
         }
       ]
     },
@@ -3048,6 +3167,13 @@
               "value": "spectator"
             }
           ]
+        },
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set which server you want to ban the user from.",
+          "required": false,
+          "autocomplete": true
         }
       ]
     },
@@ -3071,6 +3197,13 @@
           "name": "reason",
           "description": "Set a reason for the kick.",
           "required": false
+        },
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set which server you want to kick the user from.",
+          "required": false,
+          "autocomplete": true
         }
       ]
     },
@@ -3088,6 +3221,13 @@
           "name": "user",
           "description": "Set the user you want to OP.",
           "required": true
+        },
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set in which server you want to op the user.",
+          "required": false,
+          "autocomplete": true
         }
       ]
     },
@@ -3105,6 +3245,13 @@
           "name": "user",
           "description": "Set the user you want to unban.",
           "required": true
+        },
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set which server you want to unban the user from.",
+          "required": false,
+          "autocomplete": true
         }
       ]
     },
@@ -3117,7 +3264,7 @@
         {
           "type": "String",
           "name": "user",
-          "description": "Set the user you want to send a (private) message to.",
+          "description": "Set the user you want to (privately) message to.",
           "required": true
         },
         {
@@ -3125,6 +3272,13 @@
           "name": "message",
           "description": "Set the (private) message you want to send to the user.",
           "required": true
+        },
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set in which server you want to (privately) message the user.",
+          "required": false,
+          "autocomplete": true
         }
       ]
     },
@@ -3132,7 +3286,16 @@
       "name": "serverinfo",
       "type": "ChatInput",
       "long_description": "View information about the connected **Minecraft server**.",
-      "description": "View information about the connected Minecraft server."
+      "description": "View information about the connected Minecraft server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set which server you want to view information about.",
+          "required": false,
+          "autocomplete": true
+        }
+      ]
     },
     "userinfo": {
       "name": "userinfo",
@@ -3210,6 +3373,13 @@
                   "name": "offline",
                   "description": "Set the message that will be shown when the server is offline.",
                   "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "server",
+                  "description": "Set which server you want to add the statchannel to.",
+                  "required": false,
+                  "autocomplete": true
                 }
               ]
             },
@@ -3229,6 +3399,13 @@
                   "name": "message",
                   "description": "Set the message that will be shown for the player count. Use %count% for the player count.",
                   "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "server",
+                  "description": "Set which server you want to add the statchannel to.",
+                  "required": false,
+                  "autocomplete": true
                 }
               ]
             }
@@ -3244,6 +3421,13 @@
               "name": "channel",
               "description": "Set the channel you want to remove.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to remove the statchannel from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -3259,14 +3443,21 @@
               "required": false,
               "choices": [
                 {
-                  "name": "Status",
-                  "value": "status"
+                  "value": "status",
+                  "name": "Status"
                 },
                 {
                   "name": "Member Counter",
                   "value": "member-counter"
                 }
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to list the statchannels of.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         }
@@ -3312,6 +3503,13 @@
               "name": "webhooks",
               "description": "Enable webhook mode for chat messages. (Default: true)",
               "required": false
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to add the chatchannel to.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -3334,13 +3532,29 @@
                 "GuildVoice",
                 "GuildStageVoice"
               ]
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to remove the chatchannel from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
         {
           "type": "Subcommand",
           "name": "list",
-          "description": "List all chatchannels."
+          "description": "List all chatchannels.",
+          "options": [
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to list the chatchannels of.",
+              "required": false,
+              "autocomplete": true
+            }
+          ]
         }
       ]
     },
@@ -3601,7 +3815,16 @@
         "Administrator"
       ],
       "long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
-      "description": "Disconnect your Minecraft server from the bot."
+      "description": "Disconnect your Minecraft server from the bot.",
+      "options": [
+        {
+          "type": "String",
+          "name": "server",
+          "description": "Set which server you want to disconnect",
+          "required": false,
+          "autocomplete": true
+        }
+      ]
     },
     "enable": {
       "name": "enable",
@@ -3682,6 +3905,13 @@
               "description": "Set the Minecraft team or Luckperms group you want to sync to.",
               "autocomplete": true,
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to add the synced role to.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
@@ -3695,13 +3925,29 @@
               "name": "role",
               "description": "Set the role you want to remove.",
               "required": true
+            },
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to remove the synced role from.",
+              "required": false,
+              "autocomplete": true
             }
           ]
         },
         {
           "type": "Subcommand",
           "name": "list",
-          "description": "List all synced roles."
+          "description": "List all synced roles.",
+          "options": [
+            {
+              "type": "String",
+              "name": "server",
+              "description": "Set which server you want to list the synced roles of.",
+              "required": false,
+              "autocomplete": true
+            }
+          ]
         }
       ]
     }

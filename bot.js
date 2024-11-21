@@ -213,6 +213,13 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
 
         try {
             if(!command || !(command instanceof AutocompleteCommand)) return;
+
+            if(command.serverIndex !== undefined) {
+                const server = client.serverConnections.cache.get(interaction.guildId);
+
+                return await interaction.respond([...server.servers.map(s => s.name ?? s.getDisplayIp())]);
+            }
+
             await command.autocomplete(interaction, client);
         }
         catch(err) {

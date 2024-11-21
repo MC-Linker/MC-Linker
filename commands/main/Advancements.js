@@ -22,7 +22,7 @@ export default class Advancements extends Command {
     constructor() {
         super({
             name: 'advancements',
-            requiresUserIndex: 1,
+            userIndex: 1,
             category: 'main',
         });
     }

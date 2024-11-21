@@ -9,7 +9,7 @@ export default class Message extends Command {
             name: 'message',
             ephemeral: true,
             requiresConnectedPlugin: true,
-            requiresUserIndex: 0,
+            userIndex: 0,
             category: 'other',
         });
     }

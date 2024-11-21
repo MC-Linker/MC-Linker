@@ -9,7 +9,8 @@ export default class Command {
      * @property {boolean} [defer=true] - Indicates whether to defer this command.
      * @property {boolean} [ephemeral=false] - Indicates whether to defer this command as ephemeral.
      * @property {boolean} [requiresConnectedServer=true] - Indicates whether this command requires a connected server.
-     * @property {int} [requiresUserIndex=null] - The user argument index that requires a user.
+     * @property {int} [userIndex=null] - The index of the argument that takes a user.
+     * @property {int} [serverIndex=null] - The index of the argument that takes a server.
      * @property {boolean} [requiresConnectedPlugin=false] - Indicates whether this command requires a connected plugin.
      * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
      * @property {string} [category] - The category of this command.
@@ -47,10 +48,16 @@ export default class Command {
         this.requiresConnectedServer = options.requiresConnectedServer ?? true;
 
         /**
-         * The user argument index that requires a user.
+         * The index of the argument that takes a user.
          * @type {?int}
          */
-        this.requiresUserIndex = options.requiresUserIndex ?? null;
+        this.userIndex = options.userIndex ?? null;
+
+        /**
+         * The index of the argument that takes a server.
+         * @type {?int}
+         */
+        this.serverIndex = options.serverIndex ?? null;
 
         /**
          * Indicates whether this command requires a connected plugin.
@@ -101,11 +108,18 @@ export default class Command {
             return false;
         }
 
-        if(this.requiresUserIndex !== null && (this.requiresUserIndex === 0 || args[this.requiresUserIndex - 1] !== undefined)) {
-            const user = await client.userConnections.userFromArgument(args[this.requiresUserIndex], server, interaction);
+        if(this.userIndex !== null && args[this.userIndex] !== undefined) {
+            const user = await client.userConnections.userFromArgument(args[this.userIndex], server, interaction);
             if(!user || user.error) return false;
 
-            args[this.requiresUserIndex] = user;
+            args[this.userIndex] = user;
+        }
+
+        if(this.serverIndex !== null && args[this.serverIndex] !== undefined) {
+            const mentionedServer = await server.servers.find(s => s.name === args[this.serverIndex]);
+            if(!mentionedServer) return false;
+
+            args[this.serverIndex] = server;
         }
 
         return true;

@@ -8,7 +8,7 @@ export default class Gamemode extends Command {
         super({
             name: 'gamemode',
             requiresConnectedPlugin: true,
-            requiresUserIndex: 0,
+            userIndex: 0,
             category: 'moderation',
         });
     }

@@ -4,7 +4,6 @@ import FtpProtocol from './FtpProtocol.js';
 import WebSocketProtocol from './WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
 
-/** @template {Protocol} T */
 export default class ServerConnection extends Connection {
 
     /**
@@ -43,6 +42,7 @@ export default class ServerConnection extends Connection {
      * @typedef {object} HttpServerConnectionData - The data for a server-connection established by the plugin.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
+     * @property {string} name - The name of the server.
      * @property {number} port - The port used to connect to the server plugin.
      * @property {number} version - The minor minecraft version of the server.
      * @property {string} worldPath - The path to the world folder of the server.
@@ -60,6 +60,7 @@ export default class ServerConnection extends Connection {
      * @typedef {object} FtpServerConnectionData - The data for a server-connection established by ftp or sftp.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
+     * @property {string} name - The name of the server.
      * @property {string} username - The ftp username used to connect to the server.
      * @property {string} password - The ftp password used to connect to the server.
      * @property {number} port - The ftp port used to connect to the server.
@@ -75,6 +76,7 @@ export default class ServerConnection extends Connection {
      * @typedef {object} WebSocketServerConnectionData - The data for a server-connection established by a websocket.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
+     * @property {string} name - The name of the server.
      * @property {number} version - The minor minecraft version of the server.
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
@@ -92,18 +94,14 @@ export default class ServerConnection extends Connection {
      */
 
     /**
-     * @typedef {HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData} ServerConnectionData - The data of the server.
+     * @typedef {object} ServerConnectionData - The data of the server.
+     * @property {string} id - The id of the server.
+     * @property {(HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData)[]} servers - The connected servers.
      */
 
     /**
      * @typedef {ServerConnection|string} ServerConnectionResolvable - Data that resolves to a ServerConnection object.
      */
-
-    /**
-     * The protocol used to communicate with the server.
-     * @type {T|Protocol}
-     */
-    protocol;
 
     /**
      * @param {MCLinker} client - The client to create the server-connection for.
@@ -121,46 +119,16 @@ export default class ServerConnection extends Connection {
         this.settings = client.serverSettingsConnections._add(ServerSettingsConnection.defaultSettingsData, true, {
             extras: [client.serverSettingsConnections.collectionName],
         });
-
-        // Assign the protocol used to communicate with the server.
-        if(data.protocol === 'http') {
-            this.protocol = new HttpProtocol(client, {
-                id: data.id,
-                ip: data.ip,
-                port: data.port,
-                token: data.token,
-            });
-        }
-        else if(data.protocol === 'ftp' || data.protocol === 'sftp') {
-            this.protocol = new FtpProtocol(client, {
-                ip: data.ip,
-                port: data.port,
-                password: data.password,
-                username: data.username,
-                sftp: data.protocol === 'sftp',
-            });
-        }
-        else if(data.protocol === 'websocket') {
-            this.protocol = new WebSocketProtocol(client, {
-                id: data.id,
-                ip: data.ip,
-                hash: data.hash,
-            });
-        }
-
-        this._patch(data);
     }
 
     /**
      * Returns the ip that should be displayed to users to connect to this server.
-     * This returns the displayIp if it is set, otherwise it returns ip:port if port is set and not 25565, otherwise it returns just the ip.
+     * This returns the displayIp if it is set, otherwise it returns just the ip.
      * @returns {string}
      */
     getDisplayIp() {
-        // Either display ip, or ip:port, or (if port is 25565) just ip
-        const serverIp = this.displayIp ?? this.ip;
-        if(typeof this.port === 'number' && this.port !== 25565) return `${serverIp}:${this.port}`;
-        else return serverIp;
+        // Either display ip, or just ip
+        return this.displayIp ?? this.ip;
     }
 
     _patch(data) {
@@ -168,168 +136,44 @@ export default class ServerConnection extends Connection {
         /**
          * The id of this server.
          * @type {string}
-         * */
+         */
         this.id = data.id ?? this.id;
 
         /**
-         * The ip of this server.
-         * @type {string}
-         * */
-        this.ip = data.ip ?? this.ip;
-
-        /**
-         * The minecraft version of this server.
-         * @type {number}
-         * */
-        this.version = data.version ?? this.version;
-
-        /**
-         * The path to the world folder of this server.
-         * @type {string}
-         * */
-        this.worldPath = data.worldPath ?? this.worldPath;
-
-        /**
-         * The path to the server folder of this server.
-         * @type {string}
+         * The connected servers.
+         * @type {(HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData)[]}
          */
-        this.path = data.path ?? this.path;
+        this.servers = data.servers ?? this.servers;
 
-        /**
-         * Whether online mode is enabled on this server.
-         * @default true
-         * @type {boolean}
-         * */
-        this.online = data.online ?? this.online ?? true;
+        for(const server of this.servers) {
+            if(server.protocol === 'http') {
+                server.protocol = new HttpProtocol(this.client, {
+                    id: server.id,
+                    ip: server.ip,
+                    port: server.port,
+                    token: server.token,
+                });
+            }
+            else if(server.protocol === 'ftp' || server.protocol === 'sftp') {
+                server.protocol = new FtpProtocol(this.client, {
+                    ip: server.ip,
+                    port: server.port,
+                    password: server.password,
+                    username: server.username,
+                    sftp: server.protocol === 'sftp',
+                });
+            }
+            else if(server.protocol === 'websocket') {
+                server.protocol = new WebSocketProtocol(this.client, {
+                    id: server.id,
+                    ip: server.ip,
+                    hash: server.hash,
+                    displayIp: server.displayIp,
+                });
+            }
 
-        /**
-         * Whether to update the online mode when the server reconnects.
-         * @default true
-         * @type {boolean}
-         * */
-        this.forceOnlineMode = data.forceOnlineMode ?? this.forceOnlineMode ?? true;
-
-        /**
-         * The floodgate prefix of this server.
-         * @type {string}
-         */
-        this.floodgatePrefix = data.floodgatePrefix ?? data['floodgate-prefix'] ?? this.floodgatePrefix;
-
-        if('port' in data) {
-            /**
-             * The port of this server.
-             * @type {?number}
-             * */
-            this.port = data.port;
+            this.protocol._patch(server);
         }
-        if('username' in data) {
-            /**
-             * The ftp username used to connect to this server.
-             * @type {?string}
-             * */
-            this.username = data.username;
-        }
-        if('password' in data) {
-            /**
-             * The ftp password used to connect to this server.
-             * @type {?string}
-             * */
-            this.password = data.password;
-        }
-        if('token' in data) {
-            /**
-             * The token used to authenticate the bot for http connections.
-             * @type {?string}
-             * */
-            this.token = data.token;
-        }
-        if('hash' in data) {
-            /**
-             * The connection hash used to authenticate the plugin for websocket connections.
-             * @type {?string}
-             */
-            this.hash = data.hash;
-        }
-        if('channels' in data || 'chatChannels' in data) {
-            /**
-             * The chatchannels connected to this server.
-             * @type {?ChatChannelData[]}
-             * */
-            this.chatChannels = data.chatChannels ?? data.channels;
-        }
-        if('stats-channels' in data || 'statChannels' in data || 'statsChannels' in data) {
-            /**
-             * The data for stats channels.
-             * @type {?StatsChannelData[]}
-             */
-            this.statChannels = data.statChannels ?? data.statsChannels ?? data['stats-channels'];
-        }
-        if('syncedRoles' in data) {
-            /**
-             * The data for syncedRoles.
-             * @type {?SyncedRoleData[]}
-             */
-            this.syncedRoles = data.syncedRoles;
-        }
-        if('requiredRoleToJoin' in data) {
-            /**
-             * The role required to join this server.
-             * @type {?RequiredRoleToJoinData}
-             */
-            this.requiredRoleToJoin = data.requiredRoleToJoin;
-        }
-        if('displayIp' in data) {
-            /**
-             * The ip that will be displayed to users to connect to this server.
-             * @type {?string}
-             */
-            this.displayIp = data.displayIp;
-        }
-
-        //Switch protocols if needed
-        if(!this.protocol.isHttpProtocol() && data.protocol === 'http') {
-            this.protocol = new HttpProtocol(this.client, {
-                id: data.id,
-                ip: this.ip,
-                port: this.port,
-                token: this.token,
-            });
-            delete this.username;
-            delete this.password;
-            delete this.channels;
-            delete this.hash;
-        }
-        else if(!this.protocol.isFtpProtocol() && (data.protocol === 'ftp' || data.protocol === 'sftp')) {
-            this.protocol = new FtpProtocol(this.client, {
-                ip: this.ip,
-                port: this.port,
-                password: this.password,
-                username: this.username,
-                sftp: data.protocol === 'sftp',
-            });
-
-            delete this.token;
-            delete this.hash;
-            delete this.syncedRoles;
-            delete this.chatChannels;
-            delete this.statChannels;
-            delete this.requiredRoleToJoin;
-            delete this.displayIp;
-        }
-        else if(!this.protocol.isWebSocketProtocol() && data.protocol === 'websocket') {
-            this.protocol = new WebSocketProtocol(this.client, {
-                id: this.id,
-                ip: this.ip,
-                hash: this.hash,
-                displayIp: this.displayIp,
-            });
-
-            delete this.token;
-            delete this.username;
-            delete this.password;
-            delete this.channels;
-        }
-        else this.protocol._patch({ ...data, sftp: data.protocol === 'sftp' });
     }
 
     /**

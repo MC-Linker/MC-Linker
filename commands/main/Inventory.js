@@ -81,7 +81,7 @@ export default class Inventory extends Command {
     constructor() {
         super({
             name: 'inventory',
-            requiresUserIndex: 0,
+            userIndex: 0,
             category: 'main',
         });
     }
