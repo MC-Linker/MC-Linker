@@ -71,13 +71,14 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     disconnect() {
-        return this.client.shard.broadcastEval(async (c, { id }) => {
+        return this.client.shard.broadcastEval(async (c, { id, ip }) => {
             /** @type {WebSocketProtocol} */
-            const protocol = c.serverConnections.cache.get(id).protocol;
+            const protocol = c.serverConnections.cache.get(id).servers
+                .find(s => s.protocol.isWebSocketProtocol() && s.ip === ip);
             if(!protocol.socket) return { status: 200 };
             await protocol.socket.disconnect(true);
             return { status: 200 };
-        }, { context: { id: this.id }, shard: 0 });
+        }, { context: { id: this.id, ip: this.ip }, shard: 0 });
     }
 
     /**
@@ -244,7 +245,7 @@ export default class WebSocketProtocol extends Protocol {
      * @param {string} uuid - The uuid of the user that sent the request.
      * @returns {Promise<?ProtocolResponse>} - The response from the websocket client.
      */
-    verifyUser(code, uuid) {
+    verifyUser(protocol, code, uuid) {
         return this._sendRaw('verify-user', { code, uuid });
     }
 
@@ -257,10 +258,11 @@ export default class WebSocketProtocol extends Protocol {
      */
     _sendRaw(name, ...data) {
         // Broadcast the event to shard 0 where the websocket server is running
-        return this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+        return this.client.shard.broadcastEval(async (c, { id, ip, name, data }) => {
             return await new Promise(resolve => {
+                const protocol = c.serverConnections.cache.get(id).servers.find(s => s.protocol.isWebSocketProtocol() && s.ip === ip);
+
                 /** @type {WebSocketProtocol} */
-                const protocol = c.serverConnections.cache.get(id).protocol;
                 if(!protocol.socket) return resolve(null);
                 protocol.socket.timeout(10_000).emit(name, ...data, (err, response) => {
                     if(err) return resolve(null);
@@ -268,7 +270,7 @@ export default class WebSocketProtocol extends Protocol {
                     else resolve(response);
                 });
             });
-        }, { context: { id: this.id, name, data }, shard: 0 });
+        }, { context: { id: this.id, ip: this.ip, name, data }, shard: 0 });
     }
 
     /**

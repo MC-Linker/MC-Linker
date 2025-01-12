@@ -28,16 +28,18 @@ export default class Stats extends Command {
         super({
             name: 'stats',
             userIndex: 1,
+            serverIndex: 3,
             category: 'main',
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         const category = args[0];
         const user = args[1];
         const sorting = args[2] ?? 'descending';
+        const server = args[3];
 
         const argPlaceholder = { 'stat_category': category, 'username': user.username };
 

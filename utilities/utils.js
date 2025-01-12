@@ -350,7 +350,7 @@ const defaultStatusRespones = {
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
- * @param {TranslatedResponses} interaction - The interaction to respond to.
+ * @param {?TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether the response was successful.
@@ -359,21 +359,21 @@ export async function handleProtocolResponse(response, protocol, interaction, st
     placeholders.push({ data: JSON.stringify(response?.data ?? '') });
 
     if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
-        await interaction.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
+        await interaction?.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
         return false;
     }
     else if(!response && protocol instanceof FtpProtocol) {
-        await interaction.replyTl(keys.api.ftp.errors.could_not_connect, ...placeholders);
+        await interaction?.replyTl(keys.api.ftp.errors.could_not_connect, ...placeholders);
         return false;
     }
     else if(response.status >= 500 && response.status < 600) {
-        await interaction.replyTl(keys.api.plugin.errors.status_500, ...placeholders);
+        await interaction?.replyTl(keys.api.plugin.errors.status_500, ...placeholders);
         return false;
     }
     else if(response.status !== 200) {
         const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
         if(responseKey) {
-            await interaction.replyTl(responseKey, ...placeholders);
+            await interaction?.replyTl(responseKey, ...placeholders);
             return false;
         }
     }
@@ -400,7 +400,7 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
 /**
  * Gets the live player nbt data from the server.
  * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise (or if previous method fails) it will download the nbt file.
- * @param {ServerConnection} server - The server to get the nbt data from.
+ * @param {ServerData} server - The server to get the nbt data from.
  * @param {UserResponse} user - The uuid of the player.
  * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
  * @returns {Promise<?Object>} - The parsed and simplified nbt data or null if an error occurred.

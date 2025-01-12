@@ -4,11 +4,15 @@ import * as utils from '../../utilities/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
 import { ph } from '../../utilities/messages.js';
-import client from '../../bot.js';
 
 export default class Account extends Command {
 
-    waitingInteractions = new Map();
+    /**
+     * Map of users awaiting account verification from `/verify`.
+     * The key is the verification code.
+     * @type {Map<string, { user: UserConnectionData, timeout: number, serverConnection: ServerConnection }>}
+     */
+    usersAwaitingCommandVerification = new Map();
 
     constructor() {
         super({
@@ -17,102 +21,77 @@ export default class Account extends Command {
             requiresConnectedServer: false,
             ephemeral: true,
         });
-
-        client.on('accountVerificationResponse', id => {
-            if(!this.waitingInteractions.has(id)) return;
-
-            const { interaction, timeout } = this.waitingInteractions.get(id);
-            clearTimeout(timeout);
-            interaction.replyTl(keys.commands.account.success.verified, ph.emojisAndColors());
-        });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         const subcommand = args[0];
         if(subcommand === 'connect') {
-            if(!server?.protocol?.isPluginProtocol()) {
-                return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
-            }
-
-            if(args[1].match(Discord.MessageMentions.UsersPattern)) {
+            const username = args[1];
+            if(username.match(Discord.MessageMentions.UsersPattern))
                 return interaction.replyTl(keys.commands.account.warnings.mention);
-            }
-
-            const {
-                uuid,
-                username,
-                error,
-            } = await client.userConnections.userFromArgument(args[1], server, interaction);
-            if(error) return;
 
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
 
-            const verifyResponse = await server.protocol.verifyUser(code, uuid);
-            if(!await utils.handleProtocolResponse(verifyResponse, server.protocol, interaction)) return;
+            const successIPs = [];
+            let user;
+            if(!serverConnection.servers.length) return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
+
+            // Send errors to interaction when there's only one server
+            if(serverConnection.servers.length === 1) {
+                const server = serverConnection.servers[0];
+                if(!server.protocol.isPluginProtocol()) return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
+                const {
+                    error,
+                    username,
+                    uuid,
+                } = await client.userConnections.userFromArgument(args[1], server, interaction);
+                if(error) return;
+
+                const verifyResponse = await server.protocol.verifyUser(code, uuid);
+                if(!await utils.handleProtocolResponse(verifyResponse, server.protocol, interaction)) return;
+                user = { username, uuid, id: interaction.user.id };
+                successIPs.push(server.displayIp ?? server.ip);
+            }
+            else {
+                for(const server of serverConnection.servers) {
+                    if(!server.protocol.isPluginProtocol()) continue;
+
+                    const {
+                        error,
+                        username,
+                        uuid,
+                    } = await client.userConnections.userFromArgument(args[1], server, null);
+                    if(error) continue;
+
+                    const verifyResponse = await server.protocol.verifyUser(code, uuid);
+                    if(!await utils.handleProtocolResponse(verifyResponse, server.protocol, null)) continue;
+                    user = { username, uuid, id: interaction.user.id };
+                    successIPs.push(server.displayIp ?? server.ip);
+                }
+                // Generalize errors for multiple servers
+                if(!successIPs.length) return await interaction.replyTl(keys.commands.account.errors.unknown_error);
+            }
 
             await interaction.replyTl(keys.commands.account.step.verification_info, {
                 code,
-                ip: server.getDisplayIp(),
+                ip: successIPs.join('**/**'),
             }, ph.emojisAndColors());
 
             const timeout = setTimeout(async () => {
                 await interaction.replyTl(keys.commands.account.warnings.verification_timeout);
             }, 180_000);
 
-            this.waitingInteractions.set(interaction.user.id, { interaction, timeout });
-            await client.shard.broadcastEval((c, { uuid, username, code, userId, serverId, shard, websocket }) => {
-                const listener = async data => {
-                    if(data.uuid !== uuid || data.code !== code) return;
-
-                    const connection = await c.userConnections.connect({
-                        id: userId,
-                        uuid,
-                        username,
-                    });
-
-                    const settings = c.userSettingsConnections.cache.get(userId);
-                    if(settings) await settings.updateRoleConnection(username, {
-                        'connectedaccount': 1,
-                    });
-
-                    await client.serverConnections.cache.get(serverId).syncRoles(interaction.guild, interaction.member, connection);
-
-                    await c.shard.broadcastEval((c, { id }) => c.emit('accountVerificationResponse', id), {
-                        context: { id: userId },
-                        shard,
-                    });
-                };
-
-                if(websocket) {
-                    const socket = c.serverConnections.cache.get(serverId).protocol.socket;
-                    socket.on('verify-response', data => {
-                        listener(JSON.parse(data));
-                    });
-                }
-                else c.api.once('/verify/response', (request, reply) => {
-                    reply.send({});
-                    listener(request.body);
-                });
-            }, {
-                context: {
-                    uuid,
-                    username,
-                    code,
-                    userId: interaction.user.id,
-                    serverId: server.id,
-                    shard: client.shard.ids[0],
-                    websocket: server.protocol.isWebSocketProtocol(),
-                },
-                shard: 0,
+            this.usersAwaitingCommandVerification.set(code, {
+                user,
+                timeout,
+                serverConnection,
             });
         }
         else if(subcommand === 'disconnect') {
             const connection = client.userConnections.cache.get(interaction.user.id);
-            if(!connection) {
-                return interaction.replyTl(keys.commands.account.warnings.not_connected);
-            }
+            if(!connection) return interaction.replyTl(keys.commands.account.warnings.not_connected);
 
             const settings = await client.userSettingsConnections.cache.get(interaction.user.id);
             if(settings) await settings.updateRoleConnection(connection.username, {
@@ -121,11 +100,44 @@ export default class Account extends Command {
 
             await client.userConnections.disconnect(interaction.user.id);
 
-            if(server.protocol.isPluginProtocol() && server.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
+            for(const server of serverConnection.servers) {
+                if(server.protocol.isPluginProtocol() && server.requiredRoleToJoin)
+                    await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
+            }
             await interaction.replyTl(keys.commands.disconnect.success, {
                 protocol: 'account',
                 protocol_cap: 'Account',
             });
         }
+    }
+
+
+    /**
+     * Gets called when a user verifies their account
+     * @param {MCLinker} client
+     * @param {object} data
+     * @param {string} data.code
+     */
+    async verifyResponse(client, data) {
+        await client.shard.broadcastEval(async (c, { data }) => {
+            const verificationData = c.commands.get('account').usersAwaitingCommandVerification.get(data.code);
+            if(!verificationData) return;
+
+            const connection = await client.userConnections.connect(verificationData.user);
+
+            const settings = client.userSettingsConnections.cache.get(verificationData.user.id);
+            if(settings) await settings.updateRoleConnection(verificationData.user.username, {
+                'connectedaccount': 1,
+            });
+
+            const guild = await client.guilds.fetch(verificationData.serverConnection.id);
+            const member = await guild.members.fetch(verificationData.user.id);
+            for(const server of verificationData.serverConnection.servers) await verificationData.serverConnection.syncRoles(guild, member, connection);
+
+            clearTimeout(verificationData.timeout);
+            await verificationData.interaction.replyTl(keys.commands.account.success.verified, ph.emojisAndColors());
+        }, {
+            context: { data },
+        });
     }
 }

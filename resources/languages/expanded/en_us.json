@@ -1101,6 +1101,17 @@
           "console": "Verification timed out"
         }
       },
+      "errors": {
+        "unknown_error": {
+          "embeds": [
+            {
+              "title": "Unknown Error",
+              "description": "An unknown error ocurred while verifying your account."
+            }
+          ],
+          "console": "Unknown account error"
+        }
+      },
       "step": {
         "verification_info": {
           "embeds": [

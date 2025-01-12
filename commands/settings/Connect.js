@@ -1,12 +1,11 @@
 import crypto from 'crypto';
-import { addPh, addTranslatedResponses, getActionRows, getEmbed, ph } from '../../utilities/messages.js';
+import { addPh, addTranslatedResponses, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../utilities/utils.js';
-import { disableComponents } from '../../utilities/utils.js';
 import client from '../../bot.js';
 import Discord from 'discord.js';
 
@@ -51,7 +50,7 @@ export default class Connect extends Command {
 
                             const hash = c.utils.createHash(socket.handshake.auth.token);
                             /** @type {WebSocketServerConnectionData} */
-                            const serverConnectionData = {
+                            const serverData = {
                                 id,
                                 ip: socket.handshake.address,
                                 path: socket.handshake.query.path,
@@ -69,8 +68,7 @@ export default class Connect extends Command {
                                 displayIp,
                             };
 
-                            await c.commands.get('connect').disconnectOldServer(id);
-                            await c.serverConnections.connect(serverConnectionData);
+                            await c.serverConnections.connect(serverData);
 
                             c.api.addWebsocketListeners(socket, id, hash);
 
@@ -169,7 +167,7 @@ export default class Connect extends Command {
             if(serverPath.endsWith(separator) || propertiesObject['level-name'].startsWith(separator)) separator = '';
 
             /** @type {FtpServerConnectionData} */
-            const serverConnectionData = {
+            const serverData = {
                 ip: host,
                 username,
                 password,
@@ -183,39 +181,8 @@ export default class Connect extends Command {
                 id: interaction.guildId,
             };
 
-            // A button that asks the user if they want to override the old connection
-            if(server) {
-                const overrideEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
-                const buttons = getActionRows(keys.buttons.yes_no, ph.emojisAndColors());
-                const message = await interaction.replyOptions({ embeds: [overrideEmbed], components: buttons });
-
-                const filter = i => i.user.id === interaction.user.id;
-                const collector = message.createMessageComponentCollector({ filter, time: 30_000 });
-
-                collector.on('end', async collected => {
-                    if(collected.size === 0) await interaction.editReply({ components: disableComponents(message.components) });
-                });
-
-                collector.on('collect',
-                    /** @param {import('discord.js').ButtonInteraction} button */
-                    async button => {
-                        await button.deferUpdate();
-
-                        if(button.customId === 'yes') {
-                            await this.disconnectOldServer(server);
-
-                            await client.serverConnections.connect(serverConnectionData);
-                            await interaction.replyTl(keys.commands.connect.success.ftp);
-                        }
-                        else if(button.customId === 'no') {
-                            await interaction.replyTl(keys.commands.connect.warnings.canceled_connection);
-                        }
-                    });
-            }
-            else {
-                await client.serverConnections.connect(serverConnectionData);
-                await interaction.replyTl(keys.commands.connect.success.ftp);
-            }
+            await client.serverConnections.connect(serverData);
+            await interaction.replyTl(keys.commands.connect.success.ftp);
         }
         else if(method === 'backup') {
             const ip = args[1].split(':')[0];
@@ -231,18 +198,14 @@ export default class Connect extends Command {
             const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
 
             const verify = await httpProtocol.verifyGuild();
-            const connectedServer = client.serverConnections.cache.find(s => s.ip === ip && s.port === port);
+            const connectedServer = verify?.status === 409 ? client.serverConnections.cache.find(c => c.servers.find(s => s.ip === ip && s.port === port)) : null;
             const connectedServerName = connectedServer && verify?.status === 409 ? (await client.guilds.fetch(connectedServer.id)).name : keys.commands.connect.unknown;
             if(!await utils.handleProtocolResponse(verify, httpProtocol, interaction, {
                 409: keys.commands.connect.warnings.plugin_already_connected,
             }, { name: connectedServerName ?? keys.commands.connect.unknown })) return;
 
             const checkDmsEmbed = getEmbed(keys.commands.connect.step.check_dms, ph.emojisAndColors());
-            if(server) {
-                const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
-                await interaction.replyOptions({ embeds: [checkDmsEmbed, alreadyConnectedEmbed], components: [] });
-            }
-            else await interaction.replyOptions({ embeds: [checkDmsEmbed], components: [] });
+            await interaction.replyOptions({ embeds: [checkDmsEmbed], components: [] });
 
             let dmChannel = await interaction.user.createDM();
             try {
@@ -290,9 +253,7 @@ export default class Connect extends Command {
                 id: interaction.guildId,
             };
 
-            await this.disconnectOldServer(server);
             await client.serverConnections.connect(serverConnectionData);
-
             return interaction.replyTl(keys.commands.connect.success.plugin);
         }
         else if(method === 'plugin') {
@@ -305,12 +266,7 @@ export default class Connect extends Command {
             if(!selectResponse && joinRequirement === 'roles') return; //User didn't respond in time
             else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'all' }; //No roles still requires linked account
 
-            const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
-            if(server) {
-                const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.getDisplayIp() });
-                await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed], components: [] });
-            }
-            else await interaction.replyOptions({ embeds: [verificationEmbed], components: [] });
+            await interaction.replyOptions({ embeds: [verificationEmbed], components: [] });
 
             const timeout = setTimeout(async () => {
                 await client.shard.broadcastEval((c, { id }) => {
@@ -342,17 +298,6 @@ export default class Connect extends Command {
 
             //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
         }
-    }
-
-    /**
-     * Disconnects all active connections of this server.
-     * @param {ServerConnectionResolvable} serverResolvable - The server to disconnect.
-     * @returns {Promise<boolean>} - Whether the server was disconnected.
-     */
-    async disconnectOldServer(serverResolvable) {
-        const server = client.serverConnections.resolve(serverResolvable);
-        if(server?.protocol?.isPluginProtocol()) await server.protocol.disconnect();
-        if(server) return await client.serverConnections.disconnect(server);
     }
 
     /**

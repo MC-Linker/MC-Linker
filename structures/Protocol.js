@@ -193,6 +193,9 @@ export default class Protocol extends Base {
      * @property {number} status - The http status code of the response.
      */
 
+    /** @type {MCLinker} */
+    client;
+
     /**
      * Creates a new protocol.
      * @param {MCLinker} client - The client to create the protocol for.
@@ -244,7 +247,7 @@ export default class Protocol extends Base {
     }
 
     /**
-     * Starts a batch protocol interaction with the server allowing multiple requests to be sent at once.
+     * Starts a batch protocol interaction with the server allowing multiple requests to be sent at once (only for ftp).
      * @returns {Promise<ProtocolResponse>}
      */
     async startBatch() {

@@ -51,9 +51,10 @@ export default class ServerConnection extends Connection {
      * @property {boolean} online - Whether online mode is enabled on this server.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
      * @property {RequiredRoleToJoinData} [requiredRoleToJoin] - The id of the role required to join the server.
+     * @property {SyncedRoleData[]} syncedRoles - The data for syncedRoles.
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
-     * @property {'http'} protocol - The protocol used to connect to the server.
+     * @property {'http'|HttpProtocol} protocol - The protocol used to connect to the server.
      */
 
     /**
@@ -69,7 +70,7 @@ export default class ServerConnection extends Connection {
      * @property {string} path - The path to the server folder of the server.
      * @property {boolean} online - Whether the server-connection has online mode enabled or not.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {'ftp'|'sftp'} protocol - The protocol used to connect to the server.
+     * @property {'ftp'|'sftp'|FtpProtocol} protocol - The protocol used to connect to the server.
      */
 
     /**
@@ -89,14 +90,18 @@ export default class ServerConnection extends Connection {
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {SyncedRoleData[]} syncedRoles - The data for syncedRoles.
-     * @property {'websocket'} protocol - The protocol used to connect to the server.
+     * @property {'websocket'|WebSocketProtocol} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
+     */
+
+    /**
+     * @typedef {HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData} ServerData - The data for a server.
      */
 
     /**
      * @typedef {object} ServerConnectionData - The data of the server.
      * @property {string} id - The id of the server.
-     * @property {(HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData)[]} servers - The connected servers.
+     * @property {(ServerData)[]} servers - The connected servers.
      */
 
     /**
@@ -141,9 +146,63 @@ export default class ServerConnection extends Connection {
 
         /**
          * The connected servers.
-         * @type {(HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData)[]}
+         * @type {(ServerData)[]}
          */
-        this.servers = data.servers ?? this.servers;
+        this.servers = data.servers ?? this.servers ?? [];
+
+        if(data.protocol === 'http') {
+            this.servers.push({
+                ip: data.ip,
+                name: data.name,
+                port: data.port,
+                version: data.version,
+                worldPath: data.worldPath,
+                path: data.path,
+                token: data.token,
+                online: data.online,
+                floodgatePrefix: data.floodgatePrefix ?? null,
+                requiredRoleToJoin: data.requiredRoleToJoin ?? null,
+                chatChannels: data.chatChannels ?? [],
+                statChannels: data.statChannels ?? [],
+                syncedRoles: data.syncedRoles ?? [],
+                protocol: data.protocol,
+            });
+        }
+        else if(data.protocol === 'ftp' || data.protocol === 'sftp') {
+            this.servers.push({
+                ip: data.ip,
+                name: data.name,
+                username: data.username,
+                password: data.password,
+                port: data.port,
+                version: data.version,
+                worldPath: data.worldPath,
+                path: data.path,
+                online: data.online,
+                floodgatePrefix: data.floodgatePrefix ?? null,
+                protocol: data.protocol,
+            });
+        }
+        else if(data.protocol === 'websocket') {
+            this.servers.push({
+                ip: data.ip,
+                name: data.name,
+                version: data.version,
+                worldPath: data.worldPath,
+                path: data.path,
+                hash: data.hash,
+                online: data.online,
+                forceOnlineMode: data.forceOnlineMode,
+                floodgatePrefix: data.floodgatePrefix ?? null,
+                displayIp: data.displayIp ?? null,
+                requiredRoleToJoin: data.requiredRoleToJoin ?? null,
+                chatChannels: data.chatChannels ?? [],
+                statChannels: data.statChannels ?? [],
+                syncedRoles: data.syncedRoles ?? [],
+                protocol: data.protocol,
+            });
+        }
+
 
         for(const server of this.servers) {
             if(server.protocol === 'http') {
@@ -172,8 +231,41 @@ export default class ServerConnection extends Connection {
                 });
             }
 
-            this.protocol._patch(server);
+            server.protocol._patch(server);
         }
+    }
+
+    /**
+     * Adds a new server to the server-connection.
+     * @param {ServerData} data
+     */
+    addServer(data) {
+        // Check if the server already exists (plugin already prevents duplicate connections so only ftp has to be checked)
+        const existingFtpServer = this.servers.findIndex(s => {
+            return data.protocol === 'ftp' && s.protocol.isFtpProtocol() && s.ip === data.ip && s.port === data.port;
+        });
+        if(existingFtpServer !== -1) this.servers[existingFtpServer] = data;
+        else this.servers.push(data);
+
+        this._patch(this);
+    }
+
+    removeServer(data) {
+        const server = this.servers.find(s => s.name === data.name || s.ip === data.ip);
+        if(server) this.servers.splice(this.servers.indexOf(server), 1);
+    }
+
+    /**
+     * Finds the server that includes the given name/ip or finds the first server (priority: websocket, http, ftp) if there's no match.
+     * @param {?string} nameOrIp - The name/ip of the server to get.
+     * @return {ServerData} - The server with the given name/ip or the first server.
+     */
+    findServer(nameOrIp) {
+        return this.servers.find(s => s.name === nameOrIp || s.ip === nameOrIp) ??
+            this.servers.find(s => s.name.includes(nameOrIp)) ??
+            this.servers.find(s => s.protocol.isWebSocketProtocol()) ??
+            this.servers.find(s => s.protocol.isHttpProtocol()) ??
+            this.servers.find(s => s.protocol.isFtpProtocol());
     }
 
     /**
@@ -184,15 +276,16 @@ export default class ServerConnection extends Connection {
      * @returns {Promise<void>}
      */
     async syncRoles(guild, member, userConnection) {
-        if(this.protocol.isPluginProtocol() && this.syncedRoles && this.syncedRoles.length > 0) {
+        const servers = this.servers.filter(s => s.protocol.isPluginProtocol() && this.syncedRoles && this.syncedRoles.length > 0);
+        for(const server of servers) {
             //If user has a synced-role, tell the plugin
-            for(const syncedRole of this.syncedRoles.filter(r =>
+            for(const syncedRole of server.syncedRoles.filter(r =>
                 !r.players.includes(userConnection.uuid) && member.roles.cache.has(r.id))) {
-                await this.protocol.addSyncedRoleMember(syncedRole, userConnection.uuid)
+                await server.protocol.addSyncedRoleMember(syncedRole, userConnection.uuid);
             }
 
             // Add missing synced roles
-            for(const syncedRole of this.syncedRoles.filter(r =>
+            for(const syncedRole of server.syncedRoles.filter(r =>
                 r.players.includes(userConnection.uuid) && !member.roles.cache.has(r.id))) {
                 try {
                     const discordMember = await guild.members.fetch(userConnection.id);
@@ -215,48 +308,52 @@ export default class ServerConnection extends Connection {
      * @inheritDoc
      */
     getData() {
-        const baseData = {
+        return {
             id: this.id,
-            ip: this.ip,
-            version: this.version,
-            path: this.path,
-            worldPath: this.worldPath,
-            online: this.online,
-            forceOnlineMode: this.forceOnlineMode,
-            floodgatePrefix: this.floodgatePrefix,
-        };
+            servers: this.servers.map(s => {
+                const baseData = {
+                    ip: s.ip,
+                    version: s.version,
+                    path: s.path,
+                    worldPath: s.worldPath,
+                    online: s.online,
+                    forceOnlineMode: s.forceOnlineMode,
+                    floodgatePrefix: s.floodgatePrefix,
+                };
 
-        if(this.protocol.isHttpProtocol()) {
-            return {
-                ...baseData,
-                port: this.port,
-                token: this.token,
-                requiredRoleToJoin: this.requiredRoleToJoin,
-                chatChannels: this.chatChannels ?? [],
-                statChannels: this.statChannels ?? [],
-                syncedRoles: this.syncedRoles ?? [],
-                protocol: 'http',
-            };
-        }
-        else if(this.protocol.isFtpProtocol()) {
-            return {
-                ...baseData,
-                port: this.port,
-                password: this.password,
-                username: this.username,
-                protocol: this.protocol.sftp ? 'sftp' : 'ftp',
-            };
-        }
-        else if(this.protocol.isWebSocketProtocol()) {
-            return {
-                ...baseData,
-                hash: this.hash,
-                requiredRoleToJoin: this.requiredRoleToJoin,
-                chatChannels: this.chatChannels ?? [],
-                statChannels: this.statChannels ?? [],
-                syncedRoles: this.syncedRoles ?? [],
-                protocol: 'websocket',
-            };
-        }
+                if(s.protocol.isHttpProtocol()) {
+                    return {
+                        ...baseData,
+                        port: s.port,
+                        token: s.token,
+                        requiredRoleToJoin: s.requiredRoleToJoin,
+                        chatChannels: s.chatChannels ?? [],
+                        statChannels: s.statChannels ?? [],
+                        syncedRoles: s.syncedRoles ?? [],
+                        protocol: 'http',
+                    };
+                }
+                else if(s.protocol.isFtpProtocol()) {
+                    return {
+                        ...baseData,
+                        port: s.port,
+                        password: s.password,
+                        username: s.username,
+                        protocol: s.protocol.sftp ? 'sftp' : 'ftp',
+                    };
+                }
+                else if(s.protocol.isWebSocketProtocol()) {
+                    return {
+                        ...baseData,
+                        hash: s.hash,
+                        requiredRoleToJoin: s.requiredRoleToJoin,
+                        chatChannels: s.chatChannels ?? [],
+                        statChannels: s.statChannels ?? [],
+                        syncedRoles: s.syncedRoles ?? [],
+                        protocol: 'websocket',
+                    };
+                }
+            }),
+        };
     }
 }

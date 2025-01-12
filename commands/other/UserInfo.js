@@ -25,15 +25,17 @@ export default class UserInfo extends Command {
             name: 'userinfo',
             category: 'other',
             userIndex: 0,
-            requiresConnectedServer: true, //TODO make this a global command
+            serverIndex: 1,
+            requiresConnectedServer: false,
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         /** @type {UserResponse} */
         const user = args[0];
+        const server = args[1];
 
         const batch = await server.protocol.startBatch();
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
@@ -87,9 +89,7 @@ export default class UserInfo extends Command {
         const survivalMessage = getReplyOptions(keys.commands.userinfo.success.survival, placeholders, ph.colors());
 
         const id = client.userConnections.cache.find(c => c.uuid === user.uuid)?.id;
-        if(id) {
-            generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));
-        }
+        if(id) generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));
 
         const newAdminFields = [];
         const newSurvivalFields = [];

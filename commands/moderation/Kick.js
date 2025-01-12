@@ -9,17 +9,18 @@ export default class Kick extends Command {
             name: 'kick',
             requiresConnectedPlugin: true,
             userIndex: 0,
+            serverIndex: 2,
             category: 'moderation',
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         const user = args[0];
         const userConnection = await client.userConnections.cache.get(interaction.user.id);
-        args.shift(); //Shift user
-        const reason = args[0] ? args.join(' ') : 'Kicked by an operator.';
+        const reason = args[1] ?? 'Kicked by an operator.';
+        const server = args[2];
 
         const resp = await server.protocol.execute(`kick ${user.username} ${reason}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;

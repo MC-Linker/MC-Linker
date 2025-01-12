@@ -16,6 +16,7 @@ export default class Command extends AutocompleteCommand {
         super({
             name: 'command',
             requiresConnectedPlugin: true,
+            serverIndex: 9,
             category: 'moderation',
         });
     }
@@ -35,6 +36,8 @@ export default class Command extends AutocompleteCommand {
         // Get the command name from the first option
         const commandName = allOptions[0].value.toLowerCase();
         allOptions.shift();
+        const serverName = allOptions.find(opt => opt.name === 'server')?.value;
+        allOptions = allOptions.filter(opt => opt.name !== 'server');
 
         // if the command doesn't exist, return an empty array
         if(!Object.keys(commands).includes(commandName)) return [];
@@ -80,10 +83,12 @@ export default class Command extends AutocompleteCommand {
                 return;
             }
 
+            const server = client.serverConnections.cache.get(guildId);
             const placeholder = await getPlaceholder(suggestion.replaceAll('%', ''), {
                 client,
                 user,
-                server: client.serverConnections.cache.get(guildId),
+                server,
+                protocol: server?.findServer(serverName)?.protocol,
                 focused: focusedOption.value,
             });
             if(!placeholder) {
@@ -143,11 +148,12 @@ export default class Command extends AutocompleteCommand {
         interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         const command = args[0];
         args.shift(); //Shift commandName
+        const server = args[9];
 
         for(let arg of args) {
             let user;
@@ -178,6 +184,7 @@ export default class Command extends AutocompleteCommand {
  * @param {MCLinker} args.client - The MCLinker client.
  * @param {User} args.user - The Discord user who sent the command.
  * @param {?ServerConnection} args.server - The server connection.
+ * @param {?Protocol} args.protocol - The server's protocol.
  * @param {string} args.focused - The focused command autocomplete value.
  * @returns {Promise<object|array>}
  */
@@ -203,6 +210,7 @@ async function getPlaceholder(key, args) {
 
     const userConn = args.client.userConnections.cache.get(args.user.id);
     const server = args.server;
+    const protocol = args.protocol;
 
     let placeholder = {};
     switch(key) {
@@ -228,7 +236,7 @@ async function getPlaceholder(key, args) {
                 placeholder[username] = username;
             }
 
-            const resp = await server?.protocol?.getOnlinePlayers?.();
+            const resp = await protocol?.getOnlinePlayers?.();
             const onlinePlayers = resp?.status === 200 ? resp.data : [];
             onlinePlayers.forEach(player => placeholder[player] = player);
             break;
@@ -4495,7 +4503,7 @@ async function getPlaceholder(key, args) {
 
     async function getNBTFile(getPath, putPath) {
         if(!server) return {};
-        const nbtResponse = await server.protocol.get(getPath, putPath);
+        const nbtResponse = await protocol.get(getPath, putPath);
         if(nbtResponse?.status !== 200) return {};
         return utils.nbtBufferToObject(nbtResponse.data, null);
     }
@@ -4506,13 +4514,13 @@ async function getPlaceholder(key, args) {
 
         const allFunctions = [];
 
-        const datapacks = await server.protocol.list(FilePath.DataPacks(worldPath));
+        const datapacks = await protocol.list(FilePath.DataPacks(worldPath));
         if(datapacks?.status !== 200) return [];
 
         for(const datapack of datapacks.data) {
             if(!datapack.isDirectory) continue;
 
-            const namespaces = await server.protocol.list(`${FilePath.DataPacks(worldPath)}/${datapack.name}/data/`);
+            const namespaces = await protocol.list(`${FilePath.DataPacks(worldPath)}/${datapack.name}/data/`);
             if(namespaces?.status !== 200) continue;
 
             for(const namespace of namespaces.data) {
@@ -4522,7 +4530,7 @@ async function getPlaceholder(key, args) {
         }
 
         async function listFunctions(datapack, namespace, path) {
-            const functions = await server.protocol.list(`${FilePath.DataPacks(worldPath)}/${datapack}/data/${namespace}/functions/${path}`);
+            const functions = await protocol.list(`${FilePath.DataPacks(worldPath)}/${datapack}/data/${namespace}/functions/${path}`);
             if(functions?.status !== 200) return;
 
             for(const func of functions.data) {

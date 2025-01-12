@@ -3,6 +3,9 @@ import ConnectionManager from './ConnectionManager.js';
 
 export default class UserSettingsConnectionManager extends ConnectionManager {
 
+    /** @type {import('discord.js').Collection<string, UserSettingsConnection>} */
+    cache;
+
     /**
      * Creates a new UserSettingsConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.

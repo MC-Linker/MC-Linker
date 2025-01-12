@@ -9,14 +9,16 @@ export default class Unban extends Command {
             name: 'unban',
             requiresConnectedPlugin: true,
             userIndex: 0,
+            serverIndex: 1,
             category: 'moderation',
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         const user = args[0];
+        const server = args[1];
         const userConnection = await client.userConnections.cache.get(interaction.user.id);
 
         const resp = await server.protocol.execute(`pardon ${user.username}`, userConnection?.getUUID(server));

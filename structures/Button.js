@@ -54,11 +54,11 @@ export default class Button {
      * Handles the execution of this button.
      * @param {ButtonInteraction & TranslatedResponses} interaction - The button interaction.
      * @param {MCLinker} client - The MCLinker client.
-     * @param {?ServerConnection} server - The connection of the server the command was executed in.
+     * @param {?ServerConnection} serverConnection - The connection of the server the command was executed in.
      * @returns {Promise<?boolean>|?boolean}
      * @abstract
      */
-    async execute(interaction, client, server) {
+    async execute(interaction, client, serverConnection) {
         await interaction.replyTl(keys.api.button.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
         if(this.defer) await interaction.deferReply({ ephemeral: this.ephemeral });
 

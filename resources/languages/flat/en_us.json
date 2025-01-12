@@ -631,6 +631,10 @@
   "commands.account.warnings.verification_timeout.embeds.0.description": "Account verification timed out. Please try again.",
   "commands.account.warnings.verification_timeout.console": "Verification timed out",
 
+  "commands.account.errors.unknown_error.embeds.0.title": "Unknown Error",
+  "commands.account.errors.unknown_error.embeds.0.description": "An unknown error ocurred while verifying your account.",
+  "commands.account.errors.unknown_error.console": "Unknown account error",
+
   "commands.account.step.verification_info.embeds.0.title": "Account Verification",
   "commands.account.step.verification_info.embeds.0.description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
 

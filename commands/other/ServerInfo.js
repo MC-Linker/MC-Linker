@@ -16,12 +16,14 @@ export default class ServerInfo extends Command {
         super({
             name: 'serverinfo',
             category: 'other',
+            serverIndex: 0,
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
+        const server = args[0];
         const batch = await server.protocol.startBatch();
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
 
@@ -75,8 +77,8 @@ export default class ServerInfo extends Command {
         if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;
         else onlinePlayers = onlinePlayers.data.length;
 
-        const serverName = propertiesObject['server-name'] ?? server.getDisplayIp();
-        const serverIp = server.getDisplayIp();
+        const serverName = propertiesObject['server-name'] ?? server.displayIp ?? server.ip;
+        const serverIp = server.displayIp ?? server.ip;
 
         let motd;
         try {

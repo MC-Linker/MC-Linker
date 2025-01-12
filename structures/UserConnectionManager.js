@@ -6,6 +6,9 @@ import keys from '../utilities/keys.js';
 
 export default class UserConnectionManager extends ConnectionManager {
 
+    /** @type {import('discord.js').Collection<string, UserConnection>} */
+    cache;
+
     /**
      * Creates a new UserConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
@@ -26,13 +29,13 @@ export default class UserConnectionManager extends ConnectionManager {
     /**
      * Returns the uuid and name of a minecraft user from a mention/username.
      * @param {string} arg - The argument to get the uuid and name from.
-     * @param {ServerConnectionResolvable} server - The server to resolve the uuid and name from.
-     * @param {TranslatedResponses} interaction - The interaction to reply to if the user is not connected.
+     * @param {ServerData} server - The server to resolve the uuid and name from.
+     * @param {?TranslatedResponses} interaction - The interaction to reply to if the user is not connected.
      * @returns {Promise<UserResponse>} - The uuid and name of the user.
      */
     async userFromArgument(arg, server, interaction) {
         if(!arg) {
-            await interaction.replyTl(keys.api.command.warnings.no_user);
+            await interaction?.replyTl(keys.api.command.warnings.no_user);
             return { error: 'nullish', uuid: null, username: null };
         }
 
@@ -48,11 +51,9 @@ export default class UserConnectionManager extends ConnectionManager {
                 };
             }
 
-            await interaction.replyTl(keys.api.command.errors.user_not_connected);
+            await interaction?.replyTl(keys.api.command.errors.user_not_connected);
             return { error: 'cache', uuid: null, username: null };
         }
-
-        server = this.client.serverConnections.resolve(server);
 
         if(arg.match(utils.UUIDRegex)) {
             arg = utils.addHyphen(arg);
@@ -60,7 +61,7 @@ export default class UserConnectionManager extends ConnectionManager {
             if(username && server.online) return { uuid: arg, username, error: null };
             else if(username) arg = username; // If the server is offline, we'll calculate the uuid from the username.
             else {
-                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
+                await interaction?.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
                 return { error: 'fetch', uuid: null, username: null };
             }
         }
@@ -72,7 +73,7 @@ export default class UserConnectionManager extends ConnectionManager {
         } else uuid = server.online ? await utils.fetchUUID(arg) : utils.createUUIDv3(arg);
 
         if(uuid) return { uuid: uuid, username: arg, error: null };
-        await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
+        await interaction?.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
         return { error: 'fetch', uuid: null, username: null };
     }
 }

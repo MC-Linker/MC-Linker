@@ -89,22 +89,24 @@ export default class Command {
      * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @param {any[]} args - The command arguments set by the user.
-     * @param {requiresConnectedPlugin extends true ? ServerConnection<PluginProtocol> : ServerConnection<Protocol>} server - The connection of the server the command was executed in.
+     * @param {requiresConnectedPlugin extends true ? ServerConnection<PluginProtocol> : ServerConnection<Protocol>} serverConnection - The connection of the server the command was executed in.
      * @returns {Promise<?boolean>|?boolean}
      * @abstract
      */
-    async execute(interaction, client, args, server) {
+    async execute(interaction, client, args, serverConnection) {
         await interaction.replyTl(keys.api.command.executed, { args: args.join(' ') });
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
         if(this.ownerOnly) return interaction.user.id === process.env.OWNER_ID;
 
-        if(this.requiresConnectedPlugin && !server?.protocol?.isPluginProtocol()) {
-            await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
-            return false;
-        }
+        const server = serverConnection.findServer(args?.[this.serverIndex]);
+
         if(this.requiresConnectedServer && !server) {
             await interaction.replyTl(keys.api.command.errors.server_not_connected);
+            return false;
+        }
+        if(this.requiresConnectedPlugin && !server.protocol.isPluginProtocol()) {
+            await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
             return false;
         }
 
@@ -116,9 +118,7 @@ export default class Command {
         }
 
         if(this.serverIndex !== null && args[this.serverIndex] !== undefined) {
-            const mentionedServer = await server.servers.find(s => s.name === args[this.serverIndex]);
-            if(!mentionedServer) return false;
-
+            if(!server) return false;
             args[this.serverIndex] = server;
         }
 

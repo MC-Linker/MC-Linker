@@ -2,7 +2,9 @@ import { CachedManager } from 'discord.js';
 import fs from 'fs-extra';
 import { getManagerString } from '../utilities/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
+import Connection from './Connection.js';
 
+/** @template {Connection} T */
 export default class ConnectionManager extends CachedManager {
 
     /**
@@ -15,14 +17,14 @@ export default class ConnectionManager extends CachedManager {
 
     /**
      * The server connection cache of this manager.
-     * @type {import('discord.js').Collection<string, import('./Connection.js').default>}
+     * @type {import('discord.js').Collection<string, T>}
      */
     cache;
 
     /**
      * Creates a new ConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
-     * @param {typeof Connection} holds - The type of connection the manager holds.
+     * @param {T} holds - The type of connection the manager holds.
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ConnectionManager} - A new ConnectionManager instance.
      */
@@ -37,7 +39,7 @@ export default class ConnectionManager extends CachedManager {
 
         /**
          * The connection cache of this manager.
-         * @type {import('discord.js').Collection<string, Connection>}
+         * @type {import('discord.js').Collection<string, T>}
          */
         this.cache = super.cache;
     }
@@ -45,7 +47,7 @@ export default class ConnectionManager extends CachedManager {
     /**
      * Adds a connection to the cache and writes the data to the file system.
      * @param {ConnectionData} data - The data for the connection.
-     * @returns {Promise<?Connection>} - The connection instance that has been created.
+     * @returns {Promise<?T>} - The connection instance that has been created.
      */
     async connect(data) {
         /** @type {?Connection} */
@@ -66,13 +68,17 @@ export default class ConnectionManager extends CachedManager {
     }
 
     /**
-     * Removes a connection from the cache and deletes the data from the database.
-     * @param {ConnectionResolvable} connection - The connection to disconnect.
+     * Removes a connection or server from the cache and deletes the data from the database.
+     * @param {ConnectionResolvable|ServerData} connectionOrServer - The connection or server to disconnect.
      * @returns {Promise<boolean>} - Whether the disconnection was successful.
      */
-    async disconnect(connection) {
+    async disconnect(connectionOrServer) {
         /** @type {?Connection} */
-        const instance = this.resolve(connection);
+        const instance = this.resolve(connectionOrServer);
+
+        if(!(instance instanceof Connection)) {
+            instance.removeServer(connectionOrServer);
+        }
 
         if(instance instanceof ServerConnection && Array.isArray(instance.chatChannels)) {
             for(const channel of instance.chatChannels) {
@@ -87,14 +93,15 @@ export default class ConnectionManager extends CachedManager {
         }
 
         if(instance && await instance._delete()) {
-            //Broadcast to all shards
+            /   /;
+            /Broadcast to all shards;;;
             await this.client.shard.broadcastEval((c, { instanceId, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
                 c[manager].cache.delete(instanceId);
             }, {
                 context: { instanceId: instance.id, manager: getManagerString(this), shard: this.client.shard.ids[0] },
             });
-            return this.cache.delete(this.resolveId(connection));
+            return this.cache.delete(this.resolveId(connectionOrServer));
         }
         else return false;
     }

@@ -23,17 +23,19 @@ export default class Advancements extends Command {
         super({
             name: 'advancements',
             userIndex: 1,
+            serverIndex: 3,
             category: 'main',
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         let category = args[0];
         if(category === 'minecraft') category = 'story';
         const user = args[1];
         const showDetails = args[2];
+        const server = args[3];
 
         const amFile = await server.protocol.get(FilePath.Advancements(server.worldPath, user.uuid), `./download-cache/advancements/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {

@@ -10,18 +10,15 @@ export async function convert(mongoose) {
     // Convert all requiredRoleToJoin fields to arrays
     const docs = await serverConnectionModel.find({}).exec();
     for(const doc of docs) {
-        console.log(`Converting ${doc._id}...`);
+        const oldDoc = { ...doc }._doc;
 
-        const newDoc = {
-            _id: doc._id,
-            serverSettings: doc.serverSettings,
-            servers: [{ ...doc }],
-        };
+        console.log(`Converting ${oldDoc._id}...`);
+
+        const newDoc = { servers: [{ ...oldDoc }] };
         delete newDoc.servers[0]._id;
-        delete newDoc.servers[0].serverSettings;
 
-        await serverConnectionModel.updateOne({ _id: doc }, newDoc).exec();
+        await serverConnectionModel.replaceOne({ _id: oldDoc._id }, newDoc).exec();
 
-        console.log(`Converted ${doc._id}!`);
+        console.log(`Converted ${oldDoc._id}!`);
     }
 }

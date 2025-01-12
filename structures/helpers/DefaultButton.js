@@ -29,8 +29,8 @@ export default class DefaultButton extends Button {
 
         this.collector?.on('collect', interaction => {
             if(interaction.customId === this.id && interaction instanceof ButtonInteraction) {
-                const server = interaction.client.serverConnections.cache.get(interaction.guild.id);
-                this.execute(interaction, interaction.client, server);
+                const connection = interaction.client.serverConnections.cache.get(interaction.guild.id);
+                this.execute(interaction, interaction.client, connection);
             }
         });
     }

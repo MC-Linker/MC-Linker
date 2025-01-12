@@ -27,12 +27,11 @@ export default class UserConnection extends Connection {
 
     /**
      * Gets the uuid of this user respecting whether the server is online mode.
-     * @param {string|ServerConnection} server - The server to get the online mode property from.
+     * @param {ServerData} server - The server to get the online mode property from.
      * @returns {string} - The uuid of the user.
      */
     getUUID(server) {
-        const serverData = this.client.serverConnections.resolve(server);
-        if(serverData?.online === undefined || serverData.online) return this.uuid;
+        if(server.online === undefined || server.online) return this.uuid;
         else return createUUIDv3(this.username);
     }
 

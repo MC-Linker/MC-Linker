@@ -82,16 +82,18 @@ export default class Inventory extends Command {
         super({
             name: 'inventory',
             userIndex: 0,
+            serverIndex: 2,
             category: 'main',
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         /** @type {UserResponse} */
         const user = args[0];
         const showDetails = args[1];
+        const server = args[2];
 
         const playerData = await utils.getLivePlayerNbt(server, user, interaction);
         if(!playerData) return;

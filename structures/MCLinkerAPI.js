@@ -112,6 +112,12 @@ export default class MCLinkerAPI extends EventEmitter {
         },
         {
             method: 'POST',
+            endpoint: '/verify-response',
+            event: 'verify-response',
+            handler: data => this.verifyResponse(data),
+        },
+        {
+            method: 'POST',
             endpoint: '/invite-url',
             event: 'invite-url',
             handler: (data, server) => this.getInviteUrl(data, server),
@@ -125,10 +131,11 @@ export default class MCLinkerAPI extends EventEmitter {
     ];
 
     /**
-     * A map of users that are awaiting verification. The map consists of verification codes and their username and uuid.
-     * @type {Map<String, { username: String, uuid: String }>}
+     * A map of users that are awaiting account verification from a DM message.
+     * The key is the verification code.
+     * @type {Map<string, { username: string, uuid: string }>}
      */
-    usersAwaitingVerification = new Map();
+    usersAwaitingDMVerification = new Map();
 
     constructor(client) {
         super();
@@ -165,12 +172,13 @@ export default class MCLinkerAPI extends EventEmitter {
                 const port = request.body.ip.split(':')[1];
 
                 /** @type {ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === parseInt(port));
+                const server = client.serverConnections.cache.get(id)?.servers
+                    .find(s => s.protocol.isHttpProtocol() && s.ip === ip && s.port === parseInt(port));
                 //If no connection on that guild send disconnection status
                 if(!server) reply.status(403).send({});
 
                 //check authorization: Bearer <token>
-                if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization?.split(' ')[1]) {
+                if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization.split(' ')[1]) {
                     reply.status(401).send({});
                     return;
                 }
@@ -267,8 +275,8 @@ export default class MCLinkerAPI extends EventEmitter {
             const hash = createHash(token);
 
             /** @type {?ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.protocol.isWebSocketProtocol() && server.hash === hash);
-            if(!server || !server.protocol.isWebSocketProtocol()) return socket.disconnect();
+            const server = this.client.serverConnections.cache.find(c => c.servers.find(s => s.protocol.isWebSocketProtocol() && c.hash === hash));
+            if(!server) return socket.disconnect();
 
             //Update data
             server.edit({
@@ -295,20 +303,21 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {string} hash - The hash to use for verifying server-connections.
      */
     addWebsocketListeners(socket, serverResolvable, hash) {
-        async function getServerWebsocket(client, rateLimiter = null, callback) {
+        async function getServerConnectionWebsocket(client, rateLimiter = null, callback) {
             try {
                 if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
 
                 //Update server variable to ensure it wasn't disconnected in the meantime
                 /** @type {?ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.protocol.isWebSocketProtocol() && server.hash === hash);
+                const connection = client.serverConnections.cache.find(conn => conn.servers
+                    .some(s => s.protocol.isWebSocketProtocol() && s.hash === hash));
 
                 //If no connection on that guild, disconnect socket
-                if(!server) {
+                if(!connection) {
                     socket.disconnect();
                     return;
                 }
-                return server;
+                return connection;
             }
             catch(rejRes) {
                 callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
@@ -319,10 +328,10 @@ export default class MCLinkerAPI extends EventEmitter {
             socket.on(route.event, async (data, callback) => {
                 data = typeof data === 'string' ? JSON.parse(data) : {};
                 const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
-                const server = await getServerWebsocket(this.client, rateLimiter, callback);
-                if(!server) return;
+                const connection = await getServerConnectionWebsocket(this.client, rateLimiter, callback);
+                if(!connection) return;
 
-                const response = await route.handler(data, server);
+                const response = await route.handler(data, connection);
                 callback?.(response?.body ?? {});
             });
         }
@@ -580,8 +589,14 @@ export default class MCLinkerAPI extends EventEmitter {
      * @private
      */
     verifyUser(data) {
-        this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
-        setTimeout(() => this.usersAwaitingVerification.delete(data.code), 180_000);
+        this.usersAwaitingDMVerification.set(data.code, { uuid: data.uuid, username: data.username });
+        setTimeout(() => this.usersAwaitingDMVerification.delete(data.code), 180_000);
+    }
+
+    async verifyResponse(data) {
+        /** @type {Account} */
+        const accountCommand = this.client.commands.get('account');
+        await accountCommand.verifyResponse(this.client, data);
     }
 
     /**

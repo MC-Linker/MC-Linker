@@ -6,7 +6,6 @@ import keys, { getLanguageKey } from './utilities/keys.js';
 import { addPh, addTranslatedResponses, getReplyOptions, ph } from './utilities/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
 import MCLinker from './structures/MCLinker.js';
-import ServerConnection from './structures/ServerConnection.js';
 
 console.log(
     '\x1b[1m' +     // Bold (1)
@@ -89,8 +88,8 @@ client.on(Discord.Events.MessageCreate, async message => {
     message = addTranslatedResponses(message);
 
     if(!message.inGuild()) {
-        if(client.api.usersAwaitingVerification.has(message.content)) {
-            const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
+        if(client.api.usersAwaitingDMVerification.has(message.content)) {
+            const { username, uuid } = client.api.usersAwaitingDMVerification.get(message.content);
 
             /** @type {UserConnection} */
             const userConnection = await client.userConnections.connect({
@@ -99,52 +98,50 @@ client.on(Discord.Events.MessageCreate, async message => {
                 uuid,
             });
 
-
-            const promises = await Promise.allSettled(client.serverConnections.cache.map(async conn => {
-                if(!(conn instanceof ServerConnection) || !conn.protocol.isPluginProtocol()) return null;
-                if(!conn.syncedRoles || !conn.syncedRoles.length) return null;
-                try {
-                    const guild = await client.guilds.fetch(conn.id);
-                    const member = await guild.members.fetch(message.author.id);
-                    return [conn, guild, member];
-                }
-                catch(err) {
-                    return null;
+            Promise.allSettled(client.serverConnections.cache.map(async conn => {
+                for(const server of conn.servers) {
+                    if(!conn.protocol.isPluginProtocol() || !conn.syncedRoles || !conn.syncedRoles.length) continue;
+                    try {
+                        const guild = await client.guilds.fetch(conn.id);
+                        const member = await guild.members.fetch(message.author.id);
+                        await conn.syncRoles(guild, member, userConnection);
+                    }
+                    catch(_) {}
                 }
             }));
-            const arrayOfServers = promises.map(p => p.value).filter(p => p);
 
-            for(const [conn, guild, member] of arrayOfServers) await conn.syncRoles(guild, member, userConnection);
-
-            client.api.usersAwaitingVerification.delete(message.content);
+            client.api.usersAwaitingDMVerification.delete(message.content);
             return await message.replyTl(keys.commands.account.success.verified);
         }
     }
 
-    /** @type {ServerConnection} */
-    const server = client.serverConnections.cache.get(message.guildId);
+    const conn = client.serverConnections.cache.get(message.guildId);
 
     if(!message.content.startsWith(process.env.PREFIX)) {
-        /** @type {ChatChannelData} */
-        const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
-        //Explicit check for false
-        //because it can be undefined (i haven't added the field to already existing connections)
-        if(!channel || channel.allowDiscordToMinecraft === false) return;
+        for(const server of conn.servers) {
+            /** @type {ChatChannelData} */
+            const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
+            //Explicit check for false
+            //because it can be undefined (i haven't added the field to already existing connections)
+            if(!channel || channel.allowDiscordToMinecraft === false) return;
 
-        let content = cleanEmojis(message.cleanContent);
-        message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
+            let content = cleanEmojis(message.cleanContent);
+            message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
 
-        //Fetch replied message if it exists
-        const repliedMessage = message.type === Discord.MessageType.Reply ? await message.fetchReference() : null;
-        let repliedContent = repliedMessage ? cleanEmojis(repliedMessage.cleanContent) : null;
-        //If repliedContent is empty, it's probably an attachment
-        if(repliedContent?.length === 0 && repliedMessage.attachments.size !== 0) {
-            const firstAttach = repliedMessage.attachments.first();
-            repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
+            //Fetch replied message if it exists
+            const repliedMessage = message.type === Discord.MessageType.Reply ? await message.fetchReference() : null;
+            let repliedContent = repliedMessage ? cleanEmojis(repliedMessage.cleanContent) : null;
+            //If repliedContent is empty, it's probably an attachment
+            if(repliedContent?.length === 0 && repliedMessage.attachments.size !== 0) {
+                const firstAttach = repliedMessage.attachments.first();
+                repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
+            }
+            const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? repliedMessage.author.displayName : null;
+
+            if(message.partial) message = await message.fetch();
+            // noinspection ES6MissingAwait
+            server.protocol.chat(content, message.member?.nickname ?? message.author.displayName, repliedContent, repliedUser);
         }
-        const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? repliedMessage.author.username : null;
-        // noinspection ES6MissingAwait
-        server.protocol.chat(content, message.member?.nickname ?? message.author.username, repliedContent, repliedUser);
     }
 
     if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
@@ -165,7 +162,7 @@ client.on(Discord.Events.MessageCreate, async message => {
 
     try {
         // noinspection JSUnresolvedFunction
-        await command.execute(message, client, args, server);
+        await command.execute(message, client, args, conn);
     }
     catch(err) {
         await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
@@ -181,24 +178,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
     if(interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
 
-        //Making interaction compatible with prefix commands
-        interaction.mentions = {
-            users: new Discord.Collection(),
-            roles: new Discord.Collection(),
-            channels: new Discord.Collection(),
-        };
-        interaction.attachments = new Discord.Collection();
-
-
         const args = await getArgs(interaction);
-        //Add mentions and attachments from args
-        args.forEach(arg => {
-            if(arg instanceof Discord.User) interaction.mentions.users.set(arg.id, arg);
-            else if(arg instanceof Discord.Role) interaction.mentions.roles.set(arg.id, arg);
-            else if(arg instanceof Discord.BaseChannel) interaction.mentions.channels.set(arg.id, arg);
-            else if(arg instanceof Discord.Attachment) interaction.attachments.set(arg.id, arg);
-        });
-
         const server = client.serverConnections.cache.get(interaction.guildId);
         try {
             // noinspection JSUnresolvedFunction
@@ -210,16 +190,24 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
     }
     else if(interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
+        if(!command) return;
 
         try {
-            if(!command || !(command instanceof AutocompleteCommand)) return;
-
             if(command.serverIndex !== undefined) {
-                const server = client.serverConnections.cache.get(interaction.guildId);
+                const conn = client.serverConnections.cache.get(interaction.guildId);
 
-                return await interaction.respond([...server.servers.map(s => s.name ?? s.getDisplayIp())]);
+                const args = await getArgs(interaction);
+                if(args.indexOf(interaction.options.getFocused()) === command.serverIndex) {
+                    return await interaction.respond(
+                        [...conn.servers.map(s => s.name ?? s.getDisplayIp())]
+                            .filter(s => s.toLowerCase().includes(interaction.options.getFocused().toLowerCase())),
+                    );
+                }
+                else if(command instanceof AutocompleteCommand)
+                    return await command.autocomplete(interaction, client, conn.findServer(args[command.serverIndex]));
             }
 
+            if(!(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client);
         }
         catch(err) {
@@ -246,38 +234,42 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
     if(oldMember.roles.cache.size === newMember.roles.cache.size) return;
 
     /** @type {ServerConnection} */
-    const server = client.serverConnections.cache.get(newMember.guild.id);
-    if(!server || !server.protocol.isPluginProtocol()) return;
+    const conn = client.serverConnections.cache.get(newMember.guild.id);
+    if(!conn) return;
 
-    /** @type {UserConnection} */
-    const user = client.userConnections.cache.get(newMember.id);
-    if(!user) return;
+    for(const server of conn.servers) {
+        if(!server.protocol.isPluginProtocol() || !server.syncedRoles?.length) continue;
 
-    const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
-    const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
-    if(server.requiredRoleToJoin) {
-        if(
-            server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
-            server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
-        ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
+        /** @type {UserConnection} */
+        const user = client.userConnections.cache.get(newMember.id);
+        if(!user) return;
+
+        const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
+        const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
+        if(server.requiredRoleToJoin) {
+            if(
+                server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
+                server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
+            ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
+        }
+
+        const role = server.syncedRoles?.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
+        if(!role) return;
+
+        let resp;
+        if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
+        if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
+
+        const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
+        if(roleIndex === -1) return;
+
+        //Update players of role
+        role.players = resp.data;
+        server.syncedRoles[roleIndex] = role;
+
+        //Update server
+        if(resp.status === 200) await conn.edit({});
     }
-
-    const role = server.syncedRoles?.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
-    if(!role) return;
-
-    let resp;
-    if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
-    if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
-
-    const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
-    if(roleIndex === -1) return;
-
-    //Update players of role
-    role.players = resp.data;
-    server.syncedRoles[roleIndex] = role;
-
-    //Update server
-    if(resp.status === 200) await server.edit({});
 });
 
 /**
