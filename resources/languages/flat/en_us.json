@@ -1532,7 +1532,7 @@
 
   "data.stats.options.8.type": "Subcommand",
   "data.stats.options.8.name": "killed_by",
-  "data.stats.options.8.description": "Statistics related to the times of a player being killed by entities.",
+  "data.stats.options.8.description": "Statistics related to the times off a player being killed by entities.",
 
   "data.stats.options.8.options.0.type": "String",
   "data.stats.options.8.options.0.name": "user",
@@ -2002,6 +2002,11 @@
   "data.connect.options.1.options.1.name": "display-ip",
   "data.connect.options.1.options.1.description": "Set the public IP address that will be displayed in some of the bot's commands.",
   "data.connect.options.1.options.1.required": false,
+
+  "data.connect.options.1.options.2.type": "Boolean",
+  "data.connect.options.1.options.2.name": "online",
+  "data.connect.options.1.options.2.description": "Manually set the configured online-mode of the server. For BungeeCord servers, set this to \"True\"",
+  "data.connect.options.1.options.2.required": false,
 
 
   "data.connect.options.2.type": "Subcommand",

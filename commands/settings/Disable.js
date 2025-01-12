@@ -2,7 +2,7 @@ import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
-import commands from '../../resources/data/commands.json' assert { type: 'json' };
+import commands from '../../resources/data/commands.json' with { type: 'json' };
 
 const commandNames = Object.keys(commands);
 

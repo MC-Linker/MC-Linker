@@ -90,9 +90,7 @@ export default class Command {
         await interaction.replyTl(keys.api.command.executed, { args: args.join(' ') });
         if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
 
-        if(this.ownerOnly) {
-            return interaction.user.id === process.env.OWNER_ID;
-        }
+        if(this.ownerOnly) return interaction.user.id === process.env.OWNER_ID;
 
         if(this.requiresConnectedPlugin && !server?.protocol?.isPluginProtocol()) {
             await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);

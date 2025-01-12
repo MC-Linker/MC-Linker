@@ -62,10 +62,10 @@ client.on('allShardsReady', async () => {
     await client.loadEverything();
 
     //Set Activity
-    client.user.setActivity({type: Discord.ActivityType.Listening, name: '/help'});
+    client.user.setActivity({ type: Discord.ActivityType.Listening, name: '/help' });
 
     //Start API server if this is the first shard
-    if (client.shard.ids.includes(0)) await client.api.startServer();
+    if(client.shard.ids.includes(0)) await client.api.startServer();
 });
 
 client.on(Discord.Events.GuildCreate, async guild => {
@@ -99,14 +99,22 @@ client.on(Discord.Events.MessageCreate, async message => {
                 uuid,
             });
 
-            //Sync roles in all servers the user is in (does this work with sharding?)
-            for(const [conn, guild, member] of client.serverConnections.cache.map(async conn => {
-                if(!(conn instanceof ServerConnection) || !conn.protocol.isPluginProtocol() || !conn.syncedRoles) return null;
+
+            const promises = await Promise.allSettled(client.serverConnections.cache.map(async conn => {
+                if(!(conn instanceof ServerConnection) || !conn.protocol.isPluginProtocol()) return null;
                 if(!conn.syncedRoles || !conn.syncedRoles.length) return null;
-                const guild = await client.guilds.fetch(conn.id);
-                const member = await guild.members.fetch(message.author.id);
-                return member ? [conn, guild, member] : null;
-            }).filter(c => c)) await conn.syncRoles(guild, member, userConnection);
+                try {
+                    const guild = await client.guilds.fetch(conn.id);
+                    const member = await guild.members.fetch(message.author.id);
+                    return [conn, guild, member];
+                }
+                catch(err) {
+                    return null;
+                }
+            }));
+            const arrayOfServers = promises.map(p => p.value).filter(p => p);
+
+            for(const [conn, guild, member] of arrayOfServers) await conn.syncRoles(guild, member, userConnection);
 
             client.api.usersAwaitingVerification.delete(message.content);
             return await message.replyTl(keys.commands.account.success.verified);
@@ -134,7 +142,7 @@ client.on(Discord.Events.MessageCreate, async message => {
             const firstAttach = repliedMessage.attachments.first();
             repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
         }
-        const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? message.author.username : null;
+        const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? repliedMessage.author.username : null;
         // noinspection ES6MissingAwait
         server.protocol.chat(content, message.member?.nickname ?? message.author.username, repliedContent, repliedUser);
     }
@@ -158,7 +166,8 @@ client.on(Discord.Events.MessageCreate, async message => {
     try {
         // noinspection JSUnresolvedFunction
         await command.execute(message, client, args, server);
-    } catch (err) {
+    }
+    catch(err) {
         await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
     }
 });
@@ -186,36 +195,41 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         args.forEach(arg => {
             if(arg instanceof Discord.User) interaction.mentions.users.set(arg.id, arg);
             else if(arg instanceof Discord.Role) interaction.mentions.roles.set(arg.id, arg);
-            else if (arg instanceof Discord.BaseChannel) interaction.mentions.channels.set(arg.id, arg);
-            else if (arg instanceof Discord.Attachment) interaction.attachments.set(arg.id, arg);
+            else if(arg instanceof Discord.BaseChannel) interaction.mentions.channels.set(arg.id, arg);
+            else if(arg instanceof Discord.Attachment) interaction.attachments.set(arg.id, arg);
         });
 
         const server = client.serverConnections.cache.get(interaction.guildId);
         try {
             // noinspection JSUnresolvedFunction
             await command.execute(interaction, client, args, server);
-        } catch (err) {
+        }
+        catch(err) {
             await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction));
         }
-    } else if (interaction.isAutocomplete()) {
+    }
+    else if(interaction.isAutocomplete()) {
         const command = client.commands.get(interaction.commandName);
 
         try {
-            if (!command || !(command instanceof AutocompleteCommand)) return;
+            if(!command || !(command instanceof AutocompleteCommand)) return;
             await command.autocomplete(interaction, client);
-        } catch (err) {
+        }
+        catch(err) {
             await console.log(addPh(keys.main.errors.could_not_autocomplete_command.console, ph.interaction(interaction), ph.error(err)));
         }
-    } else if (interaction.isButton()) {
+    }
+    else if(interaction.isButton()) {
         let button = client.buttons.get(interaction.customId);
-        if (!button) button = client.buttons.find(b => interaction.customId.startsWith(b.id));
+        if(!button) button = client.buttons.find(b => interaction.customId.startsWith(b.id));
 
         try {
-            if (!button) return;
+            if(!button) return;
             // noinspection JSUnresolvedFunction
             await button.execute(interaction, client);
-        } catch (err) {
-            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), {'button': interaction.customId});
+        }
+        catch(err) {
+            await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId });
         }
     }
 });
@@ -285,7 +299,8 @@ async function sendToServer(guild, key, ...placeholders) {
         try {
             await channel.send(replyOptions);
             return true;
-        } catch {
+        }
+        catch {
             return false;
         }
     }
