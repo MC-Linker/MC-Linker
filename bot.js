@@ -160,8 +160,7 @@ client.on(Discord.Events.MessageCreate, async message => {
 
     /** @type {Command} */
     const command = client.commands.get(commandName);
-    if(!command) return;
-    if(!command.allowPrefix) return message.replyTl(keys.main.no_access.no_prefix_commands);
+    if(!command || !command.allowPrefix) return;
 
     try {
         // noinspection JSUnresolvedFunction
