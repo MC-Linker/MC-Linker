@@ -16,8 +16,8 @@ export default class ChatChannel extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    async execute(interaction, client, args, serverConnection) {
+        if(!await super.execute(interaction, client, args, serverConnection)) return;
 
         const subcommand = args[0];
 
@@ -27,6 +27,7 @@ export default class ChatChannel extends Command {
             const channel = args[1];
             const allowDiscordToMinecraft = args[2] ?? true;
             const useWebhooks = args[3] ?? true;
+            const server = args[4];
 
             if(!canSendMessages(interaction.guild.members.me, channel)) return interaction.replyTl(keys.api.utils.errors.not_sendable);
             else if(useWebhooks && !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageWebhooks)) {
@@ -78,6 +79,7 @@ export default class ChatChannel extends Command {
         }
         else if(subcommand === 'remove') {
             const channel = args[1];
+            const server = args[2];
 
             const chatChannel = server.chatChannels.find(c => c.id === channel.id);
             if(!chatChannel) return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
@@ -89,6 +91,7 @@ export default class ChatChannel extends Command {
             return interaction.replyTl(keys.commands.chatchannel.success.remove);
         }
         else if(subcommand === 'list') {
+            const server = args[1];
             if(!server.chatChannels?.length) return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
 
             /** @type {PaginationPages} */

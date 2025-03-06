@@ -4,10 +4,10 @@ import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import HttpProtocol from '../../structures/HttpProtocol.js';
 import FtpProtocol from '../../structures/FtpProtocol.js';
-import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../utilities/utils.js';
 import client from '../../bot.js';
 import Discord from 'discord.js';
+import { FilePath } from '../../structures/ServerConnection.js';
 
 export default class Connect extends Command {
 
@@ -198,7 +198,7 @@ export default class Connect extends Command {
             const httpProtocol = new HttpProtocol(client, { ip, token, port, id: interaction.guildId });
 
             const verify = await httpProtocol.verifyGuild();
-            const connectedServer = verify?.status === 409 ? client.serverConnections.cache.find(c => c.servers.find(s => s.ip === ip && s.port === port)) : null;
+            const connectedServer = verify?.status === 409 ? client.serverConnections.cache.find(c => c.links.find(s => s.ip === ip && s.port === port)) : null;
             const connectedServerName = connectedServer && verify?.status === 409 ? (await client.guilds.fetch(connectedServer.id)).name : keys.commands.connect.unknown;
             if(!await utils.handleProtocolResponse(verify, httpProtocol, interaction, {
                 409: keys.commands.connect.warnings.plugin_already_connected,

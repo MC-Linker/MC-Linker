@@ -1,107 +1,184 @@
 import Connection from './Connection.js';
-import HttpProtocol from './HttpProtocol.js';
-import FtpProtocol from './FtpProtocol.js';
-import WebSocketProtocol from './WebSocketProtocol.js';
+import LinkedServer from './LinkedServer.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
+
+/**
+ * Paths to minecraft server files.
+ * @type {object}
+ */
+export const FilePath = {
+    /**
+     * Constructs the path to the user's advancements file.
+     * @param {string} worldPath - The path to the world folder.
+     * @param {string} uuid - The user's UUID.
+     * @param {?string} [userId=null] - The user's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/advancements/${string}.json`} - The path to the advancements file.
+     */
+    Advancements: (worldPath, uuid, userId = null) => {
+        const advancementPath = `${worldPath}/advancements/${uuid}.json`;
+        return userId ? [advancementPath, `./download-cache/userConnection/${userId}/advancements.json`] : advancementPath;
+    },
+    /**
+     * Constructs the path to the user's stats file.
+     * @param {string} worldPath - The path to the world folder.
+     * @param {string} uuid - The user's UUID.
+     * @param {?string} [userId=null] - The user's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/stats/${string}.json`} - The path to the stats file.
+     */
+    Stats: (worldPath, uuid, userId) => {
+        const statPath = `${worldPath}/stats/${uuid}.json`;
+        return userId ? [statPath, `./download-cache/userConnection/${userId}/stats.json`] : statPath;
+    },
+    /**
+     * Constructs the path to the user's playerdata folder.
+     * @param {string} worldPath - The path to the world folder.
+     * @param {string} uuid - The user's UUID.
+     * @param {?string} [userId=null] - The user's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/playerdata/${string}.dat`} - The path to the playerdata folder.
+     */
+    PlayerData: (worldPath, uuid, userId) => {
+        const playerdataPath = `${worldPath}/playerdata/${uuid}.dat`;
+        return userId ? [playerdataPath, `./download-cache/userConnection/${userId}/playerdata.dat`] : playerdataPath;
+    },
+
+    /**
+     * Constructs the path to the world's level.dat file.
+     * @param {string} worldPath - The path to the world folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/level.dat`} - The path to the world's level.dat file.
+     */
+    LevelDat: (worldPath, serverId) => {
+        const levelDatPath = `${worldPath}/level.dat`;
+        return serverId ? [levelDatPath, `./download-cache/serverConnection/${serverId}/level.dat`] : levelDatPath;
+    },
+
+    /**
+     * Constructs the path to the world's scoreboard.dat file.
+     * @param {string} worldPath - The path to the world folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/data/scoreboard.dat`}
+     */
+    Scoreboards: (worldPath, serverId) => {
+        const scoreboardsPath = `${worldPath}/data/scoreboard.dat`;
+        return serverId ? [scoreboardsPath, `./download-cache/serverConnection/${serverId}/scoreboard.dat`] : scoreboardsPath;
+    },
+
+    /**
+     * Constructs the path to the server's server.properties file.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/server.properties`} - The path to the server's server.properties file.
+     */
+    ServerProperties: (serverPath, serverId) => {
+        const serverPropertiesPath = `${serverPath}/server.properties`;
+        return serverId ? [serverPropertiesPath, `./download-cache/serverConnection/${serverId}/server.properties`] : serverPropertiesPath;
+    },
+
+    /**
+     * Constructs the path to the server's server-icon.png file.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/server-icon.png`} - The path to the server's server-icon.png file.
+     */
+    ServerIcon: (serverPath, serverId) => {
+        const serverIconPath = `${serverPath}/server-icon.png`;
+        return serverId ? [serverIconPath, `./download-cache/serverConnection/${serverId}/server-icon.png`] : serverIconPath;
+    },
+
+    /**
+     * Constructs the path to the server's whitelist.json file.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/whitelist.json`} - The path to the server's whitelist.json file.
+     */
+    Whitelist: (serverPath, serverId) => {
+        const whitelistPath = `${serverPath}/whitelist.json`;
+        return serverId ? [whitelistPath, `./download-cache/serverConnection/${serverId}/whitelist.json`] : whitelistPath;
+    },
+
+    /**
+     * Constructs the path to the server's ops.json file.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/ops.json`} - The path to the server's ops.json file.
+     */
+    Operators: (serverPath, serverId) => {
+        const operatorsPath = `${serverPath}/ops.json`;
+        return serverId ? [operatorsPath, `./download-cache/serverConnection/${serverId}/ops.json`] : operatorsPath;
+    },
+
+    /**
+     * Constructs the path to the server's banned-players.json file.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/banned-players.json`} - The path to the server's banned-players.json file.
+     */
+    BannedPlayers: (serverPath, serverId) => {
+        const bannedPlayersPath = `${serverPath}/banned-players.json`;
+        return serverId ? [bannedPlayersPath, `./download-cache/serverConnection/${serverId}/banned-players.json`] : bannedPlayersPath;
+    },
+
+    /**
+     * Constructs the path to the server's banned-ips.json file.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/banned-ips.json`} - The path to the server's banned-ips.json file.
+     */
+    BannedIPs: (serverPath, serverId) => {
+        const bannedIpsPath = `${serverPath}/banned-ips.json`;
+        return serverId ? [bannedIpsPath, `./download-cache/serverConnection/${serverId}/banned-ips.json`] : bannedIpsPath;
+    },
+
+    /**
+     * Constructs the path to the server's plugins folder.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/plugins`} - The path to the server's plugins folder.
+     */
+    Plugins: (serverPath, serverId) => {
+        const pluginsPath = `${serverPath}/plugins`;
+        return serverId ? [pluginsPath, `./download-cache/serverConnection/${serverId}/plugins`] : pluginsPath;
+    },
+
+    /**
+     * Constructs the path to the server's mods folder.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/mods`} - The path to the server's mods folder.
+     */
+    Mods: (serverPath, serverId) => {
+        const modsPath = `${serverPath}/mods`;
+        return serverId ? [modsPath, `./download-cache/serverConnection/${serverId}/mods`] : modsPath;
+    },
+
+    /**
+     * Constructs the path to the server's datapacks folder.
+     * @param {string} worldPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/datapacks`} - The path to the server's datapacks folder.
+     */
+    DataPacks: (worldPath, serverId) => {
+        const datapacksPath = `${worldPath}/datapacks`;
+        return serverId ? [datapacksPath, `./download-cache/serverConnection/${serverId}/datapacks`] : datapacksPath;
+    },
+    /**
+     * Constructs the path to the server's floodgate config file.
+     * @param {string} serverPath - The path to the server folder.
+     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
+     * @returns {string[]|`${string}/plugins/floodgate/config.yml`} - The path to the server's floodgate config file.
+     */
+    FloodgateConfig: (serverPath, serverId) => {
+        const floodgateConfigPath = `${serverPath}/plugins/floodgate/config.yml`;
+        return serverId ? [floodgateConfigPath, `./download-cache/serverConnection/${serverId}/floodgate-config.yml`] : floodgateConfigPath;
+    },
+};
 
 export default class ServerConnection extends Connection {
 
     /**
-     * @typedef {object} ChatChannelData - The data for a chatchannel.
-     * @property {string} id - The id of the channel.
-     * @property {string[]} types - The enabled types of the chatchannel.
-     * @property {string} [allowDiscordToMinecraft] - Whether the chatchannel should send messages from discord to minecraft.
-     * @property {string} [webhook] - The webhook id of the chatchannel.
-     */
-
-    /**
-     * @typedef {object} StatsChannelData - The data for a stats channel.
-     * @property {'member-counter'|'status'} type - The type of the stats channel.
-     * @property {string} id - The id of the channel.
-     * @property {object} names - The names for the stats channel.
-     * @property {string} [names.online] - The name when the server is online.
-     * @property {string} [names.offline] - The name when the server is offline.
-     * @property {string} [names.members] - The name for the member count.
-     */
-
-    /**
-     * @typedef {object} SyncedRoleData - The data for a synced-role.
-     * @property {string} id - The id of the role.
-     * @property {string} name - The name of the group/team.
-     * @property {boolean} isGroup - Whether the role is a luckperms group or a Minecraft team.
-     * @property {string[]} players - The player's uuids that are in the team/group.
-     */
-
-    /**
-     * @typedef {object} RequiredRoleToJoinData - The data for required roles to join the server.
-     * @property {'any'|'all'} method - The method used to determine if a user can join the server.
-     * @property {string[]} roles - The ids of the roles required to join the server.
-     */
-
-    /**
-     * @typedef {object} HttpServerConnectionData - The data for a server-connection established by the plugin.
-     * @property {string} id - The id of the server.
-     * @property {string} ip - The ip of the server.
-     * @property {string} name - The name of the server.
-     * @property {number} port - The port used to connect to the server plugin.
-     * @property {number} version - The minor minecraft version of the server.
-     * @property {string} worldPath - The path to the world folder of the server.
-     * @property {string} path - The path to the server folder of the server.
-     * @property {string} token - The connection token used to connect to the server plugin.
-     * @property {boolean} online - Whether online mode is enabled on this server.
-     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {RequiredRoleToJoinData} [requiredRoleToJoin] - The id of the role required to join the server.
-     * @property {SyncedRoleData[]} syncedRoles - The data for syncedRoles.
-     * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} statChannels - The data for stats channels.
-     * @property {'http'|HttpProtocol} protocol - The protocol used to connect to the server.
-     */
-
-    /**
-     * @typedef {object} FtpServerConnectionData - The data for a server-connection established by ftp or sftp.
-     * @property {string} id - The id of the server.
-     * @property {string} ip - The ip of the server.
-     * @property {string} name - The name of the server.
-     * @property {string} username - The ftp username used to connect to the server.
-     * @property {string} password - The ftp password used to connect to the server.
-     * @property {number} port - The ftp port used to connect to the server.
-     * @property {number} version - The minor minecraft version of the server.
-     * @property {string} worldPath - The path to the world folder of the server.
-     * @property {string} path - The path to the server folder of the server.
-     * @property {boolean} online - Whether the server-connection has online mode enabled or not.
-     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {'ftp'|'sftp'|FtpProtocol} protocol - The protocol used to connect to the server.
-     */
-
-    /**
-     * @typedef {object} WebSocketServerConnectionData - The data for a server-connection established by a websocket.
-     * @property {string} id - The id of the server.
-     * @property {string} ip - The ip of the server.
-     * @property {string} name - The name of the server.
-     * @property {number} version - The minor minecraft version of the server.
-     * @property {string} worldPath - The path to the world folder of the server.
-     * @property {string} path - The path to the server folder of the server.
-     * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
-     * @property {boolean} online - Whether online mode is enabled on this server.
-     * @property {boolean} forceOnlineMode - Whether to update the online mode when the server reconnects.
-     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {string} [displayIp] - The ip address that the bot should show users for joining the server.
-     * @property {RequiredRoleToJoinData} [requiredRoleToJoin] - An array of role ids, at least one of which is required to join the server.
-     * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} statChannels - The data for stats channels.
-     * @property {SyncedRoleData[]} syncedRoles - The data for syncedRoles.
-     * @property {'websocket'|WebSocketProtocol} protocol - The protocol used to connect to the server.
-     * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
-     */
-
-    /**
-     * @typedef {HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData} ServerData - The data for a server.
-     */
-
-    /**
      * @typedef {object} ServerConnectionData - The data of the server.
      * @property {string} id - The id of the server.
-     * @property {(ServerData)[]} servers - The connected servers.
+     * @property {Map<string, LinkedServer>} links - The linked servers.
      */
 
     /**
@@ -124,6 +201,8 @@ export default class ServerConnection extends Connection {
         this.settings = client.serverSettingsConnections._add(ServerSettingsConnection.defaultSettingsData, true, {
             extras: [client.serverSettingsConnections.collectionName],
         });
+
+        this._patch(data);
     }
 
     /**
@@ -137,7 +216,6 @@ export default class ServerConnection extends Connection {
     }
 
     _patch(data) {
-
         /**
          * The id of this server.
          * @type {string}
@@ -145,127 +223,40 @@ export default class ServerConnection extends Connection {
         this.id = data.id ?? this.id;
 
         /**
-         * The connected servers.
-         * @type {(ServerData)[]}
+         * A map of connected servers by their name.
+         * @type {Map<string, LinkedServer>}
          */
-        this.servers = data.servers ?? this.servers ?? [];
-
-        if(data.protocol === 'http') {
-            this.servers.push({
-                ip: data.ip,
-                name: data.name,
-                port: data.port,
-                version: data.version,
-                worldPath: data.worldPath,
-                path: data.path,
-                token: data.token,
-                online: data.online,
-                floodgatePrefix: data.floodgatePrefix ?? null,
-                requiredRoleToJoin: data.requiredRoleToJoin ?? null,
-                chatChannels: data.chatChannels ?? [],
-                statChannels: data.statChannels ?? [],
-                syncedRoles: data.syncedRoles ?? [],
-                protocol: data.protocol,
-            });
-        }
-        else if(data.protocol === 'ftp' || data.protocol === 'sftp') {
-            this.servers.push({
-                ip: data.ip,
-                name: data.name,
-                username: data.username,
-                password: data.password,
-                port: data.port,
-                version: data.version,
-                worldPath: data.worldPath,
-                path: data.path,
-                online: data.online,
-                floodgatePrefix: data.floodgatePrefix ?? null,
-                protocol: data.protocol,
-            });
-        }
-        else if(data.protocol === 'websocket') {
-            this.servers.push({
-                ip: data.ip,
-                name: data.name,
-                version: data.version,
-                worldPath: data.worldPath,
-                path: data.path,
-                hash: data.hash,
-                online: data.online,
-                forceOnlineMode: data.forceOnlineMode,
-                floodgatePrefix: data.floodgatePrefix ?? null,
-                displayIp: data.displayIp ?? null,
-                requiredRoleToJoin: data.requiredRoleToJoin ?? null,
-                chatChannels: data.chatChannels ?? [],
-                statChannels: data.statChannels ?? [],
-                syncedRoles: data.syncedRoles ?? [],
-                protocol: data.protocol,
-            });
-        }
-
-
-        for(const server of this.servers) {
-            if(server.protocol === 'http') {
-                server.protocol = new HttpProtocol(this.client, {
-                    id: server.id,
-                    ip: server.ip,
-                    port: server.port,
-                    token: server.token,
-                });
-            }
-            else if(server.protocol === 'ftp' || server.protocol === 'sftp') {
-                server.protocol = new FtpProtocol(this.client, {
-                    ip: server.ip,
-                    port: server.port,
-                    password: server.password,
-                    username: server.username,
-                    sftp: server.protocol === 'sftp',
-                });
-            }
-            else if(server.protocol === 'websocket') {
-                server.protocol = new WebSocketProtocol(this.client, {
-                    id: server.id,
-                    ip: server.ip,
-                    hash: server.hash,
-                    displayIp: server.displayIp,
-                });
-            }
-
-            server.protocol._patch(server);
-        }
+        this.links ??= new Map();
     }
 
     /**
      * Adds a new server to the server-connection.
-     * @param {ServerData} data
+     * @param {LinkedServerData} data
+     * @return {Promise<boolean>} - Whether the server was added.
      */
     addServer(data) {
-        // Check if the server already exists (plugin already prevents duplicate connections so only ftp has to be checked)
-        const existingFtpServer = this.servers.findIndex(s => {
-            return data.protocol === 'ftp' && s.protocol.isFtpProtocol() && s.ip === data.ip && s.port === data.port;
-        });
-        if(existingFtpServer !== -1) this.servers[existingFtpServer] = data;
-        else this.servers.push(data);
-
-        this._patch(this);
-    }
-
-    removeServer(data) {
-        const server = this.servers.find(s => s.name === data.name || s.ip === data.ip);
-        if(server) this.servers.splice(this.servers.indexOf(server), 1);
+        this.links.set(data.name, new LinkedServer(this.client, data));
+        return this._output();
     }
 
     /**
-     * Finds the server that includes the given name/ip or finds the first server (priority: websocket, http, ftp) if there's no match.
+     * Removes a server from the server-connection.
+     * @param {String} name - The name of the server to remove.
+     * @return {Promise<boolean>} - Whether the server was removed.
+     */
+    removeServer(name) {
+        this.links.delete(name);
+        return this._output();
+    }
+
+    /**
+     * Finds the server that includes the given name/ip or finds the first server if nameOrIp is undefined.
      * @param {?string} nameOrIp - The name/ip of the server to get.
-     * @return {ServerData} - The server with the given name/ip or the first server.
+     * @return {LinkedServer} - The server with the given name/ip or the first server.
      */
     findServer(nameOrIp) {
-        return this.servers.find(s => s.name === nameOrIp || s.ip === nameOrIp) ??
-            this.servers.find(s => s.name.includes(nameOrIp)) ??
-            this.servers.find(s => s.protocol.isWebSocketProtocol()) ??
-            this.servers.find(s => s.protocol.isHttpProtocol()) ??
-            this.servers.find(s => s.protocol.isFtpProtocol());
+        if(!nameOrIp) return this.links.values().next().value;
+        return this.links.get(nameOrIp);
     }
 
     /**
@@ -276,16 +267,16 @@ export default class ServerConnection extends Connection {
      * @returns {Promise<void>}
      */
     async syncRoles(guild, member, userConnection) {
-        const servers = this.servers.filter(s => s.protocol.isPluginProtocol() && this.syncedRoles && this.syncedRoles.length > 0);
-        for(const server of servers) {
+        for(const link of this.links.values()) {
+            if(!this.syncedRoles || this.syncedRoles.length === 0) return;
             //If user has a synced-role, tell the plugin
-            for(const syncedRole of server.syncedRoles.filter(r =>
+            for(const syncedRole of link.syncedRoles.filter(r =>
                 !r.players.includes(userConnection.uuid) && member.roles.cache.has(r.id))) {
-                await server.protocol.addSyncedRoleMember(syncedRole, userConnection.uuid);
+                await link.addSyncedRoleMember(syncedRole, userConnection.uuid);
             }
 
             // Add missing synced roles
-            for(const syncedRole of server.syncedRoles.filter(r =>
+            for(const syncedRole of link.syncedRoles.filter(r =>
                 r.players.includes(userConnection.uuid) && !member.roles.cache.has(r.id))) {
                 try {
                     const discordMember = await guild.members.fetch(userConnection.id);
@@ -310,8 +301,8 @@ export default class ServerConnection extends Connection {
     getData() {
         return {
             id: this.id,
-            servers: this.servers.map(s => {
-                const baseData = {
+            links: Array.from(this.links.values()).map(s => {
+                return {
                     ip: s.ip,
                     version: s.version,
                     path: s.path,
@@ -319,40 +310,12 @@ export default class ServerConnection extends Connection {
                     online: s.online,
                     forceOnlineMode: s.forceOnlineMode,
                     floodgatePrefix: s.floodgatePrefix,
+                    hash: s.hash,
+                    requiredRoleToJoin: s.requiredRoleToJoin,
+                    chatChannels: s.chatChannels ?? [],
+                    statChannels: s.statChannels ?? [],
+                    syncedRoles: s.syncedRoles ?? [],
                 };
-
-                if(s.protocol.isHttpProtocol()) {
-                    return {
-                        ...baseData,
-                        port: s.port,
-                        token: s.token,
-                        requiredRoleToJoin: s.requiredRoleToJoin,
-                        chatChannels: s.chatChannels ?? [],
-                        statChannels: s.statChannels ?? [],
-                        syncedRoles: s.syncedRoles ?? [],
-                        protocol: 'http',
-                    };
-                }
-                else if(s.protocol.isFtpProtocol()) {
-                    return {
-                        ...baseData,
-                        port: s.port,
-                        password: s.password,
-                        username: s.username,
-                        protocol: s.protocol.sftp ? 'sftp' : 'ftp',
-                    };
-                }
-                else if(s.protocol.isWebSocketProtocol()) {
-                    return {
-                        ...baseData,
-                        hash: s.hash,
-                        requiredRoleToJoin: s.requiredRoleToJoin,
-                        chatChannels: s.chatChannels ?? [],
-                        statChannels: s.statChannels ?? [],
-                        syncedRoles: s.syncedRoles ?? [],
-                        protocol: 'websocket',
-                    };
-                }
             }),
         };
     }

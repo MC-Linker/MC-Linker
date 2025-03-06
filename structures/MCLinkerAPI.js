@@ -172,7 +172,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 const port = request.body.ip.split(':')[1];
 
                 /** @type {ServerConnection} */
-                const server = client.serverConnections.cache.get(id)?.servers
+                const server = client.serverConnections.cache.get(id)?.connections
                     .find(s => s.protocol.isHttpProtocol() && s.ip === ip && s.port === parseInt(port));
                 //If no connection on that guild send disconnection status
                 if(!server) reply.status(403).send({});
@@ -265,31 +265,83 @@ export default class MCLinkerAPI extends EventEmitter {
         await this.fastify.ready(); //Await websocket plugin loading
         this.websocket = this.fastify.io;
 
-        this.websocket.on('connection', socket => {
-            const [id] = socket.handshake.auth.code?.split(':') ?? [];
+        this.websocket.on('connection', async socket => {
+            const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
 
-            //Check if awaiting verification (will be handled by connect command)
-            if(this.client.commands.get('connect')?.wsVerification?.has(id)) return;
+            //Check if awaiting new verification
+            if(this.client.commands.get('connect')?.wsVerification?.has(id)) {
+                const wsVerification = this.client.commands.get('connect').wsVerification;
 
-            const token = socket.handshake.auth.token;
-            const hash = createHash(token);
+                const {
+                    code: serverCode,
+                    shard,
+                    requiredRoleToJoin,
+                    displayIp,
+                    online,
+                } = wsVerification.get(id) ?? {};
+                try {
+                    if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
 
-            /** @type {?ServerConnection} */
-            const server = this.client.serverConnections.cache.find(c => c.servers.find(s => s.protocol.isWebSocketProtocol() && c.hash === hash));
-            if(!server) return socket.disconnect();
+                    this.client.commands.get('connect').wsVerification.delete(id);
+                    socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
 
-            //Update data
-            server.edit({
-                ip: socket.handshake.address,
-                path: socket.handshake.query.path,
-                online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
-                floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                version: Number(socket.handshake.query.version.split('.')[1]),
-                worldPath: socket.handshake.query.worldPath,
-            });
+                    const hash = this.client.utils.createHash(socket.handshake.auth.token);
+                    /** @type {LinkedServerData} */
+                    const serverData = {
+                        id,
+                        ip: socket.handshake.address,
+                        path: socket.handshake.query.path,
+                        chatChannels: [],
+                        statChannels: [],
+                        online: online ?? socket.handshake.query.online === 'true',
+                        forceOnlineMode: online !== undefined,
+                        floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                        version: Number(socket.handshake.query.version.split('.')[1]),
+                        worldPath: socket.handshake.query.worldPath,
+                        protocol: 'websocket',
+                        socket,
+                        hash,
+                        requiredRoleToJoin,
+                        displayIp,
+                    };
 
-            server.protocol.updateSocket(socket);
-            this.addWebsocketListeners(socket, server, hash);
+                    await this.client.serverConnections.connect(serverData);
+
+                    this.client.api.addWebsocketListeners(socket, id, hash);
+
+                    await this.client.shard.broadcastEval((c, { id }) => {
+                        c.emit('editConnectResponse', id, 'success'); //Tells the connect command to update the response embed
+                    }, { context: { id }, shard });
+                }
+                catch(err) {
+                    await this.client.shard.broadcastEval((c, { id, error }) => {
+                        c.emit('editConnectResponse', id, 'error', { error_stack: error });
+                    }, { context: { id, error: err.stack }, shard });
+                    socket.disconnect(true);
+                }
+            }
+            else { // Server is reconnecting
+                const token = socket.handshake.auth.token;
+                const hash = createHash(token);
+
+                const serverConnection = this.client.serverConnections.cache.get(socket.handshake.query.id);
+                const server = serverConnection.links.get(socket.handshake.query.ip);
+
+                if(server.hash !== hash) return socket.disconnect();
+
+                //Update data
+                server.edit({
+                    ip: socket.handshake.address,
+                    path: socket.handshake.query.path,
+                    online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
+                    floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                    version: Number(socket.handshake.query.version.split('.')[1]),
+                    worldPath: socket.handshake.query.worldPath,
+                });
+
+                server.updateSocket(socket);
+                this.addWebsocketListeners(socket, server, hash);
+            }
         });
 
         this.client.emit('apiReady', this);
@@ -299,17 +351,17 @@ export default class MCLinkerAPI extends EventEmitter {
     /**
      * Adds websocket listeners to the provided socket instance.
      * @param {Socket} socket - The socket to add the listeners to.
-     * @param {ServerConnectionResolvable} serverResolvable - The server-connection related to the socket.
+     * @param {LinkedServer} server - The linked server related to the socket.
      * @param {string} hash - The hash to use for verifying server-connections.
      */
-    addWebsocketListeners(socket, serverResolvable, hash) {
+    addWebsocketListeners(socket, server, hash) {
         async function getServerConnectionWebsocket(client, rateLimiter = null, callback) {
             try {
                 if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
 
                 //Update server variable to ensure it wasn't disconnected in the meantime
                 /** @type {?ServerConnection} */
-                const connection = client.serverConnections.cache.find(conn => conn.servers
+                const connection = client.serverConnections.cache.find(conn => conn.links
                     .some(s => s.protocol.isWebSocketProtocol() && s.hash === hash));
 
                 //If no connection on that guild, disconnect socket
@@ -336,9 +388,6 @@ export default class MCLinkerAPI extends EventEmitter {
             });
         }
 
-        /** @type {ServerConnection<WebSocketProtocol>} */
-        const server = this.client.serverConnections.resolve(serverResolvable);
-
         socket.on('disconnect', reason => {
             if(!['server namespace disconnect', 'client namespace disconnect'].includes(reason)) {
                 server.chatChannels.forEach(chatChannel => {
@@ -348,7 +397,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 });
             }
 
-            server.protocol.updateSocket(null);
+            server.updateSocket(null);
         });
     }
 
@@ -393,7 +442,7 @@ export default class MCLinkerAPI extends EventEmitter {
             argPlaceholder.advancement_title = advancementTitle;
             argPlaceholder.advancement_description = advancementDesc;
         }
-        else if(type === 'death' && (!message || message === '')) argPlaceholder.message = keys.api.plugin.success.default_death_message;
+        else if(type === 'death' && (!message || message === '')) argPlaceholder.message = addPh(keys.api.plugin.success.default_death_message, argPlaceholder);
 
         const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojisAndColors(), { 'timestamp_now': Date.now() });
         if(type !== 'chat') {

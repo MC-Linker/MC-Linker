@@ -21,8 +21,9 @@ import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import mojangson from 'mojangson';
 import { Authflow } from 'prismarine-auth';
-import WebSocketProtocol from '../structures/WebSocketProtocol.js';
-import { FilePath } from '../structures/Protocol.js';
+import LinkedServer from '../structures/LinkedServer.js';
+
+import { FilePath } from '../structures/ServerConnection.js';
 
 const mcData = minecraft_data('1.20.4');
 
@@ -348,7 +349,7 @@ const defaultStatusRespones = {
 
 /**
  * Handles the response of a protocol call.
- * @param {?ProtocolResponse} response - The response to handle.
+ * @param {?PluginResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
  * @param {?TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
@@ -358,7 +359,7 @@ const defaultStatusRespones = {
 export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}, ...placeholders) {
     placeholders.push({ data: JSON.stringify(response?.data ?? '') });
 
-    if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
+    if(!response && (protocol instanceof HttpProtocol || protocol instanceof LinkedServer)) {
         await interaction?.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
         return false;
     }
@@ -383,7 +384,7 @@ export async function handleProtocolResponse(response, protocol, interaction, st
 
 /**
  * Handles multiple responses of protocol calls.
- * @param {?ProtocolResponse[]} responses - The responses to handle.
+ * @param {?PluginResponse[]} responses - The responses to handle.
  * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.

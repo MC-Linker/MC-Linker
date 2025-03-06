@@ -221,48 +221,45 @@ export default class MCLinker extends Discord.Client {
         const serverConnectionSchema = new Schema({
             _id: { type: String },
             serverSettings: { type: String, ref: 'ServerSettingsConnections' },
-            servers: [{
-                ip: String,
-                name: String,
-                version: Number,
-                path: String,
-                worldPath: String,
-                online: Boolean,
-                forceOnlineMode: Boolean,
-                floodgatePrefix: String,
-                requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
-                displayIp: String,
-                protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
-                port: Number,
-                username: String,
-                password: String,
-                token: String,
-                hash: String,
-                chatChannels: [{
-                    _id: { type: String },
-                    types: [{
-                        type: String,
-                        enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
-                    }],
-                    allowDiscordToMinecraft: Boolean,
-                    webhook: String,
-                }],
-                statChannels: [{
-                    _id: { type: String },
-                    type: { type: String, enum: ['online', 'max', 'members'] },
-                    names: {
-                        online: String,
-                        offline: String,
-                        members: String,
-                    },
-                }],
-                syncedRoles: [{
-                    _id: { type: String },
+            connections: {
+                key: String, value: {
+                    ip: String,
                     name: String,
-                    isGroup: Boolean,
-                    players: [String],
-                }],
-            }],
+                    version: Number,
+                    path: String,
+                    worldPath: String,
+                    online: Boolean,
+                    forceOnlineMode: Boolean,
+                    floodgatePrefix: String,
+                    requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
+                    displayIp: String,
+                    hash: String,
+                    chatChannels: [{
+                        _id: { type: String },
+                        types: [{
+                            type: String,
+                            enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
+                        }],
+                        allowDiscordToMinecraft: Boolean,
+                        webhook: String,
+                    }],
+                    statChannels: [{
+                        _id: { type: String },
+                        type: { type: String, enum: ['online', 'max', 'members'] },
+                        names: {
+                            online: String,
+                            offline: String,
+                            members: String,
+                        },
+                    }],
+                    syncedRoles: [{
+                        _id: { type: String },
+                        name: String,
+                        isGroup: Boolean,
+                        players: [String],
+                    }],
+                },
+            },
         });
 
         const serverSettingsConnectionSchema = new Schema({

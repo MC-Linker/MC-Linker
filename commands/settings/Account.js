@@ -36,11 +36,11 @@ export default class Account extends Command {
 
             const successIPs = [];
             let user;
-            if(!serverConnection.servers.length) return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
+            if(!serverConnection.links.length) return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
 
             // Send errors to interaction when there's only one server
-            if(serverConnection.servers.length === 1) {
-                const server = serverConnection.servers[0];
+            if(serverConnection.links.length === 1) {
+                const server = serverConnection.links[0];
                 if(!server.protocol.isPluginProtocol()) return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
                 const {
                     error,
@@ -55,7 +55,7 @@ export default class Account extends Command {
                 successIPs.push(server.displayIp ?? server.ip);
             }
             else {
-                for(const server of serverConnection.servers) {
+                for(const server of serverConnection.links) {
                     if(!server.protocol.isPluginProtocol()) continue;
 
                     const {
@@ -100,7 +100,7 @@ export default class Account extends Command {
 
             await client.userConnections.disconnect(interaction.user.id);
 
-            for(const server of serverConnection.servers) {
+            for(const server of serverConnection.links) {
                 if(server.protocol.isPluginProtocol() && server.requiredRoleToJoin)
                     await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
             }
@@ -132,7 +132,7 @@ export default class Account extends Command {
 
             const guild = await client.guilds.fetch(verificationData.serverConnection.id);
             const member = await guild.members.fetch(verificationData.user.id);
-            for(const server of verificationData.serverConnection.servers) await verificationData.serverConnection.syncRoles(guild, member, connection);
+            for(const server of verificationData.serverConnection.links) await verificationData.serverConnection.syncRoles(guild, member, connection);
 
             clearTimeout(verificationData.timeout);
             await verificationData.interaction.replyTl(keys.commands.account.success.verified, ph.emojisAndColors());

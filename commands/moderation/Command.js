@@ -6,7 +6,8 @@ import { codeBlockFromCommandResponse, MaxAutoCompleteChoices } from '../../util
 import minecraft_data from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' with { type: 'json' };
-import { FilePath } from '../../structures/Protocol.js';
+
+import { FilePath } from '../../structures/ServerConnection.js';
 
 const mcData = minecraft_data('1.20.4');
 
@@ -151,9 +152,8 @@ export default class Command extends AutocompleteCommand {
     async execute(interaction, client, args, serverConnection) {
         if(!await super.execute(interaction, client, args, serverConnection)) return;
 
-        const command = args[0];
-        args.shift(); //Shift commandName
-        const server = args[9];
+        const command = args.shift();
+        const server = args.pop();
 
         for(let arg of args) {
             let user;

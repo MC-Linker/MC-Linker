@@ -99,7 +99,7 @@ client.on(Discord.Events.MessageCreate, async message => {
             });
 
             Promise.allSettled(client.serverConnections.cache.map(async conn => {
-                for(const server of conn.servers) {
+                for(const server of conn.links) {
                     if(!conn.protocol.isPluginProtocol() || !conn.syncedRoles || !conn.syncedRoles.length) continue;
                     try {
                         const guild = await client.guilds.fetch(conn.id);
@@ -118,7 +118,7 @@ client.on(Discord.Events.MessageCreate, async message => {
     const conn = client.serverConnections.cache.get(message.guildId);
 
     if(!message.content.startsWith(process.env.PREFIX)) {
-        for(const server of conn.servers) {
+        for(const server of conn.links) {
             /** @type {ChatChannelData} */
             const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
             //Explicit check for false
@@ -199,7 +199,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
                 const args = await getArgs(interaction);
                 if(args.indexOf(interaction.options.getFocused()) === command.serverIndex) {
                     return await interaction.respond(
-                        [...conn.servers.map(s => s.name ?? s.getDisplayIp())]
+                        [...conn.links.map(s => s.name ?? s.getDisplayIp())]
                             .filter(s => s.toLowerCase().includes(interaction.options.getFocused().toLowerCase())),
                     );
                 }
@@ -237,7 +237,7 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
     const conn = client.serverConnections.cache.get(newMember.guild.id);
     if(!conn) return;
 
-    for(const server of conn.servers) {
+    for(const server of conn.links) {
         if(!server.protocol.isPluginProtocol() || !server.syncedRoles?.length) continue;
 
         /** @type {UserConnection} */
