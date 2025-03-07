@@ -16,7 +16,7 @@
   "homepage": "https://github.com/MC-Linker/MC-Linker#readme",
   "type": "module",
   "dependencies": {
-    "@fastify/cookie": "^11.0.2",
+    "@fastify/cookie": "^9.4.0",
     "bufferutil": "^4.0.7",
     "d3-hierarchy": "^3.1.2",
     "discord.js": "^14.11.0",

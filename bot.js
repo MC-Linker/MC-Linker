@@ -174,10 +174,10 @@ client.on(Discord.Events.MessageCreate, async message => {
 client.on(Discord.Events.InteractionCreate, async interaction => {
     interaction = addTranslatedResponses(interaction);
 
-    //check if in guild
-    if(!interaction.guildId) return interaction.replyTl(keys.main.no_access.not_in_guild);
-
     if(interaction.isChatInputCommand()) {
+        //check if in guild
+        if(!interaction.inGuild()) return interaction.replyTl(keys.main.no_access.not_in_guild);
+
         const command = client.commands.get(interaction.commandName);
 
         //Making interaction compatible with prefix commands
@@ -208,6 +208,9 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         }
     }
     else if(interaction.isAutocomplete()) {
+        //check if in guild
+        if(!interaction.inGuild()) return;
+
         const command = client.commands.get(interaction.commandName);
 
         try {

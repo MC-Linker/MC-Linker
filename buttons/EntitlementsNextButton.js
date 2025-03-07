@@ -1,5 +1,6 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
+import { getReplyOptions } from '../utilities/messages.js';
 
 export default class EntitlementsNextButton extends Button {
 
@@ -8,6 +9,6 @@ export default class EntitlementsNextButton extends Button {
     }
 
     async execute(interaction, client, args) {
-        return await interaction.replyTl(keys.entitlements.success.details); //TODO make explanation website + talk about intents
+        return await interaction.deferUpdate(getReplyOptions(keys.entitlements.success.details)); //TODO make explanation website + talk about intents
     }
 }

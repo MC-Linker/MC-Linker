@@ -1,6 +1,6 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
-import { getComponent } from '../utilities/messages.js';
+import { getComponent, getReplyOptions } from '../utilities/messages.js';
 
 export default class EntitlementsDetailsButton extends Button {
 
@@ -36,6 +36,6 @@ export default class EntitlementsDetailsButton extends Button {
         // Automated subdomain for them?
         // Tell them to change bot link in the plugin config
 
-        return await interaction.replyTl(keys.entitlements.success.finish);
+        return await interaction.deferUpdate(getReplyOptions(keys.entitlements.success.finish)); //Add control buttons (start/stop, edit details)
     }
 }
