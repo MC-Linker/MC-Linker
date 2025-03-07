@@ -9,6 +9,6 @@ export default class EntitlementsNextButton extends Button {
     }
 
     async execute(interaction, client) {
-        return await interaction.deferUpdate(getReplyOptions(keys.entitlements.success.details)); //TODO make explanation website + talk about intents
+        return await interaction.update(getReplyOptions(keys.entitlements.success.details)); //TODO make explanation website + talk about intents
     }
 }

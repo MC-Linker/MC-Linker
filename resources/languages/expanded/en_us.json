@@ -220,43 +220,39 @@
         ]
       },
       "details_modal": {
+        "type": "Modal",
+        "custom_id": "entitlements_details_modal",
+        "title": "Enter Details",
         "components": [
           {
-            "type": "Modal",
-            "custom_id": "entitlements_details_modal",
-            "title": "Enter Details",
-            "components": [
-              {
-                "type": "TextInput",
-                "custom_id": "id",
-                "label": "Client Id",
-                "placeholder": "000000000000000000",
-                "required": true,
-                "min_length": 17,
-                "max_length": 19,
-                "style": "Short"
-              },
-              {
-                "type": "TextInput",
-                "custom_id": "secret",
-                "label": "Client Secret",
-                "placeholder": "kxbsDRU5UfAaiO7ar9GFMHSlmTwYaIYn",
-                "required": false,
-                "min_length": 20,
-                "max_length": 40,
-                "style": "Short"
-              },
-              {
-                "type": "TextInput",
-                "custom_id": "token",
-                "label": "Bot Token",
-                "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
-                "required": true,
-                "min_length": 50,
-                "max_length": 80,
-                "style": "Short"
-              }
-            ]
+            "type": "TextInput",
+            "custom_id": "id",
+            "label": "Client Id",
+            "placeholder": "000000000000000000",
+            "required": true,
+            "min_length": 17,
+            "max_length": 19,
+            "style": "Short"
+          },
+          {
+            "type": "TextInput",
+            "custom_id": "secret",
+            "label": "Client Secret",
+            "placeholder": "kxbsDRU5UfAaiO7ar9GFMHSlmTwYaIYn",
+            "required": false,
+            "min_length": 20,
+            "max_length": 40,
+            "style": "Short"
+          },
+          {
+            "type": "TextInput",
+            "custom_id": "token",
+            "label": "Bot Token",
+            "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+            "required": true,
+            "min_length": 50,
+            "max_length": 80,
+            "style": "Short"
           }
         ]
       }
