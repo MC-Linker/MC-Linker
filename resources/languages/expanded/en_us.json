@@ -163,6 +163,114 @@
       }
     }
   },
+  "entitlements": {
+    "success": {
+      "start": {
+        "embeds": [
+          {
+            "title": "Subscription Successful",
+            "description": "**Thank you for supporting MC Linker!**\nYou have successfully subscribed to the **Customize MC Linker** subscription.",
+            "color": "Green",
+            "fields": [
+              {
+                "name": "Get Started",
+                "value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true)\nYou can read more about creating your own bot application in [this artcile](https://discordjs.guide/preparations/setting-up-a-bot-application.html)."
+              }
+            ],
+            "footer": {
+              "text": "Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!"
+            }
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Next",
+            "custom_id": "entitlements_next"
+          }
+        ]
+      },
+      "details": {
+        "embeds": [
+          {
+            "title": "Subscription Successful",
+            "color": "Green",
+            "fields": [
+              {
+                "name": "Enter Bot Details",
+                "value": "The **Client ID** and **Client Secret** can be found in the \"OAuth2\" section and the **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Client Secret and Bot Token, you will have to reset them and then copy them together with the Client ID into the respective fields of the form that opens when pressing the button below.\n\n**Warning: Do not share the Client Secret and Bot Token with anyone!**"
+              }
+            ],
+            "footer": {
+              "text": "Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!"
+            }
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Enter Details",
+            "custom_id": "entitlements_details"
+          }
+        ]
+      },
+      "finish": {
+        "embeds": [
+          {
+            "title": "Subscription Successful",
+            "description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.",
+            "color": "Green",
+            "footer": {
+              "text": "Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!"
+            }
+          }
+        ]
+      },
+      "details_modal": {
+        "components": [
+          {
+            "type": "Modal",
+            "custom_id": "entitlements_details_modal",
+            "title": "Enter Details",
+            "components": [
+              {
+                "type": "TextInput",
+                "custom_id": "id",
+                "label": "Client Id",
+                "placeholder": "000000000000000000",
+                "required": true,
+                "min_length": 17,
+                "max_length": 19,
+                "style": "Short"
+              },
+              {
+                "type": "TextInput",
+                "custom_id": "secret",
+                "label": "Client Secret",
+                "placeholder": "kxbsDRU5UfAaiO7ar9GFMHSlmTwYaIYn",
+                "required": false,
+                "min_length": 20,
+                "max_length": 40,
+                "style": "Short"
+              },
+              {
+                "type": "TextInput",
+                "custom_id": "token",
+                "label": "Bot Token",
+                "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+                "required": true,
+                "min_length": 50,
+                "max_length": 80,
+                "style": "Short"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
   "commands": {
     "eval": {
       "warnings": {
@@ -2853,7 +2961,7 @@
         {
           "type": "Subcommand",
           "name": "killed_by",
-          "description": "Statistics related to the times of a player being killed by entities.",
+          "description": "Statistics related to the times off a player being killed by entities.",
           "options": [
             {
               "type": "String",

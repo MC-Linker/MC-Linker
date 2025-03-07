@@ -273,6 +273,22 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
     if(resp.status === 200) await server.edit({});
 });
 
+client.on(Discord.Events.EntitlementCreate, async entitlement => {
+    const user = await entitlement.fetchUser();
+    const dm = await user.createDM();
+    console.info(`${user.username} (${user.id}) bought an entitlement!`);
+
+    await dm.send(getReplyOptions(keys.entitlements.success.start));
+});
+
+client.on(Discord.Events.EntitlementDelete, async entitlement => {
+
+});
+
+client.on(Discord.Events.EntitlementUpdate, async entitlement => {
+
+});
+
 /**
  * Send a message to a guild with the given key
  * This will try to send the message to the system channel first
