@@ -1,16 +1,16 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
-import { getComponent, getReplyOptions } from '../utilities/messages.js';
+import { getModal, getReplyOptions } from '../utilities/messages.js';
 
 export default class EntitlementsDetailsButton extends Button {
 
     constructor() {
-        super({ id: `entitlements_details` });
+        super({ id: 'entitlements_details', defer: false });
     }
 
-    async execute(interaction, client, args) {
+    async execute(interaction, client) {
         //Send modal
-        await interaction.showModal(getComponent(keys.entitlements.success.details_modal));
+        await interaction.showModal(getModal(keys.entitlements.success.details_modal));
         const modal = await interaction.awaitModalSubmit({ time: 300_000 });
         const secret = modal.fields.getTextInputValue('secret');
         const token = modal.fields.getTextInputValue('token');
