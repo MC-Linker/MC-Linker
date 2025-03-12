@@ -82,7 +82,7 @@ export default class Command {
      * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @param {any[]} args - The command arguments set by the user.
-     * @param {requiresConnectedPlugin extends true ? ServerConnection<PluginProtocol> : ServerConnection<Protocol>} server - The connection of the server the command was executed in.
+     * @param {ServerConnection} server - The connection of the server the command was executed in.
      * @returns {Promise<?boolean>|?boolean}
      * @abstract
      */

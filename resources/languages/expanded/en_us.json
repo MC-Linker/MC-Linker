@@ -210,11 +210,39 @@
           }
         ]
       },
+      "cloning": {
+        "embeds": [
+          {
+            "title": "Setting Up Your Custom MC-Linker",
+            "description": "*Copying MC-Linker...*",
+            "color": "Green"
+          }
+        ],
+        "components": []
+      },
+      "deploying": {
+        "embeds": [
+          {
+            "title": "Setting Up Your Custom MC-Linker",
+            "description": "*Deploying Slash Commands...",
+            "color": "Green"
+          }
+        ]
+      },
+      "starting_up": {
+        "embeds": [
+          {
+            "title": "Setting Up Your Custom MC-Linker",
+            "description": "*Starting up...*",
+            "color": "Green"
+          }
+        ]
+      },
       "finish": {
         "embeds": [
           {
             "title": "Subscription Successful",
-            "description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+            "description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
             "color": "Green"
           }
         ]
@@ -236,23 +264,31 @@
           },
           {
             "type": "TextInput",
-            "custom_id": "secret",
-            "label": "Client Secret",
-            "placeholder": "kxbsDRU5UfAaiO7ar9GFMHSlmTwYaIYn",
-            "required": false,
-            "min_length": 20,
-            "max_length": 40,
-            "style": "Short"
-          },
-          {
-            "type": "TextInput",
             "custom_id": "token",
             "label": "Bot Token",
             "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
             "required": true,
             "min_length": 50,
-            "max_length": 80,
+            "max_length": 70,
             "style": "Short"
+          }
+        ]
+      }
+    },
+    "errors": {
+      "no_entitlement": {
+        "embeds": [
+          {
+            "title": "No Entitlement",
+            "description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
+            "color": "Red"
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Premium",
+            "sku_id": "1166098447665995807"
           }
         ]
       }
@@ -2519,6 +2555,11 @@
           "required": false
         }
       ]
+    },
+    "customize": {
+      "name": "customize",
+      "description": "Customize the bot's appearance to your likings.",
+      "type": "ChatInput"
     },
     "advancements": {
       "name": "advancements",

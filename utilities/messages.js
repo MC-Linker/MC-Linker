@@ -346,6 +346,11 @@ export async function replyTl(interaction, key, ...placeholders) {
  * @returns {Promise<Message>|Message}
  */
 export async function replyOptions(interaction, options) {
+    if(options.ephemeral) {
+        options.flags = Discord.MessageFlags.Ephemeral;
+        delete options.ephemeral;
+    }
+
     function handleError(err) {
         console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { 'interaction': interaction }));
         try {
@@ -479,6 +484,7 @@ export function getComponent(key, ...placeholders) {
             if(component.emoji) componentBuilder.setEmoji(component.emoji);
             if(component.url) componentBuilder.setURL(component.url);
             if(component.label) componentBuilder.setLabel(component.label);
+            if(component.sku_id) componentBuilder.setSKUId(component.sku_id);
 
             break;
         case Discord.ComponentType.StringSelect:

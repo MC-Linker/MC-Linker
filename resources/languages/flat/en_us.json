@@ -124,8 +124,24 @@
   "entitlements.success.details.components.0.custom_id": "entitlements_details",
 
 
+  "entitlements.success.cloning.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.cloning.embeds.0.description": "*Copying MC-Linker...*",
+  "entitlements.success.cloning.embeds.0.color": "Green",
+  "entitlements.success.cloning.components": [],
+
+
+  "entitlements.success.deploying.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.deploying.embeds.0.description": "*Deploying Slash Commands...",
+  "entitlements.success.deploying.embeds.0.color": "Green",
+
+
+  "entitlements.success.starting_up.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.starting_up.embeds.0.description": "*Starting up...*",
+  "entitlements.success.starting_up.embeds.0.color": "Green",
+
+
   "entitlements.success.finish.embeds.0.title": "Subscription Successful",
-  "entitlements.success.finish.embeds.0.description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.success.finish.embeds.0.description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
   "entitlements.success.finish.embeds.0.color": "Green",
 
 
@@ -143,22 +159,19 @@
   "entitlements.success.details_modal.components.0.style": "Short",
 
   "entitlements.success.details_modal.components.1.type": "TextInput",
-  "entitlements.success.details_modal.components.1.custom_id": "secret",
-  "entitlements.success.details_modal.components.1.label": "Client Secret",
-  "entitlements.success.details_modal.components.1.placeholder": "kxbsDRU5UfAaiO7ar9GFMHSlmTwYaIYn",
-  "entitlements.success.details_modal.components.1.required": false,
-  "entitlements.success.details_modal.components.1.min_length": 20,
-  "entitlements.success.details_modal.components.1.max_length": 40,
+  "entitlements.success.details_modal.components.1.custom_id": "token",
+  "entitlements.success.details_modal.components.1.label": "Bot Token",
+  "entitlements.success.details_modal.components.1.placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+  "entitlements.success.details_modal.components.1.required": true,
+  "entitlements.success.details_modal.components.1.min_length": 50,
+  "entitlements.success.details_modal.components.1.max_length": 70,
   "entitlements.success.details_modal.components.1.style": "Short",
-
-  "entitlements.success.details_modal.components.2.type": "TextInput",
-  "entitlements.success.details_modal.components.2.custom_id": "token",
-  "entitlements.success.details_modal.components.2.label": "Bot Token",
-  "entitlements.success.details_modal.components.2.placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
-  "entitlements.success.details_modal.components.2.required": true,
-  "entitlements.success.details_modal.components.2.min_length": 50,
-  "entitlements.success.details_modal.components.2.max_length": 80,
-  "entitlements.success.details_modal.components.2.style": "Short",
+  "entitlements.errors.no_entitlement.embeds.0.title": "No Entitlement",
+  "entitlements.errors.no_entitlement.embeds.0.description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
+  "entitlements.errors.no_entitlement.embeds.0.color": "Red",
+  "entitlements.errors.no_entitlement.components.0.type": "Button",
+  "entitlements.errors.no_entitlement.components.0.style": "Premium",
+  "entitlements.errors.no_entitlement.components.0.sku_id": "1166098447665995807",
 
 
 
@@ -1304,9 +1317,9 @@
   "data.help.options.0.name": "command",
   "data.help.options.0.description": "Set the command or category of which you want to get infos.",
   "data.help.options.0.required": false,
-
-
-
+  "data.customize.name": "customize",
+  "data.customize.description": "Customize the bot's appearance to your likings.",
+  "data.customize.type": "ChatInput",
   "data.advancements.name": "advancements",
   "data.advancements.type": "ChatInput",
   "data.advancements.long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",

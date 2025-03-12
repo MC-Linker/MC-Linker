@@ -1,0 +1,81 @@
+import Button from '../structures/Button.js';
+import keys from '../utilities/keys.js';
+import { getModal, getReplyOptions } from '../utilities/messages.js';
+import { execSync } from 'child_process';
+import fs from 'fs-extra';
+
+export default class EntitlementsDetails extends Button {
+
+    constructor() {
+        super({ id: 'entitlements_details', defer: false });
+    }
+
+    async execute(interaction, client) {
+        if(interaction.entitlements.size === 0)
+            return await interaction.update(getReplyOptions(keys.entitlements.errors.no_entitlement));
+
+        try {
+            //Send modal
+            await interaction.showModal(getModal(keys.entitlements.success.details_modal));
+            const modal = await interaction.awaitModalSubmit({ time: 300_000 });
+            if(!modal) return await interaction.update(getReplyOptions(keys.entitlements.errors.timeout));
+            const token = modal.fields.getTextInputValue('token');
+            const id = modal.fields.getTextInputValue('id');
+            console.log(token, id);
+            await modal.deferUpdate();
+
+            // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
+            await interaction.replyTl(keys.entitlements.success.cloning);
+            execSync(`git clone https://github.com/MC-Linker/MC-Linker ../Custom-MC-Linker/${interaction.user.id}`);
+
+            const botPort = 30000; //TODO
+            const botFolder = `../Custom-MC-Linker/${interaction.user.id}`;
+            const env = {
+                BOT_PORT: botPort,
+                PLUGIN_PORT: process.env.PLUGIN_PORT,
+                CLIENT_ID: id,
+                CLIENT_SECRET: '',
+                TOKEN: token,
+                COOKIE_SECRET: crypto.randomUUID(),
+                DISCORD_LINK: process.env.DISCORD_LINK,
+                GUILD_ID: `\'${process.env.GUILD_ID}\'`,
+                OWNER_ID: process.env.OWNER_ID,
+                PLUGIN_VERSION: process.env.PLUGIN_VERSION,
+                PREFIX: process.env.PREFIX,
+                LINKED_ROLES_REDIRECT_URI: `http://api.mclinker.com:${botPort}/linked-role/callback`,
+                MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
+                MICROSOFT_PASSWORD: process.env.MICROSOFT_PASSWORD,
+                AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
+                SERVICE_NAME: `custom-mc-linker_${interaction.user.id}`,
+                DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${interaction.user.id}`,
+            };
+
+            const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
+            await fs.writeFile(`${botFolder}/.env`, stringifiedEnv);
+
+            // Copy docker-compose.yml
+            await fs.copy('../Custom-MC-Linker/docker-compose.yml', `${botFolder}/docker-compose.yml`);
+
+            // Docker it up
+            await interaction.replyTl(keys.entitlements.success.starting_up);
+            execSync(`docker build . -t lianecx/${env.SERVICE_NAME} && docker compose up -d`, { cwd: botFolder });
+
+            //Check for errors (wrong token, secret etc)
+
+            // Run slash command script
+            await interaction.replyTl(keys.entitlements.success.deploying);
+            execSync(`docker exec -it ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, { cwd: botFolder });
+
+            //Send success
+            //For linked roles they'll have to add endpoints in the portal and provide the secret
+
+            // Automated subdomain for them?
+            // Tell them to change bot port in the plugin config
+
+            return await interaction.replyTl(keys.entitlements.success.finish, { port: botPort }); //TODO Add control buttons (start/stop, edit details)
+        }
+        catch(e) {
+            console.error(e);
+        }
+    }
+}
