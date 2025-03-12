@@ -196,7 +196,7 @@
             "fields": [
               {
                 "name": "Enter Bot Details",
-                "value": "The **Client ID** and **Client Secret** can be found in the \"OAuth2\" section and the **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Client Secret and Bot Token, you will have to reset them and then copy them together with the Client ID into the respective fields of the form that opens when pressing the button below.\n\n**Warning: Do not share the Client Secret and Bot Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                "value": "The **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
               }
             ]
           }
@@ -254,16 +254,6 @@
         "components": [
           {
             "type": "TextInput",
-            "custom_id": "id",
-            "label": "Client Id",
-            "placeholder": "000000000000000000",
-            "required": true,
-            "min_length": 17,
-            "max_length": 19,
-            "style": "Short"
-          },
-          {
-            "type": "TextInput",
             "custom_id": "token",
             "label": "Bot Token",
             "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
@@ -289,6 +279,28 @@
             "type": "Button",
             "style": "Premium",
             "sku_id": "1166098447665995807"
+          }
+        ]
+      }
+    },
+    "warnings": {
+      "details": {
+        "embeds": [
+          {
+            "title": "Incorrect Bot Token",
+            "fields": [
+              {
+                "description": "Please enter a correct token!\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+              }
+            ]
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Enter Details",
+            "custom_id": "entitlements_details"
           }
         ]
       }

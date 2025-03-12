@@ -116,7 +116,7 @@
   "entitlements.success.details.embeds.0.color": "Green",
 
   "entitlements.success.details.embeds.0.fields.0.name": "Enter Bot Details",
-  "entitlements.success.details.embeds.0.fields.0.value": "The **Client ID** and **Client Secret** can be found in the \"OAuth2\" section and the **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Client Secret and Bot Token, you will have to reset them and then copy them together with the Client ID into the respective fields of the form that opens when pressing the button below.\n\n**Warning: Do not share the Client Secret and Bot Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.success.details.embeds.0.fields.0.value": "The **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
 
   "entitlements.success.details.components.0.type": "Button",
   "entitlements.success.details.components.0.style": "Primary",
@@ -150,22 +150,15 @@
   "entitlements.success.details_modal.title": "Enter Details",
 
   "entitlements.success.details_modal.components.0.type": "TextInput",
-  "entitlements.success.details_modal.components.0.custom_id": "id",
-  "entitlements.success.details_modal.components.0.label": "Client Id",
-  "entitlements.success.details_modal.components.0.placeholder": "000000000000000000",
+  "entitlements.success.details_modal.components.0.custom_id": "token",
+  "entitlements.success.details_modal.components.0.label": "Bot Token",
+  "entitlements.success.details_modal.components.0.placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
   "entitlements.success.details_modal.components.0.required": true,
-  "entitlements.success.details_modal.components.0.min_length": 17,
-  "entitlements.success.details_modal.components.0.max_length": 19,
+  "entitlements.success.details_modal.components.0.min_length": 50,
+  "entitlements.success.details_modal.components.0.max_length": 70,
   "entitlements.success.details_modal.components.0.style": "Short",
 
-  "entitlements.success.details_modal.components.1.type": "TextInput",
-  "entitlements.success.details_modal.components.1.custom_id": "token",
-  "entitlements.success.details_modal.components.1.label": "Bot Token",
-  "entitlements.success.details_modal.components.1.placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
-  "entitlements.success.details_modal.components.1.required": true,
-  "entitlements.success.details_modal.components.1.min_length": 50,
-  "entitlements.success.details_modal.components.1.max_length": 70,
-  "entitlements.success.details_modal.components.1.style": "Short",
+
   "entitlements.errors.no_entitlement.embeds.0.title": "No Entitlement",
   "entitlements.errors.no_entitlement.embeds.0.description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
   "entitlements.errors.no_entitlement.embeds.0.color": "Red",
@@ -173,6 +166,14 @@
   "entitlements.errors.no_entitlement.components.0.style": "Premium",
   "entitlements.errors.no_entitlement.components.0.sku_id": "1166098447665995807",
 
+
+  "entitlements.warnings.details.embeds.0.title": "Incorrect Bot Token",
+  "entitlements.warnings.details.embeds.0.fields.0.description": "Please enter a correct token!\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+
+  "entitlements.warnings.details.components.0.type": "Button",
+  "entitlements.warnings.details.components.0.style": "Primary",
+  "entitlements.warnings.details.components.0.label": "Enter Details",
+  "entitlements.warnings.details.components.0.custom_id": "entitlements_details",
 
 
   "commands.eval.warnings.no_command.embeds.0.title": "No Command Specified",

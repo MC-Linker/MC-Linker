@@ -3,6 +3,7 @@ import keys from '../utilities/keys.js';
 import { getModal, getReplyOptions } from '../utilities/messages.js';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
+import Discord from 'discord.js';
 
 export default class EntitlementsDetails extends Button {
 
@@ -20,9 +21,21 @@ export default class EntitlementsDetails extends Button {
             const modal = await interaction.awaitModalSubmit({ time: 300_000 });
             if(!modal) return await interaction.update(getReplyOptions(keys.entitlements.errors.timeout));
             const token = modal.fields.getTextInputValue('token');
-            const id = modal.fields.getTextInputValue('id');
             console.log(token, id);
             await modal.deferUpdate();
+
+            //For linked roles they'll have to add endpoints in the portal and provide the secret
+
+            const testClient = new Discord.Client({ intents: 0 });
+            try {
+                await testClient.login(token);
+            }
+            catch(e) {
+                return await interaction.replyTl(keys.entitlements.errors.invalid_token);
+            }
+            finally {
+                await testClient.destroy();
+            }
 
             // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
             await interaction.replyTl(keys.entitlements.success.cloning);
@@ -33,7 +46,7 @@ export default class EntitlementsDetails extends Button {
             const env = {
                 BOT_PORT: botPort,
                 PLUGIN_PORT: process.env.PLUGIN_PORT,
-                CLIENT_ID: id,
+                CLIENT_ID: testClient.user.id,
                 CLIENT_SECRET: '',
                 TOKEN: token,
                 COOKIE_SECRET: crypto.randomUUID(),
@@ -67,7 +80,6 @@ export default class EntitlementsDetails extends Button {
             execSync(`docker exec -it ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, { cwd: botFolder });
 
             //Send success
-            //For linked roles they'll have to add endpoints in the portal and provide the secret
 
             // Automated subdomain for them?
             // Tell them to change bot port in the plugin config
