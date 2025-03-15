@@ -35,7 +35,7 @@ export default class Help extends AutocompleteCommand {
 
         const respondArrray = categories
             .concat(choices)
-            .filter(o => o.value.includes(interaction.options.getFocused()))
+            .filter(o => o.value.includes(interaction.options.getFocused().toLowerCase()))
             .slice(0, 24);
         return await interaction.respond(respondArrray);
     }
