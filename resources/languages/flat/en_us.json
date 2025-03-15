@@ -168,8 +168,8 @@
 
 
   "entitlements.warnings.invalid_token.embeds.0.title": "Incorrect Bot Token",
-  "entitlements.warnings.invalid_token.embeds.0.fields.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
-  "entitlements.warnings.invalid_token.embeds.0.fields.0.console": "Failed to login to bot with token %error_stack%",
+  "entitlements.warnings.invalid_token.embeds.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.warnings.invalid_token.console": "Failed to login to bot with token %error_stack%",
 
   "entitlements.warnings.invalid_token.components.0.type": "Button",
   "entitlements.warnings.invalid_token.components.0.style": "Primary",
