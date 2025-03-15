@@ -2564,6 +2564,7 @@
           "type": "String",
           "name": "command",
           "description": "Set the command or category of which you want to get infos.",
+          "autocomplete": true,
           "required": false
         }
       ]

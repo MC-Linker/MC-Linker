@@ -1317,10 +1317,13 @@
   "data.help.options.0.type": "String",
   "data.help.options.0.name": "command",
   "data.help.options.0.description": "Set the command or category of which you want to get infos.",
+  "data.help.options.0.autocomplete": true,
   "data.help.options.0.required": false,
+
   "data.customize.name": "customize",
   "data.customize.description": "Customize the bot's appearance to your likings.",
   "data.customize.type": "ChatInput",
+
   "data.advancements.name": "advancements",
   "data.advancements.type": "ChatInput",
   "data.advancements.long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",

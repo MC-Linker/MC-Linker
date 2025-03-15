@@ -101,9 +101,6 @@ await yargs(hideBin(process.argv))
 
 const excludedHelp = ['help'];
 
-const helpChoices = [];
-let helpBuilder;
-
 const commands = [];
 const linkedRoles = [];
 
@@ -112,27 +109,14 @@ if(deployGuild || deployGlobal) {
     for(const command of Object.values(keys.data)) {
         const builder = getCommand(command);
 
-        if(builder.name === 'help') helpBuilder = builder;
-        else commands.push(builder.toJSON()); //Push all commands to `commands`
-
-        //Push help-command choices
-        if(!excludedHelp.includes(builder.name))
-            helpChoices.push({ name: builder.name.toTitleCase(), value: builder.name });
-
+        commands.push(builder.toJSON()); //Push all commands to `commands`
         console.log(`Loaded command: ${builder.name}`);
     }
 
     //Push categories
     const commandFolders = fs.readdirSync('./commands/')
         .filter(file => fs.statSync(`./commands/${file}`).isDirectory());
-    for(const folder of commandFolders) {
-        helpChoices.push({ name: folder.toTitleCase(), value: folder });
-        console.log(`Loaded category: ${folder}`);
-    }
-
-    //Set command and category choices
-    helpBuilder.options[0].choices = helpChoices;
-    commands.push(helpBuilder.toJSON());
+    for(const folder of commandFolders) console.log(`Loaded category: ${folder}`);
 }
 
 if(deployRoles) {

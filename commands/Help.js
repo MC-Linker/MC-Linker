@@ -1,15 +1,23 @@
 import { addPh, fetchCommand, getEmbed, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
-import Command from '../structures/Command.js';
 import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
+import AutocompleteCommand from '../structures/AutocompleteCommand.js';
 
-export default class Help extends Command {
+export default class Help extends AutocompleteCommand {
 
     constructor() {
         super({
             name: 'help',
             requiresConnectedServer: false,
         });
+    }
+
+    async autocomplete(interaction, client) {
+        const choices = client.commands.values()
+            .map(c => {
+                return { name: c.name, value: c.name };
+            }).toArray();
+        return await interaction.respond(choices);
     }
 
     async execute(interaction, client, args, server) {
