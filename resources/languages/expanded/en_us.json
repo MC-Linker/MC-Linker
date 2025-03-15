@@ -169,7 +169,7 @@
         "embeds": [
           {
             "title": "Subscription Successful",
-            "description": "**Thank you for supporting MC Linker!**\nYou have successfully subscribed to the **Customize MC Linker** subscription.",
+            "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
             "color": "Green",
             "fields": [
               {
@@ -270,8 +270,7 @@
         "embeds": [
           {
             "title": "No Subscription",
-            "description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
-            "color": "Red"
+            "description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription."
           }
         ],
         "components": [
@@ -282,13 +281,14 @@
           }
         ]
       },
-      "details": {
+      "invalid_token": {
         "embeds": [
           {
             "title": "Incorrect Bot Token",
             "fields": [
               {
-                "description": "Please enter a correct token!\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+                "console": "Failed to login to bot with token %error_stack%"
               }
             ]
           }

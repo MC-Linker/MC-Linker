@@ -100,7 +100,7 @@
 
 
   "entitlements.success.start.embeds.0.title": "Subscription Successful",
-  "entitlements.success.start.embeds.0.description": "**Thank you for supporting MC Linker!**\nYou have successfully subscribed to the **Customize MC Linker** subscription.",
+  "entitlements.success.start.embeds.0.description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
   "entitlements.success.start.embeds.0.color": "Green",
 
   "entitlements.success.start.embeds.0.fields.0.name": "Get Started",
@@ -161,24 +161,27 @@
 
   "entitlements.warnings.no_entitlement.embeds.0.title": "No Subscription",
   "entitlements.warnings.no_entitlement.embeds.0.description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
-  "entitlements.warnings.no_entitlement.embeds.0.color": "Red",
+
   "entitlements.warnings.no_entitlement.components.0.type": "Button",
   "entitlements.warnings.no_entitlement.components.0.style": "Premium",
   "entitlements.warnings.no_entitlement.components.0.sku_id": "1166098447665995807",
 
 
-  "entitlements.warnings.details.embeds.0.title": "Incorrect Bot Token",
-  "entitlements.warnings.details.embeds.0.fields.0.description": "Please enter a correct token!\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.warnings.invalid_token.embeds.0.title": "Incorrect Bot Token",
+  "entitlements.warnings.invalid_token.embeds.0.fields.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.warnings.invalid_token.embeds.0.fields.0.console": "Failed to login to bot with token %error_stack%",
 
-  "entitlements.warnings.details.components.0.type": "Button",
-  "entitlements.warnings.details.components.0.style": "Primary",
-  "entitlements.warnings.details.components.0.label": "Enter Details",
-  "entitlements.warnings.details.components.0.custom_id": "entitlements_details",
+  "entitlements.warnings.invalid_token.components.0.type": "Button",
+  "entitlements.warnings.invalid_token.components.0.style": "Primary",
+  "entitlements.warnings.invalid_token.components.0.label": "Enter Details",
+  "entitlements.warnings.invalid_token.components.0.custom_id": "entitlements_details",
+
 
 
   "commands.eval.warnings.no_command.embeds.0.title": "No Command Specified",
   "commands.eval.warnings.no_command.embeds.0.description": "Please specify a command to evaluate.",
   "commands.eval.warnings.no_command.console": "No command specified",
+
 
   "commands.eval.success.embeds.0.title": "Successfully Evaluated Command",
   "commands.eval.success.embeds.0.description": "%output%",

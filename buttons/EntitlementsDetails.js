@@ -1,6 +1,6 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
-import { getModal, getReplyOptions } from '../utilities/messages.js';
+import { getModal, getReplyOptions, ph } from '../utilities/messages.js';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import Discord from 'discord.js';
@@ -19,9 +19,8 @@ export default class EntitlementsDetails extends Button {
             //Send modal
             await interaction.showModal(getModal(keys.entitlements.success.details_modal));
             const modal = await interaction.awaitModalSubmit({ time: 300_000 });
-            if(!modal) return await interaction.update(getReplyOptions(keys.entitlements.errors.timeout));
             const token = modal.fields.getTextInputValue('token');
-            console.log(token, id);
+            console.log(token);
             await modal.deferUpdate();
 
             //For linked roles they'll have to add endpoints in the portal and provide the secret
@@ -30,8 +29,8 @@ export default class EntitlementsDetails extends Button {
             try {
                 await testClient.login(token);
             }
-            catch(e) {
-                return await interaction.replyTl(keys.entitlements.errors.invalid_token);
+            catch(err) {
+                return await interaction.replyTl(keys.entitlements.warnings.invalid_token, ph.error(err));
             }
             finally {
                 await testClient.destroy();
