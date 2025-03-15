@@ -12,6 +12,7 @@ export default class Help extends AutocompleteCommand {
         super({
             name: 'help',
             requiresConnectedServer: false,
+            allowUser: true,
         });
     }
 

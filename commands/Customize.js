@@ -7,6 +7,7 @@ export default class Customize extends Command {
         super({
             name: 'customize',
             defer: false,
+            allowUser: true,
         });
     }
 

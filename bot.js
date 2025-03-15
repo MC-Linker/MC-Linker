@@ -175,10 +175,11 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
     interaction = addTranslatedResponses(interaction);
 
     if(interaction.isChatInputCommand()) {
-        //check if in guild
-        if(!interaction.inGuild()) return interaction.replyTl(keys.main.no_access.not_in_guild);
-
         const command = client.commands.get(interaction.commandName);
+
+        //check if in guild
+        if(!command.allowUser && !interaction.inGuild()) return interaction.replyTl(keys.main.no_access.not_in_guild);
+
 
         //Making interaction compatible with prefix commands
         interaction.mentions = {

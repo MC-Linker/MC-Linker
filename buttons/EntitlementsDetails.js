@@ -1,6 +1,6 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
-import { getModal, getReplyOptions, ph } from '../utilities/messages.js';
+import { getModal, ph } from '../utilities/messages.js';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import Discord from 'discord.js';
@@ -36,12 +36,13 @@ export default class EntitlementsDetails extends Button {
                 await testClient.destroy();
             }
 
+            const botFolder = `/home/ubuntu/lianecx/Custom-MC-Linker/${interaction.user.id}`;
+
             // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
             await interaction.replyTl(keys.entitlements.success.cloning);
-            execSync(`git clone https://github.com/MC-Linker/MC-Linker ../Custom-MC-Linker/${interaction.user.id}`);
+            execSync(`git clone https://github.com/MC-Linker/MC-Linker ${botFolder}`);
 
             const botPort = 30000; //TODO
-            const botFolder = `../Custom-MC-Linker/${interaction.user.id}`;
             const env = {
                 BOT_PORT: botPort,
                 PLUGIN_PORT: process.env.PLUGIN_PORT,
