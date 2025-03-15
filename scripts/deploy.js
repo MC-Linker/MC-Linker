@@ -99,8 +99,6 @@ await yargs(hideBin(process.argv))
     .help()
     .parse();
 
-const excludedHelp = ['help'];
-
 const commands = [];
 const linkedRoles = [];
 

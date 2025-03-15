@@ -2,8 +2,11 @@ import { addPh, fetchCommand, getEmbed, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
+import fs from 'fs-extra';
 
 export default class Help extends AutocompleteCommand {
+
+    excludedCommands = ['help', 'eval', 'systemstats'];
 
     constructor() {
         super({
@@ -13,11 +16,18 @@ export default class Help extends AutocompleteCommand {
     }
 
     async autocomplete(interaction, client) {
+        //Push categories
+        const commandDirs = await fs.readdir('./commands/');
+        const categories = [];
+        for await(const dir of commandDirs.map(c => fs.stat(`./commands/${c}`))) {
+            if(dir.isDirectory()) categories.push({ name: dir, value: dir });
+        }
         const choices = client.commands.values()
             .map(c => {
+                if(this.excludedCommands.includes(c.name)) return null;
                 return { name: c.name, value: c.name };
-            }).toArray();
-        return await interaction.respond(choices);
+            }).filter(c => c);
+        return await interaction.respond(categories.concat(choices));
     }
 
     async execute(interaction, client, args, server) {
