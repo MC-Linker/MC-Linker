@@ -19,8 +19,8 @@ export default class Help extends AutocompleteCommand {
         //Push categories
         const commandDirs = await fs.readdir('./commands/');
         const categories = [];
-        for await(const dir of commandDirs.map(c => fs.stat(`./commands/${c}`))) {
-            if(dir.isDirectory()) categories.push({ name: dir, value: dir });
+        for(const dir of commandDirs) {
+            if((await fs.stat(dir)).isDirectory()) categories.push({ name: dir, value: dir });
         }
         const choices = client.commands.values()
             .map(c => {
