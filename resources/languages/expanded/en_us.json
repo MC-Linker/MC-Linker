@@ -259,7 +259,7 @@
             "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
             "required": true,
             "min_length": 50,
-            "max_length": 70,
+            "max_length": 100,
             "style": "Short"
           }
         ]

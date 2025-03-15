@@ -155,7 +155,7 @@
   "entitlements.success.details_modal.components.0.placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
   "entitlements.success.details_modal.components.0.required": true,
   "entitlements.success.details_modal.components.0.min_length": 50,
-  "entitlements.success.details_modal.components.0.max_length": 70,
+  "entitlements.success.details_modal.components.0.max_length": 100,
   "entitlements.success.details_modal.components.0.style": "Short",
 
 
