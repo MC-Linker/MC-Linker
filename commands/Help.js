@@ -20,17 +20,24 @@ export default class Help extends AutocompleteCommand {
         const commandDirs = await fs.readdir('./commands/');
         const categories = [];
         for(const dir of commandDirs) {
-            if((await fs.stat(`./commands/${dir}`)).isDirectory()) categories.push({ name: dir, value: dir });
+            if((await fs.stat(`./commands/${dir}`)).isDirectory()) categories.push({
+                name: dir.toTitleCase(),
+                value: dir,
+            });
         }
         console.log(categories);
         const choices = client.commands.values().toArray()
             .map(c => {
                 if(this.excludedCommands.includes(c.name)) return null;
-                return { name: c.name, value: c.name };
+                return { name: c.name.toTitleCase(), value: c.name };
             }).filter(c => c);
         console.log(choices);
 
-        return await interaction.respond(categories.concat(choices).slice(0, 24));
+        const respondArrray = categories
+            .concat(choices)
+            .filter(o => o.value.includes(interaction.options.getFocused()))
+            .slice(0, 24);
+        return await interaction.respond(respondArrray);
     }
 
     async execute(interaction, client, args, server) {
