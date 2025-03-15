@@ -22,12 +22,15 @@ export default class Help extends AutocompleteCommand {
         for(const dir of commandDirs) {
             if((await fs.stat(`./commands/${dir}`)).isDirectory()) categories.push({ name: dir, value: dir });
         }
-        const choices = client.commands.values()
+        console.log(categories);
+        const choices = client.commands.values().toArray()
             .map(c => {
                 if(this.excludedCommands.includes(c.name)) return null;
                 return { name: c.name, value: c.name };
             }).filter(c => c);
-        return await interaction.respond(categories.concat(choices));
+        console.log(choices);
+
+        return await interaction.respond(categories.concat(choices).slice(0, 24));
     }
 
     async execute(interaction, client, args, server) {
