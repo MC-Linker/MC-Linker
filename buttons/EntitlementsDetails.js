@@ -13,7 +13,7 @@ export default class EntitlementsDetails extends Button {
 
     async execute(interaction, client) {
         if(interaction.entitlements.size === 0)
-            return await interaction.update(getReplyOptions(keys.entitlements.errors.no_entitlement));
+            return await interaction.update(getReplyOptions(keys.warnings.errors.no_entitlement));
 
         try {
             //Send modal

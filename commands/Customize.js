@@ -11,9 +11,8 @@ export default class Customize extends Command {
     }
 
     async execute(interaction, client, args) {
-        if(interaction.entitlements.size === 0) {
-            return await interaction.replyTl(keys.entitlements.errors.no_entitlement);
-        }
+        if(interaction.entitlements.size === 0)
+            return await interaction.replyTl(keys.entitlements.warnings.no_entitlement);
 
         return await interaction.replyTl(keys.entitlements.success.start);
     }

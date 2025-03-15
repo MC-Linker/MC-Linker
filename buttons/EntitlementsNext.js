@@ -10,7 +10,7 @@ export default class EntitlementsNext extends Button {
 
     async execute(interaction, client) {
         if(interaction.entitlements.size === 0)
-            return await interaction.replyTl(keys.entitlements.errors.no_entitlement);
+            return await interaction.replyTl(keys.entitlements.warnings.no_entitlement);
 
         return await interaction.update(getReplyOptions(keys.entitlements.success.details)); //TODO make explanation website + talk about intents
     }

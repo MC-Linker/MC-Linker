@@ -25,13 +25,11 @@ export default class Help extends AutocompleteCommand {
                 value: dir,
             });
         }
-        console.log(categories);
         const choices = client.commands.values().toArray()
             .map(c => {
                 if(this.excludedCommands.includes(c.name)) return null;
                 return { name: c.name.toTitleCase(), value: c.name };
             }).filter(c => c);
-        console.log(choices);
 
         const respondArrray = categories
             .concat(choices)

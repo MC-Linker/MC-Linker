@@ -265,11 +265,11 @@
         ]
       }
     },
-    "errors": {
+    "warnings": {
       "no_entitlement": {
         "embeds": [
           {
-            "title": "No Entitlement",
+            "title": "No Subscription",
             "description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
             "color": "Red"
           }
@@ -281,9 +281,7 @@
             "sku_id": "1166098447665995807"
           }
         ]
-      }
-    },
-    "warnings": {
+      },
       "details": {
         "embeds": [
           {
@@ -2572,6 +2570,7 @@
     "customize": {
       "name": "customize",
       "description": "Customize the bot's appearance to your likings.",
+      "long_description": "Customize the bot's appearance to your likings. Requires a premium subscription to use, check out the bot's shop in its profile!",
       "type": "ChatInput"
     },
     "advancements": {
@@ -3705,8 +3704,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.",
-      "description": "Disable a specific command/stat/advancement.",
+      "long_description": "Disable a specific command preventing it from being sent in a chatchannel. List disabled chat-commands with `/disable list`.",
+      "description": "Disable a specific command preventing it from being sent in a chatchannel",
       "options": [
         {
           "type": "Subcommand",
@@ -3758,41 +3757,13 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default).",
-      "description": "Enable a disabled command/stat/advancement (All enabled by default)",
+      "long_description": "Enable a disabled command allowing it from being sent in a chatchannel again. (They're all enabled by default.)",
+      "description": "Enable a command allowing it from being sent in a chatchannel.",
       "options": [
         {
           "type": "Subcommand",
-          "name": "stats",
-          "description": "Enable a disabled stat",
-          "options": [
-            {
-              "type": "String",
-              "name": "stat",
-              "description": "Set the stat you want to enable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
-        {
-          "type": "Subcommand",
-          "name": "advancements",
-          "description": "Enable a disabled advancement",
-          "options": [
-            {
-              "type": "String",
-              "name": "advancement",
-              "description": "Set the advancement you want to enable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
-        {
-          "type": "Subcommand",
           "name": "chat-commands",
-          "description": "Enable a disabled chat-command allowing it to be sent again.",
+          "description": "Enable a command allowing it to be sent in a chatchannel.",
           "options": [
             {
               "type": "String",

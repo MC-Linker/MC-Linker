@@ -159,12 +159,12 @@
   "entitlements.success.details_modal.components.0.style": "Short",
 
 
-  "entitlements.errors.no_entitlement.embeds.0.title": "No Entitlement",
-  "entitlements.errors.no_entitlement.embeds.0.description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
-  "entitlements.errors.no_entitlement.embeds.0.color": "Red",
-  "entitlements.errors.no_entitlement.components.0.type": "Button",
-  "entitlements.errors.no_entitlement.components.0.style": "Premium",
-  "entitlements.errors.no_entitlement.components.0.sku_id": "1166098447665995807",
+  "entitlements.warnings.no_entitlement.embeds.0.title": "No Subscription",
+  "entitlements.warnings.no_entitlement.embeds.0.description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
+  "entitlements.warnings.no_entitlement.embeds.0.color": "Red",
+  "entitlements.warnings.no_entitlement.components.0.type": "Button",
+  "entitlements.warnings.no_entitlement.components.0.style": "Premium",
+  "entitlements.warnings.no_entitlement.components.0.sku_id": "1166098447665995807",
 
 
   "entitlements.warnings.details.embeds.0.title": "Incorrect Bot Token",
@@ -1322,6 +1322,7 @@
 
   "data.customize.name": "customize",
   "data.customize.description": "Customize the bot's appearance to your likings.",
+  "data.customize.long_description": "Customize the bot's appearance to your likings. Requires a premium subscription to use, check out the bot's shop in its profile!",
   "data.customize.type": "ChatInput",
 
   "data.advancements.name": "advancements",
@@ -2122,8 +2123,8 @@
   "data.disable.name": "disable",
   "data.disable.type": "ChatInput",
   "data.disable.default_member_permissions.0": "Administrator",
-  "data.disable.long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.",
-  "data.disable.description": "Disable a specific command/stat/advancement.",
+  "data.disable.long_description": "Disable a specific command preventing it from being sent in a chatchannel. List disabled chat-commands with `/disable list`.",
+  "data.disable.description": "Disable a specific command preventing it from being sent in a chatchannel",
 
   "data.disable.options.0.type": "Subcommand",
   "data.disable.options.0.name": "chat-commands",
@@ -2160,40 +2161,18 @@
   "data.enable.name": "enable",
   "data.enable.type": "ChatInput",
   "data.enable.default_member_permissions.0": "Administrator",
-  "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default).",
-  "data.enable.description": "Enable a disabled command/stat/advancement (All enabled by default)",
-
+  "data.enable.long_description": "Enable a disabled command allowing it from being sent in a chatchannel again. (They're all enabled by default.)",
+  "data.enable.description": "Enable a command allowing it from being sent in a chatchannel.",
 
   "data.enable.options.0.type": "Subcommand",
-  "data.enable.options.0.name": "stats",
-  "data.enable.options.0.description": "Enable a disabled stat",
+  "data.enable.options.0.name": "chat-commands",
+  "data.enable.options.0.description": "Enable a command allowing it to be sent in a chatchannel.",
 
   "data.enable.options.0.options.0.type": "String",
-  "data.enable.options.0.options.0.name": "stat",
-  "data.enable.options.0.options.0.description": "Set the stat you want to enable",
+  "data.enable.options.0.options.0.name": "command",
+  "data.enable.options.0.options.0.description": "Set the command you want to enable",
   "data.enable.options.0.options.0.required": true,
   "data.enable.options.0.options.0.autocomplete": true,
-
-
-  "data.enable.options.1.type": "Subcommand",
-  "data.enable.options.1.name": "advancements",
-  "data.enable.options.1.description": "Enable a disabled advancement",
-
-  "data.enable.options.1.options.0.type": "String",
-  "data.enable.options.1.options.0.name": "advancement",
-  "data.enable.options.1.options.0.description": "Set the advancement you want to enable",
-  "data.enable.options.1.options.0.required": true,
-  "data.enable.options.1.options.0.autocomplete": true,
-
-  "data.enable.options.2.type": "Subcommand",
-  "data.enable.options.2.name": "chat-commands",
-  "data.enable.options.2.description": "Enable a disabled chat-command allowing it to be sent again.",
-
-  "data.enable.options.2.options.0.type": "String",
-  "data.enable.options.2.options.0.name": "command",
-  "data.enable.options.2.options.0.description": "Set the command you want to enable",
-  "data.enable.options.2.options.0.required": true,
-  "data.enable.options.2.options.0.autocomplete": true,
 
 
 
