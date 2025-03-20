@@ -66,12 +66,14 @@ export default class UserConnectionManager extends ConnectionManager {
         }
 
         let uuid;
-        if(server.floodgatePrefix && arg.startsWith(server.floodgatePrefix)) {
+        if(!server.online) uuid = utils.createUUIDv3(arg);
+        else if(server.floodgatePrefix && arg.startsWith(server.floodgatePrefix)) {
             const usernameWithoutPrefix = arg.slice(server.floodgatePrefix.length);
             uuid = await utils.fetchFloodgateUUID(usernameWithoutPrefix);
-        } else uuid = server.online ? await utils.fetchUUID(arg) : utils.createUUIDv3(arg);
+        }
+        else uuid = await utils.fetchUUID(arg);
 
-        if(uuid) return { uuid: uuid, username: arg, error: null };
+        if(uuid) return { uuid, username: arg, error: null };
         await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
         return { error: 'fetch', uuid: null, username: null };
     }

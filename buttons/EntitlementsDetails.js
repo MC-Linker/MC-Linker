@@ -1,9 +1,13 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
-import { getModal, ph } from '../utilities/messages.js';
+import { getModal, getReplyOptions, ph } from '../utilities/messages.js';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import Discord from 'discord.js';
+import { Docker } from 'node-docker-api';
+import compose from 'docker-compose';
+
+const docker = new Docker();
 
 export default class EntitlementsDetails extends Button {
 
@@ -36,7 +40,8 @@ export default class EntitlementsDetails extends Button {
                 await testClient.destroy();
             }
 
-            const botFolder = `/home/ubuntu/lianecx/Custom-MC-Linker/${interaction.user.id}`;
+            const botFolder = `./Custom-MC-Linker/${interaction.user.id}`;
+            if(await fs.exists(botFolder)) await fs.rm(botFolder, { recursive: true });
 
             // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
             await interaction.replyTl(keys.entitlements.success.cloning);
@@ -57,7 +62,7 @@ export default class EntitlementsDetails extends Button {
                 PREFIX: process.env.PREFIX,
                 LINKED_ROLES_REDIRECT_URI: `http://api.mclinker.com:${botPort}/linked-role/callback`,
                 MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
-                MICROSOFT_PASSWORD: process.env.MICROSOFT_PASSWORD,
+                MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
                 AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
                 SERVICE_NAME: `custom-mc-linker_${interaction.user.id}`,
                 DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${interaction.user.id}`,
@@ -67,17 +72,37 @@ export default class EntitlementsDetails extends Button {
             await fs.writeFile(`${botFolder}/.env`, stringifiedEnv);
 
             // Copy docker-compose.yml
-            await fs.copy('../Custom-MC-Linker/docker-compose.yml', `${botFolder}/docker-compose.yml`);
+            await fs.copy('./Custom-MC-Linker/docker-compose.yml', `${botFolder}/docker-compose.yml`);
+
+            const promisifyStream = stream => new Promise((resolve, reject) => {
+                stream.on('data', data => console.log(data.toString()));
+                stream.on('end', resolve);
+                stream.on('error', reject);
+            });
 
             // Docker it up
             await interaction.replyTl(keys.entitlements.success.starting_up);
-            execSync(`docker build . -t lianecx/${env.SERVICE_NAME} && docker compose up -d`, { cwd: botFolder });
+            const stream = await docker.image.build(fs.createReadStream(`${botFolder}/Dockerfile`), { t: `lianecx/${env.SERVICE_NAME}` });
+            await promisifyStream(stream);
+
+            //Compose up
+            await compose.upAll({ cwd: botFolder, log: true });
+
+            // execSync(`docker build . -t lianecx/${env.SERVICE_NAME} && docker compose up -d`, { cwd: botFolder });
 
             //Check for errors (wrong token, secret etc)
 
             // Run slash command script
             await interaction.replyTl(keys.entitlements.success.deploying);
-            execSync(`docker exec -it ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, { cwd: botFolder });
+            const exec = await docker.container.get(env.SERVICE_NAME).exec.create({
+                AttachStdout: true,
+                AttachStderr: true,
+                Cmd: ['node', 'scripts/deploy.js', 'deploy', '-g'],
+            });
+            const execStart = await exec.start();
+            await promisifyStream(execStart);
+
+            // execSync(`docker exec -it ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, { cwd: botFolder });
 
             //Send success
 
