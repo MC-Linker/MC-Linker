@@ -11,7 +11,6 @@ export default class ChatChannel extends Command {
     constructor() {
         super({
             name: 'chatchannel',
-            requiresConnectedPlugin: true,
             category: 'settings',
         });
     }

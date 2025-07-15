@@ -8,7 +8,6 @@ export default class Message extends Command {
         super({
             name: 'message',
             ephemeral: true,
-            requiresConnectedPlugin: true,
             requiresUserIndex: 0,
             category: 'other',
         });

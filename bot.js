@@ -101,7 +101,7 @@ client.on(Discord.Events.MessageCreate, async message => {
 
 
             const promises = await Promise.allSettled(client.serverConnections.cache.map(async conn => {
-                if(!(conn instanceof ServerConnection) || !conn.protocol.isPluginProtocol()) return null;
+                if(!(conn instanceof ServerConnection)) return null;
                 if(!conn.syncedRoles || !conn.syncedRoles.length) return null;
                 try {
                     const guild = await client.guilds.fetch(conn.id);
@@ -240,7 +240,7 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
 
     /** @type {ServerConnection} */
     const server = client.serverConnections.cache.get(newMember.guild.id);
-    if(!server || !server.protocol.isPluginProtocol()) return;
+    if(!server) return;
 
     /** @type {UserConnection} */
     const user = client.userConnections.cache.get(newMember.id);

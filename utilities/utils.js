@@ -1,4 +1,3 @@
-import HttpProtocol from '../structures/HttpProtocol.js';
 import Discord, {
     ActionRowBuilder,
     ApplicationCommandOptionType,
@@ -11,7 +10,6 @@ import Discord, {
 } from 'discord.js';
 import crypto from 'crypto';
 import minecraft_data from 'minecraft-data';
-import FtpProtocol from '../structures/FtpProtocol.js';
 import keys from './keys.js';
 import advancementData from '../resources/data/advancements.json' with { type: 'json' };
 import customStats from '../resources/data/stats_custom.json' with { type: 'json' };
@@ -340,16 +338,10 @@ export async function getUsersFromMention(client, mention) {
     return userArray;
 }
 
-const defaultStatusRespones = {
-    400: keys.api.plugin.errors.status_400,
-    401: keys.api.plugin.errors.status_401,
-    404: keys.api.plugin.errors.status_404,
-};
-
 /**
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
- * @param {Protocol} protocol - The protocol that was called.
+ * @param {WebSocketProtocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
@@ -358,24 +350,9 @@ const defaultStatusRespones = {
 export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}, ...placeholders) {
     placeholders.push({ data: JSON.stringify(response?.data ?? '') });
 
-    if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
+    if(!response && protocol instanceof WebSocketProtocol) {
         await interaction.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
         return false;
-    }
-    else if(!response && protocol instanceof FtpProtocol) {
-        await interaction.replyTl(keys.api.ftp.errors.could_not_connect, ...placeholders);
-        return false;
-    }
-    else if(response.status >= 500 && response.status < 600) {
-        await interaction.replyTl(keys.api.plugin.errors.status_500, ...placeholders);
-        return false;
-    }
-    else if(response.status !== 200) {
-        const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
-        if(responseKey) {
-            await interaction.replyTl(responseKey, ...placeholders);
-            return false;
-        }
     }
 
     return true;
@@ -406,16 +383,14 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
  * @returns {Promise<?Object>} - The parsed and simplified nbt data or null if an error occurred.
  */
 export async function getLivePlayerNbt(server, user, interaction) {
-    if(server.protocol.isPluginProtocol()) {
-        const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-        const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
-        if(onlinePlayers.includes(user.username)) {
-            const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
-            if(playerNbtResponse?.status === 200) {
-                const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
-                if(parsed) return parsed;
-                // else fall back to downloading the nbt file
-            }
+    const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
+    const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
+    if(onlinePlayers.includes(user.username)) {
+        const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
+        if(playerNbtResponse?.status === 200) {
+            const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
+            if(parsed) return parsed;
+            // else fall back to downloading the nbt file
         }
     }
 

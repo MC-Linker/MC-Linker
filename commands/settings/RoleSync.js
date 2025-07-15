@@ -11,7 +11,6 @@ export default class RoleSync extends AutocompleteCommand {
         super({
             name: 'rolesync',
             category: 'settings',
-            requiresConnectedPlugin: true,
         });
     }
 
@@ -19,7 +18,7 @@ export default class RoleSync extends AutocompleteCommand {
         if(interaction.options.getSubcommand() !== 'add') return;
 
         const server = client.serverConnections.cache.get(interaction.guildId);
-        if(!server || !server.protocol.isPluginProtocol()) return;
+        if(!server) return;
 
         const response = await server.protocol.getTeamsAndGroups();
         if(response?.status !== 200) return;
@@ -46,7 +45,6 @@ export default class RoleSync extends AutocompleteCommand {
 
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
-        if(!server.protocol.isPluginProtocol()) return; // just for type safety
 
         const subcommand = args[0];
         if(subcommand === 'add') {

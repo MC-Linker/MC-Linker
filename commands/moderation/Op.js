@@ -8,7 +8,6 @@ export default class Op extends Command {
     constructor() {
         super({
             name: 'op',
-            requiresConnectedPlugin: true,
             requiresUserIndex: 0,
             category: 'moderation',
         });

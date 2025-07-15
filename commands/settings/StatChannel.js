@@ -11,7 +11,6 @@ export default class StatChannel extends Command {
         super({
             name: 'statchannel',
             category: 'settings',
-            requiresConnectedPlugin: true,
         });
     }
 

@@ -25,7 +25,6 @@ export default class UserInfo extends Command {
             name: 'userinfo',
             category: 'other',
             requiresUserIndex: 0,
-            requiresConnectedServer: true,
         });
     }
 
@@ -39,10 +38,8 @@ export default class UserInfo extends Command {
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
 
         let onlinePlayers = [];
-        if(server.protocol.isPluginProtocol()) {
-            const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-            if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
-        }
+        const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
+        if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
 
         const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
         const levelDatResponse = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
@@ -173,8 +170,7 @@ export default class UserInfo extends Command {
         ];
         if(onlinePlayers.includes(user.username.toLowerCase())) adminButtons.unshift(getComponent(keys.commands.userinfo.success.buttons.kick));
 
-        // FTP does not support commands
-        if(!server.protocol.isFtpProtocol()) adminMessage.components = createActionRows(adminButtons);
+        adminMessage.components = createActionRows(adminButtons);
 
         /** @type {PaginationPages} */
         const pages = {

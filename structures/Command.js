@@ -10,7 +10,6 @@ export default class Command {
      * @property {boolean} [ephemeral=false] - Indicates whether to defer this command as ephemeral.
      * @property {boolean} [requiresConnectedServer=true] - Indicates whether this command requires a connected server.
      * @property {int} [requiresUserIndex=null] - The user argument index that requires a user.
-     * @property {boolean} [requiresConnectedPlugin=false] - Indicates whether this command requires a connected plugin.
      * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
      * @property {string} [category] - The category of this command.
      * @property {boolean} [allowPrefix=false] - Whether this command can be executed with the prefix.
@@ -53,12 +52,6 @@ export default class Command {
         this.requiresUserIndex = options.requiresUserIndex ?? null;
 
         /**
-         * Indicates whether this command requires a connected plugin.
-         * @type {boolean}
-         */
-        this.requiresConnectedPlugin = options.requiresConnectedPlugin ?? false;
-
-        /**
          * Indicates whether this command is only available to the bot owner.
          * @type {boolean}
          */
@@ -82,7 +75,7 @@ export default class Command {
      * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @param {any[]} args - The command arguments set by the user.
-     * @param {requiresConnectedPlugin extends true ? ServerConnection<PluginProtocol> : ServerConnection<Protocol>} server - The connection of the server the command was executed in.
+     * @param {ServerConnection} server - The connection of the server the command was executed in.
      * @returns {Promise<?boolean>|?boolean}
      * @abstract
      */
@@ -92,10 +85,6 @@ export default class Command {
 
         if(this.ownerOnly) return interaction.user.id === process.env.OWNER_ID;
 
-        if(this.requiresConnectedPlugin && !server?.protocol?.isPluginProtocol()) {
-            await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
-            return false;
-        }
         if(this.requiresConnectedServer && !server) {
             await interaction.replyTl(keys.api.command.errors.server_not_connected);
             return false;

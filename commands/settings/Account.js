@@ -32,10 +32,6 @@ export default class Account extends Command {
 
         const subcommand = args[0];
         if(subcommand === 'connect') {
-            if(!server?.protocol?.isPluginProtocol()) {
-                return await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
-            }
-
             if(args[1].match(Discord.MessageMentions.UsersPattern)) {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
@@ -62,7 +58,7 @@ export default class Account extends Command {
             }, 180_000);
 
             this.waitingInteractions.set(interaction.user.id, { interaction, timeout });
-            await client.shard.broadcastEval((c, { uuid, username, code, userId, serverId, shard, websocket }) => {
+            await client.shard.broadcastEval((c, { uuid, username, code, userId, serverId, shard }) => {
                 const listener = async data => {
                     if(data.uuid !== uuid || data.code !== code) return;
 
@@ -85,15 +81,9 @@ export default class Account extends Command {
                     });
                 };
 
-                if(websocket) {
-                    const socket = c.serverConnections.cache.get(serverId).protocol.socket;
-                    socket.on('verify-response', data => {
-                        listener(JSON.parse(data));
-                    });
-                }
-                else c.api.once('/verify/response', (request, reply) => {
-                    reply.send({});
-                    listener(request.body);
+                const socket = c.serverConnections.cache.get(serverId).protocol.socket;
+                socket.on('verify-response', data => {
+                    listener(JSON.parse(data));
                 });
             }, {
                 context: {
@@ -103,7 +93,6 @@ export default class Account extends Command {
                     userId: interaction.user.id,
                     serverId: server.id,
                     shard: client.shard.ids[0],
-                    websocket: server.protocol.isWebSocketProtocol(),
                 },
                 shard: 0,
             });
@@ -121,7 +110,7 @@ export default class Account extends Command {
 
             await client.userConnections.disconnect(interaction.user.id);
 
-            if(server.protocol.isPluginProtocol() && server.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
+            if(server.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
             await interaction.replyTl(keys.commands.disconnect.success, {
                 protocol: 'account',
                 protocol_cap: 'Account',

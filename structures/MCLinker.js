@@ -229,11 +229,7 @@ export default class MCLinker extends Discord.Client {
             floodgatePrefix: String,
             requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
             displayIp: String,
-            protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
             port: Number,
-            username: String,
-            password: String,
-            token: String,
             hash: String,
             chatChannels: [{
                 _id: { type: String },

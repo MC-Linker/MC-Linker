@@ -15,7 +15,6 @@ export default class Command extends AutocompleteCommand {
     constructor() {
         super({
             name: 'command',
-            requiresConnectedPlugin: true,
             category: 'moderation',
         });
     }

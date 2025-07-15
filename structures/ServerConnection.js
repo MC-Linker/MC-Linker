@@ -1,10 +1,7 @@
 import Connection from './Connection.js';
-import HttpProtocol from './HttpProtocol.js';
-import FtpProtocol from './FtpProtocol.js';
 import WebSocketProtocol from './WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
 
-/** @template {Protocol} T */
 export default class ServerConnection extends Connection {
 
     /**
@@ -40,38 +37,6 @@ export default class ServerConnection extends Connection {
      */
 
     /**
-     * @typedef {object} HttpServerConnectionData - The data for a server-connection established by the plugin.
-     * @property {string} id - The id of the server.
-     * @property {string} ip - The ip of the server.
-     * @property {number} port - The port used to connect to the server plugin.
-     * @property {number} version - The minor minecraft version of the server.
-     * @property {string} worldPath - The path to the world folder of the server.
-     * @property {string} path - The path to the server folder of the server.
-     * @property {string} token - The connection token used to connect to the server plugin.
-     * @property {boolean} online - Whether online mode is enabled on this server.
-     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {RequiredRoleToJoinData} [requiredRoleToJoin] - The id of the role required to join the server.
-     * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
-     * @property {StatsChannelData[]} statChannels - The data for stats channels.
-     * @property {'http'} protocol - The protocol used to connect to the server.
-     */
-
-    /**
-     * @typedef {object} FtpServerConnectionData - The data for a server-connection established by ftp or sftp.
-     * @property {string} id - The id of the server.
-     * @property {string} ip - The ip of the server.
-     * @property {string} username - The ftp username used to connect to the server.
-     * @property {string} password - The ftp password used to connect to the server.
-     * @property {number} port - The ftp port used to connect to the server.
-     * @property {number} version - The minor minecraft version of the server.
-     * @property {string} worldPath - The path to the world folder of the server.
-     * @property {string} path - The path to the server folder of the server.
-     * @property {boolean} online - Whether the server-connection has online mode enabled or not.
-     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
-     * @property {'ftp'|'sftp'} protocol - The protocol used to connect to the server.
-     */
-
-    /**
      * @typedef {object} WebSocketServerConnectionData - The data for a server-connection established by a websocket.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
@@ -87,12 +52,11 @@ export default class ServerConnection extends Connection {
      * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
      * @property {StatsChannelData[]} statChannels - The data for stats channels.
      * @property {SyncedRoleData[]} syncedRoles - The data for syncedRoles.
-     * @property {'websocket'} protocol - The protocol used to connect to the server.
      * @property {import('socket.io').Socket} socket - The connected websocket used to communicate with the server.
      */
 
     /**
-     * @typedef {HttpServerConnectionData|FtpServerConnectionData|WebSocketServerConnectionData} ServerConnectionData - The data of the server.
+     * @typedef {WebSocketServerConnectionData} ServerConnectionData - The data of the server.
      */
 
     /**
@@ -101,7 +65,7 @@ export default class ServerConnection extends Connection {
 
     /**
      * The protocol used to communicate with the server.
-     * @type {T|Protocol}
+     * @type {WebSocketProtocol}
      */
     protocol;
 
@@ -122,31 +86,11 @@ export default class ServerConnection extends Connection {
             extras: [client.serverSettingsConnections.collectionName],
         });
 
-        // Assign the protocol used to communicate with the server.
-        if(data.protocol === 'http') {
-            this.protocol = new HttpProtocol(client, {
-                id: data.id,
-                ip: data.ip,
-                port: data.port,
-                token: data.token,
-            });
-        }
-        else if(data.protocol === 'ftp' || data.protocol === 'sftp') {
-            this.protocol = new FtpProtocol(client, {
-                ip: data.ip,
-                port: data.port,
-                password: data.password,
-                username: data.username,
-                sftp: data.protocol === 'sftp',
-            });
-        }
-        else if(data.protocol === 'websocket') {
-            this.protocol = new WebSocketProtocol(client, {
-                id: data.id,
-                ip: data.ip,
-                hash: data.hash,
-            });
-        }
+        this.protocol = new WebSocketProtocol(client, {
+            id: data.id,
+            ip: data.ip,
+            hash: data.hash,
+        });
 
         this._patch(data);
     }
@@ -285,51 +229,6 @@ export default class ServerConnection extends Connection {
              */
             this.displayIp = data.displayIp;
         }
-
-        //Switch protocols if needed
-        if(!this.protocol.isHttpProtocol() && data.protocol === 'http') {
-            this.protocol = new HttpProtocol(this.client, {
-                id: data.id,
-                ip: this.ip,
-                port: this.port,
-                token: this.token,
-            });
-            delete this.username;
-            delete this.password;
-            delete this.channels;
-            delete this.hash;
-        }
-        else if(!this.protocol.isFtpProtocol() && (data.protocol === 'ftp' || data.protocol === 'sftp')) {
-            this.protocol = new FtpProtocol(this.client, {
-                ip: this.ip,
-                port: this.port,
-                password: this.password,
-                username: this.username,
-                sftp: data.protocol === 'sftp',
-            });
-
-            delete this.token;
-            delete this.hash;
-            delete this.syncedRoles;
-            delete this.chatChannels;
-            delete this.statChannels;
-            delete this.requiredRoleToJoin;
-            delete this.displayIp;
-        }
-        else if(!this.protocol.isWebSocketProtocol() && data.protocol === 'websocket') {
-            this.protocol = new WebSocketProtocol(this.client, {
-                id: this.id,
-                ip: this.ip,
-                hash: this.hash,
-                displayIp: this.displayIp,
-            });
-
-            delete this.token;
-            delete this.username;
-            delete this.password;
-            delete this.channels;
-        }
-        else this.protocol._patch({ ...data, sftp: data.protocol === 'sftp' });
     }
 
     /**
@@ -340,7 +239,7 @@ export default class ServerConnection extends Connection {
      * @returns {Promise<void>}
      */
     async syncRoles(guild, member, userConnection) {
-        if(this.protocol.isPluginProtocol() && this.syncedRoles && this.syncedRoles.length > 0) {
+        if(this.syncedRoles && this.syncedRoles.length > 0) {
             //If user has a synced-role, tell the plugin
             for(const syncedRole of this.syncedRoles.filter(r =>
                 !r.players.includes(userConnection.uuid) && member.roles.cache.has(r.id))) {
@@ -371,7 +270,7 @@ export default class ServerConnection extends Connection {
      * @inheritDoc
      */
     getData() {
-        const baseData = {
+        return {
             id: this.id,
             ip: this.ip,
             version: this.version,
@@ -380,39 +279,12 @@ export default class ServerConnection extends Connection {
             online: this.online,
             forceOnlineMode: this.forceOnlineMode,
             floodgatePrefix: this.floodgatePrefix,
+            hash: this.hash,
+            requiredRoleToJoin: this.requiredRoleToJoin,
+            chatChannels: this.chatChannels ?? [],
+            statChannels: this.statChannels ?? [],
+            syncedRoles: this.syncedRoles ?? [],
+            protocol: 'websocket',
         };
-
-        if(this.protocol.isHttpProtocol()) {
-            return {
-                ...baseData,
-                port: this.port,
-                token: this.token,
-                requiredRoleToJoin: this.requiredRoleToJoin,
-                chatChannels: this.chatChannels ?? [],
-                statChannels: this.statChannels ?? [],
-                syncedRoles: this.syncedRoles ?? [],
-                protocol: 'http',
-            };
-        }
-        else if(this.protocol.isFtpProtocol()) {
-            return {
-                ...baseData,
-                port: this.port,
-                password: this.password,
-                username: this.username,
-                protocol: this.protocol.sftp ? 'sftp' : 'ftp',
-            };
-        }
-        else if(this.protocol.isWebSocketProtocol()) {
-            return {
-                ...baseData,
-                hash: this.hash,
-                requiredRoleToJoin: this.requiredRoleToJoin,
-                chatChannels: this.chatChannels ?? [],
-                statChannels: this.statChannels ?? [],
-                syncedRoles: this.syncedRoles ?? [],
-                protocol: 'websocket',
-            };
-        }
     }
 }

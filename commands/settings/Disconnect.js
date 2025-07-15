@@ -13,14 +13,8 @@ export default class Disconnect extends Command {
 
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
-
-        let protocol;
-        if(server.protocol.isPluginProtocol()) {
-            protocol = 'plugin';
-            const disconnect = await server.protocol.disconnect();
-            if(!await utils.handleProtocolResponse(disconnect, server.protocol, interaction)) return;
-        }
-        else if(server.protocol.isFtpProtocol()) protocol = 'ftp';
+        const disconnect = await server.protocol.disconnect();
+        if(!await utils.handleProtocolResponse(disconnect, server.protocol, interaction)) return;
 
         await client.serverConnections.disconnect(server);
         return interaction.replyTl(keys.commands.disconnect.success, {

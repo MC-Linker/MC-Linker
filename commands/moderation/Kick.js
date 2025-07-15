@@ -7,7 +7,6 @@ export default class Kick extends Command {
     constructor() {
         super({
             name: 'kick',
-            requiresConnectedPlugin: true,
             requiresUserIndex: 0,
             category: 'moderation',
         });
