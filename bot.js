@@ -160,8 +160,7 @@ client.on(Discord.Events.MessageCreate, async message => {
 
     /** @type {Command} */
     const command = client.commands.get(commandName);
-    if(!command) return;
-    if(!command.allowPrefix) return message.replyTl(keys.main.no_access.no_prefix_commands);
+    if(!command || !command.allowPrefix) return;
 
     try {
         // noinspection JSUnresolvedFunction
@@ -175,11 +174,12 @@ client.on(Discord.Events.MessageCreate, async message => {
 client.on(Discord.Events.InteractionCreate, async interaction => {
     interaction = addTranslatedResponses(interaction);
 
-    //check if in guild
-    if(!interaction.guildId) return interaction.replyTl(keys.main.no_access.not_in_guild);
-
     if(interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
+
+        //check if in guild
+        if(!command.allowUser && !interaction.inGuild()) return interaction.replyTl(keys.main.no_access.not_in_guild);
+
 
         //Making interaction compatible with prefix commands
         interaction.mentions = {
@@ -209,6 +209,9 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
         }
     }
     else if(interaction.isAutocomplete()) {
+        //check if in guild
+        if(!interaction.inGuild()) return;
+
         const command = client.commands.get(interaction.commandName);
 
         try {
@@ -271,6 +274,22 @@ client.on(Discord.Events.GuildMemberUpdate, async (oldMember, newMember) => {
 
     //Update server
     if(resp.status === 200) await server.edit({});
+});
+
+client.on(Discord.Events.EntitlementCreate, async entitlement => {
+    const user = await entitlement.fetchUser();
+    const dm = await user.createDM();
+    console.info(`${user.username} (${user.id}) bought an entitlement!`);
+
+    await dm.send(getReplyOptions(keys.entitlements.success.start));
+});
+
+client.on(Discord.Events.EntitlementDelete, async entitlement => {
+
+});
+
+client.on(Discord.Events.EntitlementUpdate, async entitlement => {
+
 });
 
 /**

@@ -10,6 +10,10 @@ services:
       - type: bind
         source: ./download-cache
         target: /usr/src/app/download-cache
+      - type: bind
+        source: ./Custom-MC-Linker
+        target: /usr/src/Custom-MC-Linker
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DEBUG=$DEBUG
       - CONVERT=$CONVERT # true or false

@@ -38,6 +38,7 @@ export default class Eval extends Command {
             requiresConnectedServer: false,
             ownerOnly: true,
             allowPrefix: true,
+            allowUser: true,
         });
     }
 

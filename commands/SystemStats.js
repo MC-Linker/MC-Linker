@@ -16,6 +16,7 @@ export default class SystemStats extends Command {
             ownerOnly: true,
             allowPrefix: true,
             requiresConnectedServer: false,
+            allowUser: true,
         });
     }
 

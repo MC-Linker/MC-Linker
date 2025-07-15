@@ -54,6 +54,7 @@
 
   "main.no_access.not_in_guild.embeds.0.title": "Guild-Only",
   "main.no_access.not_in_guild.embeds.0.description": "I can only be used in server channels!",
+  "main.no_access.not_in_guild.embeds.ephemeral": true,
   "main.no_access.not_in_guild.console": "Not in guild",
 
   "main.no_access.no_prefix_commands.embeds.0.title": "Use Slash Commands",
@@ -98,9 +99,89 @@
 
 
 
+  "entitlements.success.start.embeds.0.title": "Subscription Successful",
+  "entitlements.success.start.embeds.0.description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
+  "entitlements.success.start.embeds.0.color": "Green",
+
+  "entitlements.success.start.embeds.0.fields.0.name": "Get Started",
+  "entitlements.success.start.embeds.0.fields.0.value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+
+  "entitlements.success.start.components.0.type": "Button",
+  "entitlements.success.start.components.0.style": "Primary",
+  "entitlements.success.start.components.0.label": "Next",
+  "entitlements.success.start.components.0.custom_id": "entitlements_next",
+
+
+  "entitlements.success.details.embeds.0.title": "Subscription Successful",
+  "entitlements.success.details.embeds.0.color": "Green",
+
+  "entitlements.success.details.embeds.0.fields.0.name": "Enter Bot Details",
+  "entitlements.success.details.embeds.0.fields.0.value": "The **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+
+  "entitlements.success.details.components.0.type": "Button",
+  "entitlements.success.details.components.0.style": "Primary",
+  "entitlements.success.details.components.0.label": "Enter Details",
+  "entitlements.success.details.components.0.custom_id": "entitlements_details",
+
+
+  "entitlements.success.cloning.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.cloning.embeds.0.description": "*Copying MC-Linker...*",
+  "entitlements.success.cloning.embeds.0.color": "Green",
+  "entitlements.success.cloning.components": [],
+
+
+  "entitlements.success.deploying.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.deploying.embeds.0.description": "*Deploying Slash Commands...",
+  "entitlements.success.deploying.embeds.0.color": "Green",
+
+
+  "entitlements.success.starting_up.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.starting_up.embeds.0.description": "*Starting up...*",
+  "entitlements.success.starting_up.embeds.0.color": "Green",
+
+
+  "entitlements.success.finish.embeds.0.title": "Subscription Successful",
+  "entitlements.success.finish.embeds.0.description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.success.finish.embeds.0.color": "Green",
+
+
+  "entitlements.success.details_modal.type": "Modal",
+  "entitlements.success.details_modal.custom_id": "entitlements_details_modal",
+  "entitlements.success.details_modal.title": "Enter Details",
+
+  "entitlements.success.details_modal.components.0.type": "TextInput",
+  "entitlements.success.details_modal.components.0.custom_id": "token",
+  "entitlements.success.details_modal.components.0.label": "Bot Token",
+  "entitlements.success.details_modal.components.0.placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+  "entitlements.success.details_modal.components.0.required": true,
+  "entitlements.success.details_modal.components.0.min_length": 50,
+  "entitlements.success.details_modal.components.0.max_length": 100,
+  "entitlements.success.details_modal.components.0.style": "Short",
+
+
+  "entitlements.warnings.no_entitlement.embeds.0.title": "No Subscription",
+  "entitlements.warnings.no_entitlement.embeds.0.description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription.",
+
+  "entitlements.warnings.no_entitlement.components.0.type": "Button",
+  "entitlements.warnings.no_entitlement.components.0.style": "Premium",
+  "entitlements.warnings.no_entitlement.components.0.sku_id": "1166098447665995807",
+
+
+  "entitlements.warnings.invalid_token.embeds.0.title": "Incorrect Bot Token",
+  "entitlements.warnings.invalid_token.embeds.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.warnings.invalid_token.console": "Failed to login to bot with token %error_stack%",
+
+  "entitlements.warnings.invalid_token.components.0.type": "Button",
+  "entitlements.warnings.invalid_token.components.0.style": "Primary",
+  "entitlements.warnings.invalid_token.components.0.label": "Enter Details",
+  "entitlements.warnings.invalid_token.components.0.custom_id": "entitlements_details",
+
+
+
   "commands.eval.warnings.no_command.embeds.0.title": "No Command Specified",
   "commands.eval.warnings.no_command.embeds.0.description": "Please specify a command to evaluate.",
   "commands.eval.warnings.no_command.console": "No command specified",
+
 
   "commands.eval.success.embeds.0.title": "Successfully Evaluated Command",
   "commands.eval.success.embeds.0.description": "%output%",
@@ -1231,9 +1312,13 @@
   "data.help.options.0.type": "String",
   "data.help.options.0.name": "command",
   "data.help.options.0.description": "Set the command or category of which you want to get infos.",
+  "data.help.options.0.autocomplete": true,
   "data.help.options.0.required": false,
 
-
+  "data.customize.name": "customize",
+  "data.customize.description": "Customize the bot's appearance to your likings.",
+  "data.customize.long_description": "Customize the bot's appearance to your likings. Requires a premium subscription to use, check out the bot's shop in its profile!",
+  "data.customize.type": "ChatInput",
 
   "data.advancements.name": "advancements",
   "data.advancements.type": "ChatInput",
@@ -1928,8 +2013,8 @@
   "data.disable.name": "disable",
   "data.disable.type": "ChatInput",
   "data.disable.default_member_permissions.0": "Administrator",
-  "data.disable.long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.",
-  "data.disable.description": "Disable a specific command/stat/advancement.",
+  "data.disable.long_description": "Disable a specific command preventing it from being sent in a chatchannel. List disabled chat-commands with `/disable list`.",
+  "data.disable.description": "Disable a specific command preventing it from being sent in a chatchannel",
 
   "data.disable.options.0.type": "Subcommand",
   "data.disable.options.0.name": "chat-commands",
@@ -1966,40 +2051,18 @@
   "data.enable.name": "enable",
   "data.enable.type": "ChatInput",
   "data.enable.default_member_permissions.0": "Administrator",
-  "data.enable.long_description": "Enable a disabled command/stat/advancement (They're all enabled by default).",
-  "data.enable.description": "Enable a disabled command/stat/advancement (All enabled by default)",
-
+  "data.enable.long_description": "Enable a disabled command allowing it from being sent in a chatchannel again. (They're all enabled by default.)",
+  "data.enable.description": "Enable a command allowing it from being sent in a chatchannel.",
 
   "data.enable.options.0.type": "Subcommand",
-  "data.enable.options.0.name": "stats",
-  "data.enable.options.0.description": "Enable a disabled stat",
+  "data.enable.options.0.name": "chat-commands",
+  "data.enable.options.0.description": "Enable a command allowing it to be sent in a chatchannel.",
 
   "data.enable.options.0.options.0.type": "String",
-  "data.enable.options.0.options.0.name": "stat",
-  "data.enable.options.0.options.0.description": "Set the stat you want to enable",
+  "data.enable.options.0.options.0.name": "command",
+  "data.enable.options.0.options.0.description": "Set the command you want to enable",
   "data.enable.options.0.options.0.required": true,
   "data.enable.options.0.options.0.autocomplete": true,
-
-
-  "data.enable.options.1.type": "Subcommand",
-  "data.enable.options.1.name": "advancements",
-  "data.enable.options.1.description": "Enable a disabled advancement",
-
-  "data.enable.options.1.options.0.type": "String",
-  "data.enable.options.1.options.0.name": "advancement",
-  "data.enable.options.1.options.0.description": "Set the advancement you want to enable",
-  "data.enable.options.1.options.0.required": true,
-  "data.enable.options.1.options.0.autocomplete": true,
-
-  "data.enable.options.2.type": "Subcommand",
-  "data.enable.options.2.name": "chat-commands",
-  "data.enable.options.2.description": "Enable a disabled chat-command allowing it to be sent again.",
-
-  "data.enable.options.2.options.0.type": "String",
-  "data.enable.options.2.options.0.name": "command",
-  "data.enable.options.2.options.0.description": "Set the command you want to enable",
-  "data.enable.options.2.options.0.required": true,
-  "data.enable.options.2.options.0.autocomplete": true,
 
 
 

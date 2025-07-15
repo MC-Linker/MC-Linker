@@ -1,0 +1,118 @@
+import Button from '../structures/Button.js';
+import keys from '../utilities/keys.js';
+import { getModal, getReplyOptions, ph } from '../utilities/messages.js';
+import { execSync } from 'child_process';
+import fs from 'fs-extra';
+import Discord from 'discord.js';
+import { Docker } from 'node-docker-api';
+import compose from 'docker-compose';
+
+const docker = new Docker();
+
+export default class EntitlementsDetails extends Button {
+
+    constructor() {
+        super({ id: 'entitlements_details', defer: false });
+    }
+
+    async execute(interaction, client) {
+        if(interaction.entitlements.size === 0)
+            return await interaction.update(getReplyOptions(keys.warnings.errors.no_entitlement));
+
+        try {
+            //Send modal
+            await interaction.showModal(getModal(keys.entitlements.success.details_modal));
+            const modal = await interaction.awaitModalSubmit({ time: 300_000 });
+            const token = modal.fields.getTextInputValue('token');
+            console.log(token);
+            await modal.deferUpdate();
+
+            //For linked roles they'll have to add endpoints in the portal and provide the secret
+
+            const testClient = new Discord.Client({ intents: 0 });
+            try {
+                await testClient.login(token);
+            }
+            catch(err) {
+                return await interaction.replyTl(keys.entitlements.warnings.invalid_token, ph.error(err));
+            }
+            finally {
+                await testClient.destroy();
+            }
+
+            const botFolder = `./Custom-MC-Linker/${interaction.user.id}`;
+            if(await fs.exists(botFolder)) await fs.rm(botFolder, { recursive: true });
+
+            // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
+            await interaction.replyTl(keys.entitlements.success.cloning);
+            execSync(`git clone https://github.com/MC-Linker/MC-Linker ${botFolder}`);
+
+            const botPort = 30000; //TODO
+            const env = {
+                BOT_PORT: botPort,
+                PLUGIN_PORT: process.env.PLUGIN_PORT,
+                CLIENT_ID: testClient.user.id,
+                CLIENT_SECRET: '',
+                TOKEN: token,
+                COOKIE_SECRET: crypto.randomUUID(),
+                DISCORD_LINK: process.env.DISCORD_LINK,
+                GUILD_ID: `\'${process.env.GUILD_ID}\'`,
+                OWNER_ID: process.env.OWNER_ID,
+                PLUGIN_VERSION: process.env.PLUGIN_VERSION,
+                PREFIX: process.env.PREFIX,
+                LINKED_ROLES_REDIRECT_URI: `http://api.mclinker.com:${botPort}/linked-role/callback`,
+                MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
+                MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
+                AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
+                SERVICE_NAME: `custom-mc-linker_${interaction.user.id}`,
+                DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${interaction.user.id}`,
+            };
+
+            const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
+            await fs.writeFile(`${botFolder}/.env`, stringifiedEnv);
+
+            // Copy docker-compose.yml
+            await fs.copy('./Custom-MC-Linker/docker-compose.yml', `${botFolder}/docker-compose.yml`);
+
+            const promisifyStream = stream => new Promise((resolve, reject) => {
+                stream.on('data', data => console.log(data.toString()));
+                stream.on('end', resolve);
+                stream.on('error', reject);
+            });
+
+            // Docker it up
+            await interaction.replyTl(keys.entitlements.success.starting_up);
+            const stream = await docker.image.build(fs.createReadStream(`${botFolder}/Dockerfile`), { t: `lianecx/${env.SERVICE_NAME}` });
+            await promisifyStream(stream);
+
+            //Compose up
+            await compose.upAll({ cwd: botFolder, log: true });
+
+            // execSync(`docker build . -t lianecx/${env.SERVICE_NAME} && docker compose up -d`, { cwd: botFolder });
+
+            //Check for errors (wrong token, secret etc)
+
+            // Run slash command script
+            await interaction.replyTl(keys.entitlements.success.deploying);
+            const exec = await docker.container.get(env.SERVICE_NAME).exec.create({
+                AttachStdout: true,
+                AttachStderr: true,
+                Cmd: ['node', 'scripts/deploy.js', 'deploy', '-g'],
+            });
+            const execStart = await exec.start();
+            await promisifyStream(execStart);
+
+            // execSync(`docker exec -it ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, { cwd: botFolder });
+
+            //Send success
+
+            // Automated subdomain for them?
+            // Tell them to change bot port in the plugin config
+
+            return await interaction.replyTl(keys.entitlements.success.finish, { port: botPort }); //TODO Add control buttons (start/stop, edit details)
+        }
+        catch(e) {
+            console.error(e);
+        }
+    }
+}

@@ -163,6 +163,143 @@
       }
     }
   },
+  "entitlements": {
+    "success": {
+      "start": {
+        "embeds": [
+          {
+            "title": "Subscription Successful",
+            "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
+            "color": "Green",
+            "fields": [
+              {
+                "name": "Get Started",
+                "value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+              }
+            ]
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Next",
+            "custom_id": "entitlements_next"
+          }
+        ]
+      },
+      "details": {
+        "embeds": [
+          {
+            "title": "Subscription Successful",
+            "color": "Green",
+            "fields": [
+              {
+                "name": "Enter Bot Details",
+                "value": "The **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+              }
+            ]
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Enter Details",
+            "custom_id": "entitlements_details"
+          }
+        ]
+      },
+      "cloning": {
+        "embeds": [
+          {
+            "title": "Setting Up Your Custom MC-Linker",
+            "description": "*Copying MC-Linker...*",
+            "color": "Green"
+          }
+        ],
+        "components": []
+      },
+      "deploying": {
+        "embeds": [
+          {
+            "title": "Setting Up Your Custom MC-Linker",
+            "description": "*Deploying Slash Commands...",
+            "color": "Green"
+          }
+        ]
+      },
+      "starting_up": {
+        "embeds": [
+          {
+            "title": "Setting Up Your Custom MC-Linker",
+            "description": "*Starting up...*",
+            "color": "Green"
+          }
+        ]
+      },
+      "finish": {
+        "embeds": [
+          {
+            "title": "Subscription Successful",
+            "description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+            "color": "Green"
+          }
+        ]
+      },
+      "details_modal": {
+        "type": "Modal",
+        "custom_id": "entitlements_details_modal",
+        "title": "Enter Details",
+        "components": [
+          {
+            "type": "TextInput",
+            "custom_id": "token",
+            "label": "Bot Token",
+            "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+            "required": true,
+            "min_length": 50,
+            "max_length": 100,
+            "style": "Short"
+          }
+        ]
+      }
+    },
+    "warnings": {
+      "no_entitlement": {
+        "embeds": [
+          {
+            "title": "No Subscription",
+            "description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription."
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Premium",
+            "sku_id": "1166098447665995807"
+          }
+        ]
+      },
+      "invalid_token": {
+        "embeds": [
+          {
+            "title": "Incorrect Bot Token",
+            "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+          }
+        ],
+        "console": "Failed to login to bot with token %error_stack%",
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Enter Details",
+            "custom_id": "entitlements_details"
+          }
+        ]
+      }
+    }
+  },
   "commands": {
     "eval": {
       "warnings": {
@@ -2421,9 +2558,16 @@
           "type": "String",
           "name": "command",
           "description": "Set the command or category of which you want to get infos.",
+          "autocomplete": true,
           "required": false
         }
       ]
+    },
+    "customize": {
+      "name": "customize",
+      "description": "Customize the bot's appearance to your likings.",
+      "long_description": "Customize the bot's appearance to your likings. Requires a premium subscription to use, check out the bot's shop in its profile!",
+      "type": "ChatInput"
     },
     "advancements": {
       "name": "advancements",
@@ -2853,7 +2997,7 @@
         {
           "type": "Subcommand",
           "name": "killed_by",
-          "description": "Statistics related to the times of a player being killed by entities.",
+          "description": "Statistics related to the times off a player being killed by entities.",
           "options": [
             {
               "type": "String",
@@ -3556,8 +3700,8 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.",
-      "description": "Disable a specific command/stat/advancement.",
+      "long_description": "Disable a specific command preventing it from being sent in a chatchannel. List disabled chat-commands with `/disable list`.",
+      "description": "Disable a specific command preventing it from being sent in a chatchannel",
       "options": [
         {
           "type": "Subcommand",
@@ -3609,41 +3753,13 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default).",
-      "description": "Enable a disabled command/stat/advancement (All enabled by default)",
+      "long_description": "Enable a disabled command allowing it from being sent in a chatchannel again. (They're all enabled by default.)",
+      "description": "Enable a command allowing it from being sent in a chatchannel.",
       "options": [
         {
           "type": "Subcommand",
-          "name": "stats",
-          "description": "Enable a disabled stat",
-          "options": [
-            {
-              "type": "String",
-              "name": "stat",
-              "description": "Set the stat you want to enable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
-        {
-          "type": "Subcommand",
-          "name": "advancements",
-          "description": "Enable a disabled advancement",
-          "options": [
-            {
-              "type": "String",
-              "name": "advancement",
-              "description": "Set the advancement you want to enable",
-              "required": true,
-              "autocomplete": true
-            }
-          ]
-        },
-        {
-          "type": "Subcommand",
           "name": "chat-commands",
-          "description": "Enable a disabled chat-command allowing it to be sent again.",
+          "description": "Enable a command allowing it to be sent in a chatchannel.",
           "options": [
             {
               "type": "String",

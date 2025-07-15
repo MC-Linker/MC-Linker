@@ -13,6 +13,7 @@ export default class Command {
      * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
      * @property {string} [category] - The category of this command.
      * @property {boolean} [allowPrefix=false] - Whether this command can be executed with the prefix.
+     * @property {boolean} [allowUser=false] - Whether this command can be executed in a DM.
      */
 
     /**
@@ -68,6 +69,12 @@ export default class Command {
          * @type {boolean}
          */
         this.allowPrefix = options.allowPrefix ?? false;
+
+        /**
+         * Whether this command can be executed in a DM.
+         * @type {boolean}
+         */
+        this.allowUser = options.allowUser ?? false;
     }
 
     /**
