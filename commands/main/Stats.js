@@ -1,16 +1,17 @@
 import * as utils from '../../utilities/utils.js';
+import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Canvas from 'skia-canvas';
 import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
-import minecraft_data from 'minecraft-data';
+import MinecraftData from 'minecraft-data';
 import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 const startCoords = [41, 152];
 const yPadding = 7;

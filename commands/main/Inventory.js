@@ -1,14 +1,15 @@
 import Canvas from 'skia-canvas';
 import Discord from 'discord.js';
-import minecraft_data from 'minecraft-data';
+import MinecraftData from 'minecraft-data';
 import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
+import { MinecraftDataVersion } from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -457,7 +458,8 @@ export default class Inventory extends Command {
 
 
 // noinspection JSUnusedLocalSymbols
-async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
+async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {
+}) {
     const background = await Canvas.loadImage(backgroundPath);
     const canvas = new Canvas.Canvas(background.width, background.height);
     const ctx = canvas.getContext('2d');

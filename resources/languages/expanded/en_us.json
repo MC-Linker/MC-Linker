@@ -122,6 +122,16 @@
         "console": "Could not respond to %interaction_name% autocomplete %error_stack%"
       }
     },
+    "warnings": {
+      "http_deprecated": {
+        "embeds": [
+          {
+            "title": "Deprecated Connection Method",
+            "description": "**Your server is using the deprecated backup connection method and will be disconnected. Please reconnect in Discord using `/connect`.**"
+          }
+        ]
+      }
+    },
     "success": {
       "login": {
         "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers."
@@ -1871,11 +1881,11 @@
       "success": {
         "embeds": [
           {
-            "title": "Disconnected From %protocol_cap%",
-            "description": "The **%protocol%** connection was successfully disconnected."
+            "title": "Disconnected From Plugin",
+            "description": "The plugin connection was successfully disconnected."
           }
         ],
-        "console": "Disconnected from %protocol%"
+        "console": "Disconnected from the plugin"
       }
     },
     "enable": {
@@ -2388,24 +2398,6 @@
             }
           ],
           "console": "User not connected"
-        },
-        "server_not_connected_plugin": {
-          "embeds": [
-            {
-              "title": "Server Not Connected",
-              "description": "Your server is not connected with the plugin. Please use `/connect plugin` first."
-            }
-          ],
-          "console": "Server not connected with plugin"
-        },
-        "server_not_connected_ftp": {
-          "embeds": [
-            {
-              "title": "Server Not Connected",
-              "description": "Your server is not connected with ftp. Please use `/connect ftp` first."
-            }
-          ],
-          "console": "Server not connected with ftp"
         },
         "could_not_download": {
           "embeds": [
@@ -3494,203 +3486,40 @@
       "default_member_permissions": [
         "Administrator"
       ],
-      "long_description": "Connect your Minecraft Java-Edition server with the bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
+      "long_description": "Connect your Minecraft Java-Edition server with the bot.\n**You'll first have to download and install the plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/).**",
       "description": "Connect your Minecraft server with the bot.",
       "options": [
         {
-          "type": "Subcommand",
-          "name": "ftp",
-          "description": "Connect your Minecraft server using ftp/sftp/ftps.",
-          "options": [
+          "type": "String",
+          "name": "join-requirement",
+          "description": "Set which requirements a user needs to join the server.",
+          "required": false,
+          "choices": [
             {
-              "type": "String",
-              "name": "host",
-              "description": "Set the ftp-host.",
-              "required": true
+              "name": "None",
+              "value": "none"
             },
             {
-              "type": "String",
-              "name": "username",
-              "description": "Set the ftp-username. (`none` if no username)",
-              "required": true
+              "name": "Require Role(s)",
+              "value": "roles"
             },
             {
-              "type": "String",
-              "name": "password",
-              "description": "Set the ftp-password (`none` if no password).",
-              "required": true
-            },
-            {
-              "type": "Integer",
-              "name": "port",
-              "description": "Set the ftp-port.",
-              "required": false,
-              "min_value": 1,
-              "max_value": 65536
-            },
-            {
-              "type": "String",
-              "name": "version",
-              "description": "Set the Minecraft version.",
-              "required": false,
-              "choices": [
-                {
-                  "name": "1.5",
-                  "value": "5"
-                },
-                {
-                  "name": "1.6",
-                  "value": "6"
-                },
-                {
-                  "name": "1.7",
-                  "value": "7"
-                },
-                {
-                  "name": "1.8",
-                  "value": "8"
-                },
-                {
-                  "name": "1.9",
-                  "value": "9"
-                },
-                {
-                  "name": "1.10",
-                  "value": "10"
-                },
-                {
-                  "name": "1.11",
-                  "value": "11"
-                },
-                {
-                  "name": "1.12",
-                  "value": "12"
-                },
-                {
-                  "name": "1.13",
-                  "value": "13"
-                },
-                {
-                  "name": "1.14",
-                  "value": "14"
-                },
-                {
-                  "name": "1.15",
-                  "value": "15"
-                },
-                {
-                  "name": "1.16",
-                  "value": "16"
-                },
-                {
-                  "name": "1.17",
-                  "value": "17"
-                },
-                {
-                  "name": "1.18",
-                  "value": "18"
-                },
-                {
-                  "name": "1.19",
-                  "value": "19"
-                },
-                {
-                  "name": "1.20",
-                  "value": "20"
-                },
-                {
-                  "name": "1.21",
-                  "value": "21"
-                }
-              ]
-            },
-            {
-              "type": "String",
-              "name": "path",
-              "description": "Set the server-path (Format: /path/to/server).",
-              "required": false
+              "name": "Require Linked Account",
+              "value": "link"
             }
           ]
         },
         {
-          "type": "Subcommand",
-          "name": "plugin",
-          "description": "Connect your Minecraft server using the Discord-Linker plugin.",
-          "options": [
-            {
-              "type": "String",
-              "name": "join-requirement",
-              "description": "Set which requirements a user needs to join the server.",
-              "required": false,
-              "choices": [
-                {
-                  "name": "None",
-                  "value": "none"
-                },
-                {
-                  "name": "Require Role(s)",
-                  "value": "roles"
-                },
-                {
-                  "name": "Require Linked Account",
-                  "value": "link"
-                }
-              ]
-            },
-            {
-              "type": "String",
-              "name": "display-ip",
-              "description": "Set the public IP address that will be displayed in some of the bot's commands.",
-              "required": false
-            },
-            {
-              "type": "Boolean",
-              "name": "online",
-              "description": "Manually set the configured online-mode of the server. For BungeeCord servers, set this to \"True\"",
-              "required": false
-            }
-          ]
+          "type": "String",
+          "name": "display-ip",
+          "description": "Set the public IP address that will be displayed in some of the bot's commands.",
+          "required": false
         },
         {
-          "type": "Subcommand",
-          "name": "backup",
-          "description": "Connect your Minecraft server using the Discord-Linker plugin with backup-mode enabled.",
-          "options": [
-            {
-              "type": "String",
-              "name": "ip",
-              "description": "Set the ip of your Minecraft server.",
-              "required": true
-            },
-            {
-              "type": "Integer",
-              "name": "port",
-              "description": "Set the port of the plugin (Default: 11111).",
-              "required": false,
-              "min_value": 1,
-              "max_value": 65535
-            },
-            {
-              "type": "String",
-              "name": "join-requirement",
-              "description": "Set which requirements a user needs to join the server.",
-              "required": false,
-              "choices": [
-                {
-                  "name": "None",
-                  "value": "none"
-                },
-                {
-                  "name": "Require Role(s)",
-                  "value": "roles"
-                },
-                {
-                  "name": "Require Linked Account",
-                  "value": "link"
-                }
-              ]
-            }
-          ]
+          "type": "Boolean",
+          "name": "online",
+          "description": "Manually set the configured online-mode of the server. For BungeeCord servers, set this to \"True\"",
+          "required": false
         }
       ]
     },

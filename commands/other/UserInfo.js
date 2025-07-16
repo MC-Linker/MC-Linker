@@ -2,7 +2,12 @@ import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../utilities/utils.js';
-import { codeBlockFromCommandResponse, formatDuration, getMinecraftAvatarURL } from '../../utilities/utils.js';
+import {
+    codeBlockFromCommandResponse,
+    formatDuration,
+    getMinecraftAvatarURL,
+    MinecraftDataVersion,
+} from '../../utilities/utils.js';
 import {
     addPh,
     addTranslatedResponses,
@@ -13,10 +18,10 @@ import {
 } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
-import minecraft_data from 'minecraft-data';
+import MinecraftData from 'minecraft-data';
 import Discord, { ComponentType, time, userMention } from 'discord.js';
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 export default class UserInfo extends Command {
 

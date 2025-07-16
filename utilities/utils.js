@@ -1,6 +1,7 @@
 import Discord, {
     ActionRowBuilder,
     ApplicationCommandOptionType,
+    ChannelType,
     CommandInteraction,
     GuildChannel,
     MessageMentions,
@@ -9,25 +10,28 @@ import Discord, {
     User,
 } from 'discord.js';
 import crypto from 'crypto';
-import minecraft_data from 'minecraft-data';
+import MinecraftData from 'minecraft-data';
 import keys from './keys.js';
 import advancementData from '../resources/data/advancements.json' with { type: 'json' };
 import customStats from '../resources/data/stats_custom.json' with { type: 'json' };
 import nbt from 'prismarine-nbt';
-import { ph } from './messages.js';
+import { getReplyOptions, ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import mojangson from 'mojangson';
 import { Authflow } from 'prismarine-auth';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import { FilePath } from '../structures/Protocol.js';
-
-const mcData = minecraft_data('1.20.4');
+import HttpProtocol from '../structures/HttpProtocol.js';
+import FtpProtocol from '../structures/FtpProtocol.js';
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxEmbedDescriptionLength = 4096;
 export const MaxAutoCompleteChoices = 25;
 export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
+export const MinecraftDataVersion = '1.21.3';
+
+const mcData = MinecraftData(MinecraftDataVersion);
 
 // Password Auth:
 const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
@@ -338,10 +342,17 @@ export async function getUsersFromMention(client, mention) {
     return userArray;
 }
 
+
+const defaultStatusRespones = {
+    400: keys.api.plugin.errors.status_400,
+    401: keys.api.plugin.errors.status_401,
+    404: keys.api.plugin.errors.status_404,
+};
+
 /**
  * Handles the response of a protocol call.
  * @param {?ProtocolResponse} response - The response to handle.
- * @param {WebSocketProtocol} protocol - The protocol that was called.
+ * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
  * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
@@ -350,9 +361,24 @@ export async function getUsersFromMention(client, mention) {
 export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}, ...placeholders) {
     placeholders.push({ data: JSON.stringify(response?.data ?? '') });
 
-    if(!response && protocol instanceof WebSocketProtocol) {
+    if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
         await interaction.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
         return false;
+    }
+    else if(!response && protocol instanceof FtpProtocol) {
+        await interaction.replyTl(keys.api.ftp.errors.could_not_connect, ...placeholders);
+        return false;
+    }
+    else if(response.status >= 500 && response.status < 600) {
+        await interaction.replyTl(keys.api.plugin.errors.status_500, ...placeholders);
+        return false;
+    }
+    else if(response.status !== 200) {
+        const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
+        if(responseKey) {
+            await interaction.replyTl(responseKey, ...placeholders);
+            return false;
+        }
     }
 
     return true;
@@ -875,4 +901,80 @@ export function durationString(ms) {
     return `${years} year${years === 1 ? '' : 's'}, ${weeks} week${weeks === 1 ? '' : 's'}, ${days} day${days === 1 ? '' : 's'}, ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
         //Remove 0 values
         .replace(/(?<!\d)0\s[a-z]+,\s/g, '').replace(/(, 00:00:00)/, '');
+}
+
+/**
+ * Send a message to a guild with the given key
+ * This will try to send the message to the system channel first
+ * If that fails, it will try to send it to the public updates channel
+ * If that also fails, it will try to send it to the first text channel it finds
+ * @param {Discord.Guild} guild - The guild to send the message to
+ * @param {any} key - The key of the message to send
+ * @param {...Object} placeholders - The placeholders to use in the message
+ * @returns {Promise<void>}
+ */
+export async function sendToServer(guild, key, ...placeholders) {
+    const replyOptions = getReplyOptions(key, ...placeholders);
+
+    if(await trySendMessage(guild.systemChannel)) return;
+    if(await trySendMessage(guild.publicUpdatesChannel)) return;
+
+    const sortedChannels = await sortChannels(guild);
+    for(const channel of sortedChannels) {
+        if(await trySendMessage(channel)) return;
+    }
+
+    async function trySendMessage(channel) {
+        if(!channel || !channel.isTextBased()) return false;
+        try {
+            await channel.send(replyOptions);
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+}
+
+/**
+ * Sort channels in a guild by their position
+ * @param {Guild} guild - The guild to sort the channels in
+ * @returns {Promise<Discord.Channel[]>}
+ */
+export async function sortChannels(guild) {
+    const guildChannels = await guild.channels.fetch();
+
+    //Sorting by type (text over voice) and by position
+    const descendingPosition = (a, b) => {
+        if(a.type === b.type) return a.position - b.position;
+        else if(a.type === 'voice') return 1;
+        else return -1;
+    };
+
+    const sortedChannels = [];
+
+    /** @type {Discord.Collection<?Discord.CategoryChannel, Discord.Collection<Discord.Snowflake, Discord.CategoryChildChannel>>} */
+    const channels = new Discord.Collection();
+
+    //Push channels without category/parent
+    guildChannels
+        .filter(channel => !channel.parent && channel.type !== ChannelType.GuildCategory)
+        .sort(descendingPosition)
+        .forEach(c => sortedChannels.push(c));
+
+    //Set Categories with their children
+    /** @type {Discord.Collection<Discord.Snowflake, Discord.CategoryChannel>} */
+    const categories = guildChannels.filter(channel => channel.type === ChannelType.GuildCategory).sort(descendingPosition);
+    categories.forEach(category => channels.set(category, category.children.cache.sort(descendingPosition)));
+
+    //Loop over all categories
+    channels.forEach((children, category) => {
+        //Push category
+        if(category) sortedChannels.push(category);
+
+        //Loop over children of categories and push children
+        for(const [_, child] of children) sortedChannels.push(child);
+    });
+
+    return sortedChannels;
 }

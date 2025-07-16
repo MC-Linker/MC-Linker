@@ -13,6 +13,7 @@ import MCLinkerAPI from './MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
 import { convert } from '../scripts/convert.js';
 import mongoose, { Mongoose, Schema } from 'mongoose';
+import Schemas from '../resources/schemas.js';
 
 export default class MCLinker extends Discord.Client {
 
@@ -192,7 +193,7 @@ export default class MCLinker extends Discord.Client {
         console.log(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
         if(process.env.CONVERT === 'true' && this.shard.ids[0] === 0) {
-            await convert(this.mongo);
+            await convert(this, this.mongo);
             console.log('Converted database.');
         }
 
@@ -218,73 +219,10 @@ export default class MCLinker extends Discord.Client {
          */
         this.mongo = await mongoose.connect(process.env.DATABASE_URL);
 
-        const serverConnectionSchema = new Schema({
-            _id: { type: String },
-            ip: String,
-            version: Number,
-            path: String,
-            worldPath: String,
-            online: Boolean,
-            forceOnlineMode: Boolean,
-            floodgatePrefix: String,
-            requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
-            displayIp: String,
-            port: Number,
-            hash: String,
-            chatChannels: [{
-                _id: { type: String },
-                types: [{
-                    type: String,
-                    enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
-                }],
-                allowDiscordToMinecraft: Boolean,
-                webhook: String,
-            }],
-            statChannels: [{
-                _id: { type: String },
-                type: { type: String, enum: ['online', 'max', 'members'] },
-                names: {
-                    online: String,
-                    offline: String,
-                    members: String,
-                },
-            }],
-            syncedRoles: [{
-                _id: { type: String },
-                name: String,
-                isGroup: Boolean,
-                players: [String],
-            }],
-            serverSettings: { type: String, ref: 'ServerSettingsConnections' },
-        });
-
-        const serverSettingsConnectionSchema = new Schema({
-            _id: { type: String },
-            disabled: {
-                advancements: [String],
-                stats: [String],
-                chatCommands: [String],
-            },
-            language: String,
-            server: { type: String, ref: 'ServerConnection' },
-        });
-
-        const userSettingsConnectionSchema = new Schema({
-            _id: { type: String },
-            tokens: {
-                accessToken: String,
-                refreshToken: String,
-                expires: Number,
-            },
-            user: { type: String, ref: 'UserConnection' },
-        });
-
-        const userConnectionSchema = new Schema({
-            _id: { type: String },
-            uuid: { type: String, unique: true },
-            username: String,
-            userSettings: { type: String, ref: 'UserSettingsConnection' },
-        });
+        const serverConnectionSchema = new Schema(Schemas.ServerConnection);
+        const serverSettingsConnectionSchema = new Schema(Schemas.ServerSettingsConnection);
+        const userSettingsConnectionSchema = new Schema(Schemas.UserSettingsConnection);
+        const userConnectionSchema = new Schema(Schemas.UserConnection);
 
         this.mongo.model('ServerConnection', serverConnectionSchema);
         this.mongo.model('UserConnection', userConnectionSchema);

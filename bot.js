@@ -1,7 +1,7 @@
 import Discord, { ChannelType } from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import Canvas from 'skia-canvas';
-import { cleanEmojis, getArgs } from './utilities/utils.js';
+import { cleanEmojis, getArgs, sendToServer } from './utilities/utils.js';
 import keys, { getLanguageKey } from './utilities/keys.js';
 import { addPh, addTranslatedResponses, getReplyOptions, ph } from './utilities/messages.js';
 import AutocompleteCommand from './structures/AutocompleteCommand.js';
@@ -42,7 +42,8 @@ String.prototype.toTitleCase = function(c, n) {
 if(process.env.TOPGG_TOKEN) {
     const poster = AutoPoster(process.env.TOPGG_TOKEN, client);
 
-    poster.on('posted', () => {});
+    poster.on('posted', () => {
+    });
     poster.on('error', () => console.log(getLanguageKey(keys.main.errors.could_not_post_stats.console)));
 }
 
@@ -291,82 +292,6 @@ client.on(Discord.Events.EntitlementDelete, async entitlement => {
 client.on(Discord.Events.EntitlementUpdate, async entitlement => {
 
 });
-
-/**
- * Send a message to a guild with the given key
- * This will try to send the message to the system channel first
- * If that fails, it will try to send it to the public updates channel
- * If that also fails, it will try to send it to the first text channel it finds
- * @param {Discord.Guild} guild - The guild to send the message to
- * @param {any} key - The key of the message to send
- * @param {...Object} placeholders - The placeholders to use in the message
- * @returns {Promise<void>}
- */
-async function sendToServer(guild, key, ...placeholders) {
-    const replyOptions = getReplyOptions(key, ...placeholders);
-
-    if(await trySendMessage(guild.systemChannel)) return;
-    if(await trySendMessage(guild.publicUpdatesChannel)) return;
-
-    const sortedChannels = await sortChannels(guild);
-    for(const channel of sortedChannels) {
-        if(await trySendMessage(channel)) return;
-    }
-
-    async function trySendMessage(channel) {
-        if(!channel || !channel.isTextBased()) return false;
-        try {
-            await channel.send(replyOptions);
-            return true;
-        }
-        catch {
-            return false;
-        }
-    }
-}
-
-/**
- * Sort channels in a guild by their position
- * @param {Guild} guild - The guild to sort the channels in
- * @returns {Promise<Discord.Channel[]>}
- */
-async function sortChannels(guild) {
-    const guildChannels = await guild.channels.fetch();
-
-    //Sorting by type (text over voice) and by position
-    const descendingPosition = (a, b) => {
-        if(a.type === b.type) return a.position - b.position;
-        else if(a.type === 'voice') return 1;
-        else return -1;
-    };
-
-    const sortedChannels = [];
-
-    /** @type {Discord.Collection<?Discord.CategoryChannel, Discord.Collection<Discord.Snowflake, Discord.CategoryChildChannel>>} */
-    const channels = new Discord.Collection();
-
-    //Push channels without category/parent
-    guildChannels
-        .filter(channel => !channel.parent && channel.type !== ChannelType.GuildCategory)
-        .sort(descendingPosition)
-        .forEach(c => sortedChannels.push(c));
-
-    //Set Categories with their children
-    /** @type {Discord.Collection<Discord.Snowflake, Discord.CategoryChannel>} */
-    const categories = guildChannels.filter(channel => channel.type === ChannelType.GuildCategory).sort(descendingPosition);
-    categories.forEach(category => channels.set(category, category.children.cache.sort(descendingPosition)));
-
-    //Loop over all categories
-    channels.forEach((children, category) => {
-        //Push category
-        if(category) sortedChannels.push(category);
-
-        //Loop over children of categories and push children
-        for(const [_, child] of children) sortedChannels.push(child);
-    });
-
-    return sortedChannels;
-}
 
 await client.login(process.env.TOKEN);
 

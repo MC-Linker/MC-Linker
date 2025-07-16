@@ -156,6 +156,48 @@ export default class MCLinkerAPI extends EventEmitter {
     }
 
     async startServer() {
+        async function _getServerFastify(request, reply, client, rateLimiter = null) {
+            try {
+                if(rateLimiter) await rateLimiter.consume(request.ip);
+
+                const id = request.body.id;
+                const ip = request.body.ip.split(':')[0];
+                const port = request.body.ip.split(':')[1];
+
+                /** @type {ServerConnection} */
+                const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === parseInt(port));
+                //If no connection on that guild send disconnection status
+                if(!server) reply.status(403).send({});
+
+                //check authorization: Bearer <token>
+                if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization?.split(' ')[1]) {
+                    reply.status(401).send({});
+                    return;
+                }
+
+                return server;
+            }
+            catch(rateLimiterRes) {
+                reply.status(429).headers({
+                    'Retry-After': rateLimiterRes.msBeforeNext / 1000,
+                    'X-RateLimit-Limit': rateLimiter.points,
+                    'X-RateLimit-Remaining': rateLimiterRes.remainingPoints,
+                    'X-RateLimit-Reset': new Date(Date.now() + rateLimiterRes.msBeforeNext),
+                }).send({ message: 'Too many requests' });
+            }
+        }
+
+        for(const route of this.routes) {
+            this.fastify[route.method.toLowerCase()](route.endpoint, async (request, reply) => {
+                const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(request.body) : route.rateLimiter;
+                const server = await _getServerFastify(request, reply, this.client, rateLimiter);
+                if(!server) return;
+
+                const response = await route.handler(request.body, server);
+                reply.status(response?.status ?? 200).send(response?.body ?? {});
+            });
+        }
+
         this.fastify.get('/linked-role', async (request, reply) => {
             // Generate state
             const { state, url } = getOAuthURL();
@@ -375,7 +417,8 @@ export default class MCLinkerAPI extends EventEmitter {
             argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
         }
 
-        const allWebhooks = await guild.fetchWebhooks().catch(() => {});
+        const allWebhooks = await guild.fetchWebhooks().catch(() => {
+        });
 
         for(const channel of channels) {
             if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
@@ -401,7 +444,8 @@ export default class MCLinkerAPI extends EventEmitter {
             }
 
             if(!channel.webhook) {
-                await discordChannel.send({ embeds: [chatEmbed] }).catch(() => {});
+                await discordChannel.send({ embeds: [chatEmbed] }).catch(() => {
+                });
                 continue;
             }
 

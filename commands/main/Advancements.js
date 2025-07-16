@@ -1,7 +1,8 @@
-import minecraft_data from 'minecraft-data';
+import MinecraftData from 'minecraft-data';
 import Discord, { time } from 'discord.js';
 import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
+import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as d3 from 'd3-hierarchy';
@@ -10,7 +11,7 @@ import allAdvancements from '../../resources/data/advancements.json' with { type
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 const iconSize = 40;
 const frameSize = iconSize + 18;

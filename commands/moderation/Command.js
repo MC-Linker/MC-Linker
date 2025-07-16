@@ -2,15 +2,18 @@
 import { addPh, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
-import { codeBlockFromCommandResponse, MaxAutoCompleteChoices } from '../../utilities/utils.js';
-import minecraft_data from 'minecraft-data';
+import { codeBlockFromCommandResponse, MaxAutoCompleteChoices, MinecraftDataVersion } from '../../utilities/utils.js';
+import MinecraftData from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' with { type: 'json' };
 import { FilePath } from '../../structures/Protocol.js';
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 export default class Command extends AutocompleteCommand {
+
+    // noinspection LocalVariableNamingConventionJS
+    memoizedGetAutocompleteSuggestions = utils.memoize(this.getAutocompleteSuggestions, 4);
 
     constructor() {
         super({
@@ -18,9 +21,6 @@ export default class Command extends AutocompleteCommand {
             category: 'moderation',
         });
     }
-
-    // noinspection LocalVariableNamingConventionJS
-    memoizedGetAutocompleteSuggestions = utils.memoize(this.getAutocompleteSuggestions, 4);
 
     async getAutocompleteSuggestions(focusedOption, allOptions, user, guildId, client) {
         const respondArray = [];
@@ -4472,6 +4472,7 @@ async function getPlaceholder(key, args) {
                 'wither',
                 'wither_skull',
             ];
+            break;
         case key.endsWith('_criteria') ? key : null:
             //TODO get advancement criteria
             break;

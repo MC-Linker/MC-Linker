@@ -37,6 +37,38 @@ export default class ServerConnection extends Connection {
      */
 
     /**
+     * @typedef {object} HttpServerConnectionData - The data for a server-connection established by the plugin.
+     * @property {string} id - The id of the server.
+     * @property {string} ip - The ip of the server.
+     * @property {number} port - The port used to connect to the server plugin.
+     * @property {number} version - The minor minecraft version of the server.
+     * @property {string} worldPath - The path to the world folder of the server.
+     * @property {string} path - The path to the server folder of the server.
+     * @property {string} token - The connection token used to connect to the server plugin.
+     * @property {boolean} online - Whether online mode is enabled on this server.
+     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
+     * @property {RequiredRoleToJoinData} [requiredRoleToJoin] - The id of the role required to join the server.
+     * @property {ChatChannelData[]} chatChannels - The chatchannels connected to the server.
+     * @property {StatsChannelData[]} statChannels - The data for stats channels.
+     * @property {'http'} protocol - The protocol used to connect to the server.
+     */
+
+    /**
+     * @typedef {object} FtpServerConnectionData - The data for a server-connection established by ftp or sftp.
+     * @property {string} id - The id of the server.
+     * @property {string} ip - The ip of the server.
+     * @property {string} username - The ftp username used to connect to the server.
+     * @property {string} password - The ftp password used to connect to the server.
+     * @property {number} port - The ftp port used to connect to the server.
+     * @property {number} version - The minor minecraft version of the server.
+     * @property {string} worldPath - The path to the world folder of the server.
+     * @property {string} path - The path to the server folder of the server.
+     * @property {boolean} online - Whether the server-connection has online mode enabled or not.
+     * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
+     * @property {'ftp'|'sftp'} protocol - The protocol used to connect to the server.
+     */
+
+    /**
      * @typedef {object} WebSocketServerConnectionData - The data for a server-connection established by a websocket.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.

@@ -79,6 +79,11 @@
 
   "main.errors.could_not_autocomplete_command.console": "Could not respond to %interaction_name% autocomplete %error_stack%",
 
+
+  "main.warnings.http_deprecated.embeds.0.title": "Deprecated Connection Method",
+  "main.warnings.http_deprecated.embeds.0.description": "**Your server is using the deprecated backup connection method and will be disconnected. Please reconnect in Discord using `/connect`.**",
+
+
   "main.success.login.console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers.",
 
   "main.success.command_load.console": "[%shard%] Successfully loaded command: %command%",
