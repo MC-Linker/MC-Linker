@@ -1,4 +1,4 @@
-import { CommandInteraction, Message } from 'discord.js';
+import { CommandInteraction, Message, MessageFlags } from 'discord.js';
 import keys from '../utilities/keys.js';
 
 export default class Command {
@@ -88,7 +88,7 @@ export default class Command {
      */
     async execute(interaction, client, args, server) {
         await interaction.replyTl(keys.api.command.executed, { args: args.join(' ') });
-        if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
+        if(this.defer) await interaction.deferReply?.({ flags: this.ephemeral ? MessageFlags.Ephemeral : undefined });
 
         if(this.ownerOnly) return interaction.user.id === process.env.OWNER_ID;
 

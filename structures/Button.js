@@ -1,4 +1,4 @@
-import { ButtonInteraction, PermissionsBitField, User } from 'discord.js';
+import { ButtonInteraction, MessageFlags, PermissionsBitField, User } from 'discord.js';
 import { ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 
@@ -59,7 +59,7 @@ export default class Button {
      */
     async execute(interaction, client) {
         await interaction.replyTl(keys.api.button.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
-        if(this.defer) await interaction.deferReply({ ephemeral: this.ephemeral });
+        if(this.defer) await interaction.deferReply({ flags: this.ephemeral ? MessageFlags.Ephemeral : undefined });
 
         if(this.permissions) {
             const memberPerms = interaction.member.permissionsIn(interaction.channel);
