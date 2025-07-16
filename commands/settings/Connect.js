@@ -73,15 +73,15 @@ export default class Connect extends Command {
                                 c.emit('editConnectResponse', id, 'success');
                             }, { context: { id }, shard });
                         }
-                    catch(err) {
-                        await c.shard.broadcastEval((c, { id, error }) => {
-                            c.emit('editConnectResponse', id, 'error', { error_stack: error });
-                        }, { context: { id, error: err.stack }, shard });
-                        socket.disconnect(true);
-                    }
-                });
-            }, { shard: 0 });
-        });
+                        catch(err) {
+                            await c.shard.broadcastEval((c, { id, error }) => {
+                                c.emit('editConnectResponse', id, 'error', { error_stack: error });
+                            }, { context: { id, error: err.stack }, shard });
+                            socket.disconnect(true);
+                        }
+                    });
+                }, { shard: 0 });
+            });
 
         client.on('editConnectResponse', async (id, responseType, placeholders = {}) => {
             if(!this.waitingInteractions.has(id)) return;
@@ -101,11 +101,11 @@ export default class Connect extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
         const joinRequirement = args[0];
         const displayIp = args[1];
         const online = args[2];
 
+        const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
         let selectResponse = joinRequirement === 'roles' ? await this.askForRequiredRolesToJoin(interaction) : null;
         if(!selectResponse && joinRequirement === 'roles') return; //User didn't respond in time
         else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'all' }; //No roles still requires linked account
@@ -211,7 +211,8 @@ export default class Connect extends Command {
                 resolve({ roles, method });
             });
 
-            methodCollector.on('end', async () => {}); // Will throw an error if not defined (i think)
+            methodCollector.on('end', async () => {
+            }); // Will throw an error if not defined (i think)
         });
     }
 }
