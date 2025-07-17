@@ -1,6 +1,4 @@
 import { Mongoose } from 'mongoose';
-import { sendToServer } from '../utilities/utils.js';
-import keys from '../utilities/keys.js';
 
 /**
  * Convert a mongoose model to the new schema
@@ -10,15 +8,15 @@ import keys from '../utilities/keys.js';
 export async function convert(client, mongoose) {
     const serverConnectionModel = mongoose.models.ServerConnection;
 
-    // Remove all http type server connections
-    const docs = await serverConnectionModel.find({ protocol: 'http' }).exec();
-    console.log(`[${client.shard.ids[0]}] Found ${docs.length} server connections with protocol http.`);
-    for(const doc of docs) {
-        //Fetch guild
-        const guild = await client.guilds.fetch(doc._id);
-        await sendToServer(guild, keys.main.warnings.http_deprecated);
+    /*  // (Remove all http type server connections) Keep them for legacy support
+        const docs = await serverConnectionModel.find({ protocol: 'http' }).exec();
+        console.log(`[${client.shard.ids[0]}] Found ${docs.length} server connections with protocol http.`);
+        for(const doc of docs) {
+            //Fetch guild
+            const guild = await client.guilds.fetch(doc._id);
+            await sendToServer(guild, keys.main.warnings.http_deprecated);
 
-        await serverConnectionModel.deleteOne({ _id: doc._id });
-        console.log(`[${client.shard.ids[0]}] Removed server connection with id ${doc._id} and protocol http.`);
-    }
+            await serverConnectionModel.deleteOne({ _id: doc._id });
+            console.log(`[${client.shard.ids[0]}] Removed server connection with id ${doc._id} and protocol http.`);
+        }*/
 }
