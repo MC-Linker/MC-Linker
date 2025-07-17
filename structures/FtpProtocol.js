@@ -3,6 +3,7 @@ import FtpClient from './ftp/FtpClient.js';
 import SftpClient from './ftp/SftpClient.js';
 import fs from 'fs-extra';
 
+// @deprecated
 export default class FtpProtocol extends Protocol {
 
     /**

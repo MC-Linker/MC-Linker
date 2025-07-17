@@ -64,7 +64,9 @@ export default class Connect extends Command {
                                 displayIp,
                             };
 
-                            await c.commands.get('connect').disconnectOldServer(id);
+                            /** @type {Connect} **/
+                            const connectCommand = c.commands.get('connect');
+                            await connectCommand.disconnectOldServer(id);
                             await c.serverConnections.connect(serverConnectionData);
 
                             c.api.addWebsocketListeners(socket, id, hash);
@@ -155,8 +157,10 @@ export default class Connect extends Command {
      */
     async disconnectOldServer(serverResolvable) {
         const server = client.serverConnections.resolve(serverResolvable);
-        await server.protocol.disconnect();
-        if(server) return await client.serverConnections.disconnect(server);
+        if(server) {
+            await server.protocol.disconnect();
+            return await client.serverConnections.disconnect(server);
+        }
     }
 
     /**

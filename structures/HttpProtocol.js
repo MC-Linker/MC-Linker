@@ -253,7 +253,7 @@ const PluginRoutes = {
     ],
 };
 
-
+// @deprecated
 export default class HttpProtocol extends Protocol {
 
     /**
