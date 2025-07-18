@@ -355,12 +355,12 @@ export async function replyOptions(interaction, options) {
     }
 
     function handleError(err) {
-        logger.error({ err }, `Could not reply to interaction ${interaction}`);
+        logger.error(err, `Could not reply to interaction ${interaction}`);
         try {
             return interaction.channel?.send(options);
         }
         catch(err) {
-            logger.error({ err }, `Could not send message to channel of interaction ${interaction}`);
+            logger.error(err, `Could not send message to channel of interaction ${interaction}`);
         }
     }
 

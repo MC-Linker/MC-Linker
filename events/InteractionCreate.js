@@ -1,5 +1,5 @@
 import Event from '../structures/Event.js';
-import { addTranslatedResponses, ph } from '../utilities/messages.js';
+import { addTranslatedResponses } from '../utilities/messages.js';
 import { getArgs } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
@@ -25,7 +25,8 @@ export default class InteractionCreate extends Event {
                 await command.execute(interaction, client, args, server);
             }
             catch(err) {
-                await interaction.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(interaction));
+                logger.error(err, `Could not execute command ${interaction.name}`);
+                await interaction.replyTl(keys.main.errors.could_not_execute_command);
             }
         }
         else if(interaction.isAutocomplete()) {
@@ -36,7 +37,7 @@ export default class InteractionCreate extends Event {
                 await command.autocomplete(interaction, client);
             }
             catch(err) {
-                logger.error({ err, interaction }, keys.main.errors.could_not_autocomplete_command.console);
+                logger.error(err, `Could not autocomplete command ${interaction.name}`);
             }
         }
         else if(interaction.isButton()) {
@@ -47,7 +48,8 @@ export default class InteractionCreate extends Event {
                 await button.execute(interaction, client);
             }
             catch(err) {
-                await interaction.replyTl(keys.main.errors.could_not_execute_button, ph.error(err), { 'button': interaction.customId });
+                logger.error(err, `Could not execute button ${interaction.name}`);
+                await interaction.replyTl(keys.main.errors.could_not_execute_button);
             }
         }
     }

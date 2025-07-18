@@ -14,10 +14,10 @@ const client = new MCLinker();
 
 // Handle errors
 process.on('unhandledRejection', async err => {
-    logger.error({ err }, 'Unhandled rejection');
+    logger.fatal(err, 'Unhandled rejection');
 });
 process.on('uncaughtException', async err => {
-    logger.error({ err }, 'Uncaught exception');
+    logger.fatal(err, 'Uncaught exception');
 });
 
 /*

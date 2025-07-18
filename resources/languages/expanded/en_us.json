@@ -106,8 +106,7 @@
             "title": "Unknown Error",
             "description": "An unknown error occurred while executing this command. Please try again."
           }
-        ],
-        "console": "Could not execute %interaction_name% command %error_stack%"
+        ]
       },
       "could_not_execute_button": {
         "embeds": [
@@ -115,11 +114,7 @@
             "title": "Unknown Error",
             "description": "An unknown error occurred while executing this button. Please try again."
           }
-        ],
-        "console": "Could not execute %button% button %error_stack%"
-      },
-      "could_not_autocomplete_command": {
-        "console": "Could not respond to %interaction_name% autocomplete %error_stack%"
+        ]
       }
     },
     "warnings": {

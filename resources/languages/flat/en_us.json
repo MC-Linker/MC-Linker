@@ -71,14 +71,9 @@
 
   "main.errors.could_not_execute_command.embeds.0.title": "Unknown Error",
   "main.errors.could_not_execute_command.embeds.0.description": "An unknown error occurred while executing this command. Please try again.",
-  "main.errors.could_not_execute_command.console": "Could not execute %interaction_name% command %error_stack%",
 
   "main.errors.could_not_execute_button.embeds.0.title": "Unknown Error",
   "main.errors.could_not_execute_button.embeds.0.description": "An unknown error occurred while executing this button. Please try again.",
-  "main.errors.could_not_execute_button.console": "Could not execute %button% button %error_stack%",
-
-  "main.errors.could_not_autocomplete_command.console": "Could not respond to %interaction_name% autocomplete %error_stack%",
-
 
   "main.warnings.http_deprecated.embeds.0.title": "Deprecated Connection Method",
   "main.warnings.http_deprecated.embeds.0.description": "**Your server is using the deprecated backup connection method and will be disconnected. Please reconnect in Discord using `/connect`.**",

@@ -88,7 +88,7 @@ export async function getUser(client, accessToken) {
         return new Discord.User(client, json.user);
     }
     catch(err) {
-        logger.error(`Error fetching user profile: ${err}`);
+        logger.error(err, 'Error fetching user profile');
         return null;
     }
 }
