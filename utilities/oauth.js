@@ -1,5 +1,6 @@
 import Discord from 'discord.js';
 import crypto from 'crypto';
+import logger from './logger.js';
 
 /**
  * @typedef {object} OAuthTokens
@@ -47,7 +48,7 @@ export async function getTokens(code) {
         });
 
         if(!response.ok) {
-            console.log(`Error fetching access tokens: [${response.status}] ${response.statusText}`);
+            logger.error(`Error fetching access tokens: [${response.status}] ${response.statusText}`);
             return null;
         }
 
@@ -59,7 +60,7 @@ export async function getTokens(code) {
         };
     }
     catch(err) {
-        console.log(`Error fetching access tokens: ${err}`);
+        logger.error(`Error fetching access tokens: ${err}`);
         return null;
     }
 }
@@ -79,7 +80,7 @@ export async function getUser(client, accessToken) {
         });
 
         if(!response.ok) {
-            console.log(`Error fetching user profile: [${response.status}] ${response.statusText}`);
+            logger.error(`Error fetching user profile: [${response.status}] ${response.statusText}`);
             return null;
         }
 
@@ -87,7 +88,7 @@ export async function getUser(client, accessToken) {
         return new Discord.User(client, json.user);
     }
     catch(err) {
-        console.log(`Error fetching user profile: ${err}`);
+        logger.error(`Error fetching user profile: ${err}`);
         return null;
     }
 }

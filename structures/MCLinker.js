@@ -9,11 +9,13 @@ import keys from '../utilities/keys.js';
 import path from 'path';
 import Command from './Command.js';
 import Button from './Button.js';
+import Event from './Event.js';
 import MCLinkerAPI from './MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
 import { convert } from '../scripts/convert.js';
-import mongoose, { Mongoose, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
+import logger from '../utilities/logger.js';
 
 export default class MCLinker extends Discord.Client {
 
@@ -48,13 +50,20 @@ export default class MCLinker extends Discord.Client {
     buttons = new Discord.Collection();
 
     /**
+     * A collection of all events in this bot.
+     * @type {Collection}
+     */
+    events = new Discord.Collection();
+
+    /**
      * Creates a new MCLinker client instance.
      * @param {string} commandPath - The path to the commands folder.
      * @param {string} buttonPath - The path to the buttons folder.
+     * @param {string} eventPath - The path to the events folder.
      * @param {Discord.ClientOptions} options - The options to pass to the Discord.js client.
      * @returns {MCLinker} - The new MCLinker client instance.
      */
-    constructor(commandPath = './commands', buttonPath = './buttons', options = {
+    constructor(commandPath = './commands', buttonPath = './buttons', eventPath = './events', options = {
         intents: [
             Discord.GatewayIntentBits.GuildMessages,
             Discord.GatewayIntentBits.GuildMembers,
@@ -108,6 +117,12 @@ export default class MCLinker extends Discord.Client {
         this.buttons = new Discord.Collection();
 
         /**
+         * A collection of all events in this bot.
+         * @type {import('discord.js').Collection<string, Event>}
+         */
+        this.events = new Discord.Collection();
+
+        /**
          * The path to the commands folder.
          * @type {string}
          */
@@ -133,6 +148,23 @@ export default class MCLinker extends Discord.Client {
     }
 
     async _loadCommands() {
+        const loadCommand = async (file, category = null) => {
+            // noinspection LocalVariableNamingConventionJS
+            const { default: CommandFile } = category ?
+                await import(`file://${path.resolve(`${this.commandPath}/${category}/${file}`)}`) :
+                await import(`file://${path.resolve(`${this.commandPath}/${file}`)}`);
+
+            if(CommandFile?.prototype instanceof Command) {
+                const command = new CommandFile();
+
+                this.commands.set(command.name, command);
+                logger.info(addPh(
+                    category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,
+                    { command: command.name, category: category, shard: this.shard.ids[0] },
+                ));
+            }
+        };
+
         const commands = await fs.readdir(this.commandPath);
 
         const commandCategories = commands.filter(command => !command.endsWith('.js'));
@@ -143,25 +175,7 @@ export default class MCLinker extends Discord.Client {
             const commandFiles = (await fs.readdir(`${this.commandPath}/${category}`))
                 .filter(file => file.endsWith('.js'));
 
-            for(const file of commandFiles) await loadCommand.call(this, file, category);
-        }
-
-        async function loadCommand(file, category = null) {
-            // noinspection LocalVariableNamingConventionJS
-            const { default: CommandFile } = category ?
-                await import(`file://${path.resolve(`${this.commandPath}/${category}/${file}`)}`) :
-                await import(`file://${path.resolve(`${this.commandPath}/${file}`)}`);
-
-            if(CommandFile?.prototype instanceof Command) {
-                const command = new CommandFile();
-
-                // noinspection JSPotentiallyInvalidUsageOfClassThis
-                this.commands.set(command.name, command);
-                console.log(addPh(
-                    category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,
-                    { command: command.name, category: category, shard: this.shard.ids[0] },
-                ));
-            }
+            for(const file of commandFiles) await loadCommand(file, category);
         }
     }
 
@@ -176,8 +190,29 @@ export default class MCLinker extends Discord.Client {
                 const button = new ButtonFile();
 
                 this.buttons.set(button.id, button);
-                console.log(addPh(keys.main.success.button_load.console, {
+                logger.info(addPh(keys.main.success.button_load.console, {
                     button: button.id,
+                    shard: this.shard.ids[0],
+                }));
+            }
+        }
+    }
+
+    async _loadEvents() {
+        const eventFiles = (await fs.readdir(this.eventPath))
+            .filter(file => file.endsWith('.js'));
+
+        for(const file of eventFiles) {
+            // noinspection LocalVariableNamingConventionJS
+            const { default: EventFile } = await import(`file://${path.resolve(`${this.eventPath}/${file}`)}`);
+            if(EventFile?.prototype instanceof Event) {
+                const event = new EventFile();
+
+                this.events.set(event.name, event);
+                if(event.once) this.once(event.name, (...args) => event.execute(this, ...args));
+                else this.on(event.name, (...args) => event.execute(this, ...args));
+                logger.info(addPh(keys.main.success.event_load.console, {
+                    event: event.name,
                     shard: this.shard.ids[0],
                 }));
             }
@@ -190,26 +225,28 @@ export default class MCLinker extends Discord.Client {
      */
     async loadEverything() {
         await this.loadMongoose();
-        console.log(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
         if(process.env.CONVERT === 'true' && this.shard.ids[0] === 0) {
             await convert(this, this.mongo);
-            console.log('Converted database.');
+            logger.info('Converted database.');
         }
 
         await this.serverConnections._load();
-        console.log(`[${this.shard.ids[0]}] Loaded all server connections.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all server connections.`);
         await this.userConnections._load();
-        console.log(`[${this.shard.ids[0]}] Loaded all user connections.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all user connections.`);
         await this.serverSettingsConnections._load();
-        console.log(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
         await this.userSettingsConnections._load();
-        console.log(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
 
         await this._loadCommands();
-        console.log(`[${this.shard.ids[0]}] Loaded all commands.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all commands.`);
         await this._loadButtons();
-        console.log(`[${this.shard.ids[0]}] Loaded all buttons.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all buttons.`);
+        await this._loadEvents();
+        logger.info(`[${this.shard.ids[0]}] Loaded all events.`);
     }
 
     async loadMongoose() {

@@ -275,7 +275,7 @@ export default class ServerConnection extends Connection {
             //If user has a synced-role, tell the plugin
             for(const syncedRole of this.syncedRoles.filter(r =>
                 !r.players.includes(userConnection.uuid) && member.roles.cache.has(r.id))) {
-                await this.protocol.addSyncedRoleMember(syncedRole, userConnection.uuid)
+                await this.protocol.addSyncedRoleMember(syncedRole, userConnection.uuid);
             }
 
             // Add missing synced roles
@@ -298,9 +298,6 @@ export default class ServerConnection extends Connection {
         else return false;
     }
 
-    /**
-     * @inheritDoc
-     */
     getData() {
         return {
             id: this.id,

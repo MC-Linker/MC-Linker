@@ -86,7 +86,7 @@ export default class Command extends AutocompleteCommand {
                 focused: focusedOption.value,
             });
             if(!placeholder) {
-                console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
+                logger.info(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
                 return;
             }
 

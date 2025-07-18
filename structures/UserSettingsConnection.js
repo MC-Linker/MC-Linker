@@ -1,5 +1,6 @@
 import Connection from './Connection.js';
 import { Routes } from 'discord.js';
+import logger from '../utilities/logger.js';
 
 export default class UserSettingsConnection extends Connection {
 
@@ -72,7 +73,7 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            console.log('Error updating role connections:', err);
+            logger.info('Error updating role connections:', err);
             return false;
         }
     }
@@ -108,14 +109,11 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            console.log('Error refreshing access tokens:', err);
+            logger.info('Error refreshing access tokens:', err);
             return null;
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     getData() {
         return {
             id: this.id,

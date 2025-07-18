@@ -17,6 +17,7 @@ import Discord, {
 } from 'discord.js';
 import keys, { getLanguageKey, getObjectPath } from './keys.js';
 import util from 'util';
+import logger from './logger.js';
 
 const maxComponentsInActionRow = {
     [ComponentType.Button]: 5,
@@ -319,7 +320,7 @@ export async function replyTl(interaction, key, ...placeholders) {
     // Log to console if interaction doesn't exist
     // noinspection JSUnresolvedVariable
     if(message?.console && !interaction) {
-        console.log(addPh(message.console, Object.assign({}, ...placeholders)));
+        logger.info(addPh(message.console, Object.assign({}, ...placeholders)));
         return null;
     }
 
@@ -333,9 +334,9 @@ export async function replyTl(interaction, key, ...placeholders) {
     const options = getReplyOptions(message, placeholders);
 
     // noinspection JSUnresolvedVariable
-    if(message.console) console.log(addPh(message.console, placeholders));
+    if(message.console) logger.info(addPh(message.console, placeholders));
 
-    if(!message.embeds && !message.components && !message.files) return null; //If only console don't reply
+    if(!message.embeds && !message.components && !message.files) return null; //If only console, don't reply
     return replyOptions(interaction, options);
 }
 
@@ -346,18 +347,20 @@ export async function replyTl(interaction, key, ...placeholders) {
  * @returns {Promise<Message>|Message}
  */
 export async function replyOptions(interaction, options) {
+    // noinspection JSDeprecatedSymbols
     if(options.ephemeral) {
         options.flags = Discord.MessageFlags.Ephemeral;
+        // noinspection JSDeprecatedSymbols
         delete options.ephemeral;
     }
 
     function handleError(err) {
-        console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { 'interaction': interaction }));
+        logger.error({ err }, `Could not reply to interaction ${interaction}`);
         try {
             return interaction.channel?.send(options);
         }
         catch(err) {
-            console.log(addPh(keys.api.messages.errors.could_not_reply_channel.console, ph.error(err), { 'interaction': interaction }));
+            logger.error({ err }, `Could not send message to channel of interaction ${interaction}`);
         }
     }
 

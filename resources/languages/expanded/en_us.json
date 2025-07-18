@@ -145,6 +145,9 @@
       "button_load": {
         "console": "[%shard%] Successfully loaded button: %button%"
       },
+      "event_load": {
+        "console": "[%shard%] Successfully loaded event: %event%"
+      },
       "ping": {
         "embeds": [
           {

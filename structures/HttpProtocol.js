@@ -312,9 +312,6 @@ export default class HttpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     static async testConnection(data) {
         // noinspection HttpUrlsUsage
         const url = new URL(PluginRoutes.Base()[1], `http://${data.ip}:${data.port}`);
@@ -387,9 +384,6 @@ export default class HttpProtocol extends Protocol {
         return await fetchToProtocolResponse(response);
     }
 
-    /**
-     * @inheritDoc
-     */
     async get(getPath, putPath) {
         return new Promise(async resolve => {
             try {
@@ -412,9 +406,6 @@ export default class HttpProtocol extends Protocol {
         });
     }
 
-    /**
-     * @inheritDoc
-     */
     async put(getPath, putPath) {
         try {
             const response = await this._fetch(...PluginRoutes.PutFile(fs.createReadStream(getPath), putPath));
@@ -425,9 +416,6 @@ export default class HttpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async list(folder) {
         const response = await this._fetch(...PluginRoutes.ListFiles(folder));
         return fetchToProtocolResponse(response);

@@ -43,9 +43,6 @@ export default class FtpProtocol extends Protocol {
         else if(!bool && !(this.ftpClient instanceof FtpClient)) this.ftpClient = new FtpClient(credentials);
     }
 
-    /**
-     * @inheritDoc
-     */
     static async testConnection(data) {
         const ftpClient = data.sftp ? new SftpClient(data) : new FtpClient(data);
         return await ftpClient.connect();
@@ -115,9 +112,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async get(getPath, putPath) {
         try {
             if(!this.batchMode) await this.ftpClient.connect();
@@ -131,9 +125,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async list(folder) {
         try {
             if(!this.batchMode) await this.ftpClient.connect();
@@ -147,9 +138,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async put(getPath, putPath) {
         try {
             if(!this.batchMode) await this.ftpClient.connect();
@@ -183,9 +171,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async startBatch() {
         try {
             await this.ftpClient.connect();
@@ -197,9 +182,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async endBatch() {
         try {
             await this.ftpClient.disconnect();

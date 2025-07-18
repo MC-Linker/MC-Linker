@@ -22,7 +22,7 @@ export default class ConnectionManager extends CachedManager {
     /**
      * Creates a new ConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
-     * @param {typeof Connection} holds - The type of connection the manager holds.
+     * @param {typeof import('./Connection.js').default} holds - The type of connection the manager holds.
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ConnectionManager} - A new ConnectionManager instance.
      */
@@ -37,7 +37,7 @@ export default class ConnectionManager extends CachedManager {
 
         /**
          * The connection cache of this manager.
-         * @type {import('discord.js').Collection<string, Connection>}
+         * @type {import('discord.js').Collection<string, import('./Connection.js').default>}
          */
         this.cache = super.cache;
     }
@@ -45,7 +45,7 @@ export default class ConnectionManager extends CachedManager {
     /**
      * Adds a connection to the cache and writes the data to the file system.
      * @param {ConnectionData} data - The data for the connection.
-     * @returns {Promise<?Connection>} - The connection instance that has been created.
+     * @returns {Promise<?import('./Connection.js').default>} - The connection instance that has been created.
      */
     async connect(data) {
         /** @type {?Connection} */

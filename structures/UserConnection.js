@@ -54,9 +54,6 @@ export default class UserConnection extends Connection {
         this.username = data.username ?? this.username;
     }
 
-    /**
-     * @inheritDoc
-     */
     getData() {
         return {
             id: this.id,

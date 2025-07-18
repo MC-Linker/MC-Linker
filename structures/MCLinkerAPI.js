@@ -251,7 +251,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
         this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
             if(err) throw err;
-            console.log(addPh(keys.api.plugin.success.listening.console, { address }));
+            logger.info(addPh(keys.api.plugin.success.listening.console, { address }));
         });
 
         await this.fastify.ready(); //Await websocket plugin loading

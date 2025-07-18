@@ -46,10 +46,7 @@ export default class WebSocketProtocol extends Protocol {
          */
         this.socket = data.socket ?? this.socket;
     }
-    
-    /**
-     * @inheritDoc
-     */
+
     async get(getPath, putPath) {
         const response = await this._sendRaw('get-file', { path: getPath });
         if(!response) return null;
@@ -59,9 +56,6 @@ export default class WebSocketProtocol extends Protocol {
         return { status: 200, data: await fs.readFile(putPath) };
     }
 
-    /**
-     * @inheritDoc
-     */
     async put(getPath, putPath) {
         return await this._sendRaw('put-file', { path: encodeURIComponent(putPath) }, await fs.readFile(getPath));
     }
@@ -80,9 +74,6 @@ export default class WebSocketProtocol extends Protocol {
         }, { context: { id: this.id }, shard: 0 });
     }
 
-    /**
-     * @inheritDoc
-     */
     list(folder) {
         return this._sendRaw('list-file', { folder });
     }

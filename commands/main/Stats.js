@@ -10,6 +10,7 @@ import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
+import logger from '../../utilities/logger.js';
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
@@ -175,7 +176,7 @@ export default class Stats extends Command {
                     }
                     catch(err) {
                         //Draw name
-                        console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': id }));
+                        logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': id }));
                         const fontSize = 12;
                         ctx.font = `${fontSize}px Minecraft`;
                         ctx.fillStyle = '#000';

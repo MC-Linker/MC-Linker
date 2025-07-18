@@ -10,6 +10,7 @@ import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import logger from '../../utilities/logger.js';
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
@@ -113,7 +114,7 @@ export default class Advancements extends Command {
             }
             catch(err) {
                 //Draw name
-                console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': node.data.icon }));
+                logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': node.data.icon }));
                 ctx.font = '8px Minecraft';
                 ctx.fillStyle = '#000';
                 const lines = utils.wrapText(ctx, mcData.itemsByName[node.data.icon]?.displayName ?? node.data.icon, frameSize);

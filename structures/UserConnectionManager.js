@@ -7,6 +7,11 @@ import keys from '../utilities/keys.js';
 export default class UserConnectionManager extends ConnectionManager {
 
     /**
+     * @type {import('discord.js').Collection<string, UserConnection>}
+     */
+    cache;
+
+    /**
      * Creates a new UserConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.

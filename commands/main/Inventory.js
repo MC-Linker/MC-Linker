@@ -8,6 +8,7 @@ import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
+import logger from '../../utilities/logger.js';
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
@@ -509,7 +510,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
         }
         catch(err) {
             //Draw name
-            console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
+            logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
             ctx.font = '8px Minecraft';
             ctx.fillStyle = '#000';
             const lines = utils.wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);
