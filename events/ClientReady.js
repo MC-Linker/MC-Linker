@@ -20,7 +20,6 @@ export default class ClientReady extends Event {
             { prefix: process.env.PREFIX, 'guild_count': client.guilds.cache.size },
         ));
 
-        await client.loadEverything();
         client.user.setActivity({ type: 2, name: '/help' });
         if(client.shard.ids.includes(0)) await client.api.startServer();
 
