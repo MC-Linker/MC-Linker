@@ -41,8 +41,8 @@ export default class MCLinkerAPI extends EventEmitter {
      */
     rateLimiterChats = new RateLimiterMemory({
         keyPrefix: 'chats',
-        points: 20, // 20 messages
-        duration: 10, // per 10 seconds
+        points: 5, // 5 messages
+        duration: 2, // per 2 seconds
     });
 
     /**
@@ -144,7 +144,7 @@ export default class MCLinkerAPI extends EventEmitter {
          * The fastify instance for the api.
          * @type {import('fastify').FastifyInstance}
          */
-        this.fastify = Fastify();
+        this.fastify = Fastify({ logger: { level: 'debug' } });
         // noinspection JSCheckFunctionSignatures
         this.fastify.register(fastifyIO);
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
