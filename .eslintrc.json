@@ -1,0 +1,31 @@
+{
+    "env": {
+        "node": true,
+        "es2021": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error", 4],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "no-unused-vars": ["warn"],
+        "no-console": ["off"],
+        "no-var": ["error"],
+        "prefer-const": ["error"],
+        "arrow-spacing": ["error", { "before": true, "after": true }],
+        "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
+        "object-curly-spacing": ["error", "always"],
+        "array-bracket-spacing": ["error", "never"],
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "comma-dangle": ["error", "always-multiline"],
+        "no-empty": ["error", { "allowEmptyCatch": true }],
+        "no-magic-numbers": ["warn", { "ignore": [0, 1, -1], "ignoreArrayIndexes": true, "enforceConst": true }],
+        "no-unused-imports": ["warn"],
+        "no-unused-private-class-members": ["warn"],
+        "sort-imports": ["warn", { "ignoreCase": true, "ignoreDeclarationSort": true }]
+    }
+}
