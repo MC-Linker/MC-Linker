@@ -15,7 +15,8 @@ services:
         target: /usr/src/Custom-MC-Linker
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - DEBUG=$DEBUG
+      - NODE_ENV=$NODE_ENV
+      - LOG_LEVEL=$LOG_LEVEL
       - CONVERT=$CONVERT # true or false
     networks:
       - mongo-network
