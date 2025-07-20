@@ -10,7 +10,9 @@ import ServerConnection from '../structures/ServerConnection.js';
  */
 export default class MessageCreate extends Event {
     constructor() {
-        super({ name: 'messageCreate' });
+        super({
+            name: 'messageCreate',
+        });
     }
 
     async execute(client, message) {

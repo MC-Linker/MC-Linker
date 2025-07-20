@@ -10,7 +10,10 @@ import logger from '../utilities/logger.js';
  */
 export default class ClientReady extends Event {
     constructor() {
-        super({ name: 'ready', once: true });
+        super({
+            name: 'ready',
+            once: true,
+        });
     }
 
     async execute(client, _) {

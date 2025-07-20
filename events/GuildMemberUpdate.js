@@ -6,7 +6,9 @@ import Event from '../structures/Event.js';
  */
 export default class GuildMemberUpdate extends Event {
     constructor() {
-        super({ name: 'guildMemberUpdate' });
+        super({
+            name: 'guildMemberUpdate',
+        });
     }
 
     async execute(client, oldMember, newMember) {

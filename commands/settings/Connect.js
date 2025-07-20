@@ -2,14 +2,21 @@ import crypto from 'crypto';
 import { getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
-import client from '../../bot.js';
 import Discord from 'discord.js';
 
 export default class Connect extends Command {
 
+    /**
+     * Map to store the websocket verification data for each server.
+     * @type {Map<any, any>}
+     */
     wsVerification = new Map();
 
-    waitingInteractions = new Map();
+    /**
+     * Map to store the pending interactions for the connect command.
+     * @type {Map<any, any>}
+     */
+    pendingInteractions = new Map();
 
     constructor() {
         super({
@@ -17,86 +24,6 @@ export default class Connect extends Command {
             requiresConnectedServer: false,
             category: 'settings',
             ephemeral: true,
-        });
-
-
-        // noinspection JSIgnoredPromiseFromCall
-        client.shard.broadcastEval(
-            /** @param {MCLinker} c */
-            c => {
-                c.on('apiReady', api => {
-                    api.websocket.on('connection', async socket => {
-                        const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
-
-                        const wsVerification = c.commands.get('connect').wsVerification;
-                        if(!wsVerification.has(id)) return;
-
-                        const {
-                            code: serverCode,
-                            shard,
-                            requiredRoleToJoin,
-                            displayIp,
-                            online,
-                        } = wsVerification.get(id) ?? {};
-                        try {
-                            if(!serverCode || serverCode !== userCode) return socket.disconnect(true);
-
-                            c.commands.get('connect').wsVerification.delete(id);
-                            socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
-
-                            const hash = c.utils.createHash(socket.handshake.auth.token);
-                            /** @type {WebSocketServerConnectionData} */
-                            const serverConnectionData = {
-                                id,
-                                ip: socket.handshake.address,
-                                path: socket.handshake.query.path,
-                                chatChannels: [],
-                                statChannels: [],
-                                online: online ?? socket.handshake.query.online === 'true',
-                                forceOnlineMode: online !== undefined,
-                                floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                                version: Number(socket.handshake.query.version.split('.')[1]),
-                                worldPath: socket.handshake.query.worldPath,
-                                protocol: 'websocket',
-                                socket,
-                                hash,
-                                requiredRoleToJoin,
-                                displayIp,
-                            };
-
-                            /** @type {Connect} **/
-                            const connectCommand = c.commands.get('connect');
-                            await connectCommand.disconnectOldServer(id);
-                            await c.serverConnections.connect(serverConnectionData);
-
-                            c.api.addWebsocketListeners(socket, id, hash);
-
-                            await c.shard.broadcastEval((c, { id }) => {
-                                c.emit('editConnectResponse', id, 'success');
-                            }, { context: { id }, shard });
-                        }
-                        catch(err) {
-                            await c.shard.broadcastEval((c, { id, error }) => {
-                                c.emit('editConnectResponse', id, 'error', { error_stack: error });
-                            }, { context: { id, error: err.stack }, shard });
-                            socket.disconnect(true);
-                        }
-                    });
-                }, { shard: 0 });
-            });
-
-        client.on('editConnectResponse', async (id, responseType, placeholders = {}) => {
-            if(!this.waitingInteractions.has(id)) return;
-            const { timeout, interaction } = this.waitingInteractions.get(id);
-
-            clearTimeout(timeout);
-
-            if(responseType === 'success') {
-                await interaction.replyTl(keys.commands.connect.success.websocket, placeholders, ph.emojisAndColors());
-            }
-            else if(responseType === 'error') {
-                await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders, ph.emojisAndColors());
-            }
         });
     }
 
@@ -126,7 +53,7 @@ export default class Connect extends Command {
             await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
         }, 180_000);
 
-        this.waitingInteractions.set(interaction.guildId, { interaction, timeout });
+        this.pendingInteractions.set(interaction.guildId, { interaction, timeout });
         await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin, displayIp, online }) => {
             c.commands.get('connect').wsVerification.set(id, {
                 code,
@@ -147,15 +74,16 @@ export default class Connect extends Command {
             shard: 0,
         });
 
-        //Connection and interaction response will now be handled by connection listener in constructor or by the timeout
+        //Connection and interaction response will now be handled by editConnectResponse event or by the timeout
     }
 
     /**
      * Disconnects all active connections of this server.
+     * @param {MCLinker} client - The Discord client.
      * @param {ServerConnectionResolvable} serverResolvable - The server to disconnect.
      * @returns {Promise<boolean>} - Whether the server was disconnected.
      */
-    async disconnectOldServer(serverResolvable) {
+    async disconnectOldServer(client, serverResolvable) {
         const server = client.serverConnections.resolve(serverResolvable);
         if(server) {
             await server.protocol.disconnect();
@@ -215,8 +143,7 @@ export default class Connect extends Command {
                 resolve({ roles, method });
             });
 
-            methodCollector.on('end', async () => {
-            }); // Will throw an error if not defined (i think)
+            methodCollector.on('end', () => {}); // Will throw an error if not defined (i think)
         });
     }
 }

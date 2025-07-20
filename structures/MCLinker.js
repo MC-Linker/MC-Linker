@@ -207,6 +207,7 @@ export default class MCLinker extends Discord.Client {
             const { default: EventFile } = await import(`file://${path.resolve(`${this.eventPath}/${file}`)}`);
             if(EventFile?.prototype instanceof Event) {
                 const event = new EventFile();
+                if(event.shard !== -1 && !this.shard.ids.includes(event.shard)) continue; // Skip events not for this shard
 
                 this.events.set(event.name, event);
                 if(event.once) this.once(event.name, (...args) => event.execute(this, ...args));

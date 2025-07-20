@@ -10,7 +10,9 @@ import logger from '../utilities/logger.js';
  */
 export default class GuildCreate extends Event {
     constructor() {
-        super({ name: 'guildCreate' });
+        super({
+            name: 'guildCreate',
+        });
     }
 
     async execute(client, guild) {

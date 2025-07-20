@@ -8,7 +8,9 @@ import logger from '../utilities/logger.js';
  */
 export default class EntitlementCreate extends Event {
     constructor() {
-        super({ name: 'entitlementCreate' });
+        super({
+            name: 'entitlementCreate',
+        });
     }
 
     async execute(client, entitlement) {

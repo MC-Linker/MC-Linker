@@ -11,7 +11,9 @@ import logger from '../utilities/logger.js';
  */
 export default class InteractionCreate extends Event {
     constructor() {
-        super({ name: 'interactionCreate' });
+        super({
+            name: 'interactionCreate',
+        });
     }
 
     async execute(client, interaction) {

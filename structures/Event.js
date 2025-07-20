@@ -19,6 +19,7 @@ export default class Event {
      * @typedef {object} EventOptions
      * @property {string} name - The name of this event (from Discord.js Events).
      * @property {boolean} [once=false] - Whether this event should only be triggered once.
+     * @property {number} [shard=-1] - The shard this event is for (-1 for all shards).
      */
 
     /**
@@ -37,12 +38,18 @@ export default class Event {
          * @type {boolean}
          */
         this.once = options.once ?? false;
+
+        /**
+         * The shard this event is for (-1 for all shards).
+         * @type {number}
+         */
+        this.shard = options.shard ?? -1;
     }
 
     /**
      * Handles the execution of an event.
      * @param {MCLinker} client - The MCLinker client instance.
-     * @param {...any} args - The event arguments as provided by Discord.js.
+     * @param {...any} args - The event arguments as provided.
      * @returns {Promise<void>}
      * @abstract
      */

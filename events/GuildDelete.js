@@ -9,7 +9,9 @@ import logger from '../utilities/logger.js';
  */
 export default class GuildDelete extends Event {
     constructor() {
-        super({ name: 'guildDelete' });
+        super({
+            name: 'guildDelete',
+        });
     }
 
     async execute(client, guild) {

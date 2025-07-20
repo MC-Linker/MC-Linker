@@ -4,11 +4,10 @@ import * as utils from '../../utilities/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
 import { ph } from '../../utilities/messages.js';
-import client from '../../bot.js';
 
 export default class Account extends Command {
 
-    waitingInteractions = new Map();
+    pendingInteractions = new Map();
 
     constructor() {
         super({
@@ -16,14 +15,6 @@ export default class Account extends Command {
             category: 'settings',
             requiresConnectedServer: false,
             ephemeral: true,
-        });
-
-        client.on('accountVerificationResponse', id => {
-            if(!this.waitingInteractions.has(id)) return;
-
-            const { interaction, timeout } = this.waitingInteractions.get(id);
-            clearTimeout(timeout);
-            interaction.replyTl(keys.commands.account.success.verified, ph.emojisAndColors());
         });
     }
 
@@ -57,7 +48,7 @@ export default class Account extends Command {
                 await interaction.replyTl(keys.commands.account.warnings.verification_timeout);
             }, 180_000);
 
-            this.waitingInteractions.set(interaction.user.id, { interaction, timeout });
+            this.pendingInteractions.set(interaction.user.id, { interaction, timeout });
             await client.shard.broadcastEval((c, { uuid, username, code, userId, serverId, shard }) => {
                 const listener = async data => {
                     if(data.uuid !== uuid || data.code !== code) return;
@@ -82,9 +73,7 @@ export default class Account extends Command {
                 };
 
                 const socket = c.serverConnections.cache.get(serverId).protocol.socket;
-                socket.on('verify-response', data => {
-                    listener(JSON.parse(data));
-                });
+                socket.on('verify-response', data => listener(JSON.parse(data)));
             }, {
                 context: {
                     uuid,

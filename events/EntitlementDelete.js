@@ -7,7 +7,9 @@ import Event from '../structures/Event.js';
  */
 export default class EntitlementDelete extends Event {
     constructor() {
-        super({ name: 'entitlementDelete' });
+        super({
+            name: 'entitlementDelete',
+        });
     }
 
     async execute(client, entitlement) {
