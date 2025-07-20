@@ -77,18 +77,18 @@ export default class MCLinkerAPI extends EventEmitter {
             rateLimiter: data => data.event === 'members' ? this.rateLimiterMemberCounter : null,
         },
         {
-            method: 'GET',
+            method: 'POST',
             endpoint: '/add-synced-role-member',
             event: 'add-synced-role-member',
             handler: (data, server) => this.addSyncedRoleMember(data, server),
         },
         {
-            method: 'GET',
+            method: 'POST',
             endpoint: '/remove-synced-role-member',
             event: 'remove-synced-role-member',
             handler: (data, server) => this.removeSyncedRoleMember(data, server),
         }, {
-            method: 'GET',
+            method: 'POST',
             endpoint: '/remove-synced-role',
             event: 'remove-synced-role',
             handler: (data, server) => this.removeSyncedRole(data, server),
@@ -161,12 +161,18 @@ export default class MCLinkerAPI extends EventEmitter {
             try {
                 if(rateLimiter) await rateLimiter.consume(request.ip);
 
+                if(request.method === 'GET') return;
+                else if(!request.body || !request.body.id || !request.body.ip) {
+                    reply.status(400).send({ message: 'Bad Request: Missing id and ip' });
+                    return;
+                }
+
                 const id = request.body.id;
                 const ip = request.body.ip.split(':')[0];
                 const port = request.body.ip.split(':')[1];
 
                 /** @type {ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.protocol.isHttpProtocol() && server.id === id && server.ip === ip && server.port === parseInt(port));
+                const server = client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === parseInt(port));
                 //If no connection on that guild send disconnection status
                 if(!server) reply.status(403).send({});
 
