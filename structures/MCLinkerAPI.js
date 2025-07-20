@@ -9,7 +9,7 @@ import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
 import Discord from 'discord.js';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
+import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import logger from '../utilities/logger.js';
 
 export default class MCLinkerAPI extends EventEmitter {
@@ -178,13 +178,19 @@ export default class MCLinkerAPI extends EventEmitter {
 
                 return server;
             }
-            catch(rateLimiterRes) {
-                reply.status(429).headers({
-                    'Retry-After': rateLimiterRes.msBeforeNext / 1000,
-                    'X-RateLimit-Limit': rateLimiter.points,
-                    'X-RateLimit-Remaining': rateLimiterRes.remainingPoints,
-                    'X-RateLimit-Reset': new Date(Date.now() + rateLimiterRes.msBeforeNext),
-                }).send({ message: 'Too many requests' });
+            catch(err) {
+                if(err instanceof RateLimiterRes) {
+                    reply.status(429).headers({
+                        'Retry-After': err.msBeforeNext / 1000,
+                        'X-RateLimit-Limit': rateLimiter.points,
+                        'X-RateLimit-Remaining': err.remainingPoints,
+                        'X-RateLimit-Reset': new Date(Date.now() + err.msBeforeNext),
+                    }).send({ message: 'Too many requests' });
+                }
+                else {
+                    logger.error(err, 'Error while processing request');
+                    reply.status(500).send({ message: 'Internal Server Error' });
+                }
             }
         }
 
