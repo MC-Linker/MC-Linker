@@ -16,6 +16,12 @@ export default class ServerConnectionManager extends ConnectionManager {
      */
     constructor(client, collectionName = 'ServerConnection') {
         super(client, ServerConnection, collectionName);
+
+        /**
+         * The connection cache of this manager.
+         * @type {import('discord.js').Collection<string, ServerConnection>}
+         */
+        this.cache = super.cache;
     }
 
     async _load() {

@@ -11,9 +11,6 @@ logger.info(
     'Loading...',   // Second argument (%s)
 );
 
-const client = new MCLinker();
-await client.loadEverything();
-
 // Handle errors
 process.on('unhandledRejection', async err => {
     logger.fatal(err, 'Unhandled rejection');
@@ -21,6 +18,10 @@ process.on('unhandledRejection', async err => {
 process.on('uncaughtException', async err => {
     logger.fatal(err, 'Uncaught exception');
 });
+
+const client = new MCLinker();
+await client.loadEverything();
+
 
 /*
  * Converts the first letter of a string to uppercase.

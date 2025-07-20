@@ -16,5 +16,11 @@ export default class UserSettingsConnectionManager extends ConnectionManager {
      */
     constructor(client, collectionName = 'UserSettingsConnection') {
         super(client, UserSettingsConnection, collectionName);
+
+        /**
+         * The connection cache of this manager.
+         * @type {import('discord.js').Collection<string, UserSettingsConnection>}
+         */
+        this.cache = super.cache;
     }
 }
