@@ -204,7 +204,7 @@ export default class MCLinkerAPI extends EventEmitter {
             this.fastify[route.method.toLowerCase()](route.endpoint, async (request, reply) => {
                 const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(request.body) : route.rateLimiter;
                 const server = await _getServerFastify(request, reply, this.client, rateLimiter);
-                if(!server) return;
+                if(!server && request.method !== 'GET') return;
 
                 const response = await route.handler(request.body, server);
                 reply.status(response?.status ?? 200).send(response?.body ?? {});
