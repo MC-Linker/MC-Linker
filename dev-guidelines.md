@@ -43,8 +43,9 @@ PLUGIN_PORT=11111  # Port for the Minecraft plugin
 
 # Optional Variables
 TOPGG_TOKEN=your_topgg_token  # For Top.gg integration
-DEBUG=true  # Enable debug mode
-CONVERT=false  # Conversion flag
+CONVERT=false  # Whether to convert the database
+LOG_LEVEL=log_level  # Logging level (e.g., debug, info, warn, error)
+NODE_ENV=development  # Node.js environment (development or production)
 ```
 
 ### Installation
