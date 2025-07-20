@@ -1,4 +1,3 @@
-version: '3.5'
 services:
   mc-linker:
     image: lianecx/${SERVICE_NAME}
@@ -15,7 +14,7 @@ services:
         target: /usr/src/app/logs
       - type: bind
         source: ./Custom-MC-Linker
-        target: /usr/src/Custom-MC-Linker
+        target: /usr/src/app/Custom-MC-Linker
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
@@ -24,35 +23,8 @@ services:
       - LOG_LEVEL=$LOG_LEVEL
       - CONVERT=$CONVERT # true or false
     networks:
-      - mongo-network
-
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    restart: on-failure
-    ports:
-      - "27017:27017"
-    volumes:
-      - type: bind
-        source: ./mongodb
-        target: /data/db
-    networks:
-      - mongo-network
-
-  mongo-express:
-    image: mongo-express
-    container_name: mongo-express
-    depends_on:
-      - mongodb
-    networks:
-      - mongo-network
-    environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb
-    ports:
-      - '8081:8081'
-    volumes:
-      - ./data:/data/db
+      - mc-linker_mongo-network
 
 networks:
-  mongo-network:
-    driver: bridge
+  mc-linker_mongo-network:
+    external: true

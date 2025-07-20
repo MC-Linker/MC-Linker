@@ -10,6 +10,6 @@ const logger = pino({
             ignore: 'pid,hostname',
         },
     },
-}, pino.destination(`./logs`));
+}, pino.destination(`./logs/'${new Date().toISOString().split('T')[0]}.log`));
 
 export default logger; 
