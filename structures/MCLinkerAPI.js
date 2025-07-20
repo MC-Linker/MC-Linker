@@ -121,7 +121,7 @@ export default class MCLinkerAPI extends EventEmitter {
             method: 'GET',
             endpoint: '/version',
             event: 'version',
-            handler: () => process.env.PLUGIN_VERSION,
+            handler: () => { return { body: process.env.PLUGIN_VERSION }; },
         },
     ];
 
