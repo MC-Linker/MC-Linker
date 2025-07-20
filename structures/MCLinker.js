@@ -135,6 +135,12 @@ export default class MCLinker extends Discord.Client {
         this.buttonPath = buttonPath;
 
         /**
+         * The path to the events folder.
+         * @type {string}
+         */
+        this.eventPath = eventPath;
+
+        /**
          * Utility functions for the bot to use in cross-shard communication.
          * @type {typeof utils}
          */
