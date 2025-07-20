@@ -10,6 +10,7 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
 import Discord from 'discord.js';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
+import logger from '../utilities/logger.js';
 
 export default class MCLinkerAPI extends EventEmitter {
 
