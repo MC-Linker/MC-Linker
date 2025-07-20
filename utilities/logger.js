@@ -14,7 +14,7 @@ const transport = pino.transport({
         {
             target: 'pino/file',
             options: {
-                destination: path.resolve('logs'),
+                destination: path.resolve(`logs/${new Date().toISOString().split('T')[0]}.log`),
                 mkdir: true,
             },
         },
