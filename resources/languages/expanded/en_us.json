@@ -1246,6 +1246,17 @@
           "console": "Verification timed out"
         }
       },
+      "errors": {
+        "could_not_fetch_uuid": {
+          "embeds": [
+            {
+              "title": "Could Not Fetch User",
+              "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate/Cracked accounts can't be verified by name and are therefore not possible to connect."
+            }
+          ],
+          "console": "Could not fetch uuid of %user%"
+        }
+      },
       "step": {
         "verification_info": {
           "embeds": [
@@ -3295,8 +3306,8 @@
           "options": [
             {
               "type": "String",
-              "name": "username",
-              "description": "Set your java-edition username you want to connect with.",
+              "name": "user",
+              "description": "Set your java-edition username or uuid you want to connect with.",
               "required": true
             }
           ]

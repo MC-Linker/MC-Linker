@@ -1,6 +1,7 @@
 import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
+import { UUIDRegex } from '../../utilities/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
 import { ph } from '../../utilities/messages.js';
@@ -23,16 +24,22 @@ export default class Account extends Command {
 
         const subcommand = args[0];
         if(subcommand === 'connect') {
-            if(args[1].match(Discord.MessageMentions.UsersPattern)) {
+            const usernameOrUUID = args[1];
+            if(usernameOrUUID.match(Discord.MessageMentions.UsersPattern)) {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
             }
 
-            const {
-                uuid,
-                username,
-                error,
-            } = await client.userConnections.userFromArgument(args[1], server, interaction);
-            if(error) return;
+            let uuid;
+            let username;
+            if(usernameOrUUID.match(UUIDRegex)) {
+                uuid = usernameOrUUID;
+                username = await utils.fetchUsername(uuid);
+            }
+            else {
+                uuid = await utils.fetchUUID(usernameOrUUID);
+                username = usernameOrUUID;
+            }
+            if(!uuid || !username) return await interaction.replyTl(keys.commands.account.errors.could_not_fetch_uuid, { user: usernameOrUUID });
 
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
 
@@ -77,7 +84,7 @@ export default class Account extends Command {
             }, {
                 context: {
                     uuid,
-                    username,
+                    username: usernameOrUUID,
                     code,
                     userId: interaction.user.id,
                     serverId: server.id,

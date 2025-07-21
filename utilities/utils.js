@@ -235,6 +235,11 @@ export async function fetchUUID(username) {
     }
 }
 
+/**
+ * Fetches the username of the given uuid from the Mojang API.
+ * @param {string} uuid - The uuid to fetch the username for.
+ * @returns {Promise<?string>} - The username or undefined if the user doesn't exist.
+ */
 export async function fetchUsername(uuid) {
     try {
         const data = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`)

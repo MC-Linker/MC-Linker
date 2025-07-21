@@ -713,6 +713,10 @@
   "commands.account.warnings.verification_timeout.embeds.0.description": "Account verification timed out. Please try again.",
   "commands.account.warnings.verification_timeout.console": "Verification timed out",
 
+  "commands.account.errors.could_not_fetch_uuid.embeds.0.title": "Could Not Fetch User",
+  "commands.account.errors.could_not_fetch_uuid.embeds.0.description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate/Cracked accounts can't be verified by name and are therefore not possible to connect.",
+  "commands.account.errors.could_not_fetch_uuid.console": "Could not fetch uuid of %user%",
+
   "commands.account.step.verification_info.embeds.0.title": "Account Verification",
   "commands.account.step.verification_info.embeds.0.description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**",
 
@@ -1846,8 +1850,8 @@
   "data.account.options.0.description": "Connect your Minecraft-account.",
 
   "data.account.options.0.options.0.type": "String",
-  "data.account.options.0.options.0.name": "username",
-  "data.account.options.0.options.0.description": "Set your java-edition username you want to connect with.",
+  "data.account.options.0.options.0.name": "user",
+  "data.account.options.0.options.0.description": "Set your java-edition username or uuid you want to connect with.",
   "data.account.options.0.options.0.required": true,
 
   "data.account.options.1.type": "Subcommand",
