@@ -40,7 +40,6 @@ export default class UserSettingsConnection extends Connection {
          */
         this.tokens ??= {};
 
-        //Loop over tokens and assign them to the tokens object.
         if('tokens' in data) {
             if('accessToken' in data.tokens) this.tokens.accessToken = data.tokens.accessToken;
             if('refreshToken' in data.tokens) this.tokens.refreshToken = data.tokens.refreshToken;
@@ -55,6 +54,8 @@ export default class UserSettingsConnection extends Connection {
      * @returns {Promise<boolean>} - True if the request was successful, false otherwise.
      */
     async updateRoleConnection(username, metadata) {
+        if(!this.tokens.accessToken || !this.tokens.refreshToken || !this.tokens.expires) return false;
+
         await this._refreshToken();
 
         try {
@@ -83,7 +84,9 @@ export default class UserSettingsConnection extends Connection {
      * @returns {Promise<boolean>} - True if the token was refreshed, false otherwise.
      */
     async _refreshToken() {
-        // Check if the access token has expired / is about to expire
+        if(!this.tokens.accessToken || !this.tokens.refreshToken || !this.tokens.expires) return false;
+
+        // Check if the access token has expired / is about to expire (less than 1 hour left)
         if(this.tokens.expires > Date.now() + 60 * 60 * 1000) {
             return false;
         }
@@ -91,9 +94,11 @@ export default class UserSettingsConnection extends Connection {
         try {
             const response = await this.client.rest.post(Routes.oauth2TokenExchange(), {
                 auth: false, // Bots cannot use this endpoint, we set our own Authorization header
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`),
+                },
                 body: new URLSearchParams({
-                    client_id: process.env.CLIENT_ID,
-                    client_secret: process.env.CLIENT_SECRET,
                     grant_type: 'refresh_token',
                     refresh_token: this.tokens.refreshToken,
                 }),
