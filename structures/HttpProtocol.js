@@ -347,15 +347,6 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Generates a verification code and displays it on the server.
-     * @returns {Promise<ProtocolResponse>} - The response from the plugin.
-     */
-    async verifyGuild() {
-        const response = await this._fetch(...PluginRoutes.VerifyGuild(this.id));
-        return await fetchToProtocolResponse(response);
-    }
-
-    /**
      * Sends a verification request to the server. Users can verify using `/verify <code>`.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */

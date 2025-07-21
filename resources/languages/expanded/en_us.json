@@ -1547,24 +1547,6 @@
     "connect": {
       "unknown": "Unknown",
       "warnings": {
-        "invalid_version": {
-          "embeds": [
-            {
-              "title": "Invalid Version Specified",
-              "description": "Please specify a valid minor Minecraft version without patch number (e.g. `1.19`, `1.16`)."
-            }
-          ],
-          "console": "Invalid version specified"
-        },
-        "invalid_port": {
-          "embeds": [
-            {
-              "title": "Invalid Port Specified",
-              "description": "Please specify a port that is bigger than 0 and smaller than 65536."
-            }
-          ],
-          "console": "Invalid port specified"
-        },
         "version_below_11": {
           "embeds": [
             {
@@ -1607,14 +1589,6 @@
           "console": "Invalid port specified",
           "components": []
         },
-        "could_not_dm": {
-          "embeds": [
-            {
-              "title": "Could Not DM",
-              "description": "Could not DM you. Verifying in the current channel..."
-            }
-          ]
-        },
         "no_reply_in_time": {
           "embeds": [
             {
@@ -1644,35 +1618,11 @@
           ],
           "console": "Searching for server.properties..."
         },
-        "connecting": {
-          "embeds": [
-            {
-              "title": "Connecting...",
-              "description": "%emoji_step% Trying to connect to the ftp server..."
-            }
-          ]
-        },
-        "check_dms": {
-          "embeds": [
-            {
-              "title": "Check Your DMs",
-              "description": "%emoji_step% Please check your DMs to complete the connection."
-            }
-          ]
-        },
         "command_verification": {
           "embeds": [
             {
               "title": "Server Verification",
               "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server as an operator and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
-            }
-          ]
-        },
-        "code_verification": {
-          "embeds": [
-            {
-              "title": "Server Verification",
-              "description": "%emoji_step% Please check the console of your Minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**"
             }
           ]
         },
@@ -1712,15 +1662,6 @@
         }
       },
       "errors": {
-        "could_not_connect_ftp": {
-          "embeds": [
-            {
-              "title": "Could Not Connect",
-              "description": "Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again."
-            }
-          ],
-          "console": "Could not connect with ftp, sftp or ftps."
-        },
         "could_not_connect_plugin": {
           "embeds": [
             {
@@ -1748,15 +1689,6 @@
           ],
           "console": "Could not download server.properties"
         },
-        "incorrect_code": {
-          "embeds": [
-            {
-              "title": "Verification Failed",
-              "description": "You didn't reply with the correct code."
-            }
-          ],
-          "console": "Incorrect code"
-        },
         "websocket_error": {
           "embeds": [
             {
@@ -1768,25 +1700,6 @@
         }
       },
       "success": {
-        "ftp": {
-          "embeds": [
-            {
-              "title": "Connected to Server",
-              "description": "Successfully connected to the ftp server."
-            }
-          ],
-          "console": "Successfully wrote ftp file",
-          "components": []
-        },
-        "plugin": {
-          "embeds": [
-            {
-              "title": "Connected to Server",
-              "description": "Successfully connected to the plugin."
-            }
-          ],
-          "console": "Successfully wrote plugin file"
-        },
         "websocket": {
           "embeds": [
             {
@@ -1795,15 +1708,6 @@
             }
           ],
           "console": "Successfully wrote websocket file"
-        },
-        "verification": {
-          "embeds": [
-            {
-              "title": "Verification Successful",
-              "description": "Successfully verified your server."
-            }
-          ],
-          "console": "Guild verified"
         }
       }
     },

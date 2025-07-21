@@ -147,6 +147,12 @@ export default class MCLinker extends Discord.Client {
         this.utils = { ...utils };
 
         /**
+         * The language keys for the bot to use in cross-shard communication.
+         * @type {typeof keys}
+         */
+        this.keys = { ...keys };
+
+        /**
          * The API instance of the bot.
          * @type {MCLinkerAPI}
          */

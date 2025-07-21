@@ -865,14 +865,6 @@
 
   "commands.connect.unknown": "Unknown",
 
-  "commands.connect.warnings.invalid_version.embeds.0.title": "Invalid Version Specified",
-  "commands.connect.warnings.invalid_version.embeds.0.description": "Please specify a valid minor Minecraft version without patch number (e.g. `1.19`, `1.16`).",
-  "commands.connect.warnings.invalid_version.console": "Invalid version specified",
-
-  "commands.connect.warnings.invalid_port.embeds.0.title": "Invalid Port Specified",
-  "commands.connect.warnings.invalid_port.embeds.0.description": "Please specify a port that is bigger than 0 and smaller than 65536.",
-  "commands.connect.warnings.invalid_port.console": "Invalid port specified",
-
   "commands.connect.warnings.version_below_11.embeds.0.title": "Version Below 1.11",
   "commands.connect.warnings.version_below_11.embeds.0.description": "The advancement command might not work because advancements don't exist in your Minecraft version yet.",
 
@@ -894,15 +886,6 @@
   "commands.connect.step.searching_properties.embeds.0.description": "%emoji_step% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)",
   "commands.connect.step.searching_properties.console": "Searching for server.properties...",
 
-  "commands.connect.step.connecting.embeds.0.title": "Connecting...",
-  "commands.connect.step.connecting.embeds.0.description": "%emoji_step% Trying to connect to the ftp server...",
-
-  "commands.connect.step.check_dms.embeds.0.title": "Check Your DMs",
-  "commands.connect.step.check_dms.embeds.0.description": "%emoji_step% Please check your DMs to complete the connection.",
-
-  "commands.connect.warnings.could_not_dm.embeds.0.title": "Could Not DM",
-  "commands.connect.warnings.could_not_dm.embeds.0.description": "Could not DM you. Verifying in the current channel...",
-
   "commands.connect.warnings.no_reply_in_time.embeds.0.title": "Verification Failed",
   "commands.connect.warnings.no_reply_in_time.embeds.0.description": "You did not reply in time!",
   "commands.connect.warnings.no_reply_in_time.console": "No reply in time",
@@ -910,10 +893,6 @@
   "commands.connect.warnings.not_collected.embeds.0.title": "Choose Required Roles To Join",
   "commands.connect.warnings.not_collected.embeds.0.description": "Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)",
   "commands.connect.warnings.not_collected.components": [],
-
-  "commands.connect.errors.could_not_connect_ftp.embeds.0.title": "Could Not Connect",
-  "commands.connect.errors.could_not_connect_ftp.embeds.0.description": "Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again.",
-  "commands.connect.errors.could_not_connect_ftp.console": "Could not connect with ftp, sftp or ftps.",
 
   "commands.connect.errors.could_not_connect_plugin.embeds.0.title": "Could Not Connect",
   "commands.connect.errors.could_not_connect_plugin.embeds.0.description": "Could not connect to server with plugin.",
@@ -927,19 +906,12 @@
   "commands.connect.errors.could_not_get_properties.embeds.0.description": "Could not download server configuration. Please specify the server-path manually.",
   "commands.connect.errors.could_not_get_properties.console": "Could not download server.properties",
 
-  "commands.connect.errors.incorrect_code.embeds.0.title": "Verification Failed",
-  "commands.connect.errors.incorrect_code.embeds.0.description": "You didn't reply with the correct code.",
-  "commands.connect.errors.incorrect_code.console": "Incorrect code",
-
   "commands.connect.errors.websocket_error.embeds.0.title": "Verification Failed",
   "commands.connect.errors.websocket_error.embeds.0.description": "An unknown error occurred while connecting to the plugin.",
   "commands.connect.errors.websocket_error.console": "Unknown websocket connection error %error_stack%",
 
   "commands.connect.step.command_verification.embeds.0.title": "Server Verification",
   "commands.connect.step.command_verification.embeds.0.description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server as an operator and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**",
-
-  "commands.connect.step.code_verification.embeds.0.title": "Server Verification",
-  "commands.connect.step.code_verification.embeds.0.description": "%emoji_step% Please check the console of your Minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**",
 
 
   "commands.connect.step.choose_roles.embeds.0.title": "Choose Required Roles To Join",
@@ -963,23 +935,9 @@
   "commands.connect.step.choose_roles.components.1.min_values": 1,
   "commands.connect.step.choose_roles.components.1.max_values": 25,
 
-
-  "commands.connect.success.ftp.embeds.0.title": "Connected to Server",
-  "commands.connect.success.ftp.embeds.0.description": "Successfully connected to the ftp server.",
-  "commands.connect.success.ftp.console": "Successfully wrote ftp file",
-  "commands.connect.success.ftp.components": [],
-
-  "commands.connect.success.plugin.embeds.0.title": "Connected to Server",
-  "commands.connect.success.plugin.embeds.0.description": "Successfully connected to the plugin.",
-  "commands.connect.success.plugin.console": "Successfully wrote plugin file",
-
   "commands.connect.success.websocket.embeds.0.title": "Connected to Server",
   "commands.connect.success.websocket.embeds.0.description": "Successfully connected to the plugin.",
   "commands.connect.success.websocket.console": "Successfully wrote websocket file",
-
-  "commands.connect.success.verification.embeds.0.title": "Verification Successful",
-  "commands.connect.success.verification.embeds.0.description": "Successfully verified your server.",
-  "commands.connect.success.verification.console": "Guild verified",
 
 
 
