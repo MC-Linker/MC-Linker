@@ -80,7 +80,7 @@ export default class Account extends Command {
                     });
 
                     // Reply to the interaction on the shard that initiated the verification
-                    await c.shard.broadcastEval(async (c, { id }) => {
+                    await c.shard.broadcastEval(async (c, { id, serverId }) => {
                         /** @type {Account} */
                         const accountCommand = c.commands.get('account');
                         if(!accountCommand.pendingInteractions.has(id)) return;
