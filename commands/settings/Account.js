@@ -68,7 +68,7 @@ export default class Account extends Command {
                 const verifyResponseListener = async data => {
                     if(data.uuid !== uuid || data.code !== code) return;
 
-                    const connection = await c.userConnections.connect({
+                    await c.userConnections.connect({
                         id: userId,
                         uuid,
                         username,
@@ -87,6 +87,7 @@ export default class Account extends Command {
 
                         const { interaction, timeout } = accountCommand.pendingInteractions.get(id);
 
+                        const connection = c.userConnections.cache.get(id);
                         await c.serverConnections.cache.get(serverId).syncRoles(interaction.guild, interaction.member, connection);
                         clearTimeout(timeout); // Works because event is called on same shard
                         await interaction.replyTl(c.keys.commands.account.success.verified);
