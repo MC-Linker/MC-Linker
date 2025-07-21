@@ -94,11 +94,9 @@ export default class UserSettingsConnection extends Connection {
         try {
             const response = await this.client.rest.post(Routes.oauth2TokenExchange(), {
                 auth: false, // Bots cannot use this endpoint, we set our own Authorization header
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Basic ' + btoa(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`),
-                },
                 body: new URLSearchParams({
+                    client_id: process.env.CLIENT_ID,
+                    client_secret: process.env.CLIENT_SECRET,
                     grant_type: 'refresh_token',
                     refresh_token: this.tokens.refreshToken,
                 }),
