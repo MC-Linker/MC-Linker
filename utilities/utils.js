@@ -407,9 +407,9 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
  * @example [{"text":"Hello "},{"text":"World","color":"green"},{"text":"!"}] -> "Hello World!"
  * @param {Object|string|Array} json - The minecraft json object to stringify. This can be a string, an object or an array of objects.
  * @param {boolean} [stripColors=true] - Whether to strip color codes from the string.
- * @returns {Promise<?string>} - The stringified json or null if the input was invalid.
+ * @returns {?string} - The stringified json or null if the input was invalid.
  */
-export async function stringifyMinecraftJson(json, stripColors = true) {
+export function stringifyMinecraftJson(json, stripColors = true) {
     const runStripColors = text => stripColors ? text.replace(/§[0-9a-fk-or]/g, '') : text;
 
     if(typeof json === 'string' && json.startsWith('"')) return runStripColors(json.replace(/^"|"$/g, '')); //Remove quotes at the start and end of the string
