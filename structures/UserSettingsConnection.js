@@ -73,7 +73,7 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            logger.info('Error updating role connections:', err);
+            logger.error(err, 'Error updating role connections:');
             return false;
         }
     }
@@ -109,7 +109,7 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            logger.info('Error refreshing access tokens:', err);
+            logger.error(err, 'Error refreshing access tokens:');
             return null;
         }
     }

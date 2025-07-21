@@ -71,7 +71,7 @@ export default class Account extends Command {
                         'connectedaccount': 1,
                     });
 
-                    await client.serverConnections.cache.get(serverId).syncRoles(interaction.guild, interaction.member, connection);
+                    await c.serverConnections.cache.get(serverId).syncRoles(interaction.guild, interaction.member, connection);
 
                     await c.shard.broadcastEval((c, { id }) => c.emit('accountVerificationResponse', id), {
                         context: { id: userId },
