@@ -55,10 +55,12 @@
     "mc_a": "<:MinecraftA:849561916632465408>"
   },
   "colors": {
-    "success": "#729e34",
+    "success": "#43611a",
     "error": "#9e3436",
     "warning": "#f1c40f",
-    "step": "#f88239"
+    "step": "#f88239",
+    "green": "#43611a",
+    "brown": "#915d2a"
   },
   "main": {
     "no_access": {

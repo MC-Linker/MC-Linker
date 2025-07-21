@@ -45,10 +45,12 @@
 
 
 
-  "colors.success": "#729e34",
+  "colors.success": "#43611a",
   "colors.error": "#9e3436",
   "colors.warning": "#f1c40f",
   "colors.step": "#f88239",
+  "colors.green": "#43611a",
+  "colors.brown": "#915d2a",
 
 
 

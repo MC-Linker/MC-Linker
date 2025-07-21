@@ -17,9 +17,6 @@ export default class Disconnect extends Command {
         if(!await utils.handleProtocolResponse(disconnect, server.protocol, interaction)) return;
 
         await client.serverConnections.disconnect(server);
-        return interaction.replyTl(keys.commands.disconnect.success, {
-            protocol,
-            protocol_cap: protocol.toTitleCase(),
-        });
+        return interaction.replyTl(keys.commands.disconnect.success);
     }
 }
