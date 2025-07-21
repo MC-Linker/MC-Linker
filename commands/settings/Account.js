@@ -63,7 +63,7 @@ export default class Account extends Command {
                 interaction,
                 timeout,
             });
-            
+
             await client.shard.broadcastEval((c, { uuid, username, code, userId, serverId, shard }) => {
                 const verifyResponseListener = async data => {
                     if(data.uuid !== uuid || data.code !== code) return;
@@ -91,7 +91,7 @@ export default class Account extends Command {
                         clearTimeout(timeout); // Works because event is called on same shard
                         await interaction.replyTl(c.keys.commands.account.success.verified);
                     }, {
-                        context: { id: userId },
+                        context: { id: userId, serverId },
                         shard,
                     });
                 };
