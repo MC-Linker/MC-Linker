@@ -43,10 +43,10 @@
         "unraw": "^3.0.0",
         "utf-8-validate": "^6.0.3",
         "yargs": "^18.0.0",
-        "zlib-sync": "^0.1.8"
+        "zlib-sync": "^0.1.8",
+        "pino-pretty": "^13.0.0"
     },
     "devDependencies": {
-        "pino-pretty": "^13.0.0",
         "eslint": "^9.31.0",
         "lodash": "^4.17.21",
         "typescript": "^5.0.4"

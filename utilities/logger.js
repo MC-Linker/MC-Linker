@@ -3,7 +3,7 @@ import path from 'path';
 
 const transport = pino.transport({
     targets: [
-        process.env.NODE_ENV === 'production' ? undefined : {
+        {
             target: 'pino-pretty',
             options: {
                 colorize: true,
