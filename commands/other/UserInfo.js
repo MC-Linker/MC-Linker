@@ -7,6 +7,7 @@ import {
     formatDuration,
     getMinecraftAvatarURL,
     MinecraftDataVersion,
+    stringifyMinecraftJson,
 } from '../../utilities/utils.js';
 import {
     addPh,
@@ -137,7 +138,7 @@ export default class UserInfo extends Command {
         }
         if(scoreboardDat) {
             const teams = scoreboardDat.data.Teams.filter(team => team.Players.includes(user.username));
-            if(teams.length > 0) placeholders.teams = teams.map(team => JSON.parse(team.DisplayName).text).join('\n');
+            if(teams.length > 0) placeholders.teams = teams.map(team => stringifyMinecraftJson(team.DisplayName)).join('\n');
             if(placeholders.teams) newSurvivalFields.push(addPh(
                 keys.commands.userinfo.success.survival.embeds[0].fields[9], placeholders,
             ));

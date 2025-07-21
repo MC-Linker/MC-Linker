@@ -6,7 +6,7 @@ import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
-import { MinecraftDataVersion } from '../../utilities/utils.js';
+import { MinecraftDataVersion, stringifyMinecraftJson } from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
 import logger from '../../utilities/logger.js';
 
@@ -171,16 +171,11 @@ export default class Inventory extends Command {
         if(tag['minecraft:lore'] || tag.display?.Lore) {
             const lore = tag['minecraft:lore'] ?? tag.display.Lore;
 
-            let loreString = JSON.parse(lore);
-            if(Array.isArray(loreString))
-                loreString = loreString.map(line => line.text ?? line.replace(/"/g, '')).join('\n');
-            else loreString = loreString.text ?? loreString.replace(/"/g, '');
-
             embed.addFields(addPh(
                 keys.commands.inventory.success.item_lore.embeds[0].fields,
                 {
                     lore_json: lore,
-                    lore: loreString,
+                    lore: stringifyMinecraftJson(lore),
                 },
             ));
 
@@ -195,7 +190,7 @@ export default class Inventory extends Command {
                 keys.commands.inventory.success.item_custom_name.embeds[0].fields,
                 {
                     custom_name_json: customName,
-                    custom_name: JSON.parse(customName).text ?? customName.replace(/"/g, ''),
+                    custom_name: stringifyMinecraftJson(customName),
                 },
             ));
 

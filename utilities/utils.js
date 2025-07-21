@@ -401,6 +401,33 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
 }
 
 /**
+ * Stringifies a minecraft json object to a string.
+ * @example "Hello §aWorld§r!" -> "Hello World"
+ * @example {"text":"Hello §aWorld§r!"} -> "Hello World"
+ * @example [{"text":"Hello "},{"text":"World","color":"green"},{"text":"!"}] -> "Hello World!"
+ * @param {Object|string|Array} json - The minecraft json object to stringify. This can be a string, an object or an array of objects.
+ * @param {boolean} [stripColors=true] - Whether to strip color codes from the string.
+ * @returns {Promise<?string>} - The stringified json or null if the input was invalid.
+ */
+export async function stringifyMinecraftJson(json, stripColors = true) {
+    const runStripColors = text => stripColors ? text.replace(/§[0-9a-fk-or]/g, '') : text;
+
+    if(typeof json === 'string' && json.startsWith('"')) return runStripColors(json.replace(/^"|"$/g, '')); //Remove quotes at the start and end of the string
+    else if(typeof json === 'string') {
+        try {
+            return stringifyMinecraftJson(JSON.parse(json));
+        }
+        catch(err) {
+            return null;
+        }
+    }
+    else if(Array.isArray(json))
+        return runStripColors(json.map(item => item.text).join(''));
+    else if(typeof json === 'object') return runStripColors(json.text);
+}
+
+
+/**
  * Gets the live player nbt data from the server.
  * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise (or if previous method fails) it will download the nbt file.
  * @param {ServerConnection} server - The server to get the nbt data from.
