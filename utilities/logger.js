@@ -1,5 +1,11 @@
 import pino from 'pino';
 import path from 'path';
+import fs from 'fs-extra';
+
+// Number the log files per day
+let index = 1;
+let logFilePath = () => path.resolve(`logs/${new Date().toISOString().split('T')[0]}-${index}.log`);
+while(await fs.pathExists(logFilePath())) index++;
 
 const transport = pino.transport({
     targets: [
@@ -14,7 +20,7 @@ const transport = pino.transport({
         {
             target: 'pino/file',
             options: {
-                destination: path.resolve(`logs/${new Date().toISOString().split('T')[0]}.log`),
+                destination: logFilePath(),
                 mkdir: true,
             },
         },
