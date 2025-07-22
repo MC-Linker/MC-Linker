@@ -271,7 +271,7 @@ export default class MCLinkerAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.on('connection', socket => {
-            logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${socket.handshake.query}`);
+            logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
 
             if(socket.handshake.auth.code) {
                 //New Connection
@@ -319,7 +319,7 @@ export default class MCLinkerAPI extends EventEmitter {
                             displayIp,
                         };
 
-                        connectCommand.disconnectOldServer(client, id);
+                        connectCommand.disconnectOldServer(this.client, id);
                         this.addWebsocketListeners(socket, id, hash);
                         this.client.serverConnections.connect(serverConnectionData).then(server => {
                             logger.debug(`[Socket.io] Successfully connected ${server.getDisplayIp()} from ${server.id} to websocket`);
@@ -328,8 +328,6 @@ export default class MCLinkerAPI extends EventEmitter {
                                 { context: { id }, shard },
                             );
                         });
-
-
                     }
                     catch(err) {
                         logger.error(err, '[Socket.io] Error while processing websocket connection');
@@ -409,12 +407,16 @@ export default class MCLinkerAPI extends EventEmitter {
 
         for(const route of this.routes) {
             socket.on(route.event, async (data, callback) => {
+                logger.debug(`[Socket.IO] Received event ${route.event} with data: ${JSON.stringify(data)}`);
+
                 data = typeof data === 'string' ? JSON.parse(data) : {};
                 const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
                 const server = await getServerWebsocket(this.client, rateLimiter, callback);
+                logger.debug(`[Socket.IO] Server for event ${route.event}: ${server ? server.getDisplayIp() : 'none'}`);
                 if(!server) return;
 
                 const response = await route.handler(data, server);
+                logger.debug(`[Socket.IO] Response for event ${route.event}: ${JSON.stringify(response)}`);
                 callback?.(response?.body ?? {});
             });
         }
