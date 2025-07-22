@@ -274,9 +274,9 @@ export default class MCLinkerAPI extends EventEmitter {
             logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with id ${id}`);
 
             if(socket.handshake.auth.code) {
+                //New Connection
                 const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
 
-                //Check if awaiting verification (new connection)
                 /** @type {Connect} */
                 const connectCommand = this.client.commands.get('connect');
                 const wsVerification = connectCommand.wsVerification;
@@ -339,6 +339,10 @@ export default class MCLinkerAPI extends EventEmitter {
                         );
                         socket.disconnect(true);
                     }
+                }
+                else {
+                    logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
+                    return socket.disconnect(true);
                 }
             }
             else if(socket.handshake.auth.token) {
