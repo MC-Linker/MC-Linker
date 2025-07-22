@@ -1,7 +1,8 @@
 import pino from 'pino';
 import path from 'path';
 
-const transport = pino.transport({
+
+export const pinoTransport = {
     targets: [
         {
             target: 'pino-pretty',
@@ -19,11 +20,9 @@ const transport = pino.transport({
             },
         },
     ],
-});
+};
 
-const logger = pino(
-    { level: process.env.LOG_LEVEL || 'info' },
-    transport,
-);
+const logger = pino({ level: process.env.LOG_LEVEL ?? 'info', transport: pinoTransport });
+
 
 export default logger; 

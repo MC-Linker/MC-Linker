@@ -10,7 +10,7 @@ import fastifyCookie from '@fastify/cookie';
 import fastifyIO from 'fastify-socket.io';
 import Discord from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
-import logger from '../utilities/logger.js';
+import logger, { pinoTransport } from '../utilities/logger.js';
 
 export default class MCLinkerAPI extends EventEmitter {
 
@@ -145,7 +145,7 @@ export default class MCLinkerAPI extends EventEmitter {
          * The fastify instance for the api.
          * @type {import('fastify').FastifyInstance}
          */
-        this.fastify = Fastify({ logger: { level: 'debug' } });
+        this.fastify = Fastify({ logger: { level: process.env.LOG_LEVEL ?? 'info', transport: pinoTransport } });
         // noinspection JSCheckFunctionSignatures
         this.fastify.register(fastifyIO);
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
