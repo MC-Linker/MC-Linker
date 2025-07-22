@@ -271,17 +271,84 @@ export default class MCLinkerAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.on('connection', socket => {
-            const [id] = socket.handshake.auth.code?.split(':') ?? [];
+            const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
+
+            logger.debug(`[Socket.io] New websocket connection from ${socket.handshake.address} with id ${id}`);
 
             //Check if awaiting verification (will be handled by connect command)
-            if(this.client.commands.get('connect')?.wsVerification?.has(id)) return;
+            /** @type {Connect} */
+            const connectCommand = this.client.commands.get('connect');
+            const wsVerification = connectCommand.wsVerification;
+
+            if(wsVerification.has(id)) {
+                const {
+                    code: serverCode,
+                    shard,
+                    requiredRoleToJoin,
+                    displayIp,
+                    online,
+                } = wsVerification.get(id);
+                try {
+                    if(!serverCode || serverCode !== userCode) {
+                        logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
+                        return socket.disconnect(true);
+                    }
+
+                    wsVerification.delete(id);
+                    socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
+
+                    const hash = createHash(socket.handshake.auth.token);
+                    /** @type {WebSocketServerConnectionData} */
+                    const serverConnectionData = {
+                        id,
+                        ip: socket.handshake.address,
+                        path: socket.handshake.query.path,
+                        chatChannels: [],
+                        statChannels: [],
+                        syncedRoles: [],
+                        online: online ?? socket.handshake.query.online === 'true',
+                        forceOnlineMode: online !== undefined,
+                        floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                        version: Number(socket.handshake.query.version.split('.')[1]),
+                        worldPath: socket.handshake.query.worldPath,
+                        protocol: 'websocket',
+                        socket,
+                        hash,
+                        requiredRoleToJoin,
+                        displayIp,
+                    };
+
+                    connectCommand.disconnectOldServer(client, id);
+                    this.addWebsocketListeners(socket, id, hash);
+                    this.client.serverConnections.connect(serverConnectionData).then(server => {
+                        logger.debug(`[Socket.io] Successfully connected ${server.getDisplayIp()} from ${server.id} to websocket`);
+                        this.client.shard.broadcastEval(
+                            (c, { id }) => c.emit('editConnectResponse', id, 'success'),
+                            { context: { id }, shard },
+                        );
+                    });
+
+
+                }
+                catch(err) {
+                    logger.error(err, '[Socket.io] Error while processing websocket connection');
+                    this.client.shard.broadcastEval(
+                        (c, { id, error }) => c.emit('editConnectResponse', id, 'error', { error_stack: error }),
+                        { context: { id, error: err.stack }, shard },
+                    );
+                    socket.disconnect(true);
+                }
+            }
 
             const token = socket.handshake.auth.token;
             const hash = createHash(token);
 
             /** @type {?ServerConnection} */
             const server = this.client.serverConnections.cache.find(server => server.hash === hash);
-            if(!server) return socket.disconnect();
+            if(!server) {
+                logger.debug(`[Socket.io] No server connection found. Disconnecting socket.`);
+                return socket.disconnect();
+            }
 
             //Update data
             server.edit({
@@ -295,9 +362,9 @@ export default class MCLinkerAPI extends EventEmitter {
 
             server.protocol.updateSocket(socket);
             this.addWebsocketListeners(socket, server, hash);
+            logger.debug(`[Socket.io] Successfully reconnected ${server.getDisplayIp()} from ${server.id} to websocket`);
         });
 
-        this.client.emit('apiReady', this);
         return this.fastify;
     }
 
