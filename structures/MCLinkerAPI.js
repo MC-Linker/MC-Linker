@@ -271,7 +271,7 @@ export default class MCLinkerAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.on('connection', socket => {
-            logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with id ${id}`);
+            logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${socket.handshake.query}`);
 
             if(socket.handshake.auth.code) {
                 //New Connection
