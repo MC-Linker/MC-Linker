@@ -291,7 +291,7 @@ export default class MCLinkerAPI extends EventEmitter {
                     } = wsVerification.get(id);
                     try {
                         if(!serverCode || serverCode !== userCode) {
-                            logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
+                            logger.debug(`[Socket.io] New Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
                             return socket.disconnect(true);
                         }
 
@@ -341,7 +341,7 @@ export default class MCLinkerAPI extends EventEmitter {
                     }
                 }
                 else {
-                    logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
+                    logger.debug(`[Socket.io] New Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
                     return socket.disconnect(true);
                 }
             }
@@ -372,7 +372,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 logger.debug(`[Socket.io] Successfully reconnected ${server.getDisplayIp()} from ${server.id} to websocket`);
             }
             else {
-                logger.debug(`[Socket.io] Connection from ${socket.handshake.address} failed verification. Disconnecting socket.`);
+                logger.debug(`[Socket.io] Connection from ${socket.handshake.address} provided no verification. Disconnecting socket.`);
                 return socket.disconnect(true);
             }
         });
