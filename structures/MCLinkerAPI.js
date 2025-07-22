@@ -271,98 +271,106 @@ export default class MCLinkerAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.on('connection', socket => {
-            const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
+            logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with id ${id}`);
 
-            logger.debug(`[Socket.io] New websocket connection from ${socket.handshake.address} with id ${id}`);
+            if(socket.handshake.auth.code) {
+                const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
 
-            //Check if awaiting verification (will be handled by connect command)
-            /** @type {Connect} */
-            const connectCommand = this.client.commands.get('connect');
-            const wsVerification = connectCommand.wsVerification;
+                //Check if awaiting verification (new connection)
+                /** @type {Connect} */
+                const connectCommand = this.client.commands.get('connect');
+                const wsVerification = connectCommand.wsVerification;
 
-            if(wsVerification.has(id)) {
-                const {
-                    code: serverCode,
-                    shard,
-                    requiredRoleToJoin,
-                    displayIp,
-                    online,
-                } = wsVerification.get(id);
-                try {
-                    if(!serverCode || serverCode !== userCode) {
-                        logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
-                        return socket.disconnect(true);
-                    }
-
-                    wsVerification.delete(id);
-                    socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
-
-                    const hash = createHash(socket.handshake.auth.token);
-                    /** @type {WebSocketServerConnectionData} */
-                    const serverConnectionData = {
-                        id,
-                        ip: socket.handshake.address,
-                        path: socket.handshake.query.path,
-                        chatChannels: [],
-                        statChannels: [],
-                        syncedRoles: [],
-                        online: online ?? socket.handshake.query.online === 'true',
-                        forceOnlineMode: online !== undefined,
-                        floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                        version: Number(socket.handshake.query.version.split('.')[1]),
-                        worldPath: socket.handshake.query.worldPath,
-                        protocol: 'websocket',
-                        socket,
-                        hash,
+                if(wsVerification.has(id)) {
+                    const {
+                        code: serverCode,
+                        shard,
                         requiredRoleToJoin,
                         displayIp,
-                    };
+                        online,
+                    } = wsVerification.get(id);
+                    try {
+                        if(!serverCode || serverCode !== userCode) {
+                            logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
+                            return socket.disconnect(true);
+                        }
 
-                    connectCommand.disconnectOldServer(client, id);
-                    this.addWebsocketListeners(socket, id, hash);
-                    this.client.serverConnections.connect(serverConnectionData).then(server => {
-                        logger.debug(`[Socket.io] Successfully connected ${server.getDisplayIp()} from ${server.id} to websocket`);
+                        wsVerification.delete(id);
+                        socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
+
+                        const hash = createHash(socket.handshake.auth.token);
+                        /** @type {WebSocketServerConnectionData} */
+                        const serverConnectionData = {
+                            id,
+                            ip: socket.handshake.address,
+                            path: socket.handshake.query.path,
+                            chatChannels: [],
+                            statChannels: [],
+                            syncedRoles: [],
+                            online: online ?? socket.handshake.query.online === 'true',
+                            forceOnlineMode: online !== undefined,
+                            floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                            version: Number(socket.handshake.query.version.split('.')[1]),
+                            worldPath: socket.handshake.query.worldPath,
+                            protocol: 'websocket',
+                            socket,
+                            hash,
+                            requiredRoleToJoin,
+                            displayIp,
+                        };
+
+                        connectCommand.disconnectOldServer(client, id);
+                        this.addWebsocketListeners(socket, id, hash);
+                        this.client.serverConnections.connect(serverConnectionData).then(server => {
+                            logger.debug(`[Socket.io] Successfully connected ${server.getDisplayIp()} from ${server.id} to websocket`);
+                            this.client.shard.broadcastEval(
+                                (c, { id }) => c.emit('editConnectResponse', id, 'success'),
+                                { context: { id }, shard },
+                            );
+                        });
+
+
+                    }
+                    catch(err) {
+                        logger.error(err, '[Socket.io] Error while processing websocket connection');
                         this.client.shard.broadcastEval(
-                            (c, { id }) => c.emit('editConnectResponse', id, 'success'),
-                            { context: { id }, shard },
+                            (c, { id, error }) => c.emit('editConnectResponse', id, 'error', { error_stack: error }),
+                            { context: { id, error: err.stack }, shard },
                         );
-                    });
-
-
-                }
-                catch(err) {
-                    logger.error(err, '[Socket.io] Error while processing websocket connection');
-                    this.client.shard.broadcastEval(
-                        (c, { id, error }) => c.emit('editConnectResponse', id, 'error', { error_stack: error }),
-                        { context: { id, error: err.stack }, shard },
-                    );
-                    socket.disconnect(true);
+                        socket.disconnect(true);
+                    }
                 }
             }
+            else if(socket.handshake.auth.token) {
+                //Reconnection
+                const token = socket.handshake.auth.token;
+                const hash = createHash(token);
 
-            const token = socket.handshake.auth.token;
-            const hash = createHash(token);
+                /** @type {?ServerConnection} */
+                const server = this.client.serverConnections.cache.find(server => server.hash === hash);
+                if(!server) {
+                    logger.debug(`[Socket.io] No server connection found. Disconnecting socket.`);
+                    return socket.disconnect();
+                }
 
-            /** @type {?ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.hash === hash);
-            if(!server) {
-                logger.debug(`[Socket.io] No server connection found. Disconnecting socket.`);
-                return socket.disconnect();
+                //Update data
+                server.edit({
+                    ip: socket.handshake.address,
+                    path: socket.handshake.query.path,
+                    online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
+                    floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                    version: Number(socket.handshake.query.version.split('.')[1]),
+                    worldPath: socket.handshake.query.worldPath,
+                });
+
+                server.protocol.updateSocket(socket);
+                this.addWebsocketListeners(socket, server, hash);
+                logger.debug(`[Socket.io] Successfully reconnected ${server.getDisplayIp()} from ${server.id} to websocket`);
             }
-
-            //Update data
-            server.edit({
-                ip: socket.handshake.address,
-                path: socket.handshake.query.path,
-                online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
-                floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                version: Number(socket.handshake.query.version.split('.')[1]),
-                worldPath: socket.handshake.query.worldPath,
-            });
-
-            server.protocol.updateSocket(socket);
-            this.addWebsocketListeners(socket, server, hash);
-            logger.debug(`[Socket.io] Successfully reconnected ${server.getDisplayIp()} from ${server.id} to websocket`);
+            else {
+                logger.debug(`[Socket.io] Connection from ${socket.handshake.address} failed verification. Disconnecting socket.`);
+                return socket.disconnect(true);
+            }
         });
 
         return this.fastify;
