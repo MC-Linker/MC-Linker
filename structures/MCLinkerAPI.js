@@ -359,20 +359,21 @@ export default class MCLinkerAPI extends EventEmitter {
                         return socket.disconnect();
                     }
                 }
+                else {
+                    //Update data
+                    server.edit({
+                        ip: socket.handshake.address,
+                        path: socket.handshake.query.path,
+                        online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
+                        floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                        version: Number(socket.handshake.query.version.split('.')[1]),
+                        worldPath: socket.handshake.query.worldPath,
+                    });
 
-                //Update data
-                server.edit({
-                    ip: socket.handshake.address,
-                    path: socket.handshake.query.path,
-                    online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
-                    floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                    version: Number(socket.handshake.query.version.split('.')[1]),
-                    worldPath: socket.handshake.query.worldPath,
-                });
-
-                server.protocol.updateSocket(socket);
-                this.addWebsocketListeners(socket, server, hash);
-                logger.debug(`[Socket.io] Successfully reconnected ${server.getDisplayIp()} from ${server.id} to websocket`);
+                    server.protocol.updateSocket(socket);
+                    this.addWebsocketListeners(socket, server, hash);
+                    logger.debug(`[Socket.io] Successfully reconnected ${server.getDisplayIp()} from ${server.id} to websocket`);
+                }
             }
             else {
                 logger.debug(`[Socket.io] Connection from ${socket.handshake.address} provided invalid verification. Disconnecting socket.`);
