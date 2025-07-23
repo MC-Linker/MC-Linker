@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+import Discord, { Options } from 'discord.js';
 import ServerConnectionManager from './ServerConnectionManager.js';
 import UserConnectionManager from './UserConnectionManager.js';
 import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.js';
@@ -75,6 +75,15 @@ export default class MCLinker extends Discord.Client {
             Discord.Partials.Channel,
             Discord.Partials.GuildMember,
         ],
+        makeCache: Options.cacheWithLimits({
+            // Don’t cache any messages
+            MessageManager: 0,
+            // Limit number of members cached per guild
+            GuildMemberManager: 100,
+            UserManager: 100,
+            ReactionManager: 0,
+            PresenceManager: 0,
+        }),
         // Disable @everyone and @here mentions
         allowedMentions: { parse: ['users', 'roles'] },
     }) {

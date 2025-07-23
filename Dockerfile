@@ -31,4 +31,4 @@ RUN npm ci
 # Bundle app source
 COPY . .
 
-CMD [ "node", "main.js" ]
+CMD [ "node", "--max-old-space-size=8192", "main.js" ]

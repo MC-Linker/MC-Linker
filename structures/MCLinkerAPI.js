@@ -511,6 +511,7 @@ export default class MCLinkerAPI extends EventEmitter {
         //Parse pings (@name)
         const mentions = message.match(/@(\S+)/g);
         for(const mention of mentions ?? []) {
+            if(mention.length > 101) continue; //101 because of the @
             const users = await guild.members.search({ query: mention.replace('@', ''), limit: 1 });
             if(users.first()?.username !== mention.replace('@', '')) continue;
             argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
