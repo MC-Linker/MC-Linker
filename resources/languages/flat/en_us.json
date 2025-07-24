@@ -193,14 +193,20 @@
   "entitlements.warnings.invalid_token.embeds.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
   "entitlements.warnings.invalid_token.console": "Failed to login to bot because of invalid token",
 
-  "entitlements.warnings.no_intents.embeds.0.title": "Incorrect Bot Token",
-  "entitlements.warnings.no_intents.embeds.0.description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
-  "entitlements.warnings.no_intents.console": "Failed to login to bot because of missing intents",
-
   "entitlements.warnings.invalid_token.components.0.type": "Button",
   "entitlements.warnings.invalid_token.components.0.style": "Primary",
   "entitlements.warnings.invalid_token.components.0.label": "Enter Details",
   "entitlements.warnings.invalid_token.components.0.custom_id": "entitlements_details",
+
+
+  "entitlements.warnings.no_intents.embeds.0.title": "Incorrect Bot Token",
+  "entitlements.warnings.no_intents.embeds.0.description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.warnings.no_intents.console": "Failed to login to bot because of missing intents",
+
+  "entitlements.warnings.no_intents.components.0.type": "Button",
+  "entitlements.warnings.no_intents.components.0.style": "Primary",
+  "entitlements.warnings.no_intents.components.0.label": "Enter Details",
+  "entitlements.warnings.no_intents.components.0.custom_id": "entitlements_details",
 
 
 
