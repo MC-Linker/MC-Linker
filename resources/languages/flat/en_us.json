@@ -102,10 +102,10 @@
 
 
 
+  "entitlements.success.start.ephemeral":  true,
   "entitlements.success.start.embeds.0.title": "Subscription Successful",
   "entitlements.success.start.embeds.0.description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
   "entitlements.success.start.embeds.0.color": "Green",
-  "entitlements.success.start.embeds.0.ephemeral":  true,
 
   "entitlements.success.start.embeds.0.fields.0.name": "Get Started",
   "entitlements.success.start.embeds.0.fields.0.value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",

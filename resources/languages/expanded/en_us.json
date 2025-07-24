@@ -176,12 +176,12 @@
   "entitlements": {
     "success": {
       "start": {
+        "ephemeral": true,
         "embeds": [
           {
             "title": "Subscription Successful",
             "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
             "color": "Green",
-            "ephemeral": true,
             "fields": [
               {
                 "name": "Get Started",
