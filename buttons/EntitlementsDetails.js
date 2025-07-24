@@ -12,9 +12,8 @@ export default class EntitlementsDetails extends Button {
     }
 
     async execute(interaction, client) {
-        if(interaction.entitlements.size === 0) {
-            if(process.env.NODE_ENV === 'production') return await interaction.update(getReplyOptions(keys.warnings.errors.no_entitlement));
-        }
+        if(interaction.entitlements.size === 0 && process.env.NODE_ENV === 'production')
+            return await interaction.update(getReplyOptions(keys.warnings.errors.no_entitlement));
 
         try {
             //Send modal
