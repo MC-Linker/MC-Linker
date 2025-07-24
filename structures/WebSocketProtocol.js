@@ -201,7 +201,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     execute(command, uuid = null) {
-        return this._sendRaw('command', { cmd: encodeURIComponent(command), uuid });
+        return this._sendRaw('command', { cmd: encodeURIComponent(command.trim()), uuid });
     }
 
     /**
