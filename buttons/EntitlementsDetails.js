@@ -1,6 +1,6 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
-import { getModal, getReplyOptions, ph } from '../utilities/messages.js';
+import { getModal, getReplyOptions } from '../utilities/messages.js';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import Discord from 'discord.js';
@@ -35,7 +35,10 @@ export default class EntitlementsDetails extends Button {
             }
             catch(err) {
                 console.log(err);
-                return await interaction.replyTl(keys.entitlements.warnings.invalid_token, ph.error(err));
+                if(err.code === 'TokenInvalid')
+                    return await interaction.replyTl(keys.entitlements.warnings.invalid_token);
+                else if(err.message === 'Used disallowed intents')
+                    return await interaction.replyTl(keys.entitlements.warnings.no_intents);
             }
             finally {
                 await testClient.destroy();

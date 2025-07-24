@@ -105,6 +105,7 @@
   "entitlements.success.start.embeds.0.title": "Subscription Successful",
   "entitlements.success.start.embeds.0.description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
   "entitlements.success.start.embeds.0.color": "Green",
+  "entitlements.success.start.embeds.0.ephemeral":  true,
 
   "entitlements.success.start.embeds.0.fields.0.name": "Get Started",
   "entitlements.success.start.embeds.0.fields.0.value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
@@ -112,14 +113,27 @@
   "entitlements.success.start.components.0.type": "Button",
   "entitlements.success.start.components.0.style": "Primary",
   "entitlements.success.start.components.0.label": "Next",
-  "entitlements.success.start.components.0.custom_id": "entitlements_next",
+  "entitlements.success.start.components.0.custom_id": "entitlements_next_intents",
+
+
+  "entitlements.success.intents.embeds.0.title": "Subscription Successful",
+  "entitlements.success.intents.embeds.0.color": "Green",
+  "entitlements.success.intents.embeds.0.ephemeral":  true,
+
+  "entitlements.success.intents.embeds.0.fields.0.name": "Enabling Intents",
+  "entitlements.success.intents.embeds.0.fields.0.value": "Move to the *\"Bot\"* section of the Developer Portal. There, scroll down to the *\"Privileged Gateway Intents\"* subsection and enable both the *\"Server Members Intent\"* and the *\"Message Content Intent\"*.",
+
+  "entitlements.success.intents.components.0.type": "Button",
+  "entitlements.success.intents.components.0.style": "Primary",
+  "entitlements.success.intents.components.0.label": "Next",
+  "entitlements.success.intents.components.0.custom_id": "entitlements_next_details",
 
 
   "entitlements.success.details.embeds.0.title": "Subscription Successful",
   "entitlements.success.details.embeds.0.color": "Green",
 
   "entitlements.success.details.embeds.0.fields.0.name": "Enter Bot Details",
-  "entitlements.success.details.embeds.0.fields.0.value": "The **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.success.details.embeds.0.fields.0.value": "The **Bot Token** is located in the *\"Bot\"* section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
 
   "entitlements.success.details.components.0.type": "Button",
   "entitlements.success.details.components.0.style": "Primary",
@@ -149,7 +163,7 @@
 
 
   "entitlements.success.finish.embeds.0.title": "Subscription Successful",
-  "entitlements.success.finish.embeds.0.description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.success.finish.embeds.0.description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the *\"General Information\"* and *\"Bot\"* section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
   "entitlements.success.finish.embeds.0.color": "Green",
 
 
@@ -176,8 +190,12 @@
 
 
   "entitlements.warnings.invalid_token.embeds.0.title": "Incorrect Bot Token",
-  "entitlements.warnings.invalid_token.embeds.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
-  "entitlements.warnings.invalid_token.console": "Failed to login to bot with token %error_stack%",
+  "entitlements.warnings.invalid_token.embeds.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the *\"Bot\"* section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.warnings.invalid_token.console": "Failed to login to bot because of invalid token",
+
+  "entitlements.warnings.no_intents.embeds.0.title": "Incorrect Bot Token",
+  "entitlements.warnings.no_intents.embeds.0.description": "**Please check your intents again!**\n\nMove to the *\"Bot\"* section of the Developer Portal. There, scroll down to the *\"Privileged Gateway Intents\"* subsection and enable both the *\"Server Members Intent\"* and the *\"Message Content Intent\"*.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.warnings.no_intents.console": "Failed to login to bot because of missing intents",
 
   "entitlements.warnings.invalid_token.components.0.type": "Button",
   "entitlements.warnings.invalid_token.components.0.style": "Primary",

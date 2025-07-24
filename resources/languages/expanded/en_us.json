@@ -181,6 +181,7 @@
             "title": "Subscription Successful",
             "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
             "color": "Green",
+            "ephemeral": true,
             "fields": [
               {
                 "name": "Get Started",
@@ -194,7 +195,30 @@
             "type": "Button",
             "style": "Primary",
             "label": "Next",
-            "custom_id": "entitlements_next"
+            "custom_id": "entitlements_next_intents"
+          }
+        ]
+      },
+      "intents": {
+        "embeds": [
+          {
+            "title": "Subscription Successful",
+            "color": "Green",
+            "ephemeral": true,
+            "fields": [
+              {
+                "name": "Enabling Intents",
+                "value": "Move to the *\"Bot\"* section of the Developer Portal. There, scroll down to the *\"Privileged Gateway Intents\"* subsection and enable both the *\"Server Members Intent\"* and the *\"Message Content Intent\"*."
+              }
+            ]
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Next",
+            "custom_id": "entitlements_next_details"
           }
         ]
       },
@@ -206,7 +230,7 @@
             "fields": [
               {
                 "name": "Enter Bot Details",
-                "value": "The **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                "value": "The **Bot Token** is located in the *\"Bot\"* section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
               }
             ]
           }
@@ -261,7 +285,7 @@
         "embeds": [
           {
             "title": "Subscription Successful",
-            "description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the \"General Information\" and \"Bot\" section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+            "description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the *\"General Information\"* and *\"Bot\"* section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
             "color": "Green"
           }
         ]
@@ -304,10 +328,10 @@
         "embeds": [
           {
             "title": "Incorrect Bot Token",
-            "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the \"Bot\" section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+            "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the *\"Bot\"* section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
           }
         ],
-        "console": "Failed to login to bot with token %error_stack%",
+        "console": "Failed to login to bot because of invalid token",
         "components": [
           {
             "type": "Button",
@@ -316,6 +340,15 @@
             "custom_id": "entitlements_details"
           }
         ]
+      },
+      "no_intents": {
+        "embeds": [
+          {
+            "title": "Incorrect Bot Token",
+            "description": "**Please check your intents again!**\n\nMove to the *\"Bot\"* section of the Developer Portal. There, scroll down to the *\"Privileged Gateway Intents\"* subsection and enable both the *\"Server Members Intent\"* and the *\"Message Content Intent\"*.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+          }
+        ],
+        "console": "Failed to login to bot because of missing intents"
       }
     }
   },
