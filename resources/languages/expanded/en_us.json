@@ -220,6 +220,16 @@
           }
         ]
       },
+      "logging_in": {
+        "embeds": [
+          {
+            "title": "Setting Up Your Custom MC-Linker",
+            "description": "*Logging into your bot...*",
+            "color": "Green"
+          }
+        ],
+        "components": []
+      },
       "cloning": {
         "embeds": [
           {
@@ -227,14 +237,13 @@
             "description": "*Copying MC-Linker...*",
             "color": "Green"
           }
-        ],
-        "components": []
+        ]
       },
       "deploying": {
         "embeds": [
           {
             "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Deploying Slash Commands...",
+            "description": "*Deploying Slash Commands...*",
             "color": "Green"
           }
         ]

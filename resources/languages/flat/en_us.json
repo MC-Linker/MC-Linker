@@ -127,14 +127,19 @@
   "entitlements.success.details.components.0.custom_id": "entitlements_details",
 
 
+  "entitlements.success.logging_in.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.logging_in.embeds.0.description": "*Logging into your bot...*",
+  "entitlements.success.logging_in.embeds.0.color": "Green",
+  "entitlements.success.logging_in.components": [],
+
+
   "entitlements.success.cloning.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "entitlements.success.cloning.embeds.0.description": "*Copying MC-Linker...*",
   "entitlements.success.cloning.embeds.0.color": "Green",
-  "entitlements.success.cloning.components": [],
 
 
   "entitlements.success.deploying.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "entitlements.success.deploying.embeds.0.description": "*Deploying Slash Commands...",
+  "entitlements.success.deploying.embeds.0.description": "*Deploying Slash Commands...*",
   "entitlements.success.deploying.embeds.0.color": "Green",
 
 
