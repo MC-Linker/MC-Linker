@@ -11,9 +11,8 @@ export default class EntitlementsNext extends Button {
     async execute(interaction, client) {
         if(interaction.entitlements.size === 0) {
             if(process.env.NODE_ENV === 'production') return await interaction.update(getReplyOptions(keys.warnings.errors.no_entitlement));
-            else return;
         }
-        
+
         return await interaction.update(getReplyOptions(keys.entitlements.success.details)); //TODO make explanation
     }
 }
