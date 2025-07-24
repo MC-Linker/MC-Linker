@@ -116,7 +116,7 @@
   "entitlements.success.start.components.0.custom_id": "entitlements_next_intents",
 
 
-  "entitlements.success.intents.embeds.0.title": "Subscription Successful",
+  "entitlements.success.intents.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "entitlements.success.intents.embeds.0.color": "Green",
   "entitlements.success.intents.embeds.0.ephemeral":  true,
 
@@ -129,7 +129,7 @@
   "entitlements.success.intents.components.0.custom_id": "entitlements_next_details",
 
 
-  "entitlements.success.details.embeds.0.title": "Subscription Successful",
+  "entitlements.success.details.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "entitlements.success.details.embeds.0.color": "Green",
 
   "entitlements.success.details.embeds.0.fields.0.name": "Enter Bot Details",

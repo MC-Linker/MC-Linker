@@ -202,7 +202,7 @@
       "intents": {
         "embeds": [
           {
-            "title": "Subscription Successful",
+            "title": "Setting Up Your Custom MC-Linker",
             "color": "Green",
             "ephemeral": true,
             "fields": [
@@ -225,7 +225,7 @@
       "details": {
         "embeds": [
           {
-            "title": "Subscription Successful",
+            "title": "Setting Up Your Custom MC-Linker",
             "color": "Green",
             "fields": [
               {
