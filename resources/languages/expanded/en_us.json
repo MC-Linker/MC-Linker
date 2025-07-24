@@ -277,7 +277,7 @@
             "label": "Bot Token",
             "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
             "required": true,
-            "min_length": 50,
+            "min_length": 20,
             "max_length": 100,
             "style": "Short"
           }

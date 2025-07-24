@@ -22,8 +22,7 @@ export default class EntitlementsDetails extends Button {
             const token = modal.fields.getTextInputValue('token');
 
             console.log(token);
-            await interaction.replyTl(keys.entitlements.success.logging_in);
-            await modal.deferUpdate();
+            await interaction.update(keys.entitlements.success.logging_in);
 
             const testClient = new Discord.Client({
                 intents: [
