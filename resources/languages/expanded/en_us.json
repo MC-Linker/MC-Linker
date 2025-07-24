@@ -348,7 +348,15 @@
             "description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
           }
         ],
-        "console": "Failed to login to bot because of missing intents"
+        "console": "Failed to login to bot because of missing intents",
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Enter Details",
+            "custom_id": "entitlements_details"
+          }
+        ]
       }
     }
   },
