@@ -97,16 +97,16 @@ export default class EntitlementsDetails extends Button {
             logger.info(execSync(`docker build . -t lianecx/${env.SERVICE_NAME} && docker compose up -d`, {
                 cwd: botFolder,
                 env,
-            }));
+            }).toString());
 
             //TODO Check for errors (wrong secret etc)
-            logger.info(execSync(`docker logs ${env.SERVICE_NAME}`));
+            logger.info(execSync(`docker logs ${env.SERVICE_NAME}`).toString());
 
             await interaction.replyTl(keys.entitlements.success.deploying);
             logger.info(execSync(`docker exec ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, {
                 cwd: botFolder,
                 env,
-            }));
+            }).toString());
 
             // TODO
             await exposeCustomBotPorts(botPort, botPort);
