@@ -145,7 +145,7 @@ export default class MCLinkerAPI extends EventEmitter {
          * The fastify instance for the api.
          * @type {import('fastify').FastifyInstance}
          */
-        this.fastify = Fastify({ logger: { level: process.env.LOG_LEVEL ?? 'info', transport: pinoTransport } });
+        this.fastify = Fastify({ logger: { level: process.env.LOG_LEVEL || 'info', transport: pinoTransport } });
         // noinspection JSCheckFunctionSignatures
         this.fastify.register(fastifyIO);
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
