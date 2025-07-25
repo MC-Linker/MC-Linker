@@ -250,7 +250,7 @@
             "fields": [
               {
                 "name": "Setting Up Your Custom MC-Linker",
-                "value": "Lastly, run `/linker bot_port %port` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                "value": "Lastly, run `/linker bot_port %port%` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
               }
             ]
           }

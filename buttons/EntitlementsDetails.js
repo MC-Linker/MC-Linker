@@ -60,7 +60,8 @@ export default class EntitlementsDetails extends Button {
             else {
                 // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
                 await interaction.replyTl(keys.entitlements.success.cloning);
-                logger.info(execSync(`git clone https://github.com/MC-Linker/MC-Linker ${botFolder}`).toString());
+                //TODO remove branch dev
+                logger.info(execSync(`git clone https://github.com/MC-Linker/MC-Linker --branch dev ${botFolder}`).toString());
                 // Copy docker-compose.yml
                 await fs.copy('./docker-compose-custom.yml', `${botFolder}/docker-compose.yml`);
                 await fs.mkdir(`${botFolder}/download-cache`);
