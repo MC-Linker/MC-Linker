@@ -1,7 +1,7 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
 import { getModal, getReplyOptions } from '../utilities/messages.js';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import fs from 'fs-extra';
 import Discord from 'discord.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
