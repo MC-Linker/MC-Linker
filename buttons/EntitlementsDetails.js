@@ -100,6 +100,7 @@ export default class EntitlementsDetails extends Button {
             }));
 
             //TODO Check for errors (wrong secret etc)
+            logger.info(execSync(`docker logs ${env.SERVICE_NAME}`));
 
             await interaction.replyTl(keys.entitlements.success.deploying);
             logger.info(execSync(`docker exec ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, {

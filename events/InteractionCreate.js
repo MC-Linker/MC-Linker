@@ -39,7 +39,7 @@ export default class InteractionCreate extends Event {
                 await command.autocomplete(interaction, client);
             }
             catch(err) {
-                logger.error(err, `Could not autocomplete command ${interaction.name}`);
+                logger.error(err, `Could not autocomplete command ${interaction.commandName}`);
             }
         }
         else if(interaction.isButton()) {
@@ -50,7 +50,7 @@ export default class InteractionCreate extends Event {
                 await button.execute(interaction, client);
             }
             catch(err) {
-                logger.error(err, `Could not execute button ${interaction.name}`);
+                logger.error(err, `Could not execute button ${interaction.customId}`);
                 await interaction.replyTl(keys.main.errors.could_not_execute_button);
             }
         }
