@@ -92,12 +92,38 @@ export default class EntitlementsDetails extends Button {
             const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
             await fs.writeFile(`${botFolder}/.env`, stringifiedEnv);
 
-
             await interaction.replyTl(keys.entitlements.success.starting_up);
-            logger.info(execSync(`docker build . -t lianecx/${env.SERVICE_NAME} && docker compose up -d`, {
+            logger.info(execSync(`docker build . -t lianecx/${env.SERVICE_NAME}`, { cwd: botFolder, env }).toString());
+
+            const composeProcess = spawn('docker', ['compose', 'up'], {
                 cwd: botFolder,
-                env,
-            }).toString());
+                env: { ...env },
+                stdio: 'pipe',
+                timeout: 30_000, // 30 seconds
+            });
+
+            await new Promise((resolve, reject) => {
+                let output = '';
+
+                composeProcess.stdout.on('data', data => {
+                    const chunk = data.toString();
+                    output += chunk;
+                    logger.info(chunk);
+
+                    if(chunk.includes(`Server listening at http://0.0.0.0:${botPort}`)) {
+                        // Detach process from docker (Ctrl+P, Ctrl+Q)
+                        composeProcess.stdin.write(Buffer.from([0x10, 0x11])); // Ctrl+P, Ctrl+Q
+                        composeProcess.kill();
+                        resolve();
+                    }
+                });
+
+                composeProcess.stderr.on('data', data => {
+                    logger.error(data.toString());
+                });
+
+                composeProcess.on('error', reject);
+            });
 
             //TODO Check for errors (wrong secret etc)
             logger.info(execSync(`docker logs ${env.SERVICE_NAME}`).toString());
