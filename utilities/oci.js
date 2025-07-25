@@ -1,6 +1,6 @@
 import ociCore from 'oci-core';
 import ociCommon from 'oci-common';
-import { securityListId } from '../oci/constants.json' with { type: 'json' };
+import ociConstants from '../oci/constants.json' with { type: 'json' };
 
 const provider = new ociCommon.ConfigFileAuthenticationDetailsProvider('./oci/config');
 
@@ -16,7 +16,7 @@ export async function exposeCustomBotPorts(minPort, maxPort) {
     });
 
     const previousSecurityList = await vcnClient.getSecurityList({
-        securityListId,
+        securityListId: ociConstants.securityListId,
     });
     console.log(previousSecurityList.securityList.ingressSecurityRules);
     const customBotRuleIndex = previousSecurityList.securityList.ingressSecurityRules.findIndex(rule => rule.description === 'Custom Bots');
@@ -36,7 +36,7 @@ export async function exposeCustomBotPorts(minPort, maxPort) {
     console.log(previousSecurityList.securityList.ingressSecurityRules);
 
     /*    await vcnClient.updateSecurityList({
-            securityListId,
+            securityListId: ociConstants.securityListId,
             updateSecurityListDetails: {
                 ingressSecurityRules: previousSecurityList.securityList.ingressSecurityRules,
             },
