@@ -112,6 +112,7 @@ export default class EntitlementsDetails extends Button {
                 logger.info(chunk);
 
                 if(chunk.includes(`Server listening at http://0.0.0.0:${botPort}`)) {
+                    logger.info('Custom bot is ready! Detaching...');
                     // Detach process from docker (Ctrl+P, Ctrl+Q)
                     composeProcess.stdin.write(Buffer.from([0x10, 0x11])); // Ctrl+P, Ctrl+Q
                     resolve();
