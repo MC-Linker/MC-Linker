@@ -107,6 +107,20 @@
   "entitlements.success.start.embeds.0.description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
   "entitlements.success.start.embeds.0.color": "Green",
 
+
+  "entitlements.success.intents.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.intents.embeds.0.color": "Green",
+  "entitlements.success.intents.embeds.0.ephemeral":  true,
+
+  "entitlements.success.intents.embeds.0.fields.0.name": "Enabling Intents",
+  "entitlements.success.intents.embeds.0.fields.0.value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+
+  "entitlements.success.intents.components.0.type": "Button",
+  "entitlements.success.intents.components.0.style": "Primary",
+  "entitlements.success.intents.components.0.label": "Next",
+  "entitlements.success.intents.components.0.custom_id": "entitlements_next_details",
+
+
   "entitlements.success.start.embeds.0.fields.0.name": "Get Started",
   "entitlements.success.start.embeds.0.fields.0.value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
 
@@ -114,19 +128,6 @@
   "entitlements.success.start.components.0.style": "Primary",
   "entitlements.success.start.components.0.label": "Next",
   "entitlements.success.start.components.0.custom_id": "entitlements_next_intents",
-
-
-  "entitlements.success.intents.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "entitlements.success.intents.embeds.0.color": "Green",
-  "entitlements.success.intents.embeds.0.ephemeral":  true,
-
-  "entitlements.success.intents.embeds.0.fields.0.name": "Enabling Intents",
-  "entitlements.success.intents.embeds.0.fields.0.value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.",
-
-  "entitlements.success.intents.components.0.type": "Button",
-  "entitlements.success.intents.components.0.style": "Primary",
-  "entitlements.success.intents.components.0.label": "Next",
-  "entitlements.success.intents.components.0.custom_id": "entitlements_next_details",
 
 
   "entitlements.success.details.embeds.0.title": "Setting Up Your Custom MC-Linker",
@@ -139,6 +140,15 @@
   "entitlements.success.details.components.0.style": "Primary",
   "entitlements.success.details.components.0.label": "Enter Details",
   "entitlements.success.details.components.0.custom_id": "entitlements_details",
+
+
+  "entitlements.success.port.embeds.0.fields.0.name": "Setting Up Your Custom MC-Linker",
+  "entitlements.success.port.embeds.0.fields.0.value": "Lastly, run `/linker bot_port %port` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+
+  "entitlements.success.port.components.0.type": "Button",
+  "entitlements.success.port.components.0.style": "Primary",
+  "entitlements.success.port.components.0.label": "Next",
+  "entitlements.success.port.components.0.custom_id": "entitlements_next_port",
 
 
   "entitlements.success.logging_in.embeds.0.title": "Setting Up Your Custom MC-Linker",
@@ -163,8 +173,13 @@
 
 
   "entitlements.success.finish.embeds.0.title": "Subscription Successful",
-  "entitlements.success.finish.embeds.0.description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.success.finish.embeds.0.description": "You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` (on your bot) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
   "entitlements.success.finish.embeds.0.color": "Green",
+
+  "entitlements.success.finish.components.0.type": "Button",
+  "entitlements.success.finish.components.0.style": "Link",
+  "entitlements.success.finish.components.0.label": "Invite Your Bot!",
+  "entitlements.success.finish.components.0.url": "%invite%",
 
 
   "entitlements.success.details_modal.type": "Modal",

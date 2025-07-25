@@ -4,6 +4,8 @@ import { getModal, getReplyOptions } from '../utilities/messages.js';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import Discord from 'discord.js';
+import { exposeCustomBotPorts } from '../utilities/oci.js';
+import logger from '../utilities/logger.js';
 
 export default class EntitlementsDetails extends Button {
 
@@ -25,6 +27,8 @@ export default class EntitlementsDetails extends Button {
             console.log(token);
             await interaction.replyTl(keys.entitlements.success.logging_in);
 
+            let invite;
+
             const testClient = new Discord.Client({
                 intents: [
                     Discord.GatewayIntentBits.GuildMessages,
@@ -33,6 +37,10 @@ export default class EntitlementsDetails extends Button {
             });
             try {
                 await testClient.login(token);
+                invite = testClient.generateInvite({
+                    scopes: [],
+                    permissions: [],
+                });
             }
             catch(err) {
                 console.log(err);
@@ -52,7 +60,7 @@ export default class EntitlementsDetails extends Button {
             else {
                 // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
                 await interaction.replyTl(keys.entitlements.success.cloning);
-                console.log(execSync(`git clone https://github.com/MC-Linker/MC-Linker ${botFolder}`).toString());
+                logger.info(execSync(`git clone https://github.com/MC-Linker/MC-Linker ${botFolder}`).toString());
                 // Copy docker-compose.yml
                 await fs.copy('./docker-compose-custom.yml', `${botFolder}/docker-compose.yml`);
                 await fs.mkdir(`${botFolder}/download-cache`);
@@ -83,25 +91,25 @@ export default class EntitlementsDetails extends Button {
             const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
             await fs.writeFile(`${botFolder}/.env`, stringifiedEnv);
 
-            //TODO Create database
 
-            execSync(`docker build . -t lianecx/${env.SERVICE_NAME} && docker compose up -d`, { cwd: botFolder, env });
+            await interaction.replyTl(keys.entitlements.success.starting_up);
+            logger.info(execSync(`docker build . -t lianecx/${env.SERVICE_NAME} && docker compose up -d`, {
+                cwd: botFolder,
+                env,
+            }));
 
-            //Check for errors (wrong secret etc)
+            //TODO Check for errors (wrong secret etc)
 
-            // Run slash command script
             await interaction.replyTl(keys.entitlements.success.deploying);
+            logger.info(execSync(`docker exec ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, {
+                cwd: botFolder,
+                env,
+            }));
 
-            //TODO does not work
-            execSync(`docker exec ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, { cwd: botFolder, env });
+            // TODO
+            await exposeCustomBotPorts(botPort, botPort);
 
-            //TODO port expose
-
-            //Send success
-
-            // Tell them to change bot port in the plugin config / run command
-
-            return await interaction.replyTl(keys.entitlements.success.finish, { port: botPort }); //TODO Add control buttons (start/stop, edit details)
+            return await interaction.replyTl(keys.entitlements.success.port, { port: botPort, invite });
         }
         catch(e) {
             console.error(e);

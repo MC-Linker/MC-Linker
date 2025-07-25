@@ -5,13 +5,15 @@ import { getReplyOptions } from '../utilities/messages.js';
 export default class EntitlementsNextDetails extends Button {
 
     constructor() {
-        super({ id: 'entitlements_next_intents', defer: false });
+        super({ id: 'entitlements_next_port', defer: false });
     }
 
     async execute(interaction, client) {
         if(interaction.entitlements.size === 0 && process.env.NODE_ENV === 'production')
             return await interaction.update(getReplyOptions(keys.warnings.errors.no_entitlement));
 
-        return await interaction.update(getReplyOptions(keys.entitlements.success.intents));
+        //Todo grab invite link and port
+        //TODO Add control buttons (start/stop, edit details)
+        return await interaction.update(getReplyOptions(keys.entitlements.success.finish));
     }
 }

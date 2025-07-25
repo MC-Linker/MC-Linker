@@ -192,6 +192,7 @@ export default class MCLinker extends Discord.Client {
             }
         };
 
+        await fs.ensureDir(this.commandPath);
         const commands = await fs.readdir(this.commandPath);
 
         const commandCategories = commands.filter(command => !command.endsWith('.js'));
@@ -207,6 +208,7 @@ export default class MCLinker extends Discord.Client {
     }
 
     async _loadButtons() {
+        await fs.ensureDir(this.buttonPath);
         const buttonFiles = (await fs.readdir(this.buttonPath))
             .filter(file => file.endsWith('.js'));
 
@@ -226,6 +228,7 @@ export default class MCLinker extends Discord.Client {
     }
 
     async _loadEvents() {
+        await fs.ensureDir(this.eventPath);
         const eventFiles = (await fs.readdir(this.eventPath))
             .filter(file => file.endsWith('.js'));
 

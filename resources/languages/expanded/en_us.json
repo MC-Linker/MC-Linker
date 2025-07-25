@@ -208,7 +208,7 @@
             "fields": [
               {
                 "name": "Enabling Intents",
-                "value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**."
+                "value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
               }
             ]
           }
@@ -241,6 +241,26 @@
             "style": "Primary",
             "label": "Enter Details",
             "custom_id": "entitlements_details"
+          }
+        ]
+      },
+      "port": {
+        "embeds": [
+          {
+            "fields": [
+              {
+                "name": "Setting Up Your Custom MC-Linker",
+                "value": "Lastly, run `/linker bot_port %port` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+              }
+            ]
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Next",
+            "custom_id": "entitlements_next_port"
           }
         ]
       },
@@ -285,8 +305,16 @@
         "embeds": [
           {
             "title": "Subscription Successful",
-            "description": "You have successfully set up your bot application. You can read [this article](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to find out how to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nYou'll also need to set the bot_port in the config to **%port%**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+            "description": "You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` (on your bot) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
             "color": "Green"
+          }
+        ],
+        "components": [
+          {
+            "type": "Button",
+            "style": "Link",
+            "label": "Invite Your Bot!",
+            "url": "%invite%"
           }
         ]
       },

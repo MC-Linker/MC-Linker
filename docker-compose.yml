@@ -48,6 +48,7 @@ services:
       - mongo-network
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
     ports:
       - '8081:8081'
     volumes:
