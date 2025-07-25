@@ -63,7 +63,9 @@ export default class EntitlementsDetails extends Button {
             logger.info(execSync(`git clone https://github.com/MC-Linker/MC-Linker --branch dev ${botFolder}`).toString());
             // Copy docker-compose.yml
             await fs.copy('./docker-compose-custom.yml', `${botFolder}/docker-compose.yml`);
+            await fs.copy('./oci', `${botFolder}/oci`);
             await fs.mkdir(`${botFolder}/download-cache`);
+            await fs.mkdir(`${botFolder}/logs`);
         }
 
         const botPort = 30000; //TODO
