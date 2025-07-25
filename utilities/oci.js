@@ -1,6 +1,6 @@
 import ociCore from 'oci-core';
-import { securityListId } from '../oci/constants.json' with { type: 'json' };
 import ociCommon from 'oci-common';
+import { securityListId } from '../oci/constants.json' with { type: 'json' };
 
 const provider = new ociCommon.ConfigFileAuthenticationDetailsProvider('./oci/config');
 
