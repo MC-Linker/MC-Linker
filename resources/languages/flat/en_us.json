@@ -216,25 +216,25 @@
   "entitlements.success.invalid_token.components.0.label": "< Back",
   "entitlements.success.invalid_token.components.0.custom_id": "entitlements_next_details",
 
-  "entitlements.warnings.invalid_token.components.0.type": "Button",
-  "entitlements.warnings.invalid_token.components.0.style": "Primary",
-  "entitlements.warnings.invalid_token.components.0.label": "Enter Details",
-  "entitlements.warnings.invalid_token.components.0.custom_id": "entitlements_enter_details",
+  "entitlements.success.invalid_token.components.1.type": "Button",
+  "entitlements.success.invalid_token.components.1.style": "Primary",
+  "entitlements.success.invalid_token.components.1.label": "Enter Details",
+  "entitlements.success.invalid_token.components.1.custom_id": "entitlements_enter_details",
 
 
-  "entitlements.warnings.no_intents.embeds.0.title": "Incorrect Bot Token",
+  "entitlements.warnings.no_intents.embeds.0.title": "Missing Intents",
   "entitlements.warnings.no_intents.embeds.0.description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
   "entitlements.warnings.no_intents.console": "Failed to login to bot because of missing intents",
 
-  "entitlements.success.no_intents.components.0.type": "Button",
-  "entitlements.success.no_intents.components.0.style": "Primary",
-  "entitlements.success.no_intents.components.0.label": "< Back",
-  "entitlements.success.no_intents.components.0.custom_id": "entitlements_next_details",
-
   "entitlements.warnings.no_intents.components.0.type": "Button",
   "entitlements.warnings.no_intents.components.0.style": "Primary",
-  "entitlements.warnings.no_intents.components.0.label": "Enter Details",
-  "entitlements.warnings.no_intents.components.0.custom_id": "entitlements_enter_details",
+  "entitlements.warnings.no_intents.components.0.label": "< Back",
+  "entitlements.warnings.no_intents.components.0.custom_id": "entitlements_next_details",
+
+  "entitlements.warnings.no_intents.components.1.type": "Button",
+  "entitlements.warnings.no_intents.components.1.style": "Primary",
+  "entitlements.warnings.no_intents.components.1.label": "Enter Details",
+  "entitlements.warnings.no_intents.components.1.custom_id": "entitlements_enter_details",
 
 
 
