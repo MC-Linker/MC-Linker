@@ -107,6 +107,14 @@
   "entitlements.success.start.embeds.0.description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
   "entitlements.success.start.embeds.0.color": "Green",
 
+  "entitlements.success.start.embeds.0.fields.0.name": "Get Started",
+  "entitlements.success.start.embeds.0.fields.0.value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+
+  "entitlements.success.start.components.0.type": "Button",
+  "entitlements.success.start.components.0.style": "Primary",
+  "entitlements.success.start.components.0.label": "Next",
+  "entitlements.success.start.components.0.custom_id": "entitlements_next_intents",
+
 
   "entitlements.success.intents.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "entitlements.success.intents.embeds.0.color": "Green",
@@ -117,17 +125,13 @@
 
   "entitlements.success.intents.components.0.type": "Button",
   "entitlements.success.intents.components.0.style": "Primary",
-  "entitlements.success.intents.components.0.label": "Next",
-  "entitlements.success.intents.components.0.custom_id": "entitlements_next_details",
+  "entitlements.success.intents.components.0.label": "Back",
+  "entitlements.success.intents.components.0.custom_id": "entitlements_back_start",
 
-
-  "entitlements.success.start.embeds.0.fields.0.name": "Get Started",
-  "entitlements.success.start.embeds.0.fields.0.value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
-
-  "entitlements.success.start.components.0.type": "Button",
-  "entitlements.success.start.components.0.style": "Primary",
-  "entitlements.success.start.components.0.label": "Next",
-  "entitlements.success.start.components.0.custom_id": "entitlements_next_intents",
+  "entitlements.success.intents.components.1.type": "Button",
+  "entitlements.success.intents.components.1.style": "Primary",
+  "entitlements.success.intents.components.1.label": "Next",
+  "entitlements.success.intents.components.1.custom_id": "entitlements_next_details",
 
 
   "entitlements.success.details.embeds.0.title": "Setting Up Your Custom MC-Linker",
@@ -138,8 +142,13 @@
 
   "entitlements.success.details.components.0.type": "Button",
   "entitlements.success.details.components.0.style": "Primary",
-  "entitlements.success.details.components.0.label": "Enter Details",
-  "entitlements.success.details.components.0.custom_id": "entitlements_details",
+  "entitlements.success.details.components.0.label": "Back",
+  "entitlements.success.details.components.0.custom_id": "entitlements_next_intents",
+
+  "entitlements.success.details.components.1.type": "Button",
+  "entitlements.success.details.components.1.style": "Primary",
+  "entitlements.success.details.components.1.label": "Enter Details",
+  "entitlements.success.details.components.1.custom_id": "entitlements_enter_details",
 
 
   "entitlements.success.port.embeds.0.fields.0.name": "Setting Up Your Custom MC-Linker",
@@ -172,8 +181,8 @@
   "entitlements.success.starting_up.embeds.0.color": "Green",
 
 
-  "entitlements.success.finish.embeds.0.title": "Subscription Successful",
-  "entitlements.success.finish.embeds.0.description": "You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` (on your bot) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "entitlements.success.finish.embeds.0.title": "Set Up Complete",
+  "entitlements.success.finish.embeds.0.description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
   "entitlements.success.finish.embeds.0.color": "Green",
 
   "entitlements.success.finish.components.0.type": "Button",

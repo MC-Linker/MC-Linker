@@ -217,6 +217,12 @@
           {
             "type": "Button",
             "style": "Primary",
+            "label": "Back",
+            "custom_id": "entitlements_back_start"
+          },
+          {
+            "type": "Button",
+            "style": "Primary",
             "label": "Next",
             "custom_id": "entitlements_next_details"
           }
@@ -239,8 +245,14 @@
           {
             "type": "Button",
             "style": "Primary",
+            "label": "Back",
+            "custom_id": "entitlements_next_intents"
+          },
+          {
+            "type": "Button",
+            "style": "Primary",
             "label": "Enter Details",
-            "custom_id": "entitlements_details"
+            "custom_id": "entitlements_enter_details"
           }
         ]
       },
@@ -304,8 +316,8 @@
       "finish": {
         "embeds": [
           {
-            "title": "Subscription Successful",
-            "description": "You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` (on your bot) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+            "title": "Set Up Complete",
+            "description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
             "color": "Green"
           }
         ],

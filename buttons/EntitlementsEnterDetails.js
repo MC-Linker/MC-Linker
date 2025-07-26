@@ -3,14 +3,14 @@ import keys from '../utilities/keys.js';
 import { getModal, getReplyOptions } from '../utilities/messages.js';
 import { execSync, spawn } from 'child_process';
 import fs from 'fs-extra';
-import Discord from 'discord.js';
+import Discord, { OAuth2Scopes, PermissionsBitField } from 'discord.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import logger from '../utilities/logger.js';
 
-export default class EntitlementsDetails extends Button {
+export default class EntitlementsEnterDetails extends Button {
 
     constructor() {
-        super({ id: 'entitlements_details', defer: false });
+        super({ id: 'entitlements_enter_details', defer: false });
     }
 
     async execute(interaction, client) {
@@ -37,8 +37,20 @@ export default class EntitlementsDetails extends Button {
         try {
             await testClient.login(token);
             invite = testClient.generateInvite({
-                scopes: [],
-                permissions: [],
+                scopes: [
+                    OAuth2Scopes.ApplicationsCommands,
+                    OAuth2Scopes.Bot,
+                ],
+                permissions: [
+                    PermissionsBitField.Flags.CreateInstantInvite,
+                    PermissionsBitField.Flags.ManageWebhooks,
+                    PermissionsBitField.Flags.ViewChannel,
+                    PermissionsBitField.Flags.SendMessages,
+                    PermissionsBitField.Flags.SendMessagesInThreads,
+                    PermissionsBitField.Flags.EmbedLinks,
+                    PermissionsBitField.Flags.AttachFiles,
+                    PermissionsBitField.Flags.UseExternalEmojis,
+                ],
             });
         }
         catch(err) {
