@@ -195,7 +195,7 @@
           {
             "type": "Button",
             "style": "Primary",
-            "label": "Next",
+            "label": "Next >",
             "custom_id": "entitlements_next_intents"
           }
         ]
@@ -217,13 +217,13 @@
           {
             "type": "Button",
             "style": "Primary",
-            "label": "Back",
+            "label": "< Back",
             "custom_id": "entitlements_back_start"
           },
           {
             "type": "Button",
             "style": "Primary",
-            "label": "Next",
+            "label": "Next >",
             "custom_id": "entitlements_next_details"
           }
         ]
@@ -244,7 +244,7 @@
           {
             "type": "Button",
             "style": "Primary",
-            "label": "Back",
+            "label": "< Back",
             "custom_id": "entitlements_next_intents"
           },
           {
@@ -270,7 +270,7 @@
           {
             "type": "Button",
             "style": "Primary",
-            "label": "Next",
+            "label": "Next >",
             "custom_id": "entitlements_next_port"
           }
         ]
@@ -340,6 +340,26 @@
             "style": "Short"
           }
         ]
+      },
+      "invalid_token": {
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "< Back",
+            "custom_id": "entitlements_next_details"
+          }
+        ]
+      },
+      "no_intents": {
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "< Back",
+            "custom_id": "entitlements_next_details"
+          }
+        ]
       }
     },
     "warnings": {
@@ -371,7 +391,7 @@
             "type": "Button",
             "style": "Primary",
             "label": "Enter Details",
-            "custom_id": "entitlements_details"
+            "custom_id": "entitlements_enter_details"
           }
         ]
       },
@@ -388,7 +408,7 @@
             "type": "Button",
             "style": "Primary",
             "label": "Enter Details",
-            "custom_id": "entitlements_details"
+            "custom_id": "entitlements_enter_details"
           }
         ]
       }
