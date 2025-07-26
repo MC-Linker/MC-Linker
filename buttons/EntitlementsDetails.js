@@ -96,40 +96,85 @@ export default class EntitlementsDetails extends Button {
         await interaction.replyTl(keys.entitlements.success.starting_up);
         logger.info(execSync(`docker build . -t lianecx/${env.SERVICE_NAME}`, { cwd: botFolder, env }).toString());
 
-        const composeProcess = spawn('docker', ['compose', 'up'], {
+        /*        const composeProcess = spawn('docker', ['compose', 'up'], {
+                    cwd: botFolder,
+                    env: { ...env },
+                    stdio: 'pipe',
+                    timeout: 30_000, // 30 seconds
+                });
+
+                await new Promise((resolve, reject) => {
+                    let output = '';
+
+                    composeProcess.stdout.on('data', data => {
+                        const chunk = data.toString();
+                        output += chunk;
+                        logger.info(chunk);
+
+                        if(chunk.includes(`Server listening at http://0.0.0.0:${botPort}`)) {
+                            logger.info('Custom bot is ready! Detaching...');
+                            // Detach process from docker (Ctrl+P, Ctrl+Q)
+                            composeProcess.stdin.write(Buffer.from([0x10, 0x11])); // Ctrl+P, Ctrl+Q
+                            resolve();
+                        }
+                    });
+
+                    composeProcess.stderr.on('data', data => {
+                        logger.error(data.toString());
+                    });
+
+                    composeProcess.on('error', reject);
+                });
+
+                composeProcess.kill();*/
+
+        const composeProcess = spawn('docker', ['compose', 'up', '-d'], {
             cwd: botFolder,
-            env: { ...env },
+            env,
             stdio: 'pipe',
-            timeout: 30_000, // 30 seconds
         });
 
+        // Check logs until the bot is ready
         await new Promise((resolve, reject) => {
-            let output = '';
+            const checkLogsInterval = setInterval(async () => {
+                try {
+                    const logs = execSync(`docker logs ${env.SERVICE_NAME} --tail 10`, {
+                        cwd: botFolder,
+                        encoding: 'utf8',
+                    });
 
-            composeProcess.stdout.on('data', data => {
-                const chunk = data.toString();
-                output += chunk;
-                logger.info(chunk);
+                    if(logs.includes(`Server listening at http://0.0.0.0:${botPort}`)) {
+                        logger.info('Custom bot is ready!');
+                        clearInterval(checkLogsInterval);
+                        resolve();
+                    }
+                }
+                catch(err) {
+                    // Container might not be ready yet, continue checking
+                }
+            }, 1000, 1000);
 
-                if(chunk.includes(`Server listening at http://0.0.0.0:${botPort}`)) {
-                    logger.info('Custom bot is ready! Detaching...');
-                    // Detach process from docker (Ctrl+P, Ctrl+Q)
-                    composeProcess.stdin.write(Buffer.from([0x10, 0x11])); // Ctrl+P, Ctrl+Q
-                    resolve();
+            composeProcess.on('close', code => {
+                if(code !== 0) {
+                    clearInterval(checkLogsInterval);
+                    execSync(`docker compose down`, { cwd: botFolder });
+                    reject(new Error(`Docker compose failed with code ${code}`));
                 }
             });
 
-            composeProcess.stderr.on('data', data => {
-                logger.error(data.toString());
+            composeProcess.on('error', err => {
+                clearInterval(checkLogsInterval);
+                execSync(`docker compose down`, { cwd: botFolder });
+                reject(err);
             });
 
-            composeProcess.on('error', reject);
+            // Timeout after 30 seconds
+            setTimeout(() => {
+                clearInterval(checkLogsInterval);
+                execSync(`docker compose down`, { cwd: botFolder });
+                reject(new Error('Timeout waiting for bot to start'));
+            }, 30_000);
         });
-
-        composeProcess.kill();
-
-        //TODO Check for errors (wrong secret etc)
-        logger.info(execSync(`docker logs ${env.SERVICE_NAME}`).toString());
 
         await interaction.replyTl(keys.entitlements.success.deploying);
         logger.info(execSync(`docker exec ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, {
