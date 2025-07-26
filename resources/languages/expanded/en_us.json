@@ -167,7 +167,7 @@
         "embeds": [
           {
             "title": "Thanks for inviting MC Linker!",
-            "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute </connect plugin:932257443394777129> in Discord.\n• Execute the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using </chatchannel add:932257443394777128> or check out any of the other commands!\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
+            "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute %command_mention% in Discord.\n• Execute the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using </chatchannel add:932257443394777128> or check out any of the other commands!\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
           }
         ]
       }
@@ -250,7 +250,7 @@
             "fields": [
               {
                 "name": "Setting Up Your Custom MC-Linker",
-                "value": "Lastly, run `/linker bot_port %port%` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                "value": "Lastly, run `/linker bot_port %port%` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml) and reload your server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
               }
             ]
           }
@@ -2378,7 +2378,7 @@
           "embeds": [
             {
               "title": "Server Not Connected",
-              "description": "Your server is not connected. Please use `/connect plugin` or `/connect ftp` first."
+              "description": "Your server is not connected. Please use `/connect` first."
             }
           ],
           "console": "Server not connected"
