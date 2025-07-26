@@ -108,7 +108,8 @@
             "title": "Unknown Error",
             "description": "An unknown error occurred while executing this command. Please try again."
           }
-        ]
+        ],
+        "components": []
       },
       "could_not_execute_button": {
         "embeds": [
@@ -116,7 +117,8 @@
             "title": "Unknown Error",
             "description": "An unknown error occurred while executing this button. Please try again."
           }
-        ]
+        ],
+        "components": []
       }
     },
     "warnings": {

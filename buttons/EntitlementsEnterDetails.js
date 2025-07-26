@@ -1,6 +1,6 @@
 import Button from '../structures/Button.js';
 import keys from '../utilities/keys.js';
-import { getModal, getReplyOptions } from '../utilities/messages.js';
+import { getModal } from '../utilities/messages.js';
 import { execSync, spawn } from 'child_process';
 import fs from 'fs-extra';
 import Discord, { OAuth2Scopes, PermissionsBitField } from 'discord.js';
@@ -15,7 +15,7 @@ export default class EntitlementsEnterDetails extends Button {
 
     async execute(interaction, client) {
         if(interaction.entitlements.size === 0 && process.env.NODE_ENV === 'production')
-            return await interaction.update(getReplyOptions(keys.warnings.errors.no_entitlement));
+            return await interaction.replyTl(keys.warnings.errors.no_entitlement);
 
         //Send modal
         await interaction.showModal(getModal(keys.entitlements.success.details_modal));
