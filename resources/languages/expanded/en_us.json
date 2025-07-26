@@ -181,7 +181,6 @@
           {
             "title": "Subscription Successful",
             "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
-            "color": "Green",
             "fields": [
               {
                 "name": "Get Started",
@@ -203,7 +202,6 @@
         "embeds": [
           {
             "title": "Setting Up Your Custom MC-Linker",
-            "color": "Green",
             "ephemeral": true,
             "fields": [
               {
@@ -232,7 +230,6 @@
         "embeds": [
           {
             "title": "Setting Up Your Custom MC-Linker",
-            "color": "Green",
             "fields": [
               {
                 "name": "Enter Bot Details",
@@ -280,8 +277,7 @@
         "embeds": [
           {
             "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Logging into your bot...*",
-            "color": "Green"
+            "description": "*Logging into your bot...*"
           }
         ],
         "components": []
@@ -290,8 +286,7 @@
         "embeds": [
           {
             "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Copying MC-Linker...*",
-            "color": "Green"
+            "description": "*Copying MC-Linker...*"
           }
         ]
       },
@@ -299,8 +294,7 @@
         "embeds": [
           {
             "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Deploying Slash Commands...*",
-            "color": "Green"
+            "description": "*Deploying Slash Commands...*"
           }
         ]
       },
@@ -308,8 +302,7 @@
         "embeds": [
           {
             "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Starting up...*",
-            "color": "Green"
+            "description": "*Starting up...*"
           }
         ]
       },
@@ -317,8 +310,7 @@
         "embeds": [
           {
             "title": "Set Up Complete",
-            "description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
-            "color": "Green"
+            "description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
           }
         ],
         "components": [
@@ -1840,8 +1832,7 @@
           "embeds": [
             {
               "title": "Nothing Disabled",
-              "description": "There are no disabled %type%.",
-              "color": "Green"
+              "description": "There are no disabled %type%."
             }
           ],
           "console": "Nothing disabled"
@@ -1860,8 +1851,7 @@
             "embeds": [
               {
                 "title": "Disable List",
-                "description": "Here's a list of all disabled **%type%**:",
-                "color": "Green"
+                "description": "Here's a list of all disabled **%type%**:"
               }
             ]
           },

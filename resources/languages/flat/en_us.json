@@ -105,7 +105,6 @@
   "entitlements.success.start.ephemeral":  true,
   "entitlements.success.start.embeds.0.title": "Subscription Successful",
   "entitlements.success.start.embeds.0.description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
-  "entitlements.success.start.embeds.0.color": "Green",
 
   "entitlements.success.start.embeds.0.fields.0.name": "Get Started",
   "entitlements.success.start.embeds.0.fields.0.value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
@@ -117,7 +116,6 @@
 
 
   "entitlements.success.intents.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "entitlements.success.intents.embeds.0.color": "Green",
   "entitlements.success.intents.embeds.0.ephemeral":  true,
 
   "entitlements.success.intents.embeds.0.fields.0.name": "Enabling Intents",
@@ -135,7 +133,6 @@
 
 
   "entitlements.success.details.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "entitlements.success.details.embeds.0.color": "Green",
 
   "entitlements.success.details.embeds.0.fields.0.name": "Enter Bot Details",
   "entitlements.success.details.embeds.0.fields.0.value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
@@ -162,28 +159,23 @@
 
   "entitlements.success.logging_in.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "entitlements.success.logging_in.embeds.0.description": "*Logging into your bot...*",
-  "entitlements.success.logging_in.embeds.0.color": "Green",
   "entitlements.success.logging_in.components": [],
 
 
   "entitlements.success.cloning.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "entitlements.success.cloning.embeds.0.description": "*Copying MC-Linker...*",
-  "entitlements.success.cloning.embeds.0.color": "Green",
 
 
   "entitlements.success.deploying.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "entitlements.success.deploying.embeds.0.description": "*Deploying Slash Commands...*",
-  "entitlements.success.deploying.embeds.0.color": "Green",
 
 
   "entitlements.success.starting_up.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "entitlements.success.starting_up.embeds.0.description": "*Starting up...*",
-  "entitlements.success.starting_up.embeds.0.color": "Green",
 
 
   "entitlements.success.finish.embeds.0.title": "Set Up Complete",
   "entitlements.success.finish.embeds.0.description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
-  "entitlements.success.finish.embeds.0.color": "Green",
 
   "entitlements.success.finish.components.0.type": "Button",
   "entitlements.success.finish.components.0.style": "Link",
@@ -1011,7 +1003,6 @@
   "commands.disable.success.nothing_disabled.embeds.0.title": "Nothing Disabled",
   "commands.disable.success.nothing_disabled.embeds.0.description": "There are no disabled %type%.",
   "commands.disable.success.nothing_disabled.console": "Nothing disabled",
-  "commands.disable.success.nothing_disabled.embeds.0.color": "Green",
 
   "commands.disable.success.disabled.embeds.0.title": "Successfully Disabled",
   "commands.disable.success.disabled.embeds.0.description": "Successfully disabled %type% **%disable%**.",
@@ -1019,7 +1010,6 @@
 
   "commands.disable.success.list.base.embeds.0.title": "Disable List",
   "commands.disable.success.list.base.embeds.0.description": "Here's a list of all disabled **%type%**:",
-  "commands.disable.success.list.base.embeds.0.color": "Green",
 
   "commands.disable.success.list.entry": "- `%disable%`",
 
