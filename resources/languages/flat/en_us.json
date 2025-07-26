@@ -211,15 +211,15 @@
   "entitlements.warnings.invalid_token.embeds.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
   "entitlements.warnings.invalid_token.console": "Failed to login to bot because of invalid token",
 
-  "entitlements.success.invalid_token.components.0.type": "Button",
-  "entitlements.success.invalid_token.components.0.style": "Primary",
-  "entitlements.success.invalid_token.components.0.label": "< Back",
-  "entitlements.success.invalid_token.components.0.custom_id": "entitlements_next_details",
+  "entitlements.warnings.invalid_token.components.0.type": "Button",
+  "entitlements.warnings.invalid_token.components.0.style": "Primary",
+  "entitlements.warnings.invalid_token.components.0.label": "< Back",
+  "entitlements.warnings.invalid_token.components.0.custom_id": "entitlements_next_details",
 
-  "entitlements.success.invalid_token.components.1.type": "Button",
-  "entitlements.success.invalid_token.components.1.style": "Primary",
-  "entitlements.success.invalid_token.components.1.label": "Enter Details",
-  "entitlements.success.invalid_token.components.1.custom_id": "entitlements_enter_details",
+  "entitlements.warnings.invalid_token.components.1.type": "Button",
+  "entitlements.warnings.invalid_token.components.1.style": "Primary",
+  "entitlements.warnings.invalid_token.components.1.label": "Enter Details",
+  "entitlements.warnings.invalid_token.components.1.custom_id": "entitlements_enter_details",
 
 
   "entitlements.warnings.no_intents.embeds.0.title": "Missing Intents",

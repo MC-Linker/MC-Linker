@@ -340,22 +340,6 @@
             "style": "Short"
           }
         ]
-      },
-      "invalid_token": {
-        "components": [
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "< Back",
-            "custom_id": "entitlements_next_details"
-          },
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "Enter Details",
-            "custom_id": "entitlements_enter_details"
-          }
-        ]
       }
     },
     "warnings": {
@@ -381,7 +365,21 @@
             "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
           }
         ],
-        "console": "Failed to login to bot because of invalid token"
+        "console": "Failed to login to bot because of invalid token",
+        "components": [
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "< Back",
+            "custom_id": "entitlements_next_details"
+          },
+          {
+            "type": "Button",
+            "style": "Primary",
+            "label": "Enter Details",
+            "custom_id": "entitlements_enter_details"
+          }
+        ]
       },
       "no_intents": {
         "embeds": [

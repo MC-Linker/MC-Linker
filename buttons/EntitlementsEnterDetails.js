@@ -27,7 +27,6 @@ export default class EntitlementsEnterDetails extends Button {
         await interaction.replyTl(keys.entitlements.success.logging_in);
 
         let invite;
-
         const testClient = new Discord.Client({
             intents: [
                 Discord.GatewayIntentBits.GuildMessages,
