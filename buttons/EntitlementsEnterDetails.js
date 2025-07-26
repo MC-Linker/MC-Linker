@@ -55,10 +55,11 @@ export default class EntitlementsEnterDetails extends Button {
         }
         catch(err) {
             console.log(err);
-            if(err.code === 'TokenInvalid')
+            if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG')
                 return await interaction.replyTl(keys.entitlements.warnings.invalid_token);
             else if(err.message === 'Used disallowed intents')
                 return await interaction.replyTl(keys.entitlements.warnings.no_intents);
+            else throw err; // Rethrow other errors
         }
         finally {
             await testClient.destroy();
