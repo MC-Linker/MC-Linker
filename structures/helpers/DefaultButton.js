@@ -1,10 +1,10 @@
-import Button from '../Button.js';
+import Component from '../Component.js';
 import { ButtonInteraction, InteractionCollector } from 'discord.js';
 
-export default class DefaultButton extends Button {
+export default class DefaultButton extends Component {
 
     /**
-     * @typedef {ButtonOptions} DefaultButtonOptions
+     * @typedef {ComponentOptions & { interactionType: InteractionType.MessageComponent }} DefaultButtonOptions
      * @property {?InteractionCollector} collector - An optional collector that will be used to trigger this button.
      */
 
@@ -13,7 +13,7 @@ export default class DefaultButton extends Button {
      * @param {Function} handler
      */
     constructor(options, handler) {
-        super(options);
+        super({ ...options, interactionType: InteractionType.MessageComponent });
 
         /**
          * The handler of this button.

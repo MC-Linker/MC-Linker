@@ -185,18 +185,18 @@
   "entitlements.success.finish.components.0.url": "%invite%",
 
 
-  "entitlements.success.details_modal.type": "Modal",
-  "entitlements.success.details_modal.custom_id": "entitlements_details_modal",
-  "entitlements.success.details_modal.title": "Enter Details",
+  "entitlements.success.token_modal.type": "Modal",
+  "entitlements.success.token_modal.custom_id": "entitlements_token_modal",
+  "entitlements.success.token_modal.title": "Enter Details",
 
-  "entitlements.success.details_modal.components.0.type": "TextInput",
-  "entitlements.success.details_modal.components.0.custom_id": "token",
-  "entitlements.success.details_modal.components.0.label": "Bot Token",
-  "entitlements.success.details_modal.components.0.placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
-  "entitlements.success.details_modal.components.0.required": true,
-  "entitlements.success.details_modal.components.0.min_length": 20,
-  "entitlements.success.details_modal.components.0.max_length": 100,
-  "entitlements.success.details_modal.components.0.style": "Short",
+  "entitlements.success.token_modal.components.0.type": "TextInput",
+  "entitlements.success.token_modal.components.0.custom_id": "token",
+  "entitlements.success.token_modal.components.0.label": "Bot Token",
+  "entitlements.success.token_modal.components.0.placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+  "entitlements.success.token_modal.components.0.required": true,
+  "entitlements.success.token_modal.components.0.min_length": 20,
+  "entitlements.success.token_modal.components.0.max_length": 100,
+  "entitlements.success.token_modal.components.0.style": "Short",
 
 
   "entitlements.warnings.no_entitlement.embeds.0.title": "No Subscription",
@@ -214,7 +214,7 @@
   "entitlements.warnings.invalid_token.components.0.type": "Button",
   "entitlements.warnings.invalid_token.components.0.style": "Primary",
   "entitlements.warnings.invalid_token.components.0.label": "< Back",
-  "entitlements.warnings.invalid_token.components.0.custom_id": "entitlements_next_details",
+  "entitlements.warnings.invalid_token.components.0.custom_id": "entitlements_next_intents",
 
   "entitlements.warnings.invalid_token.components.1.type": "Button",
   "entitlements.warnings.invalid_token.components.1.style": "Primary",
@@ -229,7 +229,7 @@
   "entitlements.warnings.no_intents.components.0.type": "Button",
   "entitlements.warnings.no_intents.components.0.style": "Primary",
   "entitlements.warnings.no_intents.components.0.label": "< Back",
-  "entitlements.warnings.no_intents.components.0.custom_id": "entitlements_next_details",
+  "entitlements.warnings.no_intents.components.0.custom_id": "entitlements_next_intents",
 
   "entitlements.warnings.no_intents.components.1.type": "Button",
   "entitlements.warnings.no_intents.components.1.style": "Primary",
@@ -1226,29 +1226,29 @@
   "api.utils.errors.not_sendable.embeds.0.description": "The bot does not have permission to send messages in this channel.",
   "api.utils.errors.not_sendable.console": "Channel not sendable",
 
-  "api.button.clicked.console": "%author_tag% has clicked button %interaction_id% in %guild_name%",
-  "api.button.no_access.no_author.embeds.0.title": "No Permission",
-  "api.button.no_access.no_author.embeds.0.description": "Only the command sender can use this button.",
-  "api.button.no_access.no_author.ephemeral": true,
+  "api.component.clicked.console": "%author_tag% has clicked component %interaction_id% in %guild_name%",
+  "api.component.no_access.no_author.embeds.0.title": "No Permission",
+  "api.component.no_access.no_author.embeds.0.description": "Only the command sender can use this component.",
+  "api.component.no_access.no_author.ephemeral": true,
 
-  "api.button.no_access.no_permission.embeds.0.title": "No Permission",
-  "api.button.no_access.no_permission.embeds.0.description": "This button can only be used with the `%permission%` permission!",
-  "api.button.no_access.no_permission.ephemeral": true,
+  "api.component.no_access.no_permission.embeds.0.title": "No Permission",
+  "api.component.no_access.no_permission.embeds.0.description": "This component can only be used with the `%permission%` permission!",
+  "api.component.no_access.no_permission.ephemeral": true,
 
-  "api.button.success.next_button.components.0.type": "Button",
-  "api.button.success.next_button.components.0.style": "Secondary",
-  "api.button.success.next_button.components.0.custom_id": "%id%",
-  "api.button.success.next_button.components.0.label": "Next >",
+  "api.component.success.next_button.components.0.type": "Button",
+  "api.component.success.next_button.components.0.style": "Secondary",
+  "api.component.success.next_button.components.0.custom_id": "%id%",
+  "api.component.success.next_button.components.0.label": "Next >",
 
-  "api.button.success.back_button.components.0.type": "Button",
-  "api.button.success.back_button.components.0.style": "Secondary",
-  "api.button.success.back_button.components.0.custom_id": "%id%",
-  "api.button.success.back_button.components.0.label": "< Back",
+  "api.component.success.back_button.components.0.type": "Button",
+  "api.component.success.back_button.components.0.style": "Secondary",
+  "api.component.success.back_button.components.0.custom_id": "%id%",
+  "api.component.success.back_button.components.0.label": "< Back",
 
-  "api.button.success.exit_button.components.0.type": "Button",
-  "api.button.success.exit_button.components.0.style": "Secondary",
-  "api.button.success.exit_button.components.0.custom_id": "%id%",
-  "api.button.success.exit_button.components.0.label": "Exit",
+  "api.component.success.exit_button.components.0.type": "Button",
+  "api.component.success.exit_button.components.0.style": "Secondary",
+  "api.component.success.exit_button.components.0.custom_id": "%id%",
+  "api.component.success.exit_button.components.0.label": "Exit",
 
 
 

@@ -1,10 +1,15 @@
-import Button from '../structures/Button.js';
+import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
+import { InteractionType } from 'discord.js';
 
-export default class EntitlementsNextDetails extends Button {
+export default class EntitlementsNextDetails extends Component {
 
     constructor() {
-        super({ id: 'entitlements_next_port', defer: false });
+        super({
+            interactionType: InteractionType.MessageComponent,
+            id: 'entitlements_next_port',
+            defer: false,
+        });
     }
 
     async execute(interaction, client) {

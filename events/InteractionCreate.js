@@ -16,6 +16,11 @@ export default class InteractionCreate extends Event {
         });
     }
 
+    /**
+     * @inheritDoc
+     * @param {MCLinker} client
+     * @param {import('discord.js').BaseInteraction} interaction
+     */
     async execute(client, interaction) {
         interaction = addTranslatedResponses(interaction);
         if(interaction.isChatInputCommand()) {
@@ -42,15 +47,16 @@ export default class InteractionCreate extends Event {
                 logger.error(err, `Could not autocomplete command ${interaction.commandName}`);
             }
         }
-        else if(interaction.isButton()) {
-            let button = client.buttons.get(interaction.customId);
-            if(!button) button = client.buttons.find(b => interaction.customId.startsWith(b.id));
+        else if(interaction.isMessageComponent() || interaction.isModalSubmit()) {
+            let component = client.components.get(interaction.customId);
+            if(!component || interaction.type !== component.interactionType) component = client.components
+                .find(c => interaction.customId.startsWith(c.id) && interaction.type === c.interactionType);
+            if(!component) return;
             try {
-                if(!button) return;
-                await button.execute(interaction, client);
+                await component.execute(interaction, client);
             }
             catch(err) {
-                logger.error(err, `Could not execute button ${interaction.customId}`);
+                logger.error(err, `Could not execute component ${interaction.customId}`);
                 await interaction.replyTl(keys.main.errors.could_not_execute_button);
             }
         }

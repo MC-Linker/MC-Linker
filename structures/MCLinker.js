@@ -8,7 +8,7 @@ import { addPh } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import path from 'path';
 import Command from './Command.js';
-import Button from './Button.js';
+import Component from './Component.js';
 import Event from './Event.js';
 import MCLinkerAPI from './MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
@@ -44,10 +44,10 @@ export default class MCLinker extends Discord.Client {
     commands = new Discord.Collection();
 
     /**
-     * A collection of all buttons in this bot.
-     * @type {Discord.Collection<string, Button>}
+     * A collection of all components in this bot.
+     * @type {Discord.Collection<string, Component>}
      */
-    buttons = new Discord.Collection();
+    components = new Discord.Collection();
 
     /**
      * A collection of all events in this bot.
@@ -58,12 +58,12 @@ export default class MCLinker extends Discord.Client {
     /**
      * Creates a new MCLinker client instance.
      * @param {string} commandPath - The path to the commands folder.
-     * @param {string} buttonPath - The path to the buttons folder.
+     * @param {string} componentPath - The path to the components folder.
      * @param {string} eventPath - The path to the events folder.
      * @param {Discord.ClientOptions} options - The options to pass to the Discord.js client.
      * @returns {MCLinker} - The new MCLinker client instance.
      */
-    constructor(commandPath = './commands', buttonPath = './buttons', eventPath = './events', options = {
+    constructor(commandPath = './commands', componentPath = './components', eventPath = './events', options = {
         intents: [
             Discord.GatewayIntentBits.GuildMessages,
             Discord.GatewayIntentBits.GuildMembers,
@@ -121,9 +121,9 @@ export default class MCLinker extends Discord.Client {
 
         /**
          * A collection of all buttons in this bot.
-         * @type {import('discord.js').Collection<string, Button>}
+         * @type {import('discord.js').Collection<string, Component>}
          */
-        this.buttons = new Discord.Collection();
+        this.components = new Discord.Collection();
 
         /**
          * A collection of all events in this bot.
@@ -138,10 +138,10 @@ export default class MCLinker extends Discord.Client {
         this.commandPath = commandPath;
 
         /**
-         * The path to the buttons folder.
+         * The path to the components folder.
          * @type {string}
          */
-        this.buttonPath = buttonPath;
+        this.componentPath = componentPath;
 
         /**
          * The path to the events folder.
@@ -208,17 +208,17 @@ export default class MCLinker extends Discord.Client {
     }
 
     async _loadButtons() {
-        await fs.ensureDir(this.buttonPath);
-        const buttonFiles = (await fs.readdir(this.buttonPath))
+        await fs.ensureDir(this.componentPath);
+        const buttonFiles = (await fs.readdir(this.componentPath))
             .filter(file => file.endsWith('.js'));
 
         for(const file of buttonFiles) {
             // noinspection LocalVariableNamingConventionJS
-            const { default: ButtonFile } = await import(`file://${path.resolve(`${this.buttonPath}/${file}`)}`);
-            if(ButtonFile?.prototype instanceof Button) {
-                const button = new ButtonFile();
+            const { default: ComponentFile } = await import(`file://${path.resolve(`${this.componentPath}/${file}`)}`);
+            if(ComponentFile?.prototype instanceof Component) {
+                const button = new ComponentFile();
 
-                this.buttons.set(button.id, button);
+                this.components.set(button.id, button);
                 logger.info(addPh(keys.main.success.button_load.console, {
                     button: button.id,
                     shard: this.shard.ids[0],

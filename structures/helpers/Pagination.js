@@ -33,7 +33,7 @@ export default class Pagination {
      * @property {PaginationPages} [pages] - The pages to send (for nested pagination)
      * @property {boolean} [startPage=false] - Whether this is the starting page
      * @property {PaginationOptions} [pageOptions] - The options for this page (for nested pagination)
-     * @property {ButtonOptions} [buttonOptions] - Additional options that will be passed to the constructor of the button
+     * @property {ComponentOptions} [buttonOptions] - Additional options that will be passed to the constructor of the button
      */
 
     /**
@@ -95,9 +95,9 @@ export default class Pagination {
          * @type {PaginationOptions}
          */
         this.options = options;
-        if(!(this.options.nextButton instanceof ButtonBuilder)) this.options.nextButton = getComponent(keys.api.button.success.next_button, { id: 'next' });
-        if(!(this.options.backButton instanceof ButtonBuilder)) this.options.backButton = getComponent(keys.api.button.success.back_button, { id: 'back' });
-        if(!(this.options.exitButton instanceof ButtonBuilder)) this.options.exitButton = getComponent(keys.api.button.success.exit_button, { id: 'exit' });
+        if(!(this.options.nextButton instanceof ButtonBuilder)) this.options.nextButton = getComponent(keys.api.component.success.next_button, { id: 'next' });
+        if(!(this.options.backButton instanceof ButtonBuilder)) this.options.backButton = getComponent(keys.api.component.success.back_button, { id: 'back' });
+        if(!(this.options.exitButton instanceof ButtonBuilder)) this.options.exitButton = getComponent(keys.api.component.success.exit_button, { id: 'exit' });
 
         /**
          * The parent of this pagination (only used for nested paginations)

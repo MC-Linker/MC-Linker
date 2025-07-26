@@ -1,36 +1,33 @@
-import Button from '../structures/Button.js';
+import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
-import { getModal } from '../utilities/messages.js';
-import { execSync, spawn } from 'child_process';
+import Discord, { GatewayIntentBits, InteractionType, OAuth2Scopes, PermissionsBitField } from 'discord.js';
 import fs from 'fs-extra';
-import Discord, { OAuth2Scopes, PermissionsBitField } from 'discord.js';
-import { exposeCustomBotPorts } from '../utilities/oci.js';
 import logger from '../utilities/logger.js';
+import { exposeCustomBotPorts } from '../utilities/oci.js';
+import { execSync, spawn } from 'child_process';
 
-export default class EntitlementsEnterDetails extends Button {
+export default class EntitlementsNextDetails extends Component {
 
     constructor() {
-        super({ id: 'entitlements_enter_details', defer: false });
+        super({
+            interactionType: InteractionType.ModalSubmit,
+            id: 'entitlements_token_modal',
+            defer: false,
+        });
     }
 
     async execute(interaction, client) {
         if(interaction.entitlements.size === 0 && process.env.NODE_ENV === 'production')
             return await interaction.replyTl(keys.warnings.errors.no_entitlement);
 
-        //Send modal
-        await interaction.showModal(getModal(keys.entitlements.success.details_modal));
-        const modal = await interaction.awaitModalSubmit({ time: 300_000 });
-        const token = modal.fields.getTextInputValue('token');
-
-        await modal.deferUpdate();
-        console.log(token);
+        const token = interaction.fields.getTextInputValue('token');
         await interaction.replyTl(keys.entitlements.success.logging_in);
 
         let invite;
         const testClient = new Discord.Client({
             intents: [
-                Discord.GatewayIntentBits.GuildMessages,
-                Discord.GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildMembers,
             ],
         });
         try {
