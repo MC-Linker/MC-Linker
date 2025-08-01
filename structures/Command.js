@@ -14,6 +14,7 @@ export default class Command {
      * @property {string} [category] - The category of this command.
      * @property {boolean} [allowPrefix=false] - Whether this command can be executed with the prefix.
      * @property {boolean} [allowUser=false] - Whether this command can be executed in a DM.
+     * @property {string} [sku] - The sku required to execute this command.
      */
 
     /**
@@ -75,6 +76,12 @@ export default class Command {
          * @type {boolean}
          */
         this.allowUser = options.allowUser ?? false;
+
+        /**
+         * The sku required to execute this command.
+         * @type {?string}
+         */
+        this.sku = options.sku ?? null;
     }
 
     /**
@@ -102,6 +109,13 @@ export default class Command {
             if(!user || user.error) return false;
 
             args[this.requiresUserIndex] = user;
+        }
+
+        if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
+            if(process.env.NODE_ENV === 'production' && (await client.application.fetchSKUs()).size) {
+                await interaction.replyTl(keys.entitlements.warnings.no_entitlement);
+                return false;
+            }
         }
 
         return true;

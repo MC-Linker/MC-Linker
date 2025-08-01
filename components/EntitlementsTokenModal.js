@@ -13,12 +13,12 @@ export default class EntitlementsNextDetails extends Component {
             interactionType: InteractionType.ModalSubmit,
             id: 'entitlements_token_modal',
             defer: false,
+            sku: '1166098447665995807',
         });
     }
 
     async execute(interaction, client) {
-        if(interaction.entitlements.size === 0 && process.env.NODE_ENV === 'production')
-            return await interaction.replyTl(keys.warnings.errors.no_entitlement);
+        if(!await super.execute(interaction, client)) return;
 
         const token = interaction.fields.getTextInputValue('token');
         await interaction.replyTl(keys.entitlements.success.logging_in);

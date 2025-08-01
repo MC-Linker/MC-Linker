@@ -12,6 +12,7 @@ export default class Component {
      * @property {User} [author] - The author of this component that is allowed to use it.
      * @property {boolean} [ephemeral=false] - Whether this component should be ephemeral.
      * @property {boolean} [defer=true] - Whether this component should be deferUpdated.
+     * @property {?string} [sku] - The SKU required to use this component.
      */
 
     /**
@@ -55,6 +56,12 @@ export default class Component {
          * @type {boolean|boolean}
          */
         this.defer = options.defer ?? true;
+
+        /**
+         * The SKU required to use this component.
+         * @type {?string}
+         */
+        this.sku = options.sku ?? null;
     }
 
     /**
@@ -80,6 +87,13 @@ export default class Component {
         if(this.author) {
             if(this.author.id !== interaction.user.id) {
                 await interaction.replyTl(keys.api.component.no_access.no_author);
+                return false;
+            }
+        }
+
+        if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
+            if(process.env.NODE_ENV === 'production' && (await client.application.fetchSKUs()).size) {
+                await interaction.replyTl(keys.entitlements.warnings.no_entitlement);
                 return false;
             }
         }

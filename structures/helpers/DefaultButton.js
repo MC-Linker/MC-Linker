@@ -1,5 +1,5 @@
 import Component from '../Component.js';
-import { ButtonInteraction, InteractionCollector } from 'discord.js';
+import { ButtonInteraction, InteractionCollector, InteractionType } from 'discord.js';
 
 export default class DefaultButton extends Component {
 
@@ -13,7 +13,7 @@ export default class DefaultButton extends Component {
      * @param {Function} handler
      */
     constructor(options, handler) {
-        super({ ...options, interactionType: InteractionType.MessageComponent });
+        super(Object.assign(options, { interactionType: InteractionType.MessageComponent }));
 
         /**
          * The handler of this button.
