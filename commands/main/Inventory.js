@@ -400,13 +400,13 @@ export default class Inventory extends Command {
                 };
 
                 //Push shulkerItemEmbed to first page
-                if(isSpecialItem) paginationPages[buttonId].pages['slot_start'].page.embeds.push(itemEmbed);
+                if(isSpecialItem) paginationPages[buttonId].pages['slot_start'].options.embeds.push(itemEmbed);
             }
             //Only add page for items that have special info
             else if(isSpecialItem) {
                 paginationPages[buttonId] = {
                     button,
-                    page: {
+                    options: {
                         embeds: [embed, itemEmbed],
                     },
                 };
@@ -414,7 +414,7 @@ export default class Inventory extends Command {
         }
         paginationPages['slot_start'] = {
             startPage: true,
-            page: {
+            options: {
                 embeds: [embed],
                 files: [attach],
             },

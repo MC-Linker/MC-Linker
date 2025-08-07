@@ -18,16 +18,7 @@ import Discord, {
 import keys, { getLanguageKey, getObjectPath } from './keys.js';
 import util from 'util';
 import logger from './logger.js';
-
-const maxComponentsInActionRow = {
-    [ComponentType.Button]: 5,
-    [ComponentType.StringSelect]: 1,
-    [ComponentType.RoleSelect]: 1,
-    [ComponentType.ChannelSelect]: 1,
-    [ComponentType.UserSelect]: 1,
-    [ComponentType.MentionableSelect]: 1,
-    [ComponentType.TextInput]: 1,
-};
+import { ComponentSizeInActionRow, MaxActionRows, MaxActionRowSize } from './utils.js';
 
 const completions = getLanguageKey(keys.completions);
 
@@ -857,17 +848,18 @@ export function createActionRows(components) {
 
     const actionRows = [];
     let currentRow = new Discord.ActionRowBuilder();
-
+    let currentSize = 0;
     for(const component of components) {
-        currentRow.addComponents(component);
-
-        const maxAmount = maxComponentsInActionRow[component.data.type];
-
-        //If the same component type is already in the row more than the max amount, create a new row.
-        if(currentRow.components.filter(c => c.data.type === component.data.type).length >= maxAmount) {
+        currentSize += ComponentSizeInActionRow[component.data.type];
+        if(currentSize > MaxActionRowSize) {
+            // If the current row is full, push it to the action rows and start a new one
             actionRows.push(currentRow);
+            if(actionRows.length > MaxActionRows) break;
             currentRow = new Discord.ActionRowBuilder();
+            currentSize = ComponentSizeInActionRow[component.data.type];
         }
+
+        currentRow.addComponents(component);
     }
     if(currentRow.components.length > 0) actionRows.push(currentRow);
 

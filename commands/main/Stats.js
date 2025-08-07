@@ -235,7 +235,7 @@ export default class Stats extends Command {
                     min: startIndex,
                     max: endIndex,
                 }),
-                page: {
+                options: {
                     files: [statsAttach],
                     embeds: [statsEmbed],
                 },

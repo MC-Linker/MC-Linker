@@ -182,16 +182,16 @@ export default class UserInfo extends Command {
         const pages = {
             userinfo_general: {
                 button: getComponent(keys.commands.userinfo.success.buttons.general),
-                page: generalMessage,
+                options: generalMessage,
                 startPage: true,
             },
             userinfo_survival: {
                 button: getComponent(keys.commands.userinfo.success.buttons.survival),
-                page: survivalMessage,
+                options: survivalMessage,
             },
             userinfo_admin: {
                 button: getComponent(keys.commands.userinfo.success.buttons.admin),
-                page: adminMessage,
+                options: adminMessage,
             },
         };
 

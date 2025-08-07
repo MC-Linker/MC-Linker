@@ -200,7 +200,7 @@ export default class Advancements extends Command {
                 paginationPages[advancementButton.data.custom_id] = {
                     button: advancementButton,
                     startPage: true,
-                    page: {
+                    options: {
                         embeds: [advancementsEmbed],
                         files: [advancementsAttach],
                     },
@@ -211,7 +211,7 @@ export default class Advancements extends Command {
             paginationPages[advancementButton.data.custom_id] = {
                 button: advancementButton,
                 startPage: advancement.value === 'root',
-                page: {
+                options: {
                     embeds: [advancementsEmbed, advancementEmbed],
                 },
             };

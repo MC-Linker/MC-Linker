@@ -171,12 +171,12 @@ export default class ServerInfo extends Command {
         const pages = {
             serverinfo_general: {
                 button: getComponent(keys.commands.serverinfo.success.general_button),
-                page: startingMessage,
+                options: startingMessage,
                 startPage: true,
             },
             serverinfo_world: {
                 button: getComponent(keys.commands.serverinfo.success.world_button),
-                page: { embeds: [worldEmbed], files: [] },
+                options: { embeds: [worldEmbed], files: [] },
             },
         };
 
@@ -198,7 +198,7 @@ export default class ServerInfo extends Command {
 
             pages['serverinfo_admin'] = {
                 button: getComponent(keys.commands.serverinfo.success.admin_button),
-                page: { embeds: [adminEmbed], files: [] },
+                options: { embeds: [adminEmbed], files: [] },
                 buttonOptions: {
                     permissions: new Discord.PermissionsBitField(Discord.PermissionFlagsBits.Administrator),
                 },

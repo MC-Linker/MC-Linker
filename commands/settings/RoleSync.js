@@ -128,7 +128,7 @@ export default class RoleSync extends AutocompleteCommand {
                 });
 
                 pages[roleButton.data.custom_id] = {
-                    page: { embeds: [roleEmbed] },
+                    options: { embeds: [roleEmbed] },
                     button: roleButton,
                 };
             }

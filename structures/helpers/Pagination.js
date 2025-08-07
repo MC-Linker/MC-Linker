@@ -1,5 +1,4 @@
 import {
-    ActionRowBuilder,
     BaseInteraction,
     ButtonBuilder,
     ComponentType,
@@ -10,9 +9,17 @@ import {
 import DefaultButton from './DefaultButton.js';
 import { createActionRows, getComponent } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
-import { disableComponents } from '../../utilities/utils.js';
+import { ComponentSizeInActionRow, disableComponents, MaxActionRows, MaxActionRowSize } from '../../utilities/utils.js';
 
 export default class Pagination {
+
+    static DEFAULT_TIMEOUT = 120_000;
+
+    static NAVIGATION_BUTTON_IDS = {
+        NEXT: 'next',
+        BACK: 'back',
+        EXIT: 'exit',
+    };
 
     /**
      * @typedef {Object} PaginationOptions
@@ -29,7 +36,7 @@ export default class Pagination {
     /**
      * @typedef  {Object} PaginationPage
      * @property {ButtonBuilder} [button] - The button that points to this page
-     * @property {import('discord.js').BaseMessageOptions} [page] - The page to send
+     * @property {import('discord.js').BaseMessageOptions} [options] - The message options to send
      * @property {PaginationPages} [pages] - The pages to send (for nested pagination)
      * @property {boolean} [startPage=false] - Whether this is the starting page
      * @property {PaginationOptions} [pageOptions] - The options for this page (for nested pagination)
@@ -37,7 +44,7 @@ export default class Pagination {
      */
 
     /**
-     *  @typedef {Object.<string, PaginationPage>} PaginationPages
+     *  @typedef {Object.<string, PaginationPage>} PaginationPages - An object of custom IDs to PaginationPage objects
      */
 
     /**
@@ -79,7 +86,7 @@ export default class Pagination {
         this.interaction = interaction;
 
         /**
-         * An object of pages that will be used for the pagination
+         * An object of pages that are used for the pagination
          * @type {PaginationPages}
          */
         this.pages = pages;
@@ -94,33 +101,91 @@ export default class Pagination {
          * The options for this pagination
          * @type {PaginationOptions}
          */
-        this.options = options;
-        if(!(this.options.nextButton instanceof ButtonBuilder)) this.options.nextButton = getComponent(keys.api.component.success.next_button, { id: 'next' });
-        if(!(this.options.backButton instanceof ButtonBuilder)) this.options.backButton = getComponent(keys.api.component.success.back_button, { id: 'back' });
-        if(!(this.options.exitButton instanceof ButtonBuilder)) this.options.exitButton = getComponent(keys.api.component.success.exit_button, { id: 'exit' });
+        this.options = this._initializeOptions(options);
 
         /**
-         * The parent of this pagination (only used for nested paginations)
-         * @type {?Pagination}
+         * The parent pagination if this is a nested pagination
+         * @type {Pagination|null}
          */
         this.parent = this.options.parent ?? null;
 
-        //Register next and back buttons
-        this.buttons.set(this.options.nextButton.data.custom_id, new DefaultButton({
-            id: this.options.nextButton.data.custom_id,
-            author: this.interaction.user,
-            defer: false,
-        }, this._handleNextButton.bind(this)));
-        this.buttons.set(this.options.backButton.data.custom_id, new DefaultButton({
-            id: this.options.nextButton.data.custom_id,
-            author: this.interaction.user,
-            defer: false,
-        }, this._handleBackButton.bind(this)));
-        this.buttons.set(this.options.exitButton.data.custom_id, new DefaultButton({
-            id: this.options.exitButton.data.custom_id,
-            author: this.interaction.user,
-            defer: false,
-        }, this._handleExitButton.bind(this)));
+        this._registerPageButtons();
+        this._registerNavigationButtons();
+    }
+
+    /**
+     * Initialize default options for pagination
+     * @private
+     * @param {PaginationOptions} options - The options to initialize
+     * @return {PaginationOptions} - The initialized options with defaults applied
+     */
+    _initializeOptions(options) {
+        return {
+            nextButton: getComponent(keys.api.component.success.next_button, { id: Pagination.NAVIGATION_BUTTON_IDS.NEXT }),
+            backButton: getComponent(keys.api.component.success.back_button, { id: Pagination.NAVIGATION_BUTTON_IDS.BACK }),
+            exitButton: getComponent(keys.api.component.success.exit_button, { id: Pagination.NAVIGATION_BUTTON_IDS.EXIT }),
+            timeout: Pagination.DEFAULT_TIMEOUT,
+            showSelectedButton: false,
+            showStartPageOnce: false,
+            ...options,
+        };
+    }
+
+
+    /**
+     * Register page buttons with their handlers
+     * @private
+     */
+    _registerPageButtons() {
+        Object.entries(this.pages).forEach(([customId, page]) => {
+            if(!(page.button instanceof ButtonBuilder)) return;
+            if(page.startPage && this.options.showStartPageOnce) return;
+
+            this.buttons.set(customId, new DefaultButton({
+                id: customId,
+                author: this.interaction.user,
+                defer: false,
+                ...page.buttonOptions,
+            }, this._handleButton.bind(this)));
+        });
+    }
+
+    /**
+     * Register navigation buttons (next, back, exit)
+     * @private
+     */
+    _registerNavigationButtons() {
+        const navigationButtons = [
+            { button: this.options.nextButton, handler: this._handleNextButton.bind(this) },
+            { button: this.options.backButton, handler: this._handleBackButton.bind(this) },
+            { button: this.options.exitButton, handler: this._handleExitButton.bind(this) },
+        ];
+
+        navigationButtons.forEach(({ button, handler }) => {
+            this.buttons.set(button.data.custom_id, new DefaultButton({
+                id: button.data.custom_id,
+                author: this.interaction.user,
+                defer: false,
+            }, handler));
+        });
+    }
+
+    /**
+     * Get starting page data
+     * @private
+     * @return {PaginationPage} - Contains the button and page for the starting page
+     */
+    _getStartPage() {
+        return Object.values(this.pages).find(page => page.startPage) ?? Object.values(this.pages)[0];
+    }
+
+    /**
+     * Get all page buttons
+     * @private
+     * @return {ButtonBuilder[]} - An array of buttons for all pages
+     */
+    _getPageButtons() {
+        return Object.values(this.pages).map(page => page.button).filter(Boolean);
     }
 
     /**
@@ -128,53 +193,16 @@ export default class Pagination {
      * @returns {Promise<Message|InteractionResponse>} - The message that was sent
      */
     async start() {
-        /** @type {ButtonBuilder[]} */
-        const {
-            button: startingButton,
-            page: startingPage,
-        } = Object.values(this.pages).find(page => page.startPage) ?? Object.values(this.pages)[0];
-        const buttons = Object.values(this.pages).map(page => page.button);
-        if(!startingPage) return;
-
-        //Map custom ids of buttons to default button instances
-        buttons.forEach((button, i) => {
-            if(!(button instanceof ButtonBuilder)) return;
-            this.buttons.set(button.data.custom_id, new DefaultButton({
-                id: button.data.custom_id,
-                author: this.interaction.user,
-                defer: false,
-                ...Object.values(this.pages)[i].buttonOptions,
-            }, this._handleButton.bind(this)));
-        });
-        //Remove starting button only if selected button should not be shown or if the start page should only be shown once
-        if(!this.options.showSelectedButton || this.options.showStartPageOnce) buttons.splice(buttons.indexOf(startingButton), 1);
-        // Remove starting button if it should only be shown once
-        if(this.options.showStartPageOnce) this.buttons.delete(startingButton?.data?.custom_id);
-
-        //Set last page and message options
-        this.lastPage = { button: startingButton, page: startingPage };
-
-        // Change selected button style if needed
-        const tempStartingButtonStyle = startingButton?.data?.style;
-        if(this.options.showSelectedButton && this.options.highlightSelectedButton) startingButton.setStyle(this.options.highlightSelectedButton);
-
-
-        //Send starting message
-        const oldComponents = startingPage.components ?? []; //Save old components
-        startingPage.components = this.combineComponents(startingPage, buttons);
-
-        this.lastMessageOptions = { ...startingPage };
-        const message = await this.interaction.replyOptions(startingPage);
-        startingPage.components = oldComponents; //Reset components
-
-        //Reset starting button style
-        if(this.options.showSelectedButton && this.options.highlightSelectedButton) startingButton.setStyle(tempStartingButtonStyle);
-
-        //Create button collector
+        const message = await this._sendInitialMessage();
         this._createComponentCollector(message);
         return message;
     }
 
+    /**
+     * +     * Create a component collector for the pagination buttons
+     * @param {Message|InteractionResponse} message - The message to create the collector for
+     * @private
+     */
     _createComponentCollector(message) {
         this.collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
@@ -183,139 +211,217 @@ export default class Pagination {
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', async (_, reason) => {
             if(reason === 'nested_pagination') return;
+            else if(reason === 'exit_to_parent') {
+                // Return to parent pagination
+                const message = await this.interaction.replyOptions(this.lastMessageOptions);
+                return this._createComponentCollector(message);
+            }
 
             message = await message.fetch(); // Get the latest components
             if(!message?.components) return;
 
-            message.edit({ components: disableComponents(message.components) });
+            await message.edit({ components: disableComponents(message.components) });
         });
     }
 
     /**
+     * Send the initial message
+     * @returns {Promise<Message|InteractionResponse>} - The message that was sent
+     * @private
+     */
+    async _sendInitialMessage() {
+        const startPage = this._getStartPage();
+        const options = startPage.options;
+
+        const originalComponents = options.components ?? [];
+
+        const components = this._getReplyRows(startPage.options, 0, startPage.button.data.custom_id, 'next');
+        options.components = createActionRows(components);
+
+        this.lastPage = startPage;
+        this.lastMessageOptions = options;
+
+        const message = await this.interaction.replyOptions(options);
+        options.components = originalComponents; // Restore original components after sending
+        return message;
+    }
+
+    /**
+     * Handle next button interaction
+     * @param {import('discord.js').ButtonInteraction & TranslatedResponses} interaction - The interaction to handle
+     * @private
+     */
+    async _handleNextButton(interaction) {
+        const firstPageButtonIndex = this._getFirstPageButtonIndex(interaction.message);
+        const rows = this._getReplyRows(this.lastPage, firstPageButtonIndex, null, 'next');
+        await interaction.update({ components: rows });
+    }
+
+    /**
+     * Handle back button interaction
+     * @param {import('discord.js').ButtonInteraction & TranslatedResponses} interaction - The interaction to handle
+     * @private
+     */
+    async _handleBackButton(interaction) {
+        const firstPageButtonIndex = this._getFirstPageButtonIndex(interaction.message);
+        const rows = this._getReplyRows(this.lastPage, firstPageButtonIndex, null, 'back');
+        await interaction.update({ components: rows });
+    }
+
+    /**
+     * Handle exit button for nested pagination
+     * @param {import('discord.js').ButtonInteraction & TranslatedResponses} interaction - The interaction to handle
+     * @private
+     */
+    async _handleExitButton(interaction) {
+        if(!this.parent) return;
+
+        await interaction.deferUpdate();
+        this.collector?.stop('exit_to_parent');
+        this.collector = null;
+    }
+
+    /**
      * Handles a button interaction
-     * @param {ButtonInteraction} interaction - The interaction to handle
+     * @param {import('discord.js').ButtonInteraction & TranslatedResponses} interaction - The button interaction to handle
      * @private
      */
     async _handleButton(interaction) {
-        let page = this.pages[interaction.customId];
+        const page = this.pages[interaction.customId];
         if(!page) return;
 
-        if(page.pages) {
-            await interaction.deferUpdate();
+        // Handle nested pagination
+        if(page.pages) return await this._handleNestedPagination(interaction, page);
 
-            const pagination = new Pagination(this.client, this.interaction, page.pages, {
-                ...(page.pageOptions ?? this.options),
-                parent: this,
-            });
+        // Handle regular page navigation
+        await this._navigateToPage(interaction, page);
+    }
 
-            //Temporarily remove collector to avoid conflicts
-            this.collector.stop('nested_pagination');
-            this.collector = null;
-            return await pagination.start();
-        }
-        else page = page.page;
+    /**
+     * Handle nested pagination
+     * @param {import('discord.js').ButtonInteraction & TranslatedResponses} interaction - The interaction to handle
+     * @param {PaginationPage} pageData - The page data for the nested pagination
+     * @returns {Promise<Message|InteractionResponse>} - The message that was sent for the nested pagination
+     * @private
+     */
+    async _handleNestedPagination(interaction, pageData) {
+        await interaction.deferUpdate();
 
-        //Edit message with new page
-        const navComponents = [];
-        //Push all page buttons of the current page
-        interaction.message.components?.forEach(row => {
-            row = ActionRowBuilder.from(row);
-            row.components.forEach(b => {
-                //Ignore navigation buttons
-                if(this.options.nextButton.data.custom_id === b.data.custom_id ||
-                    this.options.backButton.data.custom_id === b.data.custom_id ||
-                    this.options.exitButton.data.custom_id === b.data.custom_id) return;
-                if(this.buttons.has(b.data.custom_id)) navComponents.push(b);
-            });
+        const nestedPagination = new Pagination(this.client, this.interaction, pageData.pages, {
+            ...this.options,
+            ...pageData.pageOptions,
+            parent: this,
         });
 
-        if(!this.options.showSelectedButton) {
-            //Replace current page button with requested page button
-            const requestedPageButton = navComponents.findIndex(b => b.data.custom_id === interaction.customId);
-            navComponents.splice(requestedPageButton, 1, this.lastPage.button);
-        }
+        this.collector.stop('nested_pagination');
+        this.collector = null;
+        return await nestedPagination.start();
+    }
+
+    /**
+     * Navigate to a specific page
+     * @param {import('discord.js').ButtonInteraction & TranslatedResponses} interaction - The interaction to handle
+     * @param {PaginationPage} page - The page data to navigate to
+     * @private
+     */
+    async _navigateToPage(interaction, page) {
+        const options = page.options;
+
+        const originalComponents = options.components ?? [];
+
+        const components = this._getReplyRows(options, 0, page.button.data.custom_id, 'next');
+        options.components = createActionRows(components);
+
+        this.lastPage = { button: page.button, options };
+        Object.assign(this.lastMessageOptions, options);
+
+        await interaction.update(options);
+        options.components = originalComponents;
+    }
+
+    /**
+     * Hides or highlights the selected button based on options
+     * @param {ButtonBuilder[]} components - The components to update
+     * @param {string} selectedButtonId - The ID of the selected button
+     * @return {ButtonBuilder[]} - The updated components with the selected button handled
+     * @private
+     */
+    _updateSelectedButtonStyle(components, selectedButtonId) {
+        const selectedButtonIndex = components.findIndex(b => b.data.custom_id === selectedButtonId);
+        if(selectedButtonIndex === -1) return components;
+        if(!this.options.showSelectedButton) components.splice(selectedButtonIndex, 1);
         else if(this.options.highlightSelectedButton) {
-            //Remove highlight of previous button
-            const lastButton = navComponents.find(b => b.data.custom_id === this.lastPage.button.data.custom_id);
-            lastButton?.setStyle(this.lastPage.button.data.style);
-
-            //Change style of requested page button
-            const requestedPageButton = navComponents.find(b => b.data.custom_id === interaction.customId);
-            requestedPageButton.setStyle(this.options.highlightSelectedButton);
+            components[selectedButtonIndex] = ButtonBuilder.from(components[selectedButtonIndex].data)
+                .setStyle(this.options.highlightSelectedButton);
         }
-
-        //Set last page
-        this.lastPage = this.pages[interaction.customId];
-
-        const oldComponents = page.components ?? []; //Save old components
-        page.components = this.combineComponents(page, navComponents);
-        Object.assign(this.lastMessageOptions, page);
-        await interaction.update(page);
-
-        page.components = oldComponents; //Reset components
+        return components;
     }
 
-    async _handleNextButton(interaction) {
-        const allComponents = Object.values(this.pages).map(page => page.button).filter(Boolean);
-
-        //Find button index of first button in current page
-        const buttonIndex = allComponents.findIndex(button => button.data.custom_id === interaction.message.components[0].components[0].data.custom_id);
-
-        const newComponents = allComponents.slice(buttonIndex + 24, buttonIndex + 49);
-        //Add exit button if this is a nested pagination
-        if(this.parent) allComponents.unshift(this.options.exitButton);
-        //Add next button if there are too many components
-        if(newComponents.length > 25) newComponents.splice(24, 1, this.options.nextButton);
-        //Add back button
-        newComponents.splice(newComponents.length > 25 ? 23 : 24, 1, this.options.backButton);
-
-        //Edit message with new components
-        await interaction.update({ components: createActionRows(newComponents) });
+    /**
+     * Gets the index of the first button in the message components that is also a page button
+     * @param {Message} message - The message containing the components
+     * @return {number} - The index of the first button in the message components that is also a page button
+     * @private
+     */
+    _getFirstPageButtonIndex(message) {
+        const allButtonIds = this._getPageButtons().map(b => b.data.custom_id);
+        const allComponentIds = this._flattenActionRows(message.components).map(c => c.data.custom_id);
+        return allButtonIds.findIndex(id => allComponentIds.includes(id));
     }
 
-    async _handleBackButton(interaction) {
-        const allComponents = Object.values(this.pages).map(page => page.button).filter(Boolean);
+    /**
+     * Get the action rows to reply for the current page
+     * @param {import('discord.js').BaseMessageOptions} options - The options object containing components
+     * @param {number} firstPageButtonIndex - The index of the first page button in the page
+     * @param {?string} selectedButtonId - The ID of the currently selected button
+     * @param {'next'|'back'} direction - The direction of navigation
+     * @return {import('discord.js').ActionRowBuilder[]} - The action rows to reply with
+     * @private
+     */
+    _getReplyRows(options, firstPageButtonIndex, selectedButtonId, direction) {
+        // Navigation buttons
+        let navComponents = [this.options.backButton, this.options.nextButton];
+        if(this.parent) navComponents.push(this.options.exitButton);
 
-        //Find button index of first button in current page
-        const buttonIndex = allComponents.findIndex(button => button.data.custom_id === interaction.message.components[0].components[0].data.custom_id);
+        // Counts how many page buttons can fit in the action row and slices the page buttons accordingly
+        const spaceLeft = this._countActionRowSpace(this._combineComponents(options, navComponents));
 
-        const newComponents = allComponents.slice(buttonIndex - 24, buttonIndex);
-        //Add exit button if this is a nested pagination
-        if(this.parent) allComponents.unshift(this.options.exitButton);
-        //Add back button if we are not on the first page yet
-        if(buttonIndex - 24 !== 0) newComponents.splice(23, 1, this.options.backButton);
-        //Add next button
-        newComponents.splice(24, 1, this.options.nextButton);
+        let pageButtons = [];
+        if(direction === 'next') pageButtons = this._getPageButtons().slice(firstPageButtonIndex, firstPageButtonIndex + spaceLeft + 1);
+        else if(direction === 'back') pageButtons = this._getPageButtons().slice(firstPageButtonIndex - spaceLeft, firstPageButtonIndex + 1);
 
-        //Edit message with new components
-        await interaction.update({ components: createActionRows(newComponents) });
+        if(selectedButtonId) this._updateSelectedButtonStyle(pageButtons, selectedButtonId);
+        return createActionRows(this._combineComponents(options, [...pageButtons, ...navComponents]));
     }
 
-    async _handleExitButton(interaction, client, forceNoExit = false) {
-        if(!forceNoExit && this.parent) {
-            this.collector.stop('nested_pagination'); //Stop child collector
-            //Force prevent exit of parent so we dont exit the whole pagination but only go one step back
-            return await this.parent._handleExitButton(interaction, client, true);
-        }
-
-        //Re-add component collector when going back to parent pagination
-        const message = await interaction.update(this.lastMessageOptions);
-        this._createComponentCollector(message);
+    /**
+     * Counts how much space is left in an action row for components
+     * @param {ButtonBuilder[]} components - The components already in the action row
+     * @return {number} - The amount of space left in the action row
+     * @private
+     */
+    _countActionRowSpace(components) {
+        const maxSpace = MaxActionRows * MaxActionRowSize;
+        return maxSpace - components.reduce((acc, component) => acc + ComponentSizeInActionRow[component.data.type], 0);
     }
 
-    combineComponents(page, navComponents) {
-        const pageComponents = page.components?.map(component => component.components).flat() ?? [];
-        const pageComponentRows = createActionRows(pageComponents);
-        const maxNavComponents = (5 - pageComponentRows.length) * 5;
+    /**
+     * Combine own page components with page buttons
+     * @param {import('discord.js').BaseMessageOptions} options - The options object containing components
+     * @param {ButtonBuilder[]} pageButtons - Page Buttons to add
+     * @returns {import('discord.js').ComponentBuilder[]} - Combined components for the page
+     */
+    _combineComponents(options, pageButtons) {
+        return [...this._flattenActionRows(options.components), ...pageButtons];
+    }
 
-        //Add exit button if this is a nested pagination
-        if(this.parent) navComponents.unshift(this.options.exitButton);
-        //Add next button if there are too many components
-        if(navComponents.length > maxNavComponents) navComponents.splice(maxNavComponents - 1, 0, this.options.nextButton);
-
-        // Slice navComponent so that they don't override the page components
-        navComponents = navComponents.slice(0, maxNavComponents);
-
-        return [...createActionRows(navComponents), ...pageComponentRows];
+    /**
+     * Flatten action rows to get all components
+     * @param {import('discord.js').ActionRowBuilder[]} actionRows - The action rows to flatten
+     * @return {import('discord.js').ComponentBuilder[]} - An array of all components in the action rows
+     * @private
+     */
+    _flattenActionRows(actionRows) {
+        return actionRows?.flatMap(row => row.components) ?? [];
     }
 }

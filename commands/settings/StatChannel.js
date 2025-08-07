@@ -104,7 +104,7 @@ export default class StatChannel extends Command {
                 });
 
                 pages[channelButton.data.custom_id] = {
-                    page: { embeds: [channelEmbed] },
+                    options: { embeds: [channelEmbed] },
                     button: channelButton,
                 };
             }
