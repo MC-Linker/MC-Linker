@@ -19,9 +19,10 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
     environment:
-      - NODE_ENV=$NODE_ENV
+      - NODE_ENV=development
       - LOG_LEVEL=$LOG_LEVEL
       - CONVERT=$CONVERT # true or false
+      - NODE_MAX_HEAP_SIZE=1024
     networks:
       - mc-linker_mongo-network
 
