@@ -31,4 +31,4 @@ RUN npm ci
 # Bundle app source
 COPY . .
 
-CMD [ "node", "--max-old-space-size=$NODE_MAX_HEAP_SIZE", "main.js" ]
+CMD node --max-old-space-size=$NODE_MAX_HEAP_SIZE main.js

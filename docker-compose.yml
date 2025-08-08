@@ -4,6 +4,8 @@ services:
     image: lianecx/${SERVICE_NAME}
     container_name: ${SERVICE_NAME}
     restart: on-failure
+    depends_on:
+      - mongodb
     ports:
       - "${BOT_PORT}:${BOT_PORT}"
     volumes:
@@ -20,9 +22,10 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
     environment:
-      - NODE_ENV=$NODE_ENV
       - LOG_LEVEL=$LOG_LEVEL
       - CONVERT=$CONVERT # true or false
+      - NODE_ENV=$NODE_ENV
+      - NODE_MAX_HEAP_SIZE=8192
     networks:
       - mongo-network
 
@@ -49,7 +52,6 @@ services:
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongodb
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-      - NODE_MAX_HEAP_SIZE=8192
     ports:
       - '8081:8081'
     volumes:
