@@ -199,7 +199,7 @@ export default class Pagination {
     }
 
     /**
-     * +     * Create a component collector for the pagination buttons
+     * Create a component collector for the pagination buttons
      * @param {Message|InteractionResponse} message - The message to create the collector for
      * @private
      */
@@ -235,8 +235,7 @@ export default class Pagination {
 
         const originalComponents = options.components ?? [];
 
-        const components = this._getReplyRows(startPage.options, 0, startPage.button.data.custom_id, 'next');
-        options.components = createActionRows(components);
+        options.components = this._getReplyRows(startPage.options, 0, startPage.button.data.custom_id, 'next');
 
         this.lastPage = startPage;
         this.lastMessageOptions = options;
@@ -329,8 +328,7 @@ export default class Pagination {
 
         const originalComponents = options.components ?? [];
 
-        const components = this._getReplyRows(options, 0, page.button.data.custom_id, 'next');
-        options.components = createActionRows(components);
+        options.components = this._getReplyRows(options, 0, page.button.data.custom_id, 'next');
 
         this.lastPage = { button: page.button, options };
         Object.assign(this.lastMessageOptions, options);
