@@ -253,14 +253,14 @@ export default class WebSocketProtocol extends Protocol {
                 /** @type {WebSocketProtocol} */
                 const protocol = c.serverConnections.cache.get(id).protocol;
                 if(!protocol.socket) return resolve(null);
-                c.logger.debug(`[WebSocket] Sending event ${name} with data: ${JSON.stringify(data)}`);
+                c.logger.debug(`[Socket.IO] Sending event ${name} with data: ${JSON.stringify(data)}`);
                 protocol.socket.timeout(10_000).emit(name, ...data, (err, response) => {
                     if(err) {
-                        c.logger.error(err, `[WebSocket] Error while sending event ${name}`);
+                        c.logger.error(err, `[Socket.IO] Error while sending event ${name}`);
                         return resolve(null);
                     }
 
-                    c.logger.debug(`[WebSocket] Received response for event ${name}: ${JSON.stringify(response)}`);
+                    c.logger.debug(`[Socket.IO] Received response for event ${name}: ${JSON.stringify(response)}`);
                     if(typeof response === 'string') resolve(JSON.parse(response));
                     else resolve(response);
                 });
