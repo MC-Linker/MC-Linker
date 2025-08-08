@@ -271,7 +271,7 @@
   "commands.help.success.no_args.embeds.0.fields.2.value": "Other commands such as %message_command_mention% or %serverinfo_command_mention%.",
 
   "commands.help.success.no_args.embeds.0.fields.3.name": "Settings",
-  "commands.help.success.no_args.embeds.0.fields.3.value": "Setup and settings such as %connect_command_mention% or %disable_command_mention%.",
+  "commands.help.success.no_args.embeds.0.fields.3.value": "Setup and settings such as %connect_command_mention% or %chatchannel_command_mention%.",
 
   "commands.help.success.no_args.embeds.0.fields.4.name": "\u200B",
   "commands.help.success.no_args.embeds.0.fields.4.value": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)",

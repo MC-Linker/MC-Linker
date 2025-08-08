@@ -482,7 +482,7 @@
                 },
                 {
                   "name": "Settings",
-                  "value": "Setup and settings such as %connect_command_mention% or %disable_command_mention%."
+                  "value": "Setup and settings such as %connect_command_mention% or %chatchannel_command_mention%."
                 },
                 {
                   "name": "​",
