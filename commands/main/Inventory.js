@@ -1,5 +1,5 @@
 import Canvas from 'skia-canvas';
-import Discord from 'discord.js';
+import Discord, { ButtonStyle } from 'discord.js';
 import MinecraftData from 'minecraft-data';
 import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
@@ -102,7 +102,7 @@ export default class Inventory extends Command {
         playerData.Inventory = playerData.Inventory.map(item => {
             return {
                 ...item,
-                Slot: this.dataSlotToNetworkSlot(item.Slot),
+                slot: this.dataSlotToNetworkSlot(item.Slot ?? item.slot),
             };
         });
 
@@ -141,6 +141,7 @@ export default class Inventory extends Command {
         const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach);
         const pagination = new Pagination(client, interaction, paginationPages, {
             showSelectedButton: true,
+            highlightSelectedButton: ButtonStyle.Primary,
             showStartPageOnce: true,
         });
         await pagination.start();
@@ -285,11 +286,11 @@ export default class Inventory extends Command {
     }
 
     pushInvButton(buttons, maxSlot, doUseArmorSlots, item, index) {
-        if(item.Slot > maxSlot) return;
+        if(item.slot > maxSlot) return;
 
         //Push button for each item in the inventory
         const itemId = item.id.split(':').pop();
-        const slot = item.Slot;
+        const slot = item.slot;
         buttons.push(getComponent(
             keys.commands.inventory.success.item_button,
             {
@@ -325,12 +326,12 @@ export default class Inventory extends Command {
             //If parent item is a shulker, get item from shulker inventory
             const indexes = buttonId.split('_').slice(2);
             for(const i of indexes) {
-                item = (item.components?.['minecraft:block_entity_data'] ?? item.tag.BlockEntityTag).Items[i];
+                item = (item.components?.['minecraft:container'] ?? item.tag.BlockEntityTag).Items[i];
                 indexOfIndex++;
             }
 
             const formattedId = item.id.split(':').pop();
-            const slot = item.Slot;
+            const slot = item.slot;
             const itemStats = mcData.itemsByName[formattedId];
 
             const itemEmbed = getEmbed(
@@ -349,23 +350,24 @@ export default class Inventory extends Command {
             const isSpecialItem = this.addInfo(itemEmbed, item.components ?? item.tag, itemStats);
 
             //If item is a shulker, render shulker inventory
-            if((item.components?.['minecraft:block_entity_data'] ?? item.tag?.BlockEntityTag)?.Items && formattedId.endsWith('shulker_box')) {
-                const shulkerItems = (item.components?.['minecraft:block_entity_data'] ?? item.tag.BlockEntityTag).Items;
+            if(formattedId.endsWith('shulker_box') && item.components?.['minecraft:container'] ?? item.tag?.BlockEntityTag?.Items) {
+                const shulkerItems = item.components?.['minecraft:container'] ?? item.tag?.BlockEntityTag?.Items;
 
                 //Increase slot numbers by 18 in inventory
                 const mappedInvItems = inventory.map(item => {
-                    if(armorSlotCoords[item.Slot]) return; //Exclude armor slots
+                    if(armorSlotCoords[item.slot]) return; //Exclude armor slots
                     return {
                         ...item,
-                        Slot: item.Slot + 18,
+                        slot: item.slot + 18,
                     };
                 }).filter(i => i); //Remove undefined items
 
                 //Add parentIndex to shulker items to add in customId on buttons
-                const mappedShulkerItems = shulkerItems.map(childItem => {
+                const mappedShulkerItems = shulkerItems.map(item => {
                     return {
-                        ...childItem,
+                        ...item,
                         parentIndex: buttonId.split(/slot_?/).pop(),
+                        slot: item.Slot ?? item.slot,
                     };
                 });
 
@@ -452,10 +454,8 @@ export default class Inventory extends Command {
     }
 }
 
-
 // noinspection JSUnusedLocalSymbols
-async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {
-}) {
+async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
     const background = await Canvas.loadImage(backgroundPath);
     const canvas = new Canvas.Canvas(background.width, background.height);
     const ctx = canvas.getContext('2d');
@@ -463,7 +463,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
     for(let i = 0; i < items.length; i++) {
-        const slot = items[i].Slot;
+        const slot = items[i].slot;
         const itemId = items[i].id.split(':').pop();
         const count = items[i].Count;
         const damage = items[i].tag?.Damage;

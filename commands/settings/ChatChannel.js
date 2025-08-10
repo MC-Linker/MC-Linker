@@ -1,4 +1,4 @@
-import Discord, { PermissionFlagsBits } from 'discord.js';
+import Discord, { ButtonStyle, PermissionFlagsBits } from 'discord.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import keys, { getLanguageKey } from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
@@ -120,7 +120,10 @@ export default class ChatChannel extends Command {
                 };
             }
 
-            const pagination = new Pagination(client, interaction, pages);
+            const pagination = new Pagination(client, interaction, pages, {
+                showSelectedButton: true,
+                highlightSelectedButton: ButtonStyle.Primary,
+            });
             return pagination.start();
         }
     }

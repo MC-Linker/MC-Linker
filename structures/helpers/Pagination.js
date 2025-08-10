@@ -219,7 +219,7 @@ export default class Pagination {
     _createComponentCollector(message) {
         this.collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: this.options.timeout ?? 120_000,
+            time: this.options.timeout ?? Pagination.DEFAULT_TIMEOUT,
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', async (_, reason) => {
@@ -393,24 +393,33 @@ export default class Pagination {
 
         let spaceLeft = this._countActionRowSpace(this._combineComponents(options, navButtons));
 
-        let newFirstPageButtonIndex;
-        if(direction === 'next') newFirstPageButtonIndex = this.lastFirstPageButtonIndex + spaceLeft;
-        else if(direction === 'back') newFirstPageButtonIndex = this.lastFirstPageButtonIndex - spaceLeft;
-        else if(direction === 'stay') newFirstPageButtonIndex = this.lastFirstPageButtonIndex;
+        const calcNewFirstPageButtonIndex = () => {
+            let newFirstPageButtonIndex;
+            if(direction === 'next') newFirstPageButtonIndex = this.lastFirstPageButtonIndex + spaceLeft;
+            else if(direction === 'back') newFirstPageButtonIndex = this.lastFirstPageButtonIndex - spaceLeft;
+            else if(direction === 'stay') newFirstPageButtonIndex = this.lastFirstPageButtonIndex;
+            return newFirstPageButtonIndex;
+        };
 
-        console.log('Index', newFirstPageButtonIndex, this.lastFirstPageButtonIndex);
+        let newFirstPageButtonIndex = calcNewFirstPageButtonIndex();
+
+        console.log('Index 1', newFirstPageButtonIndex, this.lastFirstPageButtonIndex);
 
         // If we're not going to the last button page (i.e. theres not enough space to add all buttons), add the next button
         if(newFirstPageButtonIndex + spaceLeft < pageButtons.length) {
             navButtons.push(this.options.nextButton);
             spaceLeft--;
+            newFirstPageButtonIndex = calcNewFirstPageButtonIndex();
         }
 
         // If we're not going to the first button page, add the back button
         if(newFirstPageButtonIndex > 0) {
             navButtons.push(this.options.backButton);
             spaceLeft--;
+            newFirstPageButtonIndex = calcNewFirstPageButtonIndex();
         }
+
+        console.log('Index 2', newFirstPageButtonIndex, this.lastFirstPageButtonIndex);
 
         if(direction === 'next' || direction === 'stay') pageButtons = pageButtons.slice(newFirstPageButtonIndex, newFirstPageButtonIndex + spaceLeft);
         else if(direction === 'back') pageButtons = pageButtons.slice(newFirstPageButtonIndex, this.lastFirstPageButtonIndex);

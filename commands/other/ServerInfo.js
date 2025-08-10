@@ -205,7 +205,9 @@ export default class ServerInfo extends Command {
             };
         }
 
-        const pagination = new Pagination(client, interaction, pages);
+        const pagination = new Pagination(client, interaction, pages, {
+            showSelectedButton: true,
+        });
         return pagination.start();
     }
 }
