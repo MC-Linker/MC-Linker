@@ -93,7 +93,8 @@ export default class ChatChannel extends Command {
             /** @type {PaginationPages} */
             const pages = {};
 
-            for(const channel of server.chatChannels) {
+            for(let i = 0; i < server.chatChannels.length; i++) {
+                const channel = server.chatChannels[i];
                 const options = getLanguageKey(keys.commands.chatchannel.step.choose.components[0].options);
                 const formattedTypes = channel.types.map(type => options.find(o => o.value === type).label).join(',\n');
 
@@ -108,10 +109,9 @@ export default class ChatChannel extends Command {
                     },
                 );
 
-                const index = server.chatChannels.indexOf(channel);
                 const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
-                    index1: index + 1,
-                    index: index,
+                    index1: i + 1,
+                    index: i,
                 });
 
                 pages[channelButton.data.custom_id] = {

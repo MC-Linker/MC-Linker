@@ -50,14 +50,23 @@ export default class Pagination {
     /**
      * The last page that was sent in this pagination
      * @type {PaginationPage}
+     * @private
      */
     lastPage;
 
     /**
      * The last message options that were sent
      * @type {import('discord.js').BaseMessageOptions}
+     * @private
      */
     lastMessageOptions;
+
+    /**
+     * The index of the last first page button in the components array
+     * @type {number}
+     * @private
+     */
+    lastFirstPageButtonIndex;
 
     /**
      * The collector for the buttons of this pagination that is currently running
@@ -176,7 +185,9 @@ export default class Pagination {
      * @return {PaginationPage} - Contains the button and page for the starting page
      */
     _getStartPage() {
-        return Object.values(this.pages).find(page => page.startPage) ?? Object.values(this.pages)[0];
+        // Make sure to return a reference
+        let startPageId = Object.entries(this.pages).find(([_, page]) => page.startPage)?.[0] ?? Object.keys(this.pages)[0];
+        return this.pages[startPageId];
     }
 
     /**
@@ -193,6 +204,8 @@ export default class Pagination {
      * @returns {Promise<Message|InteractionResponse>} - The message that was sent
      */
     async start() {
+        this.lastFirstPageButtonIndex = 0;
+
         const message = await this._sendInitialMessage();
         this._createComponentCollector(message);
         return message;
@@ -235,7 +248,7 @@ export default class Pagination {
 
         const originalComponents = options.components ?? [];
 
-        options.components = this._getReplyRows(startPage.options, 0, startPage.button.data.custom_id, 'next');
+        options.components = this._getReplyRows(startPage.options, startPage.button?.data?.custom_id, 'stay');
 
         this.lastPage = startPage;
         this.lastMessageOptions = options;
@@ -251,8 +264,7 @@ export default class Pagination {
      * @private
      */
     async _handleNextButton(interaction) {
-        const firstPageButtonIndex = this._getFirstPageButtonIndex(interaction.message);
-        const rows = this._getReplyRows(this.lastPage, firstPageButtonIndex, null, 'next');
+        const rows = this._getReplyRows(this.lastPage, null, 'next');
         await interaction.update({ components: rows });
     }
 
@@ -262,8 +274,7 @@ export default class Pagination {
      * @private
      */
     async _handleBackButton(interaction) {
-        const firstPageButtonIndex = this._getFirstPageButtonIndex(interaction.message);
-        const rows = this._getReplyRows(this.lastPage, firstPageButtonIndex, null, 'back');
+        const rows = this._getReplyRows(this.lastPage, null, 'back');
         await interaction.update({ components: rows });
     }
 
@@ -328,10 +339,9 @@ export default class Pagination {
 
         const originalComponents = options.components ?? [];
 
-        options.components = this._getReplyRows(options, 0, page.button.data.custom_id, 'next');
-
+        options.components = this._getReplyRows(options, page.button.data.custom_id, 'stay');
         this.lastPage = { button: page.button, options };
-        Object.assign(this.lastMessageOptions, options);
+        this.lastMessageOptions = options;
 
         await interaction.update(options);
         options.components = originalComponents;
@@ -370,31 +380,52 @@ export default class Pagination {
     /**
      * Get the action rows to reply for the current page
      * @param {import('discord.js').BaseMessageOptions} options - The options object containing components
-     * @param {number} firstPageButtonIndex - The index of the first page button in the page
      * @param {?string} selectedButtonId - The ID of the currently selected button
-     * @param {'next'|'back'} direction - The direction of navigation
+     * @param {'next'|'back'|'stay'} direction - The direction of navigation
      * @return {import('discord.js').ActionRowBuilder[]} - The action rows to reply with
      * @private
      */
-    _getReplyRows(options, firstPageButtonIndex, selectedButtonId, direction) {
-        // Navigation buttons
-        let navComponents = [this.options.backButton, this.options.nextButton];
-        if(this.parent) navComponents.push(this.options.exitButton);
+    _getReplyRows(options, selectedButtonId, direction) {
+        let pageButtons = this._getPageButtons();
 
-        // Counts how many page buttons can fit in the action row and slices the page buttons accordingly
-        const spaceLeft = this._countActionRowSpace(this._combineComponents(options, navComponents));
+        let navButtons = [];
+        if(this.parent) navButtons.push(this.options.exitButton);
 
-        let pageButtons = [];
-        if(direction === 'next') pageButtons = this._getPageButtons().slice(firstPageButtonIndex, firstPageButtonIndex + spaceLeft + 1);
-        else if(direction === 'back') pageButtons = this._getPageButtons().slice(firstPageButtonIndex - spaceLeft, firstPageButtonIndex + 1);
+        let spaceLeft = this._countActionRowSpace(this._combineComponents(options, navButtons));
+
+        let newFirstPageButtonIndex;
+        if(direction === 'next') newFirstPageButtonIndex = this.lastFirstPageButtonIndex + spaceLeft;
+        else if(direction === 'back') newFirstPageButtonIndex = this.lastFirstPageButtonIndex - spaceLeft;
+        else if(direction === 'stay') newFirstPageButtonIndex = this.lastFirstPageButtonIndex;
+
+        console.log('Index', newFirstPageButtonIndex, this.lastFirstPageButtonIndex);
+
+        // If we're not going to the last button page (i.e. theres not enough space to add all buttons), add the next button
+        if(newFirstPageButtonIndex + spaceLeft < pageButtons.length) {
+            navButtons.push(this.options.nextButton);
+            spaceLeft--;
+        }
+
+        // If we're not going to the first button page, add the back button
+        if(newFirstPageButtonIndex > 0) {
+            navButtons.push(this.options.backButton);
+            spaceLeft--;
+        }
+
+        if(direction === 'next' || direction === 'stay') pageButtons = pageButtons.slice(newFirstPageButtonIndex, newFirstPageButtonIndex + spaceLeft);
+        else if(direction === 'back') pageButtons = pageButtons.slice(newFirstPageButtonIndex, this.lastFirstPageButtonIndex);
+
+        this.lastFirstPageButtonIndex = newFirstPageButtonIndex;
 
         if(selectedButtonId) this._updateSelectedButtonStyle(pageButtons, selectedButtonId);
-        return createActionRows(this._combineComponents(options, [...pageButtons, ...navComponents]));
+
+        console.log('Final page buttons', pageButtons);
+        return createActionRows(this._combineComponents(options, [...pageButtons, ...navButtons]));
     }
 
     /**
      * Counts how much space is left in an action row for components
-     * @param {ButtonBuilder[]} components - The components already in the action row
+     * @param {import('discord.js').ComponentBuilder[]} components - The components already in the action row
      * @return {number} - The amount of space left in the action row
      * @private
      */
@@ -404,8 +435,8 @@ export default class Pagination {
     }
 
     /**
-     * Combine own page components with page buttons
-     * @param {import('discord.js').BaseMessageOptions} options - The options object containing components
+     * Combine action rows of options with page buttons
+     * @param {import('discord.js').BaseMessageOptions} options - The options object containing action rows
      * @param {ButtonBuilder[]} pageButtons - Page Buttons to add
      * @returns {import('discord.js').ComponentBuilder[]} - Combined components for the page
      */

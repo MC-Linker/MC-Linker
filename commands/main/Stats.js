@@ -92,21 +92,21 @@ export default class Stats extends Command {
                     return Math.max(...namesInColumn.map(name => ctx.measureText(name).width));
                 });
 
-                const longestTextInColumn = utils.memoize(async columnIndex => {
-                    if(await longestNameInColumn(columnIndex) === 0) return 0;
+                const longestTextInColumn = utils.memoize(columnIndex => {
+                    if(longestNameInColumn(columnIndex) === 0) return 0;
                     const valuesInColumn = Object.values(stats).slice(columnIndex * maxCustomStatsAmountY, (columnIndex + 1) * maxCustomStatsAmountY);
                     if(valuesInColumn.length === 0) return 0;
 
                     const longestValue = Math.max(...valuesInColumn.map(value => ctx.measureText(value.toString()).width));
 
-                    return await longestNameInColumn(columnIndex) + numberPadding[0] + longestValue;
+                    return longestNameInColumn(columnIndex) + numberPadding[0] + longestValue;
                 });
 
                 let tempColumnIndex = currentStatAmounts[0];
                 let sizeOfAllItems = startCoords[0];
-                while(sizeOfAllItems + await longestTextInColumn(tempColumnIndex) <= statsCanvas.width) {
-                    if(await longestTextInColumn(tempColumnIndex) === 0) break;
-                    sizeOfAllItems += await longestTextInColumn(tempColumnIndex++) + numberPadding[0];
+                while(sizeOfAllItems + longestTextInColumn(tempColumnIndex) <= statsCanvas.width) {
+                    if(longestTextInColumn(tempColumnIndex) === 0) break;
+                    sizeOfAllItems += longestTextInColumn(tempColumnIndex++) + numberPadding[0];
                 }
 
                 let x = (statsCanvas.width - sizeOfAllItems) / 2;
@@ -114,12 +114,12 @@ export default class Stats extends Command {
 
                 for(const [name, value] of Object.entries(stats).slice(startIndex)) {
                     utils.drawMinecraftText(ctx, name, x, y, true);
-                    utils.drawMinecraftText(ctx, value, x + await longestNameInColumn(currentStatAmounts[0]) + numberPadding[0], y, true);
+                    utils.drawMinecraftText(ctx, value, x + longestNameInColumn(currentStatAmounts[0]) + numberPadding[0], y, true);
 
                     currentStatAmounts[1]++;
                     if(currentStatAmounts[1] >= maxCustomStatsAmountY) {
                         y = startCoords[1] + ctx.measureText('M').actualBoundingBoxAscent / 2;
-                        x += await longestTextInColumn(currentStatAmounts[0]) + numberPadding[0];
+                        x += longestTextInColumn(currentStatAmounts[0]) + numberPadding[0];
 
                         currentStatAmounts[1] = 0;
                         currentStatAmounts[0]++;
