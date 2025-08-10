@@ -403,8 +403,6 @@ export default class Pagination {
 
         let newFirstPageButtonIndex = calcNewFirstPageButtonIndex();
 
-        console.log('Index 1', newFirstPageButtonIndex, this.lastFirstPageButtonIndex);
-
         // If we're not going to the last button page (i.e. theres not enough space to add all buttons), add the next button
         if(newFirstPageButtonIndex + spaceLeft < pageButtons.length) {
             navButtons.push(this.options.nextButton);
@@ -419,8 +417,6 @@ export default class Pagination {
             newFirstPageButtonIndex = calcNewFirstPageButtonIndex();
         }
 
-        console.log('Index 2', newFirstPageButtonIndex, this.lastFirstPageButtonIndex);
-
         if(direction === 'next' || direction === 'stay') pageButtons = pageButtons.slice(newFirstPageButtonIndex, newFirstPageButtonIndex + spaceLeft);
         else if(direction === 'back') pageButtons = pageButtons.slice(newFirstPageButtonIndex, this.lastFirstPageButtonIndex);
 
@@ -428,7 +424,6 @@ export default class Pagination {
 
         if(selectedButtonId) this._updateSelectedButtonStyle(pageButtons, selectedButtonId);
 
-        console.log('Final page buttons', pageButtons);
         return createActionRows(this._combineComponents(options, [...pageButtons, ...navButtons]));
     }
 
