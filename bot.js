@@ -22,7 +22,6 @@ process.on('uncaughtException', async err => {
 const client = new MCLinker();
 await client.loadEverything();
 
-
 /*
  * Converts the first letter of a string to uppercase.
  * @param {boolean} c - True for snake_case, false for camelCase.

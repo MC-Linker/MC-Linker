@@ -509,6 +509,8 @@ export default class MCLinkerAPI extends EventEmitter {
 
         //type === 'chat'
 
+        if(message === '' || message === null) return; //Ignore empty messages
+
         //Parse pings (@name)
         const mentions = message.match(/@(\S+)/g);
         for(const mention of mentions ?? []) {
@@ -518,8 +520,7 @@ export default class MCLinkerAPI extends EventEmitter {
             argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
         }
 
-        const allWebhooks = await guild.fetchWebhooks().catch(() => {
-        });
+        const allWebhooks = await guild.fetchWebhooks().catch(() => {});
 
         for(const channel of channels) {
             if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
@@ -707,7 +708,7 @@ export default class MCLinkerAPI extends EventEmitter {
         else {
             /** @type {?Discord.BaseGuildTextChannel} */
             const channel = guild.channels.cache.find(c =>
-                c.isTextBased() && c.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.CreateInstantInvite),
+                c.isTextBased() && c.permissionsFor?.(guild.members.me)?.has(Discord.PermissionFlagsBits.CreateInstantInvite),
             );
             if(!channel) return { status: 500 };
             const invite = await channel.createInvite({ maxAge: 0, maxUses: 0, unique: true });
