@@ -5,8 +5,13 @@ import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import * as utils from '../../utilities/utils.js';
-import { MinecraftDataVersion, stringifyMinecraftJson } from '../../utilities/utils.js';
+import {
+    drawMinecraftNumber,
+    getLivePlayerNbt,
+    MinecraftDataVersion,
+    stringifyMinecraftJson,
+    wrapText,
+} from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
 import logger from '../../utilities/logger.js';
 
@@ -95,7 +100,7 @@ export default class Inventory extends Command {
         const user = args[0];
         const showDetails = args[1];
 
-        const playerData = await utils.getLivePlayerNbt(server, user, interaction);
+        const playerData = await getLivePlayerNbt(server, user, interaction);
         if(!playerData) return;
 
         //Convert slots to network slots
@@ -508,12 +513,12 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
             logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
             ctx.font = '8px Minecraft';
             ctx.fillStyle = '#000';
-            const lines = utils.wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);
+            const lines = wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);
             lines.forEach((line, i) => ctx.fillText(line, x, y + 8 + i * 8));
         }
 
         //Draw count
-        if(count > 1) utils.drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
+        if(count > 1) drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
 
         const maxDurability = mcData.itemsByName[itemId]?.maxDurability;
         if(damage && maxDurability) {
