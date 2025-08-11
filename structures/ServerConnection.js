@@ -122,6 +122,7 @@ export default class ServerConnection extends Connection {
             id: data.id,
             ip: data.ip,
             hash: data.hash,
+            socket: data.socket,
         });
 
         this._patch(data);
