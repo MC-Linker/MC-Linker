@@ -83,7 +83,7 @@ const armorSlotNames = {
     45: keys.commands.inventory.slots.offhand,
 };
 
-export class Inventory extends Command {
+export default class Inventory extends Command {
 
     constructor() {
         super({
@@ -355,7 +355,7 @@ export class Inventory extends Command {
             const isSpecialItem = this.addInfo(itemEmbed, item.components ?? item.tag, itemStats);
 
             //If item is a shulker, render shulker inventory
-            if(formattedId.endsWith('shulker_box') && item.components?.['minecraft:container'] ?? item.tag?.BlockEntityTag?.Items) {
+            if(formattedId.endsWith('shulker_box') && (item.components?.['minecraft:container'] ?? item.tag?.BlockEntityTag?.Items)) {
                 const shulkerItems = item.components?.['minecraft:container'] ?? item.tag.BlockEntityTag.Items;
 
                 //Increase slot numbers by 18 in inventory
