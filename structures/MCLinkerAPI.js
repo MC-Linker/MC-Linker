@@ -7,12 +7,11 @@ import { addPh, getEmbed, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
+import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import Discord from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import logger, { pinoTransport } from '../utilities/logger.js';
-
-const { instrument } = require('@socket.io/admin-ui');
 
 
 export default class MCLinkerAPI extends EventEmitter {
