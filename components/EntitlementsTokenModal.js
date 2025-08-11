@@ -94,6 +94,8 @@ export default class EntitlementsNextDetails extends Component {
             MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
             MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
             AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
+            IO_USERNAME: process.env.IO_USERNAME,
+            IO_PASSWORD: crypto.randomUUID(),
             SERVICE_NAME: `custom-mc-linker_${interaction.user.id}`,
             DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${interaction.user.id}`,
             NODE_ENV: 'production',

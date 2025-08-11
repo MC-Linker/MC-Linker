@@ -12,6 +12,9 @@ import Discord from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import logger, { pinoTransport } from '../utilities/logger.js';
 
+const { instrument } = require('@socket.io/admin-ui');
+
+
 export default class MCLinkerAPI extends EventEmitter {
 
     /**
@@ -147,7 +150,12 @@ export default class MCLinkerAPI extends EventEmitter {
          */
         this.fastify = Fastify({ logger: { level: process.env.LOG_LEVEL || 'info', transport: pinoTransport } });
         // noinspection JSCheckFunctionSignatures
-        this.fastify.register(fastifyIO);
+        this.fastify.register(fastifyIO, {
+            cors: {
+                origin: ['https://admin.socket.io'],
+                credentials: true,
+            },
+        });
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
         this.fastify.addHook('preHandler', (request, reply, done) => {
@@ -269,6 +277,15 @@ export default class MCLinkerAPI extends EventEmitter {
 
         await this.fastify.ready(); //Await websocket plugin loading
         this.websocket = this.fastify.io;
+
+        instrument(this.websocket, {
+            auth: {
+                type: 'basic',
+                username: process.env.IO_USERNAME,
+                password: process.env.IO_PASSWORD,
+            },
+            mode: 'development',
+        });
 
         this.websocket.on('connection', socket => {
             logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
