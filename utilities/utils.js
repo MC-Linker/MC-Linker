@@ -459,7 +459,7 @@ export async function getLivePlayerNbt(server, user, interaction) {
     const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
     if(onlinePlayers.includes(user.username)) {
         const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
-        if(playerNbtResponse?.status === 200) {
+        if(playerNbtResponse?.status === 200 && playerNbtResponse.data.data !== '') {
             const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
             if(parsed) return parsed;
             // else fall back to downloading the nbt file
@@ -537,7 +537,7 @@ export function nbtStringToObject(string, interaction) {
         const object = mojangson.parse(stripColorCodes(string));
         //remove empty inventory/ender-items to prevent error (please fix this mojangson)
         if(!object.value?.Inventory?.value?.value) delete object.value.Inventory;
-        else if(!object.value?.EnderItems?.value?.value) delete object.value.EnderItems;
+        if(!object.value?.EnderItems?.value?.value) delete object.value.EnderItems;
         const simplified = mojangson.simplify(object);
         // re-add empty inventory/ender-items
         if(!simplified.Inventory) simplified.Inventory = [];

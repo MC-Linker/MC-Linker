@@ -260,9 +260,14 @@ export default class WebSocketProtocol extends Protocol {
                         return resolve(null);
                     }
 
-                    c.logger.debug(`[Socket.IO] Received response for event ${name}: ${JSON.stringify(response)}`);
-                    if(typeof response === 'string') resolve(JSON.parse(response));
-                    else resolve(response);
+                    if(typeof response === 'string') {
+                        c.logger.debug(`[Socket.IO] Received response for event ${name}: ${response}`);
+                        resolve(JSON.parse(response));
+                    }
+                    else {
+                        c.logger.debug(`[Socket.IO] Received response for event ${name}`);
+                        resolve(response);
+                    }
                 });
             });
         }, { context: { id: this.id, name, data }, shard: 0 });

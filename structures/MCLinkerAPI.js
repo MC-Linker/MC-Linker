@@ -427,10 +427,10 @@ export default class MCLinkerAPI extends EventEmitter {
             });
         }
 
-        /** @type {ServerConnection<WebSocketProtocol>} */
-        const server = this.client.serverConnections.resolve(serverResolvable);
-
         socket.on('disconnect', reason => {
+            /** @type {ServerConnection<WebSocketProtocol>} */
+            const server = this.client.serverConnections.resolve(serverResolvable);
+
             if(!['server namespace disconnect', 'client namespace disconnect'].includes(reason)) {
                 server.chatChannels.forEach(chatChannel => {
                     // Send a message to the chat channels that the server has disconnected
