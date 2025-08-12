@@ -14,6 +14,7 @@ import Discord from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import logger, { pinoTransport } from '../utilities/logger.js';
 import path from 'path';
+import fs from 'fs-extra';
 
 
 export default class MCLinkerAPI extends EventEmitter {
@@ -149,7 +150,13 @@ export default class MCLinkerAPI extends EventEmitter {
          * The fastify instance for the api.
          * @type {import('fastify').FastifyInstance}
          */
-        this.fastify = Fastify({ logger: { level: process.env.LOG_LEVEL || 'info', transport: pinoTransport } });
+        this.fastify = Fastify({
+            logger: { level: process.env.LOG_LEVEL || 'info', transport: pinoTransport },
+            https: {
+                key: fs.readFileSync(path.resolve('./private/mclinker.com.key')),
+                cert: fs.readFileSync(path.resolve('./private/mclinker.com.pem')),
+            },
+        });
         // noinspection JSCheckFunctionSignatures
         this.fastify.register(fastifyIO, {
             cors: {
@@ -278,11 +285,6 @@ export default class MCLinkerAPI extends EventEmitter {
             reply.redirect('https://mclinker.com');
         });
 
-        this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
-            if(err) throw err;
-            logger.info(addPh(keys.api.plugin.success.listening.console, { address }));
-        });
-
         await this.fastify.ready(); //Await websocket plugin loading
         this.websocket = this.fastify.io;
 
@@ -406,6 +408,11 @@ export default class MCLinkerAPI extends EventEmitter {
                 logger.debug(`[Socket.io] Connection from ${socket.handshake.address} provided invalid verification. Disconnecting socket.`);
                 return socket.disconnect(true);
             }
+        });
+
+        this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
+            if(err) throw err;
+            logger.info(addPh(keys.api.plugin.success.listening.console, { address }));
         });
 
         return this.fastify;
