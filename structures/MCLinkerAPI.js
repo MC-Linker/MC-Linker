@@ -9,6 +9,7 @@ import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
+import fastifyStatic from '@fastify/static';
 import Discord from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import logger, { pinoTransport } from '../utilities/logger.js';
@@ -154,6 +155,13 @@ export default class MCLinkerAPI extends EventEmitter {
                 origin: ['https://admin.socket.io'],
                 credentials: true,
             },
+            logLevel: process.env.LOG_LEVEL || 'info',
+        });
+
+        this.fastify.register(fastifyStatic, {
+            root: './socket.io-admin-ui', // The path to the static files
+            prefix: '/admin/', // optional: default '/'
+            logLevel: process.env.LOG_LEVEL || 'info',
         });
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
