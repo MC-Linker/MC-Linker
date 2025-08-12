@@ -295,6 +295,8 @@ export default class MCLinkerAPI extends EventEmitter {
             mode: 'development',
         });
 
+        this.websocket.engine.on('connection_error', err => logger.error(err, '[Socket.io] Websocket connection error'));
+
         this.websocket.on('connection', socket => {
             logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
 
