@@ -14,7 +14,6 @@ import Discord from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import logger, { pinoTransport } from '../utilities/logger.js';
 import path from 'path';
-import fs from 'fs-extra';
 
 
 export default class MCLinkerAPI extends EventEmitter {
@@ -152,10 +151,10 @@ export default class MCLinkerAPI extends EventEmitter {
          */
         this.fastify = Fastify({
             logger: { level: process.env.LOG_LEVEL || 'info', transport: pinoTransport },
-            https: {
-                key: fs.readFileSync(path.resolve('./private/mclinker.com.key')),
-                cert: fs.readFileSync(path.resolve('./private/mclinker.com.pem')),
-            },
+            /*            https: {
+                            key: fs.readFileSync(path.resolve('./private/mclinker.com.key')),
+                            cert: fs.readFileSync(path.resolve('./private/mclinker.com.pem')),
+                        },*/
         });
         // noinspection JSCheckFunctionSignatures
         this.fastify.register(fastifyIO, {
@@ -213,7 +212,7 @@ export default class MCLinkerAPI extends EventEmitter {
                         'Retry-After': err.msBeforeNext / 1000,
                         'X-RateLimit-Limit': rateLimiter.points,
                         'X-RateLimit-Remaining': err.remainingPoints,
-                        'X-RateLimit-Reset': new Date(Date.now() + err.msBeforeNext),
+                        'X-RateLimit-Reset': Math.ceil((Date.now() + rateLimiterRes.msBeforeNext) / 1000),
                     }).send({ message: 'Too many requests' });
                 }
                 else {
