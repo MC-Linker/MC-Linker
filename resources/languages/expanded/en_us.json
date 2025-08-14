@@ -3399,8 +3399,8 @@
           "options": [
             {
               "type": "String",
-              "name": "filter",
-              "description": "Set a filter to only show statchannels of a specific type.",
+              "name": "type",
+              "description": "Set which type of statchannels to list.",
               "required": false,
               "choices": [
                 {

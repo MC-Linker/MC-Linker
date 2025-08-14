@@ -1935,8 +1935,8 @@
   "data.statchannel.options.2.description": "List all statchannels in the server.",
 
   "data.statchannel.options.2.options.0.type": "String",
-  "data.statchannel.options.2.options.0.name": "filter",
-  "data.statchannel.options.2.options.0.description": "Set a filter to only show statchannels of a specific type.",
+  "data.statchannel.options.2.options.0.name": "type",
+  "data.statchannel.options.2.options.0.description": "Set which type of statchannels to list.",
   "data.statchannel.options.2.options.0.required": false,
   "data.statchannel.options.2.options.0.choices.0.name": "Status",
   "data.statchannel.options.2.options.0.choices.0.value": "status",
