@@ -12,9 +12,8 @@ manager.on('shardCreate', shard => {
     shard.on(ShardEvents.Ready, async () => {
         logger.info(`Shard ${shard.id} ready`);
         readyShards.add(shard.id);
-        if(readyShards.size === manager.totalShards) {
+        if(readyShards.size === manager.totalShards)
             logger.info(`All ${manager.totalShards} shards ready`);
-        }
     });
 });
 await manager.spawn();
