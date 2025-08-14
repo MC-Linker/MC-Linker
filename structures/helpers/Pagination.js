@@ -223,12 +223,7 @@ export default class Pagination {
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', async (_, reason) => {
-            if(reason === 'nested_pagination') return;
-            else if(reason === 'exit_to_parent') {
-                // Return to parent pagination
-                const message = await this.interaction.replyOptions(this.lastMessageOptions);
-                return this._createComponentCollector(message);
-            }
+            if(['nested_pagination', 'exit_to_parent'].includes(reason)) return;
 
             message = await message.fetch(); // Get the latest components
             if(!message?.components) return;
@@ -246,15 +241,12 @@ export default class Pagination {
         const startPage = this._getStartPage();
         const options = startPage.options;
 
-        const originalComponents = options.components ?? [];
-
-        options.components = this._getReplyRows(startPage.options, startPage.button?.data?.custom_id, 'stay');
+        const components = this._getReplyRows(startPage.options, startPage.button?.data?.custom_id, 'stay');
 
         this.lastPage = startPage;
-        this.lastMessageOptions = options;
+        this.lastMessageOptions = { ...options, components };
 
-        const message = await this.interaction.replyOptions(options);
-        options.components = originalComponents; // Restore original components after sending
+        const message = await this.interaction.replyOptions(this.lastMessageOptions);
         return message;
     }
 
@@ -289,6 +281,10 @@ export default class Pagination {
         await interaction.deferUpdate();
         this.collector?.stop('exit_to_parent');
         this.collector = null;
+
+        // Return to parent pagination
+        const message = await this.parent.interaction.replyOptions(this.parent.lastMessageOptions);
+        return this.parent._createComponentCollector(message);
     }
 
     /**
@@ -337,14 +333,11 @@ export default class Pagination {
     async _navigateToPage(interaction, page) {
         const options = page.options;
 
-        const originalComponents = options.components ?? [];
-
-        options.components = this._getReplyRows(options, page.button.data.custom_id, 'stay');
+        const components = this._getReplyRows(options, page.button.data.custom_id, 'stay');
         this.lastPage = { button: page.button, options };
-        this.lastMessageOptions = options;
+        this.lastMessageOptions = { ...options, components };
 
-        await interaction.update(options);
-        options.components = originalComponents;
+        await interaction.update(this.lastMessageOptions);
     }
 
     /**
