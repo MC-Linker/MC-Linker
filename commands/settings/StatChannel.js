@@ -72,10 +72,10 @@ export default class StatChannel extends Command {
             await interaction.replyTl(keys.commands.statchannel.success.remove);
         }
         else if(subcommand === 'list') {
-            const filter = args[1];
+            const type = args[1];
 
             let statChannels = server.statChannels;
-            if(filter && statChannels) statChannels = statChannels.filter(c => c.type === filter);
+            if(type && statChannels) statChannels = statChannels.filter(c => c.type === type);
 
             if(!statChannels?.length) {
                 await interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
