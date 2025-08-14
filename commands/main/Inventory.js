@@ -108,6 +108,7 @@ export default class Inventory extends Command {
             return {
                 ...item,
                 slot: this.dataSlotToNetworkSlot(item.Slot ?? item.slot),
+                count: item.Count ?? item.count,
             };
         });
 
@@ -331,7 +332,7 @@ export default class Inventory extends Command {
             //If parent item is a shulker, get item from shulker inventory
             const indexes = buttonId.split('_').slice(2);
             for(const i of indexes) {
-                item = item.components?.['minecraft:container']?.[i] ?? item.tag.BlockEntityTag.Items[i];
+                item = item.components?.['minecraft:container']?.[i].item ?? item.tag.BlockEntityTag.Items[i];
                 indexOfIndex++;
             }
 
@@ -370,9 +371,10 @@ export default class Inventory extends Command {
                 //Add parentIndex to shulker items to add in customId on buttons
                 const mappedShulkerItems = shulkerItems.map(item => {
                     return {
-                        ...item,
+                        ...(item.item ?? item),
                         parentIndex: buttonId.split(/slot_?/).pop(),
                         slot: item.Slot ?? item.slot,
+                        count: item.item?.count ?? item.Count,
                     };
                 });
 
@@ -470,7 +472,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
     for(let i = 0; i < items.length; i++) {
         const slot = items[i].slot;
         const itemId = items[i].id.split(':').pop();
-        const count = items[i].Count;
+        const count = items[i].count;
         const damage = items[i].tag?.Damage;
 
         const [x, y] = slotCoords[slot] ?? [];
