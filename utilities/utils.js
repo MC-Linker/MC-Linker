@@ -884,6 +884,16 @@ export function disableComponents(rows) {
 }
 
 /**
+ * Flatten action rows to get all components in an array
+ * @param {import('discord.js').ActionRowBuilder[]} actionRows - The action rows to flatten
+ * @return {import('discord.js').ComponentBuilder[]} - An array of all components in the action rows
+ * @private
+ */
+export function flattenActionRows(actionRows) {
+    return actionRows?.flatMap(row => row.components) ?? [];
+}
+
+/**
  * Memoizes a function.
  * @template {Function} K
  * @param {K} fn - The function to memoize.

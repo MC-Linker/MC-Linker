@@ -9,16 +9,22 @@ import {
 import DefaultButton from './DefaultButton.js';
 import { createActionRows, getComponent } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
-import { ComponentSizeInActionRow, disableComponents, MaxActionRows, MaxActionRowSize } from '../../utilities/utils.js';
+import {
+    ComponentSizeInActionRow,
+    disableComponents,
+    flattenActionRows,
+    MaxActionRows,
+    MaxActionRowSize,
+} from '../../utilities/utils.js';
 
 export default class Pagination {
 
     static DEFAULT_TIMEOUT = 120_000;
 
     static NAVIGATION_BUTTON_IDS = {
-        NEXT: 'next',
-        BACK: 'back',
-        EXIT: 'exit',
+        NEXT: 'pagination_next',
+        BACK: 'pagination_back',
+        EXIT: 'pagination_exit',
     };
 
     /**
@@ -207,7 +213,7 @@ export default class Pagination {
         this.lastFirstPageButtonIndex = 0;
 
         const message = await this._sendInitialMessage();
-        this._createComponentCollector(message);
+        this._createCollector(message);
         return message;
     }
 
@@ -216,7 +222,7 @@ export default class Pagination {
      * @param {Message|InteractionResponse} message - The message to create the collector for
      * @private
      */
-    _createComponentCollector(message) {
+    _createCollector(message) {
         this.collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: this.options.timeout ?? Pagination.DEFAULT_TIMEOUT,
@@ -246,8 +252,7 @@ export default class Pagination {
         this.lastPage = startPage;
         this.lastMessageOptions = { ...options, components };
 
-        const message = await this.interaction.replyOptions(this.lastMessageOptions);
-        return message;
+        return await this.interaction.replyOptions(this.lastMessageOptions);
     }
 
     /**
@@ -284,7 +289,7 @@ export default class Pagination {
 
         // Return to parent pagination
         const message = await this.parent.interaction.replyOptions(this.parent.lastMessageOptions);
-        return this.parent._createComponentCollector(message);
+        return this.parent._createCollector(message);
     }
 
     /**
@@ -366,7 +371,7 @@ export default class Pagination {
      */
     _getFirstPageButtonIndex(message) {
         const allButtonIds = this._getPageButtons().map(b => b.data.custom_id);
-        const allComponentIds = this._flattenActionRows(message.components).map(c => c.data.custom_id);
+        const allComponentIds = flattenActionRows(message.components).map(c => c.data.custom_id);
         return allButtonIds.findIndex(id => allComponentIds.includes(id));
     }
 
@@ -438,16 +443,6 @@ export default class Pagination {
      * @returns {import('discord.js').ComponentBuilder[]} - Combined components for the page
      */
     _combineComponents(options, pageButtons) {
-        return [...this._flattenActionRows(options.components), ...pageButtons];
-    }
-
-    /**
-     * Flatten action rows to get all components
-     * @param {import('discord.js').ActionRowBuilder[]} actionRows - The action rows to flatten
-     * @return {import('discord.js').ComponentBuilder[]} - An array of all components in the action rows
-     * @private
-     */
-    _flattenActionRows(actionRows) {
-        return actionRows?.flatMap(row => row.components) ?? [];
+        return [...flattenActionRows(options.components), ...pageButtons];
     }
 }

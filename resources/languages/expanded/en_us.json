@@ -175,238 +175,211 @@
       }
     }
   },
-  "entitlements": {
-    "success": {
-      "start": {
-        "ephemeral": true,
-        "embeds": [
-          {
-            "title": "Subscription Successful",
-            "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
-            "fields": [
-              {
-                "name": "Get Started",
-                "value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
-              }
-            ]
-          }
-        ],
-        "components": [
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "Next >",
-            "custom_id": "entitlements_next_intents"
-          }
-        ]
+  "commands": {
+    "customize": {
+      "success": {
+        "start": {
+          "ephemeral": true,
+          "embeds": [
+            {
+              "title": "Subscription Successful",
+              "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
+              "fields": [
+                {
+                  "name": "Get Started",
+                  "value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                }
+              ]
+            }
+          ],
+          "components": [
+            {
+              "type": "Button",
+              "style": "Primary",
+              "label": "Next >",
+              "custom_id": "entitlements_next_intents"
+            }
+          ]
+        },
+        "intents": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "ephemeral": true,
+              "fields": [
+                {
+                  "name": "Enabling Intents",
+                  "value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                }
+              ]
+            }
+          ]
+        },
+        "details": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "fields": [
+                {
+                  "name": "Enter Bot Details",
+                  "value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                }
+              ]
+            }
+          ],
+          "components": [
+            {
+              "type": "Button",
+              "style": "Primary",
+              "label": "Enter Details",
+              "custom_id": "entitlements_enter_details"
+            }
+          ]
+        },
+        "port": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "fields": [
+                {
+                  "name": "Configure Bot Port",
+                  "value": "Lastly, run `/linker bot_port %port%` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml) and reload your server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                }
+              ]
+            }
+          ]
+        },
+        "logging_in": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "description": "*Logging into your bot...*"
+            }
+          ],
+          "components": []
+        },
+        "cloning": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "description": "*Copying MC-Linker...*"
+            }
+          ]
+        },
+        "deploying": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "description": "*Deploying Slash Commands...*"
+            }
+          ]
+        },
+        "starting_up": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "description": "*Starting up...*"
+            }
+          ]
+        },
+        "finish": {
+          "embeds": [
+            {
+              "title": "Set Up Complete",
+              "description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+            }
+          ],
+          "components": [
+            {
+              "type": "Button",
+              "style": "Link",
+              "label": "Invite Your Bot!",
+              "url": "%invite%"
+            }
+          ]
+        },
+        "token_modal": {
+          "type": "Modal",
+          "custom_id": "entitlements_token_modal",
+          "title": "Enter Details",
+          "components": [
+            {
+              "type": "TextInput",
+              "custom_id": "token",
+              "label": "Bot Token",
+              "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+              "required": true,
+              "min_length": 20,
+              "max_length": 100,
+              "style": "Short"
+            }
+          ]
+        }
       },
-      "intents": {
-        "embeds": [
-          {
-            "title": "Setting Up Your Custom MC-Linker",
-            "ephemeral": true,
-            "fields": [
-              {
-                "name": "Enabling Intents",
-                "value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
-              }
-            ]
-          }
-        ],
-        "components": [
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "< Back",
-            "custom_id": "entitlements_back_start"
-          },
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "Next >",
-            "custom_id": "entitlements_next_details"
-          }
-        ]
-      },
-      "details": {
-        "embeds": [
-          {
-            "title": "Setting Up Your Custom MC-Linker",
-            "fields": [
-              {
-                "name": "Enter Bot Details",
-                "value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
-              }
-            ]
-          }
-        ],
-        "components": [
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "< Back",
-            "custom_id": "entitlements_next_intents"
-          },
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "Enter Details",
-            "custom_id": "entitlements_enter_details"
-          }
-        ]
-      },
-      "port": {
-        "embeds": [
-          {
-            "fields": [
-              {
-                "name": "Setting Up Your Custom MC-Linker",
-                "value": "Lastly, run `/linker bot_port %port%` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml) and reload your server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
-              }
-            ]
-          }
-        ],
-        "components": [
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "Next >",
-            "custom_id": "entitlements_next_port"
-          }
-        ]
-      },
-      "logging_in": {
-        "embeds": [
-          {
-            "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Logging into your bot...*"
-          }
-        ],
-        "components": []
-      },
-      "cloning": {
-        "embeds": [
-          {
-            "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Copying MC-Linker...*"
-          }
-        ]
-      },
-      "deploying": {
-        "embeds": [
-          {
-            "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Deploying Slash Commands...*"
-          }
-        ]
-      },
-      "starting_up": {
-        "embeds": [
-          {
-            "title": "Setting Up Your Custom MC-Linker",
-            "description": "*Starting up...*"
-          }
-        ]
-      },
-      "finish": {
-        "embeds": [
-          {
-            "title": "Set Up Complete",
-            "description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nThen you can customize your Bot's appearance in the **General Information** and **Bot** section to your likings.\n\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!) to connect your Minecraft server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
-          }
-        ],
-        "components": [
-          {
-            "type": "Button",
-            "style": "Link",
-            "label": "Invite Your Bot!",
-            "url": "%invite%"
-          }
-        ]
-      },
-      "token_modal": {
-        "type": "Modal",
-        "custom_id": "entitlements_token_modal",
-        "title": "Enter Details",
-        "components": [
-          {
-            "type": "TextInput",
-            "custom_id": "token",
-            "label": "Bot Token",
-            "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
-            "required": true,
-            "min_length": 20,
-            "max_length": 100,
-            "style": "Short"
-          }
-        ]
+      "warnings": {
+        "no_entitlement": {
+          "embeds": [
+            {
+              "title": "No Subscription",
+              "description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription."
+            }
+          ],
+          "components": [
+            {
+              "type": "Button",
+              "style": "Premium",
+              "sku_id": "1166098447665995807"
+            }
+          ]
+        },
+        "invalid_token": {
+          "embeds": [
+            {
+              "title": "Incorrect Bot Token",
+              "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+            }
+          ],
+          "console": "Failed to login to bot because of invalid token",
+          "components": [
+            {
+              "type": "Button",
+              "style": "Primary",
+              "label": "< Back",
+              "custom_id": "wizard_back"
+            },
+            {
+              "type": "Button",
+              "style": "Primary",
+              "label": "Enter Details",
+              "custom_id": "entitlements_enter_details"
+            }
+          ]
+        },
+        "no_intents": {
+          "embeds": [
+            {
+              "title": "Missing Intents",
+              "description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+            }
+          ],
+          "console": "Failed to login to bot because of missing intents",
+          "components": [
+            {
+              "type": "Button",
+              "style": "Primary",
+              "label": "< Back",
+              "custom_id": "wizard_back"
+            },
+            {
+              "type": "Button",
+              "style": "Primary",
+              "label": "Enter Details",
+              "custom_id": "entitlements_enter_details"
+            }
+          ]
+        }
       }
     },
-    "warnings": {
-      "no_entitlement": {
-        "embeds": [
-          {
-            "title": "No Subscription",
-            "description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription."
-          }
-        ],
-        "components": [
-          {
-            "type": "Button",
-            "style": "Premium",
-            "sku_id": "1166098447665995807"
-          }
-        ]
-      },
-      "invalid_token": {
-        "embeds": [
-          {
-            "title": "Incorrect Bot Token",
-            "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
-          }
-        ],
-        "console": "Failed to login to bot because of invalid token",
-        "components": [
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "< Back",
-            "custom_id": "entitlements_next_intents"
-          },
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "Enter Details",
-            "custom_id": "entitlements_enter_details"
-          }
-        ]
-      },
-      "no_intents": {
-        "embeds": [
-          {
-            "title": "Missing Intents",
-            "description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
-          }
-        ],
-        "console": "Failed to login to bot because of missing intents",
-        "components": [
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "< Back",
-            "custom_id": "entitlements_next_intents"
-          },
-          {
-            "type": "Button",
-            "style": "Primary",
-            "label": "Enter Details",
-            "custom_id": "entitlements_enter_details"
-          }
-        ]
-      }
-    }
-  },
-  "commands": {
     "eval": {
       "warnings": {
         "no_command": {
