@@ -152,7 +152,6 @@ export default class Advancements extends Command {
 
         const paginationPages = await this.getAdvancementPages(advancementDataList, user.username, advancementsEmbed, advancementsAttach);
         const pagination = new Pagination(client, interaction, paginationPages, {
-            showSelectedButton: true,
             showStartPageOnce: true,
             timeout: 60000 * 5, // 5 minutes
         });

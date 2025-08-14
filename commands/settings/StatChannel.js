@@ -3,7 +3,7 @@ import keys from '../../utilities/keys.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
-import { GuildChannel } from 'discord.js';
+import { ButtonStyle, GuildChannel } from 'discord.js';
 
 export default class StatChannel extends Command {
 
@@ -109,7 +109,9 @@ export default class StatChannel extends Command {
                 };
             }
 
-            const pagination = new Pagination(client, interaction, pages);
+            const pagination = new Pagination(client, interaction, pages, {
+                highlightSelectedButton: ButtonStyle.Primary,
+            });
             return pagination.start();
         }
     }

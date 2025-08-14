@@ -4,6 +4,7 @@ import * as utils from '../../utilities/utils.js';
 import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import { ButtonStyle } from 'discord.js';
 
 export default class RoleSync extends AutocompleteCommand {
 
@@ -133,7 +134,9 @@ export default class RoleSync extends AutocompleteCommand {
                 };
             }
 
-            const pagination = new Pagination(client, interaction, pages);
+            const pagination = new Pagination(client, interaction, pages, {
+                highlightSelectedButton: ButtonStyle.Primary,
+            });
             return pagination.start();
         }
     }

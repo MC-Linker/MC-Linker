@@ -121,7 +121,6 @@ export default class ChatChannel extends Command {
             }
 
             const pagination = new Pagination(client, interaction, pages, {
-                showSelectedButton: true,
                 highlightSelectedButton: ButtonStyle.Primary,
             });
             return pagination.start();

@@ -247,7 +247,6 @@ export default class Stats extends Command {
         await addStatisticPage();
 
         const pagination = new Pagination(client, interaction, paginationPages, {
-            showSelectedButton: true,
             highlightSelectedButton: ButtonStyle.Primary,
             timeout: 60000 * 5, // 5 minutes
         });

@@ -145,9 +145,9 @@ export default class Inventory extends Command {
 
         const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach);
         const pagination = new Pagination(client, interaction, paginationPages, {
-            showSelectedButton: true,
-            highlightSelectedButton: ButtonStyle.Primary,
             showStartPageOnce: true,
+            highlightSelectedButton: ButtonStyle.Primary,
+            timeout: 60000 * 5, // 5 minutes
         });
         await pagination.start();
     }
