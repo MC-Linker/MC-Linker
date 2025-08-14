@@ -199,7 +199,9 @@ export default class UserInfo extends Command {
         // If the user is not an admin, delete the admin page
         if(!interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator)) delete pages.userinfo_admin;
 
-        const pagination = new Pagination(client, interaction, pages);
+        const pagination = new Pagination(client, interaction, pages, {
+            showSelectedButton: true,
+        });
         const message = await pagination.start();
         const collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
@@ -246,7 +248,10 @@ export default class UserInfo extends Command {
 
         let response = commandResponse.data?.message ? commandResponse.data.message : keys.api.plugin.warnings.no_response_message;
         response = codeBlockFromCommandResponse(response);
-        await interaction.replyTl(keys.commands.userinfo.success.admin_button, { response, command });
+        await interaction.editReply(getReplyOptions(
+            keys.commands.userinfo.success.admin_button,
+            { response, command },
+        ));
 
         if(interaction.customId === 'userinfo_kick') return;
 

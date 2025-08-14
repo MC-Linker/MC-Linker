@@ -918,7 +918,7 @@
   "commands.chatchannel.success.channel_button.components.0.type": "Button",
   "commands.chatchannel.success.channel_button.components.0.label": "Channel #%index1%",
   "commands.chatchannel.success.channel_button.components.0.custom_id": "channel_%index%",
-  "commands.chatchannel.success.channel_button.components.0.style": "Success",
+  "commands.chatchannel.success.channel_button.components.0.style": "Secondary",
 
 
 

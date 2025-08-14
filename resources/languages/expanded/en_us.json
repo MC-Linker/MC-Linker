@@ -1636,7 +1636,7 @@
               "type": "Button",
               "label": "Channel #%index1%",
               "custom_id": "channel_%index%",
-              "style": "Success"
+              "style": "Secondary"
             }
           ]
         }

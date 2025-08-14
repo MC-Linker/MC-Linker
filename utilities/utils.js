@@ -892,11 +892,15 @@ export function disableComponents(rows) {
  */
 export function memoize(fn, parameters = undefined) {
     const cache = new Map();
-    return async function(...args) {
+    return function(...args) {
         const key = JSON.stringify(args.slice(0, parameters));
         if(cache.has(key)) return cache.get(key);
-        const result = await fn(...args);
-        cache.set(key, result);
+
+        const result = fn(...args);
+        if(result instanceof Promise)
+            result.then(value => cache.set(key, value));
+        else cache.set(key, result);
+
         return result;
     };
 }
