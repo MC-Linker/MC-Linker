@@ -18,7 +18,7 @@ const startCoords = [41, 152];
 const yPadding = 7;
 const numberPadding = [32, 19];
 const maxStatsAmountsY = 8;
-const maxCustomStatsAmountY = 18;
+const maxCustomStatsAmountY = 24;
 const headerSize = 74;
 const itemSize = headerSize - 10;
 const numberSize = [30, 45];
@@ -66,6 +66,7 @@ export default class Stats extends Command {
             stats = Object.fromEntries(Object.entries(stats).sort((a, b) => a[0].localeCompare(b[0])));
 
         const paginationPages = {};
+        // [currentColumnIndex, currentRowIndex]
         const currentStatAmounts = [0, 0];
 
         const addStatisticPage = async (pageNumber = 0, startIndex = 0) => {
@@ -112,7 +113,7 @@ export default class Stats extends Command {
                 let x = (statsCanvas.width - sizeOfAllItems) / 2;
                 let y = startCoords[1] + ctx.measureText('M').actualBoundingBoxAscent / 2; // Move it down half the height of the text
 
-                for(const [name, value] of Object.entries(stats).slice(startIndex)) {
+                for(const [name, value] of Object.entries(stats).slice(startIndex, tempColumnIndex * maxCustomStatsAmountY)) {
                     utils.drawMinecraftText(ctx, name, x, y, true);
                     utils.drawMinecraftText(ctx, value, x + longestNameInColumn(currentStatAmounts[0]) + numberPadding[0], y, true);
 
