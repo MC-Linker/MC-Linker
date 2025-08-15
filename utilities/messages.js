@@ -306,6 +306,8 @@ export function addPh(key, ...placeholders) {
  * @returns {Promise<?Message|?InteractionResponse>}
  */
 export async function replyTl(interaction, key, ...placeholders) {
+    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
+
     if(key?.console) logger.info(addPh(key.console, placeholders));
     if(key?.console && !interaction) return null; // Only log to console if interaction doesn't exist
 
@@ -314,7 +316,6 @@ export async function replyTl(interaction, key, ...placeholders) {
         return null;
     }
 
-    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
     return replyOptions(interaction, getReplyOptions(key, placeholders));
 }
 

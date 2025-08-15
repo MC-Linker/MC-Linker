@@ -1,7 +1,7 @@
 import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import Wizard from '../structures/helpers/Wizard.js';
-import { getReplyOptions } from '../utilities/messages.js';
+import { getReplyOptions, ph } from '../utilities/messages.js';
 
 export default class Customize extends Command {
 
@@ -23,7 +23,7 @@ export default class Customize extends Command {
             keys.commands.customize.success.start,
             keys.commands.customize.success.intents,
             keys.commands.customize.success.details,
-        ].map(getReplyOptions));
+        ].map(key => getReplyOptions(key, ph.emojisAndColors())));
         await wizard.start();
     }
 }
