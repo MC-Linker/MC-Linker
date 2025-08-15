@@ -25,7 +25,7 @@ export const pinoTransport = {
     ],
 };
 
-const logger = pino({ level: logLevel || 'info', transport: pinoTransport });
+const logger = pino({ level: logLevel, transport: pinoTransport });
 logger.info(`[Pino] Logger initialized at level: ${logger.level}`);
 
 await new Promise(r => setTimeout(r, 1000));

@@ -19,15 +19,9 @@ export default class Customize extends Command {
         if(!await super.execute(interaction, client, args, server)) return;
 
         const wizard = new Wizard(client, interaction, [
-            {
-                options: keys.commands.customize.success.start,
-            },
-            {
-                options: keys.commands.customize.success.intents,
-            },
-            {
-                options: keys.commands.customize.success.details,
-            },
+            keys.commands.customize.success.start,
+            keys.commands.customize.success.intents,
+            keys.commands.customize.success.details,
         ]);
         await wizard.start();
     }

@@ -48,11 +48,12 @@ export const ComponentSizeInActionRow = {
 const mcData = MinecraftData(MinecraftDataVersion);
 
 // Password Auth:
-const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
-    authTitle: process.env.AZURE_CLIENT_ID,
-    flow: 'msal', // required, but will be ignored because password field is set
-    password: process.env.MICROSOFT_PASSWORD,
-});
+const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && process.env.AZURE_CLIENT_ID ?
+    new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
+        authTitle: process.env.AZURE_CLIENT_ID,
+        flow: 'msal', // required, but will be ignored because password field is set
+        password: process.env.MICROSOFT_PASSWORD,
+    }) : null;
 // MSAL Auth:
 // const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
 //     console.log(res);
