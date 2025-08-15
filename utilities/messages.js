@@ -308,15 +308,18 @@ export function addPh(key, ...placeholders) {
 export async function replyTl(interaction, key, ...placeholders) {
     placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
 
-    if(key?.console) logger.info(addPh(key.console, placeholders));
-    if(key?.console && !interaction) return null; // Only log to console if interaction doesn't exist
-
     if(!interaction || !key || !placeholders) {
         console.error(getLanguageKey(keys.api.messages.errors.no_reply_arguments.console));
         return null;
     }
 
-    return replyOptions(interaction, getReplyOptions(key, placeholders));
+    const options = getReplyOptions(key, placeholders);
+
+    if(options?.console) logger.info(addPh(options.console, placeholders));
+    if(options?.console && !interaction) return null; // Only log to console if interaction doesn't exist
+
+    if(!options.content && !options.embeds && !options.components && !options.files) return null;
+    return replyOptions(interaction, options);
 }
 
 /**
