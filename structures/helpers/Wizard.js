@@ -54,7 +54,7 @@ export default class Wizard {
             this.buttons.set(button.data.custom_id, new DefaultButton({
                 id: button.data.custom_id,
                 author: this.interaction.user,
-                defer: false,
+                defer: true,
             }, handler));
         });
     }
