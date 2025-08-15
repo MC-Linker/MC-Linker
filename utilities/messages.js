@@ -306,12 +306,8 @@ export function addPh(key, ...placeholders) {
  * @returns {Promise<?Message|?InteractionResponse>}
  */
 export async function replyTl(interaction, key, ...placeholders) {
-    // Log to console if interaction doesn't exist
-    // noinspection JSUnresolvedVariable
-    if(key?.console && !interaction) {
-        logger.info(addPh(key.console, Object.assign({}, ...placeholders)));
-        return null;
-    }
+    if(key?.console) logger.info(addPh(key.console, placeholders));
+    if(key?.console && !interaction) return null; // Only log to console if interaction doesn't exist
 
     if(!interaction || !key || !placeholders) {
         console.error(getLanguageKey(keys.api.messages.errors.no_reply_arguments.console));
@@ -319,14 +315,7 @@ export async function replyTl(interaction, key, ...placeholders) {
     }
 
     placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
-
-    const options = getReplyOptions(message, placeholders);
-
-    // noinspection JSUnresolvedVariable
-    if(message.console) logger.info(addPh(message.console, placeholders));
-
-    if(!message.embeds && !message.components && !message.files) return null; //If only console, don't reply
-    return replyOptions(interaction, options);
+    return replyOptions(interaction, getReplyOptions(key, placeholders));
 }
 
 /**
