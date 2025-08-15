@@ -4,7 +4,7 @@ import { ButtonInteraction, InteractionCollector, InteractionType } from 'discor
 export default class DefaultButton extends Component {
 
     /**
-     * @typedef {ComponentOptions & { interactionType: InteractionType.MessageComponent }} DefaultButtonOptions
+     * @typedef {ComponentOptions & { type: InteractionType.MessageComponent }} DefaultButtonOptions
      * @property {?InteractionCollector} collector - An optional collector that will be used to trigger this button.
      */
 
@@ -13,7 +13,7 @@ export default class DefaultButton extends Component {
      * @param {Function} handler
      */
     constructor(options, handler) {
-        super(Object.assign(options, { interactionType: InteractionType.MessageComponent }));
+        super(Object.assign(options, { type: InteractionType.MessageComponent }));
 
         /**
          * The handler of this button.

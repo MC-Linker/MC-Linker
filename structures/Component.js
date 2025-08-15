@@ -1,4 +1,4 @@
-import { PermissionsBitField, User } from 'discord.js';
+import { ComponentType, PermissionsBitField, User } from 'discord.js';
 import { ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 
@@ -7,7 +7,7 @@ export default class Component {
     /**
      * @typedef {Object} ComponentOptions
      * @property {string} id - The first part of the components' custom ID.
-     * @property {InteractionType} interactionType - The type of interaction this component is for.
+     * @property {InteractionType & ComponentType} type - The type of interaction this component is for.
      * @property {PermissionsBitField} [permissions] - The permissions required to use this component.
      * @property {User} [author] - The author of this component that is allowed to use it.
      * @property {boolean} [ephemeral=false] - Whether this component should be ephemeral.
@@ -28,10 +28,10 @@ export default class Component {
         this.id = options.id;
 
         /**
-         * The type of interaction this component is for.
-         * @type {InteractionType}
+         * The type of interaction or component this component is for.
+         * @type {InteractionType & ComponentType}
          */
-        this.interactionType = options.interactionType;
+        this.type = options.type;
 
         /**
          * The permissions required to use this component.
@@ -72,6 +72,8 @@ export default class Component {
      * @abstract
      */
     async execute(interaction, client) {
+        if(this.type instanceof ComponentType && interaction.componentType !== this.type) return false;
+
         await interaction.replyTl(keys.api.component.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
         if(this.defer) await interaction.deferUpdate();
 

@@ -130,7 +130,7 @@
   "commands.customize.success.details.components.0.type": "Button",
   "commands.customize.success.details.components.0.style": "Primary",
   "commands.customize.success.details.components.0.label": "Enter Details",
-  "commands.customize.success.details.components.0.custom_id": "entitlements_enter_details",
+  "commands.customize.success.details.components.0.custom_id": "customize_enter_details",
 
 
   "commands.customize.success.port.embeds.0.title": "Setting Up Your Custom MC-Linker",
@@ -198,7 +198,7 @@
   "commands.customize.warnings.invalid_token.components.1.type": "Button",
   "commands.customize.warnings.invalid_token.components.1.style": "Primary",
   "commands.customize.warnings.invalid_token.components.1.label": "Enter Details",
-  "commands.customize.warnings.invalid_token.components.1.custom_id": "entitlements_enter_details",
+  "commands.customize.warnings.invalid_token.components.1.custom_id": "customize_enter_details",
 
 
   "commands.customize.warnings.no_intents.embeds.0.title": "Missing Intents",
@@ -213,7 +213,7 @@
   "commands.customize.warnings.no_intents.components.1.type": "Button",
   "commands.customize.warnings.no_intents.components.1.style": "Primary",
   "commands.customize.warnings.no_intents.components.1.label": "Enter Details",
-  "commands.customize.warnings.no_intents.components.1.custom_id": "entitlements_enter_details",
+  "commands.customize.warnings.no_intents.components.1.custom_id": "customize_enter_details",
 
 
 

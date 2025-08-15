@@ -14,7 +14,7 @@ export default class Wizard {
     };
 
     /**
-     * @typedef {Object} Wizardoptions
+     * @typedef {Object} WizardOptions
      * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
      * @property {import('discord.js').ButtonBuilder} [nextButton] - The button to use for going to the next page
      * @property {import('discord.js').ButtonBuilder} [backButton] - The button to use for going to the previous page
@@ -26,7 +26,7 @@ export default class Wizard {
      * @param {(Message|import('discord.js').BaseInteraction) & TranslatedResponses} interaction - The interaction to handle
      * @param {Array<import('discord.js').BaseMessageOptions>} pages - Array of pages (MessageOptions)
      * @param {Object} [options] - Additional options
-     * @param {Wizardoptions} [options] - Timeout in milliseconds for the wizard
+     * @param {WizardOptions} [options] - Timeout in milliseconds for the wizard
      */
     constructor(client, interaction, pages, options = {}) {
         this.client = client;
@@ -77,7 +77,7 @@ export default class Wizard {
     async _showPage(pageIndex, initial = false) {
         this.currentPage = pageIndex;
         const page = this.pages[pageIndex];
-        const components = this._getActionRows();
+        const components = this._getActionRows(page);
         const options = { ...page, components, flags: this.options.ephemeral ? MessageFlags.Ephemeral : 0 };
 
         if(initial) {
@@ -91,17 +91,17 @@ export default class Wizard {
 
     /**
      * Creates the ActionRows with the buttons
-     * @param {import('discord.js').BaseMessageOptions} options - The options for the message with additional components
+     * @param {import('discord.js').BaseMessageOptions} page - The page with additional components
      * @return {import('discord.js').ActionRowBuilder[]} - Array of ActionRows with buttons
      * @private
      */
-    _getActionRows(options) {
+    _getActionRows(page) {
         const buttons = [];
         if(this.currentPage > 0) buttons.push(this.options.backButton);
         if(this.currentPage < this.pages.length - 1) buttons.push(this.options.nextButton);
 
         // Merge the buttons with the existing components if any
-        if(options && options.components) buttons.unshift(...flattenActionRows(options.components));
+        if(page && page.components) buttons.unshift(...flattenActionRows(page.components));
 
         return createActionRows(buttons);
     }

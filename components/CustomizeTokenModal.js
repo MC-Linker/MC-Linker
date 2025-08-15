@@ -6,12 +6,12 @@ import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import { execSync, spawn } from 'child_process';
 
-export default class EntitlementsNextDetails extends Component {
+export default class CustomizeTokenModal extends Component {
 
     constructor() {
         super({
-            interactionType: InteractionType.ModalSubmit,
-            id: 'entitlements_token_modal',
+            type: InteractionType.ModalSubmit,
+            id: 'customize_token_modal',
             defer: false,
             sku: '1166098447665995807',
         });
@@ -21,7 +21,7 @@ export default class EntitlementsNextDetails extends Component {
         if(!await super.execute(interaction, client)) return;
 
         const token = interaction.fields.getTextInputValue('token');
-        await interaction.replyTl(keys.entitlements.success.logging_in);
+        await interaction.replyTl(keys.commands.customize.success.logging_in);
 
         let invite;
         const testClient = new Discord.Client({
@@ -52,9 +52,9 @@ export default class EntitlementsNextDetails extends Component {
         catch(err) {
             console.log(err);
             if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG')
-                return await interaction.replyTl(keys.entitlements.warnings.invalid_token);
+                return await interaction.replyTl(keys.commands.customize.warnings.invalid_token);
             else if(err.message === 'Used disallowed intents')
-                return await interaction.replyTl(keys.entitlements.warnings.no_intents);
+                return await interaction.replyTl(keys.commands.customize.warnings.no_intents);
             else throw err; // Rethrow other errors
         }
         finally {
@@ -67,7 +67,7 @@ export default class EntitlementsNextDetails extends Component {
         if(await fs.exists(botFolder)) console.log(execSync('git pull', { cwd: botFolder }).toString());
         else {
             // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
-            await interaction.replyTl(keys.entitlements.success.cloning);
+            await interaction.replyTl(keys.commands.customize.success.cloning);
             //TODO remove branch dev
             logger.info(execSync(`git clone https://github.com/MC-Linker/MC-Linker --branch dev ${botFolder}`).toString());
             // Copy docker-compose.yml
@@ -104,7 +104,7 @@ export default class EntitlementsNextDetails extends Component {
         const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
         await fs.writeFile(`${botFolder}/.env`, stringifiedEnv);
 
-        await interaction.replyTl(keys.entitlements.success.starting_up);
+        await interaction.replyTl(keys.commands.customize.success.starting_up);
         logger.info(execSync(`docker build . -t lianecx/${env.SERVICE_NAME}`, { cwd: botFolder, env }).toString());
 
         const composeProcess = spawn('docker', ['compose', 'up', '-d'], {
@@ -155,7 +155,7 @@ export default class EntitlementsNextDetails extends Component {
             }, 30_000);
         });
 
-        await interaction.replyTl(keys.entitlements.success.deploying);
+        await interaction.replyTl(keys.commands.customize.success.deploying);
         logger.info(execSync(`docker exec ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, {
             cwd: botFolder,
             env,
@@ -164,6 +164,6 @@ export default class EntitlementsNextDetails extends Component {
         // TODO
         await exposeCustomBotPorts(botPort, botPort);
 
-        return await interaction.replyTl(keys.entitlements.success.port, { port: botPort, invite });
+        return await interaction.replyTl(keys.commands.customize.success.port, { port: botPort, invite });
     }
 }

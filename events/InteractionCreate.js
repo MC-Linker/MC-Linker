@@ -49,9 +49,10 @@ export default class InteractionCreate extends Event {
         }
         else if(interaction.isMessageComponent() || interaction.isModalSubmit()) {
             let component = client.components.get(interaction.customId);
-            if(!component || interaction.type !== component.interactionType) component = client.components
-                .find(c => interaction.customId.startsWith(c.id) && interaction.type === c.interactionType);
+            if(!component || interaction.type !== component.type) component = client.components
+                .find(c => interaction.customId.startsWith(c.id) && interaction.type === c.type);
             if(!component) return;
+
             try {
                 await component.execute(interaction, client);
             }
