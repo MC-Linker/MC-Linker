@@ -306,16 +306,14 @@ export function addPh(key, ...placeholders) {
  * @returns {Promise<?Message|?InteractionResponse>}
  */
 export async function replyTl(interaction, key, ...placeholders) {
-    const message = addCompletion(key);
-
     // Log to console if interaction doesn't exist
     // noinspection JSUnresolvedVariable
-    if(message?.console && !interaction) {
-        logger.info(addPh(message.console, Object.assign({}, ...placeholders)));
+    if(key?.console && !interaction) {
+        logger.info(addPh(key.console, Object.assign({}, ...placeholders)));
         return null;
     }
 
-    if(!interaction || !message || !placeholders) {
+    if(!interaction || !key || !placeholders) {
         console.error(getLanguageKey(keys.api.messages.errors.no_reply_arguments.console));
         return null;
     }
