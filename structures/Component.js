@@ -66,7 +66,7 @@ export default class Component {
 
     /**
      * Handles the execution of this component.
-     * @param {import('discord.js').MessageComponentInteraction & TranslatedResponses} interaction - The component interaction.
+     * @param {(import('discord.js').MessageComponentInteraction | import('discord.js').ModalSubmitInteraction) & TranslatedResponses} interaction - The component or modal interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @returns {Promise<?boolean>|?boolean}
      * @abstract

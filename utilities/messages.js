@@ -12,6 +12,7 @@ import Discord, {
     Message,
     MessagePayload,
     ModalBuilder,
+    ModalSubmitInteraction,
     SlashCommandBuilder,
     User,
 } from 'discord.js';
@@ -94,7 +95,7 @@ export const ph = {
                 'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
             };
         }
-        else if(interaction instanceof Discord.MessageComponentInteraction) {
+        else if(interaction instanceof Discord.MessageComponentInteraction || interaction instanceof ModalSubmitInteraction) {
             return {
                 'interaction_id': interaction.customId,
                 'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
@@ -350,7 +351,7 @@ export async function replyOptions(interaction, options) {
         if(interaction instanceof Discord.Message) return await interaction.reply(options).catch(handleError);
         else if(interaction instanceof Discord.BaseInteraction && interaction.isRepliable()) {
             if(interaction.deferred || interaction.replied) return await interaction.editReply(options).catch(handleError);
-            else if(interaction.isMessageComponent()) return await interaction.update({
+            else if(interaction.isMessageComponent() || interaction.isModalSubmit()) return await interaction.update({
                 ...options,
                 withResponse: true,
             }).catch(handleError);
