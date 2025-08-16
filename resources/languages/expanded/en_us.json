@@ -292,7 +292,7 @@
         },
         "token_modal": {
           "type": "Modal",
-          "custom_id": "entitlements_token_modal",
+          "custom_id": "customize_token_modal",
           "title": "Enter Details",
           "components": [
             {
