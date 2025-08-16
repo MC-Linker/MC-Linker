@@ -3,7 +3,7 @@
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from '../utilities/oauth.js';
 import { createHash, getMinecraftAvatarURL, searchAdvancements } from '../utilities/utils.js';
-import { addPh, getEmbed, ph } from '../utilities/messages.js';
+import { getEmbed, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
@@ -409,10 +409,7 @@ export default class MCLinkerAPI extends EventEmitter {
             }
         });
 
-        this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
-            if(err) throw err;
-            logger.info(addPh(keys.api.plugin.success.listening.console, { address }));
-        });
+        await this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' });
 
         return this.fastify;
     }

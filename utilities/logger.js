@@ -35,7 +35,12 @@ export const pinoTransport = {
                 colorize: true,
                 translateTime: 'SYS:standard',
                 ignore: 'pid,hostname',
-                messageFormat: '{if shardId}[{shardId}] {end} {msg}',
+                messageFormat: '{if shardId}{shardId} {end} {msg}',
+            },
+            customPrettifiers: {
+                shardId: id => {
+                    return id ? `[${id}]` : undefined;
+                },
             },
         },
         {
