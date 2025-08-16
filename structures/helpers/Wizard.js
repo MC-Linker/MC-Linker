@@ -101,7 +101,7 @@ export default class Wizard {
         if(this.currentPage < this.pages.length - 1) buttons.push(this.options.nextButton);
 
         // Merge the buttons with the existing components if any
-        if(page && page.components) buttons.unshift(...flattenActionRows(page.components));
+        if(page && page.components) buttons.push(...flattenActionRows(page.components));
 
         return createActionRows(buttons);
     }

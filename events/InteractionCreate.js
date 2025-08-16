@@ -64,6 +64,7 @@ export default class InteractionCreate extends Event {
 
     getComponentForInteraction(client, interaction) {
         let component = client.components.get(interaction.customId);
+        if(!component) return;
         if(component.type instanceof ComponentType) return interaction.isMessageComponent() && interaction.componentType === component.type;
         else if(component.type instanceof InteractionType) return interaction.type === component.type;
         return component;
