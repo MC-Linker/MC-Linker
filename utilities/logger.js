@@ -37,11 +37,6 @@ export const pinoTransport = {
                 ignore: 'pid,hostname',
                 messageFormat: '{if shardId}{shardId} {end} {msg}',
             },
-            customPrettifiers: {
-                shardId: id => {
-                    return id ? `[${id}]` : undefined;
-                },
-            },
         },
         {
             target: 'pino/file',
