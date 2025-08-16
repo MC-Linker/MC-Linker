@@ -1,14 +1,15 @@
 import pino from 'pino';
 import path from 'path';
 
-export let shardId = '';
+const logLevel = process.env.LOG_LEVEL || 'info';
+let shardId;
 
 /**
- * Changes the log level across all shards.
+ * Sets the log level across all shards.
  * @param {MCLinker} client - The MCLinker client instance.
  * @param {import('pino').LevelOrString} newLevel - The new log level to set.
  */
-export function changeLogLevel(client, newLevel) {
+function setLogLevel(client, newLevel) {
     client.shard.broadcastEval((c, { newLevel }) => {
         c.logger.level = newLevel;
         c.logger.info(`Log level changed to: ${newLevel}`);
@@ -17,7 +18,14 @@ export function changeLogLevel(client, newLevel) {
     });
 }
 
-const logLevel = process.env.LOG_LEVEL || 'info';
+/**
+ * Sets the shard ID for the logger.
+ * @param {number} newShardId - The new shard ID to set.
+ */
+function setShardId(newShardId) {
+    shardId = newShardId;
+}
+
 export const pinoTransport = {
     targets: [
         {
@@ -27,7 +35,7 @@ export const pinoTransport = {
                 colorize: true,
                 translateTime: 'SYS:standard',
                 ignore: 'pid,hostname',
-                messageFormat: '{time} {if shardId}[{shardId}] {end}{levelLabel}: {msg}',
+                messageFormat: '{if shardId}[{shardId}] {end} {msg}',
             },
         },
         {
@@ -48,7 +56,9 @@ const logger = pino({
     },
     transport: pinoTransport,
 });
-logger.changeLogLevel = changeLogLevel;
+logger.setLogLevel = setLogLevel;
+logger.setShardId = setShardId;
+logger.shardId = shardId;
 logger.info(`[Pino] Logger initialized at level: ${logger.level}`);
 
 await new Promise(r => setTimeout(r, 1000));

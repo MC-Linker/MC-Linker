@@ -17,7 +17,7 @@ export default class ClientReady extends Event {
     }
 
     async execute(client, _) {
-        shardId = client.shard.ids[0];
+        logger.setShardId(client.shard.ids[0]);
 
         logger.info(addPh(
             keys.main.success.login.console,
