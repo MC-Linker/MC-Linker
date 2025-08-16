@@ -1,4 +1,4 @@
-import { ComponentType, MessageFlags } from 'discord.js';
+import { BaseInteraction, ComponentType, Message, MessageFlags } from 'discord.js';
 import { createActionRows, getComponent } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import { disableComponents, flattenActionRows } from '../../utilities/utils.js';
@@ -18,7 +18,6 @@ export default class Wizard {
      * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
      * @property {import('discord.js').ButtonBuilder} [nextButton] - The button to use for going to the next page
      * @property {import('discord.js').ButtonBuilder} [backButton] - The button to use for going to the previous page
-     * @property {boolean} [ephemeral=false] - Whether the interaction should be ephemeral
      */
 
     /**
@@ -29,9 +28,28 @@ export default class Wizard {
      * @param {WizardOptions} [options] - Timeout in milliseconds for the wizard
      */
     constructor(client, interaction, pages, options = {}) {
+        /**
+         * The Discord client
+         * @type {MCLinker}
+         */
         this.client = client;
+
+        /**
+         * The interaction that initiated the wizard
+         * @type {(Message|import('discord.js').BaseInteraction) & TranslatedResponses}
+         */
         this.interaction = interaction;
+
+        /**
+         * Array of pages for the wizard
+         * @type {import('discord.js').BaseMessageOptions[]}
+         */
         this.pages = pages;
+
+        /**
+         * Options for the wizard
+         * @type {WizardOptions}
+         */
         this.options = {
             timeout: Wizard.DEFAULT_TIMEOUT,
             nextButton: getComponent(keys.api.component.success.next_button, { id: Wizard.NAVIGATION_BUTTON_IDS.NEXT }),
@@ -39,10 +57,28 @@ export default class Wizard {
             ...options,
         };
 
+        /**
+         * The current page index of the wizard
+         * @type {number}
+         */
         this.currentPage = 0;
+
+        /**
+         * The message that contains the current page of the wizard
+         * @type {Message}
+         */
         this.message = null;
+
+        /**
+         * The collector for the button interactions
+         * @type {import('discord.js').MessageComponentInteractionCollector}
+         */
         this.collector = null;
 
+        /**
+         * Map of buttons with their custom IDs as keys
+         * @type {Map<string, DefaultButton>}
+         */
         this.buttons = new Map();
 
         const navigationButtons = [
@@ -118,7 +154,8 @@ export default class Wizard {
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', async () => {
             this.message = await this.message.fetch(); // Get the latest components
-            await this.message.edit({ components: disableComponents(this.message.components) });
+            if(!this.message.flags.has(MessageFlags.Ephemeral)) await this.message.edit({ components: disableComponents(this.message.components) });
+            else if(this.interaction.update) await this.interaction.update({ components: disableComponents(this.message.components) });
         });
     }
 

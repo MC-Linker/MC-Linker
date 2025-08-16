@@ -161,7 +161,6 @@ export default class CustomizeTokenModal extends Component {
             env,
         }).toString());
 
-        // TODO
         await exposeCustomBotPorts(botPort, botPort);
 
         return await interaction.replyTl(keys.commands.customize.success.port, { port: botPort, invite });
