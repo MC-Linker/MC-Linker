@@ -2,7 +2,7 @@ import pino from 'pino';
 import path from 'path';
 
 const logLevel = process.env.LOG_LEVEL || 'info';
-let shardId;
+let shardId = undefined;
 
 /**
  * Sets the log level across all shards.
@@ -34,8 +34,8 @@ export const pinoTransport = {
             options: {
                 colorize: true,
                 translateTime: 'SYS:standard',
-                ignore: 'pid,hostname',
-                messageFormat: '{if shardId}{shardId} {end} {msg}',
+                ignore: 'pid,hostname,shardId',
+                messageFormat: '{if shardId}[{shardId}] {end}{msg}',
             },
         },
         {
@@ -52,7 +52,7 @@ export const pinoTransport = {
 const logger = pino({
     level: logLevel,
     mixin: () => {
-        return { shardId };
+        return { shardId: shardId !== undefined ? `${shardId}` : undefined };
     },
     transport: pinoTransport,
 });

@@ -150,7 +150,11 @@ export default class MCLinkerAPI extends EventEmitter {
          * @type {import('fastify').FastifyInstance}
          */
         this.fastify = Fastify({
-            logger: { level: process.env.LOG_LEVEL || 'info', transport: pinoTransport },
+            logger: {
+                // By default, log only errors
+                level: process.env.LOG_LEVEL === 'info' ? 'error' : process.env.LOG_LEVEL,
+                transport: pinoTransport,
+            },
             /*            https: {
                             key: fs.readFileSync(path.resolve('./private/mclinker.com.key')),
                             cert: fs.readFileSync(path.resolve('./private/mclinker.com.pem')),
