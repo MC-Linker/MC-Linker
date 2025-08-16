@@ -216,11 +216,12 @@ export default class MCLinker extends Discord.Client {
             // noinspection LocalVariableNamingConventionJS
             const { default: ComponentFile } = await import(`file://${path.resolve(`${this.componentPath}/${file}`)}`);
             if(ComponentFile?.prototype instanceof Component) {
-                const button = new ComponentFile();
+                const component = new ComponentFile();
 
-                this.components.set(button.id, button);
-                logger.info(addPh(keys.main.success.button_load.console, {
-                    button: button.id,
+                this.components.set(component.id, component);
+                logger.info(addPh(keys.main.success.component_load.console, {
+                    id: component.id,
+                    type: component.type,
                     shard: this.shard.ids[0],
                 }));
             }

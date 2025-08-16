@@ -141,8 +141,8 @@
       "command_load_category": {
         "console": "[%shard%] Successfully loaded command: %category%/%command%"
       },
-      "button_load": {
-        "console": "[%shard%] Successfully loaded button: %button%"
+      "component_load": {
+        "console": "[%shard%] Successfully loaded component of type %type%: %id%"
       },
       "event_load": {
         "console": "[%shard%] Successfully loaded event: %event%"
@@ -190,14 +190,6 @@
                   "value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                 }
               ]
-            }
-          ],
-          "components": [
-            {
-              "type": "Button",
-              "style": "Primary",
-              "label": "Next >",
-              "custom_id": "entitlements_next_intents"
             }
           ]
         },
@@ -344,14 +336,14 @@
             {
               "type": "Button",
               "style": "Primary",
-              "label": "< Back",
-              "custom_id": "wizard_back"
+              "label": "Enter Details",
+              "custom_id": "customize_enter_details"
             },
             {
               "type": "Button",
               "style": "Primary",
-              "label": "Enter Details",
-              "custom_id": "customize_enter_details"
+              "label": "< Back",
+              "custom_id": "wizard_back"
             }
           ]
         },

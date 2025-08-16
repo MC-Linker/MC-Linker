@@ -94,7 +94,7 @@ export const ph = {
                 'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
             };
         }
-        else if(interaction instanceof Discord.ButtonInteraction) {
+        else if(interaction instanceof Discord.MessageComponentInteraction) {
             return {
                 'interaction_id': interaction.customId,
                 'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),

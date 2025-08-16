@@ -87,7 +87,7 @@
 
   "main.success.command_load.console": "[%shard%] Successfully loaded command: %command%",
   "main.success.command_load_category.console": "[%shard%] Successfully loaded command: %category%/%command%",
-  "main.success.button_load.console": "[%shard%] Successfully loaded button: %button%",
+  "main.success.component_load.console": "[%shard%] Successfully loaded component of type %type%: %id%",
   "main.success.event_load.console": "[%shard%] Successfully loaded event: %event%",
 
   "main.success.ping.embeds.0.title": "Hey, I'm %client_username%! :wave:",
@@ -110,11 +110,6 @@
 
   "commands.customize.success.start.embeds.0.fields.0.name": "Get Started",
   "commands.customize.success.start.embeds.0.fields.0.value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
-
-  "commands.customize.success.start.components.0.type": "Button",
-  "commands.customize.success.start.components.0.style": "Primary",
-  "commands.customize.success.start.components.0.label": "Next >",
-  "commands.customize.success.start.components.0.custom_id": "entitlements_next_intents",
 
 
   "commands.customize.success.intents.embeds.0.title": "Setting Up Your Custom MC-Linker",
@@ -192,13 +187,13 @@
 
   "commands.customize.warnings.invalid_token.components.0.type": "Button",
   "commands.customize.warnings.invalid_token.components.0.style": "Primary",
-  "commands.customize.warnings.invalid_token.components.0.label": "< Back",
-  "commands.customize.warnings.invalid_token.components.0.custom_id": "wizard_back",
+  "commands.customize.warnings.invalid_token.components.0.label": "Enter Details",
+  "commands.customize.warnings.invalid_token.components.0.custom_id": "customize_enter_details",
 
   "commands.customize.warnings.invalid_token.components.1.type": "Button",
   "commands.customize.warnings.invalid_token.components.1.style": "Primary",
-  "commands.customize.warnings.invalid_token.components.1.label": "Enter Details",
-  "commands.customize.warnings.invalid_token.components.1.custom_id": "customize_enter_details",
+  "commands.customize.warnings.invalid_token.components.1.label": "< Back",
+  "commands.customize.warnings.invalid_token.components.1.custom_id": "wizard_back",
 
 
   "commands.customize.warnings.no_intents.embeds.0.title": "Missing Intents",

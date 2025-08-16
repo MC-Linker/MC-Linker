@@ -72,9 +72,7 @@ export default class Component {
      * @abstract
      */
     async execute(interaction, client) {
-        if(this.type instanceof ComponentType && interaction.componentType !== this.type) return false;
-
-        await interaction.replyTl(keys.api.component.clicked, { 'button_id': interaction.customId }, ph.std(interaction));
+        await interaction.replyTl(keys.api.component.clicked, ph.std(interaction));
         if(this.defer) await interaction.deferUpdate();
 
         if(this.permissions) {

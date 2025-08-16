@@ -4,6 +4,7 @@ import { getArgs } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
 import logger from '../utilities/logger.js';
+import { ComponentType, InteractionType } from 'discord.js';
 
 /**
  * Handles the Discord interactionCreate event for the MC-Linker bot.
@@ -48,9 +49,7 @@ export default class InteractionCreate extends Event {
             }
         }
         else if(interaction.isMessageComponent() || interaction.isModalSubmit()) {
-            let component = client.components.get(interaction.customId);
-            if(!component || interaction.type !== component.type) component = client.components
-                .find(c => interaction.customId.startsWith(c.id) && interaction.type === c.type);
+            const component = this.getComponentForInteraction(client, interaction);
             if(!component) return;
 
             try {
@@ -61,5 +60,12 @@ export default class InteractionCreate extends Event {
                 await interaction.replyTl(keys.main.errors.could_not_execute_button);
             }
         }
+    }
+
+    getComponentForInteraction(client, interaction) {
+        let component = client.components.get(interaction.customId);
+        if(component.type instanceof ComponentType) return interaction.isMessageComponent() && interaction.componentType === component.type;
+        else if(component.type instanceof InteractionType) return interaction.type === component.type;
+        return component;
     }
 } 
