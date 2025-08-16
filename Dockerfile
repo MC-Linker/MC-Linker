@@ -21,6 +21,16 @@ RUN echo \
 
 RUN apt-get install -y docker-ce-cli docker-compose-plugin
 
+# Download Socket.IO Admin UI ui/dist folder
+RUN git init socket.io-admin-ui && \
+    cd socket.io-admin-ui && \
+    git remote add -f origin https://github.com/socketio/socket.io-admin-ui.git && \
+    git config core.sparseCheckout true && \
+    echo "ui/dist/*" >> .git/info/sparse-checkout && \
+    git pull origin main && \
+    mv ui/dist/* . && \
+    rm -rf ui
+
 # A wildcard is used to ensure both package.json AND package-lock.json
 # are copied where available (npm@5+)
 COPY package*.json ./
