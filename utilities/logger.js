@@ -27,6 +27,10 @@ export const pinoTransport = {
                 colorize: true,
                 translateTime: 'SYS:standard',
                 ignore: 'pid,hostname',
+                messageFormat: '{time} {if shardId}[{shardId}] {end}{levelLabel}: {msg}',
+                customPrettifiers: {
+                    shardId: id => `[${id}]`,
+                },
             },
         },
         {
