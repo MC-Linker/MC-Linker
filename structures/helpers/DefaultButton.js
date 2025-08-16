@@ -13,7 +13,7 @@ export default class DefaultButton extends Component {
      * @param {Function} handler
      */
     constructor(options, handler) {
-        super(Object.assign(options, { type: InteractionType.MessageComponent }));
+        super(Object.assign(options, { type: 'Button' }));
 
         /**
          * The handler of this button.
