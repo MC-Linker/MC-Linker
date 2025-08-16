@@ -2,7 +2,7 @@ import Event from '../structures/Event.js';
 import Canvas from 'skia-canvas';
 import { addPh, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
-import logger from '../utilities/logger.js';
+import logger, { shardId } from '../utilities/logger.js';
 
 /**
  * Handles the Discord ready event for the MC-Linker bot.
@@ -17,6 +17,7 @@ export default class ClientReady extends Event {
     }
 
     async execute(client, _) {
+        shardId = client.shard.ids[0];
         logger.info(addPh(
             keys.main.success.login.console,
             ph.client(client),
