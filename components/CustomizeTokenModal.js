@@ -1,6 +1,6 @@
 import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
-import Discord, { GatewayIntentBits, InteractionType, OAuth2Scopes, PermissionsBitField } from 'discord.js';
+import Discord, { GatewayIntentBits, OAuth2Scopes, PermissionsBitField } from 'discord.js';
 import fs from 'fs-extra';
 import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
@@ -10,7 +10,7 @@ export default class CustomizeTokenModal extends Component {
 
     constructor() {
         super({
-            type: InteractionType.ModalSubmit,
+            type: 'ModalSubmit',
             id: 'customize_token_modal',
             defer: false,
             sku: '1166098447665995807',

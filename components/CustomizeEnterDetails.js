@@ -1,5 +1,4 @@
 import Component from '../structures/Component.js';
-import { ComponentType } from 'discord.js';
 import { getModal, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 
@@ -7,7 +6,7 @@ export default class CustomizeTokenModal extends Component {
 
     constructor() {
         super({
-            type: ComponentType.Button,
+            type: 'Button',
             id: 'customize_enter_details',
             defer: false,
             sku: '1166098447665995807',

@@ -66,12 +66,11 @@ export default class InteractionCreate extends Event {
         let component = client.components.get(interaction.customId);
         if(!component) return;
         // js enum check
-        if(Object.values(ComponentType).includes(component.type))
+        if(ComponentType[component.type])
             return interaction.isMessageComponent() && interaction.componentType === component.type ?
                 component : null;
-        else if(Object.values(InteractionType).includes(component.type))
+        else if(InteractionType[component.type])
             return interaction.type === component.type ?
                 component : null;
-        return component;
     }
 } 

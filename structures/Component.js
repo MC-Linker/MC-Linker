@@ -7,7 +7,7 @@ export default class Component {
     /**
      * @typedef {Object} ComponentOptions
      * @property {string} id - The first part of the components' custom ID.
-     * @property {InteractionType & ComponentType} type - The type of interaction this component is for.
+     * @property {keyof typeof InteractionType & ComponentType} type - The type of interaction this component is for.
      * @property {PermissionsBitField} [permissions] - The permissions required to use this component.
      * @property {User} [author] - The author of this component that is allowed to use it.
      * @property {boolean} [ephemeral=false] - Whether this component should be ephemeral.
