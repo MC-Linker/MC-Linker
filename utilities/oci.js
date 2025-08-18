@@ -25,7 +25,8 @@ export async function exposeCustomBotPorts(minPort, maxPort) {
         securityListId: ociConstants.securityListId,
     });
     const customBotRuleIndex = previousSecurityList.securityList.ingressSecurityRules.findIndex(rule => rule.description === 'Custom Bots');
-    if(previousSecurityList.securityList.ingressSecurityRules[customBotRuleIndex].tcpOptions.destinationPortRange === newPortRange)
+    const previousPortRange = previousSecurityList.securityList.ingressSecurityRules[customBotRuleIndex].tcpOptions.destinationPortRange;
+    if(previousPortRange && previousPortRange.min === minPort && previousPortRange.max === maxPort)
         return logger.debug('[OCI] Custom Bot ports already exposed.');
     previousSecurityList.securityList.ingressSecurityRules[customBotRuleIndex].tcpOptions.destinationPortRange = {
         min: minPort,
@@ -39,7 +40,7 @@ export async function exposeCustomBotPorts(minPort, maxPort) {
         },
     });
 
-    logger.debug('[OCI] Custom Bot ports updated to ' + JSON.stringify(newPortRange));
+    logger.debug(`[OCI] Custom Bot ports updated to ${JSON.stringify(newPortRange)}`);
 
     await vcnClient.close();
 }

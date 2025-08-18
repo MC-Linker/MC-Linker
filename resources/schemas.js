@@ -53,6 +53,7 @@ export default {
         uuid: { type: String, unique: true },
         username: String,
         userSettings: { type: String, ref: 'UserSettingsConnection' },
+        customBot: { type: String, ref: 'CustomBotConnection' },
     },
     UserSettingsConnection: {
         _id: { type: String },
@@ -62,5 +63,10 @@ export default {
             expires: Number,
         },
         user: { type: String, ref: 'UserConnection' },
+    },
+    CustomBotConnection: {
+        _id: { type: String },
+        port: Number,
+        ownerId: String,
     },
 };

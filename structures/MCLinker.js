@@ -3,6 +3,7 @@ import ServerConnectionManager from './ServerConnectionManager.js';
 import UserConnectionManager from './UserConnectionManager.js';
 import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.js';
 import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
+import CustomBotConnectionManager from './CustomBotConnectionManager.js';
 import fs from 'fs-extra';
 import { addPh } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
@@ -36,6 +37,18 @@ export default class MCLinker extends Discord.Client {
      * @type {ServerSettingsConnectionManager}
      */
     serverSettingsConnections;
+
+    /**
+     * The user-settings connection manager for the bot.
+     * @type {UserSettingsConnectionManager}
+     */
+    userSettingsConnections;
+
+    /**
+     * The custom-bot connection manager for the bot.
+     * @type {CustomBotConnectionManager}
+     */
+    customBots;
 
     /**
      * A collection of all commands in this bot.
@@ -112,6 +125,12 @@ export default class MCLinker extends Discord.Client {
          * @type {UserSettingsConnectionManager}
          */
         this.userSettingsConnections = new UserSettingsConnectionManager(this);
+
+        /**
+         * The custom-bot connection manager for the bot.
+         * @type {CustomBotConnectionManager}
+         */
+        this.customBots = new CustomBotConnectionManager(this);
 
         /**
          * A collection of all commands in this bot.
@@ -272,6 +291,8 @@ export default class MCLinker extends Discord.Client {
         logger.info(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
         await this.userSettingsConnections._load();
         logger.info(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
+        await this.customBots._load();
+        logger.info(`[${this.shard.ids[0]}] Loaded all custom bots.`);
 
         await this._loadCommands();
         logger.info(`[${this.shard.ids[0]}] Loaded all commands.`);

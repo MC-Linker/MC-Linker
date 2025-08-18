@@ -5,11 +5,11 @@ import ServerConnection from './ServerConnection.js';
 export default class Connection extends Base {
 
     /**
-     * @typedef {UserConnectionData|ServerConnectionData|ServerSettingsConnectionData|UserSettingsConnectionData} ConnectionData - The data for the connection.
+     * @typedef {UserConnectionData|ServerConnectionData|ServerSettingsConnectionData|UserSettingsConnectionData|CustomBotConnectionData} ConnectionData - The data for the connection.
      */
 
     /**
-     * @typedef {'ServerConnection'|'UserConnection'|'ServerSettingsConnection'|'UserSettingsConnection'} CollectionName - The name of a database collection.
+     * @typedef {'ServerConnection'|'UserConnection'|'ServerSettingsConnection'|'UserSettingsConnection'|'CustomBot'} CollectionName - The name of a database collection.
      */
 
     /**

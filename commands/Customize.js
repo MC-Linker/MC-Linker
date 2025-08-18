@@ -23,7 +23,9 @@ export default class Customize extends Command {
             keys.commands.customize.success.start,
             keys.commands.customize.success.intents,
             keys.commands.customize.success.details,
-        ].map(key => getReplyOptions(key, ph.emojisAndColors())));
+        ].map(key => getReplyOptions(key, ph.emojisAndColors())), {
+            timeout: 60_000 * 14, // 15 minutes is max interaction timeout
+        });
         await wizard.start();
     }
 }

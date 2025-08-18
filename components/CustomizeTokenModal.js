@@ -77,7 +77,7 @@ export default class CustomizeTokenModal extends Component {
             await fs.mkdir(`${botFolder}/logs`);
         }
 
-        const botPort = 30000; //TODO
+        const botPort = client.customBots.getNewAvailablePort();
         const env = {
             BOT_PORT: botPort,
             PLUGIN_PORT: process.env.PLUGIN_PORT,
@@ -161,8 +161,13 @@ export default class CustomizeTokenModal extends Component {
             env,
         }).toString());
 
-        await exposeCustomBotPorts(botPort, botPort);
+        await exposeCustomBotPorts(...this.customBots.getPortRange());
 
+        await client.customBots.connect({
+            id: env.CLIENT_ID,
+            port: botPort,
+            ownerId: interaction.user.id,
+        });
         return await interaction.replyTl(keys.commands.customize.success.port, { port: botPort, invite });
     }
 }
