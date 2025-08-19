@@ -20,7 +20,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ServerConnectionManager} - A new ServerConnectionManager instance.
      */
-    constructor(client, collectionName = 'CustomBot') {
+    constructor(client, collectionName = 'CustomBotConnection') {
         super(client, CustomBotConnection, collectionName);
 
         /**

@@ -9,7 +9,7 @@ export default class Connection extends Base {
      */
 
     /**
-     * @typedef {'ServerConnection'|'UserConnection'|'ServerSettingsConnection'|'UserSettingsConnection'|'CustomBot'} CollectionName - The name of a database collection.
+     * @typedef {'ServerConnection'|'UserConnection'|'ServerSettingsConnection'|'UserSettingsConnection'|'CustomBotConnection'} CollectionName - The name of a database collection.
      */
 
     /**
