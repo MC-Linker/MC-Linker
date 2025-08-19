@@ -120,7 +120,7 @@ export default class Wizard {
             this.message = await this.interaction.replyOptions(options);
             this._createCollector();
         }
-        else await this.message.edit(options);
+        else await this.interaction.replyOptions(options);
 
         return this.message;
     }
