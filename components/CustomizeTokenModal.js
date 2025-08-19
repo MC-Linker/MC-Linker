@@ -116,6 +116,12 @@ export default class CustomizeTokenModal extends Component {
 
         // Check logs until the bot is ready
         await new Promise((resolve, reject) => {
+            const checkLogsTimeout = setTimeout(() => {
+                clearInterval(checkLogsInterval);
+                execSync(`docker compose down`, { cwd: botFolder });
+                reject(new Error('Timeout waiting for bot to start'));
+            }, 60_000);
+
             const checkLogsInterval = setInterval(async () => {
                 try {
                     const logs = execSync(`docker logs ${env.SERVICE_NAME} --tail 10`, {
@@ -126,6 +132,7 @@ export default class CustomizeTokenModal extends Component {
                     if(logs.includes(`Server listening at http://0.0.0.0:${botPort}`)) {
                         logger.info('Custom bot is ready!');
                         clearInterval(checkLogsInterval);
+                        clearTimeout(checkLogsTimeout);
                         resolve();
                     }
                 }
@@ -147,13 +154,6 @@ export default class CustomizeTokenModal extends Component {
                 execSync(`docker compose down`, { cwd: botFolder });
                 reject(err);
             });
-
-            // Timeout after 30 seconds
-            setTimeout(() => {
-                clearInterval(checkLogsInterval);
-                execSync(`docker compose down`, { cwd: botFolder });
-                reject(new Error('Timeout waiting for bot to start'));
-            }, 30_000);
         });
 
         await interaction.replyTl(keys.commands.customize.step.deploying);
