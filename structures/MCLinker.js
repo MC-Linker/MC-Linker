@@ -309,14 +309,7 @@ export default class MCLinker extends Discord.Client {
          */
         this.mongo = await mongoose.connect(process.env.DATABASE_URL);
 
-        const serverConnectionSchema = new Schema(Schemas.ServerConnection);
-        const serverSettingsConnectionSchema = new Schema(Schemas.ServerSettingsConnection);
-        const userSettingsConnectionSchema = new Schema(Schemas.UserSettingsConnection);
-        const userConnectionSchema = new Schema(Schemas.UserConnection);
-
-        this.mongo.model('ServerConnection', serverConnectionSchema);
-        this.mongo.model('UserConnection', userConnectionSchema);
-        this.mongo.model('ServerSettingsConnection', serverSettingsConnectionSchema);
-        this.mongo.model('UserSettingsConnection', userSettingsConnectionSchema);
+        for(const [name, schema] of Object.entries(Schemas))
+            this.mongo.model(name, new Schema(schema));
     }
 }
