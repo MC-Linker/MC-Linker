@@ -5,6 +5,8 @@ import fs from 'fs-extra';
 import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import { execSync, spawn } from 'child_process';
+import Wizard from '../structures/helpers/Wizard.js';
+import { getReplyOptions, ph } from '../utilities/messages.js';
 
 export default class CustomizeTokenModal extends Component {
 
@@ -168,6 +170,14 @@ export default class CustomizeTokenModal extends Component {
             port: botPort,
             ownerId: interaction.user.id,
         });
+
+        const wizard = new Wizard(client, interaction, [
+            keys.commands.customize.success.port,
+            keys.commands.customize.success.finish,
+        ].map(key => getReplyOptions(key, { port: botPort, invite }, ph.emojisAndColors())), {
+            timeout: 60_000 * 14, // 15 minutes is max interaction timeout
+        });
+        await wizard.start();
         return await interaction.replyTl(keys.commands.customize.success.port, { port: botPort, invite });
     }
 }
