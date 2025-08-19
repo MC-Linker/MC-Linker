@@ -241,39 +241,6 @@
             }
           ]
         },
-        "logging_in": {
-          "embeds": [
-            {
-              "title": "Setting Up Your Custom MC-Linker",
-              "description": "*Logging into your bot...*"
-            }
-          ],
-          "components": []
-        },
-        "cloning": {
-          "embeds": [
-            {
-              "title": "Setting Up Your Custom MC-Linker",
-              "description": "*Copying MC-Linker...*"
-            }
-          ]
-        },
-        "deploying": {
-          "embeds": [
-            {
-              "title": "Setting Up Your Custom MC-Linker",
-              "description": "*Deploying Slash Commands...*"
-            }
-          ]
-        },
-        "starting_up": {
-          "embeds": [
-            {
-              "title": "Setting Up Your Custom MC-Linker",
-              "description": "*Starting up...*"
-            }
-          ]
-        },
         "finish": {
           "embeds": [
             {
@@ -304,6 +271,41 @@
               "min_length": 20,
               "max_length": 100,
               "style": "Short"
+            }
+          ]
+        }
+      },
+      "step": {
+        "logging_in": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "description": "*Logging into your bot...*"
+            }
+          ],
+          "components": []
+        },
+        "cloning": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "description": "*Copying MC-Linker...*"
+            }
+          ]
+        },
+        "deploying": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "description": "*Deploying Slash Commands...*"
+            }
+          ]
+        },
+        "starting_up": {
+          "embeds": [
+            {
+              "title": "Setting Up Your Custom MC-Linker",
+              "description": "*Starting up...*"
             }
           ]
         }

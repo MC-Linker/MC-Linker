@@ -23,7 +23,7 @@ export default class CustomizeTokenModal extends Component {
         if(!await super.execute(interaction, client)) return;
 
         const token = interaction.fields.getTextInputValue('token');
-        await interaction.replyTl(keys.commands.customize.success.logging_in);
+        await interaction.replyTl(keys.commands.customize.step.logging_in);
 
         let invite;
         const testClient = new Discord.Client({
@@ -105,7 +105,7 @@ export default class CustomizeTokenModal extends Component {
         const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
         await fs.writeFile(`${botFolder}/.env`, stringifiedEnv);
 
-        await interaction.replyTl(keys.commands.customize.success.starting_up);
+        await interaction.replyTl(keys.commands.customize.step.starting_up);
         logger.info(execSync(`docker build . -t lianecx/${env.SERVICE_NAME}`, { cwd: botFolder, env }).toString());
 
         const composeProcess = spawn('docker', ['compose', 'up', '-d'], {
@@ -156,13 +156,13 @@ export default class CustomizeTokenModal extends Component {
             }, 30_000);
         });
 
-        await interaction.replyTl(keys.commands.customize.success.deploying);
+        await interaction.replyTl(keys.commands.customize.step.deploying);
         logger.info(execSync(`docker exec ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, {
             cwd: botFolder,
             env,
         }).toString());
 
-        await exposeCustomBotPorts(...this.customBots.getPortRange());
+        await exposeCustomBotPorts(...client.customBots.getPortRange());
 
         await client.customBots.connect({
             id: env.CLIENT_ID,
@@ -177,6 +177,5 @@ export default class CustomizeTokenModal extends Component {
             timeout: 60_000 * 14, // 15 minutes is max interaction timeout
         });
         await wizard.start();
-        return await interaction.replyTl(keys.commands.customize.success.port, { port: botPort, invite });
     }
 }

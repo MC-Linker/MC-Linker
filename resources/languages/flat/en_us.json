@@ -133,21 +133,21 @@
   "commands.customize.success.port.embeds.0.fields.0.value": "Lastly, run `/linker bot_port %port%` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml) and reload your server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
 
 
-  "commands.customize.success.logging_in.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "commands.customize.success.logging_in.embeds.0.description": "*Logging into your bot...*",
-  "commands.customize.success.logging_in.components": [],
+  "commands.customize.step.logging_in.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "commands.customize.step.logging_in.embeds.0.description": "*Logging into your bot...*",
+  "commands.customize.step.logging_in.components": [],
 
 
-  "commands.customize.success.cloning.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "commands.customize.success.cloning.embeds.0.description": "*Copying MC-Linker...*",
+  "commands.customize.step.cloning.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "commands.customize.step.cloning.embeds.0.description": "*Copying MC-Linker...*",
 
 
-  "commands.customize.success.deploying.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "commands.customize.success.deploying.embeds.0.description": "*Deploying Slash Commands...*",
+  "commands.customize.step.deploying.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "commands.customize.step.deploying.embeds.0.description": "*Deploying Slash Commands...*",
 
 
-  "commands.customize.success.starting_up.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "commands.customize.success.starting_up.embeds.0.description": "*Starting up...*",
+  "commands.customize.step.starting_up.embeds.0.title": "Setting Up Your Custom MC-Linker",
+  "commands.customize.step.starting_up.embeds.0.description": "*Starting up...*",
 
 
   "commands.customize.success.finish.embeds.0.title": "Set Up Complete",
