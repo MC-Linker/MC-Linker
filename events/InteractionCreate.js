@@ -64,7 +64,6 @@ export default class InteractionCreate extends Event {
 
     getComponentForInteraction(client, interaction) {
         let component = client.components.get(interaction.customId);
-        console.log(component);
         if(!component) return;
         // js enum check
         if(ComponentType[component.type])

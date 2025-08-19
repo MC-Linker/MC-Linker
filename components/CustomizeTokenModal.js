@@ -52,7 +52,6 @@ export default class CustomizeTokenModal extends Component {
             });
         }
         catch(err) {
-            console.log(err);
             if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG')
                 return await interaction.replyTl(keys.commands.customize.warnings.invalid_token);
             else if(err.message === 'Used disallowed intents')
@@ -66,7 +65,7 @@ export default class CustomizeTokenModal extends Component {
         //For linked roles they'll have to add endpoints in the portal and provide the secret
 
         const botFolder = `./Custom-MC-Linker/${interaction.user.id}`;
-        if(await fs.exists(botFolder)) console.log(execSync('git pull', { cwd: botFolder }).toString());
+        if(await fs.exists(botFolder)) logger.info(execSync('git pull', { cwd: botFolder }).toString());
         else {
             // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
             await interaction.replyTl(keys.commands.customize.success.cloning);

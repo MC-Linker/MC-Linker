@@ -214,7 +214,7 @@
               "fields": [
                 {
                   "name": "Enter Bot Details",
-                  "value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                  "value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                 }
               ]
             }
@@ -223,7 +223,7 @@
             {
               "type": "Button",
               "style": "Primary",
-              "label": "Enter Details",
+              "label": "Enter Token",
               "custom_id": "customize_enter_details"
             }
           ]
@@ -293,7 +293,7 @@
         "token_modal": {
           "type": "Modal",
           "custom_id": "customize_token_modal",
-          "title": "Enter Details",
+          "title": "Enter Token",
           "components": [
             {
               "type": "TextInput",
@@ -328,7 +328,7 @@
           "embeds": [
             {
               "title": "Incorrect Bot Token",
-              "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+              "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
             }
           ],
           "console": "Failed to login to bot because of invalid token",
@@ -336,7 +336,7 @@
             {
               "type": "Button",
               "style": "Primary",
-              "label": "Enter Details",
+              "label": "Enter Token",
               "custom_id": "customize_enter_details"
             },
             {
@@ -365,7 +365,7 @@
             {
               "type": "Button",
               "style": "Primary",
-              "label": "Enter Details",
+              "label": "Enter Token",
               "custom_id": "customize_enter_details"
             }
           ]

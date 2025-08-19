@@ -120,11 +120,11 @@
 
   "commands.customize.success.details.embeds.0.title": "Setting Up Your Custom MC-Linker",
   "commands.customize.success.details.embeds.0.fields.0.name": "Enter Bot Details",
-  "commands.customize.success.details.embeds.0.fields.0.value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "commands.customize.success.details.embeds.0.fields.0.value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
 
   "commands.customize.success.details.components.0.type": "Button",
   "commands.customize.success.details.components.0.style": "Primary",
-  "commands.customize.success.details.components.0.label": "Enter Details",
+  "commands.customize.success.details.components.0.label": "Enter Token",
   "commands.customize.success.details.components.0.custom_id": "customize_enter_details",
 
 
@@ -161,7 +161,7 @@
 
   "commands.customize.success.token_modal.type": "Modal",
   "commands.customize.success.token_modal.custom_id": "customize_token_modal",
-  "commands.customize.success.token_modal.title": "Enter Details",
+  "commands.customize.success.token_modal.title": "Enter Token",
 
   "commands.customize.success.token_modal.components.0.type": "TextInput",
   "commands.customize.success.token_modal.components.0.custom_id": "token",
@@ -182,12 +182,12 @@
 
 
   "commands.customize.warnings.invalid_token.embeds.0.title": "Incorrect Bot Token",
-  "commands.customize.warnings.invalid_token.embeds.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+  "commands.customize.warnings.invalid_token.embeds.0.description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
   "commands.customize.warnings.invalid_token.console": "Failed to login to bot because of invalid token",
 
   "commands.customize.warnings.invalid_token.components.0.type": "Button",
   "commands.customize.warnings.invalid_token.components.0.style": "Primary",
-  "commands.customize.warnings.invalid_token.components.0.label": "Enter Details",
+  "commands.customize.warnings.invalid_token.components.0.label": "Enter Token",
   "commands.customize.warnings.invalid_token.components.0.custom_id": "customize_enter_details",
 
   "commands.customize.warnings.invalid_token.components.1.type": "Button",
@@ -207,7 +207,7 @@
 
   "commands.customize.warnings.no_intents.components.1.type": "Button",
   "commands.customize.warnings.no_intents.components.1.style": "Primary",
-  "commands.customize.warnings.no_intents.components.1.label": "Enter Details",
+  "commands.customize.warnings.no_intents.components.1.label": "Enter Token",
   "commands.customize.warnings.no_intents.components.1.custom_id": "customize_enter_details",
 
 
