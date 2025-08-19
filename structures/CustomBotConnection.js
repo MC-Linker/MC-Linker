@@ -14,7 +14,7 @@ export default class CustomBotConnection extends Connection {
      * @param {CustomBotConnectionData} data - The data for this custom bot.
      */
     constructor(client, data) {
-        super(client, data, 'CustomBot');
+        super(client, data, 'CustomBotConnection');
 
         /**
          * The ID of the custom bot.

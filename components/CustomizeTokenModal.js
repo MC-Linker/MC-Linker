@@ -162,13 +162,13 @@ export default class CustomizeTokenModal extends Component {
             env,
         }).toString());
 
-        await exposeCustomBotPorts(...client.customBots.getPortRange());
-
         await client.customBots.connect({
             id: env.CLIENT_ID,
             port: botPort,
             ownerId: interaction.user.id,
         });
+
+        await exposeCustomBotPorts(...client.customBots.getPortRange());
 
         const wizard = new Wizard(client, interaction, [
             keys.commands.customize.success.port,
