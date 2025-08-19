@@ -134,20 +134,20 @@
 
 
   "commands.customize.step.logging_in.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "commands.customize.step.logging_in.embeds.0.description": "*Logging into your bot...*",
+  "commands.customize.step.logging_in.embeds.0.description": "%emoji_step% *Logging into your bot...*",
   "commands.customize.step.logging_in.components": [],
 
 
   "commands.customize.step.cloning.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "commands.customize.step.cloning.embeds.0.description": "*Copying MC-Linker...*",
+  "commands.customize.step.cloning.embeds.0.description": "%emoji_step% *Copying MC-Linker...*",
 
 
   "commands.customize.step.deploying.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "commands.customize.step.deploying.embeds.0.description": "*Deploying Slash Commands...*",
+  "commands.customize.step.deploying.embeds.0.description": "%emoji_step% *Deploying Slash Commands...*",
 
 
   "commands.customize.step.starting_up.embeds.0.title": "Setting Up Your Custom MC-Linker",
-  "commands.customize.step.starting_up.embeds.0.description": "*Starting up...*",
+  "commands.customize.step.starting_up.embeds.0.description": "%emoji_step% *Starting up...*",
 
 
   "commands.customize.success.finish.embeds.0.title": "Set Up Complete",

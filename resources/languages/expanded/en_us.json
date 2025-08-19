@@ -280,7 +280,7 @@
           "embeds": [
             {
               "title": "Setting Up Your Custom MC-Linker",
-              "description": "*Logging into your bot...*"
+              "description": "%emoji_step% *Logging into your bot...*"
             }
           ],
           "components": []
@@ -289,7 +289,7 @@
           "embeds": [
             {
               "title": "Setting Up Your Custom MC-Linker",
-              "description": "*Copying MC-Linker...*"
+              "description": "%emoji_step% *Copying MC-Linker...*"
             }
           ]
         },
@@ -297,7 +297,7 @@
           "embeds": [
             {
               "title": "Setting Up Your Custom MC-Linker",
-              "description": "*Deploying Slash Commands...*"
+              "description": "%emoji_step% *Deploying Slash Commands...*"
             }
           ]
         },
@@ -305,7 +305,7 @@
           "embeds": [
             {
               "title": "Setting Up Your Custom MC-Linker",
-              "description": "*Starting up...*"
+              "description": "%emoji_step% *Starting up...*"
             }
           ]
         }
