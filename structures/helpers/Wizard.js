@@ -8,11 +8,6 @@ export default class Wizard {
 
     static DEFAULT_TIMEOUT = 120_000;
 
-    static NAVIGATION_BUTTON_IDS = {
-        NEXT: 'wizard_next',
-        BACK: 'wizard_back',
-    };
-
     /**
      * @typedef {Object} WizardOptions
      * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
@@ -47,13 +42,28 @@ export default class Wizard {
         this.pages = pages;
 
         /**
+         * Unique identifier for the wizard instance to prevent conflicts
+         * @type {number}
+         */
+        this.uid = Date.now();
+
+        /**
+         * Unique CustomIDs for the navigation buttons
+         * @type {{next: string, back: string}}
+         */
+        this.navButtonIds = {
+            next: `wizard_next_${this.uid}`,
+            back: `wizard_back_${this.uid}`,
+        };
+
+        /**
          * Options for the wizard
          * @type {WizardOptions}
          */
         this.options = {
             timeout: Wizard.DEFAULT_TIMEOUT,
-            nextButton: getComponent(keys.api.component.success.next_button, { id: Wizard.NAVIGATION_BUTTON_IDS.NEXT }),
-            backButton: getComponent(keys.api.component.success.back_button, { id: Wizard.NAVIGATION_BUTTON_IDS.BACK }),
+            nextButton: getComponent(keys.api.component.success.next_button, { id: this.navButtonIds.next }),
+            backButton: getComponent(keys.api.component.success.back_button, { id: this.navButtonIds.back }),
             ...options,
         };
 
