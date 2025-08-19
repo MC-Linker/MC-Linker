@@ -254,6 +254,12 @@
               "style": "Link",
               "label": "Invite Your Bot!",
               "url": "%invite%"
+            },
+            {
+              "type": "Button",
+              "style": "Primary",
+              "label": "Manage Bot",
+              "custom_id": "customize_manage_bot"
             }
           ]
         },

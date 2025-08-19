@@ -1,10 +1,9 @@
 import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
 import Discord, { GatewayIntentBits, OAuth2Scopes, PermissionsBitField } from 'discord.js';
-import fs from 'fs-extra';
 import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
-import { execSync, spawn } from 'child_process';
+import { execSync } from 'child_process';
 import Wizard from '../structures/helpers/Wizard.js';
 import { getReplyOptions, ph } from '../utilities/messages.js';
 
@@ -62,111 +61,34 @@ export default class CustomizeTokenModal extends Component {
             await testClient.destroy();
         }
 
-        //For linked roles they'll have to add endpoints in the portal and provide the secret
+        //TODO For linked roles they'll have to add endpoints in the portal and provide the secret
 
-        const botFolder = `./Custom-MC-Linker/${interaction.user.id}`;
-        if(await fs.exists(botFolder)) logger.info(execSync('git pull', { cwd: botFolder }).toString());
-        else {
-            // Clone MC-Linker to ../../Custom-MC-Linker/<author_id>
-            await interaction.replyTl(keys.commands.customize.success.cloning);
-            //TODO remove branch dev
-            logger.info(execSync(`git clone https://github.com/MC-Linker/MC-Linker --branch dev ${botFolder}`).toString());
-            // Copy docker-compose.yml
-            await fs.copy('./docker-compose-custom.yml', `${botFolder}/docker-compose.yml`);
-            await fs.copy('./oci', `${botFolder}/oci`);
-            await fs.mkdir(`${botFolder}/download-cache`);
-            await fs.mkdir(`${botFolder}/logs`);
-        }
 
         const botPort = client.customBots.getNewAvailablePort();
-        const env = {
-            BOT_PORT: botPort,
-            PLUGIN_PORT: process.env.PLUGIN_PORT,
-            CLIENT_ID: testClient.user.id,
-            CLIENT_SECRET: '',
-            TOKEN: token,
-            COOKIE_SECRET: crypto.randomUUID(),
-            DISCORD_LINK: process.env.DISCORD_LINK,
-            GUILD_ID: `\'${process.env.GUILD_ID}\'`,
-            OWNER_ID: process.env.OWNER_ID,
-            PLUGIN_VERSION: process.env.PLUGIN_VERSION,
-            PREFIX: process.env.PREFIX,
-            LINKED_ROLES_REDIRECT_URI: `http://api.mclinker.com:${botPort}/linked-role/callback`,
-            MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
-            MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
-            AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
-            IO_USERNAME: process.env.IO_USERNAME,
-            IO_PASSWORD: crypto.randomUUID(),
-            SERVICE_NAME: `custom-mc-linker_${interaction.user.id}`,
-            DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${interaction.user.id}`,
-            NODE_ENV: 'production',
-        };
 
-        const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
-        await fs.writeFile(`${botFolder}/.env`, stringifiedEnv);
-
-        await interaction.replyTl(keys.commands.customize.step.starting_up);
-        logger.info(execSync(`docker build . -t lianecx/${env.SERVICE_NAME}`, { cwd: botFolder, env }).toString());
-
-        const composeProcess = spawn('docker', ['compose', 'up', '-d'], {
-            cwd: botFolder,
-            env,
-            stdio: 'pipe',
-        });
-
-        // Check logs until the bot is ready
-        await new Promise((resolve, reject) => {
-            const checkLogsTimeout = setTimeout(() => {
-                clearInterval(checkLogsInterval);
-                execSync(`docker compose down`, { cwd: botFolder });
-                reject(new Error('Timeout waiting for bot to start'));
-            }, 60_000);
-
-            const checkLogsInterval = setInterval(async () => {
-                try {
-                    const logs = execSync(`docker logs ${env.SERVICE_NAME} --tail 10`, {
-                        cwd: botFolder,
-                        encoding: 'utf8',
-                    });
-
-                    if(logs.includes(`Server listening at http://0.0.0.0:${botPort}`)) {
-                        logger.info('Custom bot is ready!');
-                        clearInterval(checkLogsInterval);
-                        clearTimeout(checkLogsTimeout);
-                        resolve();
-                    }
-                }
-                catch(err) {
-                    // Container might not be ready yet, continue checking
-                }
-            }, 1000, 1000);
-
-            composeProcess.on('close', code => {
-                if(code !== 0) {
-                    clearInterval(checkLogsInterval);
-                    execSync(`docker compose down`, { cwd: botFolder });
-                    reject(new Error(`Docker compose failed with code ${code}`));
-                }
-            });
-
-            composeProcess.on('error', err => {
-                clearInterval(checkLogsInterval);
-                execSync(`docker compose down`, { cwd: botFolder });
-                reject(err);
-            });
-        });
-
-        await interaction.replyTl(keys.commands.customize.step.deploying);
-        logger.info(execSync(`docker exec ${env.SERVICE_NAME} node scripts/deploy.js deploy -g`, {
-            cwd: botFolder,
-            env,
-        }).toString());
-
-        await client.customBots.connect({
-            id: env.CLIENT_ID,
+        /** @type {CustomBotConnection} */
+        const customBotConnection = await client.customBots.connect({
+            id: testClient.user.id,
             port: botPort,
             ownerId: interaction.user.id,
         });
+
+        await interaction.replyTl(keys.commands.customize.step.building);
+        logger.info(execSync(`docker build . -t lianecx/${customBotConnection.serviceName}`).toString());
+
+        try {
+            await interaction.replyTl(keys.commands.customize.step.starting_up);
+            await customBotConnection.init(token);
+            await customBotConnection.start();
+        }
+        catch(err) {
+            await interaction.replyTl(keys.commands.customize.errors.startup_failed);
+            await client.customBots.disconnect(customBotConnection);
+        }
+
+        await interaction.replyTl(keys.commands.customize.step.deploying);
+
+        logger.info(execSync(`docker exec ${customBotConnection.serviceName} node scripts/deploy.js deploy -g`).toString());
 
         await exposeCustomBotPorts(...client.customBots.getPortRange());
 

@@ -1,5 +1,5 @@
-import { BaseInteraction, ComponentType, Message, MessageFlags } from 'discord.js';
-import { createActionRows, getComponent } from '../../utilities/messages.js';
+import { BaseGuildTextChannel, BaseInteraction, ComponentType, Message, MessageFlags } from 'discord.js';
+import { addTranslatedResponses, createActionRows, getComponent } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import { disableComponents, flattenActionRows } from '../../utilities/utils.js';
 import DefaultButton from './DefaultButton.js';
@@ -17,7 +17,7 @@ export default class Wizard {
 
     /**
      * @param {MCLinker} client - Discord client
-     * @param {(Message|import('discord.js').BaseInteraction) & TranslatedResponses} interaction - The interaction to handle
+     * @param {(Message|import('discord.js').BaseInteraction) & TranslatedResponses|BaseGuildTextChannel} interaction - The interaction to handle
      * @param {Array<import('discord.js').BaseMessageOptions>} pages - Array of pages (MessageOptions)
      * @param {Object} [options] - Additional options
      * @param {WizardOptions} [options] - Timeout in milliseconds for the wizard
@@ -30,8 +30,8 @@ export default class Wizard {
         this.client = client;
 
         /**
-         * The interaction that initiated the wizard
-         * @type {(Message|import('discord.js').BaseInteraction) & TranslatedResponses}
+         * The interaction or channel that initiated the wizard
+         * @type {(Message|import('discord.js').BaseInteraction) & TranslatedResponses|BaseGuildTextChannel}
          */
         this.interaction = interaction;
 
@@ -127,7 +127,11 @@ export default class Wizard {
         const options = { ...page, components, flags: this.options.ephemeral ? MessageFlags.Ephemeral : 0 };
 
         if(initial) {
-            this.message = await this.interaction.replyOptions(options);
+            if(this.interaction instanceof BaseGuildTextChannel) {
+                this.message = await this.interaction.send(options);
+                this.interaction = addTranslatedResponses(this.message);
+            }
+            else this.message = await this.interaction.replyOptions(options);
             this._createCollector();
         }
         else await this.interaction.replyOptions(options);

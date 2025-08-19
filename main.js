@@ -2,7 +2,7 @@ import { ShardEvents, ShardingManager } from 'discord.js';
 import dotenv from 'dotenv';
 import logger from './utilities/logger.js';
 
-dotenv.config();
+dotenv.config({ path: process.env.DATA_FOLDER });
 
 const manager = new ShardingManager('./bot.js', { token: process.env.TOKEN });
 

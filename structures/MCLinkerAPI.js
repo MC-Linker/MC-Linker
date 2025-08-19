@@ -462,6 +462,8 @@ export default class MCLinkerAPI extends EventEmitter {
         }
 
         socket.on('disconnect', reason => {
+            logger.debug(`[Socket.IO] Disconnected from ${socket.handshake.address} with reason: ${reason}`);
+
             /** @type {ServerConnection<WebSocketProtocol>} */
             const server = this.client.serverConnections.resolve(serverResolvable);
 

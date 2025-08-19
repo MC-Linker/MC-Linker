@@ -158,6 +158,11 @@
   "commands.customize.success.finish.components.0.label": "Invite Your Bot!",
   "commands.customize.success.finish.components.0.url": "%invite%",
 
+  "commands.customize.success.finish.components.1.type": "Button",
+  "commands.customize.success.finish.components.1.style": "Primary",
+  "commands.customize.success.finish.components.1.label": "Manage Bot",
+  "commands.customize.success.finish.components.1.custom_id": "customize_manage_bot",
+
 
   "commands.customize.success.token_modal.type": "Modal",
   "commands.customize.success.token_modal.custom_id": "customize_token_modal",

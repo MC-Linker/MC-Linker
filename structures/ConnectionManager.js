@@ -1,7 +1,6 @@
 import { CachedManager } from 'discord.js';
 import fs from 'fs-extra';
 import { getManagerString } from '../utilities/shardingUtils.js';
-import ServerConnection from './ServerConnection.js';
 
 export default class ConnectionManager extends CachedManager {
 
@@ -10,7 +9,7 @@ export default class ConnectionManager extends CachedManager {
      */
 
     /**
-     * @typedef {ServerConnectionResolvable|UserConnectionResolvable|ServerSettingsConnectionResolvable|UserSettingsConnectionResolvable} ConnectionResolvable - The resolvable for any connection.
+     * @typedef {ServerConnectionResolvable|UserConnectionResolvable|ServerSettingsConnectionResolvable|UserSettingsConnectionResolvable|CustomBotConnectionResolvable} ConnectionResolvable - The resolvable for any connection.
      */
 
     /**
@@ -67,32 +66,21 @@ export default class ConnectionManager extends CachedManager {
 
     /**
      * Removes a connection from the cache and deletes the data from the database.
-     * @param {ConnectionResolvable} connection - The connection to disconnect.
+     * @param {Connection} connection - The connection to disconnect.
      * @returns {Promise<boolean>} - Whether the disconnection was successful.
      */
     async disconnect(connection) {
-        /** @type {?Connection} */
-        const instance = this.resolve(connection);
-
-        if(instance instanceof ServerConnection && Array.isArray(instance.chatChannels)) {
-            for(const channel of instance.chatChannels) {
-                if(channel.webhook) {
-                    try {
-                        const webhook = await this.client.fetchWebhook(channel.webhook);
-                        await webhook.delete();
-                    }
-                    catch(_) {}
-                }
-            }
-        }
-
-        if(instance && await instance._delete()) {
+        if(connection && await connection._delete()) {
             //Broadcast to all shards
-            await this.client.shard.broadcastEval((c, { instanceId, manager, shard }) => {
+            await this.client.shard.broadcastEval((c, { connectionId, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
-                c[manager].cache.delete(instanceId);
+                c[manager].cache.delete(connectionId);
             }, {
-                context: { instanceId: instance.id, manager: getManagerString(this), shard: this.client.shard.ids[0] },
+                context: {
+                    connectionId: connection.id,
+                    manager: getManagerString(this),
+                    shard: this.client.shard.ids[0],
+                },
             });
             return this.cache.delete(this.resolveId(connection));
         }

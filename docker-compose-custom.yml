@@ -7,14 +7,15 @@ services:
       - "${BOT_PORT}:${BOT_PORT}"
     volumes:
       - type: bind
-        source: ./download-cache
+        source: ./{$DATA_FOLDER}/download-cache
         target: /usr/src/app/download-cache
       - type: bind
-        source: ./logs
+        source: ./${DATA_FOLDER}/logs
         target: /usr/src/app/logs
     environment:
       - LOG_LEVEL=$LOG_LEVEL
-      - CONVERT=$CONVERT # true or false\
+      - CONVERT=$CONVERT # true or false
+      - DATA_FOLDER=$DATA_FOLDER # where logs, download-cache, and .env is stored
       - NODE_ENV=production
       - NODE_MAX_HEAP_SIZE=1024
     networks:

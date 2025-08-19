@@ -8,6 +8,8 @@ import Discord, {
     MessageMentions,
     MessagePayload,
     PermissionFlagsBits,
+    PermissionsBitField,
+    Routes,
     User,
 } from 'discord.js';
 import crypto from 'crypto';
@@ -1038,4 +1040,34 @@ export async function sortChannels(guild) {
     });
 
     return sortedChannels;
+}
+
+/**
+ * Generates a default invite link for a bot.
+ * Default Scopes:
+ * - bot
+ * - applications.commands
+ * Default Permissions:
+ * - Create Instant Invite
+ * - Manage Webhooks
+ * - View Channel
+ * - Send Messages
+ * - Send Messages in Threads
+ * - Embed Links
+ * - Attach Files
+ * - Use External Emojis
+ * @param {string} botId - The id of the bot to generate the invite for.
+ * @return {'https://discord.com/api/oauth2/authorize?client_id=${botId}&scope=${scopes}&permissions=${permissions}'}
+ */
+export function generateDefaultInvite(botId) {
+    const permissions = PermissionsBitField.Flags.CreateInstantInvite |
+        PermissionsBitField.Flags.ManageWebhooks |
+        PermissionsBitField.Flags.ViewChannel |
+        PermissionsBitField.Flags.SendMessages |
+        PermissionsBitField.Flags.SendMessagesInThreads |
+        PermissionsBitField.Flags.EmbedLinks |
+        PermissionsBitField.Flags.AttachFiles |
+        PermissionsBitField.Flags.UseExternalEmojis;
+
+    return `https://discord.com/api/${Routes.oauth2Authorization()}?client_id=${botId}&scope=bot%20applications.commands&permissions=${permissions}`;
 }

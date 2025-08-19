@@ -1,5 +1,4 @@
 import Event from '../structures/Event.js';
-import { getReplyOptions } from '../utilities/messages.js';
 import logger from '../utilities/logger.js';
 
 /**
@@ -17,6 +16,6 @@ export default class EntitlementCreate extends Event {
         const user = await entitlement.fetchUser();
         const dm = await user.createDM();
         logger.info(`${user.username} (${user.id}) bought an entitlement!`);
-        await dm.send(getReplyOptions(keys.entitlements.success.start));
+        await client.customBots.sendCustomBotCreateWizard(dm);
     }
 }

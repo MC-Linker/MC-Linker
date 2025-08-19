@@ -1,4 +1,8 @@
 import Connection from './Connection.js';
+import logger from '../utilities/logger.js';
+import { execSync } from 'child_process';
+import fs from 'fs-extra';
+import path from 'path';
 
 export default class CustomBotConnection extends Connection {
     /**
@@ -6,6 +10,10 @@ export default class CustomBotConnection extends Connection {
      * @property {string} id - The ID of the custom bot.\
      * @property {number} port - The port the custom bot is listening on.
      * @property {string} ownerId - The ID of the owner of the custom bot.
+     */
+
+    /**
+     * @typedef {CustomBotConnection|string} CustomBotConnectionResolvable - Data that resolves to a CustomBotConnection object.
      */
 
     /**
@@ -33,6 +41,108 @@ export default class CustomBotConnection extends Connection {
          * @type {string}
          */
         this.ownerId = data.ownerId;
+
+        this.serviceName = `custom-mc-linker_${this.ownerId}`;
+        this.dataFolder = path.resolve(`./Custom-MC-Linker/${this.ownerId}`);
+    }
+
+    /**
+     * Initializes the custom bot connection.
+     * This will create the necessary directories and environment files for the custom bot.
+     * @param {string} token - The token to use for the custom bot.
+     * @return {Promise<void>}
+     */
+    async init(token) {
+        const env = {
+            BOT_PORT: this.port,
+            PLUGIN_PORT: process.env.PLUGIN_PORT,
+            CLIENT_ID: this.id,
+            CLIENT_SECRET: '',
+            TOKEN: token,
+            COOKIE_SECRET: crypto.randomUUID(),
+            DISCORD_LINK: process.env.DISCORD_LINK,
+            GUILD_ID: `\'${process.env.GUILD_ID}\'`,
+            OWNER_ID: process.env.OWNER_ID,
+            PLUGIN_VERSION: process.env.PLUGIN_VERSION,
+            PREFIX: process.env.PREFIX,
+            LINKED_ROLES_REDIRECT_URI: `http://api.mclinker.com:${this.port}/linked-role/callback`,
+            MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
+            MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
+            AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
+            IO_USERNAME: process.env.IO_USERNAME,
+            IO_PASSWORD: crypto.randomUUID(),
+            SERVICE_NAME: `custom-mc-linker_${this.ownerId}`,
+            DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${this.ownerId}`,
+            DATA_FOLDER: this.dataFolder,
+            NODE_ENV: 'production',
+        };
+
+        const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
+        await fs.writeFile(`${this.dataFolder}/.env`, stringifiedEnv);
+
+        await fs.mkdir(`${this.dataFolder}/download-cache`);
+        await fs.mkdir(`${this.dataFolder}/logs`);
+    }
+
+    /**
+     * Starts the custom bot connection using docker compose and listens for logs to confirm the bot is ready.
+     * @return {Promise<void>}
+     */
+    start() {
+        const composeProcess = spawn('docker', ['compose', '-f', './docker-compose-custom.yml', 'up', '-d', this.serviceName], {
+            env: {
+                DATA_FOLDER: this.dataFolder,
+                SERVICE_NAME: this.serviceName,
+            },
+            stdio: 'pipe',
+        });
+
+        // Check logs until the bot is ready
+        return new Promise((resolve, reject) => {
+            const checkLogsTimeout = setTimeout(() => {
+                clearInterval(checkLogsInterval);
+                this.down();
+                reject(new Error('Timeout waiting for bot to start'));
+            }, 60_000);
+
+            const checkLogsInterval = setInterval(() => {
+                try {
+                    const logs = execSync(`docker logs ${this.serviceName} --tail 10`).toString();
+
+                    if(logs.includes(`Server listening at http://0.0.0.0:${this.port}`)) {
+                        logger.info('Custom bot is ready!');
+                        clearInterval(checkLogsInterval);
+                        clearTimeout(checkLogsTimeout);
+                        resolve();
+                    }
+                }
+                catch(err) {
+                    // Container might not be ready yet, continue checking
+                }
+            }, 1000, 1000);
+
+            composeProcess.on('close', code => {
+                if(code !== 0) {
+                    clearInterval(checkLogsInterval);
+                    this.down();
+                    reject(new Error(`Docker compose failed with code ${code}`));
+                }
+            });
+
+            composeProcess.on('error', err => {
+                clearInterval(checkLogsInterval);
+                this.down();
+                reject(err);
+            });
+        });
+    }
+
+    stop() {
+        execSync(`docker compose -f docker-compose-custom.yml stop ${this.serviceName}`);
+    }
+
+    down() {
+        execSync(`docker compose -f docker-compose-custom.yml down ${this.serviceName}`);
     }
 
     getData() {

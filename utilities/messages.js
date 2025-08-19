@@ -8,7 +8,6 @@ import Discord, {
     EmbedBuilder,
     Guild,
     GuildApplicationCommandManager,
-    InteractionResponse,
     Message,
     MessagePayload,
     ModalBuilder,
@@ -304,7 +303,7 @@ export function addPh(key, ...placeholders) {
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Promise<?Message|?InteractionResponse>}
+ * @returns {Promise<?Message>}
  */
 export async function replyTl(interaction, key, ...placeholders) {
     placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
@@ -327,7 +326,7 @@ export async function replyTl(interaction, key, ...placeholders) {
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.MessageReplyOptions} options - The options to reply with.
- * @returns {Promise<Message>|Message}
+ * @returns {Promise<Message>}
  */
 export async function replyOptions(interaction, options) {
     // noinspection JSDeprecatedSymbols
