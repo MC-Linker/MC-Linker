@@ -3,3 +3,5 @@ files:
     translation: /resources/languages/flat/%locale_with_underscore%.json
   - source: README.md
     translation: /resources/readme/%locale_with_underscore%.md
+  - source: /resources/languages/expanded/en_us.json
+    translation: /resources/languages/expanded/%locale_with_underscore%.json
