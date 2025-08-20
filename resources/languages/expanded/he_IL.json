@@ -1,0 +1,3717 @@
+{
+  "completions": {
+    "success": {
+      "author": {
+        "name": "Success",
+        "icon_url": "https://cdn.discordapp.com/emojis/1084892413035810897.webp?size=96&quality=lossless"
+      },
+      "color": "%color_success%"
+    },
+    "warnings": {
+      "author": {
+        "name": "Warning",
+        "icon_url": "https://cdn.discordapp.com/emojis/1084892438205829180.webp"
+      },
+      "color": "%color_warning%"
+    },
+    "errors": {
+      "author": {
+        "name": "Error",
+        "icon_url": "https://cdn.discordapp.com/emojis/1084892456371376240.webp"
+      },
+      "color": "%color_error%"
+    },
+    "no_access": {
+      "author": {
+        "name": "No Access",
+        "icon_url": "https://cdn.discordapp.com/emojis/1084892473756766370.webp"
+      },
+      "color": "%color_error%"
+    },
+    "step": {
+      "color": "%color_step%"
+    }
+  },
+  "emojis": {
+    "warning": "<:warn:1084892438205829180>",
+    "error": "<:error:1084892456371376240>",
+    "success": "<:success:1084892413035810897>",
+    "step": "<:step:1084904567961034803>",
+    "no_access": "<:noaccess:1084892473756766370>",
+    "join": "<:join:905924638083784836>",
+    "leave": "<:leave:905924638100557865>",
+    "death": "<:death:905924668735770674>",
+    "command": "<a:pinging:891202470833946635>",
+    "command_block": "<:command_block:976452589166166037>",
+    "startup": ":green_circle:",
+    "shutdown": ":red_circle:",
+    "main": ":label:",
+    "moderation": ":shield:",
+    "other_1": ":point_right:",
+    "other_2": ":point_left:",
+    "settings": ":gear:",
+    "mc_s": "<:MinecraftS:849561874033803264>",
+    "mc_t": "<:MinecraftT:849561902979350529>",
+    "mc_a": "<:MinecraftA:849561916632465408>"
+  },
+  "colors": {
+    "success": "#729e34",
+    "error": "#9e3436",
+    "warning": "#f1c40f",
+    "step": "#f88239"
+  },
+  "main": {
+    "no_access": {
+      "not_in_guild": {
+        "embeds": [
+          {
+            "title": "Guild-Only",
+            "description": "I can only be used in server channels!"
+          }
+        ],
+        "console": "Not in guild"
+      },
+      "no_prefix_commands": {
+        "embeds": [
+          {
+            "title": "Use Slash Commands",
+            "description": "Prefixed commands are disabled. Please use [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) instead by typing `/` in a server channel followed by the command name."
+          }
+        ],
+        "console": "%author_username% used prefix command %interaction_name%"
+      },
+      "no_permission_component": {
+        "embeds": [
+          {
+            "title": "No Permission",
+            "description": "Only the command sender can use this!"
+          }
+        ],
+        "ephemeral": true
+      }
+    },
+    "errors": {
+      "unknown_rejection": {
+        "console": "Unknown promise rejection %error_stack%"
+      },
+      "could_not_post_stats": {
+        "console": "Could not post stats to Top.gg"
+      },
+      "no_connection_file": {
+        "console": "No connection file found for guild: %guild_name%"
+      },
+      "could_not_execute_command": {
+        "embeds": [
+          {
+            "title": "שגיאה לא ידועה",
+            "description": "An unknown error occurred while executing this command. Please try again."
+          }
+        ],
+        "console": "Could not execute %interaction_name% command %error_stack%"
+      },
+      "could_not_execute_button": {
+        "embeds": [
+          {
+            "title": "שגיאה לא ידועה",
+            "description": "An unknown error occurred while executing this button. Please try again."
+          }
+        ],
+        "console": "Could not execute %button% button %error_stack%"
+      },
+      "could_not_autocomplete_command": {
+        "console": "Could not respond to %interaction_name% autocomplete %error_stack%"
+      }
+    },
+    "success": {
+      "login": {
+        "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers."
+      },
+      "command_load": {
+        "console": "[%shard%] Successfully loaded command: %command%"
+      },
+      "command_load_category": {
+        "console": "[%shard%] Successfully loaded command: %category%/%command%"
+      },
+      "button_load": {
+        "console": "[%shard%] Successfully loaded button: %button%"
+      },
+      "ping": {
+        "embeds": [
+          {
+            "title": "שלום, אני %client_username%! :wave:",
+            "description": "אני משתמש בפקודות סלאש. כתבו `/help` אם תצטרכו עוד עזרה עם פקודה ספציפית.",
+            "color": "Blue"
+          }
+        ]
+      },
+      "guild_create": {
+        "console": "Joined a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!"
+      },
+      "guild_delete": {
+        "console": "Left a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!"
+      },
+      "disconnected": {
+        "console": "Successfully deleted connection file of guild: %guild_name%"
+      },
+      "invite": {
+        "embeds": [
+          {
+            "title": "Thanks for inviting MC Linker!",
+            "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute </connect plugin:932257443394777129> in Discord.\n• Execute the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using </chatchannel add:932257443394777128> or check out any of the other commands!\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
+          }
+        ]
+      }
+    }
+  },
+  "commands": {
+    "eval": {
+      "warnings": {
+        "no_command": {
+          "embeds": [
+            {
+              "title": "פקודה לא צויינה",
+              "description": "Please specify a command to evaluate."
+            }
+          ],
+          "console": "No command specified"
+        }
+      },
+      "success": {
+        "embeds": [
+          {
+            "title": "הפקודה הוערכה בהצלחה",
+            "description": "%output%"
+          }
+        ],
+        "console": "Successfully evaluated command"
+      },
+      "errors": {
+        "unknown_error": {
+          "embeds": [
+            {
+              "title": "שגיאה לא ידועה",
+              "description": "%output_error%"
+            }
+          ],
+          "console": "Unknown error %error_stack%"
+        }
+      }
+    },
+    "help": {
+      "warnings": {
+        "command_does_not_exist": {
+          "embeds": [
+            {
+              "title": "פקודה/קטגוריה לא קיימת",
+              "description": "Command/Category **%command_name%** does not exist."
+            }
+          ],
+          "console": "Command/Category does not exist"
+        }
+      },
+      "success": {
+        "base": {
+          "embeds": [
+            {
+              "title": "תפריט עזרה",
+              "author": {
+                "name": "%client_username%",
+                "icon_url": "%client_avatar%"
+              }
+            }
+          ]
+        },
+        "no_args": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "ראשי",
+                  "value": "Main commands such as %inventory_command_mention%, or %advancements_command_mention%."
+                },
+                {
+                  "name": "אבטחה",
+                  "value": "Moderation commands such as %ban_command_mention% or %command_command_mention%."
+                },
+                {
+                  "name": "אחר",
+                  "value": "פקודות אחרות כמו %message_command_mention% או %serverinfo_command_mention%."
+                },
+                {
+                  "name": "הגדרות",
+                  "value": "Setup and settings such as %connect_command_mention% or %disable_command_mention%."
+                },
+                {
+                  "name": "​",
+                  "value": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)"
+                }
+              ]
+            }
+          ]
+        },
+        "category": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "%command_mention%",
+                  "value": "%command_description%"
+                },
+                {
+                  "name": "​",
+                  "value": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)"
+                }
+              ]
+            }
+          ]
+        },
+        "command": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "%command_mention%",
+                  "value": "%command_long_description%\n\n**Usage**:\n%command_usage%"
+                }
+              ]
+            }
+          ]
+        },
+        "disabled": {
+          "embeds": [
+            {
+              "description": "תוכלו למצוא מידע מועיל כאן.\n```dif\n- [COMMAND DISABLED]```"
+            }
+          ]
+        }
+      }
+    },
+    "systemstats": {
+      "step": {
+        "measuring": {
+          "embeds": [
+            {
+              "title": "Measuring System Stats",
+              "description": "Please wait while I measure the system stats..."
+            }
+          ]
+        }
+      },
+      "success": {
+        "embeds": [
+          {
+            "title": "System Stats",
+            "fields": [
+              {
+                "name": "Platform",
+                "value": "`%platform%`"
+              },
+              {
+                "name": "OS Uptime",
+                "value": "`%os_uptime%`"
+              },
+              {
+                "name": "Bot Uptime",
+                "value": "`%bot_uptime%`"
+              },
+              {
+                "name": "CPU (Usage)",
+                "value": "`%cpu%` (`%cpu_usage_percent%%`)"
+              },
+              {
+                "name": "Memory Usage",
+                "value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%%`)"
+              },
+              {
+                "name": "Storage Usage",
+                "value": "`%storage_usage%GB/%max_storage%GB` (`%storage_usage_percent%%`)"
+              },
+              {
+                "name": "Library",
+                "value": "`%library%`"
+              },
+              {
+                "name": "Node.js",
+                "value": "`%node_version%`"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "advancements": {
+      "advancements_description": "Image of player's advancements",
+      "no_description_available": "אין תיאור זמין...",
+      "acquired": "Acquired",
+      "not_acquired": "Not Acquired",
+      "success": {
+        "final": {
+          "embeds": [
+            {
+              "title": "Player Advancements",
+              "description": "Here are the advancements of **%username%**:\n",
+              "image": "attachment://Advancements_Player.png"
+            }
+          ]
+        },
+        "details_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "%style%",
+              "custom_id": "advancement_%advancement_value%",
+              "label": "%advancement_name%"
+            }
+          ]
+        },
+        "details": {
+          "embeds": [
+            {
+              "title": "%advancement_name%",
+              "description": "*%advancement_description%*",
+              "fields": [
+                {
+                  "name": "Requirements",
+                  "value": "%advancement_criteria%",
+                  "inline": true
+                },
+                {
+                  "name": "Acquired on",
+                  "value": "%advancement_timestamps%",
+                  "inline": true
+                },
+                {
+                  "name": "Icon Item",
+                  "value": "%advancement_icon%",
+                  "inline": false
+                },
+                {
+                  "name": "Type",
+                  "value": "%advancement_type%",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Advancement %advancement_obtained%\nId: %advancement_value%"
+              },
+              "author": {
+                "name": "%username%",
+                "icon_url": "%user_icon%"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "inventory": {
+      "errors": {
+        "no_image": {
+          "console": "Could not find item image %item_name%. Applying text..."
+        }
+      },
+      "success": {
+        "item_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "slot_%index%",
+              "label": "%slot%: %name%"
+            }
+          ]
+        },
+        "final": {
+          "embeds": [
+            {
+              "title": "אינוונטורי השחקן",
+              "description": "Here's the inventory of **%username%**:\n",
+              "image": "attachment://Inventory_Player.png"
+            }
+          ]
+        },
+        "final_shulker": {
+          "embeds": [
+            {
+              "title": "אינוונטורי השחקן",
+              "description": "Here are the shulker contents of **%username%**:\n",
+              "image": "attachment://Shulker_Contents.png"
+            }
+          ]
+        },
+        "item": {
+          "embeds": [
+            {
+              "title": "מידע לגבי האייטם",
+              "description": "Here's information about the **%name%**. [%count%/%max_count%]",
+              "author": {
+                "name": "%username%'s %slot_name% slot",
+                "icon_url": "%avatar%"
+              },
+              "footer": {
+                "text": "מזהה האייטם: %id%"
+              }
+            }
+          ]
+        },
+        "item_durability": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "דוראביליטי",
+                  "value": "%durability%/%max_durability%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "item_lore": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "תיאור",
+                  "value": "**%lore%**\n%lore_json%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "item_enchantments": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "כישופים",
+                  "value": "%enchantments%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "item_custom_name": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "שם מיוחד",
+                  "value": "**%custom_name%**\n%custom_name_json%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "item_potion": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "שיקויים",
+                  "value": "%effects%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "slots": {
+        "feet": "כפות רגליים",
+        "legs": "רגליים",
+        "chest": "חזה",
+        "head": "ראש",
+        "offhand": "יד שנייה",
+        "first": "ראשון",
+        "second": "שני",
+        "third": "שלישי",
+        "default": "%slot%th"
+      },
+      "inventory_description": "תמונת האינוונטורי של השחקן",
+      "shulker_description": "תמונת השולקר של השחקן"
+    },
+    "stats": {
+      "stats_description": "Image of player's statistics",
+      "warnings": {
+        "no_image": {
+          "console": "No Image available for %stat_name%"
+        }
+      },
+      "errors": {
+        "could_not_parse": {
+          "embeds": [
+            {
+              "title": "לא ניתן למצוא קטגוריה",
+              "description": "%username% has never done anything in this category."
+            }
+          ],
+          "console": "שגיאה בניסיון לנתח את Json הסטטיסטיקות"
+        }
+      },
+      "success": {
+        "title": "%category% Statistics",
+        "stats_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "stats_%index%",
+              "label": "Stats %min%-%max%"
+            }
+          ]
+        },
+        "final": {
+          "embeds": [
+            {
+              "title": "Player Statistics",
+              "description": "Here are the statistics of **%username%**:\n",
+              "image": "attachment://Statistics_Player.png"
+            }
+          ]
+        }
+      }
+    },
+    "ban": {
+      "success": {
+        "embeds": [
+          {
+            "title": "Ban Player",
+            "description": "Successfully banned player **%username%**: `%reason%`\n%warning%",
+            "color": "Orange"
+          }
+        ]
+      }
+    },
+    "command": {
+      "warnings": {
+        "could_not_find_placeholders": {
+          "console": "Could not find placeholder value for %placeholder%"
+        }
+      },
+      "success": {
+        "embeds": [
+          {
+            "title": "Command Executed",
+            "description": "%response%",
+            "color": "Blue"
+          }
+        ]
+      }
+    },
+    "deop": {
+      "success": {
+        "embeds": [
+          {
+            "title": "Deop Player",
+            "description": "Successfully Deoped player **%username%**\n%warning%",
+            "color": "Blue"
+          }
+        ]
+      }
+    },
+    "gamemode": {
+      "success": {
+        "embeds": [
+          {
+            "title": "Change Gamemode",
+            "description": "Successfully changed gamemode of **%username%** to **%gamemode%**\n%warning%",
+            "color": "Orange"
+          }
+        ]
+      }
+    },
+    "kick": {
+      "success": {
+        "embeds": [
+          {
+            "title": "Kick Player",
+            "description": "Successfully kicked player **%username%**: `%reason%`\n%warning%",
+            "color": "Orange"
+          }
+        ]
+      }
+    },
+    "op": {
+      "success": {
+        "embeds": [
+          {
+            "title": "OP Player",
+            "description": "Successfully oped player **%username%**\n%warning%",
+            "color": "Blue"
+          }
+        ]
+      }
+    },
+    "unban": {
+      "success": {
+        "embeds": [
+          {
+            "title": "Unban Player",
+            "description": "Successfully unbanned player **%username%**\n%warning%",
+            "color": "Blue"
+          }
+        ]
+      }
+    },
+    "message": {
+      "success": {
+        "embeds": [
+          {
+            "title": "Send Message",
+            "description": "Successfully sent message to player **%username%**\n%warning%",
+            "color": "Blue"
+          }
+        ]
+      }
+    },
+    "serverinfo": {
+      "unknown": "*Unknown*",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "difficulty": [
+        "Peaceful",
+        "Easy",
+        "Normal",
+        "Hard"
+      ],
+      "success": {
+        "general": {
+          "embeds": [
+            {
+              "title": "Server Information",
+              "thumbnail": "attachment://server-icon.png",
+              "image": "attachment://server-list.png",
+              "color": "#729e34",
+              "fields": [
+                {
+                  "name": "Name",
+                  "value": "%server_name%",
+                  "inline": true
+                },
+                {
+                  "name": "MOTD",
+                  "value": "%motd%",
+                  "inline": true
+                },
+                {
+                  "name": "Players",
+                  "value": "%online_players%/%max_players%",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Server IP: %ip% (%version%)"
+              }
+            }
+          ]
+        },
+        "hardcore_enabled": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Difficulty",
+                  "value": "%difficulty% (Hardcore Enabled)"
+                }
+              ]
+            }
+          ]
+        },
+        "hardcore_disabled": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Difficulty",
+                  "value": "%difficulty%"
+                }
+              ]
+            }
+          ]
+        },
+        "world": {
+          "embeds": [
+            {
+              "title": "World Information",
+              "color": "#729e34",
+              "fields": [
+                {
+                  "name": "Spawn Coordinates",
+                  "value": "Players will spawn at `%spawn_x%, %spawn_y%, %spawn_z%` in world: `%spawn_world%`"
+                },
+                {
+                  "name": "אפשר אנד/נדר",
+                  "value": "אנד: `%allow_end%`\nנדר: `%allow_nether%`"
+                },
+                {
+                  "name": "Difficulty",
+                  "value": "%difficulty%",
+                  "inline": true
+                },
+                {
+                  "name": "Gamerules (only non-default values)",
+                  "value": "%gamerules%",
+                  "inline": false
+                }
+              ]
+            }
+          ]
+        },
+        "admin": {
+          "embeds": [
+            {
+              "title": "פרטי ניהול",
+              "color": "#729e34",
+              "fields": [
+                {
+                  "name": "פלאגינים",
+                  "value": "%plugins%",
+                  "inline": true
+                },
+                {
+                  "name": "דאטאפאקים",
+                  "value": "%datapacks%",
+                  "inline": true
+                },
+                {
+                  "name": "מודים",
+                  "value": "%mods%",
+                  "inline": true
+                },
+                {
+                  "name": "שחקנים בוויטליסט",
+                  "value": "%whitelisted_users%",
+                  "inline": true
+                },
+                {
+                  "name": "שחקנים בבאן",
+                  "value": "%banned_users%",
+                  "inline": true
+                },
+                {
+                  "name": "איפיים חסומים",
+                  "value": "%banned_ips%",
+                  "inline": true
+                },
+                {
+                  "name": "Operators",
+                  "value": "%operators%",
+                  "inline": true
+                },
+                {
+                  "name": "Whitelist",
+                  "value": "%enable_whitelist%",
+                  "inline": true
+                },
+                {
+                  "name": "Seed",
+                  "value": "`%seed%`",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "general_button": {
+          "label": "General Information",
+          "type": "Button",
+          "style": "Primary",
+          "custom_id": "serverinfo_general"
+        },
+        "world_button": {
+          "label": "World Information",
+          "type": "Button",
+          "style": "Secondary",
+          "custom_id": "serverinfo_world"
+        },
+        "admin_button": {
+          "label": "פרטי ניהול",
+          "type": "Button",
+          "style": "Danger",
+          "custom_id": "serverinfo_admin"
+        }
+      }
+    },
+    "userinfo": {
+      "online": "Online",
+      "offline": "Offline",
+      "yes": "Yes",
+      "no": "No",
+      "gamemode": [
+        "Survival",
+        "Creative",
+        "Adventure",
+        "Spectator"
+      ],
+      "dimensions": {
+        "overworld": "Overworld",
+        "the_nether": "Nether",
+        "the_end": "End"
+      },
+      "success": {
+        "general": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "footer": {
+                "text": "UUID: %uuid%"
+              },
+              "fields": [
+                {
+                  "name": "Status",
+                  "value": "%status_emoji% %status%",
+                  "inline": true
+                },
+                {
+                  "name": "Banned",
+                  "value": "%banned%",
+                  "inline": true
+                },
+                {
+                  "name": "Whitelisted",
+                  "value": "%whitelisted%",
+                  "inline": true
+                },
+                {
+                  "name": "Operator",
+                  "value": "%operator% (Level: %operator_level%)",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "connected_account": {
+          "embeds": [
+            {
+              "fields": [
+                {
+                  "name": "Linked Discord Account",
+                  "value": "%connection%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "survival": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "fields": [
+                {
+                  "name": "Gamemode",
+                  "value": "%gamemode%",
+                  "inline": true
+                },
+                {
+                  "name": "Score",
+                  "value": "%score% :diamonds:",
+                  "inline": true
+                },
+                {
+                  "name": "Health",
+                  "value": "%health% ❤️",
+                  "inline": true
+                },
+                {
+                  "name": "Food Level",
+                  "value": "%food% 🍗 (Saturation: %saturation%)",
+                  "inline": true
+                },
+                {
+                  "name": "XP",
+                  "value": "%xp% ✨ (Level: %xp_level%)",
+                  "inline": true
+                },
+                {
+                  "name": "First Joined",
+                  "value": "%first_join%",
+                  "inline": true
+                },
+                {
+                  "name": "Last Joined",
+                  "value": "%last_join%",
+                  "inline": true
+                },
+                {
+                  "name": "Play Time",
+                  "value": "%play_time%",
+                  "inline": true
+                },
+                {
+                  "name": "Effects",
+                  "value": "%effects%",
+                  "inline": true
+                },
+                {
+                  "name": "Teams",
+                  "value": "%teams%",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "admin": {
+          "embeds": [
+            {
+              "title": "User Information",
+              "author": {
+                "name": "%name%",
+                "icon_url": "%icon_url%"
+              },
+              "fields": [
+                {
+                  "name": "Current Position",
+                  "value": "`%position%` (Dimension: %dimension%)",
+                  "inline": true
+                },
+                {
+                  "name": "Spawn Location",
+                  "value": "`%spawn_location%` (Dimension: %spawn_dimension%)",
+                  "inline": true
+                },
+                {
+                  "name": "Last Death Location",
+                  "value": "`%death_location%` (Dimension: %death_dimension%)",
+                  "inline": true
+                }
+              ]
+            }
+          ]
+        },
+        "admin_button": {
+          "embeds": [
+            {
+              "title": "Command Executed",
+              "description": "Command: `%command%`\n%response%"
+            }
+          ]
+        },
+        "buttons": {
+          "kick": {
+            "style": "Danger",
+            "label": "Kick",
+            "custom_id": "userinfo_kick",
+            "disabled": false,
+            "type": "Button"
+          },
+          "ban": {
+            "style": "Danger",
+            "label": "Ban",
+            "custom_id": "userinfo_ban",
+            "disabled": false,
+            "type": "Button"
+          },
+          "unban": {
+            "style": "Danger",
+            "label": "Un-Ban",
+            "custom_id": "userinfo_unban",
+            "disabled": false,
+            "type": "Button"
+          },
+          "whitelist": {
+            "style": "Secondary",
+            "label": "Whitelist",
+            "custom_id": "userinfo_whitelist",
+            "disabled": false,
+            "type": "Button"
+          },
+          "unwhitelist": {
+            "style": "Secondary",
+            "label": "Un-Whitelist",
+            "custom_id": "userinfo_unwhitelist",
+            "disabled": false,
+            "type": "Button"
+          },
+          "op": {
+            "style": "Primary",
+            "label": "OP",
+            "custom_id": "userinfo_op",
+            "disabled": false,
+            "type": "Button"
+          },
+          "deop": {
+            "style": "Primary",
+            "label": "De-OP",
+            "custom_id": "userinfo_deop",
+            "disabled": false,
+            "type": "Button"
+          },
+          "general": {
+            "label": "General Information",
+            "type": "Button",
+            "style": "Secondary",
+            "custom_id": "userinfo_general"
+          },
+          "survival": {
+            "label": "Survival Information",
+            "type": "Button",
+            "style": "Secondary",
+            "custom_id": "userinfo_survival"
+          },
+          "admin": {
+            "label": "פרטי ניהול",
+            "type": "Button",
+            "style": "Danger",
+            "custom_id": "userinfo_admin"
+          }
+        }
+      }
+    },
+    "account": {
+      "warnings": {
+        "mention": {
+          "embeds": [
+            {
+              "title": "No Username Specified",
+              "description": "Don't ping someone. Specify your **Minecraft Java-Edition account name** instead."
+            }
+          ],
+          "console": "No username specified"
+        },
+        "not_connected": {
+          "embeds": [
+            {
+              "title": "Account Not Connected",
+              "description": "Your Minecraft account is not connected."
+            }
+          ],
+          "console": "Account not connected"
+        },
+        "verification_timeout": {
+          "embeds": [
+            {
+              "title": "Verification Timeout",
+              "description": "Account verification timed out. Please try again."
+            }
+          ],
+          "console": "Verification timed out"
+        }
+      },
+      "step": {
+        "verification_info": {
+          "embeds": [
+            {
+              "title": "Account Verification",
+              "description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**"
+            }
+          ]
+        }
+      },
+      "success": {
+        "verified": {
+          "embeds": [
+            {
+              "title": "Account Verified",
+              "description": "Successfully verified your account.",
+              "console": "Account verified"
+            }
+          ]
+        }
+      }
+    },
+    "statchannel": {
+      "errors": {
+        "not_manageable": {
+          "embeds": [
+            {
+              "title": "Cannot Change Name",
+              "description": "The bot does not have the `Manage Channels` permission to edit the channel's name."
+            }
+          ],
+          "console": "Channel not manageable"
+        }
+      },
+      "success": {
+        "add": {
+          "embeds": [
+            {
+              "title": "Added Stat Channel",
+              "description": "Successfully added the stat channel."
+            }
+          ],
+          "console": "Successfully added stat channel"
+        },
+        "remove": {
+          "embeds": [
+            {
+              "title": "Removed Stat Channel",
+              "description": "Successfully removed the stat channel."
+            }
+          ],
+          "console": "Successfully removed stat channel"
+        },
+        "status_list": {
+          "embeds": [
+            {
+              "title": "List Stat Channels",
+              "fields": [
+                {
+                  "name": "Channel",
+                  "value": "%channel%",
+                  "inline": true
+                },
+                {
+                  "name": "Type",
+                  "value": "Status",
+                  "inline": true
+                },
+                {
+                  "name": "Offline Text",
+                  "value": "%online_name%"
+                },
+                {
+                  "name": "Online Text",
+                  "value": "%offline_name%"
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed stat channels"
+        },
+        "member-counter_list": {
+          "embeds": [
+            {
+              "title": "List Stat Channels",
+              "fields": [
+                {
+                  "name": "Channel",
+                  "value": "%channel%",
+                  "inline": true
+                },
+                {
+                  "name": "Type",
+                  "value": "Member Counter",
+                  "inline": true
+                },
+                {
+                  "name": "Channel Text",
+                  "value": "%name%",
+                  "inline": true
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed stat channels"
+        }
+      }
+    },
+    "chatchannel": {
+      "warnings": {
+        "no_channels": {
+          "embeds": [
+            {
+              "title": "No Channels Added",
+              "description": "There are no added channels."
+            }
+          ],
+          "console": "No channels added"
+        },
+        "channel_not_added": {
+          "embeds": [
+            {
+              "title": "Channel Not Added",
+              "description": "The specified channel is not added."
+            }
+          ],
+          "console": "Channel not added"
+        },
+        "not_collected": {
+          "embeds": [
+            {
+              "title": "Select Message Types",
+              "description": "Select all message types you want the bot to send. (Time ran out)"
+            }
+          ],
+          "components": []
+        },
+        "already_responded": {
+          "embeds": [
+            {
+              "title": "Select Message Types",
+              "description": "Select all message types you want the bot to send. (Already responded)"
+            }
+          ]
+        }
+      },
+      "errors": {
+        "could_not_create_webhook": {
+          "embeds": [
+            {
+              "title": "Could not Create Webhook",
+              "description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel."
+            }
+          ],
+          "console": "Could not create webhook",
+          "components": []
+        }
+      },
+      "step": {
+        "choose": {
+          "embeds": [
+            {
+              "title": "Select Message Types",
+              "description": "%emoji_step% Select all message types you want the bot to send. (You have 3 minutes to select)"
+            }
+          ],
+          "components": [
+            {
+              "type": "SelectMenu",
+              "custom_id": "log",
+              "min_values": 1,
+              "max_values": 10,
+              "placeholder": "Select up to 10 message types.",
+              "options": [
+                {
+                  "label": "Chat Messages",
+                  "description": "Send a message whenever a player chats.",
+                  "value": "chat"
+                },
+                {
+                  "label": "Join Messages",
+                  "description": "Send a message whenever a player joins the server.",
+                  "value": "join"
+                },
+                {
+                  "label": "Quit Messages",
+                  "description": "Send a message whenever a player leaves the server.",
+                  "value": "quit"
+                },
+                {
+                  "label": "Advancement Messages",
+                  "description": "Send a message whenever a player completes an advancement.",
+                  "value": "advancement"
+                },
+                {
+                  "label": "Death Messages",
+                  "description": "Send a message whenever a player dies.",
+                  "value": "death"
+                },
+                {
+                  "label": "Player Command Messages",
+                  "description": "Send a message whenever a command is sent by a player.",
+                  "value": "player_command"
+                },
+                {
+                  "label": "Console Command Messages",
+                  "description": "Send a message whenever a command is sent by the console.",
+                  "value": "console_command"
+                },
+                {
+                  "label": "Block Command Messages",
+                  "description": "Send a message whenever a command block is executed.",
+                  "value": "block_command"
+                },
+                {
+                  "label": "Startup Messages",
+                  "description": "Send a message whenever the server starts up.",
+                  "value": "start"
+                },
+                {
+                  "label": "Shutdown Messages",
+                  "description": "Send a message whenever the server shuts down.",
+                  "value": "close"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "success": {
+        "add": {
+          "embeds": [
+            {
+              "title": "Added Chat Channel",
+              "description": "Successfully added the chat channel."
+            }
+          ],
+          "components": [],
+          "console": "Successfully added chat channel"
+        },
+        "remove": {
+          "embeds": [
+            {
+              "title": "Removed Chat Channel",
+              "description": "Successfully removed the chat channel."
+            }
+          ],
+          "console": "Successfully removed chat channel"
+        },
+        "list": {
+          "embeds": [
+            {
+              "title": "List Chat Channels",
+              "fields": [
+                {
+                  "name": "Channel",
+                  "value": "%channel%"
+                },
+                {
+                  "name": "Logging",
+                  "value": "%channel_types%"
+                },
+                {
+                  "name": "Webhook Mode",
+                  "value": "%webhooks%"
+                },
+                {
+                  "name": "Discord To Minecraft",
+                  "value": "%discord_to_minecraft%"
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed chat channels"
+        },
+        "channel_button": {
+          "components": [
+            {
+              "type": "Button",
+              "label": "Channel #%index1%",
+              "custom_id": "channel_%index%",
+              "style": "Success"
+            }
+          ]
+        }
+      }
+    },
+    "connect": {
+      "unknown": "Unknown",
+      "warnings": {
+        "invalid_version": {
+          "embeds": [
+            {
+              "title": "Invalid Version Specified",
+              "description": "Please specify a valid minor Minecraft version without patch number (e.g. `1.19`, `1.16`)."
+            }
+          ],
+          "console": "Invalid version specified"
+        },
+        "invalid_port": {
+          "embeds": [
+            {
+              "title": "Invalid Port Specified",
+              "description": "Please specify a port that is bigger than 0 and smaller than 65536."
+            }
+          ],
+          "console": "Invalid port specified"
+        },
+        "version_below_11": {
+          "embeds": [
+            {
+              "title": "Version Below 1.11",
+              "description": "The advancement command might not work because advancements don't exist in your Minecraft version yet."
+            }
+          ]
+        },
+        "version_below_7": {
+          "embeds": [
+            {
+              "title": "Version Below 1.7",
+              "description": "The stat and advancement commands might not work because stats and advancements don't exist in your Minecraft version yet."
+            }
+          ]
+        },
+        "already_connected": {
+          "embeds": [
+            {
+              "title": "Already Connected",
+              "description": "Already connected with another server (**%ip%**). If you proceed to connect, that server will be automatically disconnected!"
+            }
+          ]
+        },
+        "plugin_already_connected": {
+          "embeds": [
+            {
+              "title": "Already Connected",
+              "description": "The plugin is already connected to another server (**%name%**). Please disconnect that server from the plugin first."
+            }
+          ]
+        },
+        "canceled_connection": {
+          "embeds": [
+            {
+              "title": "Connection Canceled",
+              "description": "This connection request was canceled by the user."
+            }
+          ],
+          "console": "Invalid port specified",
+          "components": []
+        },
+        "could_not_dm": {
+          "embeds": [
+            {
+              "title": "Could Not DM",
+              "description": "Could not DM you. Verifying in the current channel..."
+            }
+          ]
+        },
+        "no_reply_in_time": {
+          "embeds": [
+            {
+              "title": "Verification Failed",
+              "description": "You did not reply in time!"
+            }
+          ],
+          "console": "No reply in time"
+        },
+        "not_collected": {
+          "embeds": [
+            {
+              "title": "Choose Required Roles To Join",
+              "description": "Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)"
+            }
+          ],
+          "components": []
+        }
+      },
+      "step": {
+        "searching_properties": {
+          "embeds": [
+            {
+              "title": "Searching For Server...",
+              "description": "%emoji_step% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)"
+            }
+          ],
+          "console": "Searching for server.properties..."
+        },
+        "connecting": {
+          "embeds": [
+            {
+              "title": "Connecting...",
+              "description": "%emoji_step% Trying to connect to the ftp server..."
+            }
+          ]
+        },
+        "check_dms": {
+          "embeds": [
+            {
+              "title": "Check Your DMs",
+              "description": "%emoji_step% Please check your DMs to complete the connection."
+            }
+          ]
+        },
+        "command_verification": {
+          "embeds": [
+            {
+              "title": "Server Verification",
+              "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server as an operator and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
+            }
+          ]
+        },
+        "code_verification": {
+          "embeds": [
+            {
+              "title": "Server Verification",
+              "description": "%emoji_step% Please check the console of your Minecraft server and enter the verification code from the server console below this message.\n**You have 3 minutes to reply.**"
+            }
+          ]
+        },
+        "choose_roles": {
+          "embeds": [
+            {
+              "title": "Choose Required Roles To Join",
+              "description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (You have 3 minutes to select)"
+            }
+          ],
+          "components": [
+            {
+              "type": "StringSelect",
+              "custom_id": "required_roles_method",
+              "placeholder": "Select the method to check the roles.",
+              "options": [
+                {
+                  "label": "Any",
+                  "description": "The player only needs to have one of the selected roles to join.",
+                  "value": "any"
+                },
+                {
+                  "label": "All",
+                  "description": "The player needs to have all of the selected roles to join.",
+                  "value": "all"
+                }
+              ]
+            },
+            {
+              "type": "RoleSelect",
+              "custom_id": "required_roles",
+              "placeholder": "Select up to 25 roles.",
+              "min_values": 1,
+              "max_values": 25
+            }
+          ]
+        }
+      },
+      "errors": {
+        "could_not_connect_ftp": {
+          "embeds": [
+            {
+              "title": "Could Not Connect",
+              "description": "Could not connect to server with ftp, sftp or ftps. Please check your credentials and try again."
+            }
+          ],
+          "console": "Could not connect with ftp, sftp or ftps."
+        },
+        "could_not_connect_plugin": {
+          "embeds": [
+            {
+              "title": "Could Not Connect",
+              "description": "Could not connect to server with plugin."
+            }
+          ],
+          "console": "Could not connect with plugin."
+        },
+        "could_not_find_properties": {
+          "embeds": [
+            {
+              "title": "Could Not Find Server",
+              "description": "Could not find server folder. Please specify the server path manually."
+            }
+          ],
+          "console": "Could not find server.properties"
+        },
+        "could_not_get_properties": {
+          "embeds": [
+            {
+              "title": "Could Not Download",
+              "description": "Could not download server configuration. Please specify the server-path manually."
+            }
+          ],
+          "console": "Could not download server.properties"
+        },
+        "incorrect_code": {
+          "embeds": [
+            {
+              "title": "Verification Failed",
+              "description": "You didn't reply with the correct code."
+            }
+          ],
+          "console": "Incorrect code"
+        },
+        "websocket_error": {
+          "embeds": [
+            {
+              "title": "Verification Failed",
+              "description": "An unknown error occurred while connecting to the plugin."
+            }
+          ],
+          "console": "Unknown websocket connection error %error_stack%"
+        }
+      },
+      "success": {
+        "ftp": {
+          "embeds": [
+            {
+              "title": "Connected to Server",
+              "description": "Successfully connected to the ftp server."
+            }
+          ],
+          "console": "Successfully wrote ftp file",
+          "components": []
+        },
+        "plugin": {
+          "embeds": [
+            {
+              "title": "Connected to Server",
+              "description": "Successfully connected to the plugin."
+            }
+          ],
+          "console": "Successfully wrote plugin file"
+        },
+        "websocket": {
+          "embeds": [
+            {
+              "title": "Connected to Server",
+              "description": "Successfully connected to the plugin."
+            }
+          ],
+          "console": "Successfully wrote websocket file"
+        },
+        "verification": {
+          "embeds": [
+            {
+              "title": "Verification Successful",
+              "description": "Successfully verified your server."
+            }
+          ],
+          "console": "Guild verified"
+        }
+      }
+    },
+    "disable": {
+      "warnings": {
+        "command_does_not_exist": {
+          "embeds": [
+            {
+              "title": "Command Does Not Exist",
+              "description": "Command **%disable%** does not exist."
+            }
+          ],
+          "console": "Command does not exist"
+        },
+        "disabled_command": {
+          "embeds": [
+            {
+              "title": "Disabled Command Specified",
+              "description": "You cannot disable the command **%disable%**."
+            }
+          ],
+          "console": "Disabled command specified"
+        }
+      },
+      "errors": {
+        "could_not_disable": {
+          "embeds": [
+            {
+              "title": "Could Not Disable",
+              "description": "Could not disable %type% **%disable%**."
+            }
+          ],
+          "console": "Could not disable %disable%"
+        }
+      },
+      "success": {
+        "nothing_disabled": {
+          "embeds": [
+            {
+              "title": "Nothing Disabled",
+              "description": "There are no disabled %type%.",
+              "color": "Green"
+            }
+          ],
+          "console": "Nothing disabled"
+        },
+        "disabled": {
+          "embeds": [
+            {
+              "title": "Successfully Disabled",
+              "description": "Successfully disabled %type% **%disable%**."
+            }
+          ],
+          "console": "Successfully disabled %type% %disable%"
+        },
+        "list": {
+          "base": {
+            "embeds": [
+              {
+                "title": "Disable List",
+                "description": "Here's a list of all disabled **%type%**:",
+                "color": "Green"
+              }
+            ]
+          },
+          "entry": "- `%disable%`",
+          "final": {
+            "embeds": [
+              {
+                "fields": [
+                  {
+                    "name": "​",
+                    "value": "%list%",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "disconnect": {
+      "success": {
+        "embeds": [
+          {
+            "title": "Disconnected From %protocol_cap%",
+            "description": "The **%protocol%** connection was successfully disconnected."
+          }
+        ],
+        "console": "Disconnected from %protocol%"
+      }
+    },
+    "enable": {
+      "warnings": {
+        "command_does_not_exist": {
+          "embeds": [
+            {
+              "title": "Command Does Not Exist",
+              "description": "Command **%enable%** does not exist."
+            }
+          ],
+          "console": "Command does not exist"
+        },
+        "already_enabled": {
+          "embeds": [
+            {
+              "title": "Already Enabled",
+              "description": "%type% **%enable%** is already enabled."
+            }
+          ],
+          "console": "Already enabled %enable%"
+        }
+      },
+      "success": {
+        "embeds": [
+          {
+            "title": "Successfully Enabled",
+            "description": "Successfully enabled %type% **%enable%**."
+          }
+        ],
+        "console": "Successfully enabled %type% %enable%"
+      }
+    },
+    "rolesync": {
+      "warnings": {
+        "no_roles": {
+          "embeds": [
+            {
+              "title": "No Synced Roles Added",
+              "description": "There are no added synced roles."
+            }
+          ],
+          "console": "No synced roles added"
+        },
+        "role_not_added": {
+          "embeds": [
+            {
+              "title": "Role Not Added",
+              "description": "The specified role is not added."
+            }
+          ],
+          "console": "Role not added"
+        }
+      },
+      "errors": {
+        "group_not_found": {
+          "embeds": [
+            {
+              "title": "Group Or Team Not Found",
+              "description": "Could not find a group or team with the name **%name%**."
+            }
+          ],
+          "console": "Group or team not found"
+        },
+        "not_editable": {
+          "embeds": [
+            {
+              "title": "Role Not Editable",
+              "description": "I do not have permission to edit members of the role **%role%**."
+            }
+          ],
+          "console": "Role not editable"
+        },
+        "luckperms_not_loaded": {
+          "embeds": [
+            {
+              "title": "Luckperms Not Loaded",
+              "description": "Please install luckperms or sync to a team instead."
+            }
+          ],
+          "console": "Luckperms not loaded"
+        }
+      },
+      "success": {
+        "add": {
+          "embeds": [
+            {
+              "title": "Added Synced Role",
+              "description": "Successfully added the synced role."
+            }
+          ],
+          "console": "Successfully added synced role"
+        },
+        "remove": {
+          "embeds": [
+            {
+              "title": "Removed Synced Role",
+              "description": "Successfully removed the synced role."
+            }
+          ],
+          "console": "Successfully removed synced role"
+        },
+        "list": {
+          "embeds": [
+            {
+              "title": "List Synced Roles",
+              "fields": [
+                {
+                  "name": "Role",
+                  "value": "%role%"
+                },
+                {
+                  "name": "%group_or_team%",
+                  "value": "%group_or_team_value%"
+                },
+                {
+                  "name": "Members",
+                  "value": "%member_count%"
+                }
+              ]
+            }
+          ],
+          "console": "Successfully listed chat channels"
+        },
+        "role_button": {
+          "components": [
+            {
+              "type": "Button",
+              "label": "Role #%index1%",
+              "custom_id": "role_%index%",
+              "style": "Success"
+            }
+          ]
+        }
+      },
+      "group": "Group",
+      "team": "Team"
+    }
+  },
+  "api": {
+    "messages": {
+      "errors": {
+        "no_command_arguments": {
+          "console": "Could not get command: No name or type specified"
+        },
+        "no_command_key": {
+          "console": "Could not get command: No key specified"
+        },
+        "no_embed_key": {
+          "console": "Could not get embed: No key specified"
+        },
+        "no_component_key": {
+          "console": "Could not get component: No key specified"
+        },
+        "no_reply_arguments": {
+          "console": "Could not reply: No message, key or placeholders specified"
+        },
+        "no_reply_key": {
+          "console": "Could not get reply options: No key specified"
+        },
+        "could_not_reply": {
+          "console": "Could not reply to interaction %error_stack%\n%interaction%"
+        },
+        "could_not_reply_channel": {
+          "console": "Could not send message to channel of interaction %error_stack%\n%interaction%"
+        }
+      }
+    },
+    "settings": {
+      "errors": {
+        "could_not_read_file": {
+          "console": "Could not read disable file %error_stack%"
+        },
+        "could_not_write_file": {
+          "console": "Could not read disable file %error_stack%"
+        }
+      }
+    },
+    "plugin": {
+      "warnings": {
+        "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
+        "no_response_message_short": "No response message! This commonly happens after using `/reload`.",
+        "server_disconnected": {
+          "embeds": [
+            {
+              "title": "Server Disconnected",
+              "description": "The server has lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
+            }
+          ]
+        }
+      },
+      "errors": {
+        "no_response": {
+          "embeds": [
+            {
+              "title": "Plugin Does Not Respond",
+              "description": "[Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled."
+            }
+          ],
+          "console": "Plugin does not respond",
+          "components": []
+        },
+        "unknown_chat_error": {
+          "embeds": [
+            {
+              "title": "שגיאה לא ידועה",
+              "description": "Could not send the message to the chatchannel using webhooks. Please re-add the channel using `/chatchannel add`!"
+            }
+          ],
+          "console": "Unknown chat error %error_stack%"
+        },
+        "no_webhook_permission": {
+          "embeds": [
+            {
+              "title": "No Webhook Permission",
+              "description": "The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission."
+            }
+          ],
+          "console": "No webhook permission"
+        },
+        "could_not_add_webhook": {
+          "embeds": [
+            {
+              "title": "Could Not Add Webhook",
+              "description": "The chatchannel webhook got deleted for an unknown reason and could not be re-added."
+            }
+          ],
+          "console": "Could not re-add webhook"
+        },
+        "status_400": {
+          "embeds": [
+            {
+              "title": "Unknown Bot Error",
+              "description": "An unknown bot error occurred."
+            }
+          ],
+          "console": "400: Unknown client error, %data%"
+        },
+        "status_401": {
+          "embeds": [
+            {
+              "title": "Unknown Bot Error",
+              "description": "An unknown bot error occurred."
+            }
+          ],
+          "console": "401: Wrong authorization"
+        },
+        "status_404": {
+          "embeds": [
+            {
+              "title": "Data Not Found",
+              "description": "The requested data could not be found on the server."
+            }
+          ],
+          "console": "404: Data could not be found, %data%"
+        },
+        "status_500": {
+          "embeds": [
+            {
+              "title": "Unknown Plugin Error",
+              "description": "An unknown plugin error occurred."
+            }
+          ],
+          "console": "500: Unknown server error, %data%"
+        }
+      },
+      "success": {
+        "default_death_message": "%username% died",
+        "messages": {
+          "chat": {
+            "embeds": [
+              {
+                "author": {
+                  "name": "%username%",
+                  "icon_url": "%author_url%"
+                },
+                "description": "%message%",
+                "color": "Blurple"
+              }
+            ]
+          },
+          "join": {
+            "embeds": [
+              {
+                "author": {
+                  "name": "%username%",
+                  "icon_url": "%author_url%"
+                },
+                "description": "%emoji_join% **%username%** joined the game",
+                "color": "Yellow"
+              }
+            ]
+          },
+          "quit": {
+            "embeds": [
+              {
+                "author": {
+                  "name": "%username%",
+                  "icon_url": "%author_url%"
+                },
+                "description": "%emoji_leave% **%username%** left the game",
+                "color": "Yellow"
+              }
+            ]
+          },
+          "advancement": {
+            "embeds": [
+              {
+                "author": {
+                  "name": "%username%",
+                  "icon_url": "%author_url%"
+                },
+                "description": "**%username%** has made the advancement: [**%advancement_title%**]\n*%advancement_description%*",
+                "color": "LuminousVividPink"
+              }
+            ]
+          },
+          "death": {
+            "embeds": [
+              {
+                "author": {
+                  "name": "%username%",
+                  "icon_url": "%author_url%"
+                },
+                "description": "%emoji_death% %message%",
+                "color": "DarkPurple"
+              }
+            ]
+          },
+          "player_command": {
+            "embeds": [
+              {
+                "author": {
+                  "name": "%username%",
+                  "icon_url": "%author_url%"
+                },
+                "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+                "color": "DarkGold"
+              }
+            ]
+          },
+          "console_command": {
+            "embeds": [
+              {
+                "author": {
+                  "name": "%username%",
+                  "icon_url": "%author_url%"
+                },
+                "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+                "color": "DarkGold"
+              }
+            ]
+          },
+          "block_command": {
+            "embeds": [
+              {
+                "author": {
+                  "name": "Command Block",
+                  "icon_url": "https://cdn.discordapp.com/emojis/976452589166166037.webp"
+                },
+                "description": "**%username%** has executed the command: [**%message%**]",
+                "color": "DarkGold"
+              }
+            ]
+          },
+          "start": {
+            "embeds": [
+              {
+                "description": "%emoji_startup% **The server has opened!**",
+                "color": "Green",
+                "timestamp": "%timestamp_now%"
+              }
+            ]
+          },
+          "close": {
+            "embeds": [
+              {
+                "description": "%emoji_shutdown% **The server has shutdown!**",
+                "color": "Red",
+                "timestamp": "%timestamp_now%"
+              }
+            ]
+          }
+        },
+        "listening": {
+          "console": "Listening on %address%"
+        }
+      }
+    },
+    "ftp": {
+      "errors": {
+        "could_not_connect": {
+          "embeds": [
+            {
+              "title": "Could Not Connect",
+              "description": "Could not connect to server with ftp. Please check if the ftp server is online."
+            }
+          ],
+          "console": "Could not connect with ftp, sftp or ftps."
+        },
+        "could_not_parse": {
+          "embeds": [
+            {
+              "title": "Could not Read File",
+              "description": "Could not read the NBT file. File may be corrupted."
+            }
+          ],
+          "console": "Could not read nbt file %error_stack%"
+        }
+      }
+    },
+    "utils": {
+      "errors": {
+        "could_not_fetch_user": {
+          "embeds": [
+            {
+              "title": "Could Not Fetch User",
+              "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
+            }
+          ],
+          "console": "Could not fetch uuid/username of %user%"
+        },
+        "not_sendable": {
+          "embeds": [
+            {
+              "title": "Cannot Send Messages",
+              "description": "The bot does not have permission to send messages in this channel."
+            }
+          ],
+          "console": "Channel not sendable"
+        }
+      }
+    },
+    "button": {
+      "clicked": {
+        "console": "%author_tag% has clicked button %interaction_id% in %guild_name%"
+      },
+      "no_access": {
+        "no_author": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "Only the command sender can use this button."
+            }
+          ],
+          "ephemeral": true
+        },
+        "no_permission": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "This button can only be used with the `%permission%` permission!"
+            }
+          ],
+          "ephemeral": true
+        }
+      },
+      "success": {
+        "next_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "%id%",
+              "label": "Next >"
+            }
+          ]
+        },
+        "back_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "%id%",
+              "label": "< Back"
+            }
+          ]
+        },
+        "exit_button": {
+          "components": [
+            {
+              "type": "Button",
+              "style": "Secondary",
+              "custom_id": "%id%",
+              "label": "Exit"
+            }
+          ]
+        }
+      }
+    },
+    "command": {
+      "executed": {
+        "console": "%author_tag% executed /%interaction_name% %args% in %guild_name%"
+      },
+      "errors": {
+        "server_not_connected": {
+          "embeds": [
+            {
+              "title": "Server Not Connected",
+              "description": "Your server is not connected. Please use `/connect plugin` or `/connect ftp` first."
+            }
+          ],
+          "console": "Server not connected"
+        },
+        "user_not_connected": {
+          "embeds": [
+            {
+              "title": "User Not Connected",
+              "description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **Minecraft username**."
+            }
+          ],
+          "console": "User not connected"
+        },
+        "server_not_connected_plugin": {
+          "embeds": [
+            {
+              "title": "Server Not Connected",
+              "description": "Your server is not connected with the plugin. Please use `/connect plugin` first."
+            }
+          ],
+          "console": "Server not connected with plugin"
+        },
+        "server_not_connected_ftp": {
+          "embeds": [
+            {
+              "title": "Server Not Connected",
+              "description": "Your server is not connected with ftp. Please use `/connect ftp` first."
+            }
+          ],
+          "console": "Server not connected with ftp"
+        },
+        "could_not_download": {
+          "embeds": [
+            {
+              "title": "Could Not Download",
+              "description": "Could not download %category% files."
+            }
+          ],
+          "console": "Could not download %category% files"
+        },
+        "could_not_download_user_files": {
+          "embeds": [
+            {
+              "title": "Could Not Download",
+              "description": "Could not download %category% files. The user most likely never joined the server."
+            }
+          ],
+          "console": "Could not download %category% files"
+        }
+      },
+      "no_access": {
+        "disabled": {
+          "embeds": [
+            {
+              "title": "Command Disabled",
+              "description": "Command **%interaction_name%** disabled!"
+            }
+          ],
+          "console": "Command disabled"
+        },
+        "no_permission": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "This command can only be used with the `%permission%` permission!"
+            }
+          ],
+          "console": "No permission"
+        },
+        "no_unknown_permission": {
+          "embeds": [
+            {
+              "title": "No Permission",
+              "description": "You do not have permission to execute this command!"
+            }
+          ],
+          "console": "No permission"
+        }
+      },
+      "warnings": {
+        "no_argument": {
+          "embeds": [
+            {
+              "title": "Missing Required Argument",
+              "description": "Please specify: `%argument%`"
+            }
+          ],
+          "console": "Missing required argument"
+        },
+        "no_user": {
+          "embeds": [
+            {
+              "title": "No User Specified",
+              "description": "Please ping a user or specify a Minecraft username."
+            }
+          ],
+          "console": "No user specified"
+        }
+      }
+    }
+  },
+  "buttons": {
+    "disable": {
+      "success": {
+        "response": {
+          "embeds": [
+            {
+              "title": "Disabled Command",
+              "description": "Successfully disabled command **%command_name%**."
+            }
+          ],
+          "console": "Disabled command %command_name%"
+        },
+        "help": {
+          "embeds": [
+            {
+              "description": "```diff\n- [COMMAND DISABLED]```",
+              "color": "DarkRed"
+            }
+          ]
+        }
+      }
+    },
+    "enable": {
+      "warnings": {
+        "already_enabled": {
+          "embeds": [
+            {
+              "title": "Already Enabled",
+              "description": "Command **%command_name%** is already enabled."
+            }
+          ],
+          "console": "Could not enable %command_name%"
+        }
+      },
+      "success": {
+        "response": {
+          "embeds": [
+            {
+              "title": "Enabled Command",
+              "description": "Successfully enabled command **%command_name%**."
+            }
+          ],
+          "console": "Enabled command %command_name%"
+        },
+        "help": {
+          "embeds": [
+            {
+              "description": "```diff\n+ [COMMAND ENABLED]```",
+              "color": "Green"
+            }
+          ]
+        }
+      }
+    },
+    "yes_no": {
+      "components": [
+        {
+          "type": "Button",
+          "style": "Success",
+          "custom_id": "yes",
+          "label": "Yes"
+        },
+        {
+          "type": "Button",
+          "style": "Danger",
+          "custom_id": "no",
+          "label": "No"
+        }
+      ]
+    }
+  },
+  "data": {
+    "help": {
+      "name": "help",
+      "description": "Detailed Description of every command.",
+      "type": "ChatInput",
+      "options": [
+        {
+          "type": "String",
+          "name": "פקודה",
+          "description": "Set the command or category of which you want to get infos.",
+          "required": false
+        }
+      ]
+    },
+    "advancements": {
+      "name": "התקדמויות",
+      "type": "ChatInput",
+      "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
+      "description": "Look up your and other member's Minecraft advancements.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "minecraft",
+          "description": "The heart and story of the game",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "nether",
+          "description": "Bring summer clothes",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "end",
+          "description": "Or the beginning?",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "adventure",
+          "description": "Adventure, exploration, and combat",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "husbandry",
+          "description": "The world is full of friends and food",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the advancement from.",
+              "required": true
+            },
+            {
+              "type": "Boolean",
+              "name": "show_details",
+              "description": "Set whether to display buttons that show details about advancements.",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "inventory": {
+      "name": "inventory",
+      "type": "ChatInput",
+      "long_description": "Get an image of the current player's inventory.",
+      "description": "Get an image of the current player's inventory.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to get the inventory from.",
+          "required": true
+        },
+        {
+          "type": "Boolean",
+          "name": "show_details",
+          "description": "Set whether to display buttons that show more details about items.",
+          "required": false
+        }
+      ]
+    },
+    "stats": {
+      "name": "סטטיסטיקות",
+      "type": "ChatInput",
+      "long_description": "Look at your and other member's Minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
+      "description": "Look at your and other member's Minecraft server stats.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "custom",
+          "description": "A multitude of generic statistics related to a player's actions.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "mined",
+          "description": "Statistic related to the number of blocks a player mined.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "broken",
+          "description": "Statistics related to the number of items a player ran their durability negative.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "crafted",
+          "description": "Statistics related to the number of items crafted, smelted, etc.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "used",
+          "description": "Statistics related to the number of block or item used.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats (Default: Descending).",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "picked_up",
+          "description": "Statistics related to the number of dropped items a player picked up.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "dropped",
+          "description": "Statistics related to the number of items that dropped.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "value": "none",
+                  "name": "None"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "killed",
+          "description": "Statistics related to the number of entities a player killed.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "killed_by",
+          "description": "Statistics related to the times of a player being killed by entities.",
+          "options": [
+            {
+              "type": "String",
+              "name": "user",
+              "description": "Set the user you want to get the stats from.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "sort",
+              "description": "Set how you want to sort the stats.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Ascending",
+                  "value": "ascending"
+                },
+                {
+                  "name": "Descending",
+                  "value": "descending"
+                },
+                {
+                  "name": "Alphabetically",
+                  "value": "alphabetically"
+                },
+                {
+                  "name": "None",
+                  "value": "none"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ban": {
+      "name": "ban",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "BanMembers"
+      ],
+      "long_description": "Ban a player from the **Minecraft server**. Can only be used with `Ban member` permission!",
+      "description": "Ban a player from the Minecraft server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to ban.",
+          "required": true
+        },
+        {
+          "type": "String",
+          "name": "reason",
+          "description": "Set a reason for the ban.",
+          "required": false
+        }
+      ]
+    },
+    "command": {
+      "name": "פקודה",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Execute any command on the **Minecraft-server**. Can only be executed by admins.",
+      "description": "Execute any command on the Minecraft-server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "פקודה",
+          "description": "Set the command name.",
+          "required": true,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument1",
+          "description": "Set the first command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument2",
+          "description": "Set the second command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument3",
+          "description": "Set the third command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument4",
+          "description": "Set the fourth command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument5",
+          "description": "Set the fifth command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument6",
+          "description": "Set the sixth command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument7",
+          "description": "Set the seventh command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument8",
+          "description": "Set the eighth command argument.",
+          "required": false,
+          "autocomplete": true
+        },
+        {
+          "type": "String",
+          "name": "argument9",
+          "description": "Set the ninth command argument.",
+          "required": false,
+          "autocomplete": true
+        }
+      ]
+    },
+    "deop": {
+      "name": "deop",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Deop players on the **Minecraft-server**. Can only be used by admins.",
+      "description": "Deop players on the Minecraft-server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to deop.",
+          "required": true
+        }
+      ]
+    },
+    "gamemode": {
+      "name": "gamemode",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Change the gamemode of a player on the **Minecraft server**. Can only be used by admins.",
+      "description": "Change the gamemode of a player on the Minecraft-server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to change the gamemode of.",
+          "required": true
+        },
+        {
+          "type": "String",
+          "name": "gamemode",
+          "description": "Set the gamemode.",
+          "required": true,
+          "choices": [
+            {
+              "name": "Creative",
+              "value": "creative"
+            },
+            {
+              "name": "Survival",
+              "value": "survival"
+            },
+            {
+              "name": "Adventure",
+              "value": "adventure"
+            },
+            {
+              "name": "Spectator",
+              "value": "spectator"
+            }
+          ]
+        }
+      ]
+    },
+    "kick": {
+      "name": "kick",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "KickMembers"
+      ],
+      "long_description": "Kick a player from the **Minecraft server**. Can only be used with `Kick member` permission!",
+      "description": "Kick a player from the Minecraft server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to kick.",
+          "required": true
+        },
+        {
+          "type": "String",
+          "name": "reason",
+          "description": "Set a reason for the kick.",
+          "required": false
+        }
+      ]
+    },
+    "op": {
+      "name": "op",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "OP players on the **Minecraft server**. Can only be used by admins.",
+      "description": "OP players on the Minecraft server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to OP.",
+          "required": true
+        }
+      ]
+    },
+    "unban": {
+      "name": "unban",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "BanMembers"
+      ],
+      "long_description": "Unban a banned player from the **Minecraft server**. Can only be used with `Ban member` permissions.",
+      "description": "Unban a banned player from the Minecraft server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to unban.",
+          "required": true
+        }
+      ]
+    },
+    "message": {
+      "name": "message",
+      "type": "ChatInput",
+      "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.wiki/w/Formatting_codes#Color_codes).",
+      "description": "Send private chat messages to members on the server.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to send a (private) message to.",
+          "required": true
+        },
+        {
+          "type": "String",
+          "name": "message",
+          "description": "Set the (private) message you want to send to the user.",
+          "required": true
+        }
+      ]
+    },
+    "serverinfo": {
+      "name": "serverinfo",
+      "type": "ChatInput",
+      "long_description": "View information about the connected **Minecraft server**.",
+      "description": "View information about the connected Minecraft server."
+    },
+    "userinfo": {
+      "name": "userinfo",
+      "type": "ChatInput",
+      "long_description": "View information about the specified **Minecraft user**.",
+      "description": "View information about the specified Minecraft user.",
+      "options": [
+        {
+          "type": "String",
+          "name": "user",
+          "description": "Set the user you want to view information about.",
+          "required": true
+        }
+      ]
+    },
+    "account": {
+      "name": "account",
+      "type": "ChatInput",
+      "long_description": "Connect or disconnect your Minecraft Java-Edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
+      "description": "Connect your Minecraft account with the bot.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "connect",
+          "description": "Connect your Minecraft-account.",
+          "options": [
+            {
+              "type": "String",
+              "name": "username",
+              "description": "Set your java-edition username you want to connect with.",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "התנתק",
+          "description": "Disconnect your account."
+        }
+      ]
+    },
+    "statchannel": {
+      "name": "statchannel",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Manage statchannels in the server that will show the current player count of the Minecraft server or it's online status.",
+      "description": "Manage statchannels in the server.",
+      "options": [
+        {
+          "type": "SubcommandGroup",
+          "name": "add",
+          "description": "Add a statchannel to the server.",
+          "options": [
+            {
+              "type": "Subcommand",
+              "name": "status",
+              "description": "Add a statchannel that will show the online status of the Minecraft server.",
+              "options": [
+                {
+                  "type": "Channel",
+                  "name": "channel",
+                  "description": "Set the channel you want to add as a statchannel.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "online",
+                  "description": "Set the message that will be shown when the server is online.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "offline",
+                  "description": "Set the message that will be shown when the server is offline.",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "type": "Subcommand",
+              "name": "member-counter",
+              "description": "Add a statchannel that will show the current player count of the Minecraft server.",
+              "options": [
+                {
+                  "type": "Channel",
+                  "name": "channel",
+                  "description": "Set the channel you want to add as a statchannel.",
+                  "required": true
+                },
+                {
+                  "type": "String",
+                  "name": "message",
+                  "description": "Set the message that will be shown for the player count. Use %count% for the player count.",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "remove",
+          "description": "Remove a statchannel from the server.",
+          "options": [
+            {
+              "type": "Channel",
+              "name": "channel",
+              "description": "Set the channel you want to remove.",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "List all statchannels in the server.",
+          "options": [
+            {
+              "type": "String",
+              "name": "filter",
+              "description": "Set a filter to only show statchannels of a specific type.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "Status",
+                  "value": "status"
+                },
+                {
+                  "name": "Member Counter",
+                  "value": "member-counter"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "chatchannel": {
+      "name": "chatchannel",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
+      "description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "add",
+          "description": "Add a chatchannel.",
+          "options": [
+            {
+              "type": "Channel",
+              "name": "channel",
+              "description": "Set the channel.",
+              "required": true,
+              "channel_types": [
+                "GuildText",
+                "GuildAnnouncement",
+                "AnnouncementThread",
+                "PublicThread",
+                "PrivateThread",
+                "GuildVoice",
+                "GuildStageVoice"
+              ]
+            },
+            {
+              "type": "Boolean",
+              "name": "discord-to-minecraft",
+              "description": "Enable chat messages from Discord to Minecraft. (Default: true)",
+              "required": false
+            },
+            {
+              "type": "Boolean",
+              "name": "webhooks",
+              "description": "Enable webhook mode for chat messages. (Default: true)",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "remove",
+          "description": "Remove an existing chatchannel.",
+          "options": [
+            {
+              "type": "Channel",
+              "name": "channel",
+              "description": "Set the channel.",
+              "required": true,
+              "channel_types": [
+                "GuildText",
+                "GuildAnnouncement",
+                "AnnouncementThread",
+                "PublicThread",
+                "PrivateThread",
+                "GuildVoice",
+                "GuildStageVoice"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "List all chatchannels."
+        }
+      ]
+    },
+    "connect": {
+      "name": "connect",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Connect your Minecraft Java-Edition server with the bot. Connection methods are:\n-ftp (also includes sftp/ftps)\n-plugin\n**You can download the plugin using [this link](https://www.spigotmc.org/resources/discord-linker.98749/).**",
+      "description": "Connect your Minecraft server with the bot.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "ftp",
+          "description": "Connect your Minecraft server using ftp/sftp/ftps.",
+          "options": [
+            {
+              "type": "String",
+              "name": "host",
+              "description": "Set the ftp-host.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "username",
+              "description": "Set the ftp-username. (`none` if no username)",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "password",
+              "description": "Set the ftp-password (`none` if no password).",
+              "required": true
+            },
+            {
+              "type": "Integer",
+              "name": "port",
+              "description": "Set the ftp-port.",
+              "required": false,
+              "min_value": 1,
+              "max_value": 65536
+            },
+            {
+              "type": "String",
+              "name": "version",
+              "description": "Set the Minecraft version.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "1.5",
+                  "value": "5"
+                },
+                {
+                  "name": "1.6",
+                  "value": "6"
+                },
+                {
+                  "name": "1.7",
+                  "value": "7"
+                },
+                {
+                  "name": "1.8",
+                  "value": "8"
+                },
+                {
+                  "name": "1.9",
+                  "value": "9"
+                },
+                {
+                  "name": "1.10",
+                  "value": "10"
+                },
+                {
+                  "name": "1.11",
+                  "value": "11"
+                },
+                {
+                  "name": "1.12",
+                  "value": "12"
+                },
+                {
+                  "name": "1.13",
+                  "value": "13"
+                },
+                {
+                  "name": "1.14",
+                  "value": "14"
+                },
+                {
+                  "name": "1.15",
+                  "value": "15"
+                },
+                {
+                  "name": "1.16",
+                  "value": "16"
+                },
+                {
+                  "name": "1.17",
+                  "value": "17"
+                },
+                {
+                  "name": "1.18",
+                  "value": "18"
+                },
+                {
+                  "name": "1.19",
+                  "value": "19"
+                },
+                {
+                  "name": "1.20",
+                  "value": "20"
+                },
+                {
+                  "name": "1.21",
+                  "value": "21"
+                }
+              ]
+            },
+            {
+              "type": "String",
+              "name": "path",
+              "description": "Set the server-path (Format: /path/to/server).",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "plugin",
+          "description": "Connect your Minecraft server using the Discord-Linker plugin.",
+          "options": [
+            {
+              "type": "String",
+              "name": "join-requirement",
+              "description": "Set which requirements a user needs to join the server.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "None",
+                  "value": "none"
+                },
+                {
+                  "name": "Require Role(s)",
+                  "value": "roles"
+                },
+                {
+                  "name": "Require Linked Account",
+                  "value": "link"
+                }
+              ]
+            },
+            {
+              "type": "String",
+              "name": "display-ip",
+              "description": "Set the public IP address that will be displayed in some of the bot's commands.",
+              "required": false
+            },
+            {
+              "type": "Boolean",
+              "name": "online",
+              "description": "Manually set the configured online-mode of the server. For BungeeCord servers, set this to \"True\"",
+              "required": false
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "backup",
+          "description": "Connect your Minecraft server using the Discord-Linker plugin with backup-mode enabled.",
+          "options": [
+            {
+              "type": "String",
+              "name": "ip",
+              "description": "Set the ip of your Minecraft server.",
+              "required": true
+            },
+            {
+              "type": "Integer",
+              "name": "port",
+              "description": "Set the port of the plugin (Default: 11111).",
+              "required": false,
+              "min_value": 1,
+              "max_value": 65535
+            },
+            {
+              "type": "String",
+              "name": "join-requirement",
+              "description": "Set which requirements a user needs to join the server.",
+              "required": false,
+              "choices": [
+                {
+                  "name": "None",
+                  "value": "none"
+                },
+                {
+                  "name": "Require Role(s)",
+                  "value": "roles"
+                },
+                {
+                  "name": "Require Linked Account",
+                  "value": "link"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "disable": {
+      "name": "מבוטל",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Disable a specific command/stat/advancement. List disabled commands/stats/advancements with `/disable list`.\nDisabled Chat Commands will not be sent in any configured chatchannel.",
+      "description": "Disable a specific command/stat/advancement.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "chat-commands",
+          "description": "Disable a command preventing it from being sent in any chatchannel.",
+          "options": [
+            {
+              "type": "String",
+              "name": "פקודה",
+              "description": "Set the command you want to disable",
+              "required": true,
+              "autocomplete": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "Get a list of all disabled commands/stats/advancements",
+          "options": [
+            {
+              "type": "String",
+              "name": "category",
+              "description": "Set the category which you want to list",
+              "required": true,
+              "choices": [
+                {
+                  "name": "Chat Commands",
+                  "value": "chatCommands"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "disconnect": {
+      "name": "התנתק",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
+      "description": "Disconnect your Minecraft server from the bot."
+    },
+    "enable": {
+      "name": "הפעל/י",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Enable a disabled command/stat/advancement (They're all enabled by default).",
+      "description": "Enable a disabled command/stat/advancement (All enabled by default)",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "סטטיסטיקות",
+          "description": "Enable a disabled stat",
+          "options": [
+            {
+              "type": "String",
+              "name": "stat",
+              "description": "Set the stat you want to enable",
+              "required": true,
+              "autocomplete": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "התקדמויות",
+          "description": "Enable a disabled advancement",
+          "options": [
+            {
+              "type": "String",
+              "name": "advancement",
+              "description": "Set the advancement you want to enable",
+              "required": true,
+              "autocomplete": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "chat-commands",
+          "description": "Enable a disabled chat-command allowing it to be sent again.",
+          "options": [
+            {
+              "type": "String",
+              "name": "פקודה",
+              "description": "Set the command you want to enable",
+              "required": true,
+              "autocomplete": true
+            }
+          ]
+        }
+      ]
+    },
+    "rolesync": {
+      "name": "rolesync",
+      "type": "ChatInput",
+      "default_member_permissions": [
+        "Administrator"
+      ],
+      "long_description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
+      "description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
+      "options": [
+        {
+          "type": "Subcommand",
+          "name": "add",
+          "description": "Add a synced role.",
+          "options": [
+            {
+              "type": "Role",
+              "name": "role",
+              "description": "Set the role you want to sync.",
+              "required": true
+            },
+            {
+              "type": "String",
+              "name": "group_or_team",
+              "description": "Set the Minecraft team or Luckperms group you want to sync to.",
+              "autocomplete": true,
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "remove",
+          "description": "Remove an existing synced role.",
+          "options": [
+            {
+              "type": "Role",
+              "name": "role",
+              "description": "Set the role you want to remove.",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "Subcommand",
+          "name": "list",
+          "description": "List all synced roles."
+        }
+      ]
+    }
+  },
+  "roles": {
+    "connectedaccount": {
+      "name": "Has Minecraft Account",
+      "type": 7,
+      "key": "connectedaccount",
+      "description": "Whether the user has connected their Minecraft account."
+    }
+  }
+}
