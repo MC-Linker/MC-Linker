@@ -15,6 +15,6 @@ export default class CustomizeTokenModal extends Component {
 
     async execute(interaction, client) {
         if(!await super.execute(interaction, client)) return;
-        return await interaction.showModal(getModal(keys.commands.customize.success.token_modal, ph.emojisAndColors()));
+        return await interaction.showModal(getModal(keys.custom_bot.create.token_modal, ph.emojisAndColors()));
     }
 }

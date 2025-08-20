@@ -98,8 +98,8 @@ export default class Connection extends Base {
     }
 
     /**
-     * Returns the writable data of the connection.
-     * @returns {ConnectionData} - The writable data of the connection.
+     * Returns the serializable data of the connection.
+     * @returns {ConnectionData} - The serializable data of the connection.
      * @abstract
      */
     getData() {

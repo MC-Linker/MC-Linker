@@ -2,10 +2,9 @@ import CustomBotConnection from './CustomBotConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 import Wizard from './helpers/Wizard.js';
 import keys from '../utilities/keys.js';
-import { getModal, getReplyOptions, ph } from '../utilities/messages.js';
+import { createActionRows, getComponent, getModal, getReplyOptions, ph } from '../utilities/messages.js';
 import { BaseGuildTextChannel, ComponentType, MessageFlags } from 'discord.js';
 import { generateDefaultInvite } from '../utilities/utils.js';
-import logger from '../utilities/logger.js';
 
 export default class CustomBotConnectionManager extends ConnectionManager {
 
@@ -37,9 +36,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
     }
 
     async disconnect(connection) {
-        //Shutdown the docker container
-        logger.info(execSync(`docker compose down`, { cwd: `./Custom-MC-Linker/${connection.ownerId}` }).toString());
-
+        connection.down();
         return super.disconnect(connection);
     }
 
@@ -69,9 +66,9 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      */
     sendCustomBotCreateWizard(interaction) {
         const wizard = new Wizard(this.client, interaction, [
-            keys.commands.customize.success.start,
-            keys.commands.customize.success.intents,
-            keys.commands.customize.success.details,
+            keys.custom_bot.create.success.main,
+            keys.custom_bot.create.success.intents,
+            keys.custom_bot.create.success.details,
         ].map(key => getReplyOptions(key, ph.emojisAndColors())), {
             timeout: 60_000 * 14, // 15 minutes is max interaction timeout
         });
@@ -85,15 +82,24 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      * @return {Promise<Message>}
      */
     async sendCustomBotManager(interaction, customBotConnection) {
+        const isStarted = customBotConnection.isStarted();
+
         const placeholders = {
             port: customBotConnection.port,
             invite: generateDefaultInvite(customBotConnection.id),
+            status: isStarted ? keys.custom_bot.custom_bot_manager.status.started : keys.custom_bot.custom_bot_manager.status.stopped,
         };
+
+        const mainMessage = keys.custom_bot.custom_bot_manager.success.main;
+        const buttons = [getComponent(keys.custom_bot.custom_bot_manager.buttons.delete)];
+        if(isStarted) buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
+        else buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
+        mainMessage.components = [...buttons, ...mainMessage.components];
 
         let message;
         if(interaction instanceof BaseGuildTextChannel)
-            message = await interaction.send(getReplyOptions(keys.entitlements.success.custom_bot_manager, ph.emojisAndColors(), placeholders));
-        else message = await interaction.replyTl(keys.entitlements.custom_bot_manager.success.main, ph.emojisAndColors(), placeholders);
+            message = await interaction.send(getReplyOptions(mainMessage, ph.emojisAndColors(), placeholders));
+        else message = await interaction.replyTl(mainMessage, placeholders);
 
         const collector = message.createMessageComponentCollector({
             time: Wizard.DEFAULT_TIMEOUT,
@@ -106,18 +112,22 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 case 'custom_bot_start':
                     try {
                         await customBotConnection.start();
-                        await interaction.reply(getReplyOptions(keys.entitlements.custom_bot_manager.success.start, ph.emojisAndColors()));
+                        buttons.splice(1, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
+                        await interaction.update({ components: createActionRows(buttons) });
+                        await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.start, ph.emojisAndColors()));
                     }
                     catch(err) {
-                        await interaction.reply(getReplyOptions(keys.commands.customize.errors.startup_failed, ph.emojisAndColors()));
+                        await interaction.reply(getReplyOptions(keys.custom_bot.errors.start_failed, ph.emojisAndColors()));
                     }
                     break;
                 case 'custom_bot_stop':
                     await customBotConnection.stop();
-                    await interaction.reply(getReplyOptions(keys.entitlements.custom_bot_manager.success.stop, ph.emojisAndColors()));
+                    buttons.splice(1, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
+                    await interaction.update({ components: createActionRows(buttons) });
+                    await interaction.followUp(getReplyOptions(keys.custom_bot.custom_bot_manager.success.stop, ph.emojisAndColors()));
                     break;
                 case 'custom_bot_delete':
-                    await interaction.showModal(getModal(keys.entitlements.custom_bot_manager.confirm_delete));
+                    await interaction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete));
                     break;
             }
         });

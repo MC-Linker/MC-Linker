@@ -2,7 +2,6 @@ import Connection from './Connection.js';
 import logger from '../utilities/logger.js';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
-import path from 'path';
 
 export default class CustomBotConnection extends Connection {
     /**
@@ -43,7 +42,7 @@ export default class CustomBotConnection extends Connection {
         this.ownerId = data.ownerId;
 
         this.serviceName = `custom-mc-linker_${this.ownerId}`;
-        this.dataFolder = path.resolve(`./Custom-MC-Linker/${this.ownerId}`);
+        this.dataFolder = `./Custom-MC-Linker/${this.ownerId}`;
     }
 
     /**
@@ -137,12 +136,20 @@ export default class CustomBotConnection extends Connection {
         });
     }
 
+    /**
+     * Stops the docker container for this custom bot.
+     * @return {string} - The output of the docker command.
+     */
     stop() {
-        execSync(`docker compose -f docker-compose-custom.yml stop ${this.serviceName}`);
+        return execSync(`docker compose -f docker-compose-custom.yml stop ${this.serviceName}`).toString();
     }
 
+    /**
+     * Shuts down and removes the docker container for this custom bot.
+     * @return {string} - The output of the docker command.
+     */
     down() {
-        execSync(`docker compose -f docker-compose-custom.yml down ${this.serviceName}`);
+        return execSync(`docker compose -f docker-compose-custom.yml down ${this.serviceName}`).toString();
     }
 
     getData() {

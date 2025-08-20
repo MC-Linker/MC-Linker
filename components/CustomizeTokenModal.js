@@ -22,7 +22,7 @@ export default class CustomizeTokenModal extends Component {
         if(!await super.execute(interaction, client)) return;
 
         const token = interaction.fields.getTextInputValue('token');
-        await interaction.replyTl(keys.commands.customize.step.logging_in);
+        await interaction.replyTl(keys.custom_bot.create.step.logging_in);
 
         let invite;
         const testClient = new Discord.Client({
@@ -52,9 +52,9 @@ export default class CustomizeTokenModal extends Component {
         }
         catch(err) {
             if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG')
-                return await interaction.replyTl(keys.commands.customize.warnings.invalid_token);
+                return await interaction.replyTl(keys.custom_bot.create.warnings.invalid_token);
             else if(err.message === 'Used disallowed intents')
-                return await interaction.replyTl(keys.commands.customize.warnings.no_intents);
+                return await interaction.replyTl(keys.custom_bot.create.warnings.no_intents);
             else throw err; // Rethrow other errors
         }
         finally {
@@ -73,28 +73,27 @@ export default class CustomizeTokenModal extends Component {
             ownerId: interaction.user.id,
         });
 
-        await interaction.replyTl(keys.commands.customize.step.building);
+        await interaction.replyTl(keys.custom_bot.create.step.building);
         logger.info(execSync(`docker build . -t lianecx/${customBotConnection.serviceName}`).toString());
 
         try {
-            await interaction.replyTl(keys.commands.customize.step.starting_up);
+            await interaction.replyTl(keys.custom_bot.create.step.starting_up);
             await customBotConnection.init(token);
             await customBotConnection.start();
         }
         catch(err) {
-            await interaction.replyTl(keys.commands.customize.errors.startup_failed);
             await client.customBots.disconnect(customBotConnection);
+            await interaction.replyTl(keys.custom_bot.errors.start_failed);
         }
 
-        await interaction.replyTl(keys.commands.customize.step.deploying);
-
+        await interaction.replyTl(keys.custom_bot.create.step.deploying);
         logger.info(execSync(`docker exec ${customBotConnection.serviceName} node scripts/deploy.js deploy -g`).toString());
 
         await exposeCustomBotPorts(...client.customBots.getPortRange());
 
         const wizard = new Wizard(client, interaction, [
-            keys.commands.customize.success.port,
-            keys.commands.customize.success.finish,
+            keys.custom_bot.create.success.port,
+            keys.custom_bot.create.success.finish,
         ].map(key => getReplyOptions(key, { port: botPort, invite }, ph.emojisAndColors())), {
             timeout: 60_000 * 14, // 15 minutes is max interaction timeout
         });
