@@ -1,6 +1,6 @@
 import Connection from './Connection.js';
 import logger from '../utilities/logger.js';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import fs from 'fs-extra';
 
 export default class CustomBotConnection extends Connection {
