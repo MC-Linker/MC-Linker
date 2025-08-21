@@ -334,9 +334,9 @@
           "components": [
             {
               "type": "Button",
-              "style": "Primary",
+              "style": "Secondary",
               "label": "< Back",
-              "custom_id": "wizard_back"
+              "custom_id": "wizard_back_%uid%"
             },
             {
               "type": "Button",
@@ -357,9 +357,9 @@
           "components": [
             {
               "type": "Button",
-              "style": "Primary",
+              "style": "Secondary",
               "label": "< Back",
-              "custom_id": "wizard_back"
+              "custom_id": "wizard_back_uid"
             },
             {
               "type": "Button",
