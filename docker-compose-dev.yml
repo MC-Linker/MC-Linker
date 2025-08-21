@@ -1,6 +1,6 @@
 services:
   dev-mc-linker:
-    image: lianecx/dev-mclinker
+    image: lianecx/dev-mc-linker
     container_name: dev-mc-linker
     restart: on-failure
     ports:

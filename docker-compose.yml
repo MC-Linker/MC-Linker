@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   mc-linker:
-    image: lianecx/mclinker
+    image: lianecx/mc-linker
     container_name: mc-linker
     restart: on-failure
     depends_on:
