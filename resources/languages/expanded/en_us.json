@@ -364,7 +364,7 @@
         "embeds": [
           {
             "title": "Start Failed",
-            "description": "**Failed to start your bot! Please try again.**\n\n*Need help?oin the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+            "description": "Failed to start your bot! Please try again.\n\n*Need help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
           }
         ]
       }
