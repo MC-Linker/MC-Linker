@@ -47,7 +47,7 @@ export default class CustomBotConnection extends Connection {
 
     /**
      * Initializes the custom bot connection.
-     * This will create the necessary directories and environment files for the custom bot.
+     * This will create the necessary data folder and env file as well as build the docker image for the custom bot.
      * @param {string} token - The token to use for the custom bot.
      * @return {Promise<void>}
      */
@@ -82,6 +82,8 @@ export default class CustomBotConnection extends Connection {
         await fs.mkdir(`${this.dataFolder}/download-cache`);
         await fs.mkdir(`${this.dataFolder}/logs`);
         await logger.debug(`Custom bot data folder created at ${this.dataFolder}`);
+
+        logger.info(execSync(`docker build . -t lianecx/${this.serviceName}`).toString());
     }
 
     /**
@@ -102,7 +104,7 @@ export default class CustomBotConnection extends Connection {
             return JSON.parse(output)[0];
         }
         catch(err) {
-            logger.error(`Failed to inspect custom bot connection: ${err.message}`);
+            logger.error(err, `Failed to inspect custom bot connection`);
             return null;
         }
     }
@@ -172,7 +174,7 @@ export default class CustomBotConnection extends Connection {
             return execSync(`docker compose -f docker-compose-custom.yml stop ${this.serviceName}`).toString();
         }
         catch(err) {
-            logger.error(`Failed to stop custom bot container ${this.serviceName}:`, err);
+            logger.error(err, `Failed to stop custom bot container ${this.serviceName}`);
             return '';
         }
     }
@@ -188,7 +190,7 @@ export default class CustomBotConnection extends Connection {
             return execSync(`docker compose -f docker-compose-custom.yml down ${this.serviceName}`).toString();
         }
         catch(err) {
-            logger.error(`Failed to shut down custom bot container ${this.serviceName}:`, err);
+            logger.error(err, `Failed to shut down custom bot container ${this.serviceName}`);
             return '';
         }
     }

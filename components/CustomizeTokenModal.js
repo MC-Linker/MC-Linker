@@ -73,18 +73,17 @@ export default class CustomizeTokenModal extends Component {
             ownerId: interaction.user.id,
         });
 
-        await interaction.replyTl(keys.custom_bot.create.step.building);
-        logger.info(execSync(`docker build . -t lianecx/${customBotConnection.serviceName}`).toString());
-
         try {
-            await interaction.replyTl(keys.custom_bot.create.step.starting_up);
+            await interaction.replyTl(keys.custom_bot.create.step.building);
             await customBotConnection.init(token);
+
+            await interaction.replyTl(keys.custom_bot.create.step.starting_up);
             await customBotConnection.start();
         }
         catch(err) {
-            logger.error(`Failed to start custom bot ${customBotConnection.serviceName}:`, err);
+            logger.error(err, `Failed to start custom bot ${customBotConnection.serviceName}`);
             await client.customBots.disconnect(customBotConnection);
-            await interaction.replyTl(keys.custom_bot.errors.start_failed);
+            return await interaction.replyTl(keys.custom_bot.errors.start_failed);
         }
 
         await interaction.replyTl(keys.custom_bot.create.step.deploying);

@@ -60,7 +60,7 @@ export async function getTokens(code) {
         };
     }
     catch(err) {
-        logger.error(`Error fetching access tokens: ${err}`);
+        logger.error(err, `Error fetching access tokens`);
         return null;
     }
 }
