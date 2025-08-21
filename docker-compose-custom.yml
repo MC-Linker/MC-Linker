@@ -1,7 +1,7 @@
 services:
-  mc-linker:
-    image: lianecx/${SERVICE_NAME}
-    container_name: ${SERVICE_NAME}
+  custom-mc-linker:
+    image: lianecx/${CONTAINER_NAME}
+    container_name: ${CONTAINER_NAME}
     restart: on-failure
     ports:
       - "${BOT_PORT}:${BOT_PORT}"

@@ -41,7 +41,7 @@ export default class CustomBotConnection extends Connection {
          */
         this.ownerId = data.ownerId;
 
-        this.serviceName = `custom-mc-linker_${this.ownerId}`;
+        this.containerName = `custom-mc-linker_${this.ownerId}`;
         this.dataFolder = `./Custom-MC-Linker/${this.ownerId}`;
     }
 
@@ -83,7 +83,7 @@ export default class CustomBotConnection extends Connection {
         await fs.mkdir(`${this.dataFolder}/logs`);
         await logger.debug(`Custom bot data folder created at ${this.dataFolder}`);
 
-        logger.info(execSync(`docker build . -t lianecx/${this.serviceName}`).toString());
+        logger.info(execSync(`docker build . -t lianecx/${this.containerName}`).toString());
     }
 
     /**
@@ -100,7 +100,7 @@ export default class CustomBotConnection extends Connection {
      */
     inspect() {
         try {
-            const output = execSync(`docker inspect ${this.serviceName}`).toString();
+            const output = execSync(`docker inspect ${this.containerName}`).toString();
             return JSON.parse(output)[0];
         }
         catch(err) {
@@ -114,10 +114,10 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     start() {
-        const composeProcess = spawn('docker', ['compose', '-f', './docker-compose-custom.yml', 'up', '-d', this.serviceName], {
+        const composeProcess = spawn('docker', ['compose', '-f', './docker-compose-custom.yml', 'up', '-d', 'custom-mc-linker'], {
             env: {
                 DATA_FOLDER: this.dataFolder,
-                SERVICE_NAME: this.serviceName,
+                CONTAINER_NAME: this.containerName,
             },
             stdio: 'pipe',
         });
@@ -132,7 +132,7 @@ export default class CustomBotConnection extends Connection {
 
             const checkLogsInterval = setInterval(() => {
                 try {
-                    const logs = execSync(`docker logs ${this.serviceName} --tail 10`).toString();
+                    const logs = execSync(`docker logs ${this.containerName} --tail 10`).toString();
 
                     if(logs.includes(`Server listening at http://0.0.0.0:${this.port}`)) {
                         logger.info('Custom bot is ready!');
@@ -169,12 +169,12 @@ export default class CustomBotConnection extends Connection {
      * @return {string} - The output of the docker command.
      */
     stop() {
-        logger.debug(`Stopping custom bot container ${this.serviceName}`);
+        logger.debug(`Stopping custom bot container ${this.containerName}`);
         try {
-            return execSync(`docker compose -f docker-compose-custom.yml stop ${this.serviceName}`).toString();
+            return execSync(`docker compose -f docker-compose-custom.yml stop ${this.containerName}`).toString();
         }
         catch(err) {
-            logger.error(err, `Failed to stop custom bot container ${this.serviceName}`);
+            logger.error(err, `Failed to stop custom bot container ${this.containerName}`);
             return '';
         }
     }
@@ -184,13 +184,13 @@ export default class CustomBotConnection extends Connection {
      * @return {string} - The output of the docker command.
      */
     down() {
-        logger.debug(`Shutting down and removing custom bot container ${this.serviceName}`);
+        logger.debug(`Shutting down and removing custom bot container ${this.containerName}`);
 
         try {
-            return execSync(`docker compose -f docker-compose-custom.yml down ${this.serviceName}`).toString();
+            return execSync(`docker compose -f docker-compose-custom.yml down ${this.containerName}`).toString();
         }
         catch(err) {
-            logger.error(err, `Failed to shut down custom bot container ${this.serviceName}`);
+            logger.error(err, `Failed to shut down custom bot container ${this.containerName}`);
             return '';
         }
     }

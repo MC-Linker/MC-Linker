@@ -1,8 +1,8 @@
 version: '3.5'
 services:
   mc-linker:
-    image: lianecx/${SERVICE_NAME}
-    container_name: ${SERVICE_NAME}
+    image: lianecx/mclinker
+    container_name: mc-linker
     restart: on-failure
     depends_on:
       - mongodb

@@ -81,13 +81,13 @@ export default class CustomizeTokenModal extends Component {
             await customBotConnection.start();
         }
         catch(err) {
-            logger.error(err, `Failed to start custom bot ${customBotConnection.serviceName}`);
+            logger.error(err, `Failed to start custom bot ${customBotConnection.containerName}`);
             await client.customBots.disconnect(customBotConnection);
             return await interaction.replyTl(keys.custom_bot.errors.start_failed);
         }
 
         await interaction.replyTl(keys.custom_bot.create.step.deploying);
-        logger.info(execSync(`docker exec ${customBotConnection.serviceName} node scripts/deploy.js deploy -g`).toString());
+        logger.info(execSync(`docker exec ${customBotConnection.containerName} node scripts/deploy.js deploy -g`).toString());
 
         await exposeCustomBotPorts(...client.customBots.getPortRange());
 

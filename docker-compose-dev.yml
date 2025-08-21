@@ -1,7 +1,7 @@
 services:
   dev-mc-linker:
-    image: lianecx/${SERVICE_NAME}
-    container_name: ${SERVICE_NAME}
+    image: lianecx/dev-mclinker
+    container_name: dev-mc-linker
     restart: on-failure
     ports:
       - "${BOT_PORT}:${BOT_PORT}"
