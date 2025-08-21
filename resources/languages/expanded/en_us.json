@@ -334,12 +334,6 @@
           "components": [
             {
               "type": "Button",
-              "style": "Secondary",
-              "label": "< Back",
-              "custom_id": "wizard_back_%uid%"
-            },
-            {
-              "type": "Button",
               "style": "Primary",
               "label": "Enter Token",
               "custom_id": "customize_enter_details"
@@ -355,12 +349,6 @@
           ],
           "console": "Failed to login to bot because of missing intents",
           "components": [
-            {
-              "type": "Button",
-              "style": "Secondary",
-              "label": "< Back",
-              "custom_id": "wizard_back_uid"
-            },
             {
               "type": "Button",
               "style": "Primary",
