@@ -81,6 +81,7 @@ export default class CustomBotConnection extends Connection {
 
         await fs.mkdir(`${this.dataFolder}/download-cache`);
         await fs.mkdir(`${this.dataFolder}/logs`);
+        await logger.debug(`Custom bot data folder created at ${this.dataFolder}`);
     }
 
     /**
@@ -146,6 +147,7 @@ export default class CustomBotConnection extends Connection {
             composeProcess.on('close', code => {
                 if(code !== 0) {
                     clearInterval(checkLogsInterval);
+                    clearTimeout(checkLogsTimeout);
                     this.down();
                     reject(new Error(`Docker compose failed with code ${code}`));
                 }
@@ -153,6 +155,7 @@ export default class CustomBotConnection extends Connection {
 
             composeProcess.on('error', err => {
                 clearInterval(checkLogsInterval);
+                clearTimeout(checkLogsTimeout);
                 this.down();
                 reject(err);
             });

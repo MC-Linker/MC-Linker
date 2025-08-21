@@ -82,6 +82,7 @@ export default class CustomizeTokenModal extends Component {
             await customBotConnection.start();
         }
         catch(err) {
+            logger.error(`Failed to start custom bot ${customBotConnection.serviceName}:`, err);
             await client.customBots.disconnect(customBotConnection);
             await interaction.replyTl(keys.custom_bot.errors.start_failed);
         }
