@@ -168,7 +168,13 @@ export default class CustomBotConnection extends Connection {
      */
     stop() {
         logger.debug(`Stopping custom bot container ${this.serviceName}`);
-        return execSync(`docker compose -f docker-compose-custom.yml stop ${this.serviceName}`).toString();
+        try {
+            return execSync(`docker compose -f docker-compose-custom.yml stop ${this.serviceName}`).toString();
+        }
+        catch(err) {
+            logger.error(`Failed to stop custom bot container ${this.serviceName}:`, err);
+            return '';
+        }
     }
 
     /**
@@ -177,7 +183,23 @@ export default class CustomBotConnection extends Connection {
      */
     down() {
         logger.debug(`Shutting down and removing custom bot container ${this.serviceName}`);
-        return execSync(`docker compose -f docker-compose-custom.yml down ${this.serviceName}`).toString();
+
+        try {
+            return execSync(`docker compose -f docker-compose-custom.yml down ${this.serviceName}`).toString();
+        }
+        catch(err) {
+            logger.error(`Failed to shut down custom bot container ${this.serviceName}:`, err);
+            return '';
+        }
+    }
+
+    /**
+     * Removes the custom bot data folder from the filesystem.
+     * @return {Promise<void>}
+     */
+    async removeDataFolder() {
+        logger.debug(`Removing custom bot data folder ${this.dataFolder}`);
+        await fs.remove(this.dataFolder);
     }
 
     getData() {

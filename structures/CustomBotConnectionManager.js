@@ -37,6 +37,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
     async disconnect(connection) {
         connection.down();
+        await connection.removeDataFolder();
         return super.disconnect(connection);
     }
 

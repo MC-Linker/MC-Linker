@@ -1,5 +1,4 @@
 import { CachedManager } from 'discord.js';
-import fs from 'fs-extra';
 import { getManagerString } from '../utilities/shardingUtils.js';
 
 export default class ConnectionManager extends CachedManager {
@@ -127,21 +126,6 @@ export default class ConnectionManager extends CachedManager {
             }
 
             await this._add(connection, true, { extras: [this.collectionName] });
-        }
-    }
-
-    /**
-     * Removes the download cache folder for a connection.
-     * @param {string} id - The id of the connection.
-     * @returns {Promise<boolean>}
-     */
-    async removeCache(id) {
-        try {
-            await fs.rm(`./download-cache/${this.collectionName}/${id}/`, { recursive: true });
-            return true;
-        }
-        catch(_) {
-            return false;
         }
     }
 }

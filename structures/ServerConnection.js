@@ -1,6 +1,7 @@
 import Connection from './Connection.js';
 import WebSocketProtocol from './WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
+import fs from 'fs-extra';
 
 export default class ServerConnection extends Connection {
 
@@ -297,6 +298,22 @@ export default class ServerConnection extends Connection {
             return await this.settings._output();
         }
         else return false;
+    }
+
+
+    /**
+     * Removes the download cache folder for a server connection.
+     * @param {string} id - The id of the server connection.
+     * @returns {Promise<boolean>}
+     */
+    async removeCache(id) {
+        try {
+            await fs.rm(`./download-cache/${this.collectionName}/${id}/`, { recursive: true });
+            return true;
+        }
+        catch(_) {
+            return false;
+        }
     }
 
     getData() {
