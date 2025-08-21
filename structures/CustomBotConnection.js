@@ -167,6 +167,7 @@ export default class CustomBotConnection extends Connection {
      * @return {string} - The output of the docker command.
      */
     stop() {
+        logger.debug(`Stopping custom bot container ${this.serviceName}`);
         return execSync(`docker compose -f docker-compose-custom.yml stop ${this.serviceName}`).toString();
     }
 
@@ -175,6 +176,7 @@ export default class CustomBotConnection extends Connection {
      * @return {string} - The output of the docker command.
      */
     down() {
+        logger.debug(`Shutting down and removing custom bot container ${this.serviceName}`);
         return execSync(`docker compose -f docker-compose-custom.yml down ${this.serviceName}`).toString();
     }
 
