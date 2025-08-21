@@ -15,8 +15,8 @@ export default class Customize extends Command {
 
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
-        if(!client.customBots.hasCustomBot(interaction.user.id))
+        if(client.customBots.hasCustomBot(interaction.user.id))
             await client.customBots.sendCustomBotManager(interaction, client.customBots.getCustomBot(interaction.user.id));
-        await client.customBots.sendCustomBotCreateWizard(interaction);
+        else await client.customBots.sendCustomBotCreateWizard(interaction);
     }
 }
