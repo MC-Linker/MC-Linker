@@ -84,6 +84,29 @@ export default class CustomBotConnection extends Connection {
     }
 
     /**
+     * Checks if the custom bot connection is currently running.
+     * @return {boolean}
+     */
+    isStarted() {
+        return this.inspect().State?.Running ?? false;
+    }
+
+    /**
+     * Returns docker inspection details for the custom bot connection.
+     * @return {Object|null}
+     */
+    inspect() {
+        try {
+            const output = execSync(`docker inspect ${this.serviceName}`).toString();
+            return JSON.parse(output)[0];
+        }
+        catch(err) {
+            logger.error(`Failed to inspect custom bot connection: ${err.message}`);
+            return null;
+        }
+    }
+
+    /**
      * Starts the custom bot connection using docker compose and listens for logs to confirm the bot is ready.
      * @return {Promise<void>}
      */

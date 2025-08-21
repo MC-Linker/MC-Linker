@@ -503,6 +503,16 @@
             "style": "Paragraph"
           }
         ]
+      },
+      "warnings": {
+        "invalid_confirmation": {
+          "embeds": [
+            {
+              "title": "Invalid Confirmation",
+              "description": "Please type `delete` to confirm the deletion of your Custom MC Linker."
+            }
+          ]
+        }
       }
     }
   },
