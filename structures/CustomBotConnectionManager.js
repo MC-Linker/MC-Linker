@@ -121,7 +121,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     }
                     break;
                 case 'custom_bot_stop':
-                    await customBotConnection.stop();
+                    customBotConnection.stop();
                     buttons.splice(1, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
                     await interaction.update({ components: createActionRows(buttons) });
                     await interaction.followUp(getReplyOptions(keys.custom_bot.custom_bot_manager.success.stop, ph.emojisAndColors()));
