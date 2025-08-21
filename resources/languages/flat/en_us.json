@@ -296,6 +296,10 @@
     "custom_bot.custom_bot_manager.success.delete.embeds.0.description": "Your Custom MC Linker is now deleted! You can create a new one by running `/customize` again.\n\nPlease let us know any feedback in the [Support Server](https://discord.gg/rX36kZUGNK)!",
 
 
+    "custom_bot.custom_bot_manager.warnings.invalid_confirmation.embeds.0.title": "Invalid Confirmation",
+    "custom_bot.custom_bot_manager.warnings.invalid_confirmation.embeds.0.description": "Please type `delete` to confirm the deletion of your Custom MC Linker.",
+
+
 
     "commands.eval.warnings.no_command.embeds.0.title": "No Command Specified",
     "commands.eval.warnings.no_command.embeds.0.description": "Please specify a command to evaluate.",

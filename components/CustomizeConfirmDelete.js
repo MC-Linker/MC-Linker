@@ -26,6 +26,6 @@ export default class CustomizeTokenModal extends Component {
         const customBotConnection = client.customBots.getCustomBot(interaction.user.id);
         await this.disconnect(customBotConnection);
         await interaction.update({ components: [] });
-        await interaction.reply(keys.custom_bot.custom_bot_manager.success.delete);
+        await interaction.replyTl(keys.custom_bot.custom_bot_manager.success.delete);
     }
 }
