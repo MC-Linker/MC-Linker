@@ -41,7 +41,16 @@ export default class CustomBotConnection extends Connection {
          */
         this.ownerId = data.ownerId;
 
+        /**
+         * The name of the docker container for this custom bot.
+         * @type {`custom-mc-linker_${ownerId}`}
+         */
         this.containerName = `custom-mc-linker_${this.ownerId}`;
+
+        /**
+         * The folder where the custom bot's data is stored.
+         * @type {`./Custom-MC-Linker/${ownerId}`}
+         */
         this.dataFolder = `./Custom-MC-Linker/${this.ownerId}`;
     }
 
@@ -119,7 +128,7 @@ export default class CustomBotConnection extends Connection {
                 CONTAINER_NAME: this.containerName,
                 BOT_PORT: this.port,
             },
-            stdio: 'pipe',
+            stdio: 'inherit',
         });
 
         // Check logs until the bot is ready
@@ -151,6 +160,7 @@ export default class CustomBotConnection extends Connection {
                     reject(new Error(`Docker compose failed with code ${code}`));
                     clearInterval(checkLogsInterval);
                     clearTimeout(checkLogsTimeout);
+                    this.down();
                 }
             });
 
@@ -158,6 +168,7 @@ export default class CustomBotConnection extends Connection {
                 reject(err);
                 clearInterval(checkLogsInterval);
                 clearTimeout(checkLogsTimeout);
+                this.down();
             });
         });
     }
@@ -168,6 +179,7 @@ export default class CustomBotConnection extends Connection {
      */
     stop() {
         logger.debug(`Stopping custom bot container ${this.containerName}`);
+
         try {
             return execSync(`docker compose -f docker-compose-custom.yml stop ${this.containerName}`).toString();
         }
@@ -184,7 +196,7 @@ export default class CustomBotConnection extends Connection {
         logger.debug(`Shutting down and removing custom bot container ${this.containerName}`);
 
         try {
-            return execSync(`docker compose -f docker-compose-custom.yml down ${this.containerName}`).toString();
+            return execSync(`docker compose -f docker-compose-custom.yml down ${this.containerName} --rmi --volumes`).toString();
         }
         catch(err) {
             return '';

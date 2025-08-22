@@ -42,7 +42,7 @@ export const pinoTransport = {
             target: 'pino/file',
             level: logLevel,
             options: {
-                destination: path.resolve(`logs/${new Date().toISOString().split('T')[0]}.log`),
+                destination: path.resolve(`${process.env.DATA_FOLDER}/logs/${new Date().toISOString().split('T')[0]}.log`),
                 mkdir: true,
             },
         },
