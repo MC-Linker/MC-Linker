@@ -13,7 +13,7 @@ export default class CustomizeTokenModal extends Component {
 
     async execute(interaction, client) {
         if(!await super.execute(interaction, client)) return;
-        const customBotConnection = this.customBots.getCustomBot(interaction.user.id);
+        const customBotConnection = client.customBots.getCustomBot(interaction.user.id);
         return await this.customBots.sendCustomBotManager(interaction, customBotConnection);
     }
 }

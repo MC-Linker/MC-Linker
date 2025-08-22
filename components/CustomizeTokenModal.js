@@ -87,6 +87,7 @@ export default class CustomizeTokenModal extends Component {
         }
 
         await interaction.replyTl(keys.custom_bot.create.step.deploying);
+        // TODO add deploy -r for linked roles
         logger.info(execSync(`docker exec ${customBotConnection.containerName} node scripts/deploy.js deploy -g`).toString());
 
         await exposeCustomBotPorts(...client.customBots.getPortRange());

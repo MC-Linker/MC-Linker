@@ -393,6 +393,7 @@
       },
       "success": {
         "main": {
+          "ephemeral": true,
           "embeds": [
             {
               "title": "Manage Custom MC Linker",

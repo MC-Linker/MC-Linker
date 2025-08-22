@@ -5,7 +5,7 @@ export default class Customize extends Command {
     constructor() {
         super({
             name: 'customize',
-            defer: false,
+            defer: true,
             requiresConnectedServer: false,
             allowUser: true,
             ephemeral: true,
