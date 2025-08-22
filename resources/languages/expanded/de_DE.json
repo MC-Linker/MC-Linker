@@ -83,8 +83,8 @@
       "no_permission_component": {
         "embeds": [
           {
-            "title": "No Permission",
-            "description": "Only the command sender can use this!"
+            "title": "Keine Berechtigung",
+            "description": "Nur der Befehlssender kann dies verwenden!"
           }
         ],
         "ephemeral": true
@@ -291,8 +291,8 @@
         "measuring": {
           "embeds": [
             {
-              "title": "Measuring System Stats",
-              "description": "Please wait while I measure the system stats..."
+              "title": "Systemstatistiken messen",
+              "description": "Bitte warten, während ich Systemstatistiken messe..."
             }
           ]
         }
@@ -2180,7 +2180,7 @@
         "no_author": {
           "embeds": [
             {
-              "title": "No Permission",
+              "title": "Keine Berechtigung",
               "description": "Only the command sender can use this button."
             }
           ],
@@ -2189,7 +2189,7 @@
         "no_permission": {
           "embeds": [
             {
-              "title": "No Permission",
+              "title": "Keine Berechtigung",
               "description": "This button can only be used with the `%permission%` permission!"
             }
           ],
@@ -2302,7 +2302,7 @@
         "no_permission": {
           "embeds": [
             {
-              "title": "No Permission",
+              "title": "Keine Berechtigung",
               "description": "This command can only be used with the `%permission%` permission!"
             }
           ],
@@ -2311,7 +2311,7 @@
         "no_unknown_permission": {
           "embeds": [
             {
-              "title": "No Permission",
+              "title": "Keine Berechtigung",
               "description": "You do not have permission to execute this command!"
             }
           ],
