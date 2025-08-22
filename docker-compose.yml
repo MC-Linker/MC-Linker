@@ -24,7 +24,7 @@ services:
     environment:
       - LOG_LEVEL=$LOG_LEVEL
       - CONVERT=$CONVERT # true or false
-      - NODE_ENV=$NODE_ENV
+      - NODE_ENV=production
       - NODE_MAX_HEAP_SIZE=8192
     networks:
       - mongo-network

@@ -91,12 +91,12 @@ export default class CustomBotConnection extends Connection {
      * @return {boolean}
      */
     isStarted() {
-        return this.inspect().State?.Running ?? false;
+        return this.inspect()?.State?.Running ?? false;
     }
 
     /**
      * Returns docker inspection details for the custom bot connection.
-     * @return {Object|null}
+     * @return {?Object}
      */
     inspect() {
         try {
@@ -104,7 +104,6 @@ export default class CustomBotConnection extends Connection {
             return JSON.parse(output)[0];
         }
         catch(err) {
-            logger.error(err, `Failed to inspect custom bot connection`);
             return null;
         }
     }
@@ -118,6 +117,7 @@ export default class CustomBotConnection extends Connection {
             env: {
                 DATA_FOLDER: this.dataFolder,
                 CONTAINER_NAME: this.containerName,
+                BOT_PORT: this.port,
             },
             stdio: 'pipe',
         });
@@ -172,7 +172,6 @@ export default class CustomBotConnection extends Connection {
             return execSync(`docker compose -f docker-compose-custom.yml stop ${this.containerName}`).toString();
         }
         catch(err) {
-            logger.error(err, `Failed to stop custom bot container ${this.containerName}`);
             return '';
         }
     }
@@ -188,7 +187,6 @@ export default class CustomBotConnection extends Connection {
             return execSync(`docker compose -f docker-compose-custom.yml down ${this.containerName}`).toString();
         }
         catch(err) {
-            logger.error(err, `Failed to shut down custom bot container ${this.containerName}`);
             return '';
         }
     }
