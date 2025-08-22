@@ -91,16 +91,16 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             status: isStarted ? keys.custom_bot.custom_bot_manager.status.started : keys.custom_bot.custom_bot_manager.status.stopped,
         };
 
-        const mainMessage = keys.custom_bot.custom_bot_manager.success.main;
+        const mainMessage = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), placeholders);
         const buttons = [getComponent(keys.custom_bot.custom_bot_manager.buttons.delete)];
         if(isStarted) buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
         else buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-        mainMessage.components = [...buttons, ...mainMessage.components];
+        mainMessage.components = createActionRows([...buttons, ...mainMessage.components]);
 
         let message;
         if(interaction instanceof BaseGuildTextChannel)
-            message = await interaction.send(getReplyOptions(mainMessage, ph.emojisAndColors(), placeholders));
-        else message = await interaction.replyTl(mainMessage, placeholders);
+            message = await interaction.send(mainMessage);
+        else message = await interaction.replyOptions(mainMessage);
 
         const collector = message.createMessageComponentCollector({
             time: Wizard.DEFAULT_TIMEOUT,
