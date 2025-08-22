@@ -125,9 +125,9 @@ export default class CustomBotConnection extends Connection {
         // Check logs until the bot is ready
         return new Promise((resolve, reject) => {
             const checkLogsTimeout = setTimeout(() => {
+                reject(new Error('Timeout waiting for bot to start'));
                 clearInterval(checkLogsInterval);
                 this.down();
-                reject(new Error('Timeout waiting for bot to start'));
             }, 60_000);
 
             const checkLogsInterval = setInterval(() => {
@@ -136,9 +136,9 @@ export default class CustomBotConnection extends Connection {
 
                     if(logs.includes(`Server listening at http://0.0.0.0:${this.port}`)) {
                         logger.info('Custom bot is ready!');
+                        resolve();
                         clearInterval(checkLogsInterval);
                         clearTimeout(checkLogsTimeout);
-                        resolve();
                     }
                 }
                 catch(err) {
@@ -148,18 +148,16 @@ export default class CustomBotConnection extends Connection {
 
             composeProcess.on('close', code => {
                 if(code !== 0) {
+                    reject(new Error(`Docker compose failed with code ${code}`));
                     clearInterval(checkLogsInterval);
                     clearTimeout(checkLogsTimeout);
-                    this.down();
-                    reject(new Error(`Docker compose failed with code ${code}`));
                 }
             });
 
             composeProcess.on('error', err => {
+                reject(err);
                 clearInterval(checkLogsInterval);
                 clearTimeout(checkLogsTimeout);
-                this.down();
-                reject(err);
             });
         });
     }
