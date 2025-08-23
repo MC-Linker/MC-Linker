@@ -37,7 +37,6 @@ export default class CustomizeTokenModal extends Component {
             invite: '', // needed for component builder to build
             status: keys.custom_bot.custom_bot_manager.status.deleted,
         });
-        message.components = [];
         await interaction.update(message);
     }
 }
