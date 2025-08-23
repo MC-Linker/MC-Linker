@@ -113,10 +113,10 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         collector.on('collect', async btnInteraction => {
             btnInteraction = addTranslatedResponses(btnInteraction);
 
-            await btnInteraction.deferReply({ flags: MessageFlags.Ephemeral });
-
             switch(btnInteraction.customId) {
                 case 'custom_bot_start':
+                    await btnInteraction.deferReply({ flags: MessageFlags.Ephemeral });
+
                     try {
                         await customBotConnection.start();
 
@@ -132,6 +132,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     }
                     break;
                 case 'custom_bot_stop':
+                    await btnInteraction.deferReply({ flags: MessageFlags.Ephemeral });
+
                     customBotConnection.stop();
 
                     buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
@@ -142,11 +144,12 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.stop);
                     break;
                 case 'custom_bot_delete':
+                    // modals cant be deferred
                     await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete));
                     break;
             }
         });
-        collector.on('end', () => interaction.replyOptions({ components: disableComponents(message.components) }));
+        collector.on('end', () => interaction.replyOptions({ components: disableComponents(mainMessage.components) }));
     }
 
     /**
