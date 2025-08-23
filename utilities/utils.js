@@ -1069,5 +1069,5 @@ export function generateDefaultInvite(botId) {
         PermissionsBitField.Flags.AttachFiles |
         PermissionsBitField.Flags.UseExternalEmojis;
 
-    return `https://discord.com/api/${Routes.oauth2Authorization()}?client_id=${botId}&scope=applications.commands+bot&permissions=${permissions}`;
+    return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}&scope=applications.commands+bot&permissions=${permissions}`;
 }
