@@ -52,6 +52,16 @@ export default class CustomBotConnection extends Connection {
          * @type {`./Custom-MC-Linker/${ownerId}`}
          */
         this.dataFolder = `./Custom-MC-Linker/${this.ownerId}`;
+
+        /**
+         * The env passed to docker compose commands.
+         * @type {{ DATA_FOLDER: string, CONTAINER_NAME: string, BOT_PORT: number }}
+         */
+        this.composeEnv = {
+            DATA_FOLDER: this.dataFolder,
+            CONTAINER_NAME: this.containerName,
+            BOT_PORT: this.port,
+        };
     }
 
     /**
@@ -123,11 +133,7 @@ export default class CustomBotConnection extends Connection {
      */
     start() {
         const composeProcess = spawn('docker', ['compose', '-f', './docker-compose-custom.yml', 'up', '-d', 'custom-mc-linker'], {
-            env: {
-                DATA_FOLDER: this.dataFolder,
-                CONTAINER_NAME: this.containerName,
-                BOT_PORT: this.port,
-            },
+            env: this.composeEnv,
             stdio: 'inherit',
         });
 
@@ -181,7 +187,9 @@ export default class CustomBotConnection extends Connection {
         logger.debug(`Stopping custom bot container ${this.containerName}`);
 
         try {
-            return execSync(`docker compose stop ${this.containerName}`).toString();
+            return execSync(`docker compose stop ${this.containerName}`, {
+                env: this.composeEnv,
+            }).toString();
         }
         catch(err) {
             return '';
@@ -197,11 +205,7 @@ export default class CustomBotConnection extends Connection {
 
         try {
             return execSync(`docker compose -f docker-compose-custom.yml down ${this.containerName} --rmi --volumes`, {
-                env: {
-                    DATA_FOLDER: this.dataFolder,
-                    CONTAINER_NAME: this.containerName,
-                    BOT_PORT: this.port,
-                },
+                env: this.composeEnv,
             }).toString();
         }
         catch(err) {

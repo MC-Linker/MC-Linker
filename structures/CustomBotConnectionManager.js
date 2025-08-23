@@ -136,7 +136,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
                     buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
                     mainMessage.components = createActionRows(buttons);
-                    mainMessage.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
+                    mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
                     await interaction.replyOptions(mainMessage);
 
                     await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.stop);
