@@ -2,7 +2,14 @@ import CustomBotConnection from './CustomBotConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 import Wizard from './helpers/Wizard.js';
 import keys from '../utilities/keys.js';
-import { createActionRows, getComponent, getModal, getReplyOptions, ph } from '../utilities/messages.js';
+import {
+    addTranslatedResponses,
+    createActionRows,
+    getComponent,
+    getModal,
+    getReplyOptions,
+    ph,
+} from '../utilities/messages.js';
 import { BaseGuildTextChannel, ComponentType, MessageFlags } from 'discord.js';
 import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
 
@@ -107,6 +114,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             componentType: ComponentType.Button,
         });
         collector.on('collect', async interaction => {
+            interaction = addTranslatedResponses(interaction);
+
             await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
             switch(interaction.customId) {
@@ -114,18 +123,18 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     try {
                         await customBotConnection.start();
                         buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
-                        await interaction.update({ components: createActionRows(buttons) });
-                        await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.start, ph.emojisAndColors()));
+                        await message.edit({ components: createActionRows(buttons) });
+                        await interaction.replyTl(keys.custom_bot.custom_bot_manager.success.start);
                     }
                     catch(err) {
-                        await interaction.reply(getReplyOptions(keys.custom_bot.errors.start_failed, ph.emojisAndColors()));
+                        await interaction.replyTl(keys.custom_bot.errors.start_failed);
                     }
                     break;
                 case 'custom_bot_stop':
                     customBotConnection.stop();
                     buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-                    await interaction.update({ components: createActionRows(buttons) });
-                    await interaction.followUp(getReplyOptions(keys.custom_bot.custom_bot_manager.success.stop, ph.emojisAndColors()));
+                    await message.edit({ components: createActionRows(buttons) });
+                    await interaction.replyTl(keys.custom_bot.custom_bot_manager.success.stop);
                     break;
                 case 'custom_bot_delete':
                     await interaction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete));
