@@ -17,7 +17,7 @@ export default class CustomizeTokenModal extends Component {
     async execute(interaction, client) {
         if(!await super.execute(interaction, client)) return;
 
-        if(interaction.fields.getTextInputValue('confirm') !== 'delete')
+        if(interaction.fields.getTextInputValue('confirm_delete') !== 'delete')
             return await interaction.replyTl(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation);
 
         const reason = interaction.fields.getTextInputValue('reason') || 'No reason provided';
@@ -25,7 +25,12 @@ export default class CustomizeTokenModal extends Component {
 
         const customBotConnection = client.customBots.getCustomBot(interaction.user.id);
         await this.disconnect(customBotConnection);
-        await interaction.update({ components: [] });
+
+        const message = await interaction.message.fetch();
+        message.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.deleted;
+        message.components = [];
+
         await interaction.replyTl(keys.custom_bot.custom_bot_manager.success.delete);
+        await interaction.update(message);
     }
 }

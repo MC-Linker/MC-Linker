@@ -389,7 +389,8 @@
     "custom_bot_manager": {
       "status": {
         "started": "🟢 Started",
-        "stopped": "🔴 Stopped"
+        "stopped": "🔴 Stopped",
+        "deleted": "💀 Deleted"
       },
       "success": {
         "main": {
