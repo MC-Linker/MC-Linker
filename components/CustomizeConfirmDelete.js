@@ -2,6 +2,7 @@ import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
 import logger from '../utilities/logger.js';
 import { getReplyOptions, ph } from '../utilities/messages.js';
+import { MessageFlags } from 'discord.js';
 
 export default class CustomizeTokenModal extends Component {
 
@@ -9,7 +10,7 @@ export default class CustomizeTokenModal extends Component {
         super({
             type: 'ModalSubmit',
             id: 'customize_confirm_delete',
-            defer: true,
+            defer: false,
             ephemeral: true,
             sku: '1166098447665995807',
         });
@@ -19,7 +20,9 @@ export default class CustomizeTokenModal extends Component {
         if(!await super.execute(interaction, client)) return;
 
         if(interaction.fields.getTextInputValue('confirm_delete') !== 'delete')
-            return await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
+            return await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
+
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         const reason = interaction.fields.getTextInputValue('reason') || 'No reason provided';
         logger.info(`Custom bot connection for ${interaction.user.id} deleted with reason: ${reason}`);
