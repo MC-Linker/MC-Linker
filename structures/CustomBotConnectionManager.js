@@ -113,31 +113,39 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             time: Wizard.DEFAULT_TIMEOUT,
             componentType: ComponentType.Button,
         });
-        collector.on('collect', async interaction => {
-            interaction = addTranslatedResponses(interaction);
+        collector.on('collect', async btnInteraction => {
+            btnInteraction = addTranslatedResponses(btnInteraction);
 
-            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+            await btnInteraction.deferReply({ flags: MessageFlags.Ephemeral });
 
-            switch(interaction.customId) {
+            switch(btnInteraction.customId) {
                 case 'custom_bot_start':
                     try {
                         await customBotConnection.start();
+
                         buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
-                        await message.edit({ components: createActionRows(buttons) });
-                        await interaction.replyTl(keys.custom_bot.custom_bot_manager.success.start);
+                        mainMessage.components = createActionRows(buttons);
+                        mainMessage.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.started;
+                        await interaction.update(mainMessage);
+
+                        await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.start);
                     }
                     catch(err) {
-                        await interaction.replyTl(keys.custom_bot.errors.start_failed);
+                        await btnInteraction.replyTl(keys.custom_bot.errors.start_failed);
                     }
                     break;
                 case 'custom_bot_stop':
                     customBotConnection.stop();
+
                     buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-                    await message.edit({ components: createActionRows(buttons) });
-                    await interaction.replyTl(keys.custom_bot.custom_bot_manager.success.stop);
+                    mainMessage.components = createActionRows(buttons);
+                    mainMessage.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
+                    await interaction.update(mainMessage);
+
+                    await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.stop);
                     break;
                 case 'custom_bot_delete':
-                    await interaction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete));
+                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete));
                     break;
             }
         });
