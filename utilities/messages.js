@@ -350,10 +350,7 @@ export async function replyOptions(interaction, options) {
         if(interaction instanceof Discord.Message) return await interaction.reply(options).catch(handleError);
         else if(interaction instanceof Discord.BaseInteraction && interaction.isRepliable()) {
             if(interaction.deferred || interaction.replied) return await interaction.editReply(options).catch(handleError);
-            else if(interaction.isMessageComponent() || interaction.isModalSubmit()) return await interaction.update({
-                ...options,
-                withResponse: true,
-            }).catch(handleError);
+            else if(interaction.isMessageComponent() || interaction.isModalSubmit()) return await interaction.update(options).catch(handleError);
             else return await interaction.reply(options).catch(handleError);
         }
     }
