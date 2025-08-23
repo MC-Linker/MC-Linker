@@ -34,7 +34,7 @@ export default class CustomizeTokenModal extends Component {
         message.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.deleted;
         message.components = [];
 
-        await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.delete, ph.emojisAndColors()));
+        await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.delete, ph.emojisAndColors()));
         await interaction.update(message);
     }
 }
