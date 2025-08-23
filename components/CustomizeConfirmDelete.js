@@ -34,6 +34,7 @@ export default class CustomizeTokenModal extends Component {
 
         const message = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), {
             port: '-',
+            invite: '', // needed for component builder to build
             status: keys.custom_bot.custom_bot_manager.status.deleted,
         });
         message.components = [];
