@@ -30,11 +30,13 @@ export default class CustomizeTokenModal extends Component {
         const customBotConnection = client.customBots.getCustomBot(interaction.user.id);
         await client.customBots.disconnect(customBotConnection);
 
-        const message = await interaction.message.fetch();
-        message.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.deleted;
-        message.components = [];
-
         await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.delete, ph.emojisAndColors()));
+
+        const message = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), {
+            port: '-',
+            status: keys.custom_bot.custom_bot_manager.status.deleted,
+        });
+        message.components = [];
         await interaction.update(message);
     }
 }
