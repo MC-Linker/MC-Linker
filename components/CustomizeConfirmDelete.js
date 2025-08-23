@@ -24,7 +24,7 @@ export default class CustomizeTokenModal extends Component {
             return await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
         }
 
-        const reason = interaction.fields.getTextInputValue('reason') || 'No reason provided';
+        const reason = interaction.fields.getTextInputValue('confirm_delete_reason') || 'No reason provided';
         logger.info(`Custom bot connection for ${interaction.user.id} deleted with reason: ${reason}`);
 
         const customBotConnection = client.customBots.getCustomBot(interaction.user.id);
