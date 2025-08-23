@@ -113,7 +113,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 case 'custom_bot_start':
                     try {
                         await customBotConnection.start();
-                        buttons.splice(1, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
+                        buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
                         await interaction.update({ components: createActionRows(buttons) });
                         await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.start, ph.emojisAndColors()));
                     }
@@ -123,7 +123,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     break;
                 case 'custom_bot_stop':
                     customBotConnection.stop();
-                    buttons.splice(1, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
+                    buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
                     await interaction.update({ components: createActionRows(buttons) });
                     await interaction.followUp(getReplyOptions(keys.custom_bot.custom_bot_manager.success.stop, ph.emojisAndColors()));
                     break;
