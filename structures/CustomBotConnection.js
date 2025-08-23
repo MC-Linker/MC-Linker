@@ -204,7 +204,7 @@ export default class CustomBotConnection extends Connection {
     down() {
         logger.debug(`Shutting down and removing custom bot container ${this.containerName}`);
 
-        return execSync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi --volumes`, {
+        return execSync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi all --volumes`, {
             env: this.composeEnv,
         }).toString();
     }
