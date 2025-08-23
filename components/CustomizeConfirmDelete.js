@@ -1,6 +1,7 @@
 import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
 import logger from '../utilities/logger.js';
+import { getReplyOptions, ph } from '../utilities/messages.js';
 
 export default class CustomizeTokenModal extends Component {
 
@@ -18,7 +19,7 @@ export default class CustomizeTokenModal extends Component {
         if(!await super.execute(interaction, client)) return;
 
         if(interaction.fields.getTextInputValue('confirm_delete') !== 'delete')
-            return await interaction.replyTl(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation);
+            return await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
 
         const reason = interaction.fields.getTextInputValue('reason') || 'No reason provided';
         logger.info(`Custom bot connection for ${interaction.user.id} deleted with reason: ${reason}`);
@@ -30,7 +31,7 @@ export default class CustomizeTokenModal extends Component {
         message.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.deleted;
         message.components = [];
 
-        await interaction.replyTl(keys.custom_bot.custom_bot_manager.success.delete);
+        await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.delete, ph.emojisAndColors()));
         await interaction.update(message);
     }
 }
