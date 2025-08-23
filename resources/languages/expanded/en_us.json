@@ -416,7 +416,7 @@
               "type": "Button",
               "style": "Link",
               "label": "Invite Bot",
-              "url": "%invite_link%"
+              "url": "%invite%"
             }
           ]
         },
