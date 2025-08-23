@@ -181,7 +181,7 @@ export default class CustomBotConnection extends Connection {
         logger.debug(`Stopping custom bot container ${this.containerName}`);
 
         try {
-            return execSync(`docker compose -f docker-compose-custom.yml stop ${this.containerName}`).toString();
+            return execSync(`docker compose stop ${this.containerName}`).toString();
         }
         catch(err) {
             return '';
@@ -196,7 +196,13 @@ export default class CustomBotConnection extends Connection {
         logger.debug(`Shutting down and removing custom bot container ${this.containerName}`);
 
         try {
-            return execSync(`docker compose -f docker-compose-custom.yml down ${this.containerName} --rmi --volumes`).toString();
+            return execSync(`docker compose -f docker-compose-custom.yml down ${this.containerName} --rmi --volumes`, {
+                env: {
+                    DATA_FOLDER: this.dataFolder,
+                    CONTAINER_NAME: this.containerName,
+                    BOT_PORT: this.port,
+                },
+            }).toString();
         }
         catch(err) {
             return '';

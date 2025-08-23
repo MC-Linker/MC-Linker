@@ -85,7 +85,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
     /**
      * Sends a custom bot manager to the user.
-     * @param {(Message|import('discord.js').BaseInteraction) & TranslatedResponses|BaseGuildTextChannel} interaction - The interaction or channel to send the manager to.
+     * @param {(import('discord.js').BaseInteraction) & TranslatedResponses} interaction - The interaction to send the manager to.
      * @param {CustomBotConnection} customBotConnection - The custom bot connection to manage.
      * @return {Promise<Message>}
      */
@@ -104,10 +104,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         else buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
         mainMessage.components[0].components.unshift(...buttons);
 
-        let message;
-        if(interaction instanceof BaseGuildTextChannel)
-            message = await interaction.send(mainMessage);
-        else message = await interaction.replyOptions(mainMessage);
+        const message = await interaction.replyOptions(mainMessage);
 
         const collector = message.createMessageComponentCollector({
             time: Wizard.DEFAULT_TIMEOUT,
@@ -126,7 +123,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                         buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
                         mainMessage.components = createActionRows(buttons);
                         mainMessage.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.started;
-                        await interaction.update(mainMessage);
+                        await interaction.replyOptions(mainMessage);
 
                         await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.start);
                     }
@@ -140,7 +137,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
                     mainMessage.components = createActionRows(buttons);
                     mainMessage.embeds[0].fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
-                    await interaction.update(mainMessage);
+                    await interaction.replyOptions(mainMessage);
 
                     await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.stop);
                     break;
@@ -149,9 +146,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     break;
             }
         });
-        collector.on('end', () => {
-            message.edit({ components: disableComponents(message.components) });
-        });
+        collector.on('end', () => interaction.replyOptions({ components: disableComponents(message.components) }));
     }
 
     /**
