@@ -503,6 +503,16 @@
             }
           ]
         }
+      },
+      "step": {
+        "deleting": {
+          "embeds": [
+            {
+              "title": "Deleting Your Custom MC Linker",
+              "description": "%emoji_step% Please wait while I delete your Custom MC Linker... 👋"
+            }
+          ]
+        }
       }
     }
   },
