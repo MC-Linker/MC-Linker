@@ -142,7 +142,11 @@ export default class CustomBotConnection extends Connection {
             const checkLogsTimeout = setTimeout(() => {
                 reject(new Error('Timeout waiting for bot to start'));
                 clearInterval(checkLogsInterval);
-                this.down();
+
+                try {
+                    this.down();
+                }
+                catch(_) {}
             }, 60_000);
 
             const checkLogsInterval = setInterval(() => {
@@ -156,9 +160,7 @@ export default class CustomBotConnection extends Connection {
                         clearTimeout(checkLogsTimeout);
                     }
                 }
-                catch(err) {
-                    // Container might not be ready yet, continue checking
-                }
+                catch(_) {} // Container might not be ready yet, continue checking
             }, 1000, 1000);
 
             composeProcess.on('close', code => {
@@ -166,7 +168,11 @@ export default class CustomBotConnection extends Connection {
                     reject(new Error(`Docker compose failed with code ${code}`));
                     clearInterval(checkLogsInterval);
                     clearTimeout(checkLogsTimeout);
-                    this.down();
+
+                    try {
+                        this.down();
+                    }
+                    catch(_) {}
                 }
             });
 
@@ -186,14 +192,9 @@ export default class CustomBotConnection extends Connection {
     stop() {
         logger.debug(`Stopping custom bot container ${this.containerName}`);
 
-        try {
-            return execSync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
-                env: this.composeEnv,
-            }).toString();
-        }
-        catch(err) {
-            return '';
-        }
+        return execSync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
+            env: this.composeEnv,
+        }).toString();
     }
 
     /**
@@ -203,14 +204,9 @@ export default class CustomBotConnection extends Connection {
     down() {
         logger.debug(`Shutting down and removing custom bot container ${this.containerName}`);
 
-        try {
-            return execSync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi --volumes`, {
-                env: this.composeEnv,
-            }).toString();
-        }
-        catch(err) {
-            return '';
-        }
+        return execSync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi --volumes`, {
+            env: this.composeEnv,
+        }).toString();
     }
 
     /**
