@@ -457,7 +457,7 @@
           "type": "Button",
           "style": "Danger",
           "label": "Stop",
-          "emoji": "🔴",
+          "emoji": "🛑",
           "custom_id": "custom_bot_stop"
         },
         "delete": {

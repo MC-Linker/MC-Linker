@@ -4,7 +4,7 @@ import Wizard from './helpers/Wizard.js';
 import keys from '../utilities/keys.js';
 import { createActionRows, getComponent, getModal, getReplyOptions, ph } from '../utilities/messages.js';
 import { BaseGuildTextChannel, ComponentType, MessageFlags } from 'discord.js';
-import { generateDefaultInvite } from '../utilities/utils.js';
+import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
 
 export default class CustomBotConnectionManager extends ConnectionManager {
 
@@ -95,7 +95,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         const buttons = [getComponent(keys.custom_bot.custom_bot_manager.buttons.delete)];
         if(isStarted) buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
         else buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-        mainMessage.components = createActionRows([...buttons, ...mainMessage.components]);
+        mainMessage.components[0].components.unshift(...buttons);
 
         let message;
         if(interaction instanceof BaseGuildTextChannel)
@@ -131,6 +131,9 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     await interaction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete));
                     break;
             }
+        });
+        collector.on('end', () => {
+            message.edit({ components: disableComponents(message.components) });
         });
     }
 
