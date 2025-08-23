@@ -12,6 +12,7 @@ import {
 } from '../utilities/messages.js';
 import { BaseGuildTextChannel, ComponentType, MessageFlags } from 'discord.js';
 import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
+import logger from '../utilities/logger.js';
 
 export default class CustomBotConnectionManager extends ConnectionManager {
 
@@ -128,6 +129,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                         await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.start);
                     }
                     catch(err) {
+                        logger.error(err, 'Failed to start custom bot connection');
                         await btnInteraction.replyTl(keys.custom_bot.errors.start_failed);
                     }
                     break;
