@@ -5,7 +5,7 @@ import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import { execSync } from 'child_process';
 import Wizard from '../structures/helpers/Wizard.js';
-import { getReplyOptions, ph } from '../utilities/messages.js';
+import { addTranslatedResponses, getReplyOptions, ph } from '../utilities/messages.js';
 
 export default class CustomizeTokenModal extends Component {
 
@@ -98,6 +98,17 @@ export default class CustomizeTokenModal extends Component {
         ].map(key => getReplyOptions(key, { port: botPort, invite }, ph.emojisAndColors())), {
             timeout: 60_000 * 14, // 15 minutes is max interaction timeout
         });
-        await wizard.start();
+        const message = await wizard.start();
+
+        const collector = message.createMessageComponentCollector({
+            time: Wizard.DEFAULT_TIMEOUT,
+            componentType: Discord.ComponentType.Button,
+            filter: btnInteraction => btnInteraction.customId === 'customize_manage_bot',
+            max: 1,
+        });
+        collector.on('collect', async btnInteraction => {
+            btnInteraction = addTranslatedResponses(btnInteraction);
+            await client.customBots.sendCustomBotManager(btnInteraction, customBotConnection);
+        });
     }
 }

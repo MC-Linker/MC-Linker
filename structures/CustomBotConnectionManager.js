@@ -10,7 +10,7 @@ import {
     getReplyOptions,
     ph,
 } from '../utilities/messages.js';
-import { BaseGuildTextChannel, ComponentType, MessageFlags } from 'discord.js';
+import Discord, { BaseGuildTextChannel, ComponentType, MessageFlags } from 'discord.js';
 import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
 import logger from '../utilities/logger.js';
 
@@ -73,7 +73,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      * @param {(Message|import('discord.js').BaseInteraction) & TranslatedResponses|BaseGuildTextChannel} interaction - The interaction or channel to send the wizard to.
      * @return {Promise<Message>}
      */
-    sendCustomBotCreateWizard(interaction) {
+    async sendCustomBotCreateWizard(interaction) {
         const wizard = new Wizard(this.client, interaction, [
             keys.custom_bot.create.success.main,
             keys.custom_bot.create.success.intents,
@@ -81,7 +81,19 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         ].map(key => getReplyOptions(key, ph.emojisAndColors())), {
             timeout: 60_000 * 14, // 15 minutes is max interaction timeout
         });
-        return wizard.start();
+
+        const message = await wizard.start();
+
+        const collector = message.createMessageComponentCollector({
+            time: Wizard.DEFAULT_TIMEOUT,
+            componentType: Discord.ComponentType.Button,
+            filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
+            max: 1,
+        });
+        collector.on('collect', async btnInteraction =>
+            await btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal, ph.emojisAndColors())));
+
+        return message;
     }
 
     /**

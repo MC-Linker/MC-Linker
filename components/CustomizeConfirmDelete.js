@@ -20,23 +20,22 @@ export default class CustomizeTokenModal extends Component {
         if(!await super.execute(interaction, client)) return;
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-        if(interaction.fields.getTextInputValue('confirm_delete') !== 'delete') {
+        if(interaction.fields.getTextInputValue('confirm_delete') !== 'delete')
             return await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
-        }
 
         const reason = interaction.fields.getTextInputValue('confirm_delete_reason') || 'No reason provided';
         logger.info(`Custom bot connection for ${interaction.user.id} deleted with reason: "${reason}"`);
 
         const customBotConnection = client.customBots.getCustomBot(interaction.user.id);
         await client.customBots.disconnect(customBotConnection);
-
-        await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.delete, ph.emojisAndColors()));
-
+        
         const message = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), {
             port: '-',
             invite: '', // needed for component builder to build
             status: keys.custom_bot.custom_bot_manager.status.deleted,
         });
         await interaction.update(message);
+
+        await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.delete, ph.emojisAndColors()));
     }
 }
