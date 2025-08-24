@@ -22,7 +22,7 @@ export default class CustomizeTokenModal extends Component {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         if(interaction.fields.getTextInputValue('confirm_delete') !== 'delete')
-            return await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
+            return await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
 
         await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.step.deleting, ph.emojisAndColors()));
 
