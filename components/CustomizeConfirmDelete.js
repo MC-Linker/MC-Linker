@@ -2,6 +2,7 @@ import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
 import logger from '../utilities/logger.js';
 import { getReplyOptions, ph } from '../utilities/messages.js';
+import { MessageFlags } from 'discord.js';
 
 export default class CustomizeTokenModal extends Component {
 
@@ -17,6 +18,8 @@ export default class CustomizeTokenModal extends Component {
 
     async execute(interaction, client) {
         if(!await super.execute(interaction, client)) return;
+
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         if(interaction.fields.getTextInputValue('confirm_delete') !== 'delete')
             return await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
