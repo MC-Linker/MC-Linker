@@ -100,7 +100,7 @@ export default class CustomBotConnection extends Connection {
 
         await fs.mkdir(`${this.dataFolder}/download-cache`);
         await fs.mkdir(`${this.dataFolder}/logs`);
-        await logger.debug(`Custom bot data folder created at ${this.dataFolder}`);
+        await logger.info(`Custom bot data folder created at ${this.dataFolder}`);
 
         this.build();
     }
@@ -213,7 +213,7 @@ export default class CustomBotConnection extends Connection {
      */
     stop() {
         //TODO cant make this blocking
-        logger.debug(`Stopping custom bot container ${this.containerName}`);
+        logger.info(`Stopping custom bot container ${this.containerName}`);
 
         return execSync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
             env: this.composeEnv,
@@ -225,7 +225,7 @@ export default class CustomBotConnection extends Connection {
      * @return {string} - The output of the docker command.
      */
     down() {
-        logger.debug(`Shutting down and removing custom bot container ${this.containerName}`);
+        logger.info(`Shutting down and removing custom bot container ${this.containerName}`);
 
         return execSync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi all --volumes`, {
             env: this.composeEnv,
@@ -237,7 +237,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async removeDataFolder() {
-        logger.debug(`Removing custom bot data folder ${this.dataFolder}`);
+        logger.info(`Removing custom bot data folder ${this.dataFolder}`);
         await fs.remove(this.dataFolder);
     }
 

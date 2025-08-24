@@ -88,4 +88,12 @@ export default class UserConnectionManager extends ConnectionManager {
         await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
         return { error: 'fetch', uuid: null, username: null };
     }
+
+    async disconnect(connectionResolvable) {
+        const connection = this.resolve(connectionResolvable);
+
+        if(!await super.disconnect(connection)) return false;
+        await connection.removeCache();
+        return true;
+    }
 }

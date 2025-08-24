@@ -19,6 +19,5 @@ export default class GuildDelete extends Event {
         logger.info(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
         await client.serverConnections.disconnect(guild.id);
         await client.serverSettingsConnections.disconnect(guild.id);
-        await client.serverConnections.removeCache(guild.id);
     }
 } 

@@ -259,13 +259,12 @@ export default class ServerConnection extends Connection {
 
 
     /**
-     * Removes the download cache folder for a server connection.
-     * @param {string} id - The id of the server connection.
+     * Removes the download cache folder of this server connection.
      * @returns {Promise<boolean>}
      */
-    async removeCache(id) {
+    async removeCache() {
         try {
-            await fs.rm(`./download-cache/${this.collectionName}/${id}/`, { recursive: true });
+            await fs.rm(`./download-cache/serverConnection/${this.id}/`, { recursive: true });
             return true;
         }
         catch(_) {

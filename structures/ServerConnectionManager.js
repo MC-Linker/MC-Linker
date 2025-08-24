@@ -25,6 +25,7 @@ export default class ServerConnectionManager extends ConnectionManager {
     }
 
     async disconnect(connectionResolvable) {
+        /** @type {ServerConnection} */
         const connection = this.resolve(connectionResolvable);
 
         for(const channel of connection?.chatChannels ?? []) {
@@ -37,7 +38,9 @@ export default class ServerConnectionManager extends ConnectionManager {
             }
         }
 
-        return super.disconnect(connection);
+        if(!await super.disconnect(connection)) return false;
+        await connection.removeCache();
+        return true;
     }
 
     async _load() {
