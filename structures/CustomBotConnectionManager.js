@@ -88,7 +88,6 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             time: Wizard.DEFAULT_TIMEOUT,
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
-            max: 1,
         });
         collector.on('collect', async btnInteraction =>
             await btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal, ph.emojisAndColors())));
