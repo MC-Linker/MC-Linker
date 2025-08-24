@@ -5,6 +5,7 @@ import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import Wizard from '../structures/helpers/Wizard.js';
 import { addTranslatedResponses, getReplyOptions, ph } from '../utilities/messages.js';
+import { execAsync } from '../utilities/utils.js';
 
 export default class CustomizeTokenModal extends Component {
 
@@ -87,7 +88,7 @@ export default class CustomizeTokenModal extends Component {
 
         await interaction.replyTl(keys.custom_bot.create.step.deploying);
         // TODO add deploy -r for linked roles
-        logger.info(execSync(`docker exec ${customBotConnection.containerName} node scripts/deploy.js deploy -g`).toString());
+        logger.info((await execAsync(`docker exec ${customBotConnection.containerName} node scripts/deploy.js deploy -g`)).stdout);
 
         await exposeCustomBotPorts(...client.customBots.getPortRange());
 
