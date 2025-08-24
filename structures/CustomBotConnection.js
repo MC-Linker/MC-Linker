@@ -102,6 +102,7 @@ export default class CustomBotConnection extends Connection {
         await fs.mkdir(`${this.dataFolder}/logs`);
         await logger.debug(`Custom bot data folder created at ${this.dataFolder}`);
 
+        //TODO unblock
         logger.info(execSync(`docker build . -t lianecx/${this.containerName}`).toString());
     }
 
