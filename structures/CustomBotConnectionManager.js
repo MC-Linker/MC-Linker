@@ -173,7 +173,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         const modalCollector = new InteractionCollector(this.client, {
             time: Wizard.DEFAULT_TIMEOUT,
             interactionType: InteractionType.ModalSubmit,
-            filter: i => i.customId === 'custom_bot_confirm_delete',
+            filter: i => i.customId === 'customize_confirm_delete',
             message,
         });
         modalCollector.on('collect', async modalInteraction => {

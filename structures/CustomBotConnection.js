@@ -190,6 +190,7 @@ export default class CustomBotConnection extends Connection {
      * @return {string} - The output of the docker command.
      */
     stop() {
+        //TODO cant make this blocking
         logger.debug(`Stopping custom bot container ${this.containerName}`);
 
         return execSync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
