@@ -411,14 +411,6 @@
                 }
               ]
             }
-          ],
-          "components": [
-            {
-              "type": "Button",
-              "style": "Link",
-              "label": "Invite Bot",
-              "url": "%invite%"
-            }
           ]
         },
         "start": {
@@ -467,6 +459,12 @@
           "label": "Delete",
           "emoji": "💀",
           "custom_id": "custom_bot_delete"
+        },
+        "invite": {
+          "type": "Button",
+          "style": "Link",
+          "label": "Invite Bot",
+          "url": "%invite%"
         }
       },
       "confirm_delete": {

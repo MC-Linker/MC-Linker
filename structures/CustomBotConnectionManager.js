@@ -111,10 +111,10 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         };
 
         const mainMessage = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), placeholders);
-        const buttons = [getComponent(keys.custom_bot.custom_bot_manager.buttons.delete)];
+        const buttons = [keys.custom_bot.custom_bot_manager.buttons.delete, keys.custom_bot.custom_bot_manager.buttons.invite].map(x => getComponent(x));
         if(isStarted) buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
         else buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-        mainMessage.components[0].components.unshift(...buttons);
+        mainMessage.components = createActionRows(buttons);
 
         const message = await interaction.replyOptions(mainMessage);
 
