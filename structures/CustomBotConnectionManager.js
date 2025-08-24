@@ -186,8 +186,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             const reason = modalInteraction.fields.getTextInputValue('confirm_delete_reason') || 'No reason provided';
             logger.info(`Custom bot connection for ${modalInteraction.user.id} deleted with reason: "${reason}"`);
 
-            const customBotConnection = client.customBots.getCustomBot(modalInteraction.user.id);
-            await client.customBots.disconnect(customBotConnection);
+            const customBotConnection = this.client.customBots.getCustomBot(modalInteraction.user.id);
+            await this.client.customBots.disconnect(customBotConnection);
 
             const newMainMessageOptions = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), {
                 port: '-',
