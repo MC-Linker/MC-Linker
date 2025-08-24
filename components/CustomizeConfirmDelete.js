@@ -24,7 +24,7 @@ export default class CustomizeTokenModal extends Component {
         if(interaction.fields.getTextInputValue('confirm_delete') !== 'delete')
             return await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation, ph.emojisAndColors()));
 
-        await interaction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.step.deleting, ph.emojisAndColors()));
+        await interaction.editReply(getReplyOptions(keys.custom_bot.custom_bot_manager.step.deleting, ph.emojisAndColors()));
 
         const reason = interaction.fields.getTextInputValue('confirm_delete_reason') || 'No reason provided';
         logger.info(`Custom bot connection for ${interaction.user.id} deleted with reason: "${reason}"`);
