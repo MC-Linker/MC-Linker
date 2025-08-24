@@ -8,8 +8,8 @@ import { Mongoose } from 'mongoose';
 export async function convert(client, mongoose) {
     const serverConnectionModel = mongoose.models.ServerConnection;
 
-    /*  // (Remove all http type server connections) Keep them for legacy support
-        const docs = await serverConnectionModel.find({ protocol: 'http' }).exec();
+    // TODO Remove all http type server connections
+    /*    const docs = await serverConnectionModel.find({ protocol: 'http' }).exec();
         console.log(`[${client.shard.ids[0]}] Found ${docs.length} server connections with protocol http.`);
         for(const doc of docs) {
             //Fetch guild

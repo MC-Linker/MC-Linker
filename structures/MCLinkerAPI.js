@@ -362,7 +362,7 @@ export default class MCLinkerAPI extends EventEmitter {
                                 connectCommand.disconnectOldServer(this.client, id);
                                 this.addWebsocketListeners(socket, id, hash);
                                 this.client.serverConnections.connect(serverConnectionData).then(server => {
-                                    logger.debug(`[Socket.io] Successfully connected ${server.getDisplayIp()} from ${server.id} to websocket`);
+                                    logger.debug(`[Socket.io] Successfully connected ${server.displayIp} from ${server.id} to websocket`);
                                     this.client.shard.broadcastEval(
                                         (c, { id }) => c.emit('editConnectResponse', id, 'success'),
                                         { context: { id }, shard },
@@ -404,7 +404,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
                     server.protocol.updateSocket(socket);
                     this.addWebsocketListeners(socket, server, hash);
-                    logger.debug(`[Socket.io] Successfully reconnected ${server.getDisplayIp()} from ${server.id} to websocket`);
+                    logger.debug(`[Socket.io] Successfully reconnected ${server.displayIp} from ${server.id} to websocket`);
                 }
             }
             else {
@@ -452,7 +452,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 data = typeof data === 'string' ? JSON.parse(data) : {};
                 const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
                 const server = await getServerWebsocket(this.client, rateLimiter, callback);
-                logger.debug(`[Socket.IO] Server for event ${route.event}: ${server ? server.getDisplayIp() : 'none'}`);
+                logger.debug(`[Socket.IO] Server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
                 if(!server) return;
 
                 const response = await route.handler(data, server);

@@ -75,8 +75,8 @@ export default class ServerInfo extends Command {
         if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;
         else onlinePlayers = onlinePlayers.data.length;
 
-        const serverName = propertiesObject['server-name'] ?? server.getDisplayIp();
-        const serverIp = server.getDisplayIp();
+        const serverName = propertiesObject['server-name'] ?? server.displayIp;
+        const serverIp = server.displayIp;
 
         let motd;
         try {

@@ -65,10 +65,12 @@ export default class ConnectionManager extends CachedManager {
 
     /**
      * Removes a connection from the cache and deletes the data from the database.
-     * @param {Connection} connection - The connection to disconnect.
+     * @param {ConnectionResolvable} connectionResolvable - The connection resolvable to disconnect.
      * @returns {Promise<boolean>} - Whether the disconnection was successful.
      */
-    async disconnect(connection) {
+    async disconnect(connectionResolvable) {
+        const connection = this.resolve(connectionResolvable);
+
         if(connection && await connection._delete()) {
             //Broadcast to all shards
             await this.client.shard.broadcastEval((c, { connectionId, manager, shard }) => {
