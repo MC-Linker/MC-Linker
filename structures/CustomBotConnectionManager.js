@@ -193,7 +193,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 port: '-',
                 invite: '', // needed for component builder to build
                 status: keys.custom_bot.custom_bot_manager.status.deleted,
-            });
+            }, await ph.commandName('customize', this.client));
             newMainMessageOptions.components = [];
             await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.delete);
             await interaction.replyOptions(newMainMessageOptions);

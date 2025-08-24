@@ -433,7 +433,7 @@
           "embeds": [
             {
               "title": "Deleted Your Custom MC Linker",
-              "description": "Your Custom MC Linker is now deleted! You can create a new one by running `/customize` again.\n\nPlease let us know any feedback in the [Support Server](https://discord.gg/rX36kZUGNK)!"
+              "description": "Your Custom MC Linker is now deleted! You can create a new one by running %command_mention% again.\n\nPlease let us know any feedback in the [Support Server](https://discord.gg/rX36kZUGNK)!"
             }
           ]
         }
