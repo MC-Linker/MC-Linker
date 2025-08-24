@@ -203,6 +203,14 @@ export default class CustomBotConnectionManager extends ConnectionManager {
     }
 
     /**
+     * Updates all custom bot connections.
+     * @return {Promise<void[]>} - A promise that resolves when all custom bot connections have been updated.
+     */
+    updateAllBots() {
+        return Promise.all(this.cache.map(connection => connection.update()));
+    }
+
+    /**
      * Gets the port range for custom bots.
      * @return {number[]}
      */

@@ -102,8 +102,7 @@ export default class CustomBotConnection extends Connection {
         await fs.mkdir(`${this.dataFolder}/logs`);
         await logger.debug(`Custom bot data folder created at ${this.dataFolder}`);
 
-        //TODO unblock
-        logger.info(execSync(`docker build . -t lianecx/${this.containerName}`).toString());
+        this.build();
     }
 
     /**
@@ -126,6 +125,28 @@ export default class CustomBotConnection extends Connection {
         catch(err) {
             return null;
         }
+    }
+
+    /**
+     * Builds the docker image for the custom bot connection.
+     * @return {void}
+     */
+    build() {
+        logger.info(`Building custom bot ${this.containerName}`);
+        //TODO unblock
+        logger.info(execSync(`docker build . -t lianecx/${this.containerName}`).toString());
+    }
+
+    /**
+     * Updates the custom bot connection by rebuilding the docker image and restarting the container.
+     * Equivalent to calling `build()`, `stop()`, and `start()` in sequence.
+     * @return {Promise<void>}
+     */
+    update() {
+        logger.info(`Updating custom bot ${this.containerName}`);
+        this.build();
+        this.stop();
+        return this.start();
     }
 
     /**

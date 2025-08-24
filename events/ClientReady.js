@@ -30,5 +30,7 @@ export default class ClientReady extends Event {
         if(client.shard.ids.includes(0)) await client.api.startServer();
 
         Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
+
+        await client.customBots.updateAllBots();
     }
 }
