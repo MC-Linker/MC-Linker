@@ -10,7 +10,13 @@ import {
     getReplyOptions,
     ph,
 } from '../utilities/messages.js';
-import Discord, { BaseGuildTextChannel, ComponentType, MessageFlags } from 'discord.js';
+import Discord, {
+    BaseGuildTextChannel,
+    ComponentType,
+    InteractionCollector,
+    InteractionType,
+    MessageFlags,
+} from 'discord.js';
 import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
 import logger from '../utilities/logger.js';
 
@@ -118,11 +124,11 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
         const message = await interaction.replyOptions(mainMessage);
 
-        const collector = message.createMessageComponentCollector({
+        const buttonCollector = message.createMessageComponentCollector({
             time: Wizard.DEFAULT_TIMEOUT,
             componentType: ComponentType.Button,
         });
-        collector.on('collect', async btnInteraction => {
+        buttonCollector.on('collect', async btnInteraction => {
             btnInteraction = addTranslatedResponses(btnInteraction);
 
             switch(btnInteraction.customId) {
@@ -162,7 +168,36 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     break;
             }
         });
-        collector.on('end', () => interaction.replyOptions({ components: disableComponents(mainMessage.components) }));
+        buttonCollector.on('end', () => interaction.replyOptions({ components: disableComponents(mainMessage.components) }));
+
+        const modalCollector = new InteractionCollector(this.client, {
+            time: Wizard.DEFAULT_TIMEOUT,
+            interactionType: InteractionType.ModalSubmit,
+            filter: i => i.customId === 'custom_bot_confirm_delete',
+            message,
+        });
+        modalCollector.on('collect', async modalInteraction => {
+            modalInteraction = addTranslatedResponses(modalInteraction);
+            await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
+
+            if(modalInteraction.fields.getTextInputValue('confirm_delete') !== 'delete')
+                return await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation);
+
+            const reason = modalInteraction.fields.getTextInputValue('confirm_delete_reason') || 'No reason provided';
+            logger.info(`Custom bot connection for ${modalInteraction.user.id} deleted with reason: "${reason}"`);
+
+            const customBotConnection = client.customBots.getCustomBot(modalInteraction.user.id);
+            await client.customBots.disconnect(customBotConnection);
+
+            const newMainMessageOptions = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), {
+                port: '-',
+                invite: '', // needed for component builder to build
+                status: keys.custom_bot.custom_bot_manager.status.deleted,
+            });
+            newMainMessageOptions.components = [];
+            await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.delete);
+            await interaction.update(newMainMessageOptions);
+        });
     }
 
     /**
