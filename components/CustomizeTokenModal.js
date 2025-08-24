@@ -3,7 +3,6 @@ import keys from '../utilities/keys.js';
 import Discord, { GatewayIntentBits, OAuth2Scopes, PermissionsBitField } from 'discord.js';
 import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
-import { execSync } from 'child_process';
 import Wizard from '../structures/helpers/Wizard.js';
 import { addTranslatedResponses, getReplyOptions, ph } from '../utilities/messages.js';
 

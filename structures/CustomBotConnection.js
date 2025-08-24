@@ -1,7 +1,8 @@
 import Connection from './Connection.js';
 import logger from '../utilities/logger.js';
-import { execSync, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import fs from 'fs-extra';
+import { execAsync } from '../utilities/utils.js';
 
 export default class CustomBotConnection extends Connection {
     /**
@@ -102,25 +103,25 @@ export default class CustomBotConnection extends Connection {
         await fs.mkdir(`${this.dataFolder}/logs`);
         await logger.info(`Custom bot data folder created at ${this.dataFolder}`);
 
-        this.build();
+        await this.build();
     }
 
     /**
      * Checks if the custom bot connection is currently running.
-     * @return {boolean}
+     * @return {Promise<boolean>}
      */
-    isStarted() {
-        return this.inspect()?.State?.Running ?? false;
+    async isStarted() {
+        return (await this.inspect())?.State?.Running ?? false;
     }
 
     /**
      * Returns docker inspection details for the custom bot connection.
-     * @return {?Object}
+     * @return {Promise<?Object>}
      */
-    inspect() {
+    async inspect() {
         try {
-            const output = execSync(`docker inspect ${this.containerName}`).toString();
-            return JSON.parse(output)[0];
+            const { stdout } = await execAsync(`docker inspect ${this.containerName}`);
+            return JSON.parse(stdout)[0];
         }
         catch(err) {
             return null;
@@ -129,12 +130,12 @@ export default class CustomBotConnection extends Connection {
 
     /**
      * Builds the docker image for the custom bot connection.
-     * @return {void}
+     * @return {Promise<void>}
      */
-    build() {
+    async build() {
         logger.info(`Building custom bot ${this.containerName}`);
         //TODO unblock
-        logger.info(execSync(`docker build . -t lianecx/${this.containerName}`).toString());
+        logger.info((await execAsync(`docker build . -t lianecx/${this.containerName}`)).stdout);
     }
 
     /**
@@ -142,11 +143,11 @@ export default class CustomBotConnection extends Connection {
      * Equivalent to calling `build()`, `stop()`, and `start()` in sequence.
      * @return {Promise<void>}
      */
-    update() {
+    async update() {
         logger.info(`Updating custom bot ${this.containerName}`);
-        this.build();
-        this.stop();
-        return this.start();
+        await this.build();
+        await this.stop();
+        return await this.start();
     }
 
     /**
@@ -171,9 +172,9 @@ export default class CustomBotConnection extends Connection {
                 catch(_) {}
             }, 60_000);
 
-            const checkLogsInterval = setInterval(() => {
+            const checkLogsInterval = setInterval(async () => {
                 try {
-                    const logs = execSync(`docker logs ${this.containerName} --tail 10`).toString();
+                    const { stdout: logs } = await execAsync(`docker logs ${this.containerName} --tail 10`);
 
                     if(logs.includes(`Server listening at http://0.0.0.0:${this.port}`)) {
                         logger.info('Custom bot is ready!');
@@ -209,27 +210,26 @@ export default class CustomBotConnection extends Connection {
 
     /**
      * Stops the docker container for this custom bot.
-     * @return {string} - The output of the docker command.
+     * @return {Promise<string>} - The output of the docker command.
      */
-    stop() {
-        //TODO cant make this blocking
+    async stop() {
         logger.info(`Stopping custom bot container ${this.containerName}`);
 
-        return execSync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
+        return (await execAsync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
             env: this.composeEnv,
-        }).toString();
+        })).stdout;
     }
 
     /**
      * Shuts down and removes the docker container for this custom bot.
-     * @return {string} - The output of the docker command.
+     * @return {Promise<string>} - The output of the docker command.
      */
-    down() {
+    async down() {
         logger.info(`Shutting down and removing custom bot container ${this.containerName}`);
 
-        return execSync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi all --volumes`, {
+        return (await execAsync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi all --volumes`, {
             env: this.composeEnv,
-        }).toString();
+        })).stdout;
     }
 
     /**

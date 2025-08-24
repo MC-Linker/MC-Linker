@@ -23,10 +23,18 @@ import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import mojangson from 'mojangson';
 import { Authflow } from 'prismarine-auth';
+import util from 'util';
+import { exec } from 'child_process';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import { FilePath } from '../structures/Protocol.js';
 import HttpProtocol from '../structures/HttpProtocol.js';
 import FtpProtocol from '../structures/FtpProtocol.js';
+
+/**
+ * Promisified version of exec.
+ * @type {(arg1: string, options: ExecOptions=null) => Promise<{ stdout: string, stderr: string }>}
+ */
+export const execAsync = util.promisify(exec);
 
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxActionRows = 5;
@@ -60,7 +68,6 @@ const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && pr
 // const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
 //     console.log(res);
 // });
-
 
 /**
  * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.

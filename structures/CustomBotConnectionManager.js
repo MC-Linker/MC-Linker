@@ -52,7 +52,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
     async disconnect(connectionResolvable) {
         const connection = this.resolve(connectionResolvable);
 
-        connection.down();
+        await connection.down();
         await connection.removeDataFolder();
         return super.disconnect(connection);
     }
@@ -110,7 +110,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      * @return {Promise<Message>}
      */
     async sendCustomBotManager(interaction, customBotConnection) {
-        const isStarted = customBotConnection.isStarted();
+        const isStarted = await customBotConnection.isStarted();
 
         const placeholders = {
             port: customBotConnection.port,
@@ -155,7 +155,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 case 'custom_bot_stop':
                     await btnInteraction.deferReply({ flags: MessageFlags.Ephemeral });
 
-                    customBotConnection.stop();
+                    await customBotConnection.stop();
 
                     buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
                     mainMessage.components = createActionRows(buttons);
