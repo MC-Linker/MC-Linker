@@ -349,9 +349,12 @@ export async function replyOptions(interaction, options) {
     try {
         if(interaction instanceof Discord.Message) return await interaction.reply(options).catch(handleError);
         else if(interaction instanceof Discord.BaseInteraction && interaction.isRepliable()) {
-            if(interaction.deferred || interaction.replied) return await interaction.editReply(options).catch(handleError);
-            else if(interaction.isMessageComponent() || interaction.isModalSubmit()) return await interaction.update(options).catch(handleError);
-            else return await interaction.reply(options).catch(handleError);
+            if(interaction.deferred || interaction.replied)
+                return await interaction.editReply(options).catch(handleError);
+            else if(interaction.isMessageComponent() || interaction.isModalSubmit())
+                return (await interaction.update({ withResponse: true, ...options }).catch(handleError)).resource.message;
+            else
+                return (await interaction.reply({ withResponse: true, ...options }).catch(handleError)).resource.message;
         }
     }
     catch(err) {
