@@ -196,7 +196,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             });
             newMainMessageOptions.components = [];
             await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.delete);
-            await interaction.update(newMainMessageOptions);
+            await interaction.replyOptions(newMainMessageOptions);
         });
     }
 
