@@ -183,17 +183,28 @@ export const ph = {
     /**
      * Placeholders for a command.
      * @param {ApplicationCommand} command - The command to get placeholders for.
+     * @param {?string} [subcommand] - The subcommand to get placeholders for.
+     * @param {boolean} [prependCommandName=false] - Whether to prepend the command name to the placeholder keys.
      * @returns {{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}}
      */
-    command(command) {
+    command(command, subcommand = null, prependCommandName = false) {
         if(!(command instanceof Discord.ApplicationCommand)) return {};
 
-        return {
-            'command_mention': `</${command.name}:${command.id}>`,
-            'command_name': command.name,
-            'command_id': command.id,
-            'command_description': command.description,
-            'command_timestamp': Discord.time(new Date(command.createdTimestamp)),
+        const subcommandOption = subcommand ? command.options
+            ?.find(option => option.type === Discord.ApplicationCommandOptionType.Subcommand && option.name === subcommand) : undefined;
+
+        const commandName = subcommand ? `${command.name} ${subcommand}` : command.name;
+        const commandNameKey = subcommand ? `${command.name}_${subcommand}` : command.name;
+        const description = subcommandOption ? subcommandOption.description : command.description;
+
+        return prependCommandName ? {
+            [`${commandNameKey}_command_name`]: commandName,
+            [`${commandNameKey}_command_mention`]: `</${commandName}:${command.id}>`,
+            [`${commandNameKey}_command_description`]: description,
+        } : {
+            'command_name': commandName,
+            'command_mention': `</${commandName}:${command.id}>`,
+            'command_description': description,
         };
     },
 
@@ -236,17 +247,22 @@ export const ph = {
 
     /**
      * Placeholders for a command by name.
-     * @param {string} commandName - The name of the command to get placeholders for.
+     * @param {string} commandName - The name of the command to get placeholders for (space for subcommand).
      * @param {Client} client - The client to get the command from.
+     * @param {boolean} prependCommandName - Whether to prepend the command name to the placeholder keys.
      * @returns {Promise<{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}>}
      */
-    async commandName(commandName, client) {
+    async commandName(commandName, client, prependCommandName = false) {
         if(!(client instanceof Discord.Client)) return {};
 
-        const command = await fetchCommand(client.application.commands, commandName);
+        const splitCommandName = commandName.split(' ');
+
+        const rootCommandName = splitCommandName.shift();
+        const subcommandName = splitCommandName.length > 0 ? splitCommandName.join(' ') : null;
+        const command = await fetchCommand(client.application.commands, rootCommandName);
         if(!command) return {};
 
-        return this.command(command);
+        return this.command(command, subcommandName, prependCommandName);
     },
 
     /**
@@ -259,14 +275,8 @@ export const ph = {
 
         const commands = await client.application.commands.fetch();
 
-        const allPh = commands.map(cmd => prependName(this.command(cmd), cmd.name));
-        return Object.assign({}, ...allPh);
-
-        function prependName(ph, name) {
-            const newPh = {};
-            for(const [k, v] of Object.entries(ph)) newPh[`${name}_${k}`] = v;
-            return newPh;
-        }
+        const allPh = commands.map(cmd => this.command(cmd, null, true));
+        return Object.assign({}, ...allPh); //flatten
     },
 };
 

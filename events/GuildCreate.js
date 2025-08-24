@@ -17,6 +17,12 @@ export default class GuildCreate extends Event {
 
     async execute(client, guild) {
         logger.info(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
-        await sendToServer(guild, keys.main.success.invite, ph.emojisAndColors(), await ph.commandName('connect', client));
+        await sendToServer(
+            guild,
+            keys.main.success.invite,
+            ph.emojisAndColors(),
+            await ph.commandName('connect', client, true),
+            await ph.commandName('chatchannel add', client, true),
+        );
     }
 } 
