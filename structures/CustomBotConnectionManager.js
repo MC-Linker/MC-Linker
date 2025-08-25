@@ -106,7 +106,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         const message = await wizard.start();
 
         const collector = message.createMessageComponentCollector({
-            time: Wizard.DEFAULT_TIMEOUT,
+            time: 60_000 * 14,
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
         });
