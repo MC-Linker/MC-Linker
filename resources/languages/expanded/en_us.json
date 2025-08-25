@@ -187,7 +187,7 @@
               "fields": [
                 {
                   "name": "Get Started",
-                  "value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                  "value": "You'll now first need to create your own bot on the [developer portal](https://discord.com/developers/applications?new_application=true).\nEnter your desired name and then click on \"Create App\".\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                 }
               ]
             }
@@ -203,7 +203,8 @@
                   "name": "Enabling Intents",
                   "value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                 }
-              ]
+              ],
+              "image": "attachment://enable-all-intents.gif"
             }
           ]
         },
@@ -344,7 +345,8 @@
           "embeds": [
             {
               "title": "Missing Intents",
-              "description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+              "description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+              "image": "attachment://enable-all-intents.gif"
             }
           ],
           "console": "Failed to login to bot because of missing intents",

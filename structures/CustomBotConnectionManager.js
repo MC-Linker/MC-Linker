@@ -16,6 +16,7 @@ import Discord, {
     InteractionCollector,
     InteractionType,
     MessageFlags,
+    AttachmentBuilder,
 } from 'discord.js';
 import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
 import logger from '../utilities/logger.js';
@@ -82,11 +83,18 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      * @return {Promise<Message>}
      */
     async sendCustomBotCreateWizard(interaction) {
-        const wizard = new Wizard(this.client, interaction, [
-            keys.custom_bot.create.success.main,
-            keys.custom_bot.create.success.intents,
-            keys.custom_bot.create.success.details,
-        ].map(key => getReplyOptions(key, ph.emojisAndColors())), {
+        const intentsOptions = getReplyOptions(keys.custom_bot.create.success.intents, ph.emojisAndColors());
+        intentsOptions.files = [
+            new AttachmentBuilder('./resources/images/enable-all-intents.gif', { name: 'Enable All Intents' }),
+        ];
+
+        const wizardPages = [
+            getReplyOptions(keys.custom_bot.create.success.main, ph.emojisAndColors()),
+            intentsOptions,
+            getReplyOptions(keys.custom_bot.create.success.details, ph.emojisAndColors()),
+        ];
+
+        const wizard = new Wizard(this.client, interaction, wizardPages, {
             timeout: 60_000 * 14, // 15 minutes is max interaction timeout
         });
 
@@ -97,8 +105,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
         });
-        collector.on('collect', async btnInteraction =>
-            await btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal, ph.emojisAndColors())));
+        collector.on('collect', btnInteraction =>
+            btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal, ph.emojisAndColors())));
 
         return message;
     }
