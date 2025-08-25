@@ -204,7 +204,7 @@
                   "value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                 }
               ],
-              "image": "attachment://enable-all-intents.gif"
+              "image": "attachment://enable_all_intents.gif"
             }
           ]
         },
@@ -346,7 +346,7 @@
             {
               "title": "Missing Intents",
               "description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
-              "image": "attachment://enable-all-intents.gif"
+              "image": "attachment://enable_all_intents.gif"
             }
           ],
           "console": "Failed to login to bot because of missing intents",

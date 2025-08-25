@@ -58,7 +58,7 @@ export default class CustomizeTokenModal extends Component {
                 return await interaction.replyOptions({
                     ...noIntentsOptinons,
                     files: [
-                        new AttachmentBuilder('./resources/images/enable-all-intents.gif', { name: 'Enable All Intents' }),
+                        new AttachmentBuilder('./resources/images/enable_all_intents.gif', { name: 'enable_all_intents.gif' }),
                     ],
                 });
             }

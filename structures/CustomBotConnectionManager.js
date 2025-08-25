@@ -85,7 +85,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
     async sendCustomBotCreateWizard(interaction) {
         const intentsOptions = getReplyOptions(keys.custom_bot.create.success.intents, ph.emojisAndColors());
         intentsOptions.files = [
-            new AttachmentBuilder('./resources/images/enable-all-intents.gif', { name: 'Enable All Intents' }),
+            new AttachmentBuilder('./resources/images/enable_all_intents.gif', { name: 'enable_all_intents.gif' }),
         ];
 
         const wizardPages = [
