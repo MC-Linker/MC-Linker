@@ -191,7 +191,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "files": []
         },
         "intents": {
           "embeds": [
@@ -217,7 +218,8 @@
                   "name": "Enter Bot Details",
                   "value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                 }
-              ]
+              ],
+              "image": "attachment://reset_token.png"
             }
           ],
           "components": [
@@ -227,7 +229,8 @@
               "label": "Enter Token",
               "custom_id": "customize_enter_details"
             }
-          ]
+          ],
+          "files": []
         },
         "port": {
           "embeds": [
@@ -268,7 +271,8 @@
               "label": "Manage Bot",
               "custom_id": "customize_manage_bot"
             }
-          ]
+          ],
+          "files": []
         }
       },
       "token_modal": {
@@ -368,7 +372,8 @@
             "title": "Start Failed",
             "description": "Failed to start your bot! Please try again.\n\n*Need help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
           }
-        ]
+        ],
+        "files": []
       }
     },
     "warnings": {
