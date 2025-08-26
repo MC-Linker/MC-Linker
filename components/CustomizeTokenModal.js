@@ -48,11 +48,11 @@ export default class CustomizeTokenModal extends Component {
             //Enable privileged intents
             const guildMembersIntent = 1 << 15;
             const messageContentIntent = 1 << 19;
-            console.log(await testClient.rest.patch(Routes.currentApplication(), {
+            await testClient.rest.patch(Routes.currentApplication(), {
                 body: {
                     flags: guildMembersIntent | messageContentIntent,
                 },
-            }));
+            });
         }
         catch(err) {
             if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG') {
@@ -101,7 +101,6 @@ export default class CustomizeTokenModal extends Component {
         await exposeCustomBotPorts(...client.customBots.getPortRange());
 
         const wizard = new Wizard(client, interaction, [
-            keys.custom_bot.create.success.disable_public_bot,
             keys.custom_bot.create.success.port,
             keys.custom_bot.create.success.finish,
         ].map(key => getReplyOptions(key, { port: botPort, invite }, ph.emojisAndColors())), {

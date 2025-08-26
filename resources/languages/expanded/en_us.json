@@ -486,139 +486,141 @@
                 ]
             },
             "change_presence_modal": {
-                "type": "Modal",
-                "custom_id": "customize_set_presence",
-                "title": "Set Custom Presence",
-                "components": [
-                    {
-                        "type": 18,
-                        "label": "Status",
-                        "description": "The status of your bot.",
-                        "component": {
-                            "type": 3,
-                            "custom_id": "presence_status",
-                            "placeholder": "Select a status",
-                            "min_values": 1,
-                            "max_values": 1,
-                            "options": [
-                                {
-                                    "label": "Online",
-                                    "value": "online",
-                                    "description": "The bot is online and available.",
-                                    "emoji": {
-                                        "name": "🟢"
+                "type": 9,
+                "data": {
+                    "custom_id": "customize_set_presence",
+                    "title": "Set Custom Presence",
+                    "components": [
+                        {
+                            "type": 18,
+                            "label": "Status",
+                            "description": "The status of your bot.",
+                            "component": {
+                                "type": 3,
+                                "custom_id": "presence_status",
+                                "placeholder": "Select a status",
+                                "min_values": 1,
+                                "max_values": 1,
+                                "options": [
+                                    {
+                                        "label": "Online",
+                                        "value": "online",
+                                        "description": "The bot is online and available.",
+                                        "emoji": {
+                                            "name": "🟢"
+                                        }
+                                    },
+                                    {
+                                        "label": "Idle",
+                                        "value": "idle",
+                                        "description": "The bot is idle.",
+                                        "emoji": {
+                                            "name": "🌙"
+                                        }
+                                    },
+                                    {
+                                        "label": "Do Not Disturb",
+                                        "value": "dnd",
+                                        "description": "The bot is busy and should not be disturbed.",
+                                        "emoji": {
+                                            "name": "⛔"
+                                        }
+                                    },
+                                    {
+                                        "label": "Invisible",
+                                        "value": "invisible",
+                                        "description": "The bot appears offline.",
+                                        "emoji": {
+                                            "name": "⚫"
+                                        }
                                     }
-                                },
-                                {
-                                    "label": "Idle",
-                                    "value": "idle",
-                                    "description": "The bot is idle.",
-                                    "emoji": {
-                                        "name": "🌙"
+                                ]
+                            }
+                        },
+                        {
+                            "type": 18,
+                            "label": "Activity Type",
+                            "description": "The type of activity your bot is doing.",
+                            "component": {
+                                "type": 3,
+                                "custom_id": "activity_type",
+                                "placeholder": "Select an activity type",
+                                "min_values": 1,
+                                "max_values": 1,
+                                "options": [
+                                    {
+                                        "label": "Playing",
+                                        "value": "Playing",
+                                        "description": "e.g. Playing Minecraft",
+                                        "emoji": {
+                                            "name": "🎮"
+                                        }
+                                    },
+                                    {
+                                        "label": "Streaming",
+                                        "value": "Streaming",
+                                        "description": "e.g. Streaming on Twitch",
+                                        "emoji": {
+                                            "name": "📺"
+                                        }
+                                    },
+                                    {
+                                        "label": "Listening to",
+                                        "value": "Listening",
+                                        "description": "e.g. Listening to Spotify",
+                                        "emoji": {
+                                            "name": "🎧"
+                                        }
+                                    },
+                                    {
+                                        "label": "Watching",
+                                        "value": "Watching",
+                                        "description": "e.g. Watching a movie",
+                                        "emoji": {
+                                            "name": "👀"
+                                        }
+                                    },
+                                    {
+                                        "label": "Competing in",
+                                        "value": "Competing",
+                                        "description": "e.g. Competing in a tournament",
+                                        "emoji": {
+                                            "name": "🏆"
+                                        }
                                     }
-                                },
-                                {
-                                    "label": "Do Not Disturb",
-                                    "value": "dnd",
-                                    "description": "The bot is busy and should not be disturbed.",
-                                    "emoji": {
-                                        "name": "⛔"
-                                    }
-                                },
-                                {
-                                    "label": "Invisible",
-                                    "value": "invisible",
-                                    "description": "The bot appears offline.",
-                                    "emoji": {
-                                        "name": "⚫"
-                                    }
-                                }
-                            ]
+                                ]
+                            }
+                        },
+                        {
+                            "type": 18,
+                            "label": "Activity Name",
+                            "description": "The name of the activity your bot is doing.",
+                            "component": {
+                                "type": 4,
+                                "custom_id": "presence_name",
+                                "placeholder": "e.g. Minecraft",
+                                "min_length": 1,
+                                "max_length": 100,
+                                "required": true,
+                                "style": 1
+                            }
+                        },
+                        {
+                            "type": 18,
+                            "label": "Activity URL (only for \"Streaming\")",
+                            "description": "A valid Twitch or YouTube URL.",
+                            "component": {
+                                "type": 4,
+                                "custom_id": "presence_url",
+                                "placeholder": "https://twitch.tv/yourchannel",
+                                "min_length": 0,
+                                "max_length": 100,
+                                "required": false,
+                                "style": 1
+                            }
                         }
-                    },
-                    {
-                        "type": 18,
-                        "label": "Activity Type",
-                        "description": "The type of activity your bot is doing.",
-                        "component": {
-                            "type": 3,
-                            "custom_id": "activity_type",
-                            "placeholder": "Select an activity type",
-                            "min_values": 1,
-                            "max_values": 1,
-                            "options": [
-                                {
-                                    "label": "Playing",
-                                    "value": "Playing",
-                                    "description": "e.g. Playing Minecraft",
-                                    "emoji": {
-                                        "name": "🎮"
-                                    }
-                                },
-                                {
-                                    "label": "Streaming",
-                                    "value": "Streaming",
-                                    "description": "e.g. Streaming on Twitch",
-                                    "emoji": {
-                                        "name": "📺"
-                                    }
-                                },
-                                {
-                                    "label": "Listening to",
-                                    "value": "Listening",
-                                    "description": "e.g. Listening to Spotify",
-                                    "emoji": {
-                                        "name": "🎧"
-                                    }
-                                },
-                                {
-                                    "label": "Watching",
-                                    "value": "Watching",
-                                    "description": "e.g. Watching a movie",
-                                    "emoji": {
-                                        "name": "👀"
-                                    }
-                                },
-                                {
-                                    "label": "Competing in",
-                                    "value": "Competing",
-                                    "description": "e.g. Competing in a tournament",
-                                    "emoji": {
-                                        "name": "🏆"
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "type": 18,
-                        "label": "Activity Name",
-                        "description": "The name of the activity your bot is doing.",
-                        "component": {
-                            "type": 4,
-                            "custom_id": "presence_name",
-                            "placeholder": "e.g. Minecraft",
-                            "min_length": 1,
-                            "max_length": 100,
-                            "required": true,
-                            "style": 1
-                        }
-                    },
-                    {
-                        "type": 18,
-                        "label": "Activity URL (only for \"Streaming\")",
-                        "description": "A valid Twitch or YouTube URL.",
-                        "component": {
-                            "type": 4,
-                            "custom_id": "presence_url",
-                            "placeholder": "https://twitch.tv/yourchannel",
-                            "min_length": 0,
-                            "max_length": 100,
-                            "required": false,
-                            "style": 1
-                        }
-                    }
-                ]
+                    ]
+                }
             },
             "warnings": {
                 "invalid_confirmation": {

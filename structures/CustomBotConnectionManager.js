@@ -186,7 +186,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete_modal));
                     break;
                 case 'custom_bot_change_presence':
-                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.change_presence_modal));
+                    await btnInteraction.showModal(keys.custom_bot.custom_bot_manager.change_presence_modal);
                     break;
             }
         });
