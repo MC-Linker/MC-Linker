@@ -25,7 +25,7 @@ export default class CustomizeTokenModal extends Component {
         await interaction.replyTl(keys.custom_bot.create.step.logging_in);
 
         let invite;
-        const testClient = new Discord.Client();
+        const testClient = new Discord.Client({ intents: [] });
         try {
             await testClient.login(token);
             invite = testClient.generateInvite({
