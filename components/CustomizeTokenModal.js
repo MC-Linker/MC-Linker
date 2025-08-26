@@ -1,6 +1,6 @@
 import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
-import Discord, { GatewayIntentBits, OAuth2Scopes, PermissionsBitField, AttachmentBuilder } from 'discord.js';
+import Discord, { AttachmentBuilder, OAuth2Scopes, PermissionsBitField, Routes } from 'discord.js';
 import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import Wizard from '../structures/helpers/Wizard.js';
@@ -25,12 +25,7 @@ export default class CustomizeTokenModal extends Component {
         await interaction.replyTl(keys.custom_bot.create.step.logging_in);
 
         let invite;
-        const testClient = new Discord.Client({
-            intents: [
-                GatewayIntentBits.GuildMessages,
-                GatewayIntentBits.GuildMembers,
-            ],
-        });
+        const testClient = new Discord.Client();
         try {
             await testClient.login(token);
             invite = testClient.generateInvite({
@@ -48,6 +43,16 @@ export default class CustomizeTokenModal extends Component {
                     PermissionsBitField.Flags.AttachFiles,
                     PermissionsBitField.Flags.UseExternalEmojis,
                 ],
+            });
+
+            //Enable privileged intents and disable install url
+            const guildMembersIntent = 1 << 15;
+            const messageContentIntent = 1 << 19;
+            await testClient.rest.patch(Routes.user(), {
+                body: {
+                    custom_install_url: null,
+                    flags: guildMembersIntent | messageContentIntent,
+                },
             });
         }
         catch(err) {
@@ -106,6 +111,7 @@ export default class CustomizeTokenModal extends Component {
         await exposeCustomBotPorts(...client.customBots.getPortRange());
 
         const wizard = new Wizard(client, interaction, [
+            keys.custom_bot.create.success.public_bot,
             keys.custom_bot.create.success.port,
             keys.custom_bot.create.success.finish,
         ].map(key => getReplyOptions(key, { port: botPort, invite }, ph.emojisAndColors())), {

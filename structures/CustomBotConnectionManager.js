@@ -11,12 +11,12 @@ import {
     ph,
 } from '../utilities/messages.js';
 import Discord, {
+    AttachmentBuilder,
     BaseGuildTextChannel,
     ComponentType,
     InteractionCollector,
     InteractionType,
     MessageFlags,
-    AttachmentBuilder,
 } from 'discord.js';
 import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
 import logger from '../utilities/logger.js';

@@ -231,6 +231,20 @@
                         }
                     ]
                 },
+                "public_bot": {
+                    "embeds": [
+                        {
+                            "title": "Setting Up Your Custom MC-Linker",
+                            "fields": [
+                                {
+                                    "name": "Disabling Public Bot",
+                                    "value": "To prevent others from adding your bot to their servers, go to the **Bot** section and disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                }
+                            ]
+                        }
+                    ],
+                    "image": "attachment://reset_token.png"
+                },
                 "port": {
                     "embeds": [
                         {
