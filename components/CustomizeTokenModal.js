@@ -45,12 +45,11 @@ export default class CustomizeTokenModal extends Component {
                 ],
             });
 
-            //Enable privileged intents and disable install url
+            //Enable privileged intents
             const guildMembersIntent = 1 << 15;
             const messageContentIntent = 1 << 19;
             console.log(await testClient.rest.patch(Routes.currentApplication(), {
                 body: {
-                    custom_install_url: null,
                     flags: guildMembersIntent | messageContentIntent,
                 },
             }));
@@ -62,15 +61,6 @@ export default class CustomizeTokenModal extends Component {
                     ...invalidTokenOptions,
                     files: [
                         new AttachmentBuilder('./resources/images/custom_bot/reset_token.png', { name: 'invalid_token.gif' }),
-                    ],
-                });
-            }
-            else if(err.message === 'Used disallowed intents') {
-                const noIntentsOptions = getReplyOptions(keys.custom_bot.create.warnings.no_intents, ph.emojisAndColors());
-                return await interaction.replyOptions({
-                    ...noIntentsOptions,
-                    files: [
-                        new AttachmentBuilder('./resources/images/custom_bot/enable_all_intents.gif', { name: 'enable_all_intents.gif' }),
                     ],
                 });
             }

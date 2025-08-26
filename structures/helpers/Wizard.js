@@ -167,7 +167,7 @@ export default class Wizard {
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', async () => {
-            this.message = await this.message.fetch(); // Get the latest components
+            if(!this.message.flags.has(MessageFlags.Ephemeral)) this.message = await this.message.fetch(); // Get the latest components
             if(!this.message.flags.has(MessageFlags.Ephemeral)) await this.message.edit({ components: disableComponents(this.message.components) });
             else if(this.interaction.update) await this.interaction.update({ components: disableComponents(this.message.components) });
         });

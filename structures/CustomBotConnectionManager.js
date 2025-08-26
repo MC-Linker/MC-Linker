@@ -83,11 +83,6 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      * @return {Promise<Message>}
      */
     async sendCustomBotCreateWizard(interaction) {
-        const intentsOptions = getReplyOptions(keys.custom_bot.create.success.intents, ph.emojisAndColors());
-        intentsOptions.files = [
-            new AttachmentBuilder('./resources/images/custom_bot/enable_all_intents.gif', { name: 'enable_all_intents.gif' }),
-        ];
-
         const detailsOptions = getReplyOptions(keys.custom_bot.create.success.details, ph.emojisAndColors());
         detailsOptions.files = [
             new AttachmentBuilder('./resources/images/custom_bot/reset_token.png', { name: 'reset_token.png' }),
@@ -95,7 +90,6 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
         const wizardPages = [
             getReplyOptions(keys.custom_bot.create.success.main, ph.emojisAndColors()),
-            intentsOptions,
             detailsOptions,
         ];
 
