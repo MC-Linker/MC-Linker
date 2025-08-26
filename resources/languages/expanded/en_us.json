@@ -169,7 +169,7 @@
                 "embeds": [
                     {
                         "title": "Thanks for inviting MC Linker!",
-                        "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute %connect_command_mention% in Discord.\n• Run the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using %chatchannel_add_mention% or check out any of the other commands!\n\n*Tip: Manage permissions for commands by going to `Server Settings > Integrations > MC Linker`!*\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
+                        "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute %connect_command_mention% in Discord.\n• Run the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using %chatchannel_add_command_mention% or check out any of the other commands!\n\n*Tip: Manage permissions for commands by going to `Server Settings > Integrations > MC Linker`!*\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
                     }
                 ]
             }
@@ -187,11 +187,12 @@
                             "fields": [
                                 {
                                     "name": "Get Started",
-                                    "value": "You'll now first need to create your own bot on [this page](https://discord.com/developers/applications?new_application=true).\nYou can read more about creating your own bot application in [this article](https://discordjs.guide/preparations/setting-up-a-bot-application.html).\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                    "value": "You'll now first need to create your own bot on the [developer portal](https://discord.com/developers/applications?new_application=true).\nEnter your desired name and then click on \"Create App\".\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "files": []
                 },
                 "intents": {
                     "embeds": [
@@ -203,7 +204,8 @@
                                     "name": "Enabling Intents",
                                     "value": "Move to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
-                            ]
+                            ],
+                            "image": "attachment://enable_all_intents.gif"
                         }
                     ]
                 },
@@ -216,7 +218,8 @@
                                     "name": "Enter Bot Details",
                                     "value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
-                            ]
+                            ],
+                            "image": "attachment://reset_token.png"
                         }
                     ],
                     "components": [
@@ -267,7 +270,8 @@
                             "label": "Manage Bot",
                             "custom_id": "customize_manage_bot"
                         }
-                    ]
+                    ],
+                    "files": []
                 }
             },
             "token_modal": {
@@ -295,7 +299,8 @@
                             "description": "%emoji_step% *Logging into your bot...*"
                         }
                     ],
-                    "components": []
+                    "components": [],
+                    "files": []
                 },
                 "building": {
                     "embeds": [
@@ -344,7 +349,8 @@
                     "embeds": [
                         {
                             "title": "Missing Intents",
-                            "description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                            "description": "**Please check your intents again!**\n\nMove to the **Bot** section of the Developer Portal. There, scroll down to the **Privileged Gateway Intents** subsection and enable both the **Server Members Intent** and the **Message Content Intent**.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*",
+                            "image": "attachment://enable_all_intents.gif"
                         }
                     ],
                     "console": "Failed to login to bot because of missing intents",
