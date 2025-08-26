@@ -101,7 +101,7 @@ export default class CustomizeTokenModal extends Component {
         await exposeCustomBotPorts(...client.customBots.getPortRange());
 
         const wizard = new Wizard(client, interaction, [
-            keys.custom_bot.create.success.public_bot,
+            keys.custom_bot.create.success.disable_public_bot,
             keys.custom_bot.create.success.port,
             keys.custom_bot.create.success.finish,
         ].map(key => getReplyOptions(key, { port: botPort, invite }, ph.emojisAndColors())), {

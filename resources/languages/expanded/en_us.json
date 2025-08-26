@@ -194,7 +194,7 @@
                     ],
                     "files": []
                 },
-                "public_bot": {
+                "disable_public_bot": {
                     "embeds": [
                         {
                             "title": "Setting Up Your Custom MC-Linker",
