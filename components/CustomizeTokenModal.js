@@ -25,7 +25,7 @@ export default class CustomizeTokenModal extends Component {
         await interaction.replyTl(keys.custom_bot.create.step.logging_in);
 
         let invite;
-        const testClient = new Discord.Client();
+        const testClient = new Discord.Client({ intents: [] });
         try {
             await testClient.login(token);
             invite = testClient.generateInvite({
@@ -48,12 +48,12 @@ export default class CustomizeTokenModal extends Component {
             //Enable privileged intents and disable install url
             const guildMembersIntent = 1 << 15;
             const messageContentIntent = 1 << 19;
-            await testClient.rest.patch(Routes.user(), {
+            console.log(await testClient.rest.patch(Routes.currentApplication(), {
                 body: {
                     custom_install_url: null,
                     flags: guildMembersIntent | messageContentIntent,
                 },
-            });
+            }));
         }
         catch(err) {
             if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG') {
