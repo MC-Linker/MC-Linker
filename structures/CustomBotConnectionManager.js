@@ -16,6 +16,7 @@ import Discord, {
     InteractionCollector,
     InteractionType,
     MessageFlags,
+    AttachmentBuilder,
 } from 'discord.js';
 import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
 import logger from '../utilities/logger.js';
@@ -82,12 +83,23 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      * @return {Promise<Message>}
      */
     async sendCustomBotCreateWizard(interaction) {
-        const wizard = new Wizard(this.client, interaction, [
-            keys.custom_bot.create.success.main,
-            keys.custom_bot.create.success.intents,
-            keys.custom_bot.create.success.public_bot,
-            keys.custom_bot.create.success.details,
-        ].map(key => getReplyOptions(key, ph.emojisAndColors())), {
+        const intentsOptions = getReplyOptions(keys.custom_bot.create.success.intents, ph.emojisAndColors());
+        intentsOptions.files = [
+            new AttachmentBuilder('./resources/images/custom_bot/enable_all_intents.gif', { name: 'enable_all_intents.gif' }),
+        ];
+
+        const detailsOptions = getReplyOptions(keys.custom_bot.create.success.details, ph.emojisAndColors());
+        detailsOptions.files = [
+            new AttachmentBuilder('./resources/images/custom_bot/reset_token.png', { name: 'reset_token.png' }),
+        ];
+
+        const wizardPages = [
+            getReplyOptions(keys.custom_bot.create.success.main, ph.emojisAndColors()),
+            intentsOptions,
+            detailsOptions,
+        ];
+
+        const wizard = new Wizard(this.client, interaction, wizardPages, {
             timeout: 60_000 * 14, // 15 minutes is max interaction timeout
         });
 
@@ -98,8 +110,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
         });
-        collector.on('collect', async btnInteraction =>
-            await btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal, ph.emojisAndColors())));
+        collector.on('collect', btnInteraction =>
+            btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal, ph.emojisAndColors())));
 
         return message;
     }
@@ -135,7 +147,6 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             time: 60_000 * 14,
             componentType: ComponentType.Button,
         });
-
         buttonCollector.on('collect', async btnInteraction => {
             btnInteraction = addTranslatedResponses(btnInteraction);
 
@@ -185,7 +196,6 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             interactionType: InteractionType.ModalSubmit,
             message,
         });
-
         modalCollector.on('collect', async modalInteraction => {
             if(modalInteraction.customId === 'customize_confirm_delete') {
                 modalInteraction = addTranslatedResponses(modalInteraction);

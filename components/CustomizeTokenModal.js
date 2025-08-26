@@ -1,6 +1,6 @@
 import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
-import Discord, { GatewayIntentBits, OAuth2Scopes, PermissionsBitField } from 'discord.js';
+import Discord, { GatewayIntentBits, OAuth2Scopes, PermissionsBitField, AttachmentBuilder } from 'discord.js';
 import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import Wizard from '../structures/helpers/Wizard.js';
@@ -51,10 +51,24 @@ export default class CustomizeTokenModal extends Component {
             });
         }
         catch(err) {
-            if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG')
-                return await interaction.replyTl(keys.custom_bot.create.warnings.invalid_token);
-            else if(err.message === 'Used disallowed intents')
-                return await interaction.replyTl(keys.custom_bot.create.warnings.no_intents);
+            if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG') {
+                const invalidTokenOptions = getReplyOptions(keys.custom_bot.create.warnings.invalid_token, ph.emojisAndColors());
+                return await interaction.replyOptions({
+                    ...invalidTokenOptions,
+                    files: [
+                        new AttachmentBuilder('./resources/images/custom_bot/reset_token.png', { name: 'invalid_token.gif' }),
+                    ],
+                });
+            }
+            else if(err.message === 'Used disallowed intents') {
+                const noIntentsOptions = getReplyOptions(keys.custom_bot.create.warnings.no_intents, ph.emojisAndColors());
+                return await interaction.replyOptions({
+                    ...noIntentsOptions,
+                    files: [
+                        new AttachmentBuilder('./resources/images/custom_bot/enable_all_intents.gif', { name: 'enable_all_intents.gif' }),
+                    ],
+                });
+            }
             else throw err; // Rethrow other errors
         }
         finally {
