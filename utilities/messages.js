@@ -580,6 +580,10 @@ export function getComponent(key, ...placeholders) {
             if(component.label) componentBuilder.setLabel(component.label);
 
             break;
+        case 18: // Discord.ComponentType.Label
+            componentBuilder = component; // Currently no builder for labels, so return the raw component
+            componentBuilder.toJSON = () => component; // Ensure the raw component is returned when serializing
+            break;
     }
 
     return componentBuilder;

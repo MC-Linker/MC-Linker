@@ -61,8 +61,7 @@ export default class CustomizeTokenModal extends Component {
             await testClient.destroy();
         }
 
-        //TODO For linked roles they'll have to add endpoints in the portal and provide the secret
-
+        //TODO For linked roles they'll have to add endpoints in the portal and provide the secreta
 
         const botPort = client.customBots.getNewAvailablePort();
 
