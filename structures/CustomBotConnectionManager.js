@@ -88,8 +88,14 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             new AttachmentBuilder('./resources/images/custom_bot/reset_token.png', { name: 'reset_token.png' }),
         ];
 
+        const disablePublicOptions = getReplyOptions(keys.custom_bot.create.success.disable_public_bot, ph.emojisAndColors());
+        disablePublicOptions.files = [
+            new AttachmentBuilder('./resources/images/custom_bot/disable_public_bot.gif', { name: 'disable_public_bot.gif' }),
+        ];
+
         const wizardPages = [
             getReplyOptions(keys.custom_bot.create.success.main, ph.emojisAndColors()),
+            disablePublicOptions,
             detailsOptions,
         ];
 

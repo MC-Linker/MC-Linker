@@ -194,6 +194,20 @@
                     ],
                     "files": []
                 },
+                "public_bot": {
+                    "embeds": [
+                        {
+                            "title": "Setting Up Your Custom MC-Linker",
+                            "fields": [
+                                {
+                                    "name": "Disabling Public Bot",
+                                    "value": "To prevent others from adding your bot to their servers follow these steps:\n* In the **Installation** section, set \"Install Link\" to \"None\".\n* In the **Bot** section, disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                }
+                            ]
+                        }
+                    ],
+                    "image": "attachment://disable_public_bot.gif"
+                },
                 "details": {
                     "embeds": [
                         {
@@ -215,20 +229,6 @@
                             "custom_id": "customize_enter_details"
                         }
                     ]
-                },
-                "public_bot": {
-                    "embeds": [
-                        {
-                            "title": "Setting Up Your Custom MC-Linker",
-                            "fields": [
-                                {
-                                    "name": "Disabling Public Bot",
-                                    "value": "To prevent others from adding your bot to their servers, go to the **Bot** section and disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
-                                }
-                            ]
-                        }
-                    ],
-                    "image": "attachment://reset_token.png"
                 },
                 "port": {
                     "embeds": [
