@@ -11,6 +11,7 @@ import {
     ph,
 } from '../utilities/messages.js';
 import Discord, {
+    ActionRowBuilder,
     AttachmentBuilder,
     BaseGuildTextChannel,
     ComponentType,
@@ -132,14 +133,15 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         };
 
         const mainMessage = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), placeholders);
-        const buttons = [
-            keys.custom_bot.custom_bot_manager.buttons.delete,
+        const buttonsRow1 = [keys.custom_bot.custom_bot_manager.buttons.delete]
+            .map(c => getComponent(c, placeholders));
+        const buttonsRow2 = [
             keys.custom_bot.custom_bot_manager.buttons.invite,
             keys.custom_bot.custom_bot_manager.buttons.change_presence,
-        ].map(x => getComponent(x, placeholders));
-        if(isStarted) buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
-        else buttons.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-        mainMessage.components = createActionRows(buttons);
+        ].map(c => getComponent(c, placeholders));
+        if(isStarted) buttonsRow1.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
+        else buttonsRow1.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
+        mainMessage.components = [buttonsRow1, buttonsRow2].map(b => new ActionRowBuilder().addComponents(b));
 
         const message = await interaction.replyOptions(mainMessage);
 
@@ -157,8 +159,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     try {
                         await customBotConnection.start();
 
-                        buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
-                        mainMessage.components = createActionRows(buttons);
+                        buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
+                        mainMessage.components = createActionRows(buttonsRow1);
                         mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.started;
                         await interaction.replyOptions(mainMessage);
 
@@ -174,8 +176,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
                     await customBotConnection.stop();
 
-                    buttons.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-                    mainMessage.components = createActionRows(buttons);
+                    buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
+                    mainMessage.components = createActionRows(buttonsRow1);
                     mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
                     await interaction.replyOptions(mainMessage);
 
