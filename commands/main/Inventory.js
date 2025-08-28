@@ -8,6 +8,7 @@ import Pagination from '../../structures/helpers/Pagination.js';
 import {
     drawMinecraftNumber,
     getLivePlayerNbt,
+    getMinecraftAvatarURL,
     MinecraftDataVersion,
     stringifyMinecraftJson,
     wrapText,
@@ -349,7 +350,7 @@ export default class Inventory extends Command {
                     count: item.count ?? item.Count,
                     max_count: itemStats?.stackSize ?? 64,
                     username: username,
-                    avatar: `https://minotar.net/helm/${username}/64.png`,
+                    avatar: getMinecraftAvatarURL(username),
                 },
                 ph.emojisAndColors(),
             );

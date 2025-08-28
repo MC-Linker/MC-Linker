@@ -75,8 +75,8 @@ const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && pr
  * @returns {Promise<string>} - The url of the avatar.
  */
 export async function getMinecraftAvatarURL(username) {
-    const url = `https://minotar.net/helm/${username}/64.png?rnd=${Math.random()}`; //Random query to prevent caching
-    //fetch the url to check if the user exists
+    const url = `https://minotar.net/helm/${username}?rnd=${Math.random()}`; //Random query to prevent caching
+    //TODO check if needed, fetch the url to check if the user exists
     try {
         const res = await fetch(url);
         //If the user doesn't exist, return steve
