@@ -3,7 +3,7 @@ import Canvas from 'skia-canvas';
 import { addPh, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import logger from '../utilities/logger.js';
-import { ActivityType } from 'discord.js';
+import { ActivityType, Events } from 'discord.js';
 
 /**
  * Handles the Discord ready event for the MC-Linker bot.
@@ -12,7 +12,7 @@ import { ActivityType } from 'discord.js';
 export default class ClientReady extends Event {
     constructor() {
         super({
-            name: 'ready',
+            name: Events.ClientReady,
             once: true,
         });
     }

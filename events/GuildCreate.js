@@ -3,6 +3,7 @@ import { addPh, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { sendToServer } from '../utilities/utils.js';
 import logger from '../utilities/logger.js';
+import { Events } from 'discord.js';
 
 /**
  * Handles the Discord guildCreate event for the MC-Linker bot.
@@ -11,7 +12,7 @@ import logger from '../utilities/logger.js';
 export default class GuildCreate extends Event {
     constructor() {
         super({
-            name: 'guildCreate',
+            name: Events.GuildCreate,
         });
     }
 

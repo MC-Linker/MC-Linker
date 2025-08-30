@@ -1,4 +1,5 @@
 import Event from '../structures/Event.js';
+import { Events } from 'discord.js';
 
 /**
  * Handles the Discord entitlementUpdate event for the MC-Linker bot.
@@ -8,7 +9,7 @@ import Event from '../structures/Event.js';
 export default class EntitlementUpdate extends Event {
     constructor() {
         super({
-            name: 'entitlementUpdate',
+            name: Events.EntitlementUpdate,
         });
     }
 

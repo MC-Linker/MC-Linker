@@ -4,7 +4,7 @@ import { getArgs } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
 import logger from '../utilities/logger.js';
-import { ComponentType, InteractionType } from 'discord.js';
+import { ComponentType, Events, InteractionType } from 'discord.js';
 
 /**
  * Handles the Discord interactionCreate event for the MC-Linker bot.
@@ -13,7 +13,7 @@ import { ComponentType, InteractionType } from 'discord.js';
 export default class InteractionCreate extends Event {
     constructor() {
         super({
-            name: 'interactionCreate',
+            name: Events.InteractionCreate,
         });
     }
 

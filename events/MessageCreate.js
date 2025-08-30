@@ -3,6 +3,7 @@ import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import ServerConnection from '../structures/ServerConnection.js';
+import { Events } from 'discord.js';
 
 /**
  * Handles the Discord messageCreate event for the MC-Linker bot.
@@ -11,7 +12,7 @@ import ServerConnection from '../structures/ServerConnection.js';
 export default class MessageCreate extends Event {
     constructor() {
         super({
-            name: 'messageCreate',
+            name: Events.MessageCreate,
         });
     }
 

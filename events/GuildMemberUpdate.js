@@ -1,4 +1,5 @@
 import Event from '../structures/Event.js';
+import { Events } from 'discord.js';
 
 /**
  * Handles the Discord guildMemberUpdate event for the MC-Linker bot.
@@ -7,7 +8,7 @@ import Event from '../structures/Event.js';
 export default class GuildMemberUpdate extends Event {
     constructor() {
         super({
-            name: 'guildMemberUpdate',
+            name: Events.GuildMemberUpdate,
         });
     }
 

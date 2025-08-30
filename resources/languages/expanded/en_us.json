@@ -346,6 +346,16 @@
                 }
             }
         },
+        "success": {
+            "subscribed": {
+                "embeds": [
+                    {
+                        "title": "Subscription Successful",
+                        "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.\n\nUse %customize_command_mention% to get started!"
+                    }
+                ]
+            }
+        },
         "errors": {
             "start_failed": {
                 "embeds": [
