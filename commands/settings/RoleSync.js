@@ -27,6 +27,10 @@ export default class RoleSync extends AutocompleteCommand {
         const commandResponse = [];
         for(const group of response.data.groups) {
             if(!group.includes(interaction.options.getFocused())) continue;
+
+            // Only push if not already synced
+            if(server.syncedRoles?.some(r => r.name === group && r.isGroup === true)) continue;
+
             commandResponse.push({
                 name: `${group} (Group)`,
                 value: `${group} group`,
@@ -34,6 +38,10 @@ export default class RoleSync extends AutocompleteCommand {
         }
         for(const team of response.data.teams) {
             if(!team.includes(interaction.options.getFocused())) continue;
+
+            // Only push if not already synced
+            if(server.syncedRoles?.some(r => r.name === team && r.isGroup === false)) continue;
+
             commandResponse.push({
                 name: `${team} (Team)`,
                 value: `${team} team`,
@@ -55,6 +63,11 @@ export default class RoleSync extends AutocompleteCommand {
             const isGroup = args[2].split(' ')[1] === 'group'; //If nothing is specified, default to team
 
             if(!role.editable) return interaction.replyTl(keys.commands.rolesync.errors.not_editable, { role });
+
+            if(server.syncedRoles?.some(r => r.id === role.id))
+                return interaction.replyTl(keys.commands.rolesync.errors.role_already_synced);
+            else if(server.syncedRoles?.some(r => r.name === name && r.isGroup === isGroup))
+                return interaction.replyTl(keys.commands.rolesync.errors.team_group_already_synced);
 
             // Fetch all members to ensure their roles are cached
             await interaction.guild.members.fetch();

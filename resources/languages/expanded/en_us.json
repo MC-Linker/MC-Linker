@@ -2212,6 +2212,24 @@
                         }
                     ],
                     "console": "Luckperms not loaded"
+                },
+                "role_already_synced": {
+                    "embeds": [
+                        {
+                            "title": "Role Already Synced",
+                            "description": "The specified role is already synced."
+                        }
+                    ],
+                    "console": "Role already synced"
+                },
+                "team_group_already_synced": {
+                    "embeds": [
+                        {
+                            "title": "Team/Group Already Synced",
+                            "description": "The specified team/group is already synced."
+                        }
+                    ],
+                    "console": "Team/Group already synced"
                 }
             },
             "success": {
