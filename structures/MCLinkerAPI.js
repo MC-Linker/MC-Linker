@@ -487,16 +487,19 @@ export default class MCLinkerAPI extends EventEmitter {
      * @private
      */
     async chat(data, server) {
-        const { message, channels, type, player } = data;
+        const { message, type, player } = data;
         const guildId = server.id;
         const authorURL = await getMinecraftAvatarURL(player);
 
-        const argPlaceholder = { username: player, author_url: authorURL, message };
+        const channels = server.chatChannels.filter(c => c.types.includes(type));
+        if(channels.length === 0) return; //No channels to send to
 
+        const argPlaceholder = { username: player, author_url: authorURL, message };
         //Check whether command is blocked
         if(['player_command', 'console_command', 'block_command'].includes(type)) {
             const commandName = message.replace(/^\//, '').split(/\s+/)[0];
             if(server.settings.isDisabled('chatCommands', commandName)) return;
+
         }
 
         const guild = await this.client.guilds.fetch(guildId);
@@ -655,7 +658,16 @@ export default class MCLinkerAPI extends EventEmitter {
      */
     async updateStatsChannel(data, server) {
         // event can be one of: 'online', 'offline', 'members'
-        const { channels, event } = data;
+        const { event } = data;
+
+        const eventToTypeMap = {
+            'online': 'status',
+            'offline': 'status',
+            'members': 'member-counter',
+        };
+
+        const channels = server.statChannels.filter(c => c.type === eventToTypeMap[event]);
+        if(channels.length === 0) return; //No channels to update
 
         const guild = await this.client.guilds.fetch(server.id);
         for(const channel of channels) {
