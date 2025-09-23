@@ -23,7 +23,7 @@ export default {
         }],
         statChannels: [{
             _id: { type: String },
-            type: { type: String, enum: ['online', 'max', 'members'] },
+            type: { type: String, enum: ['member-counter', 'status'] },
             names: {
                 online: String,
                 offline: String,
