@@ -483,7 +483,6 @@ export function getComponent(key, ...placeholders) {
             if(component.url) componentBuilder.setURL(component.url);
             if(component.label) componentBuilder.setLabel(component.label);
             if(component.sku_id) componentBuilder.setSKUId(component.sku_id);
-
             break;
         case Discord.ComponentType.StringSelect:
             if(!component.options || !component.custom_id) return null;
@@ -510,7 +509,6 @@ export function getComponent(key, ...placeholders) {
 
                 componentBuilder.addOptions(optionBuilder);
             }
-
             break;
         case Discord.ComponentType.RoleSelect:
             if(!component.custom_id) return null;
@@ -523,7 +521,6 @@ export function getComponent(key, ...placeholders) {
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultRoles(component.default_values.map(value => value.id));
-
             break;
         case Discord.ComponentType.ChannelSelect:
             if(!component.custom_id) return null;
@@ -536,7 +533,6 @@ export function getComponent(key, ...placeholders) {
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultChannels(component.default_values.map(value => value.id));
-
             break;
         case Discord.ComponentType.UserSelect:
             if(!component.custom_id) return null;
@@ -549,7 +545,6 @@ export function getComponent(key, ...placeholders) {
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultUsers(component.default_values.map(value => value.id));
-
             break;
         case Discord.ComponentType.MentionableSelect:
             if(!component.custom_id) return null;
@@ -562,7 +557,6 @@ export function getComponent(key, ...placeholders) {
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultValues(component.default_values);
-
             break;
         case Discord.ComponentType.TextInput:
             if(!component.style || !component.custom_id || !component.label) return null;
@@ -570,7 +564,6 @@ export function getComponent(key, ...placeholders) {
             componentBuilder = new Discord.TextInputBuilder()
                 .setStyle(Discord.TextInputStyle[component.style])
                 .setCustomId(component.custom_id)
-                .setLabel(component.label)
                 .setRequired(component.required ?? false);
 
             if(component.max_length) componentBuilder.setMaxLength(component.max_length);
@@ -578,11 +571,32 @@ export function getComponent(key, ...placeholders) {
             if(component.value) componentBuilder.setValue(component.value);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.label) componentBuilder.setLabel(component.label);
-
             break;
-        case 18: // Discord.ComponentType.Label
-            componentBuilder = component; // Currently no builder for labels, so return the raw component
-            componentBuilder.toJSON = () => component; // Ensure the raw component is returned when serializing
+        case Discord.ComponentType.Label:
+            if(!component.label || !component.description) return null;
+
+            componentBuilder = new Discord.LabelBuilder()
+                .setLabel(component.label)
+                .setDescription(component.description);
+
+            const labelComponent = getComponent(component.component);
+            switch(labelComponent?.data.type) {
+                case ComponentType.ChannelSelect:
+                    componentBuilder.setChannelSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.RoleSelect:
+                    componentBuilder.setRoleSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.UserSelect:
+                    componentBuilder.setUserSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.MentionableSelect:
+                    componentBuilder.setMentionableSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.TextInput:
+                    componentBuilder.setTextInputComponent(labelComponent);
+                    break;
+            }
             break;
     }
 
@@ -635,37 +649,36 @@ export function getCommand(key) {
             commandBuilder = new Discord.SlashCommandBuilder()
                 .setName(key.name)
                 .setDescription(key.description)
-                .setDMPermission(key.dm_permission);
+                .setContexts(key.contexts?.map(c => Discord.InteractionContextType[c]))
+                .setIntegrationTypes(key.integration_types.map(i => Discord.ApplicationIntegrationType[i]));
 
             if(key.default_member_permissions) {
                 const permissionBits = new Discord.PermissionsBitField();
-                for(const permission of key.default_member_permissions) {
+                for(const permission of key.default_member_permissions)
                     permissionBits.add(Discord.PermissionFlagsBits[permission]);
-                }
 
                 commandBuilder.setDefaultMemberPermissions(permissionBits.bitfield);
             }
 
 
-            for(const option of key.options ?? []) {
+            for(const option of key.options ?? [])
                 addSlashCommandOption(commandBuilder, option);
-            }
 
             break;
         case Discord.ApplicationCommandType.Message:
         case Discord.ApplicationCommandType.User:
-            if(!key.description) return null;
+            if(!key.name || key.description) return null;
 
             commandBuilder = new Discord.ContextMenuCommandBuilder()
                 .setName(key.name)
                 .setType(Discord.ApplicationCommandType[key.type])
-                .setDMPermission(key.dm_permission);
+                .setContexts(key.contexts?.map(c => Discord.InteractionContextType[c]))
+                .setIntegrationTypes(key.integration_types.map(i => Discord.ApplicationIntegrationType[i]));
 
             if(key.default_member_permissions) {
                 const permissionBits = new Discord.PermissionsBitField();
-                for(const permission of key.default_member_permissions) {
+                for(const permission of key.default_member_permissions)
                     permissionBits.add(Discord.PermissionFlagsBits[permission]);
-                }
 
                 commandBuilder.setDefaultMemberPermissions(permissionBits.bitfield);
             }
@@ -695,7 +708,7 @@ export function getModal(key, ...placeholders) {
         .setTitle(key.title)
         .setCustomId(key.custom_id);
 
-    modalBuilder.setComponents(getActionRows(key, ...placeholders));
+    modalBuilder.setLabelComponents(key.components.map(c => getComponent(c, ...placeholders)));
     return modalBuilder;
 }
 

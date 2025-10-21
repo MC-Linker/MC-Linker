@@ -1,7 +1,5 @@
-import { AutoPoster } from 'topgg-autoposter';
 import MCLinker from './structures/MCLinker.js';
 import logger from './utilities/logger.js';
-import keys, { getLanguageKey } from './utilities/keys.js';
 
 logger.info(
     '\x1b[1m' +     // Bold (1)
@@ -34,12 +32,6 @@ String.prototype.toTitleCase = function(c, n) {
     else t = this;
     return t.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()).trim();
 };
-
-if(process.env.TOPGG_TOKEN) {
-    const poster = AutoPoster(process.env.TOPGG_TOKEN, client);
-    poster.on('posted', () => {});
-    poster.on('error', () => logger.error(getLanguageKey(keys.main.errors.could_not_post_stats.console)));
-}
 
 await client.login(process.env.TOKEN);
 

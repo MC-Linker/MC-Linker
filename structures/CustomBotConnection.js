@@ -3,6 +3,7 @@ import logger from '../utilities/logger.js';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import { execAsync } from '../utilities/utils.js';
+import crypto from 'crypto';
 
 export default class CustomBotConnection extends Connection {
     /**
@@ -41,6 +42,12 @@ export default class CustomBotConnection extends Connection {
          * @type {string}
          */
         this.ownerId = data.ownerId;
+
+        /**
+         * The communication token used to authenticate with the custom bot.
+         * @type {string}
+         */
+        this.communicationToken = crypto.randomBytes(32).toString('hex');
 
         /**
          * The name of the docker container for this custom bot.
@@ -94,6 +101,8 @@ export default class CustomBotConnection extends Connection {
             DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${this.ownerId}`,
             DATA_FOLDER: this.dataFolder,
             NODE_ENV: 'production',
+            CUSTOM_BOT: 'true',
+            COMMUNICATION_TOKEN: this.communicationToken,
         };
 
         const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
@@ -134,7 +143,6 @@ export default class CustomBotConnection extends Connection {
      */
     async build() {
         logger.info(`Building custom bot ${this.containerName}`);
-        //TODO unblock
         logger.info((await execAsync(`docker build . -t lianecx/${this.containerName}`)).stdout);
     }
 
@@ -230,6 +238,32 @@ export default class CustomBotConnection extends Connection {
         return (await execAsync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi all --volumes`, {
             env: this.composeEnv,
         })).stdout;
+    }
+
+    /**
+     * Sends a presence update to the custom bot via HTTP.
+     * @param {import('discord.js').PresenceData} presence - The presence data to set.
+     * @return {Promise<boolean>}
+     */
+    async setPresence(presence) {
+        return await this.communicate('presence', presence);
+    }
+
+    async communicate(path, data = {}, method = 'POST') {
+        const response = await fetch(`http://${this.containerName}:${this.port}/${path}`, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'x-communication-token': this.communicationToken,
+            },
+            body: JSON.stringify(data),
+        });
+
+        if(!response.ok) {
+            logger.error(response.error, `Failed to communicate with custom bot ${this.containerName} at path /${path}`);
+            return false;
+        }
+        else return true;
     }
 
     /**

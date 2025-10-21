@@ -279,14 +279,18 @@
                 "title": "Enter Token",
                 "components": [
                     {
-                        "type": "TextInput",
-                        "custom_id": "token",
+                        "type": "Label",
                         "label": "Bot Token",
-                        "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
-                        "required": true,
-                        "min_length": 20,
-                        "max_length": 100,
-                        "style": "Short"
+                        "description": "The Bot Token can be found in the Bot section of the Developer Portal.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "token",
+                            "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+                            "required": true,
+                            "min_length": 20,
+                            "max_length": 100,
+                            "style": "Short"
+                        }
                     }
                 ]
             },
@@ -476,36 +480,44 @@
                 "title": "Confirm Deletion",
                 "components": [
                     {
-                        "type": "TextInput",
-                        "custom_id": "confirm_delete",
-                        "label": "Type 'delete' to confirm",
-                        "placeholder": "delete",
-                        "required": true,
-                        "min_length": 6,
-                        "max_length": 6,
-                        "style": "Short"
+                        "type": "Label",
+                        "label": "Warning",
+                        "description": "Deleting your Custom MC Linker will stop the bot and delete all its data. This action is irreversible. To confirm, please type 'delete' in the field below.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "confirm_delete",
+                            "placeholder": "delete",
+                            "required": true,
+                            "min_length": 6,
+                            "max_length": 6,
+                            "style": "Short"
+                        }
                     },
                     {
-                        "type": "TextInput",
-                        "custom_id": "confirm_delete_reason",
-                        "label": "Reason for deletion (optional)",
-                        "placeholder": "It was just too good...",
-                        "required": false,
-                        "style": "Paragraph"
+                        "type": "Label",
+                        "label": "Reason for Deletion",
+                        "description": "Optionally, you can provide a reason for deleting your Custom MC Linker. This feedback helps us improve our service.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "confirm_delete_reason",
+                            "placeholder": "It was just too good...",
+                            "required": false,
+                            "style": "Paragraph"
+                        }
                     }
                 ]
             },
             "change_presence_modal": {
-                "type": 9,
+                "type": "Modal",
                 "custom_id": "customize_set_presence",
                 "title": "Set Custom Presence",
                 "components": [
                     {
-                        "type": 18,
+                        "type": "Label",
                         "label": "Status",
                         "description": "The status of your bot.",
                         "component": {
-                            "type": 3,
+                            "type": "StringSelect",
                             "custom_id": "presence_status",
                             "placeholder": "Select a status",
                             "min_values": 1,
@@ -515,43 +527,35 @@
                                     "label": "Online",
                                     "value": "online",
                                     "description": "The bot is online and available.",
-                                    "emoji": {
-                                        "name": "🟢"
-                                    }
+                                    "emoji": "🟢"
                                 },
                                 {
                                     "label": "Idle",
                                     "value": "idle",
                                     "description": "The bot is idle.",
-                                    "emoji": {
-                                        "name": "🌙"
-                                    }
+                                    "emoji": "🌙"
                                 },
                                 {
                                     "label": "Do Not Disturb",
                                     "value": "dnd",
                                     "description": "The bot is busy and should not be disturbed.",
-                                    "emoji": {
-                                        "name": "⛔"
-                                    }
+                                    "emoji": "⛔"
                                 },
                                 {
                                     "label": "Invisible",
                                     "value": "invisible",
                                     "description": "The bot appears offline.",
-                                    "emoji": {
-                                        "name": "⚫"
-                                    }
+                                    "emoji": "⚫"
                                 }
                             ]
                         }
                     },
                     {
-                        "type": 18,
+                        "type": "Label",
                         "label": "Activity Type",
                         "description": "The type of activity your bot is doing.",
                         "component": {
-                            "type": 3,
+                            "type": "StringSelect",
                             "custom_id": "activity_type",
                             "placeholder": "Select an activity type",
                             "min_values": 1,
@@ -561,71 +565,61 @@
                                     "label": "Playing",
                                     "value": "Playing",
                                     "description": "e.g. Playing Minecraft",
-                                    "emoji": {
-                                        "name": "🎮"
-                                    }
+                                    "emoji": "🎮"
                                 },
                                 {
                                     "label": "Streaming",
                                     "value": "Streaming",
                                     "description": "e.g. Streaming on Twitch",
-                                    "emoji": {
-                                        "name": "📺"
-                                    }
+                                    "emoji": "📺"
                                 },
                                 {
                                     "label": "Listening to",
                                     "value": "Listening",
                                     "description": "e.g. Listening to Spotify",
-                                    "emoji": {
-                                        "name": "🎧"
-                                    }
+                                    "emoji": "🎧"
                                 },
                                 {
                                     "label": "Watching",
                                     "value": "Watching",
                                     "description": "e.g. Watching a movie",
-                                    "emoji": {
-                                        "name": "👀"
-                                    }
+                                    "emoji": "👀"
                                 },
                                 {
                                     "label": "Competing in",
                                     "value": "Competing",
                                     "description": "e.g. Competing in a tournament",
-                                    "emoji": {
-                                        "name": "🏆"
-                                    }
+                                    "emoji": "🏆"
                                 }
                             ]
                         }
                     },
                     {
-                        "type": 18,
+                        "type": "Label",
                         "label": "Activity Name",
                         "description": "The name of the activity your bot is doing.",
                         "component": {
-                            "type": 4,
+                            "type": "TextInput",
                             "custom_id": "presence_name",
                             "placeholder": "e.g. Minecraft",
                             "min_length": 1,
                             "max_length": 100,
                             "required": true,
-                            "style": 1
+                            "style": "Short"
                         }
                     },
                     {
-                        "type": 18,
+                        "type": "Label",
                         "label": "Activity URL (only for \"Streaming\")",
                         "description": "A valid Twitch or YouTube URL.",
                         "component": {
-                            "type": 4,
+                            "type": "TextInput",
                             "custom_id": "presence_url",
                             "placeholder": "https://twitch.tv/yourchannel",
                             "min_length": 0,
                             "max_length": 100,
                             "required": false,
-                            "style": 1
+                            "style": "Short"
                         }
                     }
                 ]
@@ -753,13 +747,6 @@
                                     "value": "%command_long_description%\n\n**Usage**:\n%command_usage%"
                                 }
                             ]
-                        }
-                    ]
-                },
-                "disabled": {
-                    "embeds": [
-                        {
-                            "description": "You can find helpful information here.\n```diff\n- [COMMAND DISABLED]```"
                         }
                     ]
                 }

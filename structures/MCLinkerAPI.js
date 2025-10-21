@@ -62,13 +62,21 @@ export default class MCLinkerAPI extends EventEmitter {
 
     /**
      * The routes for the rest and ws api.
-     * @type {{handler: ((Object, ServerConnection) => ?RouteResponse|Promise<?RouteResponse>), endpoint: string, method: string, event: string, rateLimiter?: RateLimiterMemory|((Object) => ?RateLimiterMemory)}[]}
+     * @type {Object[]}
+     * @property {string} method
+     * @property {string} endpoint
+     * @property {string} event
+     * @property {boolean} requiresServer
+     * @property {boolean=false} customBot
+     * @property {(data: Object, server: ?ServerConnection) => ?RouteResponse|Promise<?RouteResponse>} handler
+     * @property {RateLimiterMemory|((data: Object) => ?RateLimiterMemory)} rateLimiter
      */
     routes = [
         {
             method: 'POST',
             endpoint: '/chat',
             event: 'chat',
+            requiresServer: true,
             // Direct method reference not possible because client is not loaded when routes are loaded
             handler: (data, server) => this.chat(data, server),
             rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
@@ -77,6 +85,7 @@ export default class MCLinkerAPI extends EventEmitter {
             method: 'POST',
             endpoint: '/update-stats-channels',
             event: 'update-stats-channels',
+            requiresServer: true,
             handler: (data, server) => this.updateStatsChannel(data, server),
             rateLimiter: data => data.event === 'members' ? this.rateLimiterMemberCounter : null,
         },
@@ -84,48 +93,63 @@ export default class MCLinkerAPI extends EventEmitter {
             method: 'POST',
             endpoint: '/add-synced-role-member',
             event: 'add-synced-role-member',
+            requiresServer: true,
             handler: (data, server) => this.addSyncedRoleMember(data, server),
         },
         {
             method: 'POST',
             endpoint: '/remove-synced-role-member',
             event: 'remove-synced-role-member',
+            requiresServer: true,
             handler: (data, server) => this.removeSyncedRoleMember(data, server),
         }, {
             method: 'POST',
             endpoint: '/remove-synced-role',
             event: 'remove-synced-role',
+            requiresServer: true,
             handler: (data, server) => this.removeSyncedRole(data, server),
         },
         {
             method: 'POST',
             endpoint: '/disconnect-force',
             event: 'disconnect-force',
+            requiresServer: true,
             handler: (data, server) => this.client.serverConnections.disconnect(server),
         },
         {
             method: 'POST',
             endpoint: '/has-required-role',
             event: 'has-required-role',
+            requiresServer: true,
             handler: (data, server) => this.hasRequiredRoleToJoin(data, server),
         },
         {
             method: 'POST',
             endpoint: '/verify-user',
             event: 'verify-user',
+            requiresServer: true,
             handler: data => this.verifyUser(data),
         },
         {
             method: 'POST',
             endpoint: '/invite-url',
             event: 'invite-url',
+            requiresServer: true,
             handler: (data, server) => this.getInviteUrl(data, server),
         },
         {
             method: 'GET',
             endpoint: '/version',
             event: 'version',
+            requiresServer: false,
             handler: () => { return { body: process.env.PLUGIN_VERSION }; },
+        },
+        {
+            method: 'POST',
+            endpoint: '/presence',
+            requiresServer: false,
+            customBot: true,
+            handler: (data, _) => this.client.user.setPresence(data),
         },
     ];
 
@@ -227,10 +251,16 @@ export default class MCLinkerAPI extends EventEmitter {
         }
 
         for(const route of this.routes) {
+            if(!route.method || !route.endpoint) continue;
+            if(route.customBot && process.env.CUSTOM_BOT !== 'true') return;
+
             this.fastify[route.method.toLowerCase()](route.endpoint, async (request, reply) => {
                 const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(request.body) : route.rateLimiter;
-                const server = await _getServerFastify(request, reply, this.client, rateLimiter);
-                if(!server && request.method !== 'GET') return;
+                const server = route.requiresServer ? await _getServerFastify(request, reply, this.client, rateLimiter) : null;
+                if(!server && route.requiresServer) return;
+
+                if(route.customBot && process.env.COMMUNICATION_TOKEN !== request.headers['x-communication-token'])
+                    return reply.status(401).send({ message: 'Unauthorized' });
 
                 const response = await route.handler(request.body, server);
                 reply.status(response?.status ?? 200).send(response?.body ?? {});
@@ -446,14 +476,15 @@ export default class MCLinkerAPI extends EventEmitter {
         }
 
         for(const route of this.routes) {
+            if(!route.event) continue;
             socket.on(route.event, async (data, callback) => {
                 logger.debug(`[Socket.IO] Received event ${route.event} with data: ${JSON.stringify(data)}`);
 
                 data = typeof data === 'string' ? JSON.parse(data) : {};
                 const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
-                const server = await getServerWebsocket(this.client, rateLimiter, callback);
+                const server = route.requiresServer ? await getServerWebsocket(this.client, rateLimiter, callback) : null;
                 logger.debug(`[Socket.IO] Server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
-                if(!server) return;
+                if(!server && route.requiresServer) return;
 
                 const response = await route.handler(data, server);
                 logger.debug(`[Socket.IO] Response for event ${route.event}: ${JSON.stringify(response)}`);

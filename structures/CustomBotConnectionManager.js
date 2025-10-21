@@ -188,7 +188,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete_modal));
                     break;
                 case 'custom_bot_change_presence':
-                    await btnInteraction.showModal(keys.custom_bot.custom_bot_manager.change_presence_modal);
+                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.change_presence_modal));
                     break;
             }
         });
@@ -225,14 +225,19 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 logger.debug(modalInteraction.fields, modalInteraction);
                 await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
 
+                /** @type {import('discord.js').PresenceStatus} */
+                const status = modalInteraction.fields.getStringSelectValues('presence_status')[0];
+                const activityName = modalInteraction.fields.getTextInputValue('activity_name');
+                /** @type {import('discord.js').ActivityType} */
+                const activityType = modalInteraction.fields.getStringSelectValues('activity_type')[0];
+
+                /** @type {import('discord.js').PresenceData} */
                 const newPresence = {
+                    status,
                     activities: [],
-                    status: modalInteraction.fields.fields[0].components[0].value,
                 };
 
-                const activityName = modalInteraction.fields.getTextInputValue('activity_name');
                 if(activityName) {
-                    const activityType = modalInteraction.fields.fields[0].components[1].value;
                     newPresence.activities.push({
                         name: activityName,
                         type: activityType,
