@@ -559,7 +559,7 @@ export function getComponent(key, ...placeholders) {
             if(component.default_values) componentBuilder.setDefaultValues(component.default_values);
             break;
         case Discord.ComponentType.TextInput:
-            if(!component.style || !component.custom_id || !component.label) return null;
+            if(!component.style || !component.custom_id) return null;
 
             componentBuilder = new Discord.TextInputBuilder()
                 .setStyle(Discord.TextInputStyle[component.style])
@@ -570,7 +570,6 @@ export function getComponent(key, ...placeholders) {
             if(typeof component.min_length === 'number') componentBuilder.setMinLength(component.min_length);
             if(component.value) componentBuilder.setValue(component.value);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
-            if(component.label) componentBuilder.setLabel(component.label);
             break;
         case Discord.ComponentType.Label:
             if(!component.label || !component.description) return null;
