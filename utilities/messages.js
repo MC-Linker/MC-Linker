@@ -643,13 +643,12 @@ export function getCommand(key) {
     let commandBuilder;
     switch(Discord.ApplicationCommandType[key.type]) {
         case Discord.ApplicationCommandType.ChatInput:
-            if(!key.description) return null;
+            if(!key.description || !key.contexts) return null;
 
             commandBuilder = new Discord.SlashCommandBuilder()
                 .setName(key.name)
                 .setDescription(key.description)
-                .setContexts(key.contexts?.map(c => Discord.InteractionContextType[c]))
-                .setIntegrationTypes(key.integration_types.map(i => Discord.ApplicationIntegrationType[i]));
+                .setContexts(key.contexts.map(c => Discord.InteractionContextType[c]));
 
             if(key.default_member_permissions) {
                 const permissionBits = new Discord.PermissionsBitField();
@@ -666,13 +665,12 @@ export function getCommand(key) {
             break;
         case Discord.ApplicationCommandType.Message:
         case Discord.ApplicationCommandType.User:
-            if(!key.name || key.description) return null;
+            if(!key.name || key.description || !key.contexts) return null;
 
             commandBuilder = new Discord.ContextMenuCommandBuilder()
                 .setName(key.name)
                 .setType(Discord.ApplicationCommandType[key.type])
-                .setContexts(key.contexts?.map(c => Discord.InteractionContextType[c]))
-                .setIntegrationTypes(key.integration_types.map(i => Discord.ApplicationIntegrationType[i]));
+                .setContexts(key.contexts.map(c => Discord.InteractionContextType[c]));
 
             if(key.default_member_permissions) {
                 const permissionBits = new Discord.PermissionsBitField();

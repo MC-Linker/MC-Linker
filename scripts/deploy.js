@@ -1,13 +1,13 @@
 //noinspection JSUnresolvedVariable
 import dotenv from 'dotenv';
-import { REST, Routes } from 'discord.js';
+import { ApplicationRoleConnectionMetadataType, REST, Routes } from 'discord.js';
 import { getCommand } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import fs from 'fs-extra';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
-dotenv.config({ path: `${process.env.DATA_FOLDER}/.env` });
+dotenv.config({ path: `${process.env.DATA_FOLDER ?? '.'}/.env` });
 
 /*
  * Converts the first letter of a string to uppercase.
@@ -120,6 +120,7 @@ if(deployGuild || deployGlobal) {
 if(deployRoles) {
     //Get linked roles
     for(const role of Object.values(keys.roles)) {
+        role.type = ApplicationRoleConnectionMetadataType[role.type];
         linkedRoles.push(role);
         console.log(`Loaded linked role: ${role.key}`);
     }

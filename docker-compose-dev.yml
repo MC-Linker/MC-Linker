@@ -21,7 +21,7 @@ services:
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-debug}
       - CONVERT=$CONVERT # true or false
-      - DATA_FOLDER=./
+      - DATA_FOLDER=.
       - NODE_ENV=development
       - NODE_MAX_HEAP_SIZE=1024
     networks:
