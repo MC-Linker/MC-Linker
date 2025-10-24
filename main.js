@@ -2,7 +2,7 @@ import { ShardEvents, ShardingManager } from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: `${process.env.DATA_FOLDER}/.env` });
 
 const sharder = new ShardingManager('./bot.js', { token: process.env.TOKEN });
 
