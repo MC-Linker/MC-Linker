@@ -482,7 +482,7 @@
                     {
                         "type": "Label",
                         "label": "Warning",
-                        "description": "Deleting your Custom MC Linker will stop the bot and delete all its data. This action is irreversible. To confirm, please type 'delete' in the field below.",
+                        "description": "Deleting your Custom MC Linker will stop the bot and delete all its data. Type 'delete' to confirm.",
                         "component": {
                             "type": "TextInput",
                             "custom_id": "confirm_delete",
