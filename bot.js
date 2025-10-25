@@ -1,5 +1,6 @@
 import MCLinker from './structures/MCLinker.js';
 import logger from './utilities/logger.js';
+import { uploadApplicationEmojis } from './utilities/utils.js';
 
 logger.info(
     '\x1b[1m' +     // Bold (1)
@@ -34,5 +35,10 @@ String.prototype.toTitleCase = function(c, n) {
 };
 
 await client.login(process.env.TOKEN);
+
+if(!client.config.emojis) {
+    client.config.emojis = await uploadApplicationEmojis(client);
+    await client.writeConfig();
+}
 
 export default client;

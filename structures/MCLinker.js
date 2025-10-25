@@ -290,7 +290,7 @@ export default class MCLinker extends Discord.Client {
      * @returns {Promise<void>} - A promise that resolves when all commands, user and server connections are loaded.
      */
     async loadEverything() {
-        await this.loadConfig();
+        await this._loadConfig();
         logger.info(`[${this.shard.ids[0]}] Loaded configuration.`);
 
         ph.initClient(this);
@@ -334,16 +334,11 @@ export default class MCLinker extends Discord.Client {
             this.mongo.model(name, new Schema(schema));
     }
 
-    async loadConfig() {
+    async _loadConfig() {
         this.config = await fs.readJson(`${process.env.DATA_FOLDER}/config.json`);
         // Parse ActivityType
         for(const activity of this.config.presence.activities)
             activity.type = Discord.ActivityType[activity.type];
-
-        if(!this.config.emojis) {
-            this.config.emojis = await utils.uploadApplicationEmojis(this);
-            await this.writeConfig();
-        }
     }
 
     async writeConfig() {
