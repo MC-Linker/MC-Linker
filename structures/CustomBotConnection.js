@@ -48,7 +48,7 @@ export default class CustomBotConnection extends Connection {
          * The communication token used to authenticate with the custom bot.
          * @type {string}
          */
-        this.communicationToken = crypto.randomBytes(32).toString('hex');
+        this.communicationToken = data.communicationToken;
 
         /**
          * The name of the docker container for this custom bot.
@@ -80,6 +80,8 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async init(token) {
+        this.communicationToken = crypto.randomBytes(32).toString('hex');
+
         const env = {
             BOT_PORT: this.port,
             PLUGIN_PORT: process.env.PLUGIN_PORT,

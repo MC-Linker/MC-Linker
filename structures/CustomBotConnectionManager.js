@@ -240,9 +240,9 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     });
                 }
 
-                const error = await customBotConnection.setPresence(newPresence);
-                if(error)
-                    return await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed, { error: error.message });
+                const success = await customBotConnection.setPresence(newPresence);
+                if(!success)
+                    return await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed, { error: success.message });
                 await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
             }
         });
