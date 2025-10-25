@@ -606,7 +606,7 @@
                     {
                         "type": "Label",
                         "label": "Activity Text",
-                        "description": "Optional additional text for the activity.",
+                        "description": "Optional additional text for the activity (seen only in the profile popup).",
                         "component": {
                             "type": "TextInput",
                             "custom_id": "activity_state",
