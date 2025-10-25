@@ -87,11 +87,8 @@ export default class CustomBotConnection extends Connection {
             CLIENT_SECRET: '',
             TOKEN: token,
             COOKIE_SECRET: crypto.randomUUID(),
-            DISCORD_LINK: process.env.DISCORD_LINK,
             GUILD_ID: `\'${process.env.GUILD_ID}\'`,
             OWNER_ID: process.env.OWNER_ID,
-            PLUGIN_VERSION: this.client.config.pluginVersion,
-            PREFIX: this.port + this.client.config.prefix, // Add port for unique prefix
             LINKED_ROLES_REDIRECT_URI: `http://api.mclinker.com:${this.port}/linked-role/callback`,
             MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
             MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
@@ -106,8 +103,17 @@ export default class CustomBotConnection extends Connection {
             COMMUNICATION_TOKEN: this.communicationToken,
         };
 
+        /** @type {MCLinkerConfig} */
+        const configJson = {
+            presence: this.client.config.presence,
+            prefix: this.port + this.client.config.prefix, // Add port for unique prefix,
+            pluginVersion: this.client.config.pluginVersion,
+            supportServerInvite: this.client.config.supportServerInvite,
+        };
+
         const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
         await fs.outputFile(`${this.dataFolder}/.env`, stringifiedEnv);
+        await fs.outputJson(`${this.dataFolder}/config.json`, configJson);
 
         await fs.mkdir(`${this.dataFolder}/download-cache`);
         await fs.mkdir(`${this.dataFolder}/logs`);

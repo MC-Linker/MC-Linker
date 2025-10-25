@@ -47,7 +47,7 @@ export default class Help extends AutocompleteCommand {
         const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
         if(!commandName || commandName === 'help') {
             helpEmbed.addFields(addPh(keys.commands.help.success.no_args.embeds[0].fields,
-                { 'invite_link': process.env.DISCORD_LINK },
+                { 'invite_link': client.config.supportServerInvite },
                 await ph.allCommands(client),
             ));
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -74,7 +74,7 @@ export default class Help extends AutocompleteCommand {
 
             helpEmbed.addFields(addPh(
                 keys.commands.help.success.category.embeds[0].fields[1],
-                { 'invite_link': process.env.DISCORD_LINK },
+                { 'invite_link': client.config.supportServerInvite },
             ));
 
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -90,7 +90,7 @@ export default class Help extends AutocompleteCommand {
                 {
                     'command_long_description': command.long_description,
                     'command_usage': commandUsage,
-                    'invite_link': process.env.DISCORD_LINK,
+                    'invite_link': client.config.supportServerInvite,
                 },
                 await ph.commandName(commandName, client),
             ));
