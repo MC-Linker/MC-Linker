@@ -18,5 +18,18 @@
         "step": "#f88239",
         "green": "#43611a",
         "brown": "#915d2a"
+    },
+    "emojis": {
+        "MCLinker": "<:MCLinker:1431724745174286476>",
+        "command": "<:command:1431724745996505310>",
+        "command_block": "<:command_block:1431724747380752455>",
+        "death": "<:death:1431724748336926772>",
+        "join": "<:join:1431724749519720478>",
+        "leave": "<:leave:1431724750522286213>",
+        "no_access": "<:no_access:1431724751600226458>",
+        "redsuccess": "<:redsuccess:1431724752598208602>",
+        "step": "<:step:1431724753961484309>",
+        "success": "<:success:1431724754947018804>",
+        "warning": "<:warning:1431724756121550891>"
     }
 }
