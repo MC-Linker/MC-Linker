@@ -116,6 +116,7 @@ export default class CustomBotConnection extends Connection {
 
         await fs.mkdir(`${this.dataFolder}/download-cache`);
         await fs.mkdir(`${this.dataFolder}/logs`);
+
         await logger.info(`Custom bot data folder created at ${this.dataFolder}`);
 
         await this.build();
