@@ -605,12 +605,12 @@
                     },
                     {
                         "type": "Label",
-                        "label": "Activity URL (only for \"Streaming\")",
-                        "description": "A valid Twitch or YouTube URL.",
+                        "label": "Activity Text",
+                        "description": "Optional additional text for the activity.",
                         "component": {
                             "type": "TextInput",
-                            "custom_id": "activity_url",
-                            "placeholder": "https://twitch.tv/yourchannel",
+                            "custom_id": "activity_state",
+                            "placeholder": "e.g. on MC Linker Hub",
                             "min_length": 0,
                             "max_length": 100,
                             "required": false,

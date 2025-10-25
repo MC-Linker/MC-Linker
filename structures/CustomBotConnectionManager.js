@@ -45,8 +45,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
     }
 
     async disconnect(connectionResolvable) {
+        /** @type {CustomBotConnection} */
         const connection = this.resolve(connectionResolvable);
-
         await connection.down();
         await connection.removeDataFolder();
         return super.disconnect(connection);
@@ -223,7 +223,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 const activityName = modalInteraction.fields.getTextInputValue('activity_name');
                 /** @type {import('discord.js').ActivityType} */
                 const activityType = modalInteraction.fields.getStringSelectValues('activity_type')[0];
-                const activityUrl = modalInteraction.fields.getTextInputValue('activity_url');
+                const activityState = modalInteraction.fields.getTextInputValue('activity_state');
 
                 /** @type {import('discord.js').PresenceData} */
                 const newPresence = {
@@ -234,9 +234,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 if(activityName) {
                     newPresence.activities.push({
                         name: activityName,
-                        state: activityName,
+                        state: activityState,
                         type: Discord.ActivityType[activityType],
-                        urL: activityUrl,
                     });
                 }
 
