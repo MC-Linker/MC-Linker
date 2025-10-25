@@ -10,5 +10,13 @@
         ]
     },
     "pluginVersion": "3.6",
-    "supportServerInvite": "https://discord.gg/rX36kZUGNK"
+    "supportServerInvite": "https://discord.gg/rX36kZUGNK",
+    "colors": {
+        "success": "#43611a",
+        "error": "#9e3436",
+        "warning": "#f1c40f",
+        "step": "#f88239",
+        "green": "#43611a",
+        "brown": "#915d2a"
+    }
 }

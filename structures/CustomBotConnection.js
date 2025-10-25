@@ -105,10 +105,9 @@ export default class CustomBotConnection extends Connection {
 
         /** @type {MCLinkerConfig} */
         const configJson = {
-            presence: this.client.config.presence,
+            ...this.client.config,
+            emojis: null, // Emojis must be uploaded within the custom bot
             prefix: this.port + this.client.config.prefix, // Add port for unique prefix,
-            pluginVersion: this.client.config.pluginVersion,
-            supportServerInvite: this.client.config.supportServerInvite,
         };
 
         const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');

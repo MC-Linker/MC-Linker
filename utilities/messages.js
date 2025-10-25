@@ -41,6 +41,14 @@ export function addTranslatedResponses(interaction) {
 export const ph = {
 
     /**
+     * Initialize the client for client placeholders.
+     * @param {MCLinker} client - The client to initialize.
+     */
+    initClient(client) {
+        this._client = client;
+    },
+
+    /**
      * Placeholders for an author.
      * @param {User} author - The author to get placeholders for.
      * @returns {{}|{author_id: string, author_avatar: string, author_username: string, author_timestamp: `<t:${bigint}>`, author_tag: string}}
@@ -128,18 +136,15 @@ export const ph = {
 
     /**
      * Placeholders for the client.
-     * @param {Client} client - The client to get placeholders for.
      * @returns {{}|{client_timestamp: `<t:${bigint}>`, client_username: string, client_avatar: string, client_tag: string, client_id: string}}
      */
-    client(client) {
-        if(!(client instanceof Discord.Client)) return {};
-
+    client() {
         return {
-            'client_username': client.user.username,
-            'client_tag': client.user.tag,
-            'client_id': client.user.id,
-            'client_avatar': client.user.displayAvatarURL({ extension: Discord.ImageFormat.PNG }),
-            'client_timestamp': Discord.time(new Date(client.user.createdTimestamp)),
+            'client_username': this._client.user.username,
+            'client_tag': this._client.user.tag,
+            'client_id': this._client.user.id,
+            'client_avatar': this._client.user.displayAvatarURL({ extension: Discord.ImageFormat.PNG }),
+            'client_timestamp': Discord.time(new Date(this._client.user.createdTimestamp)),
         };
     },
 
@@ -148,7 +153,7 @@ export const ph = {
      * @returns {object}
      */
     emojis() {
-        const emojis = Object.entries(getLanguageKey(keys.emojis));
+        const emojis = Object.entries(this._client.config.emojis);
         const placeholders = {};
 
         emojis.forEach(([name, emoji]) => placeholders[`emoji_${name}`] = emoji);
@@ -161,7 +166,7 @@ export const ph = {
      * @returns {object}
      */
     colors() {
-        const colors = Object.entries(getLanguageKey(keys.colors));
+        const colors = Object.entries(this._client.config.colors);
         const placeholders = {};
 
         colors.forEach(([name, color]) => placeholders[`color_${name}`] = color);
@@ -238,9 +243,8 @@ export const ph = {
             this.guild(interaction.guild),
             this.interaction(interaction),
             this.channel(interaction.channel),
-            this.client(interaction.client),
-            this.emojis(),
-            this.colors(),
+            this.client(),
+            this.emojisAndColors(),
             { 'timestamp_now': Discord.time(Date.now() / 1000) },
         );
     },

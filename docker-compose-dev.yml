@@ -13,6 +13,9 @@ services:
         source: ./logs
         target: /usr/src/app/logs
       - type: bind
+        source: ./${DATA_FOLDER}/.config.json
+        target: /usr/src/app/.config.json
+      - type: bind
         source: ./Custom-MC-Linker
         target: /usr/src/app/Custom-MC-Linker
       - type: bind

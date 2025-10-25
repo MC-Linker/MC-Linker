@@ -29,6 +29,8 @@ import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import { FilePath } from '../structures/Protocol.js';
 import HttpProtocol from '../structures/HttpProtocol.js';
 import FtpProtocol from '../structures/FtpProtocol.js';
+import fs from 'fs-extra';
+import path from 'path';
 
 /**
  * Promisified version of exec.
@@ -1077,4 +1079,32 @@ export function generateDefaultInvite(botId) {
         PermissionsBitField.Flags.UseExternalEmojis;
 
     return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}&scope=applications.commands+bot&permissions=${permissions}`;
+}
+
+/**
+ * Uploads all emojis from the resources/emojis folder to the given client.
+ * @param {Discord.Client} client - The client to upload the emojis to.
+ * @returns {Promise<{string, string}>} - A map of emoji names to their codes.
+ */
+export async function uploadApplicationEmojis(client) {
+    const emojiDir = './resources/emojis';
+    const emojiFiles = (await fs.readdir(emojiDir))
+        .filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file));
+
+    const emojiMap = {};
+    for(const file of emojiFiles) {
+        const emojiName = path.parse(file).name;
+        try {
+            const emoji = await client.application.emojis.create({
+                attachment: `${emojiDir}/${file}`,
+                name: emojiName,
+            });
+            emojiMap[emojiName] = Discord.formatEmoji(emoji);
+            console.debug(`Uploaded emoji ${emojiName} (${emoji.id})`);
+        }
+        catch(err) {
+            console.error(`Failed to upload emoji ${emojiName}:`, err);
+        }
+    }
+    return emojiMap;
 }

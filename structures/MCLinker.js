@@ -5,7 +5,7 @@ import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.j
 import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
 import CustomBotConnectionManager from './CustomBotConnectionManager.js';
 import fs from 'fs-extra';
-import { addPh } from '../utilities/messages.js';
+import { addPh, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import path from 'path';
 import Command from './Command.js';
@@ -26,6 +26,7 @@ export default class MCLinker extends Discord.Client {
      * @property {import('discord.js').PresenceData} presence - The presence data for the bot.
      * @property {string} pluginVersion - The latest version of the Minecraft plugin.
      * @property {string} supportServerInvite - The invite link to the support server.
+     * @property {{string, string}} emojis - A map of the bot's emoji names to their codes.
      */
 
     /**
@@ -292,6 +293,9 @@ export default class MCLinker extends Discord.Client {
         await this.loadConfig();
         logger.info(`[${this.shard.ids[0]}] Loaded configuration.`);
 
+        ph.initClient(this);
+        logger.info(`[${this.shard.ids[0]}] Initialized placeholders.`);
+
         await this.loadMongoose();
         logger.info(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
@@ -335,6 +339,11 @@ export default class MCLinker extends Discord.Client {
         // Parse ActivityType
         for(const activity of this.config.presence.activities)
             activity.type = Discord.ActivityType[activity.type];
+
+        if(!this.config.emojis) {
+            this.config.emojis = await utils.uploadApplicationEmojis(this);
+            await this.writeConfig();
+        }
     }
 
     async writeConfig() {

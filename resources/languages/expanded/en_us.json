@@ -32,36 +32,6 @@
             "color": "%color_step%"
         }
     },
-    "emojis": {
-        "warning": "<:warn:1084892438205829180>",
-        "error": "<:error:1084892456371376240>",
-        "success": "<:success:1084892413035810897>",
-        "step": "<:step:1084904567961034803>",
-        "no_access": "<:noaccess:1084892473756766370>",
-        "join": "<:join:905924638083784836>",
-        "leave": "<:leave:905924638100557865>",
-        "death": "<:death:905924668735770674>",
-        "command": "<a:pinging:891202470833946635>",
-        "command_block": "<:command_block:976452589166166037>",
-        "startup": ":green_circle:",
-        "shutdown": ":red_circle:",
-        "main": ":label:",
-        "moderation": ":shield:",
-        "other_1": ":point_right:",
-        "other_2": ":point_left:",
-        "settings": ":gear:",
-        "mc_s": "<:MinecraftS:849561874033803264>",
-        "mc_t": "<:MinecraftT:849561902979350529>",
-        "mc_a": "<:MinecraftA:849561916632465408>"
-    },
-    "colors": {
-        "success": "#43611a",
-        "error": "#9e3436",
-        "warning": "#f1c40f",
-        "step": "#f88239",
-        "green": "#43611a",
-        "brown": "#915d2a"
-    },
     "main": {
         "no_access": {
             "not_in_guild": {
@@ -2529,7 +2499,7 @@
                     "start": {
                         "embeds": [
                             {
-                                "description": "%emoji_startup% **The server has started!**",
+                                "description": ":green_circle: **The server has started!**",
                                 "color": "Green",
                                 "timestamp": "%timestamp_now%"
                             }
@@ -2538,7 +2508,7 @@
                     "close": {
                         "embeds": [
                             {
-                                "description": "%emoji_shutdown% **The server has stopped!**",
+                                "description": ":red_circle: **The server has stopped!**",
                                 "color": "Red",
                                 "timestamp": "%timestamp_now%"
                             }
