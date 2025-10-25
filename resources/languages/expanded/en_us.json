@@ -447,6 +447,16 @@
                     ]
                 }
             },
+            "errors": {
+                "change_presence_failed": {
+                    "embeds": [
+                        {
+                            "title": "Changing Presence Failed",
+                            "description": "Failed to change the presence of your Custom MC Linker! Please try again."
+                        }
+                    ]
+                }
+            },
             "buttons": {
                 "start": {
                     "type": "Button",

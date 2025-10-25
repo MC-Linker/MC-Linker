@@ -192,8 +192,9 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             message,
         });
         modalCollector.on('collect', async modalInteraction => {
+            modalInteraction = addTranslatedResponses(modalInteraction);
+
             if(modalInteraction.customId === 'customize_confirm_delete') {
-                modalInteraction = addTranslatedResponses(modalInteraction);
                 await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
 
                 if(modalInteraction.fields.getTextInputValue('confirm_delete') !== 'delete')
@@ -237,8 +238,10 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     });
                 }
 
-                await customBotConnection.setPresence(newPresence);
-                await modalInteraction.reply(getReplyOptions(keys.custom_bot.custom_bot_manager.success.change_presence, ph.emojisAndColors()));
+                const error = await customBotConnection.setPresence(newPresence);
+                if(error)
+                    return await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed, { error: error.message });
+                await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
             }
         });
     }
