@@ -11,6 +11,7 @@ export default class CustomBotConnection extends Connection {
      * @property {string} id - The ID of the custom bot.\
      * @property {number} port - The port the custom bot is listening on.
      * @property {string} ownerId - The ID of the owner of the custom bot.
+     * @property {string} communicationToken - The communication token used to authenticate with the custom bot.
      */
 
     /**
@@ -280,6 +281,7 @@ export default class CustomBotConnection extends Connection {
             id: this.id,
             port: this.port,
             ownerId: this.ownerId,
+            communicationToken: this.communicationToken,
         };
     }
 }

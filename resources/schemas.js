@@ -68,5 +68,6 @@ export default {
         _id: { type: String },
         port: Number,
         ownerId: String,
+        communicationToken: String,
     },
 };
