@@ -335,7 +335,7 @@ export default class MCLinker extends Discord.Client {
     }
 
     async _loadConfig() {
-        this.config = await fs.readJson(`${process.env.DATA_FOLDER}/config.json`);
+        this.config = await fs.readJson(`./config.json`);
         // Parse ActivityType
         for(const activity of this.config.presence.activities)
             activity.type = Discord.ActivityType[activity.type];
@@ -346,6 +346,6 @@ export default class MCLinker extends Discord.Client {
         const configCopy = JSON.parse(JSON.stringify(this.config));
         for(const activity of configCopy.presence.activities)
             activity.type = Object.keys(Discord.ActivityType).find(k => Discord.ActivityType[k] === activity.type) ?? activity.type;
-        await fs.outputJson(`${process.env.DATA_FOLDER}/config.json`, configCopy, { spaces: 4 });
+        await fs.outputJson(`./config.json`, configCopy, { spaces: 4 });
     }
 }

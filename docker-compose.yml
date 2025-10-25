@@ -25,9 +25,9 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
     environment:
+      - WORKING_DIR=$PWD
       - LOG_LEVEL=$LOG_LEVEL
       - CONVERT=$CONVERT # true or false
-      - DATA_FOLDER=./
       - NODE_ENV=production
       - NODE_MAX_HEAP_SIZE=8192
     networks:

@@ -7,7 +7,7 @@ import fs from 'fs-extra';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
-dotenv.config({ path: `./${process.env.DATA_FOLDER}/.env` });
+dotenv.config();
 
 /*
  * Converts the first letter of a string to uppercase.

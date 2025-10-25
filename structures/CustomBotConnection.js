@@ -67,7 +67,7 @@ export default class CustomBotConnection extends Connection {
          * @type {{ DATA_FOLDER: string, CONTAINER_NAME: string, BOT_PORT: number }}
          */
         this.dockerEnv = {
-            DATA_FOLDER: this.dataFolder,
+            DATA_FOLDER: `${process.env.WORKING_DIR}/${this.dataFolder}`,
             CONTAINER_NAME: this.containerName,
             BOT_PORT: this.port,
         };
