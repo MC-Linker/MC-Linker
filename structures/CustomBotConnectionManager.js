@@ -216,7 +216,6 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 await interaction.replyOptions(newMainMessageOptions);
             }
             else if(modalInteraction.customId === 'customize_set_presence') {
-                logger.debug(modalInteraction.fields, modalInteraction);
                 await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
 
                 /** @type {import('discord.js').PresenceStatus} */

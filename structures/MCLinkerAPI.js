@@ -149,7 +149,15 @@ export default class MCLinkerAPI extends EventEmitter {
             endpoint: '/presence',
             requiresServer: false,
             customBot: true,
-            handler: (data, _) => this.client.user.setPresence(data),
+            handler: (data, _) => {
+                try {
+                    this.client.user.setPresence(data);
+                }
+                catch(err) {
+                    logger.error(err, 'Error while setting custom bot presence');
+                    return { status: 500, body: err };
+                }
+            },
         },
     ];
 
