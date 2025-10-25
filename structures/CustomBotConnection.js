@@ -91,7 +91,7 @@ export default class CustomBotConnection extends Connection {
             GUILD_ID: `\'${process.env.GUILD_ID}\'`,
             OWNER_ID: process.env.OWNER_ID,
             PLUGIN_VERSION: process.env.PLUGIN_VERSION,
-            PREFIX: process.env.PREFIX,
+            PREFIX: this.port + process.env.PREFIX, // Add port for unique prefix
             LINKED_ROLES_REDIRECT_URI: `http://api.mclinker.com:${this.port}/linked-role/callback`,
             MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
             MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
