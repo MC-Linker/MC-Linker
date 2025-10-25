@@ -224,6 +224,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 const activityName = modalInteraction.fields.getTextInputValue('activity_name');
                 /** @type {import('discord.js').ActivityType} */
                 const activityType = modalInteraction.fields.getStringSelectValues('activity_type')[0];
+                const activityUrl = modalInteraction.fields.getTextInputValue('activity_url');
 
                 /** @type {import('discord.js').PresenceData} */
                 const newPresence = {
@@ -235,6 +236,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     newPresence.activities.push({
                         name: activityName,
                         type: activityType,
+                        urL: activityUrl,
                     });
                 }
 
