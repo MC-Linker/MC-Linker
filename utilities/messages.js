@@ -580,6 +580,9 @@ export function getComponent(key, ...placeholders) {
 
             const labelComponent = getComponent(component.component);
             switch(labelComponent?.data.type) {
+                case ComponentType.StringSelect:
+                    componentBuilder.setStringSelectMenuComponent(labelComponent);
+                    break;
                 case ComponentType.ChannelSelect:
                     componentBuilder.setChannelSelectMenuComponent(labelComponent);
                     break;

@@ -478,7 +478,7 @@
                 "change_presence": {
                     "type": "Button",
                     "style": "Secondary",
-                    "label": "Change Status",
+                    "label": "Change Presence",
                     "custom_id": "custom_bot_change_presence"
                 }
             },
@@ -504,7 +504,7 @@
                     {
                         "type": "Label",
                         "label": "Reason for Deletion",
-                        "description": "Optionally, you can provide a reason for deleting your Custom MC Linker. This feedback helps us improve our service.",
+                        "description": "Optionally, you can provide a reason for deleting your Custom MC Linker to help us improve.",
                         "component": {
                             "type": "TextInput",
                             "custom_id": "confirm_delete_reason",
@@ -535,7 +535,8 @@
                                     "label": "Online",
                                     "value": "online",
                                     "description": "The bot is online and available.",
-                                    "emoji": "🟢"
+                                    "emoji": "🟢",
+                                    "default": true
                                 },
                                 {
                                     "label": "Idle",

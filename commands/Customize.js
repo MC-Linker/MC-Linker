@@ -17,9 +17,8 @@ export default class Customize extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        //TODO
-        if(process.env.CUSTOM_BOT !== 'true')
-            await interaction.replyTl(keys.api.command.no_access.disabled);
+        if(process.env.CUSTOM_BOT === 'true')
+            return await interaction.replyTl(keys.api.command.no_access.disabled);
 
         if(client.customBots.hasCustomBot(interaction.user.id))
             await client.customBots.sendCustomBotManager(interaction, client.customBots.getCustomBot(interaction.user.id));
