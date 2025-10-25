@@ -13,8 +13,11 @@ services:
         source: ${DATA_FOLDER}/logs
         target: /usr/src/app/logs
       - type: bind
-        source: ${DATA_FOLDER}
-        target: /usr/src/app/${DATA_FOLDER}
+        source: ${DATA_FOLDER}/config.json
+        target: /usr/src/app/config.json
+      - type: bind
+        source: ${DATA_FOLDER}/.env
+        target: /usr/src/app/.env
     environment:
       - LOG_LEVEL=$LOG_LEVEL
       - CONVERT=$CONVERT # true or false
