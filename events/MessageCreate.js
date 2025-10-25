@@ -42,7 +42,7 @@ export default class MessageCreate extends Event {
         }
 
         const server = client.serverConnections.cache.get(message.guildId);
-        if(!message.content.startsWith(process.env.PREFIX)) {
+        if(!message.content.startsWith(client.config.prefix)) {
             // Relay chat messages to Minecraft server
             const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
             if(!channel || channel.allowDiscordToMinecraft === false) return;
@@ -60,12 +60,12 @@ export default class MessageCreate extends Event {
 
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
 
-        if(!message.content.startsWith(process.env.PREFIX) || message.author.bot) return;
+        if(!message.content.startsWith(client.config.prefix) || message.author.bot) return;
         if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
         // Handle prefix command execution
         message.user = message.author;
-        const args = message.content.slice(process.env.PREFIX.length).trim().split(/\s+/);
+        const args = message.content.slice(client.config.prefix.length).trim().split(/\s+/);
         const commandName = args.shift().toLowerCase();
         const command = client.commands.get(commandName);
         if(!command || !command.allowPrefix) return;
@@ -73,7 +73,7 @@ export default class MessageCreate extends Event {
             await command.execute(message, client, args, server);
         }
         catch(err) {
-            await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err), ph.interaction(message));
+            await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
         }
     }
 } 

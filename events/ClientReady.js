@@ -3,7 +3,7 @@ import Canvas from 'skia-canvas';
 import { addPh, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import logger from '../utilities/logger.js';
-import { ActivityType, Events } from 'discord.js';
+import { Events } from 'discord.js';
 
 /**
  * Handles the Discord ready event for the MC-Linker bot.
@@ -23,10 +23,10 @@ export default class ClientReady extends Event {
         logger.info(addPh(
             keys.main.success.login.console,
             ph.client(client),
-            { prefix: process.env.PREFIX, 'guild_count': client.guilds.cache.size },
+            { prefix: client.config.prefix, 'guild_count': client.guilds.cache.size },
         ));
 
-        client.user.setActivity({ type: ActivityType.Listening, name: '/help' });
+        client.user.setPresence(client.config.presence);
         if(client.shard.ids.includes(0)) await client.api.startServer();
 
         Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');

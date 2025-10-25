@@ -21,6 +21,14 @@ import logger from '../utilities/logger.js';
 export default class MCLinker extends Discord.Client {
 
     /**
+     * @typedef {Object} MCLinkerConfig
+     * @property {string} prefix - The prefix for the bot.
+     * @property {import('discord.js').PresenceData} presence - The presence data for the bot.
+     * @property {string} pluginVersion - The latest version of the Minecraft plugin.
+     * @property {string} supportServerInvite - The invite link to the support server.
+     */
+
+    /**
      * The user-connection manager for the bot.
      * @type {UserConnectionManager}
      */
@@ -67,6 +75,12 @@ export default class MCLinker extends Discord.Client {
      * @type {Collection}
      */
     events = new Discord.Collection();
+
+    /**
+     * The config of the bot.
+     * @type {MCLinkerConfig}
+     */
+    config;
 
     /**
      * Creates a new MCLinker client instance.
@@ -182,7 +196,7 @@ export default class MCLinker extends Discord.Client {
 
         /**
          * The logger for the bot to use in cross-shard communication.
-         * @type {Logger}
+         * @type {import('pino').Logger}
          */
         this.logger = logger;
 
@@ -275,6 +289,9 @@ export default class MCLinker extends Discord.Client {
      * @returns {Promise<void>} - A promise that resolves when all commands, user and server connections are loaded.
      */
     async loadEverything() {
+        await this.loadConfig();
+        logger.info(`[${this.shard.ids[0]}] Loaded configuration.`);
+
         await this.loadMongoose();
         logger.info(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
@@ -305,11 +322,19 @@ export default class MCLinker extends Discord.Client {
     async loadMongoose() {
         /**
          * The mongoose database client.
-         * @type {Mongoose}
+         * @type {import('mongoose').Mongoose}
          */
         this.mongo = await mongoose.connect(process.env.DATABASE_URL);
 
         for(const [name, schema] of Object.entries(Schemas))
             this.mongo.model(name, new Schema(schema));
+    }
+
+    async loadConfig() {
+        this.config = await fs.readJson(`${process.env.DATA_FOLDER}/config.json`);
+    }
+
+    async writeConfig() {
+        await fs.outputJson(`${process.env.DATA_FOLDER}/config.json`, this.config, { spaces: 4 });
     }
 }

@@ -80,7 +80,7 @@ export const ph = {
      */
     interaction(interaction) {
         if(interaction instanceof Discord.Message) {
-            const args = interaction.content.slice(process.env.PREFIX.length).trim().split(/ +/);
+            const args = interaction.content.slice(interaction.client.config.prefix.length).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
 
             return {

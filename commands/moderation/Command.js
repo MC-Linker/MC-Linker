@@ -139,7 +139,7 @@ export default class Command extends AutocompleteCommand {
         const mutableOptions = [...interaction.options.data];
         const respondArray = await this.memoizedGetAutocompleteSuggestions(focused, mutableOptions, interaction.user, interaction.guildId, client);
         if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = 25;
-        interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
+        interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {

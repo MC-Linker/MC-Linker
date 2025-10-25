@@ -1,0 +1,14 @@
+{
+    "prefix": "$",
+    "presence": {
+        "status": "online",
+        "activities": [
+            {
+                "name": "/help",
+                "type": "Listening"
+            }
+        ]
+    },
+    "pluginVersion": "3.6",
+    "supportServerInvite": "https://discord.gg/rX36kZUGNK"
+}
