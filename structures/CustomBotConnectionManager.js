@@ -2,14 +2,7 @@ import CustomBotConnection from './CustomBotConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 import Wizard from './helpers/Wizard.js';
 import keys from '../utilities/keys.js';
-import {
-    addTranslatedResponses,
-    createActionRows,
-    getComponent,
-    getModal,
-    getReplyOptions,
-    ph,
-} from '../utilities/messages.js';
+import { addTranslatedResponses, getComponent, getModal, getReplyOptions, ph } from '../utilities/messages.js';
 import Discord, {
     ActionRowBuilder,
     AttachmentBuilder,
@@ -160,7 +153,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                         await customBotConnection.start();
 
                         buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
-                        mainMessage.components = createActionRows(buttonsRow1);
+                        mainMessage.components[0].data.components = buttonsRow1;
                         mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.started;
                         await interaction.replyOptions(mainMessage);
 
@@ -177,7 +170,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     await customBotConnection.stop();
 
                     buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-                    mainMessage.components = createActionRows(buttonsRow1);
+                    mainMessage.components[0].data.components = buttonsRow1;
                     mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
                     await interaction.replyOptions(mainMessage);
 
