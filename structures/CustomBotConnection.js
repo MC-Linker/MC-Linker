@@ -113,7 +113,7 @@ export default class CustomBotConnection extends Connection {
 
         const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
         await fs.outputFile(`${this.dataFolder}/.env`, stringifiedEnv);
-        await fs.outputJson(`${this.dataFolder}/config.json`, configJson);
+        await fs.outputJson(`${this.dataFolder}/config.json`, configJson, { spaces: 4 });
 
         await fs.mkdir(`${this.dataFolder}/download-cache`);
         await fs.mkdir(`${this.dataFolder}/logs`);

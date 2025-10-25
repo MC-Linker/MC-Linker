@@ -234,6 +234,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 if(activityName) {
                     newPresence.activities.push({
                         name: activityName,
+                        state: activityName,
                         type: activityType,
                         urL: activityUrl,
                     });

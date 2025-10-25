@@ -605,6 +605,12 @@
                                     "emoji": "👀"
                                 },
                                 {
+                                    "label": "Custom",
+                                    "value": "Custom",
+                                    "description": "e.g. Custom status",
+                                    "emoji": "🔵"
+                                },
+                                {
                                     "label": "Competing in",
                                     "value": "Competing",
                                     "description": "e.g. Competing in a tournament",
