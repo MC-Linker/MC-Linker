@@ -609,7 +609,7 @@
                         "description": "The name of the activity your bot is doing.",
                         "component": {
                             "type": "TextInput",
-                            "custom_id": "presence_name",
+                            "custom_id": "activity_name",
                             "placeholder": "e.g. Minecraft",
                             "min_length": 1,
                             "max_length": 100,
@@ -623,7 +623,7 @@
                         "description": "A valid Twitch or YouTube URL.",
                         "component": {
                             "type": "TextInput",
-                            "custom_id": "presence_url",
+                            "custom_id": "activity_url",
                             "placeholder": "https://twitch.tv/yourchannel",
                             "min_length": 0,
                             "max_length": 100,
