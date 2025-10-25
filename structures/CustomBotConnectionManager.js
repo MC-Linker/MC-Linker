@@ -153,7 +153,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                         await customBotConnection.start();
 
                         buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
-                        mainMessage.components[0].data.components = buttonsRow1;
+                        mainMessage.components[0].setComponents(buttonsRow1);
                         mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.started;
                         await interaction.replyOptions(mainMessage);
 
@@ -170,7 +170,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     await customBotConnection.stop();
 
                     buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
-                    mainMessage.components[0].data.components = buttonsRow1;
+                    mainMessage.components[0].setComponents(buttonsRow1);
                     mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
                     await interaction.replyOptions(mainMessage);
 
@@ -235,7 +235,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     newPresence.activities.push({
                         name: activityName,
                         state: activityName,
-                        type: activityType,
+                        type: Discord.ActivityType[activityType],
                         urL: activityUrl,
                     });
                 }

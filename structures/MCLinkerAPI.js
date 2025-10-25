@@ -153,7 +153,7 @@ export default class MCLinkerAPI extends EventEmitter {
             customBot: true,
             handler: async (data, _) => {
                 try {
-                    this.client.user.setPresence(data);
+                    await this.client.user.setPresence(data);
                     this.client.config.presence = data;
                     await this.client.writeConfig();
                 }
