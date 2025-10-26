@@ -1065,6 +1065,7 @@ export async function sortChannels(guild) {
  * - Embed Links
  * - Attach Files
  * - Use External Emojis
+ * - Manage Roles
  * @param {string} botId - The id of the bot to generate the invite for.
  * @return {'https://discord.com/api/oauth2/authorize?client_id=${botId}&scope=${scopes}&permissions=${permissions}'}
  */
@@ -1076,7 +1077,8 @@ export function generateDefaultInvite(botId) {
         PermissionsBitField.Flags.SendMessagesInThreads |
         PermissionsBitField.Flags.EmbedLinks |
         PermissionsBitField.Flags.AttachFiles |
-        PermissionsBitField.Flags.UseExternalEmojis;
+        PermissionsBitField.Flags.UseExternalEmojis |
+        PermissionsBitField.Flags.ManageRoles;
 
     return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}&scope=applications.commands+bot&permissions=${permissions}`;
 }
