@@ -171,6 +171,8 @@ export default class MCLinkerAPI extends EventEmitter {
             handler: async (_, __) => {
                 for(const server of this.client.serverConnections.cache.values())
                     await this.client.serverConnections.disconnect(server);
+                console.log('All server connections disconnected.');
+
                 this.client.mongo.connection.db.dropDatabase();
                 console.log(`${this.client.mongo.connection.db.databaseName} database dropped.`);
             },
