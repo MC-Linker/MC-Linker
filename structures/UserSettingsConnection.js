@@ -1,5 +1,6 @@
 import Connection from './Connection.js';
 import { Routes } from 'discord.js';
+import logger from '../utilities/logger.js';
 
 export default class UserSettingsConnection extends Connection {
 
@@ -39,7 +40,6 @@ export default class UserSettingsConnection extends Connection {
          */
         this.tokens ??= {};
 
-        //Loop over tokens and assign them to the tokens object.
         if('tokens' in data) {
             if('accessToken' in data.tokens) this.tokens.accessToken = data.tokens.accessToken;
             if('refreshToken' in data.tokens) this.tokens.refreshToken = data.tokens.refreshToken;
@@ -54,6 +54,8 @@ export default class UserSettingsConnection extends Connection {
      * @returns {Promise<boolean>} - True if the request was successful, false otherwise.
      */
     async updateRoleConnection(username, metadata) {
+        if(!this.tokens.accessToken || !this.tokens.refreshToken || !this.tokens.expires) return false;
+
         await this._refreshToken();
 
         try {
@@ -72,7 +74,7 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            console.log('Error updating role connections:', err);
+            logger.error(err, 'Error updating role connections:');
             return false;
         }
     }
@@ -82,7 +84,9 @@ export default class UserSettingsConnection extends Connection {
      * @returns {Promise<boolean>} - True if the token was refreshed, false otherwise.
      */
     async _refreshToken() {
-        // Check if the access token has expired / is about to expire
+        if(!this.tokens.accessToken || !this.tokens.refreshToken || !this.tokens.expires) return false;
+
+        // Check if the access token has expired / is about to expire (less than 1 hour left)
         if(this.tokens.expires > Date.now() + 60 * 60 * 1000) {
             return false;
         }
@@ -90,12 +94,16 @@ export default class UserSettingsConnection extends Connection {
         try {
             const response = await this.client.rest.post(Routes.oauth2TokenExchange(), {
                 auth: false, // Bots cannot use this endpoint, we set our own Authorization header
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
                 body: new URLSearchParams({
                     client_id: process.env.CLIENT_ID,
                     client_secret: process.env.CLIENT_SECRET,
                     grant_type: 'refresh_token',
                     refresh_token: this.tokens.refreshToken,
-                }),
+                }).toString(),
+                passThroughBody: true,
             });
 
             await this.edit({
@@ -108,14 +116,11 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            console.log('Error refreshing access tokens:', err);
+            logger.error(err, 'Error refreshing access tokens:');
             return null;
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     getData() {
         return {
             id: this.id,

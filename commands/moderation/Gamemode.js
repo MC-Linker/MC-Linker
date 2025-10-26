@@ -7,7 +7,6 @@ export default class Gamemode extends Command {
     constructor() {
         super({
             name: 'gamemode',
-            requiresConnectedPlugin: true,
             requiresUserIndex: 0,
             category: 'moderation',
         });

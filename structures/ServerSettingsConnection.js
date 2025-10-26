@@ -113,9 +113,6 @@ export default class ServerSettingsConnection extends Connection {
         return this.disabled[type].includes(value);
     }
 
-    /**
-     * @inheritDoc
-     */
     getData() {
         return {
             disabled: this.disabled,

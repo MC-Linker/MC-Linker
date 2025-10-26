@@ -253,7 +253,7 @@ const PluginRoutes = {
     ],
 };
 
-
+// @deprecated
 export default class HttpProtocol extends Protocol {
 
     /**
@@ -312,9 +312,6 @@ export default class HttpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     static async testConnection(data) {
         // noinspection HttpUrlsUsage
         const url = new URL(PluginRoutes.Base()[1], `http://${data.ip}:${data.port}`);
@@ -350,15 +347,6 @@ export default class HttpProtocol extends Protocol {
     }
 
     /**
-     * Generates a verification code and displays it on the server.
-     * @returns {Promise<ProtocolResponse>} - The response from the plugin.
-     */
-    async verifyGuild() {
-        const response = await this._fetch(...PluginRoutes.VerifyGuild(this.id));
-        return await fetchToProtocolResponse(response);
-    }
-
-    /**
      * Sends a verification request to the server. Users can verify using `/verify <code>`.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
@@ -387,9 +375,6 @@ export default class HttpProtocol extends Protocol {
         return await fetchToProtocolResponse(response);
     }
 
-    /**
-     * @inheritDoc
-     */
     async get(getPath, putPath) {
         return new Promise(async resolve => {
             try {
@@ -412,9 +397,6 @@ export default class HttpProtocol extends Protocol {
         });
     }
 
-    /**
-     * @inheritDoc
-     */
     async put(getPath, putPath) {
         try {
             const response = await this._fetch(...PluginRoutes.PutFile(fs.createReadStream(getPath), putPath));
@@ -425,9 +407,6 @@ export default class HttpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async list(folder) {
         const response = await this._fetch(...PluginRoutes.ListFiles(folder));
         return fetchToProtocolResponse(response);

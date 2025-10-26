@@ -1,20 +1,33 @@
-import Discord from 'discord.js';
+import Discord, { Options } from 'discord.js';
 import ServerConnectionManager from './ServerConnectionManager.js';
 import UserConnectionManager from './UserConnectionManager.js';
 import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.js';
 import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
+import CustomBotConnectionManager from './CustomBotConnectionManager.js';
 import fs from 'fs-extra';
-import { addPh } from '../utilities/messages.js';
+import { addPh, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import path from 'path';
 import Command from './Command.js';
-import Button from './Button.js';
+import Component from './Component.js';
+import Event from './Event.js';
 import MCLinkerAPI from './MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
 import { convert } from '../scripts/convert.js';
-import mongoose, { Mongoose, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import Schemas from '../resources/schemas.js';
+import logger from '../utilities/logger.js';
 
 export default class MCLinker extends Discord.Client {
+
+    /**
+     * @typedef {Object} MCLinkerConfig
+     * @property {string} prefix - The prefix for the bot.
+     * @property {import('discord.js').PresenceData} presence - The presence data for the bot.
+     * @property {string} pluginVersion - The latest version of the Minecraft plugin.
+     * @property {string} supportServerInvite - The invite link to the support server.
+     * @property {{string, string}} emojis - A map of the bot's emoji names to their codes.
+     */
 
     /**
      * The user-connection manager for the bot.
@@ -35,25 +48,50 @@ export default class MCLinker extends Discord.Client {
     serverSettingsConnections;
 
     /**
+     * The user-settings connection manager for the bot.
+     * @type {UserSettingsConnectionManager}
+     */
+    userSettingsConnections;
+
+    /**
+     * The custom-bot connection manager for the bot.
+     * @type {CustomBotConnectionManager}
+     */
+    customBots;
+
+    /**
      * A collection of all commands in this bot.
      * @type {Discord.Collection<string, Command>}
      */
     commands = new Discord.Collection();
 
     /**
-     * A collection of all buttons in this bot.
-     * @type {Discord.Collection<string, Button>}
+     * A collection of all components in this bot.
+     * @type {Discord.Collection<string, Component>}
      */
-    buttons = new Discord.Collection();
+    components = new Discord.Collection();
+
+    /**
+     * A collection of all events in this bot.
+     * @type {Collection}
+     */
+    events = new Discord.Collection();
+
+    /**
+     * The config of the bot.
+     * @type {MCLinkerConfig}
+     */
+    config;
 
     /**
      * Creates a new MCLinker client instance.
      * @param {string} commandPath - The path to the commands folder.
-     * @param {string} buttonPath - The path to the buttons folder.
+     * @param {string} componentPath - The path to the components folder.
+     * @param {string} eventPath - The path to the events folder.
      * @param {Discord.ClientOptions} options - The options to pass to the Discord.js client.
      * @returns {MCLinker} - The new MCLinker client instance.
      */
-    constructor(commandPath = './commands', buttonPath = './buttons', options = {
+    constructor(commandPath = './commands', componentPath = './components', eventPath = './events', options = {
         intents: [
             Discord.GatewayIntentBits.GuildMessages,
             Discord.GatewayIntentBits.GuildMembers,
@@ -65,6 +103,15 @@ export default class MCLinker extends Discord.Client {
             Discord.Partials.Channel,
             Discord.Partials.GuildMember,
         ],
+        makeCache: Options.cacheWithLimits({
+            // Don’t cache any messages
+            MessageManager: 0,
+            // Limit number of members cached per guild
+            GuildMemberManager: 100,
+            UserManager: 100,
+            ReactionManager: 0,
+            PresenceManager: 0,
+        }),
         // Disable @everyone and @here mentions
         allowedMentions: { parse: ['users', 'roles'] },
     }) {
@@ -95,6 +142,12 @@ export default class MCLinker extends Discord.Client {
         this.userSettingsConnections = new UserSettingsConnectionManager(this);
 
         /**
+         * The custom-bot connection manager for the bot.
+         * @type {CustomBotConnectionManager}
+         */
+        this.customBots = new CustomBotConnectionManager(this);
+
+        /**
          * A collection of all commands in this bot.
          * @type {Collection<string, Command>}
          */
@@ -102,9 +155,15 @@ export default class MCLinker extends Discord.Client {
 
         /**
          * A collection of all buttons in this bot.
-         * @type {import('discord.js').Collection<string, Button>}
+         * @type {import('discord.js').Collection<string, Component>}
          */
-        this.buttons = new Discord.Collection();
+        this.components = new Discord.Collection();
+
+        /**
+         * A collection of all events in this bot.
+         * @type {import('discord.js').Collection<string, Event>}
+         */
+        this.events = new Discord.Collection();
 
         /**
          * The path to the commands folder.
@@ -113,16 +172,34 @@ export default class MCLinker extends Discord.Client {
         this.commandPath = commandPath;
 
         /**
-         * The path to the buttons folder.
+         * The path to the components folder.
          * @type {string}
          */
-        this.buttonPath = buttonPath;
+        this.componentPath = componentPath;
+
+        /**
+         * The path to the events folder.
+         * @type {string}
+         */
+        this.eventPath = eventPath;
 
         /**
          * Utility functions for the bot to use in cross-shard communication.
          * @type {typeof utils}
          */
         this.utils = { ...utils };
+
+        /**
+         * The language keys for the bot to use in cross-shard communication.
+         * @type {typeof keys}
+         */
+        this.keys = { ...keys };
+
+        /**
+         * The logger for the bot to use in cross-shard communication.
+         * @type {import('pino').Logger}
+         */
+        this.logger = logger;
 
         /**
          * The API instance of the bot.
@@ -132,6 +209,24 @@ export default class MCLinker extends Discord.Client {
     }
 
     async _loadCommands() {
+        const loadCommand = async (file, category = null) => {
+            // noinspection LocalVariableNamingConventionJS
+            const { default: CommandFile } = category ?
+                await import(`file://${path.resolve(`${this.commandPath}/${category}/${file}`)}`) :
+                await import(`file://${path.resolve(`${this.commandPath}/${file}`)}`);
+
+            if(CommandFile?.prototype instanceof Command) {
+                const command = new CommandFile();
+
+                this.commands.set(command.name, command);
+                logger.info(addPh(
+                    category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,
+                    { command: command.name, category: category, shard: this.shard.ids[0] },
+                ));
+            }
+        };
+
+        await fs.ensureDir(this.commandPath);
         const commands = await fs.readdir(this.commandPath);
 
         const commandCategories = commands.filter(command => !command.endsWith('.js'));
@@ -142,41 +237,48 @@ export default class MCLinker extends Discord.Client {
             const commandFiles = (await fs.readdir(`${this.commandPath}/${category}`))
                 .filter(file => file.endsWith('.js'));
 
-            for(const file of commandFiles) await loadCommand.call(this, file, category);
-        }
-
-        async function loadCommand(file, category = null) {
-            // noinspection LocalVariableNamingConventionJS
-            const { default: CommandFile } = category ?
-                await import(`file://${path.resolve(`${this.commandPath}/${category}/${file}`)}`) :
-                await import(`file://${path.resolve(`${this.commandPath}/${file}`)}`);
-
-            if(CommandFile?.prototype instanceof Command) {
-                const command = new CommandFile();
-
-                // noinspection JSPotentiallyInvalidUsageOfClassThis
-                this.commands.set(command.name, command);
-                console.log(addPh(
-                    category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,
-                    { command: command.name, category: category, shard: this.shard.ids[0] },
-                ));
-            }
+            for(const file of commandFiles) await loadCommand(file, category);
         }
     }
 
     async _loadButtons() {
-        const buttonFiles = (await fs.readdir(this.buttonPath))
+        await fs.ensureDir(this.componentPath);
+        const buttonFiles = (await fs.readdir(this.componentPath))
             .filter(file => file.endsWith('.js'));
 
         for(const file of buttonFiles) {
             // noinspection LocalVariableNamingConventionJS
-            const { default: ButtonFile } = await import(`file://${path.resolve(`${this.buttonPath}/${file}`)}`);
-            if(ButtonFile?.prototype instanceof Button) {
-                const button = new ButtonFile();
+            const { default: ComponentFile } = await import(`file://${path.resolve(`${this.componentPath}/${file}`)}`);
+            if(ComponentFile?.prototype instanceof Component) {
+                const component = new ComponentFile();
 
-                this.buttons.set(button.id, button);
-                console.log(addPh(keys.main.success.button_load.console, {
-                    button: button.id,
+                this.components.set(component.id, component);
+                logger.info(addPh(keys.main.success.component_load.console, {
+                    id: component.id,
+                    type: component.type,
+                    shard: this.shard.ids[0],
+                }));
+            }
+        }
+    }
+
+    async _loadEvents() {
+        await fs.ensureDir(this.eventPath);
+        const eventFiles = (await fs.readdir(this.eventPath))
+            .filter(file => file.endsWith('.js'));
+
+        for(const file of eventFiles) {
+            // noinspection LocalVariableNamingConventionJS
+            const { default: EventFile } = await import(`file://${path.resolve(`${this.eventPath}/${file}`)}`);
+            if(EventFile?.prototype instanceof Event) {
+                const event = new EventFile();
+                if(event.shard !== -1 && !this.shard.ids.includes(event.shard)) continue; // Skip events not for this shard
+
+                this.events.set(event.name, event);
+                if(event.once) this.once(event.name, (...args) => event.execute(this, ...args));
+                else this.on(event.name, (...args) => event.execute(this, ...args));
+                logger.info(addPh(keys.main.success.event_load.console, {
+                    event: event.name,
                     shard: this.shard.ids[0],
                 }));
             }
@@ -188,111 +290,62 @@ export default class MCLinker extends Discord.Client {
      * @returns {Promise<void>} - A promise that resolves when all commands, user and server connections are loaded.
      */
     async loadEverything() {
+        await this._loadConfig();
+        logger.info(`[${this.shard.ids[0]}] Loaded configuration.`);
+
+        ph.initClient(this);
+        logger.info(`[${this.shard.ids[0]}] Initialized placeholders.`);
+
         await this.loadMongoose();
-        console.log(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
         if(process.env.CONVERT === 'true' && this.shard.ids[0] === 0) {
-            await convert(this.mongo);
-            console.log('Converted database.');
+            await convert(this, this.mongo);
+            logger.info('Converted database.');
         }
 
         await this.serverConnections._load();
-        console.log(`[${this.shard.ids[0]}] Loaded all server connections.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all server connections.`);
         await this.userConnections._load();
-        console.log(`[${this.shard.ids[0]}] Loaded all user connections.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all user connections.`);
         await this.serverSettingsConnections._load();
-        console.log(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
         await this.userSettingsConnections._load();
-        console.log(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
+        await this.customBots._load();
+        logger.info(`[${this.shard.ids[0]}] Loaded all custom bots.`);
 
         await this._loadCommands();
-        console.log(`[${this.shard.ids[0]}] Loaded all commands.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all commands.`);
         await this._loadButtons();
-        console.log(`[${this.shard.ids[0]}] Loaded all buttons.`);
+        logger.info(`[${this.shard.ids[0]}] Loaded all buttons.`);
+        await this._loadEvents();
+        logger.info(`[${this.shard.ids[0]}] Loaded all events.`);
     }
 
     async loadMongoose() {
         /**
          * The mongoose database client.
-         * @type {Mongoose}
+         * @type {import('mongoose').Mongoose}
          */
         this.mongo = await mongoose.connect(process.env.DATABASE_URL);
 
-        const serverConnectionSchema = new Schema({
-            _id: { type: String },
-            ip: String,
-            version: Number,
-            path: String,
-            worldPath: String,
-            online: Boolean,
-            forceOnlineMode: Boolean,
-            floodgatePrefix: String,
-            requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
-            displayIp: String,
-            protocol: { type: String, enum: ['ftp', 'http', 'websocket'] },
-            port: Number,
-            username: String,
-            password: String,
-            token: String,
-            hash: String,
-            chatChannels: [{
-                _id: { type: String },
-                types: [{
-                    type: String,
-                    enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
-                }],
-                allowDiscordToMinecraft: Boolean,
-                webhook: String,
-            }],
-            statChannels: [{
-                _id: { type: String },
-                type: { type: String, enum: ['online', 'max', 'members'] },
-                names: {
-                    online: String,
-                    offline: String,
-                    members: String,
-                },
-            }],
-            syncedRoles: [{
-                _id: { type: String },
-                name: String,
-                isGroup: Boolean,
-                players: [String],
-            }],
-            serverSettings: { type: String, ref: 'ServerSettingsConnections' },
-        });
+        for(const [name, schema] of Object.entries(Schemas))
+            this.mongo.model(name, new Schema(schema));
+    }
 
-        const serverSettingsConnectionSchema = new Schema({
-            _id: { type: String },
-            disabled: {
-                advancements: [String],
-                stats: [String],
-                chatCommands: [String],
-            },
-            language: String,
-            server: { type: String, ref: 'ServerConnection' },
-        });
+    async _loadConfig() {
+        this.config = await fs.readJson(`./config.json`);
+        // Parse ActivityType
+        for(const activity of this.config.presence.activities)
+            activity.type = Discord.ActivityType[activity.type];
+    }
 
-        const userSettingsConnectionSchema = new Schema({
-            _id: { type: String },
-            tokens: {
-                accessToken: String,
-                refreshToken: String,
-                expires: Number,
-            },
-            user: { type: String, ref: 'UserConnection' },
-        });
-
-        const userConnectionSchema = new Schema({
-            _id: { type: String },
-            uuid: { type: String, unique: true },
-            username: String,
-            userSettings: { type: String, ref: 'UserSettingsConnection' },
-        });
-
-        this.mongo.model('ServerConnection', serverConnectionSchema);
-        this.mongo.model('UserConnection', userConnectionSchema);
-        this.mongo.model('ServerSettingsConnection', serverSettingsConnectionSchema);
-        this.mongo.model('UserSettingsConnection', userSettingsConnectionSchema);
+    async writeConfig() {
+        // Convert ActivityType back to string
+        const configCopy = JSON.parse(JSON.stringify(this.config));
+        for(const activity of configCopy.presence.activities)
+            activity.type = Object.keys(Discord.ActivityType).find(k => Discord.ActivityType[k] === activity.type) ?? activity.type;
+        await fs.outputJson(`./config.json`, configCopy, { spaces: 4 });
     }
 }

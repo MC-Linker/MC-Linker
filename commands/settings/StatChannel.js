@@ -3,7 +3,7 @@ import keys from '../../utilities/keys.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
-import { GuildChannel } from 'discord.js';
+import { ButtonStyle, GuildChannel } from 'discord.js';
 
 export default class StatChannel extends Command {
 
@@ -11,7 +11,6 @@ export default class StatChannel extends Command {
         super({
             name: 'statchannel',
             category: 'settings',
-            requiresConnectedPlugin: true,
         });
     }
 
@@ -73,10 +72,10 @@ export default class StatChannel extends Command {
             await interaction.replyTl(keys.commands.statchannel.success.remove);
         }
         else if(subcommand === 'list') {
-            const filter = args[1];
+            const type = args[1];
 
             let statChannels = server.statChannels;
-            if(filter && statChannels) statChannels = statChannels.filter(c => c.type === filter);
+            if(type && statChannels) statChannels = statChannels.filter(c => c.type === type);
 
             if(!statChannels?.length) {
                 await interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
@@ -105,12 +104,14 @@ export default class StatChannel extends Command {
                 });
 
                 pages[channelButton.data.custom_id] = {
-                    page: { embeds: [channelEmbed] },
+                    options: { embeds: [channelEmbed] },
                     button: channelButton,
                 };
             }
 
-            const pagination = new Pagination(client, interaction, pages);
+            const pagination = new Pagination(client, interaction, pages, {
+                highlightSelectedButton: ButtonStyle.Primary,
+            });
             return pagination.start();
         }
     }

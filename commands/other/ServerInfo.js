@@ -71,12 +71,12 @@ export default class ServerInfo extends Command {
         }
         await server.protocol.endBatch();
 
-        let onlinePlayers = server.protocol.isPluginProtocol() ? await server.protocol.getOnlinePlayers() : null;
+        let onlinePlayers = await server.protocol.getOnlinePlayers();
         if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;
         else onlinePlayers = onlinePlayers.data.length;
 
-        const serverName = propertiesObject['server-name'] ?? server.getDisplayIp();
-        const serverIp = server.getDisplayIp();
+        const serverName = propertiesObject['server-name'] ?? server.displayIp;
+        const serverIp = server.displayIp;
 
         let motd;
         try {
@@ -171,12 +171,12 @@ export default class ServerInfo extends Command {
         const pages = {
             serverinfo_general: {
                 button: getComponent(keys.commands.serverinfo.success.general_button),
-                page: startingMessage,
+                options: startingMessage,
                 startPage: true,
             },
             serverinfo_world: {
                 button: getComponent(keys.commands.serverinfo.success.world_button),
-                page: { embeds: [worldEmbed], files: [] },
+                options: { embeds: [worldEmbed], files: [] },
             },
         };
 
@@ -198,7 +198,7 @@ export default class ServerInfo extends Command {
 
             pages['serverinfo_admin'] = {
                 button: getComponent(keys.commands.serverinfo.success.admin_button),
-                page: { embeds: [adminEmbed], files: [] },
+                options: { embeds: [adminEmbed], files: [] },
                 buttonOptions: {
                     permissions: new Discord.PermissionsBitField(Discord.PermissionFlagsBits.Administrator),
                 },

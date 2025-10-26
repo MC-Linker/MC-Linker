@@ -5,6 +5,7 @@ import { getReplyOptions, ph } from '../utilities/messages.js';
 import Discord from 'discord.js';
 import { durationString } from '../utilities/utils.js';
 import fs from 'fs-extra';
+import logger from '../utilities/logger.js';
 
 export default class SystemStats extends Command {
 
@@ -16,6 +17,7 @@ export default class SystemStats extends Command {
             ownerOnly: true,
             allowPrefix: true,
             requiresConnectedServer: false,
+            allowUser: true,
         });
     }
 
@@ -25,7 +27,7 @@ export default class SystemStats extends Command {
         const stats = await interaction.replyTl(keys.commands.systemstats.step.measuring);
 
         for(const [key, value] of Object.entries(process.memoryUsage())) {
-            console.log(`Memory usage by ${key}, ${value / 1000000}MB`);
+            logger.info(`Memory usage by ${key}, ${value / 1000000}MB`);
         }
 
         const memoryUsage = ((os.totalmem() - os.freemem()) / this.gigabyte).toFixed(2);

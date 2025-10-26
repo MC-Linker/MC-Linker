@@ -2,7 +2,13 @@ import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as utils from '../../utilities/utils.js';
-import { codeBlockFromCommandResponse, formatDuration, getMinecraftAvatarURL } from '../../utilities/utils.js';
+import {
+    codeBlockFromCommandResponse,
+    formatDuration,
+    getMinecraftAvatarURL,
+    MinecraftDataVersion,
+    stringifyMinecraftJson,
+} from '../../utilities/utils.js';
 import {
     addPh,
     addTranslatedResponses,
@@ -13,10 +19,10 @@ import {
 } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
-import minecraft_data from 'minecraft-data';
+import MinecraftData from 'minecraft-data';
 import Discord, { ComponentType, time, userMention } from 'discord.js';
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 export default class UserInfo extends Command {
 
@@ -25,7 +31,6 @@ export default class UserInfo extends Command {
             name: 'userinfo',
             category: 'other',
             requiresUserIndex: 0,
-            requiresConnectedServer: true,
         });
     }
 
@@ -39,10 +44,8 @@ export default class UserInfo extends Command {
         if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
 
         let onlinePlayers = [];
-        if(server.protocol.isPluginProtocol()) {
-            const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-            if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
-        }
+        const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
+        if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
 
         const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
         const levelDatResponse = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
@@ -135,7 +138,7 @@ export default class UserInfo extends Command {
         }
         if(scoreboardDat) {
             const teams = scoreboardDat.data.Teams.filter(team => team.Players.includes(user.username));
-            if(teams.length > 0) placeholders.teams = teams.map(team => JSON.parse(team.DisplayName).text).join('\n');
+            if(teams.length > 0) placeholders.teams = teams.map(team => stringifyMinecraftJson(team.DisplayName)).join('\n');
             if(placeholders.teams) newSurvivalFields.push(addPh(
                 keys.commands.userinfo.success.survival.embeds[0].fields[9], placeholders,
             ));
@@ -173,23 +176,22 @@ export default class UserInfo extends Command {
         ];
         if(onlinePlayers.includes(user.username.toLowerCase())) adminButtons.unshift(getComponent(keys.commands.userinfo.success.buttons.kick));
 
-        // FTP does not support commands
-        if(!server.protocol.isFtpProtocol()) adminMessage.components = createActionRows(adminButtons);
+        adminMessage.components = createActionRows(adminButtons);
 
         /** @type {PaginationPages} */
         const pages = {
             userinfo_general: {
                 button: getComponent(keys.commands.userinfo.success.buttons.general),
-                page: generalMessage,
+                options: generalMessage,
                 startPage: true,
             },
             userinfo_survival: {
                 button: getComponent(keys.commands.userinfo.success.buttons.survival),
-                page: survivalMessage,
+                options: survivalMessage,
             },
             userinfo_admin: {
                 button: getComponent(keys.commands.userinfo.success.buttons.admin),
-                page: adminMessage,
+                options: adminMessage,
             },
         };
 
@@ -244,7 +246,10 @@ export default class UserInfo extends Command {
 
         let response = commandResponse.data?.message ? commandResponse.data.message : keys.api.plugin.warnings.no_response_message;
         response = codeBlockFromCommandResponse(response);
-        await interaction.replyTl(keys.commands.userinfo.success.admin_button, { response, command });
+        await interaction.editReply(getReplyOptions(
+            keys.commands.userinfo.success.admin_button,
+            { response, command },
+        ));
 
         if(interaction.customId === 'userinfo_kick') return;
 

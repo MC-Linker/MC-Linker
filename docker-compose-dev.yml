@@ -1,0 +1,35 @@
+services:
+  dev-mc-linker:
+    image: lianecx/dev-mc-linker
+    container_name: dev-mc-linker
+    restart: on-failure
+    ports:
+      - "${BOT_PORT}:${BOT_PORT}"
+    volumes:
+      - type: bind
+        source: ./download-cache
+        target: /usr/src/app/download-cache
+      - type: bind
+        source: ./logs
+        target: /usr/src/app/logs
+      - type: bind
+        source: ./config.json
+        target: /usr/src/app/config.json
+      - type: bind
+        source: ./Custom-MC-Linker
+        target: /usr/src/app/Custom-MC-Linker
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    environment:
+      - WORKING_DIR=$PWD
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+      - CONVERT=$CONVERT # true or false
+      - NODE_ENV=development
+      - NODE_MAX_HEAP_SIZE=1024
+    networks:
+      - mc-linker_mongo-network
+
+networks:
+  mc-linker_mongo-network:
+    external: true

@@ -2,26 +2,25 @@
 import { addPh, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
-import { codeBlockFromCommandResponse, MaxAutoCompleteChoices } from '../../utilities/utils.js';
-import minecraft_data from 'minecraft-data';
+import { codeBlockFromCommandResponse, MaxAutoCompleteChoices, MinecraftDataVersion } from '../../utilities/utils.js';
+import MinecraftData from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' with { type: 'json' };
 import { FilePath } from '../../structures/Protocol.js';
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 export default class Command extends AutocompleteCommand {
+
+    // noinspection LocalVariableNamingConventionJS
+    memoizedGetAutocompleteSuggestions = utils.memoize(this.getAutocompleteSuggestions, 4);
 
     constructor() {
         super({
             name: 'command',
-            requiresConnectedPlugin: true,
             category: 'moderation',
         });
     }
-
-    // noinspection LocalVariableNamingConventionJS
-    memoizedGetAutocompleteSuggestions = utils.memoize(this.getAutocompleteSuggestions, 4);
 
     async getAutocompleteSuggestions(focusedOption, allOptions, user, guildId, client) {
         const respondArray = [];
@@ -87,7 +86,7 @@ export default class Command extends AutocompleteCommand {
                 focused: focusedOption.value,
             });
             if(!placeholder) {
-                console.log(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
+                logger.info(addPh(keys.commands.command.warnings.could_not_find_placeholders.console, { placeholder: suggestion }));
                 return;
             }
 
@@ -140,7 +139,7 @@ export default class Command extends AutocompleteCommand {
         const mutableOptions = [...interaction.options.data];
         const respondArray = await this.memoizedGetAutocompleteSuggestions(focused, mutableOptions, interaction.user, interaction.guildId, client);
         if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = 25;
-        interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.interaction(interaction), ph.error(err)));
+        interaction.respond(respondArray).catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
     }
 
     async execute(interaction, client, args, server) {
@@ -335,7 +334,7 @@ async function getPlaceholder(key, args) {
                 'bee_growables',
                 'big_dripleaf_placeable',
                 'birch_logs',
-                'buttons',
+                'components',
                 'campfires',
                 'candle_cakes',
                 'candles',
@@ -495,7 +494,7 @@ async function getPlaceholder(key, args) {
                 'beds',
                 'birch_logs',
                 'boats',
-                'buttons',
+                'components',
                 'candles',
                 'chest_boats',
                 'cluster_max_harvestables',
@@ -4473,6 +4472,7 @@ async function getPlaceholder(key, args) {
                 'wither',
                 'wither_skull',
             ];
+            break;
         case key.endsWith('_criteria') ? key : null:
             //TODO get advancement criteria
             break;

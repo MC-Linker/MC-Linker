@@ -7,6 +7,11 @@ import keys from '../utilities/keys.js';
 export default class UserConnectionManager extends ConnectionManager {
 
     /**
+     * @type {import('discord.js').Collection<string, UserConnection>}
+     */
+    cache;
+
+    /**
      * Creates a new UserConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
@@ -14,6 +19,12 @@ export default class UserConnectionManager extends ConnectionManager {
      */
     constructor(client, collectionName = 'UserConnection') {
         super(client, UserConnection, collectionName);
+
+        /**
+         * The connection cache of this manager.
+         * @type {import('discord.js').Collection<string, UserConnection>}
+         */
+        this.cache = super.cache;
     }
 
     /**
@@ -66,13 +77,23 @@ export default class UserConnectionManager extends ConnectionManager {
         }
 
         let uuid;
-        if(server.floodgatePrefix && arg.startsWith(server.floodgatePrefix)) {
+        if(!server.online) uuid = utils.createUUIDv3(arg);
+        else if(server.floodgatePrefix && arg.startsWith(server.floodgatePrefix)) {
             const usernameWithoutPrefix = arg.slice(server.floodgatePrefix.length);
             uuid = await utils.fetchFloodgateUUID(usernameWithoutPrefix);
-        } else uuid = server.online ? await utils.fetchUUID(arg) : utils.createUUIDv3(arg);
+        }
+        else uuid = await utils.fetchUUID(arg);
 
-        if(uuid) return { uuid: uuid, username: arg, error: null };
+        if(uuid) return { uuid, username: arg, error: null };
         await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
         return { error: 'fetch', uuid: null, username: null };
+    }
+
+    async disconnect(connectionResolvable) {
+        const connection = this.resolve(connectionResolvable);
+
+        if(!await super.disconnect(connection)) return false;
+        await connection.removeCache();
+        return true;
     }
 }

@@ -7,7 +7,6 @@ export default class Deop extends Command {
     constructor() {
         super({
             name: 'deop',
-            requiresConnectedPlugin: true,
             requiresUserIndex: 0,
             category: 'moderation',
         });

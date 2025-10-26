@@ -4,6 +4,11 @@ import ConnectionManager from './ConnectionManager.js';
 export default class ServerSettingsConnectionManager extends ConnectionManager {
 
     /**
+     * @type {import('discord.js').Collection<string, ServerSettingsConnection>}
+     */
+    cache;
+
+    /**
      * Creates a new ServerConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
@@ -11,11 +16,14 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
      */
     constructor(client, collectionName = 'ServerSettingsConnection') {
         super(client, ServerSettingsConnection, collectionName);
+
+        /**
+         * The connection cache of this manager.
+         * @type {import('discord.js').Collection<string, ServerSettingsConnection>}
+         */
+        this.cache = super.cache;
     }
 
-    /**
-     * @inheritDoc
-     */
     async _load() {
         await super._load();
 

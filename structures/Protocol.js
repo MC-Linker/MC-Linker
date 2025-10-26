@@ -171,14 +171,10 @@ export const FilePath = {
     },
 };
 
-/**
- * @typedef {HttpProtocol|WebSocketProtocol} PluginProtocol - A protocol that uses the plugin for communication.
- */
-
 export default class Protocol extends Base {
 
     /**
-     * @typedef {HttpProtocolData|FtpProtocolData} ProtocolData - The data for a protocol.
+     * @typedef {WebSocketProtocolData} ProtocolData - The data for a protocol.
      */
 
     /**
@@ -257,41 +253,5 @@ export default class Protocol extends Base {
      */
     async endBatch() {
         return { data: null, status: 200 };
-    }
-
-
-    //The following type guards use `Object.constructor.name` instead of `instanceof` to check the type of the protocol.
-    //This is to prevent circular dependencies between the protocols and the protocol manager.
-
-    /**
-     * Checks whether this protocol is communicating over ftp.
-     * @returns {this is FtpProtocol}
-     */
-    isFtpProtocol() {
-        return this.constructor.name === 'FtpProtocol';
-    }
-
-    /**
-     * Checks whether this protocol is communicating over http.
-     * @returns {this is HttpProtocol}
-     */
-    isHttpProtocol() {
-        return this.constructor.name === 'HttpProtocol';
-    }
-
-    /**
-     * Checks whether this protocol is communicating over websockets.
-     * @returns {this is WebSocketProtocol}
-     */
-    isWebSocketProtocol() {
-        return this.constructor.name === 'WebSocketProtocol';
-    }
-
-    /**
-     * Checks whether this protocol is communicating with a plugin.
-     * @returns {this is HttpProtocol | WebSocketProtocol}
-     */
-    isPluginProtocol() {
-        return this.isHttpProtocol() || this.isWebSocketProtocol();
     }
 }

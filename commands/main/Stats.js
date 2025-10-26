@@ -1,22 +1,24 @@
 import * as utils from '../../utilities/utils.js';
+import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Canvas from 'skia-canvas';
 import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
-import minecraft_data from 'minecraft-data';
+import MinecraftData from 'minecraft-data';
 import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
+import logger from '../../utilities/logger.js';
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 const startCoords = [41, 152];
 const yPadding = 7;
 const numberPadding = [32, 19];
 const maxStatsAmountsY = 8;
-const maxCustomStatsAmountY = 18;
+const maxCustomStatsAmountY = 24;
 const headerSize = 74;
 const itemSize = headerSize - 10;
 const numberSize = [30, 45];
@@ -64,6 +66,7 @@ export default class Stats extends Command {
             stats = Object.fromEntries(Object.entries(stats).sort((a, b) => a[0].localeCompare(b[0])));
 
         const paginationPages = {};
+        // [currentColumnIndex, currentRowIndex]
         const currentStatAmounts = [0, 0];
 
         const addStatisticPage = async (pageNumber = 0, startIndex = 0) => {
@@ -90,34 +93,34 @@ export default class Stats extends Command {
                     return Math.max(...namesInColumn.map(name => ctx.measureText(name).width));
                 });
 
-                const longestTextInColumn = utils.memoize(async columnIndex => {
-                    if(await longestNameInColumn(columnIndex) === 0) return 0;
+                const longestTextInColumn = utils.memoize(columnIndex => {
+                    if(longestNameInColumn(columnIndex) === 0) return 0;
                     const valuesInColumn = Object.values(stats).slice(columnIndex * maxCustomStatsAmountY, (columnIndex + 1) * maxCustomStatsAmountY);
                     if(valuesInColumn.length === 0) return 0;
 
                     const longestValue = Math.max(...valuesInColumn.map(value => ctx.measureText(value.toString()).width));
 
-                    return await longestNameInColumn(columnIndex) + numberPadding[0] + longestValue;
+                    return longestNameInColumn(columnIndex) + numberPadding[0] + longestValue;
                 });
 
                 let tempColumnIndex = currentStatAmounts[0];
                 let sizeOfAllItems = startCoords[0];
-                while(sizeOfAllItems + await longestTextInColumn(tempColumnIndex) <= statsCanvas.width) {
-                    if(await longestTextInColumn(tempColumnIndex) === 0) break;
-                    sizeOfAllItems += await longestTextInColumn(tempColumnIndex++) + numberPadding[0];
+                while(sizeOfAllItems + longestTextInColumn(tempColumnIndex) <= statsCanvas.width) {
+                    if(longestTextInColumn(tempColumnIndex) === 0) break;
+                    sizeOfAllItems += longestTextInColumn(tempColumnIndex++) + numberPadding[0];
                 }
 
                 let x = (statsCanvas.width - sizeOfAllItems) / 2;
                 let y = startCoords[1] + ctx.measureText('M').actualBoundingBoxAscent / 2; // Move it down half the height of the text
 
-                for(const [name, value] of Object.entries(stats).slice(startIndex)) {
+                for(const [name, value] of Object.entries(stats).slice(startIndex, tempColumnIndex * maxCustomStatsAmountY)) {
                     utils.drawMinecraftText(ctx, name, x, y, true);
-                    utils.drawMinecraftText(ctx, value, x + await longestNameInColumn(currentStatAmounts[0]) + numberPadding[0], y, true);
+                    utils.drawMinecraftText(ctx, value, x + longestNameInColumn(currentStatAmounts[0]) + numberPadding[0], y, true);
 
                     currentStatAmounts[1]++;
                     if(currentStatAmounts[1] >= maxCustomStatsAmountY) {
                         y = startCoords[1] + ctx.measureText('M').actualBoundingBoxAscent / 2;
-                        x += await longestTextInColumn(currentStatAmounts[0]) + numberPadding[0];
+                        x += longestTextInColumn(currentStatAmounts[0]) + numberPadding[0];
 
                         currentStatAmounts[1] = 0;
                         currentStatAmounts[0]++;
@@ -174,7 +177,7 @@ export default class Stats extends Command {
                     }
                     catch(err) {
                         //Draw name
-                        console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': id }));
+                        logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': id }));
                         const fontSize = 12;
                         ctx.font = `${fontSize}px Minecraft`;
                         ctx.fillStyle = '#000';
@@ -233,7 +236,7 @@ export default class Stats extends Command {
                     min: startIndex,
                     max: endIndex,
                 }),
-                page: {
+                options: {
                     files: [statsAttach],
                     embeds: [statsEmbed],
                 },
@@ -245,7 +248,6 @@ export default class Stats extends Command {
         await addStatisticPage();
 
         const pagination = new Pagination(client, interaction, paginationPages, {
-            showSelectedButton: true,
             highlightSelectedButton: ButtonStyle.Primary,
             timeout: 60000 * 5, // 5 minutes
         });

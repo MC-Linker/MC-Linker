@@ -8,25 +8,17 @@ import Discord, {
     EmbedBuilder,
     Guild,
     GuildApplicationCommandManager,
-    InteractionResponse,
     Message,
     MessagePayload,
     ModalBuilder,
+    ModalSubmitInteraction,
     SlashCommandBuilder,
     User,
 } from 'discord.js';
 import keys, { getLanguageKey, getObjectPath } from './keys.js';
 import util from 'util';
-
-const maxComponentsInActionRow = {
-    [ComponentType.Button]: 5,
-    [ComponentType.StringSelect]: 1,
-    [ComponentType.RoleSelect]: 1,
-    [ComponentType.ChannelSelect]: 1,
-    [ComponentType.UserSelect]: 1,
-    [ComponentType.MentionableSelect]: 1,
-    [ComponentType.TextInput]: 1,
-};
+import logger from './logger.js';
+import { ComponentSizeInActionRow, MaxActionRows, MaxActionRowSize } from './utils.js';
 
 const completions = getLanguageKey(keys.completions);
 
@@ -47,6 +39,14 @@ export function addTranslatedResponses(interaction) {
  * @type {object}
  */
 export const ph = {
+
+    /**
+     * Initialize the client for client placeholders.
+     * @param {MCLinker} client - The client to initialize.
+     */
+    initClient(client) {
+        this._client = client;
+    },
 
     /**
      * Placeholders for an author.
@@ -88,7 +88,7 @@ export const ph = {
      */
     interaction(interaction) {
         if(interaction instanceof Discord.Message) {
-            const args = interaction.content.slice(process.env.PREFIX.length).trim().split(/ +/);
+            const args = interaction.content.slice(interaction.client.config.prefix.length).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
 
             return {
@@ -102,7 +102,7 @@ export const ph = {
                 'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
             };
         }
-        else if(interaction instanceof Discord.ButtonInteraction) {
+        else if(interaction instanceof Discord.MessageComponentInteraction || interaction instanceof ModalSubmitInteraction) {
             return {
                 'interaction_id': interaction.customId,
                 'interaction_timestamp': Discord.time(new Date(interaction.createdTimestamp)),
@@ -136,18 +136,15 @@ export const ph = {
 
     /**
      * Placeholders for the client.
-     * @param {Client} client - The client to get placeholders for.
      * @returns {{}|{client_timestamp: `<t:${bigint}>`, client_username: string, client_avatar: string, client_tag: string, client_id: string}}
      */
-    client(client) {
-        if(!(client instanceof Discord.Client)) return {};
-
+    client() {
         return {
-            'client_username': client.user.username,
-            'client_tag': client.user.tag,
-            'client_id': client.user.id,
-            'client_avatar': client.user.displayAvatarURL({ extension: Discord.ImageFormat.PNG }),
-            'client_timestamp': Discord.time(new Date(client.user.createdTimestamp)),
+            'client_username': this._client.user.username,
+            'client_tag': this._client.user.tag,
+            'client_id': this._client.user.id,
+            'client_avatar': this._client.user.displayAvatarURL({ extension: Discord.ImageFormat.PNG }),
+            'client_timestamp': Discord.time(new Date(this._client.user.createdTimestamp)),
         };
     },
 
@@ -156,7 +153,7 @@ export const ph = {
      * @returns {object}
      */
     emojis() {
-        const emojis = Object.entries(getLanguageKey(keys.emojis));
+        const emojis = Object.entries(this._client.config.emojis);
         const placeholders = {};
 
         emojis.forEach(([name, emoji]) => placeholders[`emoji_${name}`] = emoji);
@@ -169,7 +166,7 @@ export const ph = {
      * @returns {object}
      */
     colors() {
-        const colors = Object.entries(getLanguageKey(keys.colors));
+        const colors = Object.entries(this._client.config.colors);
         const placeholders = {};
 
         colors.forEach(([name, color]) => placeholders[`color_${name}`] = color);
@@ -191,17 +188,28 @@ export const ph = {
     /**
      * Placeholders for a command.
      * @param {ApplicationCommand} command - The command to get placeholders for.
+     * @param {?string} [subcommand] - The subcommand to get placeholders for.
+     * @param {boolean} [prependCommandName=false] - Whether to prepend the command name to the placeholder keys.
      * @returns {{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}}
      */
-    command(command) {
+    command(command, subcommand = null, prependCommandName = false) {
         if(!(command instanceof Discord.ApplicationCommand)) return {};
 
-        return {
-            'command_mention': `</${command.name}:${command.id}>`,
-            'command_name': command.name,
-            'command_id': command.id,
-            'command_description': command.description,
-            'command_timestamp': Discord.time(new Date(command.createdTimestamp)),
+        const subcommandOption = subcommand ? command.options
+            ?.find(option => option.type === Discord.ApplicationCommandOptionType.Subcommand && option.name === subcommand) : undefined;
+
+        const commandName = subcommand ? `${command.name} ${subcommand}` : command.name;
+        const commandNameKey = subcommand ? `${command.name}_${subcommand}` : command.name;
+        const description = subcommandOption ? subcommandOption.description : command.description;
+
+        return prependCommandName ? {
+            [`${commandNameKey}_command_name`]: commandName,
+            [`${commandNameKey}_command_mention`]: `</${commandName}:${command.id}>`,
+            [`${commandNameKey}_command_description`]: description,
+        } : {
+            'command_name': commandName,
+            'command_mention': `</${commandName}:${command.id}>`,
+            'command_description': description,
         };
     },
 
@@ -235,26 +243,30 @@ export const ph = {
             this.guild(interaction.guild),
             this.interaction(interaction),
             this.channel(interaction.channel),
-            this.client(interaction.client),
-            this.emojis(),
-            this.colors(),
+            this.client(),
+            this.emojisAndColors(),
             { 'timestamp_now': Discord.time(Date.now() / 1000) },
         );
     },
 
     /**
      * Placeholders for a command by name.
-     * @param {string} commandName - The name of the command to get placeholders for.
+     * @param {string} commandName - The name of the command to get placeholders for (space for subcommand).
      * @param {Client} client - The client to get the command from.
+     * @param {boolean} prependCommandName - Whether to prepend the command name to the placeholder keys.
      * @returns {Promise<{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}>}
      */
-    async commandName(commandName, client) {
+    async commandName(commandName, client, prependCommandName = false) {
         if(!(client instanceof Discord.Client)) return {};
 
-        const command = await fetchCommand(client.application.commands, commandName);
+        const splitCommandName = commandName.split(' ');
+
+        const rootCommandName = splitCommandName.shift();
+        const subcommandName = splitCommandName.length > 0 ? splitCommandName.join(' ') : null;
+        const command = await fetchCommand(client.application.commands, rootCommandName);
         if(!command) return {};
 
-        return this.command(command);
+        return this.command(command, subcommandName, prependCommandName);
     },
 
     /**
@@ -267,14 +279,8 @@ export const ph = {
 
         const commands = await client.application.commands.fetch();
 
-        const allPh = commands.map(cmd => prependName(this.command(cmd), cmd.name));
-        return Object.assign({}, ...allPh);
-
-        function prependName(ph, name) {
-            const newPh = {};
-            for(const [k, v] of Object.entries(ph)) newPh[`${name}_${k}`] = v;
-            return newPh;
-        }
+        const allPh = commands.map(cmd => this.command(cmd, null, true));
+        return Object.assign({}, ...allPh); //flatten
     },
 };
 
@@ -311,31 +317,22 @@ export function addPh(key, ...placeholders) {
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string} key - The translation key to reply with.
  * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Promise<?Message|?InteractionResponse>}
+ * @returns {Promise<?Message>}
  */
 export async function replyTl(interaction, key, ...placeholders) {
-    const message = addCompletion(key);
+    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
 
-    // Log to console if interaction doesn't exist
-    // noinspection JSUnresolvedVariable
-    if(message?.console && !interaction) {
-        console.log(addPh(message.console, Object.assign({}, ...placeholders)));
-        return null;
-    }
-
-    if(!interaction || !message || !placeholders) {
+    if(!interaction || !key || !placeholders) {
         console.error(getLanguageKey(keys.api.messages.errors.no_reply_arguments.console));
         return null;
     }
 
-    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
+    const options = getReplyOptions(key, placeholders);
 
-    const options = getReplyOptions(message, placeholders);
+    if(options?.console) logger.info(addPh(options.console, placeholders));
+    if(options?.console && !interaction) return null; // Only log to console if interaction doesn't exist
 
-    // noinspection JSUnresolvedVariable
-    if(message.console) console.log(addPh(message.console, placeholders));
-
-    if(!message.embeds && !message.components && !message.files) return null; //If only console don't reply
+    if(!options.content && !options.embeds && !options.components && !options.files) return null;
     return replyOptions(interaction, options);
 }
 
@@ -343,25 +340,35 @@ export async function replyTl(interaction, key, ...placeholders) {
  * Reply to an interaction with options.
  * @param {BaseInteraction|Message} interaction - The interaction to reply to.
  * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.MessageReplyOptions} options - The options to reply with.
- * @returns {Promise<Message>|Message}
+ * @returns {Promise<Message>}
  */
 export async function replyOptions(interaction, options) {
+    // noinspection JSDeprecatedSymbols
+    if(options.ephemeral) {
+        options.flags = Discord.MessageFlags.Ephemeral;
+        // noinspection JSDeprecatedSymbols
+        delete options.ephemeral;
+    }
+
     function handleError(err) {
-        console.log(addPh(keys.api.messages.errors.could_not_reply.console, ph.error(err), { 'interaction': interaction }));
+        logger.error(err, `Could not reply to interaction ${interaction}`);
         try {
             return interaction.channel?.send(options);
         }
         catch(err) {
-            console.log(addPh(keys.api.messages.errors.could_not_reply_channel.console, ph.error(err), { 'interaction': interaction }));
+            logger.error(err, `Could not send message to channel of interaction ${interaction}`);
         }
     }
 
     try {
         if(interaction instanceof Discord.Message) return await interaction.reply(options).catch(handleError);
-        else if(interaction instanceof Discord.BaseInteraction) {
-            if(!interaction.isRepliable()) return await interaction.message.reply(options).catch(handleError);
-            if(interaction.deferred || interaction.replied) return await interaction.editReply(options).catch(handleError);
-            else return await interaction.reply(options).catch(handleError);
+        else if(interaction instanceof Discord.BaseInteraction && interaction.isRepliable()) {
+            if(interaction.deferred || interaction.replied)
+                return await interaction.editReply(options).catch(handleError);
+            else if(interaction.isMessageComponent() || interaction.isModalSubmit())
+                return (await interaction.update({ withResponse: true, ...options }).catch(handleError)).resource.message;
+            else
+                return (await interaction.reply({ withResponse: true, ...options }).catch(handleError)).resource.message;
         }
     }
     catch(err) {
@@ -479,7 +486,7 @@ export function getComponent(key, ...placeholders) {
             if(component.emoji) componentBuilder.setEmoji(component.emoji);
             if(component.url) componentBuilder.setURL(component.url);
             if(component.label) componentBuilder.setLabel(component.label);
-
+            if(component.sku_id) componentBuilder.setSKUId(component.sku_id);
             break;
         case Discord.ComponentType.StringSelect:
             if(!component.options || !component.custom_id) return null;
@@ -506,7 +513,6 @@ export function getComponent(key, ...placeholders) {
 
                 componentBuilder.addOptions(optionBuilder);
             }
-
             break;
         case Discord.ComponentType.RoleSelect:
             if(!component.custom_id) return null;
@@ -519,7 +525,6 @@ export function getComponent(key, ...placeholders) {
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultRoles(component.default_values.map(value => value.id));
-
             break;
         case Discord.ComponentType.ChannelSelect:
             if(!component.custom_id) return null;
@@ -532,7 +537,6 @@ export function getComponent(key, ...placeholders) {
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultChannels(component.default_values.map(value => value.id));
-
             break;
         case Discord.ComponentType.UserSelect:
             if(!component.custom_id) return null;
@@ -545,7 +549,6 @@ export function getComponent(key, ...placeholders) {
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultUsers(component.default_values.map(value => value.id));
-
             break;
         case Discord.ComponentType.MentionableSelect:
             if(!component.custom_id) return null;
@@ -558,23 +561,48 @@ export function getComponent(key, ...placeholders) {
             if(component.max_values) componentBuilder.setMaxValues(component.max_values);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             if(component.default_values) componentBuilder.setDefaultValues(component.default_values);
-
             break;
         case Discord.ComponentType.TextInput:
-            if(!component.style || !component.custom_id || !component.label) return null;
+            if(!component.style || !component.custom_id) return null;
 
             componentBuilder = new Discord.TextInputBuilder()
                 .setStyle(Discord.TextInputStyle[component.style])
                 .setCustomId(component.custom_id)
-                .setLabel(component.label)
                 .setRequired(component.required ?? false);
 
             if(component.max_length) componentBuilder.setMaxLength(component.max_length);
             if(typeof component.min_length === 'number') componentBuilder.setMinLength(component.min_length);
             if(component.value) componentBuilder.setValue(component.value);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
-            if(component.label) componentBuilder.setLabel(component.label);
+            break;
+        case Discord.ComponentType.Label:
+            if(!component.label || !component.description) return null;
 
+            componentBuilder = new Discord.LabelBuilder()
+                .setLabel(component.label)
+                .setDescription(component.description);
+
+            const labelComponent = getComponent(component.component);
+            switch(labelComponent?.data.type) {
+                case ComponentType.StringSelect:
+                    componentBuilder.setStringSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.ChannelSelect:
+                    componentBuilder.setChannelSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.RoleSelect:
+                    componentBuilder.setRoleSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.UserSelect:
+                    componentBuilder.setUserSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.MentionableSelect:
+                    componentBuilder.setMentionableSelectMenuComponent(labelComponent);
+                    break;
+                case ComponentType.TextInput:
+                    componentBuilder.setTextInputComponent(labelComponent);
+                    break;
+            }
             break;
     }
 
@@ -622,42 +650,39 @@ export function getCommand(key) {
     let commandBuilder;
     switch(Discord.ApplicationCommandType[key.type]) {
         case Discord.ApplicationCommandType.ChatInput:
-            if(!key.description) return null;
+            if(!key.description || !key.contexts) return null;
 
             commandBuilder = new Discord.SlashCommandBuilder()
                 .setName(key.name)
                 .setDescription(key.description)
-                .setDMPermission(key.dm_permission);
+                .setContexts(key.contexts.map(c => Discord.InteractionContextType[c]));
 
             if(key.default_member_permissions) {
                 const permissionBits = new Discord.PermissionsBitField();
-                for(const permission of key.default_member_permissions) {
+                for(const permission of key.default_member_permissions)
                     permissionBits.add(Discord.PermissionFlagsBits[permission]);
-                }
 
                 commandBuilder.setDefaultMemberPermissions(permissionBits.bitfield);
             }
 
 
-            for(const option of key.options ?? []) {
+            for(const option of key.options ?? [])
                 addSlashCommandOption(commandBuilder, option);
-            }
 
             break;
         case Discord.ApplicationCommandType.Message:
         case Discord.ApplicationCommandType.User:
-            if(!key.description) return null;
+            if(!key.name || key.description || !key.contexts) return null;
 
             commandBuilder = new Discord.ContextMenuCommandBuilder()
                 .setName(key.name)
                 .setType(Discord.ApplicationCommandType[key.type])
-                .setDMPermission(key.dm_permission);
+                .setContexts(key.contexts.map(c => Discord.InteractionContextType[c]));
 
             if(key.default_member_permissions) {
                 const permissionBits = new Discord.PermissionsBitField();
-                for(const permission of key.default_member_permissions) {
+                for(const permission of key.default_member_permissions)
                     permissionBits.add(Discord.PermissionFlagsBits[permission]);
-                }
 
                 commandBuilder.setDefaultMemberPermissions(permissionBits.bitfield);
             }
@@ -687,7 +712,7 @@ export function getModal(key, ...placeholders) {
         .setTitle(key.title)
         .setCustomId(key.custom_id);
 
-    modalBuilder.setComponents(getActionRows(key, ...placeholders));
+    modalBuilder.setLabelComponents(key.components.map(c => getComponent(c, ...placeholders)));
     return modalBuilder;
 }
 
@@ -845,17 +870,18 @@ export function createActionRows(components) {
 
     const actionRows = [];
     let currentRow = new Discord.ActionRowBuilder();
-
+    let currentSize = 0;
     for(const component of components) {
-        currentRow.addComponents(component);
-
-        const maxAmount = maxComponentsInActionRow[component.data.type];
-
-        //If the same component type is already in the row more than the max amount, create a new row.
-        if(currentRow.components.filter(c => c.data.type === component.data.type).length >= maxAmount) {
+        currentSize += ComponentSizeInActionRow[component.data.type];
+        if(currentSize > MaxActionRowSize) {
+            // If the current row is full, push it to the action rows and start a new one
             actionRows.push(currentRow);
+            if(actionRows.length > MaxActionRows) break;
             currentRow = new Discord.ActionRowBuilder();
+            currentSize = ComponentSizeInActionRow[component.data.type];
         }
+
+        currentRow.addComponents(component);
     }
     if(currentRow.components.length > 0) actionRows.push(currentRow);
 

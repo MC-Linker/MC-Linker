@@ -1,5 +1,6 @@
 import { createUUIDv3 } from '../utilities/utils.js';
 import Connection from './Connection.js';
+import fs from 'fs-extra';
 
 export default class UserConnection extends Connection {
     /**
@@ -55,8 +56,19 @@ export default class UserConnection extends Connection {
     }
 
     /**
-     * @inheritDoc
+     * Removes the download cache folder of this user connection.
+     * @returns {Promise<boolean>}
      */
+    async removeCache() {
+        try {
+            await fs.rm(`./download-cache/userConnection/${this.id}/`, { recursive: true });
+            return true;
+        }
+        catch(_) {
+            return false;
+        }
+    }
+
     getData() {
         return {
             id: this.id,

@@ -1,15 +1,42 @@
 import { addPh, fetchCommand, getEmbed, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
-import Command from '../structures/Command.js';
 import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
+import AutocompleteCommand from '../structures/AutocompleteCommand.js';
+import fs from 'fs-extra';
 
-export default class Help extends Command {
+export default class Help extends AutocompleteCommand {
+
+    excludedCommands = ['help', 'eval', 'systemstats'];
 
     constructor() {
         super({
             name: 'help',
             requiresConnectedServer: false,
+            allowUser: true,
         });
+    }
+
+    async autocomplete(interaction, client) {
+        //Push categories
+        const commandDirs = await fs.readdir('./commands/');
+        const categories = [];
+        for(const dir of commandDirs) {
+            if((await fs.stat(`./commands/${dir}`)).isDirectory()) categories.push({
+                name: dir.toTitleCase(),
+                value: dir,
+            });
+        }
+        const choices = client.commands.values().toArray()
+            .map(c => {
+                if(this.excludedCommands.includes(c.name)) return null;
+                return { name: c.name.toTitleCase(), value: c.name };
+            }).filter(c => c);
+
+        const respondArrray = categories
+            .concat(choices)
+            .filter(o => o.value.includes(interaction.options.getFocused().toLowerCase()))
+            .slice(0, 24);
+        return await interaction.respond(respondArrray);
     }
 
     async execute(interaction, client, args, server) {
@@ -20,7 +47,7 @@ export default class Help extends Command {
         const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
         if(!commandName || commandName === 'help') {
             helpEmbed.addFields(addPh(keys.commands.help.success.no_args.embeds[0].fields,
-                { 'invite_link': process.env.DISCORD_LINK },
+                { 'invite_link': client.config.supportServerInvite },
                 await ph.allCommands(client),
             ));
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -47,7 +74,7 @@ export default class Help extends Command {
 
             helpEmbed.addFields(addPh(
                 keys.commands.help.success.category.embeds[0].fields[1],
-                { 'invite_link': process.env.DISCORD_LINK },
+                { 'invite_link': client.config.supportServerInvite },
             ));
 
             return interaction.replyOptions({ embeds: [helpEmbed] });
@@ -63,7 +90,7 @@ export default class Help extends Command {
                 {
                     'command_long_description': command.long_description,
                     'command_usage': commandUsage,
-                    'invite_link': process.env.DISCORD_LINK,
+                    'invite_link': client.config.supportServerInvite,
                 },
                 await ph.commandName(commandName, client),
             ));

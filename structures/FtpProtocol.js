@@ -3,6 +3,7 @@ import FtpClient from './ftp/FtpClient.js';
 import SftpClient from './ftp/SftpClient.js';
 import fs from 'fs-extra';
 
+// @deprecated
 export default class FtpProtocol extends Protocol {
 
     /**
@@ -31,16 +32,31 @@ export default class FtpProtocol extends Protocol {
         this._patch(data);
     }
 
-    /**
-     * @inheritDoc
-     */
+    get sftp() {
+        return this.ftpClient instanceof SftpClient;
+    }
+
+    set sftp(bool) {
+        const credentials = { ip: this.ip, port: this.port, username: this.username, password: this.password };
+        //set the ftp client to the correct type if it is different
+        if(bool && !(this.ftpClient instanceof SftpClient)) this.ftpClient = new SftpClient(credentials);
+        else if(!bool && !(this.ftpClient instanceof FtpClient)) this.ftpClient = new FtpClient(credentials);
+    }
+
     static async testConnection(data) {
         const ftpClient = data.sftp ? new SftpClient(data) : new FtpClient(data);
         return await ftpClient.connect();
     }
 
-    get sftp() {
-        return this.ftpClient instanceof SftpClient;
+    static dataToProtocolResponse(data, status = 200) {
+        if(data instanceof Error) {
+            if(data.message.toLowerCase().includes('no such file')) status = 404;
+            else return null;
+            return { status, data: { message: data.message } };
+        }
+
+        if(data === null || data === undefined || data === false) return null;
+        return { data, status };
     }
 
     _patch(data) {
@@ -81,24 +97,6 @@ export default class FtpProtocol extends Protocol {
         this.batchMode = false;
     }
 
-    set sftp(bool) {
-        const credentials = { ip: this.ip, port: this.port, username: this.username, password: this.password };
-        //set the ftp client to the correct type if it is different
-        if(bool && !(this.ftpClient instanceof SftpClient)) this.ftpClient = new SftpClient(credentials);
-        else if(!bool && !(this.ftpClient instanceof FtpClient)) this.ftpClient = new FtpClient(credentials);
-    }
-
-    static dataToProtocolResponse(data, status = 200) {
-        if(data instanceof Error) {
-            if(data.message.toLowerCase().includes('no such file')) status = 404;
-            else return null;
-            return { status, data: { message: data.message } };
-        }
-
-        if(data === null || data === undefined || data === false) return null;
-        return { data, status };
-    }
-
     /**
      * @inheritDoc
      * @returns {Promise<?ProtocolResponse>} - The response from the server.
@@ -114,9 +112,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async get(getPath, putPath) {
         try {
             if(!this.batchMode) await this.ftpClient.connect();
@@ -130,9 +125,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async list(folder) {
         try {
             if(!this.batchMode) await this.ftpClient.connect();
@@ -146,9 +138,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async put(getPath, putPath) {
         try {
             if(!this.batchMode) await this.ftpClient.connect();
@@ -182,9 +171,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async startBatch() {
         try {
             await this.ftpClient.connect();
@@ -196,9 +182,6 @@ export default class FtpProtocol extends Protocol {
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     async endBatch() {
         try {
             await this.ftpClient.disconnect();

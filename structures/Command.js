@@ -1,4 +1,4 @@
-import { CommandInteraction, Message } from 'discord.js';
+import { CommandInteraction, Message, MessageFlags } from 'discord.js';
 import keys from '../utilities/keys.js';
 
 export default class Command {
@@ -10,10 +10,11 @@ export default class Command {
      * @property {boolean} [ephemeral=false] - Indicates whether to defer this command as ephemeral.
      * @property {boolean} [requiresConnectedServer=true] - Indicates whether this command requires a connected server.
      * @property {int} [requiresUserIndex=null] - The user argument index that requires a user.
-     * @property {boolean} [requiresConnectedPlugin=false] - Indicates whether this command requires a connected plugin.
      * @property {boolean} [ownerOnly=false] - Indicates whether this command is only available to the bot owner.
      * @property {string} [category] - The category of this command.
      * @property {boolean} [allowPrefix=false] - Whether this command can be executed with the prefix.
+     * @property {boolean} [allowUser=false] - Whether this command can be executed in a DM.
+     * @property {string} [sku] - The sku required to execute this command.
      */
 
     /**
@@ -53,12 +54,6 @@ export default class Command {
         this.requiresUserIndex = options.requiresUserIndex ?? null;
 
         /**
-         * Indicates whether this command requires a connected plugin.
-         * @type {boolean}
-         */
-        this.requiresConnectedPlugin = options.requiresConnectedPlugin ?? false;
-
-        /**
          * Indicates whether this command is only available to the bot owner.
          * @type {boolean}
          */
@@ -75,6 +70,18 @@ export default class Command {
          * @type {boolean}
          */
         this.allowPrefix = options.allowPrefix ?? false;
+
+        /**
+         * Whether this command can be executed in a DM.
+         * @type {boolean}
+         */
+        this.allowUser = options.allowUser ?? false;
+
+        /**
+         * The sku required to execute this command.
+         * @type {?string}
+         */
+        this.sku = options.sku ?? null;
     }
 
     /**
@@ -82,20 +89,16 @@ export default class Command {
      * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @param {any[]} args - The command arguments set by the user.
-     * @param {requiresConnectedPlugin extends true ? ServerConnection<PluginProtocol> : ServerConnection<Protocol>} server - The connection of the server the command was executed in.
+     * @param {ServerConnection} server - The connection of the server the command was executed in.
      * @returns {Promise<?boolean>|?boolean}
      * @abstract
      */
     async execute(interaction, client, args, server) {
         await interaction.replyTl(keys.api.command.executed, { args: args.join(' ') });
-        if(this.defer) await interaction.deferReply?.({ ephemeral: this.ephemeral });
+        if(this.defer) await interaction.deferReply?.({ flags: this.ephemeral ? MessageFlags.Ephemeral : undefined });
 
         if(this.ownerOnly) return interaction.user.id === process.env.OWNER_ID;
 
-        if(this.requiresConnectedPlugin && !server?.protocol?.isPluginProtocol()) {
-            await interaction.replyTl(keys.api.command.errors.server_not_connected_plugin);
-            return false;
-        }
         if(this.requiresConnectedServer && !server) {
             await interaction.replyTl(keys.api.command.errors.server_not_connected);
             return false;
@@ -106,6 +109,13 @@ export default class Command {
             if(!user || user.error) return false;
 
             args[this.requiresUserIndex] = user;
+        }
+
+        if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
+            if(process.env.NODE_ENV === 'production' && (await client.application.fetchSKUs()).size) {
+                await interaction.replyTl(keys.custom_bot.warnings.no_entitlement);
+                return false;
+            }
         }
 
         return true;

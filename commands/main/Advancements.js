@@ -1,7 +1,8 @@
-import minecraft_data from 'minecraft-data';
+import MinecraftData from 'minecraft-data';
 import Discord, { time } from 'discord.js';
 import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
+import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import { FilePath } from '../../structures/Protocol.js';
 import * as d3 from 'd3-hierarchy';
@@ -9,8 +10,9 @@ import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import logger from '../../utilities/logger.js';
 
-const mcData = minecraft_data('1.20.4');
+const mcData = MinecraftData(MinecraftDataVersion);
 
 const iconSize = 40;
 const frameSize = iconSize + 18;
@@ -112,7 +114,7 @@ export default class Advancements extends Command {
             }
             catch(err) {
                 //Draw name
-                console.log(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': node.data.icon }));
+                logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': node.data.icon }));
                 ctx.font = '8px Minecraft';
                 ctx.fillStyle = '#000';
                 const lines = utils.wrapText(ctx, mcData.itemsByName[node.data.icon]?.displayName ?? node.data.icon, frameSize);
@@ -150,7 +152,6 @@ export default class Advancements extends Command {
 
         const paginationPages = await this.getAdvancementPages(advancementDataList, user.username, advancementsEmbed, advancementsAttach);
         const pagination = new Pagination(client, interaction, paginationPages, {
-            showSelectedButton: true,
             showStartPageOnce: true,
             timeout: 60000 * 5, // 5 minutes
         });
@@ -198,7 +199,7 @@ export default class Advancements extends Command {
                 paginationPages[advancementButton.data.custom_id] = {
                     button: advancementButton,
                     startPage: true,
-                    page: {
+                    options: {
                         embeds: [advancementsEmbed],
                         files: [advancementsAttach],
                     },
@@ -209,7 +210,7 @@ export default class Advancements extends Command {
             paginationPages[advancementButton.data.custom_id] = {
                 button: advancementButton,
                 startPage: advancement.value === 'root',
-                page: {
+                options: {
                     embeds: [advancementsEmbed, advancementEmbed],
                 },
             };

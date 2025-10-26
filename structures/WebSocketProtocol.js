@@ -46,10 +46,7 @@ export default class WebSocketProtocol extends Protocol {
          */
         this.socket = data.socket ?? this.socket;
     }
-    
-    /**
-     * @inheritDoc
-     */
+
     async get(getPath, putPath) {
         const response = await this._sendRaw('get-file', { path: getPath });
         if(!response) return null;
@@ -59,9 +56,6 @@ export default class WebSocketProtocol extends Protocol {
         return { status: 200, data: await fs.readFile(putPath) };
     }
 
-    /**
-     * @inheritDoc
-     */
     async put(getPath, putPath) {
         return await this._sendRaw('put-file', { path: encodeURIComponent(putPath) }, await fs.readFile(getPath));
     }
@@ -80,9 +74,6 @@ export default class WebSocketProtocol extends Protocol {
         }, { context: { id: this.id }, shard: 0 });
     }
 
-    /**
-     * @inheritDoc
-     */
     list(folder) {
         return this._sendRaw('list-file', { folder });
     }
@@ -210,7 +201,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     execute(command, uuid = null) {
-        return this._sendRaw('command', { cmd: encodeURIComponent(command), uuid });
+        return this._sendRaw('command', { cmd: encodeURIComponent(command.trim()), uuid });
     }
 
     /**
@@ -262,10 +253,21 @@ export default class WebSocketProtocol extends Protocol {
                 /** @type {WebSocketProtocol} */
                 const protocol = c.serverConnections.cache.get(id).protocol;
                 if(!protocol.socket) return resolve(null);
+                c.logger.debug(`[Socket.IO] Sending event ${name} with data: ${JSON.stringify(data)}`);
                 protocol.socket.timeout(10_000).emit(name, ...data, (err, response) => {
-                    if(err) return resolve(null);
-                    if(typeof response === 'string') resolve(JSON.parse(response));
-                    else resolve(response);
+                    if(err) {
+                        c.logger.error(err, `[Socket.IO] Error while sending event ${name}`);
+                        return resolve(null);
+                    }
+
+                    if(typeof response === 'string') {
+                        c.logger.debug(`[Socket.IO] Received response for event ${name}: ${response}`);
+                        resolve(JSON.parse(response));
+                    }
+                    else {
+                        c.logger.debug(`[Socket.IO] Received response for event ${name}`);
+                        resolve(response);
+                    }
                 });
             });
         }, { context: { id: this.id, name, data }, shard: 0 });

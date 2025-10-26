@@ -5,6 +5,7 @@ export function getManagerString(manager) {
     else if(manager.constructor.name === 'UserConnectionManager') return 'userConnections';
     else if(manager.constructor.name === 'ServerSettingsConnectionManager') return 'serverSettingsConnections';
     else if(manager.constructor.name === 'UserSettingsConnectionManager') return 'userSettingsConnections';
+    else if(manager.constructor.name === 'CustomBotConnectionManager') return 'customBots';
     else return null;
 }
 
@@ -13,5 +14,6 @@ export function getManagerStringFromConnection(connection) {
     else if(connection.constructor.name === 'UserConnection') return 'userConnections';
     else if(connection.constructor.name === 'ServerSettingsConnection') return 'serverSettingsConnections';
     else if(connection.constructor.name === 'UserSettingsConnection') return 'userSettingsConnections';
+    else if(connection.constructor.name === 'CustomBotConnection') return 'customBots';
     else return null;
 }

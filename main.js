@@ -1,20 +1,26 @@
 import { ShardEvents, ShardingManager } from 'discord.js';
+import { AutoPoster } from 'topgg-autoposter';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const manager = new ShardingManager('./bot.js', { token: process.env.TOKEN });
+const sharder = new ShardingManager('./bot.js', { token: process.env.TOKEN });
+
+if(process.env.TOPGG_TOKEN) {
+    const poster = AutoPoster(process.env.TOPGG_TOKEN, sharder);
+    poster.on('posted', () => {});
+}
 
 const readyShards = new Set();
-manager.on('shardCreate', shard => {
+sharder.on('shardCreate', shard => {
     console.log(`Launched shard ${shard.id}`);
     shard.on(ShardEvents.Ready, async () => {
         console.log(`Shard ${shard.id} ready`);
         readyShards.add(shard.id);
-        if(readyShards.size === manager.totalShards) {
-            console.log(`All ${manager.totalShards} shards ready`);
-            await manager.broadcastEval(c => c.emit('allShardsReady'));
+        if(readyShards.size === sharder.totalShards) {
+            console.log(`All ${sharder.totalShards} shards ready`);
+            await sharder.broadcastEval(c => c.emit('allShardsReady'));
         }
     });
 });
-await manager.spawn();
+await sharder.spawn();

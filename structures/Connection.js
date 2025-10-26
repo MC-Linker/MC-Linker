@@ -5,11 +5,11 @@ import ServerConnection from './ServerConnection.js';
 export default class Connection extends Base {
 
     /**
-     * @typedef {UserConnectionData|ServerConnectionData|ServerSettingsConnectionData|UserSettingsConnectionData} ConnectionData - The data for the connection.
+     * @typedef {UserConnectionData|ServerConnectionData|ServerSettingsConnectionData|UserSettingsConnectionData|CustomBotConnectionData} ConnectionData - The data for the connection.
      */
 
     /**
-     * @typedef {'ServerConnection'|'UserConnection'|'ServerSettingsConnection'|'UserSettingsConnection'} CollectionName - The name of a database collection.
+     * @typedef {'ServerConnection'|'UserConnection'|'ServerSettingsConnection'|'UserSettingsConnection'|'CustomBotConnection'} CollectionName - The name of a database collection.
      */
 
     /**
@@ -38,15 +38,15 @@ export default class Connection extends Base {
 
         if(this instanceof ServerConnection) {
             // map id to _id
-            data.chatChannels?.forEach((channel, index) => {
+            data.chatChannels.forEach((channel, index) => {
                 data.chatChannels[index]._id = channel.id;
                 delete data.chatChannels[index].id;
             });
-            data.statChannels?.forEach((channel, index) => {
+            data.statChannels.forEach((channel, index) => {
                 data.statChannels[index]._id = channel.id;
                 delete data.statChannels[index].id;
             });
-            data.syncedRoles?.forEach((role, index) => {
+            data.syncedRoles.forEach((role, index) => {
                 data.syncedRoles[index]._id = role.id;
                 delete data.syncedRoles[index].id;
             });
@@ -98,8 +98,8 @@ export default class Connection extends Base {
     }
 
     /**
-     * Returns the writable data of the connection.
-     * @returns {ConnectionData} - The writable data of the connection.
+     * Returns the serializable data of the connection.
+     * @returns {ConnectionData} - The serializable data of the connection.
      * @abstract
      */
     getData() {

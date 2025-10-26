@@ -1,47 +1,75 @@
-import HttpProtocol from '../structures/HttpProtocol.js';
 import Discord, {
     ActionRowBuilder,
     ApplicationCommandOptionType,
+    ChannelType,
     CommandInteraction,
+    ComponentType,
     GuildChannel,
     MessageMentions,
     MessagePayload,
     PermissionFlagsBits,
+    PermissionsBitField,
+    Routes,
     User,
 } from 'discord.js';
 import crypto from 'crypto';
-import minecraft_data from 'minecraft-data';
-import FtpProtocol from '../structures/FtpProtocol.js';
+import MinecraftData from 'minecraft-data';
 import keys from './keys.js';
 import advancementData from '../resources/data/advancements.json' with { type: 'json' };
 import customStats from '../resources/data/stats_custom.json' with { type: 'json' };
 import nbt from 'prismarine-nbt';
-import { ph } from './messages.js';
+import { getReplyOptions, ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import mojangson from 'mojangson';
 import { Authflow } from 'prismarine-auth';
+import util from 'util';
+import { exec } from 'child_process';
 import WebSocketProtocol from '../structures/WebSocketProtocol.js';
 import { FilePath } from '../structures/Protocol.js';
+import HttpProtocol from '../structures/HttpProtocol.js';
+import FtpProtocol from '../structures/FtpProtocol.js';
+import fs from 'fs-extra';
+import path from 'path';
 
-const mcData = minecraft_data('1.20.4');
+/**
+ * Promisified version of exec.
+ * @type {(arg1: string, options: ExecOptions=null) => Promise<{ stdout: string, stderr: string }>}
+ */
+export const execAsync = util.promisify(exec);
 
 export const MaxEmbedFieldValueLength = 1024;
+export const MaxActionRows = 5;
+export const MaxActionRowSize = 5;
 export const MaxEmbedDescriptionLength = 4096;
 export const MaxAutoCompleteChoices = 25;
 export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
+export const MinecraftDataVersion = '1.21.3';
+
+/** The size of each component in an action row (5 takes up the whole row) */
+export const ComponentSizeInActionRow = {
+    [ComponentType.Button]: 1,
+    [ComponentType.StringSelect]: 5,
+    [ComponentType.RoleSelect]: 5,
+    [ComponentType.ChannelSelect]: 5,
+    [ComponentType.UserSelect]: 5,
+    [ComponentType.MentionableSelect]: 5,
+    [ComponentType.TextInput]: 5,
+};
+
+const mcData = MinecraftData(MinecraftDataVersion);
 
 // Password Auth:
-const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
-    authTitle: process.env.AZURE_CLIENT_ID,
-    flow: 'msal', // required, but will be ignored because password field is set
-    password: process.env.MICROSOFT_PASSWORD,
-});
+const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && process.env.AZURE_CLIENT_ID ?
+    new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
+        authTitle: process.env.AZURE_CLIENT_ID,
+        flow: 'msal', // required, but will be ignored because password field is set
+        password: process.env.MICROSOFT_PASSWORD,
+    }) : null;
 // MSAL Auth:
 // const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
 //     console.log(res);
 // });
-
 
 /**
  * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.
@@ -50,7 +78,7 @@ const flow = new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
  */
 export async function getMinecraftAvatarURL(username) {
     const url = `https://minotar.net/helm/${username}?rnd=${Math.random()}`; //Random query to prevent caching
-    //fetch the url to check if the user exists
+    //TODO check if needed, fetch the url to check if the user exists
     try {
         const res = await fetch(url);
         //If the user doesn't exist, return steve
@@ -233,6 +261,11 @@ export async function fetchUUID(username) {
     }
 }
 
+/**
+ * Fetches the username of the given uuid from the Mojang API.
+ * @param {string} uuid - The uuid to fetch the username for.
+ * @returns {Promise<?string>} - The username or undefined if the user doesn't exist.
+ */
 export async function fetchUsername(uuid) {
     try {
         const data = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`)
@@ -340,6 +373,7 @@ export async function getUsersFromMention(client, mention) {
     return userArray;
 }
 
+
 const defaultStatusRespones = {
     400: keys.api.plugin.errors.status_400,
     401: keys.api.plugin.errors.status_401,
@@ -398,6 +432,33 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
 }
 
 /**
+ * Stringifies a minecraft json object to a string.
+ * @example "Hello §aWorld§r!" -> "Hello World"
+ * @example {"text":"Hello §aWorld§r!"} -> "Hello World"
+ * @example [{"text":"Hello "},{"text":"World","color":"green"},{"text":"!"}] -> "Hello World!"
+ * @param {Object|string|Array} json - The minecraft json object to stringify. This can be a string, an object or an array of objects.
+ * @param {boolean} [stripColors=true] - Whether to strip color codes from the string.
+ * @returns {?string} - The stringified json or null if the input was invalid.
+ */
+export function stringifyMinecraftJson(json, stripColors = true) {
+    const runStripColors = text => stripColors ? text.replace(/§[0-9a-fk-or]/g, '') : text;
+
+    if(typeof json === 'string' && json.startsWith('"')) return runStripColors(json.replace(/^"|"$/g, '')); //Remove quotes at the start and end of the string
+    else if(typeof json === 'string') {
+        try {
+            return stringifyMinecraftJson(JSON.parse(json));
+        }
+        catch(err) {
+            return null;
+        }
+    }
+    else if(Array.isArray(json))
+        return runStripColors(json.map(item => item.text).join(''));
+    else if(typeof json === 'object') return runStripColors(json.text);
+}
+
+
+/**
  * Gets the live player nbt data from the server.
  * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise (or if previous method fails) it will download the nbt file.
  * @param {ServerConnection} server - The server to get the nbt data from.
@@ -406,16 +467,14 @@ export async function handleProtocolResponses(responses, protocol, interaction, 
  * @returns {Promise<?Object>} - The parsed and simplified nbt data or null if an error occurred.
  */
 export async function getLivePlayerNbt(server, user, interaction) {
-    if(server.protocol.isPluginProtocol()) {
-        const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-        const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
-        if(onlinePlayers.includes(user.username)) {
-            const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
-            if(playerNbtResponse?.status === 200) {
-                const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
-                if(parsed) return parsed;
-                // else fall back to downloading the nbt file
-            }
+    const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
+    const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
+    if(onlinePlayers.includes(user.username)) {
+        const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
+        if(playerNbtResponse?.status === 200 && playerNbtResponse.data.data !== '') {
+            const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
+            if(parsed) return parsed;
+            // else fall back to downloading the nbt file
         }
     }
 
@@ -490,7 +549,7 @@ export function nbtStringToObject(string, interaction) {
         const object = mojangson.parse(stripColorCodes(string));
         //remove empty inventory/ender-items to prevent error (please fix this mojangson)
         if(!object.value?.Inventory?.value?.value) delete object.value.Inventory;
-        else if(!object.value?.EnderItems?.value?.value) delete object.value.EnderItems;
+        if(!object.value?.EnderItems?.value?.value) delete object.value.EnderItems;
         const simplified = mojangson.simplify(object);
         // re-add empty inventory/ender-items
         if(!simplified.Inventory) simplified.Inventory = [];
@@ -837,6 +896,16 @@ export function disableComponents(rows) {
 }
 
 /**
+ * Flatten action rows to get all components in an array
+ * @param {import('discord.js').ActionRowBuilder[]} actionRows - The action rows to flatten
+ * @return {import('discord.js').ComponentBuilder[]} - An array of all components in the action rows
+ * @private
+ */
+export function flattenActionRows(actionRows) {
+    return actionRows?.flatMap(row => row.components) ?? [];
+}
+
+/**
  * Memoizes a function.
  * @template {Function} K
  * @param {K} fn - The function to memoize.
@@ -845,11 +914,15 @@ export function disableComponents(rows) {
  */
 export function memoize(fn, parameters = undefined) {
     const cache = new Map();
-    return async function(...args) {
+    return function(...args) {
         const key = JSON.stringify(args.slice(0, parameters));
         if(cache.has(key)) return cache.get(key);
-        const result = await fn(...args);
-        cache.set(key, result);
+
+        const result = fn(...args);
+        if(result instanceof Promise)
+            result.then(value => cache.set(key, value));
+        else cache.set(key, result);
+
         return result;
     };
 }
@@ -900,4 +973,147 @@ export function durationString(ms) {
     return `${years} year${years === 1 ? '' : 's'}, ${weeks} week${weeks === 1 ? '' : 's'}, ${days} day${days === 1 ? '' : 's'}, ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
         //Remove 0 values
         .replace(/(?<!\d)0\s[a-z]+,\s/g, '').replace(/(, 00:00:00)/, '');
+}
+
+/**
+ * Send a message to a guild with the given key
+ * This will try to send the message to the system channel first
+ * If that fails, it will try to send it to the public updates channel
+ * If that also fails, it will try to send it to the first text channel it finds
+ * @param {Discord.Guild} guild - The guild to send the message to
+ * @param {any} key - The key of the message to send
+ * @param {...Object} placeholders - The placeholders to use in the message
+ * @returns {Promise<void>}
+ */
+export async function sendToServer(guild, key, ...placeholders) {
+    const replyOptions = getReplyOptions(key, ...placeholders);
+
+    if(await trySendMessage(guild.systemChannel)) return;
+    if(await trySendMessage(guild.publicUpdatesChannel)) return;
+
+    const sortedChannels = await sortChannels(guild);
+    for(const channel of sortedChannels) {
+        if(await trySendMessage(channel)) return;
+    }
+
+    async function trySendMessage(channel) {
+        if(!channel || !channel.isTextBased()) return false;
+        try {
+            await channel.send(replyOptions);
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+}
+
+/**
+ * Sort channels in a guild by their position
+ * @param {Guild} guild - The guild to sort the channels in
+ * @returns {Promise<Discord.Channel[]>}
+ */
+export async function sortChannels(guild) {
+    const guildChannels = await guild.channels.fetch();
+
+    //Sorting by type (text over voice) and by position
+    const descendingPosition = (a, b) => {
+        if(a.type === b.type) return a.position - b.position;
+        else if(a.type === 'voice') return 1;
+        else return -1;
+    };
+
+    const sortedChannels = [];
+
+    /** @type {Discord.Collection<?Discord.CategoryChannel, Discord.Collection<Discord.Snowflake, Discord.CategoryChildChannel>>} */
+    const channels = new Discord.Collection();
+
+    //Push channels without category/parent
+    guildChannels
+        .filter(channel => !channel.parent && channel.type !== ChannelType.GuildCategory)
+        .sort(descendingPosition)
+        .forEach(c => sortedChannels.push(c));
+
+    //Set Categories with their children
+    /** @type {Discord.Collection<Discord.Snowflake, Discord.CategoryChannel>} */
+    const categories = guildChannels.filter(channel => channel.type === ChannelType.GuildCategory).sort(descendingPosition);
+    categories.forEach(category => channels.set(category, category.children.cache.sort(descendingPosition)));
+
+    //Loop over all categories
+    channels.forEach((children, category) => {
+        //Push category
+        if(category) sortedChannels.push(category);
+
+        //Loop over children of categories and push children
+        for(const [_, child] of children) sortedChannels.push(child);
+    });
+
+    return sortedChannels;
+}
+
+/**
+ * Generates a default invite link for a bot.
+ * Default Scopes:
+ * - bot
+ * - applications.commands
+ * Default Permissions:
+ * - Create Instant Invite
+ * - Manage Webhooks
+ * - View Channel
+ * - Send Messages
+ * - Send Messages in Threads
+ * - Embed Links
+ * - Attach Files
+ * - Use External Emojis
+ * - Manage Roles
+ * @param {string} botId - The id of the bot to generate the invite for.
+ * @return {'https://discord.com/api/oauth2/authorize?client_id=${botId}&scope=${scopes}&permissions=${permissions}'}
+ */
+export function generateDefaultInvite(botId) {
+    const permissions = PermissionsBitField.Flags.CreateInstantInvite |
+        PermissionsBitField.Flags.ManageWebhooks |
+        PermissionsBitField.Flags.ViewChannel |
+        PermissionsBitField.Flags.SendMessages |
+        PermissionsBitField.Flags.SendMessagesInThreads |
+        PermissionsBitField.Flags.EmbedLinks |
+        PermissionsBitField.Flags.AttachFiles |
+        PermissionsBitField.Flags.UseExternalEmojis |
+        PermissionsBitField.Flags.ManageRoles;
+
+    return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}&scope=applications.commands+bot&permissions=${permissions}`;
+}
+
+/**
+ * Uploads all emojis from the resources/emojis folder to the given client.
+ * @param {Discord.Client} client - The client to upload the emojis to.
+ * @returns {Promise<{string, string}>} - A map of emoji names to their codes.
+ */
+export async function uploadApplicationEmojis(client) {
+    const emojiDir = './resources/emojis';
+    const emojiFiles = (await fs.readdir(emojiDir))
+        .filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file));
+
+    const emojiMap = {};
+    for(const file of emojiFiles) {
+        const emojiName = path.parse(file).name;
+        try {
+            const existingEmoji = client.emojis.cache.find(e => e.name === emojiName);
+            if(existingEmoji) {
+                emojiMap[emojiName] = Discord.formatEmoji(emoji);
+                console.debug(`Emoji ${emojiName} already exists, skipping upload`);
+                continue;
+            }
+
+            const emoji = await client.application.emojis.create({
+                attachment: `${emojiDir}/${file}`,
+                name: emojiName,
+            });
+            emojiMap[emojiName] = Discord.formatEmoji(emoji);
+            console.debug(`Uploaded emoji ${emojiName} (${emoji.id})`);
+        }
+        catch(err) {
+            console.error(`Failed to upload emoji ${emojiName}:`, err);
+        }
+    }
+    return emojiMap;
 }

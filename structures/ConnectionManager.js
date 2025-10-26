@@ -1,7 +1,5 @@
 import { CachedManager } from 'discord.js';
-import fs from 'fs-extra';
 import { getManagerString } from '../utilities/shardingUtils.js';
-import ServerConnection from './ServerConnection.js';
 
 export default class ConnectionManager extends CachedManager {
 
@@ -10,7 +8,7 @@ export default class ConnectionManager extends CachedManager {
      */
 
     /**
-     * @typedef {ServerConnectionResolvable|UserConnectionResolvable|ServerSettingsConnectionResolvable|UserSettingsConnectionResolvable} ConnectionResolvable - The resolvable for any connection.
+     * @typedef {ServerConnectionResolvable|UserConnectionResolvable|ServerSettingsConnectionResolvable|UserSettingsConnectionResolvable|CustomBotConnectionResolvable} ConnectionResolvable - The resolvable for any connection.
      */
 
     /**
@@ -22,7 +20,7 @@ export default class ConnectionManager extends CachedManager {
     /**
      * Creates a new ConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
-     * @param {typeof Connection} holds - The type of connection the manager holds.
+     * @param {typeof import('./Connection.js').default} holds - The type of connection the manager holds.
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ConnectionManager} - A new ConnectionManager instance.
      */
@@ -37,7 +35,7 @@ export default class ConnectionManager extends CachedManager {
 
         /**
          * The connection cache of this manager.
-         * @type {import('discord.js').Collection<string, Connection>}
+         * @type {import('discord.js').Collection<string, import('./Connection.js').default>}
          */
         this.cache = super.cache;
     }
@@ -45,7 +43,7 @@ export default class ConnectionManager extends CachedManager {
     /**
      * Adds a connection to the cache and writes the data to the file system.
      * @param {ConnectionData} data - The data for the connection.
-     * @returns {Promise<?Connection>} - The connection instance that has been created.
+     * @returns {Promise<?import('./Connection.js').default>} - The connection instance that has been created.
      */
     async connect(data) {
         /** @type {?Connection} */
@@ -67,32 +65,23 @@ export default class ConnectionManager extends CachedManager {
 
     /**
      * Removes a connection from the cache and deletes the data from the database.
-     * @param {ConnectionResolvable} connection - The connection to disconnect.
+     * @param {ConnectionResolvable} connectionResolvable - The connection resolvable to disconnect.
      * @returns {Promise<boolean>} - Whether the disconnection was successful.
      */
-    async disconnect(connection) {
-        /** @type {?Connection} */
-        const instance = this.resolve(connection);
+    async disconnect(connectionResolvable) {
+        const connection = this.resolve(connectionResolvable);
 
-        if(instance instanceof ServerConnection && Array.isArray(instance.chatChannels)) {
-            for(const channel of instance.chatChannels) {
-                if(channel.webhook) {
-                    try {
-                        const webhook = await this.client.fetchWebhook(channel.webhook);
-                        await webhook.delete();
-                    }
-                    catch(_) {}
-                }
-            }
-        }
-
-        if(instance && await instance._delete()) {
+        if(connection && await connection._delete()) {
             //Broadcast to all shards
-            await this.client.shard.broadcastEval((c, { instanceId, manager, shard }) => {
+            await this.client.shard.broadcastEval((c, { connectionId, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
-                c[manager].cache.delete(instanceId);
+                c[manager].cache.delete(connectionId);
             }, {
-                context: { instanceId: instance.id, manager: getManagerString(this), shard: this.client.shard.ids[0] },
+                context: {
+                    connectionId: connection.id,
+                    manager: getManagerString(this),
+                    shard: this.client.shard.ids[0],
+                },
             });
             return this.cache.delete(this.resolveId(connection));
         }
@@ -113,23 +102,19 @@ export default class ConnectionManager extends CachedManager {
             connection.id = connection._id;
             delete connection._id;
 
-            if('chatChannels' in connection) {
+            if(this.collectionName === 'ServerConnection') {
                 //map chatChannels _id to id
                 connection.chatChannels = connection.chatChannels.map(channel => {
                     channel.id = channel._id;
                     delete channel._id;
                     return channel;
                 });
-            }
-            if('statChannels' in connection) {
                 //map statChannels _id to id
                 connection.statChannels = connection.statChannels.map(channel => {
                     channel.id = channel._id;
                     delete channel._id;
                     return channel;
                 });
-            }
-            if('syncedRoles' in connection) {
                 //map syncedRoles _id to id
                 connection.syncedRoles = connection.syncedRoles.map(role => {
                     role.id = role._id;
@@ -137,23 +122,8 @@ export default class ConnectionManager extends CachedManager {
                     return role;
                 });
             }
-
+            
             await this._add(connection, true, { extras: [this.collectionName] });
-        }
-    }
-
-    /**
-     * Removes the download cache folder for a connection.
-     * @param {string} id - The id of the connection.
-     * @returns {Promise<boolean>}
-     */
-    async removeCache(id) {
-        try {
-            await fs.rm(`./download-cache/${this.collectionName}/${id}/`, { recursive: true });
-            return true;
-        }
-        catch(_) {
-            return false;
         }
     }
 }
