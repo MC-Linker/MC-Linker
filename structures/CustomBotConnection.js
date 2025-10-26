@@ -248,7 +248,7 @@ export default class CustomBotConnection extends Connection {
     }
 
     /**
-     * Sends a presence update to the custom bot via HTTP.
+     * Sends a presence update to the custom bot.
      * @param {import('discord.js').PresenceData} presence - The presence data to set.
      * @return {Promise<boolean>}
      */
@@ -256,8 +256,12 @@ export default class CustomBotConnection extends Connection {
         return await this.communicate('presence', presence);
     }
 
-    async disconnectAllServers() {
-        return await this.communicate('disconnect-all-servers', {});
+    /**
+     * Sends a message to disconnect all servers and drop the database.
+     * @return {Promise<boolean>}
+     */
+    async preDeleteCleanup() {
+        return await this.communicate('pre-delete-cleanup', {});
     }
 
     async communicate(path, data = {}, method = 'POST') {

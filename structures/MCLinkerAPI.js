@@ -165,12 +165,14 @@ export default class MCLinkerAPI extends EventEmitter {
         },
         {
             method: 'POST',
-            endpoint: '/disconnect-all-servers',
+            endpoint: '/pre-delete-cleanup',
             requiresServer: false,
             customBot: true,
             handler: async (_, __) => {
                 for(const server of this.client.serverConnections.cache.values())
                     await this.client.serverConnections.disconnect(server);
+                this.client.mongo.connection.db.dropDatabase();
+                console.log(`${this.client.mongo.connection.db.databaseName} database dropped.`);
             },
         },
     ];
@@ -274,7 +276,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
         for(const route of this.routes) {
             if(!route.method || !route.endpoint) continue;
-            if(route.customBot && process.env.CUSTOM_BOT !== 'true') return;
+            if(route.customBot && process.env.CUSTOM_BOT !== 'true') continue;
 
             this.fastify[route.method.toLowerCase()](route.endpoint, async (request, reply) => {
                 const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(request.body) : route.rateLimiter;
