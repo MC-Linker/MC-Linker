@@ -163,6 +163,16 @@ export default class MCLinkerAPI extends EventEmitter {
                 }
             },
         },
+        {
+            method: 'POST',
+            endpoint: '/disconnect-all-servers',
+            requiresServer: false,
+            customBot: true,
+            handler: async (_, __) => {
+                for(const server of this.client.serverConnections.cache.values())
+                    await this.client.serverConnections.disconnect(server);
+            },
+        },
     ];
 
     /**

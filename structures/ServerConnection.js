@@ -251,12 +251,10 @@ export default class ServerConnection extends Connection {
     }
 
     async _output() {
-        if(await super._output()) {
+        if(await super._output())
             return await this.settings._output();
-        }
         else return false;
     }
-
 
     /**
      * Removes the download cache folder of this server connection.

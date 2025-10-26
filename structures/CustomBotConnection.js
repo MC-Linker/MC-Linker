@@ -256,6 +256,10 @@ export default class CustomBotConnection extends Connection {
         return await this.communicate('presence', presence);
     }
 
+    async disconnectAllServers() {
+        return await this.communicate('disconnect-all-servers', {});
+    }
+
     async communicate(path, data = {}, method = 'POST') {
         const response = await fetch(`http://${this.containerName}:${this.port}/${path}`, {
             method,

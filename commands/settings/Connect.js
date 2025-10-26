@@ -85,10 +85,7 @@ export default class Connect extends Command {
      */
     async disconnectOldServer(client, serverResolvable) {
         const server = client.serverConnections.resolve(serverResolvable);
-        if(server) {
-            await server.protocol.disconnect();
-            return await client.serverConnections.disconnect(server);
-        }
+        if(server) return await client.serverConnections.disconnect(server);
     }
 
     /**

@@ -47,6 +47,9 @@ export default class CustomBotConnectionManager extends ConnectionManager {
     async disconnect(connectionResolvable) {
         /** @type {CustomBotConnection} */
         const connection = this.resolve(connectionResolvable);
+
+        connection.disconnectAllServers();
+
         await connection.down();
         await connection.removeDataFolder();
         return super.disconnect(connection);

@@ -37,6 +37,7 @@ export default class ServerConnectionManager extends ConnectionManager {
                 catch(_) {}
             }
         }
+        await connection.protocol.disconnect();
 
         if(!await super.disconnect(connection)) return false;
         await connection.removeCache();
