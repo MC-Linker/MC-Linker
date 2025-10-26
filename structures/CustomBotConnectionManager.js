@@ -51,7 +51,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         connection.preDeleteCleanup();
 
         await connection.down();
-        await connection.removeDataFolder();
+        await connection.removeData();
         return super.disconnect(connection);
     }
 

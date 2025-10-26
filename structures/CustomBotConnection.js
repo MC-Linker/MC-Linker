@@ -286,9 +286,12 @@ export default class CustomBotConnection extends Connection {
      * Removes the custom bot data folder from the filesystem.
      * @return {Promise<void>}
      */
-    async removeDataFolder() {
+    async removeData() {
         logger.info(`Removing custom bot data folder ${this.dataFolder}`);
-        await fs.remove(this.dataFolder);
+        await fs.remove(`${this.dataFolder}/config.json`);
+        await fs.remove(`${this.dataFolder}/.env`);
+        await fs.remove(`${this.dataFolder}/download-cache`);
+        //Keep logs for future reference
     }
 
     getData() {
