@@ -102,25 +102,27 @@ export default class ConnectionManager extends CachedManager {
             connection.id = connection._id;
             delete connection._id;
 
-            //map chatChannels _id to id
-            connection.chatChannels = connection.chatChannels.map(channel => {
-                channel.id = channel._id;
-                delete channel._id;
-                return channel;
-            });
-            //map statChannels _id to id
-            connection.statChannels = connection.statChannels.map(channel => {
-                channel.id = channel._id;
-                delete channel._id;
-                return channel;
-            });
-            //map syncedRoles _id to id
-            connection.syncedRoles = connection.syncedRoles.map(role => {
-                role.id = role._id;
-                delete role._id;
-                return role;
-            });
-
+            if(this.collectionName === 'ServerConnection') {
+                //map chatChannels _id to id
+                connection.chatChannels = connection.chatChannels.map(channel => {
+                    channel.id = channel._id;
+                    delete channel._id;
+                    return channel;
+                });
+                //map statChannels _id to id
+                connection.statChannels = connection.statChannels.map(channel => {
+                    channel.id = channel._id;
+                    delete channel._id;
+                    return channel;
+                });
+                //map syncedRoles _id to id
+                connection.syncedRoles = connection.syncedRoles.map(role => {
+                    role.id = role._id;
+                    delete role._id;
+                    return role;
+                });
+            }
+            
             await this._add(connection, true, { extras: [this.collectionName] });
         }
     }
