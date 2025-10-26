@@ -177,6 +177,7 @@ export default class CustomBotConnection extends Connection {
 
         // Check logs until the bot is ready
         return new Promise((resolve, reject) => {
+            let checkLogsInterval;
             const checkLogsTimeout = setTimeout(() => {
                 reject(new Error('Timeout waiting for bot to start'));
                 clearInterval(checkLogsInterval);
@@ -187,7 +188,7 @@ export default class CustomBotConnection extends Connection {
                 catch(_) {}
             }, 60_000);
 
-            const checkLogsInterval = setInterval(async () => {
+            checkLogsInterval = setInterval(async () => {
                 try {
                     const { stdout: logs } = await execAsync(`docker logs ${this.containerName} --tail 10`);
 
