@@ -38,15 +38,15 @@ export default class Connection extends Base {
 
         if(this instanceof ServerConnection) {
             // map id to _id
-            data.chatChannels?.forEach((channel, index) => {
+            data.chatChannels.forEach((channel, index) => {
                 data.chatChannels[index]._id = channel.id;
                 delete data.chatChannels[index].id;
             });
-            data.statChannels?.forEach((channel, index) => {
+            data.statChannels.forEach((channel, index) => {
                 data.statChannels[index]._id = channel.id;
                 delete data.statChannels[index].id;
             });
-            data.syncedRoles?.forEach((role, index) => {
+            data.syncedRoles.forEach((role, index) => {
                 data.syncedRoles[index]._id = role.id;
                 delete data.syncedRoles[index].id;
             });

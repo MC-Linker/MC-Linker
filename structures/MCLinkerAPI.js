@@ -556,7 +556,6 @@ export default class MCLinkerAPI extends EventEmitter {
         if(['player_command', 'console_command', 'block_command'].includes(type)) {
             const commandName = message.replace(/^\//, '').split(/\s+/)[0];
             if(server.settings.isDisabled('chatCommands', commandName)) return;
-
         }
 
         const guild = await this.client.guilds.fetch(guildId);
@@ -642,8 +641,7 @@ export default class MCLinkerAPI extends EventEmitter {
             }
 
             if(!channel.webhook) {
-                await discordChannel.send({ embeds: [chatEmbed] }).catch(() => {
-                });
+                await discordChannel.send({ embeds: [chatEmbed] }).catch(() => {});
                 continue;
             }
 

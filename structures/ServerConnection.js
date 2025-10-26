@@ -178,48 +178,44 @@ export default class ServerConnection extends Connection {
          * The chatchannels connected to this server.
          * @type {?ChatChannelData[]}
          * */
-        this.chatChannels = data.chatChannels ?? [];
+        this.chatChannels = data.chatChannels ?? this.chatChannels ?? [];
 
         /**
          * The data for stats channels.
          * @type {?StatsChannelData[]}
          */
-        this.statChannels = data.statChannels ?? [];
+        this.statChannels = data.statChannels ?? this.statChannels ?? [];
 
         /**
          * The data for syncedRoles.
          * @type {?SyncedRoleData[]}
          */
-        this.syncedRoles = data.syncedRoles ?? [];
+        this.syncedRoles = data.syncedRoles ?? this.syncedRoles ?? [];
 
         /**
          * The ip that will be displayed to users to connect to this server.
          * Either display ip or just ip
+         * @type {string}
+         */
+        this.displayIp = data.displayIp ?? this.displayIp ?? this.ip;
+
+        /**
+         * The floodgate prefix of this server.
          * @type {?string}
          */
-        this.displayIp = data.displayIp ?? this.ip;
+        this.floodgatePrefix = data.floodgatePrefix ?? this.floodgatePrefix ?? null;
 
-        if('floodgatePrefix' in data) {
-            /**
-             * The floodgate prefix of this server.
-             * @type {string}
-             */
-            this.floodgatePrefix = data.floodgatePrefix;
-        }
-        if('requiredRoleToJoin' in data) {
-            /**
-             * The role required to join this server.
-             * @type {?RequiredRoleToJoinData}
-             */
-            this.requiredRoleToJoin = data.requiredRoleToJoin;
-        }
-        if('hash' in data) {
-            /**
-             * The connection hash used to authenticate the plugin for websocket connections.
-             * @type {?string}
-             */
-            this.hash = data.hash;
-        }
+        /**
+         * The role required to join this server.
+         * @type {?RequiredRoleToJoinData}
+         */
+        this.requiredRoleToJoin = data.requiredRoleToJoin ?? this.requiredRoleToJoin ?? null;
+
+        /**
+         * The connection hash used to authenticate the plugin for websocket connections.
+         * @type {?string}
+         */
+        this.hash = data.hash ?? this.hash ?? null;
     }
 
     /**
