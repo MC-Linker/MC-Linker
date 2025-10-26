@@ -2261,7 +2261,7 @@
                             "type": "Button",
                             "label": "Role #%index1%",
                             "custom_id": "role_%index%",
-                            "style": "Success"
+                            "style": "Secondary"
                         }
                     ]
                 }
