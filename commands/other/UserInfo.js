@@ -246,28 +246,29 @@ export default class UserInfo extends Command {
 
         let response = commandResponse.data?.message ? commandResponse.data.message : keys.api.plugin.warnings.no_response_message;
         response = codeBlockFromCommandResponse(response);
-        await interaction.editReply(getReplyOptions(
+
+        if(interaction.customId !== 'userinfo_kick') {
+            //Toggle buttons (ban <-> unban, whitelist <-> unwhitelist, op <-> deop)
+            const buttons = interaction.message.components[0].components;
+            const button = buttons.find(button => button.customId === interaction.customId);
+            const buttonIndex = buttons.indexOf(button);
+
+            const toggleMap = {
+                'ban': 'unban',
+                'whitelist': 'unwhitelist',
+                'op': 'deop',
+            };
+
+            let key = toggleMap[interaction.customId.replace('userinfo_', '')];
+            if(!key) key = Object.keys(toggleMap).find(k => toggleMap[k] === interaction.customId.replace('userinfo_', ''));
+
+            buttons[buttonIndex] = getComponent(keys.commands.userinfo.success.buttons[key]);
+        }
+        await interaction.editReply({ components: interaction.message.components });
+
+        await interaction.followUp(getReplyOptions(
             keys.commands.userinfo.success.admin_button,
             { response, command },
         ));
-
-        if(interaction.customId === 'userinfo_kick') return;
-
-        //Toggle buttons (ban <-> unban, whitelist <-> unwhitelist, op <-> deop)
-        const buttons = interaction.message.components[0].components;
-        const button = buttons.find(button => button.customId === interaction.customId);
-        const buttonIndex = buttons.indexOf(button);
-
-        const toggleMap = {
-            'ban': 'unban',
-            'whitelist': 'unwhitelist',
-            'op': 'deop',
-        };
-
-        let key = toggleMap[interaction.customId.replace('userinfo_', '')];
-        if(!key) key = Object.keys(toggleMap).find(k => toggleMap[k] === interaction.customId.replace('userinfo_', ''));
-
-        buttons[buttonIndex] = getComponent(keys.commands.userinfo.success.buttons[key]);
-        await interaction.message.edit({ components: interaction.message.components });
     }
 }
