@@ -1,7 +1,7 @@
 import Canvas from 'skia-canvas';
 import Discord, { ButtonStyle } from 'discord.js';
 import MinecraftData from 'minecraft-data';
-import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
+import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -141,7 +141,7 @@ export default class Inventory extends Command {
             await invCanvas.toBuffer('png'),
             { name: 'Inventory_Player.png', description: keys.commands.inventory.inventory_description },
         );
-        const invEmbed = getEmbed(keys.commands.inventory.success.final, ph.emojisAndColors(), { username: user.username });
+        const invEmbed = getEmbed(keys.commands.inventory.success.final, { username: user.username });
         // Send without buttons if showDetails is false
         if(!showDetails) return await interaction.replyOptions({ files: [invAttach], embeds: [invEmbed] });
 
@@ -207,7 +207,7 @@ export default class Inventory extends Command {
 
         //Add enchantments info
         if(tag['minecraft:enchantments'] || tag['minecraft:stored_enchantments'] || tag.Enchantments || tag.StoredEnchantments) {
-            const enchantments = tag['minecraft:enchantments']?.levels ?? tag['minecraft:stored_enchantments']?.levels ?? tag.Enchantments ?? tag.StoredEnchantments;
+            const enchantments = tag['minecraft:enchantments'] ?? tag['minecraft:stored_enchantments']?.levels ?? tag.Enchantments ?? tag.StoredEnchantments;
 
             let formattedEnchantments;
             if(tag['minecraft:enchantments'] || tag['minecraft:stored_enchantments']) {
@@ -352,7 +352,6 @@ export default class Inventory extends Command {
                     username: username,
                     avatar: getMinecraftAvatarURL(username),
                 },
-                ph.emojisAndColors(),
             );
             const isSpecialItem = this.addInfo(itemEmbed, item.components ?? item.tag, itemStats);
 
@@ -394,7 +393,7 @@ export default class Inventory extends Command {
                     await shulkerImage.toBuffer('png'),
                     { name: `Shulker_Contents.png`, description: keys.commands.inventory.shulker_description },
                 );
-                const shulkerEmbed = getEmbed(keys.commands.inventory.success.final_shulker, ph.emojisAndColors(), { username });
+                const shulkerEmbed = getEmbed(keys.commands.inventory.success.final_shulker, { username });
 
                 paginationPages[buttonId] = {
                     button,

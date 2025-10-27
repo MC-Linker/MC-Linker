@@ -4,7 +4,6 @@ import * as utils from '../../utilities/utils.js';
 import { UUIDRegex } from '../../utilities/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
-import { ph } from '../../utilities/messages.js';
 
 export default class Account extends Command {
 
@@ -53,7 +52,7 @@ export default class Account extends Command {
             await interaction.replyTl(keys.commands.account.step.verification_info, {
                 code,
                 ip: server.displayIp,
-            }, ph.emojisAndColors());
+            });
 
             const timeout = setTimeout(async () => {
                 await interaction.replyTl(keys.commands.account.warnings.verification_timeout);

@@ -293,7 +293,7 @@ export const ph = {
  */
 export function addPh(key, ...placeholders) {
     if(util.types.isProxy(key)) key = getLanguageKey(key);
-    placeholders = Object.assign({}, ...placeholders);
+    placeholders = Object.assign({}, ph.emojisAndColors(), ...placeholders);
 
     if(typeof key === 'string') {
         key = key.replace(/%([^%]+)%/g, (match, name) => placeholders[name] ?? match);
@@ -421,7 +421,7 @@ export function getEmbed(key, ...placeholders) {
     if(key.title) embed.setTitle(key.title);
     if(key.description) embed.setDescription(key.description);
     if(key.color) embed.setColor(key.color);
-    if(key.author?.name) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
+    if(key.author?.name) embed.setAuthor({ icon_url: key.author.icon_url, name: key.author.name, url: key.author.url });
     if(key.image) embed.setImage(key.image);
     if(key.thumbnail) embed.setThumbnail(key.thumbnail);
     if(key.timestamp) embed.setTimestamp(Number(key.timestamp));

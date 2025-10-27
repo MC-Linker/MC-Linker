@@ -1,6 +1,5 @@
 import Event from '../structures/Event.js';
 import keys from '../utilities/keys.js';
-import { ph } from '../utilities/messages.js';
 
 /**
  * Handles the Discord ready event for the MC-Linker bot.
@@ -23,8 +22,8 @@ export default class EditConnectResponse extends Event {
         clearTimeout(timeout); // Works because event is called on same shard
 
         if(responseType === 'success')
-            await interaction.replyTl(keys.commands.connect.success.websocket, placeholders, ph.emojisAndColors());
+            await interaction.replyTl(keys.commands.connect.success.websocket, placeholders);
         else if(responseType === 'error')
-            await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders, ph.emojisAndColors());
+            await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders);
     }
 }

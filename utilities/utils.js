@@ -44,7 +44,7 @@ export const MaxActionRowSize = 5;
 export const MaxEmbedDescriptionLength = 4096;
 export const MaxAutoCompleteChoices = 25;
 export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
-export const MinecraftDataVersion = '1.21.3';
+export const MinecraftDataVersion = '1.21.8';
 
 /** The size of each component in an action row (5 takes up the whole row) */
 export const ComponentSizeInActionRow = {
@@ -78,7 +78,6 @@ const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && pr
  */
 export async function getMinecraftAvatarURL(username) {
     const url = `https://minotar.net/helm/${username}?rnd=${Math.random()}`; //Random query to prevent caching
-    //TODO check if needed, fetch the url to check if the user exists
     try {
         const res = await fetch(url);
         //If the user doesn't exist, return steve
@@ -444,7 +443,7 @@ export function stringifyMinecraftJson(json, stripColors = true) {
     const runStripColors = text => stripColors ? text.replace(/§[0-9a-fk-or]/g, '') : text;
 
     if(typeof json === 'string' && json.startsWith('"')) return runStripColors(json.replace(/^"|"$/g, '')); //Remove quotes at the start and end of the string
-    else if(typeof json === 'string') {
+    else if(typeof json === 'string' && (json.startsWith('{') || json.startsWith('['))) {
         try {
             return stringifyMinecraftJson(JSON.parse(json));
         }
@@ -455,6 +454,7 @@ export function stringifyMinecraftJson(json, stripColors = true) {
     else if(Array.isArray(json))
         return runStripColors(json.map(item => item.text).join(''));
     else if(typeof json === 'object') return runStripColors(json.text);
+    else return json;
 }
 
 
@@ -986,7 +986,7 @@ export function durationString(ms) {
  * @returns {Promise<void>}
  */
 export async function sendToServer(guild, key, ...placeholders) {
-    const replyOptions = getReplyOptions(key, ph.emojisAndColors(), ...placeholders);
+    const replyOptions = getReplyOptions(key, ...placeholders);
 
     if(await trySendMessage(guild.systemChannel)) return;
     if(await trySendMessage(guild.publicUpdatesChannel)) return;

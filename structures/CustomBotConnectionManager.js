@@ -80,18 +80,18 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      * @return {Promise<Message>}
      */
     async sendCustomBotCreateWizard(interaction) {
-        const detailsOptions = getReplyOptions(keys.custom_bot.create.success.details, ph.emojisAndColors());
+        const detailsOptions = getReplyOptions(keys.custom_bot.create.success.details);
         detailsOptions.files = [
             new AttachmentBuilder('./resources/images/custom_bot/reset_token.png', { name: 'reset_token.png' }),
         ];
 
-        const disablePublicOptions = getReplyOptions(keys.custom_bot.create.success.disable_public_bot, ph.emojisAndColors());
+        const disablePublicOptions = getReplyOptions(keys.custom_bot.create.success.disable_public_bot);
         disablePublicOptions.files = [
             new AttachmentBuilder('./resources/images/custom_bot/disable_public_bot.gif', { name: 'disable_public_bot.gif' }),
         ];
 
         const wizardPages = [
-            getReplyOptions(keys.custom_bot.create.success.main, ph.emojisAndColors()),
+            getReplyOptions(keys.custom_bot.create.success.main),
             disablePublicOptions,
             detailsOptions,
         ];
@@ -108,7 +108,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
         });
         collector.on('collect', btnInteraction =>
-            btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal, ph.emojisAndColors())));
+            btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal)));
 
         return message;
     }
@@ -128,7 +128,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             status: isStarted ? keys.custom_bot.custom_bot_manager.status.started : keys.custom_bot.custom_bot_manager.status.stopped,
         };
 
-        const mainMessage = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), placeholders);
+        const mainMessage = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, placeholders);
         const buttonsRow1 = [keys.custom_bot.custom_bot_manager.buttons.delete]
             .map(c => getComponent(c, placeholders));
         const buttonsRow2 = [
@@ -209,7 +209,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 const customBotConnection = this.client.customBots.getCustomBot(modalInteraction.user.id);
                 await this.client.customBots.disconnect(customBotConnection);
 
-                const newMainMessageOptions = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, ph.emojisAndColors(), {
+                const newMainMessageOptions = getReplyOptions(keys.custom_bot.custom_bot_manager.success.main, {
                     port: '-',
                     invite: '', // needed for component builder to build
                     status: keys.custom_bot.custom_bot_manager.status.deleted,
