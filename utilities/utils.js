@@ -44,7 +44,7 @@ export const MaxActionRowSize = 5;
 export const MaxEmbedDescriptionLength = 4096;
 export const MaxAutoCompleteChoices = 25;
 export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
-export const MinecraftDataVersion = '1.21.3';
+export const MinecraftDataVersion = '1.21.8';
 
 /** The size of each component in an action row (5 takes up the whole row) */
 export const ComponentSizeInActionRow = {
@@ -78,7 +78,6 @@ const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && pr
  */
 export async function getMinecraftAvatarURL(username) {
     const url = `https://minotar.net/helm/${username}?rnd=${Math.random()}`; //Random query to prevent caching
-    //TODO check if needed, fetch the url to check if the user exists
     try {
         const res = await fetch(url);
         //If the user doesn't exist, return steve

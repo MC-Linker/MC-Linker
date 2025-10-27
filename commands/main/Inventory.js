@@ -207,7 +207,7 @@ export default class Inventory extends Command {
 
         //Add enchantments info
         if(tag['minecraft:enchantments'] || tag['minecraft:stored_enchantments'] || tag.Enchantments || tag.StoredEnchantments) {
-            const enchantments = tag['minecraft:enchantments']?.levels ?? tag['minecraft:stored_enchantments']?.levels ?? tag.Enchantments ?? tag.StoredEnchantments;
+            const enchantments = tag['minecraft:enchantments'] ?? tag['minecraft:stored_enchantments']?.levels ?? tag.Enchantments ?? tag.StoredEnchantments;
 
             let formattedEnchantments;
             if(tag['minecraft:enchantments'] || tag['minecraft:stored_enchantments']) {
