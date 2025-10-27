@@ -10,9 +10,9 @@ Revisa estadísticas de Minecraft, logros e inventarios dentro de Discord, ejecu
 
 Para usar la mayoría de comandos debes de conectar tu servidor de Minecraft Java Edition con este bot. Esto es posible siguiendo los siguientes pasos:
 
-+ Añadir el plugin "Discord-Linker" a tu servidor de Minecraft desde [SpigotMC](https://www.spigotmc.org/resources/discord-linker.80691/)
++ Add the "Discord-Linker" plugin to your Minecraft server from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.80691/), [Modrinth](https://modrinth.com/plugin/discord-linker), the [PaperHangar](https://hangar.papermc.io/Lianecx/Discord-Linker) or the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749)
 + Reinicia tu servidor de Minecraft o ejecuta el comando `/reload confirm` en tu servidor de Minecraft
-+ Ejecuta el comando `/connect plugin` en Discord
++ Execute `/connect` in Discord
 + Sigue las instrucciones en el mensaje enviado por el bot
 
 ## Comandos Importantes
