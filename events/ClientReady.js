@@ -36,9 +36,14 @@ export default class ClientReady extends Event {
         //TODO temporary
         if(process.env.CONVERT === 'true' && client.shard.ids.includes(0)) {
             for(const id of convertedHttpServerIds) {
-                //Fetch guild
-                const guild = await client.guilds.fetch(id);
-                await sendToServer(guild, keys.main.warnings.http_deprecated);
+                try {
+                    //Fetch guild
+                    const guild = await client.guilds.fetch(id);
+                    await sendToServer(guild, keys.main.warnings.http_deprecated);
+                }
+                catch(e) {
+                    logger.error(`Failed to send HTTP deprecation warning to guild ${id}: ${e.message}`);
+                }
             }
         }
     }
