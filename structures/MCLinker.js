@@ -16,6 +16,7 @@ import * as utils from '../utilities/utils.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
 import logger from '../utilities/logger.js';
+import { convert } from '../scripts/convert.js';
 
 export default class MCLinker extends Discord.Client {
 
