@@ -10,9 +10,9 @@ Moderate and connect your Minecraft server with Discord! This bot allows you to 
 
 To use most of the commands you’ll have to connect your Minecraft Java Edition server with the bot. This can be done by following these steps:
 
-+ Add the "Discord-Linker" plugin to your Minecraft server from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.80691/)
++ Add the "Discord-Linker" plugin to your Minecraft server from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.80691/), [Modrinth](https://modrinth.com/plugin/discord-linker), the [PaperHangar](https://hangar.papermc.io/Lianecx/Discord-Linker) or the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749)
 + Restart your Minecraft server or execute `/reload confirm` on your Minecraft server
-+ Execute `/connect plugin` in Discord
++ Execute `/connect` in Discord
 + Follow the instructions in the embed
 
 ## Important Commands
