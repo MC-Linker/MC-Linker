@@ -844,7 +844,7 @@
                                 {
                                     "name": "Icon Item",
                                     "value": "%advancement_icon%",
-                                    "inline": true
+                                    "inline": false
                                 },
                                 {
                                     "name": "Type",
