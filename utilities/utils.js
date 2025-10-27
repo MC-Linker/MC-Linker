@@ -443,7 +443,7 @@ export function stringifyMinecraftJson(json, stripColors = true) {
     const runStripColors = text => stripColors ? text.replace(/§[0-9a-fk-or]/g, '') : text;
 
     if(typeof json === 'string' && json.startsWith('"')) return runStripColors(json.replace(/^"|"$/g, '')); //Remove quotes at the start and end of the string
-    else if(typeof json === 'string') {
+    else if(typeof json === 'string' && (json.startsWith('{') || json.startsWith('['))) {
         try {
             return stringifyMinecraftJson(JSON.parse(json));
         }
@@ -454,6 +454,7 @@ export function stringifyMinecraftJson(json, stripColors = true) {
     else if(Array.isArray(json))
         return runStripColors(json.map(item => item.text).join(''));
     else if(typeof json === 'object') return runStripColors(json.text);
+    else return json;
 }
 
 
