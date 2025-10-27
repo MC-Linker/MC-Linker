@@ -153,6 +153,7 @@ export const ph = {
      * @returns {object}
      */
     emojis() {
+        if(!this._client?.config?.emojis) return {}; // As this is a default placeholder it might be called before initialization
         const emojis = Object.entries(this._client.config.emojis);
         const placeholders = {};
 
