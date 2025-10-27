@@ -4,6 +4,8 @@ import { addPh, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import logger from '../utilities/logger.js';
 import { Events } from 'discord.js';
+import { sendToServer } from '../utilities/utils.js';
+import { convertedHttpServerIds } from '../scripts/convert.js';
 
 /**
  * Handles the Discord ready event for the MC-Linker bot.
@@ -18,8 +20,6 @@ export default class ClientReady extends Event {
     }
 
     async execute(client, _) {
-        logger.setShardId(client.shard.ids[0]);
-
         logger.info(addPh(
             keys.main.success.login.console,
             ph.client(client),
@@ -32,5 +32,20 @@ export default class ClientReady extends Event {
         Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
 
         await client.customBots.updateAllBots();
+
+        //TODO temporary
+        if(process.env.CONVERT === 'true' && client.shard.ids.includes(0)) {
+            for(const id of convertedHttpServerIds) {
+                try {
+                    //Fetch guild
+                    const guild = await client.guilds.fetch(id);
+                    await sendToServer(guild, keys.main.warnings.http_deprecated);
+                    logger.info(`Sent HTTP deprecation warning to guild ${id}`);
+                }
+                catch(e) {
+                    logger.error(`Failed to send HTTP deprecation warning to guild ${id}: ${e.message}`);
+                }
+            }
+        }
     }
 }
