@@ -40,6 +40,7 @@ export default class ClientReady extends Event {
                     //Fetch guild
                     const guild = await client.guilds.fetch(id);
                     await sendToServer(guild, keys.main.warnings.http_deprecated);
+                    logger.info(`Sent HTTP deprecation warning to guild ${id}`);
                 }
                 catch(e) {
                     logger.error(`Failed to send HTTP deprecation warning to guild ${id}: ${e.message}`);
