@@ -801,6 +801,7 @@ export default class MCLinkerAPI extends EventEmitter {
         let guild;
         try {
             guild = await this.client.guilds.fetch(server.id);
+            if(guild.vanityURLCode) return { body: { url: `https://discord.gg/${guild.vanityURLCode}` } };
             invites = await guild.invites.fetch();
         }
         catch(_) {}
