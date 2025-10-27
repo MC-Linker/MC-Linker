@@ -37,7 +37,7 @@ export default class ClientReady extends Event {
         if(process.env.CONVERT === 'true' && client.shard.ids.includes(0)) {
             for(const id of convertedHttpServerIds) {
                 //Fetch guild
-                const guild = await client.guilds.fetch(doc._id);
+                const guild = await client.guilds.fetch(id);
                 await sendToServer(guild, keys.main.warnings.http_deprecated);
             }
         }
