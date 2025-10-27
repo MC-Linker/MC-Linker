@@ -1094,11 +1094,11 @@ export async function uploadApplicationEmojis(client) {
         .filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file));
 
     const emojiMap = {};
+    const existingEmojis = await client.application.emojis.fetch();
     for(const file of emojiFiles) {
         const emojiName = path.parse(file).name;
         try {
-            const existingEmoji = (await client.application.emojis.fetch())
-                .find(e => e.name === emojiName);
+            const existingEmoji = existingEmojis.find(e => e.name === emojiName);
             if(existingEmoji) {
                 emojiMap[emojiName] = Discord.formatEmoji(existingEmoji);
                 console.debug(`Emoji ${emojiName} already exists, skipping upload`);
