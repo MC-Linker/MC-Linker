@@ -1,5 +1,8 @@
 {
     "prefix": "$",
+    "commandsPath": "./commands",
+    "componentsPath": "./components",
+    "eventsPath": "./events",
     "presence": {
         "status": "online",
         "activities": [

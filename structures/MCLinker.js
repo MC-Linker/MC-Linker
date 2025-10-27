@@ -23,6 +23,9 @@ export default class MCLinker extends Discord.Client {
     /**
      * @typedef {Object} MCLinkerConfig
      * @property {string} prefix - The prefix for the bot.
+     * @property {string} commandsPath - The path to the commands folder.
+     * @property {string} componentsPath - The path to the components folder.
+     * @property {string} eventsPath - The path to the events folder.
      * @property {import('discord.js').PresenceData} presence - The presence data for the bot.
      * @property {string} pluginVersion - The latest version of the Minecraft plugin.
      * @property {string} supportServerInvite - The invite link to the support server.
@@ -78,46 +81,44 @@ export default class MCLinker extends Discord.Client {
     events = new Discord.Collection();
 
     /**
-     * The config of the bot.
-     * @type {MCLinkerConfig}
-     */
-    config;
-
-    /**
      * Creates a new MCLinker client instance.
-     * @param {string} commandPath - The path to the commands folder.
-     * @param {string} componentPath - The path to the components folder.
-     * @param {string} eventPath - The path to the events folder.
-     * @param {Discord.ClientOptions} options - The options to pass to the Discord.js client.
+     * @param {MCLinkerConfig} config - The configuration for the bot.
      * @returns {MCLinker} - The new MCLinker client instance.
      */
-    constructor(commandPath = './commands', componentPath = './components', eventPath = './events', options = {
-        intents: [
-            Discord.GatewayIntentBits.GuildMessages,
-            Discord.GatewayIntentBits.GuildMembers,
-            Discord.GatewayIntentBits.Guilds,
-            Discord.GatewayIntentBits.DirectMessages,
-            Discord.GatewayIntentBits.MessageContent,
-        ],
-        partials: [
-            Discord.Partials.Channel,
-            Discord.Partials.GuildMember,
-        ],
-        makeCache: Options.cacheWithLimits({
-            // Don’t cache any messages
-            MessageManager: 0,
-            // Limit number of members cached per guild
-            GuildMemberManager: 100,
-            UserManager: 100,
-            ReactionManager: 0,
-            PresenceManager: 0,
-        }),
-        // Disable @everyone and @here mentions
-        allowedMentions: { parse: ['users', 'roles'] },
-    }) {
-        super(options);
+    constructor(config) {
+        super({
+            intents: [
+                Discord.GatewayIntentBits.GuildMessages,
+                Discord.GatewayIntentBits.GuildMembers,
+                Discord.GatewayIntentBits.Guilds,
+                Discord.GatewayIntentBits.DirectMessages,
+                Discord.GatewayIntentBits.MessageContent,
+            ],
+            partials: [
+                Discord.Partials.Channel,
+                Discord.Partials.GuildMember,
+            ],
+            makeCache: Options.cacheWithLimits({
+                // Don’t cache any messages
+                MessageManager: 0,
+                // Limit number of members cached per guild
+                GuildMemberManager: 100,
+                UserManager: 100,
+                ReactionManager: 0,
+                PresenceManager: 0,
+            }),
+            // Disable @everyone and @here mentions
+            allowedMentions: { parse: ['users', 'roles'] },
+            presence: config.presence,
+        });
 
         logger.setShardId(this.shard.ids[0]);
+
+        /**
+         * The configuration of the bot.
+         * @type {MCLinkerConfig}
+         */
+        this.config = config;
 
         /**
          * The server-connection manager for the bot.
@@ -168,24 +169,6 @@ export default class MCLinker extends Discord.Client {
         this.events = new Discord.Collection();
 
         /**
-         * The path to the commands folder.
-         * @type {string}
-         */
-        this.commandPath = commandPath;
-
-        /**
-         * The path to the components folder.
-         * @type {string}
-         */
-        this.componentPath = componentPath;
-
-        /**
-         * The path to the events folder.
-         * @type {string}
-         */
-        this.eventPath = eventPath;
-
-        /**
          * Utility functions for the bot to use in cross-shard communication.
          * @type {typeof utils}
          */
@@ -210,12 +193,38 @@ export default class MCLinker extends Discord.Client {
         this.api = new MCLinkerAPI(this);
     }
 
+    /**
+     * Loads the configuration from the config.json file.
+     * @return {Promise<MCLinkerConfig>}
+     * @private
+     */
+    static async loadConfig() {
+        const config = await fs.readJson(`./config.json`);
+        // Parse ActivityType
+        for(const activity of config.presence.activities)
+            activity.type = Discord.ActivityType[activity.type];
+        return config;
+    }
+
+    /**
+     * Writes the configuration to the config.json file.
+     * @param {MCLinkerConfig} config - The configuration to write.
+     * @return {Promise<void>}
+     */
+    static async writeConfig(config) {
+        // Convert ActivityType back to string
+        const configCopy = JSON.parse(JSON.stringify(config));
+        for(const activity of configCopy.presence.activities)
+            activity.type = Object.keys(Discord.ActivityType).find(k => Discord.ActivityType[k] === activity.type) ?? activity.type;
+        await fs.outputJson(`./config.json`, configCopy, { spaces: 4 });
+    }
+
     async _loadCommands() {
         const loadCommand = async (file, category = null) => {
             // noinspection LocalVariableNamingConventionJS
             const { default: CommandFile } = category ?
-                await import(`file://${path.resolve(`${this.commandPath}/${category}/${file}`)}`) :
-                await import(`file://${path.resolve(`${this.commandPath}/${file}`)}`);
+                await import(`file://${path.resolve(`${this.config.commandsPath}/${category}/${file}`)}`) :
+                await import(`file://${path.resolve(`${this.config.commandsPath}/${file}`)}`);
 
             if(CommandFile?.prototype instanceof Command) {
                 const command = new CommandFile();
@@ -228,15 +237,15 @@ export default class MCLinker extends Discord.Client {
             }
         };
 
-        await fs.ensureDir(this.commandPath);
-        const commands = await fs.readdir(this.commandPath);
+        await fs.ensureDir(this.config.commandsPath);
+        const commands = await fs.readdir(this.config.commandsPath);
 
         const commandCategories = commands.filter(command => !command.endsWith('.js'));
         const commandFiles = commands.filter(command => command.endsWith('.js'));
         for(const file of commandFiles) await loadCommand.call(this, file);
 
         for(const category of commandCategories) {
-            const commandFiles = (await fs.readdir(`${this.commandPath}/${category}`))
+            const commandFiles = (await fs.readdir(`${this.config.commandsPath}/${category}`))
                 .filter(file => file.endsWith('.js'));
 
             for(const file of commandFiles) await loadCommand(file, category);
@@ -244,13 +253,13 @@ export default class MCLinker extends Discord.Client {
     }
 
     async _loadButtons() {
-        await fs.ensureDir(this.componentPath);
-        const buttonFiles = (await fs.readdir(this.componentPath))
+        await fs.ensureDir(this.config.componentsPath);
+        const buttonFiles = (await fs.readdir(this.config.componentsPath))
             .filter(file => file.endsWith('.js'));
 
         for(const file of buttonFiles) {
             // noinspection LocalVariableNamingConventionJS
-            const { default: ComponentFile } = await import(`file://${path.resolve(`${this.componentPath}/${file}`)}`);
+            const { default: ComponentFile } = await import(`file://${path.resolve(`${this.config.componentsPath}/${file}`)}`);
             if(ComponentFile?.prototype instanceof Component) {
                 const component = new ComponentFile();
 
@@ -265,13 +274,13 @@ export default class MCLinker extends Discord.Client {
     }
 
     async _loadEvents() {
-        await fs.ensureDir(this.eventPath);
-        const eventFiles = (await fs.readdir(this.eventPath))
+        await fs.ensureDir(this.config.eventsPath);
+        const eventFiles = (await fs.readdir(this.config.eventsPath))
             .filter(file => file.endsWith('.js'));
 
         for(const file of eventFiles) {
             // noinspection LocalVariableNamingConventionJS
-            const { default: EventFile } = await import(`file://${path.resolve(`${this.eventPath}/${file}`)}`);
+            const { default: EventFile } = await import(`file://${path.resolve(`${this.config.eventsPath}/${file}`)}`);
             if(EventFile?.prototype instanceof Event) {
                 const event = new EventFile();
                 if(event.shard !== -1 && !this.shard.ids.includes(event.shard)) continue; // Skip events not for this shard
@@ -292,9 +301,6 @@ export default class MCLinker extends Discord.Client {
      * @returns {Promise<void>} - A promise that resolves when all commands, user and server connections are loaded.
      */
     async loadEverything() {
-        await this._loadConfig();
-        logger.info(`[${this.shard.ids[0]}] Loaded configuration.`);
-
         ph.initClient(this);
         logger.info(`[${this.shard.ids[0]}] Initialized placeholders.`);
 
@@ -334,20 +340,5 @@ export default class MCLinker extends Discord.Client {
 
         for(const [name, schema] of Object.entries(Schemas))
             this.mongo.model(name, new Schema(schema));
-    }
-
-    async _loadConfig() {
-        this.config = await fs.readJson(`./config.json`);
-        // Parse ActivityType
-        for(const activity of this.config.presence.activities)
-            activity.type = Discord.ActivityType[activity.type];
-    }
-
-    async writeConfig() {
-        // Convert ActivityType back to string
-        const configCopy = JSON.parse(JSON.stringify(this.config));
-        for(const activity of configCopy.presence.activities)
-            activity.type = Object.keys(Discord.ActivityType).find(k => Discord.ActivityType[k] === activity.type) ?? activity.type;
-        await fs.outputJson(`./config.json`, configCopy, { spaces: 4 });
     }
 }
