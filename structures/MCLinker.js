@@ -13,7 +13,6 @@ import Component from './Component.js';
 import Event from './Event.js';
 import MCLinkerAPI from './MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
-import { convert } from '../scripts/convert.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
 import logger from '../utilities/logger.js';
@@ -116,6 +115,8 @@ export default class MCLinker extends Discord.Client {
         allowedMentions: { parse: ['users', 'roles'] },
     }) {
         super(options);
+
+        logger.setShardId(this.shard.ids[0]);
 
         /**
          * The server-connection manager for the bot.
