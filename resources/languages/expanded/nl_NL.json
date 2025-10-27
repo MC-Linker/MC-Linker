@@ -96,7 +96,7 @@
                 "embeds": [
                     {
                         "title": "Deprecated Connection Method",
-                        "description": "**Your server is using the deprecated backup connection method and will be disconnected. Please reconnect in Discord using `/connect`.**"
+                        "description": "**Your server is using the deprecated backup connection method and has been disconnected. Please reconnect in Discord using `/connect`.**"
                     }
                 ]
             }
