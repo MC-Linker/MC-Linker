@@ -293,7 +293,7 @@ export const ph = {
  */
 export function addPh(key, ...placeholders) {
     if(util.types.isProxy(key)) key = getLanguageKey(key);
-    placeholders = Object.assign({}, ...placeholders);
+    placeholders = Object.assign({}, ph.emojisAndColors(), ...placeholders);
 
     if(typeof key === 'string') {
         key = key.replace(/%([^%]+)%/g, (match, name) => placeholders[name] ?? match);
