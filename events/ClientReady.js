@@ -24,7 +24,6 @@ export default class ClientReady extends Event {
             { prefix: client.config.prefix, 'guild_count': client.guilds.cache.size },
         ));
 
-        client.user.setPresence(client.config.presence);
         if(client.shard.ids.includes(0)) {
             await client.customBots.updateAllBots();
             await client.api.startServer();

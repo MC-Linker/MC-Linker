@@ -18,7 +18,10 @@ process.on('uncaughtException', async err => {
     logger.fatal(err, 'Uncaught exception');
 });
 
-const client = new MCLinker();
+const config = await MCLinker.loadConfig();
+logger.info(`Loaded configuration.`);
+
+const client = new MCLinker(config);
 await client.loadEverything();
 
 /*
@@ -36,9 +39,6 @@ String.prototype.toTitleCase = function(c, n) {
 
 await client.login(process.env.TOKEN);
 
-if(!client.config.emojis) {
-    client.config.emojis = await uploadApplicationEmojis(client);
-    await client.writeConfig();
-}
-
+client.config.emojis = await uploadApplicationEmojis(client);
+await MCLinker.writeConfig(client.config);
 export default client;

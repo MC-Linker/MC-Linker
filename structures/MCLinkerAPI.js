@@ -14,6 +14,7 @@ import Discord from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import logger, { pinoTransport } from '../utilities/logger.js';
 import path from 'path';
+import MCLinker from './MCLinker.js';
 
 
 export default class MCLinkerAPI extends EventEmitter {
@@ -155,7 +156,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 try {
                     await this.client.user.setPresence(data);
                     this.client.config.presence = data;
-                    await this.client.writeConfig();
+                    await MCLinker.writeConfig(this.client.config);
                 }
                 catch(err) {
                     logger.error(err, 'Error while setting custom bot presence');
