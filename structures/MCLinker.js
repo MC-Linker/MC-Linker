@@ -237,7 +237,7 @@ export default class MCLinker extends Discord.Client {
             }
         };
 
-        await fs.ensureDir(this.comthis.config.commandsPathmandPath);
+        await fs.ensureDir(this.config.commandsPath);
         const commands = await fs.readdir(this.config.commandsPath);
 
         const commandCategories = commands.filter(command => !command.endsWith('.js'));
