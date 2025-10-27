@@ -142,9 +142,9 @@ export default class ServerInfo extends Command {
             .map(([key, value]) => `${key}: ${value}`);
 
         const worldEmbed = getEmbed(keys.commands.serverinfo.success.world, {
-            spawn_x: datObject.Data.SpawnX,
-            spawn_y: datObject.Data.SpawnY,
-            spawn_z: datObject.Data.SpawnZ,
+            spawn_x: datObject.Data.SpawnX ?? datObject.Data.spawn.pos[0],
+            spawn_y: datObject.Data.SpawnY ?? datObject.Data.spawn.pos[1],
+            spawn_z: datObject.Data.SpawnZ ?? datObject.Data.spawn.pos[2],
             spawn_world: datObject.Data.LevelName,
             allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
             allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
