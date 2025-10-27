@@ -33,7 +33,7 @@ export default class ClientReady extends Event {
 
         await client.customBots.updateAllBots();
 
-        //TOOD temporary
+        //TODO temporary
         if(process.env.CONVERT === 'true' && client.shard.ids.includes(0)) {
             for(const id of convertedHttpServerIds) {
                 //Fetch guild
