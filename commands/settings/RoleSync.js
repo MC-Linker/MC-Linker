@@ -102,7 +102,7 @@ export default class RoleSync extends AutocompleteCommand {
             resp.data[respRoleIndex] = respRole;
 
             await server.edit({ syncedRoles: resp.data });
-            return interaction.replyTl(keys.commands.rolesync.success.add, ph.emojisAndColors());
+            return interaction.replyTl(keys.commands.rolesync.success.add);
         }
 
         else if(subcommand === 'remove') {

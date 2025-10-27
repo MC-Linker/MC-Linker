@@ -143,7 +143,7 @@ export default class Advancements extends Command {
             await advancementCanvas.toBuffer('png'),
             { name: 'Advancements_Player.png', description: keys.commands.advancements.advancements_description },
         );
-        const advancementsEmbed = getEmbed(keys.commands.advancements.success.final, ph.emojisAndColors(), { username: user.username });
+        const advancementsEmbed = getEmbed(keys.commands.advancements.success.final, { username: user.username });
 
         if(!showDetails) return await interaction.replyOptions({
             embeds: [advancementsEmbed],
@@ -189,7 +189,6 @@ export default class Advancements extends Command {
                 advancement_obtained: advancement.obtained ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
                 username,
                 user_icon: await utils.getMinecraftAvatarURL(username),
-                ...ph.emojisAndColors(),
             };
 
             const advancementEmbed = getEmbed(keys.commands.advancements.success.details, allPlaceholders);

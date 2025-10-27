@@ -986,7 +986,7 @@ export function durationString(ms) {
  * @returns {Promise<void>}
  */
 export async function sendToServer(guild, key, ...placeholders) {
-    const replyOptions = getReplyOptions(key, ph.emojisAndColors(), ...placeholders);
+    const replyOptions = getReplyOptions(key, ...placeholders);
 
     if(await trySendMessage(guild.systemChannel)) return;
     if(await trySendMessage(guild.publicUpdatesChannel)) return;

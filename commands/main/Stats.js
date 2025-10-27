@@ -4,7 +4,7 @@ import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import { FilePath } from '../../structures/Protocol.js';
 import Canvas from 'skia-canvas';
-import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
+import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
 import MinecraftData from 'minecraft-data';
 import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -227,7 +227,7 @@ export default class Stats extends Command {
                 await statsCanvas.toBuffer('png'),
                 { name: 'Statistics_Player.png', description: keys.commands.stats.stats_description },
             );
-            const statsEmbed = getEmbed(keys.commands.stats.success.final, ph.emojisAndColors(), { username: user.username });
+            const statsEmbed = getEmbed(keys.commands.stats.success.final, { username: user.username });
 
             const endIndex = currentStatAmounts[0] * (category === 'custom' ? maxCustomStatsAmountY : maxStatsAmountsY) + currentStatAmounts[1];
             paginationPages[`stats_${pageNumber}`] = {

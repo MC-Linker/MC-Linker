@@ -528,7 +528,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 server.chatChannels.forEach(chatChannel => {
                     // Send a message to the chat channels that the server has disconnected
                     const channel = this.client.channels.cache.get(chatChannel.id);
-                    if(channel) channel.send({ embeds: [getEmbed(keys.api.plugin.warnings.server_disconnected, ph.emojisAndColors())] });
+                    if(channel) channel.send({ embeds: [getEmbed(keys.api.plugin.warnings.server_disconnected)] });
                 });
             }
 
@@ -579,7 +579,7 @@ export default class MCLinkerAPI extends EventEmitter {
         }
         else if(type === 'death' && (!message || message === '')) argPlaceholder.message = keys.api.plugin.success.default_death_message;
 
-        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, ph.emojisAndColors(), { 'timestamp_now': Date.now() });
+        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, { 'timestamp_now': Date.now() });
         if(type !== 'chat') {
             for(const channel of channels) {
                 if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
@@ -636,7 +636,7 @@ export default class MCLinkerAPI extends EventEmitter {
             }
 
             if(!allWebhooks) {
-                await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
+                await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] });
                 return;
             }
 
@@ -664,7 +664,7 @@ export default class MCLinkerAPI extends EventEmitter {
                         id: channel.id,
                     });
                     if(!regChannel) {
-                        await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook, ph.emojisAndColors())] });
+                        await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook)] });
                         await webhook.delete();
                         return;
                     }
@@ -689,10 +689,10 @@ export default class MCLinkerAPI extends EventEmitter {
             catch(err) {
                 try {
                     if(discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.ManageWebhooks)) {
-                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission, ph.emojisAndColors())] });
+                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] });
                     }
                     else {
-                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.unknown_chat_error, ph.emojisAndColors(), ph.error(err))] });
+                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.unknown_chat_error, ph.error(err))] });
                     }
                 }
                 catch(_) {

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { getEmbed, ph } from '../../utilities/messages.js';
+import { getEmbed } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Discord from 'discord.js';
@@ -39,9 +39,9 @@ export default class Connect extends Command {
         if(!selectResponse && joinRequirement === 'roles') return; //User didn't respond in time
         else if(joinRequirement === 'link') selectResponse = { roles: [], method: 'all' }; //No roles still requires linked account
 
-        const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, ph.emojisAndColors(), { code: `${interaction.guildId}:${code}` });
+        const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, { code: `${interaction.guildId}:${code}` });
         if(server) {
-            const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, ph.emojisAndColors(), { ip: server.displayIp });
+            const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, { ip: server.displayIp });
             await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed], components: [] });
         }
         else await interaction.replyOptions({ embeds: [verificationEmbed], components: [] });

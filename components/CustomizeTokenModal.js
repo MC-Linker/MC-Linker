@@ -4,7 +4,7 @@ import Discord, { AttachmentBuilder, OAuth2Scopes, PermissionsBitField, Routes }
 import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import Wizard from '../structures/helpers/Wizard.js';
-import { addTranslatedResponses, getReplyOptions, ph } from '../utilities/messages.js';
+import { addTranslatedResponses, getReplyOptions } from '../utilities/messages.js';
 import { execAsync } from '../utilities/utils.js';
 
 export default class CustomizeTokenModal extends Component {
@@ -56,7 +56,7 @@ export default class CustomizeTokenModal extends Component {
         }
         catch(err) {
             if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG') {
-                const invalidTokenOptions = getReplyOptions(keys.custom_bot.create.warnings.invalid_token, ph.emojisAndColors());
+                const invalidTokenOptions = getReplyOptions(keys.custom_bot.create.warnings.invalid_token);
                 return await interaction.replyOptions({
                     ...invalidTokenOptions,
                     files: [
@@ -105,7 +105,7 @@ export default class CustomizeTokenModal extends Component {
         const wizard = new Wizard(client, interaction, [
             keys.custom_bot.create.success.port,
             keys.custom_bot.create.success.finish,
-        ].map(key => getReplyOptions(key, { port: botPort, invite }, ph.emojisAndColors())), {
+        ].map(key => getReplyOptions(key, { port: botPort, invite })), {
             timeout: 60_000 * 14, // 15 minutes is max interaction timeout
         });
         const message = await wizard.start();
