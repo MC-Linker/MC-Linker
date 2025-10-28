@@ -39,6 +39,9 @@ String.prototype.toTitleCase = function(c, n) {
 
 await client.login(process.env.TOKEN);
 
-client.config.emojis = await uploadApplicationEmojis(client);
-await MCLinker.writeConfig(client.config);
+if(client.shard.ids.includes(0)) {
+    client.config.emojis = await uploadApplicationEmojis(client);
+    await MCLinker.writeConfig(client.config);
+}
+
 export default client;
