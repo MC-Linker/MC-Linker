@@ -24,11 +24,6 @@ export default class ClientReady extends Event {
             { prefix: client.config.prefix, 'guild_count': client.guilds.cache.size },
         ));
 
-        if(client.shard.ids.includes(0)) {
-            await client.customBots.updateAllBots();
-            await client.api.startServer();
-        }
-
         Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
     }
 }
