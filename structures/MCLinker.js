@@ -302,10 +302,10 @@ export default class MCLinker extends Discord.Client {
      */
     async loadEverything() {
         ph.initClient(this);
-        logger.info(`[${this.shard.ids[0]}] Initialized placeholders.`);
+        logger.info(`Initialized placeholders.`);
 
         await this.loadMongoose();
-        logger.info(`[${this.shard.ids[0]}] Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
+        logger.info(`Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
         if(process.env.CONVERT === 'true' && this.shard.ids[0] === 0) {
             await convert(this, this.mongo);
@@ -313,22 +313,22 @@ export default class MCLinker extends Discord.Client {
         }
 
         await this.serverConnections._load();
-        logger.info(`[${this.shard.ids[0]}] Loaded all server connections.`);
+        logger.info(`Loaded all server connections.`);
         await this.userConnections._load();
-        logger.info(`[${this.shard.ids[0]}] Loaded all user connections.`);
+        logger.info(`Loaded all user connections.`);
         await this.serverSettingsConnections._load();
-        logger.info(`[${this.shard.ids[0]}] Loaded all server-settings connections.`);
+        logger.info(`Loaded all server-settings connections.`);
         await this.userSettingsConnections._load();
-        logger.info(`[${this.shard.ids[0]}] Loaded all user-settings connections.`);
+        logger.info(`Loaded all user-settings connections.`);
         await this.customBots._load();
-        logger.info(`[${this.shard.ids[0]}] Loaded all custom bots.`);
+        logger.info(`Loaded all custom bots.`);
 
         await this._loadCommands();
-        logger.info(`[${this.shard.ids[0]}] Loaded all commands.`);
+        logger.info(`Loaded all commands.`);
         await this._loadButtons();
-        logger.info(`[${this.shard.ids[0]}] Loaded all buttons.`);
+        logger.info(`Loaded all buttons.`);
         await this._loadEvents();
-        logger.info(`[${this.shard.ids[0]}] Loaded all events.`);
+        logger.info(`Loaded all events.`);
     }
 
     async loadMongoose() {
