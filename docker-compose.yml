@@ -20,7 +20,7 @@ services:
         target: /usr/src/app/config.json
       - type: bind
         source: ./Custom-MC-Linker
-        target: /usr/src/Custom-MC-Linker
+        target: /usr/src/app/Custom-MC-Linker
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
