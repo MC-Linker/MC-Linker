@@ -17,6 +17,6 @@ export default class EntitlementCreate extends Event {
     async execute(client, entitlement) {
         const user = await entitlement.fetchUser();
         const dm = await user.createDM();
-        await dm.send(getReplyOptions(keys.custom_bot.success.subscribed, ph.commandName('customize', client, true)));
+        await dm.send(getReplyOptions(keys.custom_bot.success.subscribed, await ph.commandName('customize', true)));
     }
 }

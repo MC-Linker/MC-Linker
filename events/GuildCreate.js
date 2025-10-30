@@ -21,8 +21,8 @@ export default class GuildCreate extends Event {
         await sendToServer(
             guild,
             keys.main.success.invite,
-            await ph.commandName('connect', client, true),
-            await ph.commandName('chatchannel add', client, true),
+            await ph.commandName('connect', true),
+            await ph.commandName('chatchannel add', true),
         );
     }
 } 

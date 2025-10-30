@@ -48,7 +48,7 @@ export default class Help extends AutocompleteCommand {
         if(!commandName || commandName === 'help') {
             helpEmbed.addFields(addPh(keys.commands.help.success.no_args.embeds[0].fields,
                 { 'invite_link': client.config.supportServerInvite },
-                await ph.allCommands(client),
+                await ph.allCommands(),
             ));
             return interaction.replyOptions({ embeds: [helpEmbed] });
         }
@@ -67,7 +67,7 @@ export default class Help extends AutocompleteCommand {
 
                 helpEmbed.addFields(addPh(
                     keys.commands.help.success.category.embeds[0].fields[0],
-                    await ph.commandName(command.name, client),
+                    await ph.commandName(command.name),
                     { 'command_description': command.description },
                 ));
             }
@@ -92,7 +92,7 @@ export default class Help extends AutocompleteCommand {
                     'command_usage': commandUsage,
                     'invite_link': client.config.supportServerInvite,
                 },
-                await ph.commandName(commandName, client),
+                await ph.commandName(commandName),
             ));
             return interaction.replyOptions({ embeds: [helpEmbed] });
 

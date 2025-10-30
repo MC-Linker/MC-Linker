@@ -2,7 +2,6 @@ import Discord, {
     ActionRowBuilder,
     ApplicationCommand,
     BaseInteraction,
-    Client,
     ComponentBuilder,
     ComponentType,
     EmbedBuilder,
@@ -253,18 +252,15 @@ export const ph = {
     /**
      * Placeholders for a command by name.
      * @param {string} commandName - The name of the command to get placeholders for (space for subcommand).
-     * @param {Client} client - The client to get the command from.
      * @param {boolean} prependCommandName - Whether to prepend the command name to the placeholder keys.
      * @returns {Promise<{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}>}
      */
-    async commandName(commandName, client, prependCommandName = false) {
-        if(!(client instanceof Discord.Client)) return {};
-
+    async commandName(commandName, prependCommandName = false) {
         const splitCommandName = commandName.split(' ');
 
         const rootCommandName = splitCommandName.shift();
         const subcommandName = splitCommandName.length > 0 ? splitCommandName.join(' ') : null;
-        const command = await fetchCommand(client.application.commands, rootCommandName);
+        const command = await fetchCommand(this._client.application.commands, rootCommandName);
         if(!command) return {};
 
         return this.command(command, subcommandName, prependCommandName);
@@ -272,13 +268,10 @@ export const ph = {
 
     /**
      * Placeholders for all commands.
-     * @param {Client} client - The client to get the commands from.
      * @returns {Promise<object>}
      */
-    async allCommands(client) {
-        if(!(client instanceof Discord.Client)) return {};
-
-        const commands = await client.application.commands.fetch();
+    async allCommands() {
+        const commands = await this._client.application.commands.fetch();
 
         const allPh = commands.map(cmd => this.command(cmd, null, true));
         return Object.assign({}, ...allPh); //flatten

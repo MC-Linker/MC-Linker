@@ -33,7 +33,7 @@ export default class GuildMemberUpdate extends Event {
         if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
         if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
         const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
-        if(roleIndex === -1) return;
+        if(roleIndex === -1 || !resp) return;
         role.players = resp.data;
         server.syncedRoles[roleIndex] = role;
         if(resp.status === 200) await server.edit({});
