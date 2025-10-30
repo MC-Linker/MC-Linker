@@ -171,7 +171,7 @@
                             "fields": [
                                 {
                                     "name": "Disabling Public Bot",
-                                    "value": "To prevent others from adding your bot to their servers follow these steps:\n* In the **Installation** section, set \"Install Link\" to \"None\".\n* In the **Bot** section, disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                    "value": "To prevent others from adding your bot to their servers follow these steps (in order):\n* In the **Installation** section, set \"Install Link\" to \"None\".\n* In the **Bot** section, disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ],
                             "image": "attachment://disable_public_bot.gif"

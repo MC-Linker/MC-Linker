@@ -48,7 +48,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         /** @type {CustomBotConnection} */
         const connection = this.resolve(connectionResolvable);
 
-        connection.preDeleteCleanup();
+        await connection.preDeleteCleanup();
 
         await connection.down();
         await connection.removeData();

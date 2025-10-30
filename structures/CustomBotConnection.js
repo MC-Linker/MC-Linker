@@ -94,7 +94,7 @@ export default class CustomBotConnection extends Connection {
             MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
             AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
             IO_USERNAME: process.env.IO_USERNAME,
-            IO_PASSWORD: crypto.randomUUID(),
+            IO_PASSWORD: process.env.IO_PASSWORD,
             SERVICE_NAME: `custom-mc-linker_${this.ownerId}`,
             DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${this.ownerId}`,
             DATA_FOLDER: this.dataFolder,
@@ -114,8 +114,8 @@ export default class CustomBotConnection extends Connection {
         await fs.outputFile(`${this.dataFolder}/.env`, stringifiedEnv);
         await fs.outputJson(`${this.dataFolder}/config.json`, configJson, { spaces: 4 });
 
-        await fs.mkdir(`${this.dataFolder}/download-cache`);
-        await fs.mkdir(`${this.dataFolder}/logs`);
+        await fs.ensureDir(`${this.dataFolder}/download-cache`);
+        await fs.ensureDir(`${this.dataFolder}/logs`);
 
         await logger.info(`Custom bot data folder created at ${this.dataFolder}`);
 
@@ -283,11 +283,11 @@ export default class CustomBotConnection extends Connection {
     }
 
     /**
-     * Removes the custom bot data folder from the filesystem.
+     * Removes the custom bot data from the filesystem.
      * @return {Promise<void>}
      */
     async removeData() {
-        logger.info(`Removing custom bot data folder ${this.dataFolder}`);
+        logger.info(`Removing custom bot data ${this.dataFolder}`);
         await fs.remove(`${this.dataFolder}/config.json`);
         await fs.remove(`${this.dataFolder}/.env`);
         await fs.remove(`${this.dataFolder}/download-cache`);
