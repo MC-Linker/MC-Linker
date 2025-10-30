@@ -162,7 +162,6 @@ export default class CustomBotConnection extends Connection {
     async update() {
         logger.info(`Updating custom bot ${this.containerName}`);
         await this.build();
-        await this.stop();
         return await this.start();
     }
 
