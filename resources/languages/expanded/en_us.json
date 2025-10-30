@@ -3,28 +3,28 @@
         "success": {
             "author": {
                 "name": "Success",
-                "icon_url": "https://cdn.discordapp.com/emojis/1084892413035810897.webp?size=96&quality=lossless"
+                "icon_url": "https://cdn.discordapp.com/emojis/1432518917548544144.webp"
             },
             "color": "%color_success%"
         },
         "warnings": {
             "author": {
                 "name": "Warning",
-                "icon_url": "https://cdn.discordapp.com/emojis/1084892438205829180.webp"
+                "icon_url": "https://cdn.discordapp.com/emojis/1432518918596984917.webp"
             },
             "color": "%color_warning%"
         },
         "errors": {
             "author": {
                 "name": "Error",
-                "icon_url": "https://cdn.discordapp.com/emojis/1084892456371376240.webp"
+                "icon_url": "https://cdn.discordapp.com/emojis/1433545543455604856.webp"
             },
             "color": "%color_error%"
         },
         "no_access": {
             "author": {
                 "name": "No Access",
-                "icon_url": "https://cdn.discordapp.com/emojis/1084892473756766370.webp"
+                "icon_url": "https://cdn.discordapp.com/emojis/1432509026846900317.webp"
             },
             "color": "%color_error%"
         },
