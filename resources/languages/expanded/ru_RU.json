@@ -3,28 +3,28 @@
         "success": {
             "author": {
                 "name": "Успешно",
-                "icon_url": "https://cdn.discordapp.com/emojis/1084892413035810897.webp?size=96&quality=lossless"
+                "icon_url": "https://cdn.discordapp.com/emojis/1432518917548544144.webp"
             },
             "color": "%color_success%"
         },
         "warnings": {
             "author": {
                 "name": "Предупреждение",
-                "icon_url": "https://cdn.discordapp.com/emojis/1084892438205829180.webp"
+                "icon_url": "https://cdn.discordapp.com/emojis/1432518918596984917.webp"
             },
             "color": "%color_warning%"
         },
         "errors": {
             "author": {
                 "name": "Ошибка",
-                "icon_url": "https://cdn.discordapp.com/emojis/1084892456371376240.webp"
+                "icon_url": "https://cdn.discordapp.com/emojis/1433545543455604856.webp"
             },
             "color": "%color_error%"
         },
         "no_access": {
             "author": {
                 "name": "Нет Доступа",
-                "icon_url": "https://cdn.discordapp.com/emojis/1084892473756766370.webp"
+                "icon_url": "https://cdn.discordapp.com/emojis/1432509026846900317.webp"
             },
             "color": "%color_error%"
         },
@@ -171,7 +171,7 @@
                             "fields": [
                                 {
                                     "name": "Disabling Public Bot",
-                                    "value": "To prevent others from adding your bot to their servers follow these steps:\n* In the **Installation** section, set \"Install Link\" to \"None\".\n* In the **Bot** section, disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                    "value": "To prevent others from adding your bot to their servers follow these steps (in order):\n* In the **Installation** section, set \"Install Link\" to \"None\".\n* In the **Bot** section, disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ],
                             "image": "attachment://disable_public_bot.gif"
