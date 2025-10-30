@@ -4,6 +4,7 @@ import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import { execAsync } from '../utilities/utils.js';
 import crypto from 'crypto';
+import MCLinker from './MCLinker.js';
 
 export default class CustomBotConnection extends Connection {
     /**
@@ -107,12 +108,12 @@ export default class CustomBotConnection extends Connection {
         const configJson = {
             ...this.client.config,
             emojis: null, // Emojis must be uploaded within the custom bot
-            prefix: this.port + this.client.config.prefix, // Add port for unique prefix,
+            prefix: this.port + this.client.config.prefix, // Add port for unique prefix
         };
 
         const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
         await fs.outputFile(`${this.dataFolder}/.env`, stringifiedEnv);
-        await fs.outputJson(`${this.dataFolder}/config.json`, configJson, { spaces: 4 });
+        await MCLinker.writeConfig(configJson, `${this.dataFolder}/config.json`);
 
         await fs.ensureDir(`${this.dataFolder}/download-cache`);
         await fs.ensureDir(`${this.dataFolder}/logs`);

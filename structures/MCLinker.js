@@ -195,11 +195,12 @@ export default class MCLinker extends Discord.Client {
 
     /**
      * Loads the configuration from the config.json file.
+     * @param {string} [path=./config.json] - The path to the config file.
      * @return {Promise<MCLinkerConfig>}
      * @private
      */
-    static async loadConfig() {
-        const config = await fs.readJson(`./config.json`);
+    static async loadConfig(path = `./config.json`) {
+        const config = await fs.readJson(path);
         // Parse ActivityType
         for(const activity of config.presence.activities)
             activity.type = Discord.ActivityType[activity.type];
@@ -209,14 +210,15 @@ export default class MCLinker extends Discord.Client {
     /**
      * Writes the configuration to the config.json file.
      * @param {MCLinkerConfig} config - The configuration to write.
+     * @param {string} [path=./config.json] - The path to the config file.
      * @return {Promise<void>}
      */
-    static async writeConfig(config) {
+    static async writeConfig(config, path = `./config.json`) {
         // Convert ActivityType back to string
         const configCopy = JSON.parse(JSON.stringify(config));
         for(const activity of configCopy.presence.activities)
             activity.type = Object.keys(Discord.ActivityType).find(k => Discord.ActivityType[k] === activity.type) ?? activity.type;
-        await fs.outputJson(`./config.json`, configCopy, { spaces: 4 });
+        await fs.outputJson(path, configCopy, { spaces: 4 });
     }
 
     async _loadCommands() {
