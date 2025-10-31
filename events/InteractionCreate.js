@@ -26,7 +26,6 @@ export default class InteractionCreate extends Event {
         interaction = addTranslatedResponses(interaction);
         if(interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
-            if(!command.allowUser && !interaction.inGuild()) return interaction.replyTl(keys.main.no_access.not_in_guild);
             const args = await getArgs(interaction);
             const server = client.serverConnections.cache.get(interaction.guildId);
             try {

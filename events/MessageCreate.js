@@ -61,7 +61,6 @@ export default class MessageCreate extends Event {
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
 
         if(!message.content.startsWith(client.config.prefix) || message.author.bot) return;
-        if(!message.inGuild()) return message.replyTl(keys.main.no_access.not_in_guild);
 
         // Handle prefix command execution
         message.user = message.author;

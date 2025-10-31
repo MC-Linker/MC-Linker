@@ -97,6 +97,8 @@ export default class Command {
         await interaction.replyTl(keys.api.command.executed, { args: args.join(' ') });
         if(this.defer) await interaction.deferReply?.({ flags: this.ephemeral ? MessageFlags.Ephemeral : undefined });
 
+        if(!this.allowUser && !interaction.inGuild()) return interaction.replyTl(keys.main.no_access.not_in_guild);
+
         if(this.ownerOnly) return interaction.user.id === process.env.OWNER_ID;
 
         if(this.requiresConnectedServer && !server) {

@@ -31,6 +31,7 @@ import HttpProtocol from '../structures/HttpProtocol.js';
 import FtpProtocol from '../structures/FtpProtocol.js';
 import fs from 'fs-extra';
 import path from 'path';
+import logger from './logger.js';
 
 /**
  * Promisified version of exec.
@@ -1101,7 +1102,7 @@ export async function uploadApplicationEmojis(client) {
             const existingEmoji = existingEmojis.find(e => e.name === emojiName);
             if(existingEmoji) {
                 emojiMap[emojiName] = Discord.formatEmoji(existingEmoji);
-                console.debug(`Emoji ${emojiName} already exists, skipping upload`);
+                logger.debug(`Emoji ${emojiName} already exists, skipping upload`);
                 continue;
             }
 
@@ -1110,10 +1111,10 @@ export async function uploadApplicationEmojis(client) {
                 name: emojiName,
             });
             emojiMap[emojiName] = Discord.formatEmoji(emoji);
-            console.debug(`Uploaded emoji ${emojiName} (${emoji.id})`);
+            logger.debug(`Uploaded emoji ${emojiName} (${emoji.id})`);
         }
         catch(err) {
-            console.error(`Failed to upload emoji ${emojiName}:`, err);
+            logger.error(`Failed to upload emoji ${emojiName}:`, err);
         }
     }
     return emojiMap;
