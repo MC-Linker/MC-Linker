@@ -177,10 +177,10 @@ export default class CustomBotConnection extends Connection {
 
         // Check logs until the bot is ready
         return new Promise((resolve, reject) => {
-            let checkLogsInterval;
-            const checkLogsTimeout = setTimeout(() => {
+            let readyListener;
+            const waitForStartTimeout = setTimeout(() => {
                 reject(new Error('Timeout waiting for bot to start'));
-                clearInterval(checkLogsInterval);
+                if(readyListener) this.client.api.off('/custom-bot-api-ready', readyListener);
 
                 try {
                     this.down();
@@ -188,27 +188,21 @@ export default class CustomBotConnection extends Connection {
                 catch(_) {}
             }, 60_000);
 
-            checkLogsInterval = setInterval(async () => {
-                try {
-                    const { stdout: logs } = await execAsync(`docker logs ${this.containerName} --tail 10`);
-
-                    if(logs.includes(`Server listening at http://0.0.0.0:${this.port}`)) {
-                        logger.info('Custom bot is ready!');
-                        resolve();
-                        clearInterval(checkLogsInterval);
-                        clearTimeout(checkLogsTimeout);
-                    }
-                }
-                catch(_) {} // Container might not be ready yet, continue checking
-            }, 1000, 1000);
+            readyListener = this.client.api.once('/custom-bot-api-ready', (request, reply) => {
+                if(request.headers['x-communication-token'] !== this.communicationToken) return;
+                logger.info('Custom bot is ready!');
+                resolve();
+                clearTimeout(waitForStartTimeout);
+                reply.send();
+            });
 
             composeProcess.on('close', code => {
                 if(code !== 0) {
                     reject(new Error(`Docker compose failed with code ${code}`));
-                    clearInterval(checkLogsInterval);
-                    clearTimeout(checkLogsTimeout);
+                    clearTimeout(waitForStartTimeout);
 
                     try {
+                        this.client.api.off('/custom-bot-api-ready', readyListener);
                         this.down();
                     }
                     catch(_) {}
@@ -217,8 +211,9 @@ export default class CustomBotConnection extends Connection {
 
             composeProcess.on('error', err => {
                 reject(err);
-                clearInterval(checkLogsInterval);
-                clearTimeout(checkLogsTimeout);
+                clearTimeout(waitForStartTimeout);
+                this.client.api.off('/custom-bot-api-ready', readyListener);
+
                 this.down();
             });
         });

@@ -464,9 +464,29 @@ export default class MCLinkerAPI extends EventEmitter {
             }
         });
 
-        await this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' });
+        await this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
+            if(err) {
+                logger.fatal(err, 'Error starting API server');
+                process.exit(1);
+            }
+            logger.info(`Server listening at ${address}`);
+        });
+
+        if(process.env.CUSTOM_BOT === 'true') await this.notifyMainBotOfStart();
 
         return this.fastify;
+    }
+
+    async notifyMainBotOfStart() {
+        const res = await fetch(`http://mc-linker/custom-bot-api-ready`, {
+            method: 'POST',
+            headers: { 'x-communication-token': process.env.COMMUNICATION_TOKEN },
+        });
+        if(!res.ok) {
+            logger.fatal(res, 'Could not notify main bot of custom bot start');
+            process.exit(1);
+        }
+        logger.info('Notified main bot of custom bot start');
     }
 
     /**
