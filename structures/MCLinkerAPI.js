@@ -12,7 +12,7 @@ import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
 import Discord from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
-import logger, { pinoTransport } from '../utilities/logger.js';
+import logger from '../utilities/logger.js';
 import path from 'path';
 import MCLinker from './MCLinker.js';
 
@@ -201,11 +201,6 @@ export default class MCLinkerAPI extends EventEmitter {
          * @type {import('fastify').FastifyInstance}
          */
         this.fastify = Fastify({
-            logger: {
-                // By default, log only errors
-                level: process.env.LOG_LEVEL === 'info' ? 'error' : process.env.LOG_LEVEL,
-                transport: pinoTransport,
-            },
             /*            https: {
                             key: fs.readFileSync(path.resolve('./private/mclinker.com.key')),
                             cert: fs.readFileSync(path.resolve('./private/mclinker.com.pem')),
