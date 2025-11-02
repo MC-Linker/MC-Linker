@@ -223,7 +223,7 @@ export default class MCLinkerAPI extends EventEmitter {
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
         this.fastify.addHook('preHandler', (request, reply, done) => {
-            logger.debug(`[Fastify] ${request.method} request to ${request.url} from ${request.ip}`);
+            logger.debug(`[Fastify] ${request.method} request to ${request.url} from ${request.ip}: ${request.body}`);
             this.emit(request.url, request, reply);
             done();
         });
