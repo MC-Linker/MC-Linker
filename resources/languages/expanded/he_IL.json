@@ -207,7 +207,7 @@
                             "fields": [
                                 {
                                     "name": "Configure Bot Port",
-                                    "value": "Lastly, run `/linker bot_port %port%` on your server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml) and reload your server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                    "value": "Lastly, run `/linker bot_port %port%` on your Minecraft server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml) and reload your server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ]
                         }
@@ -1938,7 +1938,7 @@
                     "embeds": [
                         {
                             "title": "Server Verification",
-                            "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your server.\nThen join your server as an operator and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
+                            "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your Minecraft server.\nThen join your server as an operator and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
                         }
                     ]
                 },
