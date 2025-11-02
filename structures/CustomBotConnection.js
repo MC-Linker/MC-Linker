@@ -177,10 +177,19 @@ export default class CustomBotConnection extends Connection {
 
         // Check logs until the bot is ready
         return new Promise((resolve, reject) => {
-            let readyListener;
-            const waitForStartTimeout = setTimeout(() => {
+            let waitForStartTimeout;
+            let readyListener = (request, reply) => {
+                if(request.headers['x-communication-token'] !== this.communicationToken) return;
+                logger.info('Custom bot is ready!');
+                resolve();
+                clearTimeout(waitForStartTimeout);
+                reply.send();
+            };
+            this.client.api.once('/custom-bot-api-ready', readyListener);
+
+            waitForStartTimeout = setTimeout(() => {
                 reject(new Error('Timeout waiting for bot to start'));
-                if(readyListener) this.client.api.off('/custom-bot-api-ready', readyListener);
+                this.client.api.off('/custom-bot-api-ready', readyListener);
 
                 try {
                     this.down();
@@ -188,21 +197,13 @@ export default class CustomBotConnection extends Connection {
                 catch(_) {}
             }, 60_000);
 
-            readyListener = this.client.api.once('/custom-bot-api-ready', (request, reply) => {
-                if(request.headers['x-communication-token'] !== this.communicationToken) return;
-                logger.info('Custom bot is ready!');
-                resolve();
-                clearTimeout(waitForStartTimeout);
-                reply.send();
-            });
-
             composeProcess.on('close', code => {
                 if(code !== 0) {
                     reject(new Error(`Docker compose failed with code ${code}`));
                     clearTimeout(waitForStartTimeout);
+                    this.client.api.off('/custom-bot-api-ready', readyListener);
 
                     try {
-                        this.client.api.off('/custom-bot-api-ready', readyListener);
                         this.down();
                     }
                     catch(_) {}
@@ -213,7 +214,6 @@ export default class CustomBotConnection extends Connection {
                 reject(err);
                 clearTimeout(waitForStartTimeout);
                 this.client.api.off('/custom-bot-api-ready', readyListener);
-
                 this.down();
             });
         });
@@ -261,20 +261,26 @@ export default class CustomBotConnection extends Connection {
     }
 
     async communicate(path, data = {}, method = 'POST') {
-        const response = await fetch(`http://${this.containerName}:${this.port}/${path}`, {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-                'x-communication-token': this.communicationToken,
-            },
-            body: JSON.stringify(data),
-        });
+        try {
+            const response = await fetch(`http://${this.containerName}:${this.port}/${path}`, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-communication-token': this.communicationToken,
+                },
+                body: JSON.stringify(data),
+            });
 
-        if(!response.ok) {
-            logger.error(response.error, `Failed to communicate with custom bot ${this.containerName} at path /${path}`);
+            if(!response.ok) {
+                logger.error(response.error, `Failed to communicate with custom bot ${this.containerName} at path /${path}`);
+                return false;
+            }
+            else return true;
+        }
+        catch(err) {
+            logger.error(err, `Failed to communicate with custom bot ${this.containerName} at path /${path}`);
             return false;
         }
-        else return true;
     }
 
     /**
