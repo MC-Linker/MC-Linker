@@ -223,6 +223,7 @@ export default class MCLinkerAPI extends EventEmitter {
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
         this.fastify.addHook('preHandler', (request, reply, done) => {
+            logger.debug(`[Fastify] ${request.method} request to ${request.url} from ${request.ip}`);
             this.emit(request.url, request, reply);
             done();
         });
@@ -285,6 +286,7 @@ export default class MCLinkerAPI extends EventEmitter {
                     return reply.status(401).send({ message: 'Unauthorized' });
 
                 const response = await route.handler(request.body, server);
+                logger.debug(`[Fastify] Response for ${route.method} ${route.endpoint}: ${response}`);
                 reply.status(response?.status ?? 200).send(response?.body ?? {});
             });
         }
