@@ -178,12 +178,11 @@ export default class CustomBotConnection extends Connection {
         // Check logs until the bot is ready
         return new Promise((resolve, reject) => {
             let waitForStartTimeout;
-            let readyListener = (request, reply) => {
+            let readyListener = request => {
                 if(request.headers['x-communication-token'] !== this.communicationToken) return;
                 logger.info('Custom bot is ready!');
                 resolve();
                 clearTimeout(waitForStartTimeout);
-                reply.send();
             };
             this.client.api.once('/custom-bot-api-ready', readyListener);
 

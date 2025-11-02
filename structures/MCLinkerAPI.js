@@ -178,6 +178,12 @@ export default class MCLinkerAPI extends EventEmitter {
                 console.log(`${this.client.mongo.connection.db.databaseName} database dropped.`);
             },
         },
+        {
+            method: 'POST',
+            endpoint: '/custom-bot-api-ready',
+            requiresServer: false,
+            handler: async (_, __) => {}, // Just acknowledge the custom bot is ready (send 200)
+        },
     ];
 
     /**
