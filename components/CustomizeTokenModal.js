@@ -111,7 +111,7 @@ export default class CustomizeTokenModal extends Component {
         const message = await wizard.start();
 
         const collector = message.createMessageComponentCollector({
-            time: Wizard.DEFAULT_TIMEOUT,
+            time: 60_000 * 14,
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_manage_bot',
             max: 1,
