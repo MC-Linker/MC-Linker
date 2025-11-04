@@ -231,8 +231,27 @@ export default class MCLinkerAPI extends EventEmitter {
 
         this.fastify.addHook('preHandler', (request, reply, done) => {
             logger.debug(`[Fastify] ${request.method} request to ${request.url} from ${request.ip}: ${request.body}`);
-            this.emit(request.url, request, reply);
+            this.emitToAllShards(request.url, request);
             done();
+        });
+    }
+
+    /**
+     * Emits an event across all shards.
+     * @param {string} event - The event to emit (the REST endpoint).
+     * @param {import('fastify').FastifyRequest} request - The request object.
+     */
+    emitToAllShards(event, request) {
+        const args = {
+            method: request.method,
+            body: request.body,
+            headers: request.headers,
+        };
+        this.client.shard.broadcastEval((c, { event, args }) => c.api.emit(event, args), {
+            context: {
+                event,
+                args,
+            },
         });
     }
 
