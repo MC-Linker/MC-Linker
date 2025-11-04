@@ -106,16 +106,16 @@
                 "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers."
             },
             "command_load": {
-                "console": "[%shard%] Successfully loaded command: %command%"
+                "console": "Successfully loaded command: %command%"
             },
             "command_load_category": {
-                "console": "[%shard%] Successfully loaded command: %category%/%command%"
+                "console": "Successfully loaded command: %category%/%command%"
             },
             "component_load": {
-                "console": "[%shard%] Successfully loaded component of type %type%: %id%"
+                "console": "Successfully loaded component of type %type%: %id%"
             },
             "event_load": {
-                "console": "[%shard%] Successfully loaded event: %event%"
+                "console": "Successfully loaded event: %event%"
             },
             "ping": {
                 "embeds": [
