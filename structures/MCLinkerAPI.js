@@ -218,7 +218,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 origin: ['https://admin.socket.io'],
                 credentials: true,
             },
-            transports: ['polling', 'websocket'],
+            transports: ['polling', 'websocket'], //TODO
             logLevel: process.env.LOG_LEVEL || 'info',
         });
 
