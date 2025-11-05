@@ -344,8 +344,13 @@
             "no_entitlement": {
                 "embeds": [
                     {
-                        "title": "No Subscription",
-                        "description": "To customize the bot's appearance (name, avatar, etc.) by hosting MC Linker on your own bot, you need to subscribe to the **Customize MC Linker** subscription."
+                        "title": "Customize Your Own MC Linker",
+                        "description": "You can change the bot's appearance to truly match your server's style by hosting MC Linker on your own bot.\n\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\n👇 To effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription.",
+                        "color": "Blurple",
+                        "author": {
+                            "name": "Premium",
+                            "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
+                        }
                     }
                 ],
                 "components": [
