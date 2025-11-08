@@ -3,7 +3,7 @@
 import Fastify from 'fastify';
 import { getOAuthURL, getTokens, getUser } from '../utilities/oauth.js';
 import { createHash, getMinecraftAvatarURL, searchAdvancements } from '../utilities/utils.js';
-import { getEmbed, ph } from '../utilities/messages.js';
+import { addPh, getEmbed, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
@@ -613,6 +613,8 @@ export default class MCLinkerAPI extends EventEmitter {
             const [category, id] = message.replace('minecraft:', '').split('/');
             const advancement = searchAdvancements(id, category, false, true, 1);
 
+            if(!advancement[0]) return; // Advancement not found
+
             advancementTitle = advancement[0]?.name ?? message;
             advancementDesc = advancement[0]?.description ?? keys.commands.advancements.no_description_available;
 
@@ -620,7 +622,7 @@ export default class MCLinkerAPI extends EventEmitter {
             argPlaceholder.advancement_title = advancementTitle;
             argPlaceholder.advancement_description = advancementDesc;
         }
-        else if(type === 'death' && (!message || message === '')) argPlaceholder.message = keys.api.plugin.success.default_death_message;
+        else if(type === 'death' && (!message || message === '')) argPlaceholder.message = addPh(keys.api.plugin.success.default_death_message, argPlaceholder);
 
         const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, { 'timestamp_now': Date.now() });
         if(type !== 'chat') {
