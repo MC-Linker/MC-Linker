@@ -1648,11 +1648,11 @@
                                 },
                                 {
                                     "name": "Offline Text",
-                                    "value": "%online_name%"
+                                    "value": "%offline_name%"
                                 },
                                 {
                                     "name": "Online Text",
-                                    "value": "%offline_name%"
+                                    "value": "%online_name%"
                                 }
                             ]
                         }
