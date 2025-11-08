@@ -1,7 +1,9 @@
 # TODO BOT
 
 + **Create isometric block, item and entity renders in code**
++ Move `/disable chat-commands` to `/chatchannel filter chat-commands`
 + Internal Statistics
++ Proxy-Server Support (Link multiple servers)
 + Mod support (get textures and names of mod items, etc.)
 + Context Menus (inventory, ban, op, kick, add to whitelist), restricted to 5 commands
 + Use Server hosts API (and standalone) to start a server
