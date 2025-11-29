@@ -631,6 +631,10 @@
                 "title": "Customize Server Appearance",
                 "components": [
                     {
+                        "type": "TextDisplay",
+                        "content": "**Note**: Leaving a field empty will reset it to default."
+                    },
+                    {
                         "type": "Label",
                         "label": "Nickname",
                         "description": "The nickname to use for MC Linker in this server.",
@@ -699,7 +703,7 @@
                     "embeds": [
                         {
                             "title": "Customize Your Own MC Linker",
-                            "description": "You can change the bot's appearance in your server by clicking the button below!\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\n👇 To effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription.",
+                            "description": "You can change the bot's appearance in your server by clicking the button below!\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\nTo effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription. 👇",
                             "color": "Blurple",
                             "author": {
                                 "name": "Premium",

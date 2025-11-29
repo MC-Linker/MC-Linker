@@ -609,6 +609,73 @@ export function getComponent(key, ...placeholders) {
                     break;
             }
             break;
+        case ComponentType.Container:
+            if(!component.components) return null;
+            componentBuilder = new Discord.ContainerBuilder()
+                .setSpoiler(component.spoiler ?? false)
+                .setAccentColor(component.accentColor ?? false);
+
+            for(const childComponent of component.components) {
+                const childComponentBuilder = getComponent(childComponent);
+                switch(childComponentBuilder.data.type) {
+                    case ComponentType.ActionRow:
+                        componentBuilder.addActionRowComponents(childComponentBuilder);
+                        break;
+                    case ComponentType.TextDisplay:
+                        componentBuilder.addTextDisplayComponents(childComponentBuilder);
+                        break;
+                    case ComponentType.Section:
+                        componentBuilder.addSectionComponents(childComponentBuilder);
+                        break;
+                    case ComponentType.MediaGallery:
+                        componentBuilder.addMediaGalleryComponents(childComponentBuilder);
+                        break;
+                    case ComponentType.Separator:
+                        componentBuilder.addSeparatorComponents(childComponentBuilder);
+                        break;
+                    case ComponentType.File:
+                        componentBuilder.addFileComponents(childComponentBuilder);
+                        break;
+                }
+            }
+            break;
+        case ComponentType.Section:
+            if(!component.components) return null;
+            componentBuilder = new Discord.SectionBuilder();
+            const accessory = getComponent(component.accessory);
+            if(accessory.data.type === ComponentType.Button) componentBuilder.setButtonAccessory(accessory);
+            else if(accessory.data.type === Discord.ComponentType.Thumbnail) componentBuilder.setThumbnailAccessory(accessory);
+
+            for(const childComponent of component.components)
+                componentBuilder.addTextDisplayComponents(getComponent(childComponent));
+            break;
+        case ComponentType.Separator:
+            componentBuilder = new Discord.SeparatorBuilder()
+                .setDivider(component.divider ?? true)
+                .setSpacing(component.spacing);
+            break;
+        case Discord.ComponentType.TextDisplay:
+            if(!component.content) return null;
+            componentBuilder = new Discord.TextDisplayBuilder()
+                .setContent(component.content);
+            break;
+        case Discord.ComponentType.File:
+            if(!component.url) return null;
+            componentBuilder = new Discord.FileBuilder()
+                .setURL(component.url)
+                .setSpoiler(component.spoiler ?? false);
+            break;
+        case Discord.ComponentType.Thumbnail:
+            if(!component.url) return null;
+            componentBuilder = new Discord.ThumbnailBuilder()
+                .setURL(component.url)
+                .setDescription(component.description)
+                .setSpoiler(component.spoiler ?? false);
+            break;
+        case Discord.ComponentType.MediaGallery:
+            if(!component.items) return null;
+            componentBuilder = new Discord.MediaGalleryBuilder()
+                .addItems(component.items);
     }
 
     return componentBuilder;
