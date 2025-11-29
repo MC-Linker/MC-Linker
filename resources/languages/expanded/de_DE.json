@@ -60,6 +60,15 @@
                     }
                 ],
                 "ephemeral": true
+            },
+            "no_permission_command": {
+                "embeds": [
+                    {
+                        "title": "Keine Berechtigung",
+                        "description": "You do not have permission to use this command!\nRequired Permission: **%permission%**"
+                    }
+                ],
+                "ephemeral": true
             }
         },
         "errors": {
@@ -340,28 +349,6 @@
                 ]
             }
         },
-        "warnings": {
-            "no_entitlement": {
-                "embeds": [
-                    {
-                        "title": "Customize Your Own MC Linker",
-                        "description": "You can change the bot's appearance to truly match your server's style by hosting MC Linker on your own bot.\n\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\n👇 To effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription.",
-                        "color": "Blurple",
-                        "author": {
-                            "name": "Premium",
-                            "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
-                        }
-                    }
-                ],
-                "components": [
-                    {
-                        "type": "Button",
-                        "style": "Premium",
-                        "sku_id": "1166098447665995807"
-                    }
-                ]
-            }
-        },
         "custom_bot_manager": {
             "status": {
                 "started": "🟢 Started",
@@ -637,6 +624,139 @@
         }
     },
     "commands": {
+        "customize": {
+            "customize_guild_appearance_modal": {
+                "type": "Modal",
+                "custom_id": "customize_guild_appearance_modal",
+                "title": "Customize Server Appearance",
+                "components": [
+                    {
+                        "type": "TextDisplay",
+                        "content": "**Note**: Leaving a field empty will reset it to default."
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Nickname",
+                        "description": "The nickname to use for MC Linker in this server.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "nickname",
+                            "placeholder": "Monkey SMP Bot",
+                            "required": false,
+                            "min_length": 0,
+                            "max_length": 32,
+                            "style": "Short"
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Bio",
+                        "description": "The \"About Me\" text to use for MC Linker in this server.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "bio",
+                            "placeholder": "Connecting Minecraft servers to Discord!",
+                            "required": false,
+                            "min_length": 0,
+                            "max_length": 190,
+                            "style": "Paragraph"
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Avatar",
+                        "description": "The avatar to use for MC Linker in this server.",
+                        "component": {
+                            "type": "FileUpload",
+                            "custom_id": "avatar",
+                            "required": false,
+                            "min_values": 1,
+                            "max_values": 1
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Banner",
+                        "description": "The banner to use for MC Linker in this server.",
+                        "component": {
+                            "type": "FileUpload",
+                            "custom_id": "banner",
+                            "required": false,
+                            "min_values": 1,
+                            "max_values": 1
+                        }
+                    }
+                ]
+            },
+            "success": {
+                "guild_appearance_updated": {
+                    "embeds": [
+                        {
+                            "title": "Customized Server Appearance",
+                            "description": "Successfully customized MC Linker's appearance in this server!"
+                        }
+                    ]
+                }
+            },
+            "warnings": {
+                "no_entitlement": {
+                    "embeds": [
+                        {
+                            "title": "Customize Your Own MC Linker",
+                            "description": "You can change the bot's appearance in your server by clicking the button below!\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\nTo effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription. 👇",
+                            "color": "Blurple",
+                            "author": {
+                                "name": "Premium",
+                                "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
+                            }
+                        }
+                    ],
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Secondary",
+                            "label": "Change Server Appearance",
+                            "custom_id": "customize_guild_appearance"
+                        },
+                        {
+                            "type": "Button",
+                            "style": "Premium",
+                            "sku_id": "1166098447665995807"
+                        }
+                    ]
+                },
+                "no_entitlement_guild": {
+                    "embeds": [
+                        {
+                            "title": "Customize Your Own MC Linker",
+                            "description": "Run this command in your server to customize its appearance.\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\n👇 To effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription.",
+                            "color": "Blurple",
+                            "author": {
+                                "name": "Premium",
+                                "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
+                            }
+                        }
+                    ],
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Premium",
+                            "sku_id": "1166098447665995807"
+                        }
+                    ]
+                }
+            },
+            "errors": {
+                "guild_appearance_update_failed": {
+                    "embeds": [
+                        {
+                            "title": "Customization Failed",
+                            "description": "You might be uploading invalid images or customizing too fast. Ensure to upload valid images or try again later."
+                        }
+                    ]
+                }
+            }
+        },
         "eval": {
             "warnings": {
                 "no_command": {
