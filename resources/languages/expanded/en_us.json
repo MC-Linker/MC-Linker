@@ -751,7 +751,7 @@
                     "embeds": [
                         {
                             "title": "Customization Failed",
-                            "description": "Failed to customize MC Linker's appearance in this server! Please ensure you are uploading valid images and try again later."
+                            "description": "You might be uploading invalid images or customizing too fast. Ensure to upload valid images or try again later."
                         }
                     ]
                 }
