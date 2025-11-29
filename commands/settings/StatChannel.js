@@ -44,7 +44,13 @@ export default class StatChannel extends Command {
 
             await server.edit({ statChannels: resp.data });
 
-            await server.updateStatChannelName(statChannel);
+            let message;
+            if(statChannel.type === 'member-counter') {
+                const onlinePlayers = await server.protocol.getOnlinePlayers();
+                message = statChannel.names.members.replace('%count%', onlinePlayers.data.length);
+            }
+            else message = statChannel.names.online;
+            await channel.setName(message);
 
             await interaction.replyTl(keys.commands.statchannel.success.add);
         }

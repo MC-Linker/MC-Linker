@@ -519,14 +519,14 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {ServerConnectionResolvable} serverResolvable - The server-connection related to the socket.
      * @param {string} hash - The hash to use for verifying server-connections.
      */
-    addWebsocketListeners(socket, serverResolvable) {
+    addWebsocketListeners(socket, serverResolvable, hash) {
         async function getServerWebsocket(client, rateLimiter = null, callback) {
             try {
                 if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
 
                 //Update server variable to ensure it wasn't disconnected in the meantime
                 /** @type {?ServerConnection} */
-                const server = client.serverConnections.resolve(serverResolvable);
+                const server = client.serverConnections.cache.find(server => server.hash === hash);
 
                 //If no connection on that guild, disconnect socket
                 if(!server) {
