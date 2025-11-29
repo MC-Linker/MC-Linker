@@ -35,7 +35,7 @@ export default class Customize extends Command {
             buttonCollector.on('collect', async buttonInteraction =>
                 await buttonInteraction.showModal(getModal(keys.commands.customize.customize_guild_appearance_modal)));
 
-            const modalCollector = new InteractionCollector(this.client, {
+            const modalCollector = new InteractionCollector(client, {
                 time: 60_000 * 14,
                 interactionType: InteractionType.ModalSubmit,
                 message,

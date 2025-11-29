@@ -32,7 +32,7 @@ export default class InteractionCreate extends Event {
                 await command.execute(interaction, client, args, server);
             }
             catch(err) {
-                logger.error(err, `Could not execute command ${interaction.name}`);
+                logger.error(err, `Could not execute command ${interaction.commandName}`);
                 await interaction.replyTl(keys.main.errors.could_not_execute_command);
             }
         }
