@@ -45,16 +45,21 @@ export default class Customize extends Command {
 
                 const nick = modalInteraction.fields.getTextInputValue('nickname') ?? null;
                 const bio = modalInteraction.fields.getTextInputValue('bio') ?? null;
-                const avatar = modalInteraction.fields.getUploadedFiles('avatar')?.first() ?? null;
-                const banner = modalInteraction.fields.getUploadedFiles('banner')?.first() ?? null;
+                const avatar = modalInteraction.fields.getUploadedFiles('avatar')?.first()?.url ?? null;
+                const banner = modalInteraction.fields.getUploadedFiles('banner')?.first()?.url ?? null;
 
-                await interaction.guild.members.editMe({
-                    nick,
-                    avatar,
-                    banner,
-                    bio,
-                    reason: `Customized bot appearance by ${interaction.user.displayName} (${interaction.user.id})`,
-                });
+                try {
+                    await interaction.guild.members.editMe({
+                        nick,
+                        avatar,
+                        banner,
+                        bio,
+                        reason: `Customized bot appearance by ${interaction.user.displayName} (${interaction.user.id})`,
+                    });
+                }
+                catch(err) {
+                    return await modalInteraction.replyTl(keys.commands.customize.errors.guild_appearance_update_failed);
+                }
                 await modalInteraction.replyTl(keys.commands.customize.success.guild_appearance_updated);
             });
             return;
