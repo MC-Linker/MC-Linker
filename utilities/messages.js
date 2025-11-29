@@ -569,6 +569,14 @@ export function getComponent(key, ...placeholders) {
             if(component.value) componentBuilder.setValue(component.value);
             if(component.placeholder) componentBuilder.setPlaceholder(component.placeholder);
             break;
+        case Discord.ComponentType.FileUpload:
+            if(!component.custom_id) return null;
+            componentBuilder = new Discord.FileUploadBuilder()
+                .setCustomId(component.custom_id)
+                .setRequired(component.required ?? false)
+                .setMinValues(component.min_values ?? 1)
+                .setMaxValues(component.max_values ?? 1);
+            break;
         case Discord.ComponentType.Label:
             if(!component.label || !component.description) return null;
 
@@ -595,6 +603,9 @@ export function getComponent(key, ...placeholders) {
                     break;
                 case ComponentType.TextInput:
                     componentBuilder.setTextInputComponent(labelComponent);
+                    break;
+                case ComponentType.FileUpload:
+                    componentBuilder.setFileUploadComponent(labelComponent);
                     break;
             }
             break;
