@@ -95,8 +95,8 @@
             "http_deprecated": {
                 "embeds": [
                     {
-                        "title": "Deprecated Connection Method",
-                        "description": "**Your server is using the deprecated backup connection method and has been disconnected. Please reconnect in Discord using `/connect`.**"
+                        "title": "Veraltete Verbindungsmethode",
+                        "description": "**Dein Server benutzt die veraltete Backup-Verbindungsmethode und wurde getrennt. Bitte verbinde dich in Discord mit `/connect`.**"
                     }
                 ]
             }
@@ -152,11 +152,11 @@
                     "ephemeral": true,
                     "embeds": [
                         {
-                            "title": "Subscription Successful",
+                            "title": "Abonnement erfolgreich",
                             "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
                             "fields": [
                                 {
-                                    "name": "Get Started",
+                                    "name": "Los geht's",
                                     "value": "You'll now first need to create your own bot on the [developer portal](https://discord.com/developers/applications?new_application=true).\nEnter your desired name and then click on \"Create App\".\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ]
@@ -170,7 +170,7 @@
                             "title": "Setting Up Your Custom MC-Linker",
                             "fields": [
                                 {
-                                    "name": "Disabling Public Bot",
+                                    "name": "Deaktiviere öffentlichen Bot",
                                     "value": "To prevent others from adding your bot to their servers follow these steps (in order):\n* In the **Installation** section, set \"Install Link\" to \"None\".\n* In the **Bot** section, disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ],
@@ -184,7 +184,7 @@
                             "title": "Setting Up Your Custom MC-Linker",
                             "fields": [
                                 {
-                                    "name": "Enter Bot Details",
+                                    "name": "Bot Details eingeben",
                                     "value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ],
@@ -195,7 +195,7 @@
                         {
                             "type": "Button",
                             "style": "Primary",
-                            "label": "Enter Token",
+                            "label": "Token eingeben",
                             "custom_id": "customize_enter_details"
                         }
                     ]
@@ -203,10 +203,10 @@
                 "port": {
                     "embeds": [
                         {
-                            "title": "Bot Started!",
+                            "title": "Bot gestartet!",
                             "fields": [
                                 {
-                                    "name": "Configure Bot Port",
+                                    "name": "Bot Port konfigurieren",
                                     "value": "Lastly, run `/linker bot_port %port%` on your Minecraft server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml) and reload your server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ]
@@ -216,7 +216,7 @@
                 "finish": {
                     "embeds": [
                         {
-                            "title": "Set Up Complete",
+                            "title": "Einrichtung abgeschlossen",
                             "description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!).",
                             "fields": [
                                 {
@@ -230,13 +230,13 @@
                         {
                             "type": "Button",
                             "style": "Link",
-                            "label": "Invite Your Bot!",
+                            "label": "Lade deinen Bot ein!",
                             "url": "%invite%"
                         },
                         {
                             "type": "Button",
                             "style": "Primary",
-                            "label": "Manage Bot",
+                            "label": "Bot verwalten",
                             "custom_id": "customize_manage_bot"
                         }
                     ],
@@ -246,7 +246,7 @@
             "token_modal": {
                 "type": "Modal",
                 "custom_id": "customize_token_modal",
-                "title": "Enter Token",
+                "title": "Token eingeben",
                 "components": [
                     {
                         "type": "Label",
@@ -313,7 +313,7 @@
                         {
                             "type": "Button",
                             "style": "Primary",
-                            "label": "Enter Token",
+                            "label": "Token eingeben",
                             "custom_id": "customize_enter_details"
                         }
                     ]
@@ -324,7 +324,7 @@
             "subscribed": {
                 "embeds": [
                     {
-                        "title": "Subscription Successful",
+                        "title": "Abonnement erfolgreich",
                         "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.\n\nUse %customize_command_mention% to get started!"
                     }
                 ]
