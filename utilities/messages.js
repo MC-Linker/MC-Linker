@@ -790,7 +790,6 @@ export function getModal(key, ...placeholders) {
         else if(component.data.type === ComponentType.TextDisplay) modalBuilder.addTextDisplayComponents(component);
     }
 
-    modalBuilder.setLabelComponents(key.components.map(c => getComponent(c, ...placeholders)));
     return modalBuilder;
 }
 
