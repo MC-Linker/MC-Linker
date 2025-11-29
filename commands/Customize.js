@@ -2,6 +2,7 @@ import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBits } from 'discord.js';
 import { addTranslatedResponses, getModal } from '../utilities/messages.js';
+import logger from '../utilities/logger.js';
 
 export default class Customize extends Command {
 
@@ -58,6 +59,7 @@ export default class Customize extends Command {
                     });
                 }
                 catch(err) {
+                    logger.error(err, `Failed to customize guild bot appearance for guild ${interaction.guild.id}`);
                     return await modalInteraction.replyTl(keys.commands.customize.errors.guild_appearance_update_failed);
                 }
                 await modalInteraction.replyTl(keys.commands.customize.success.guild_appearance_updated);
