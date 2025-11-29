@@ -45,8 +45,8 @@ export default class Customize extends Command {
 
                 const nick = modalInteraction.fields.getTextInputValue('nickname') ?? null;
                 const bio = modalInteraction.fields.getTextInputValue('bio') ?? null;
-                const avatar = modalInteraction.fields.getUploadedFiles('avatar').first() ?? null;
-                const banner = modalInteraction.fields.getUploadedFiles('banner').first() ?? null;
+                const avatar = modalInteraction.fields.getUploadedFiles('avatar')?.first() ?? null;
+                const banner = modalInteraction.fields.getUploadedFiles('banner')?.first() ?? null;
 
                 await interaction.guild.members.editMe({
                     nick,
