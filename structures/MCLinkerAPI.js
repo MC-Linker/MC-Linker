@@ -10,7 +10,7 @@ import fastifyCookie from '@fastify/cookie';
 import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
-import Discord from 'discord.js';
+import Discord, { RESTJSONErrorCodes } from 'discord.js';
 import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
 import logger from '../utilities/logger.js';
 import path from 'path';
@@ -633,7 +633,7 @@ export default class MCLinkerAPI extends EventEmitter {
                     await discordChannel?.send({ embeds: [chatEmbed] });
                 }
                 catch(err) {
-                    if(err.code === 10003) {
+                    if(err.code === RESTJSONErrorCodes.UnknownChannel) {
                         const regChannel = await server.protocol.removeChatChannel(channel);
                         if(!regChannel) continue;
                         await server.edit({ chatChannels: regChannel.data });
@@ -668,7 +668,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 if(!discordChannel) continue;
             }
             catch(err) {
-                if(err.code === 10003) {
+                if(err.code === RESTJSONErrorCodes.UnknownChannel) {
                     const regChannel = await server.protocol.removeChatChannel(channel);
                     if(!regChannel) continue;
                     await server.edit({ chatChannels: regChannel.data });
@@ -765,10 +765,9 @@ export default class MCLinkerAPI extends EventEmitter {
         const channels = server.statChannels.filter(c => c.type === eventToTypeMap[event]);
         if(channels.length === 0) return; //No channels to update
 
-        const guild = await this.client.guilds.fetch(server.id);
         for(const channel of channels) {
             try {
-                const discordChannel = await guild.channels.fetch(channel.id);
+                const discordChannel = await this.client.channels.fetch(channel.id);
                 //Replace %count% with the actual count
                 let newName;
                 if(event === 'members') newName = channel.names[event].replace('%count%', data.members);
@@ -776,7 +775,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 await discordChannel.setName(newName);
             }
             catch(err) {
-                if(err.code === 10003) { // Channel not found
+                if(err.code === RESTJSONErrorCodes.UnknownChannel) {
                     const regChannel = await server.protocol.removeStatsChannel(channel);
                     if(!regChannel) continue;
                     await server.edit({ statChannels: regChannel.data });
@@ -806,7 +805,7 @@ export default class MCLinkerAPI extends EventEmitter {
             return { body: { response: canJoin } };
         }
         catch(err) {
-            if(err.code === 10007) return false; // Member not in server
+            if(err.code === RESTJSONErrorCodes.UnknownMember) return false; // Member not in server
             else return { body: { response: 'error', status: 500 } };
         }
     }
