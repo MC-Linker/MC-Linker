@@ -266,12 +266,8 @@ export default class MCLinkerAPI extends EventEmitter {
                     return;
                 }
 
-                const id = request.body.id;
-                const ip = request.body.ip.split(':')[0];
-                const port = request.body.ip.split(':')[1];
-
                 /** @type {ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.id === id && server.ip === ip && server.port === parseInt(port));
+                const server = client.serverConnections.cache.find(server => server.id === request.body.id);
                 //If no connection on that guild send disconnection status
                 if(!server) reply.status(403).send({});
 
@@ -523,14 +519,14 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {ServerConnectionResolvable} serverResolvable - The server-connection related to the socket.
      * @param {string} hash - The hash to use for verifying server-connections.
      */
-    addWebsocketListeners(socket, serverResolvable, hash) {
+    addWebsocketListeners(socket, serverResolvable) {
         async function getServerWebsocket(client, rateLimiter = null, callback) {
             try {
                 if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
 
                 //Update server variable to ensure it wasn't disconnected in the meantime
                 /** @type {?ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.hash === hash);
+                const server = client.serverConnections.resolve(serverResolvable);
 
                 //If no connection on that guild, disconnect socket
                 if(!server) {
@@ -771,29 +767,21 @@ export default class MCLinkerAPI extends EventEmitter {
 
         const guild = await this.client.guilds.fetch(server.id);
         for(const channel of channels) {
-            if(!channel.names[event]) return;
-
-            /** @type {?Discord.TextChannel} */
-            let discordChannel;
             try {
-                discordChannel = await guild.channels.fetch(channel.id);
-                if(!discordChannel) continue;
+                const discordChannel = await guild.channels.fetch(channel.id);
+                //Replace %count% with the actual count
+                let newName;
+                if(event === 'members') newName = channel.names[event].replace('%count%', data.members);
+                else newName = channel.names[event];
+                await discordChannel.setName(newName);
             }
             catch(err) {
-                if(err.code === 10003) {
+                if(err.code === 10003) { // Channel not found
                     const regChannel = await server.protocol.removeStatsChannel(channel);
                     if(!regChannel) continue;
                     await server.edit({ statChannels: regChannel.data });
                 }
-                continue;
             }
-
-            //Replace %count% with the actual count
-            if(event === 'members') channel.names[event] = channel.names[event].replace('%count%', data.members);
-            try {
-                await discordChannel.setName(channel.names[event]);
-            }
-            catch(_) {}
         }
     }
 

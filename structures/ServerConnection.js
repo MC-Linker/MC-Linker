@@ -2,6 +2,7 @@ import Connection from './Connection.js';
 import WebSocketProtocol from './WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
 import fs from 'fs-extra';
+import { addPh } from '../utilities/messages.js';
 
 export default class ServerConnection extends Connection {
 
@@ -96,6 +97,11 @@ export default class ServerConnection extends Connection {
      * @typedef {ServerConnection|string} ServerConnectionResolvable - Data that resolves to a ServerConnection object.
      */
 
+    /** Default timeout in seconds used to check for stat channel updates */
+    STAT_CHANNEL_CHECK_DEFAULT_TIMEOUT = 60 * 5.1;
+    /** Timeout used when the previous call did not change any name */
+    STAT_CHANNEL_CHECK_NO_CHANGE_TIMEOUT
+
     /**
      * The protocol used to communicate with the server.
      * @type {WebSocketProtocol}
@@ -185,6 +191,9 @@ export default class ServerConnection extends Connection {
          * @type {?StatsChannelData[]}
          */
         this.statChannels = data.statChannels ?? this.statChannels ?? [];
+        if(this.statChannels.length > 0) {
+            this.startStatChannelCheck();
+        }
 
         /**
          * The data for syncedRoles.
@@ -283,5 +292,35 @@ export default class ServerConnection extends Connection {
             syncedRoles: this.syncedRoles ?? [],
             protocol: 'websocket',
         };
+    }
+
+    /**
+     * Updates the names of a stat channel of this server.
+     * @param {StatsChannelData} statChannel - The stat channel to update the name of.
+     * @returns {Promise<void>}
+     */
+    async updateStatChannelName(statChannel) {
+        let message;
+        if(statChannel.type === 'member-counter') {
+            if(!this.protocol.isConnected()) return;
+            const onlinePlayers = await this.protocol.getOnlinePlayers();
+            if(!onlinePlayers || onlinePlayers.status !== 200) return;
+
+            message = statChannel.names.members.replace('%count%', onlinePlayers.data.length);
+        }
+        else if(statChannel.type === 'status')
+            message = this.protocol.isConnected() ? statChannel.names.online : statChannel.names.offline;
+
+        try {
+            const discordChannel = await this.client.channels.fetch(statChannel.id);
+            await discordChannel.setName(message);
+        }
+        catch(err) {
+            if(err.code === 10003) { // Channel not found
+                const regChannel = await this.protocol.removeStatsChannel(statChannel);
+                if(!regChannel) return;
+                await this.edit({ statChannels: regChannel.data });
+            }
+        }
     }
 }

@@ -47,6 +47,10 @@ export default class WebSocketProtocol extends Protocol {
         this.socket = data.socket ?? this.socket;
     }
 
+    isConnected() {
+        return this.socket && this.socket.connected;
+    }
+
     async get(getPath, putPath) {
         const response = await this._sendRaw('get-file', { path: getPath });
         if(!response) return null;
