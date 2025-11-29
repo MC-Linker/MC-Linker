@@ -2,7 +2,6 @@ import Connection from './Connection.js';
 import WebSocketProtocol from './WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
 import fs from 'fs-extra';
-import { addPh } from '../utilities/messages.js';
 
 export default class ServerConnection extends Connection {
 
@@ -100,7 +99,7 @@ export default class ServerConnection extends Connection {
     /** Default timeout in seconds used to check for stat channel updates */
     STAT_CHANNEL_CHECK_DEFAULT_TIMEOUT = 60 * 5.1;
     /** Timeout used when the previous call did not change any name */
-    STAT_CHANNEL_CHECK_NO_CHANGE_TIMEOUT
+    STAT_CHANNEL_CHECK_NO_CHANGE_TIMEOUT;
 
     /**
      * The protocol used to communicate with the server.
@@ -192,7 +191,7 @@ export default class ServerConnection extends Connection {
          */
         this.statChannels = data.statChannels ?? this.statChannels ?? [];
         if(this.statChannels.length > 0) {
-            this.startStatChannelCheck();
+            // this.startStatChannelCheck();
         }
 
         /**
