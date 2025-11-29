@@ -646,18 +646,6 @@
                     },
                     {
                         "type": "Label",
-                        "label": "Avatar",
-                        "description": "The avatar to use for MC Linker in this server.",
-                        "component": {
-                            "type": "FileUpload",
-                            "custom_id": "avatar",
-                            "required": false,
-                            "min_values": 1,
-                            "max_values": 1
-                        }
-                    },
-                    {
-                        "type": "Label",
                         "label": "Bio",
                         "description": "The \"About Me\" text to use for MC Linker in this server.",
                         "component": {
@@ -668,6 +656,18 @@
                             "min_length": 0,
                             "max_length": 190,
                             "style": "Paragraph"
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Avatar",
+                        "description": "The avatar to use for MC Linker in this server.",
+                        "component": {
+                            "type": "FileUpload",
+                            "custom_id": "avatar",
+                            "required": false,
+                            "min_values": 1,
+                            "max_values": 1
                         }
                     },
                     {
