@@ -3,6 +3,7 @@ import keys from '../utilities/keys.js';
 import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBits } from 'discord.js';
 import { addTranslatedResponses, getModal } from '../utilities/messages.js';
 import logger from '../utilities/logger.js';
+import { disableComponents } from '../utilities/utils.js';
 
 export default class Customize extends Command {
 
@@ -35,6 +36,7 @@ export default class Customize extends Command {
             });
             buttonCollector.on('collect', async buttonInteraction =>
                 await buttonInteraction.showModal(getModal(keys.commands.customize.customize_guild_appearance_modal)));
+            buttonCollector.on('end', () => message.edit({ components: disableComponents(message.components) }));
 
             const modalCollector = new InteractionCollector(client, {
                 time: 60_000 * 14,
