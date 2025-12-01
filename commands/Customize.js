@@ -20,7 +20,7 @@ export default class Customize extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        if(!interaction.entitlements.has('1166098447665995807')) {
+        if(!interaction.entitlements.find(e => e.skuId === '1166098447665995807')) {
             if(!interaction.inGuild()) return await interaction.replyTl(keys.commands.customize.warnings.no_entitlement_guild);
 
             if(!interaction.memberPermissions.any([PermissionFlagsBits.Administrator, PermissionFlagsBits.ManageGuild])) {
