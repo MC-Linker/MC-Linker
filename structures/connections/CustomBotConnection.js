@@ -1,10 +1,10 @@
 import Connection from './Connection.js';
-import logger from '../utilities/logger.js';
+import logger from '../../utilities/logger.js';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
-import { execAsync } from '../utilities/utils.js';
+import { execAsync } from '../../utilities/utils.js';
 import crypto from 'crypto';
-import MCLinker from './MCLinker.js';
+import MCLinker from '../MCLinker.js';
 
 export default class CustomBotConnection extends Connection {
     /**

@@ -1,6 +1,6 @@
 import Connection from './Connection.js';
 import { Routes } from 'discord.js';
-import logger from '../utilities/logger.js';
+import logger from '../../utilities/logger.js';
 
 export default class UserSettingsConnection extends Connection {
 

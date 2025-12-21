@@ -1,4 +1,4 @@
-import ServerConnection from './ServerConnection.js';
+import ServerConnection from '../ServerConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 
 export default class ServerConnectionManager extends ConnectionManager {

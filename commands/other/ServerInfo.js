@@ -1,6 +1,6 @@
 import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
-import { FilePath } from '../../structures/Protocol.js';
+import { FilePath } from '../../structures/protocol/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../utilities/utils.js';
 import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';

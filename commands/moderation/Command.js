@@ -6,7 +6,7 @@ import { codeBlockFromCommandResponse, MaxAutoCompleteChoices, MinecraftDataVers
 import MinecraftData from 'minecraft-data';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import commands from '../../resources/data/commands.json' with { type: 'json' };
-import { FilePath } from '../../structures/Protocol.js';
+import { FilePath } from '../../structures/protocol/Protocol.js';
 
 const mcData = MinecraftData(MinecraftDataVersion);
 

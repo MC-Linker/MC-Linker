@@ -1,5 +1,5 @@
 import { CachedManager } from 'discord.js';
-import { getManagerString } from '../utilities/shardingUtils.js';
+import { getManagerString } from '../../../utilities/shardingUtils.js';
 
 export default class ConnectionManager extends CachedManager {
 
@@ -13,14 +13,14 @@ export default class ConnectionManager extends CachedManager {
 
     /**
      * The server connection cache of this manager.
-     * @type {import('discord.js').Collection<string, import('./Connection.js').default>}
+     * @type {import('discord.js').Collection<string, import('./connections/Connection.js').default>}
      */
     cache;
 
     /**
      * Creates a new ConnectionManager instance.
      * @param {MCLinker} client - The client to create the manager for.
-     * @param {typeof import('./Connection.js').default} holds - The type of connection the manager holds.
+     * @param {typeof import('../Connection.js').default} holds - The type of connection the manager holds.
      * @param {CollectionName} collectionName - The name of the database collection that this manager controls.
      * @returns {ConnectionManager} - A new ConnectionManager instance.
      */
@@ -35,7 +35,7 @@ export default class ConnectionManager extends CachedManager {
 
         /**
          * The connection cache of this manager.
-         * @type {import('discord.js').Collection<string, import('./Connection.js').default>}
+         * @type {import('discord.js').Collection<string, import('./connections/Connection.js').default>}
          */
         this.cache = super.cache;
     }
@@ -43,7 +43,7 @@ export default class ConnectionManager extends CachedManager {
     /**
      * Adds a connection to the cache and writes the data to the file system.
      * @param {ConnectionData} data - The data for the connection.
-     * @returns {Promise<?import('./Connection.js').default>} - The connection instance that has been created.
+     * @returns {Promise<?import('../Connection.js').default>} - The connection instance that has been created.
      */
     async connect(data) {
         /** @type {?Connection} */
@@ -122,7 +122,7 @@ export default class ConnectionManager extends CachedManager {
                     return role;
                 });
             }
-            
+
             await this._add(connection, true, { extras: [this.collectionName] });
         }
     }

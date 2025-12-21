@@ -1,28 +1,29 @@
 // noinspection HttpUrlsUsage
 
 import Fastify from 'fastify';
-import { getOAuthURL, getTokens, getUser } from '../utilities/oauth.js';
-import { createHash, getMinecraftAvatarURL, searchAdvancements } from '../utilities/utils.js';
-import { addPh, getEmbed, ph } from '../utilities/messages.js';
-import keys from '../utilities/keys.js';
+import { getOAuthURL, getTokens, getUser } from '../../utilities/oauth.js';
+import { createHash } from '../../utilities/utils.js';
+import { getEmbed } from '../../utilities/messages.js';
+import keys from '../../utilities/keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
-import Discord, { RESTJSONErrorCodes } from 'discord.js';
-import { RateLimiterMemory, RateLimiterRes } from 'rate-limiter-flexible';
-import logger from '../utilities/logger.js';
+import Discord, { Collection, RESTJSONErrorCodes } from 'discord.js';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
+import logger from '../../utilities/logger.js';
 import path from 'path';
-import MCLinker from './MCLinker.js';
+import MCLinker from '../MCLinker.js';
+import fs from 'fs-extra';
 
 
 export default class MCLinkerAPI extends EventEmitter {
 
     /**
-     * @typedef {Object} RouteResponse
+     * @typedef {object} RouteResponse
      * @property {number?} status - The status code of the response.
-     * @property {Object?} body - The body of the response.
+     * @property {object?} body - The body of the response.
      */
 
     /**
@@ -30,26 +31,6 @@ export default class MCLinkerAPI extends EventEmitter {
      * @type {import('socket.io').Server}
      */
     websocket;
-
-    /**
-     * The rate limiter for chat-channel endpoints that are not of type chat.
-     * @type {RateLimiterMemory}
-     */
-    rateLimiterChatChannels = new RateLimiterMemory({
-        keyPrefix: 'chatchannels',
-        points: 2, // 2 updates
-        duration: 1, // per second
-    });
-
-    /**
-     * The rate limiter for chat-channel endpoints of type chat.
-     * @type {RateLimiterMemory}
-     */
-    rateLimiterChats = new RateLimiterMemory({
-        keyPrefix: 'chats',
-        points: 5, // 5 messages
-        duration: 2, // per 2 seconds
-    });
 
     /**
      * The rate limiter for stats-channel endpoints.
@@ -72,7 +53,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * @property {(data: Object, server: ?ServerConnection) => ?RouteResponse|Promise<?RouteResponse>} handler
      * @property {RateLimiterMemory|((data: Object) => ?RateLimiterMemory)} rateLimiter
      */
-    routes = [
+    routesOld = [
         {
             method: 'POST',
             endpoint: '/chat',
@@ -203,6 +184,18 @@ export default class MCLinkerAPI extends EventEmitter {
         this.client = client;
 
         /**
+         * The REST routes for the api.
+         * @type {Route[]}
+         */
+        this.restRoutes = [];
+
+        /**
+         * The WS routes for the api mapped by event name.
+         * @type {Collection<string, Route>}
+         */
+        this.wsRoutes = new Collection();
+
+        /**
          * The fastify instance for the api.
          * @type {import('fastify').FastifyInstance}
          */
@@ -218,7 +211,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 origin: ['https://admin.socket.io'],
                 credentials: true,
             },
-            transports: ['polling', 'websocket'], //TODO
+            transports: ['polling', 'websocket'], //TODO remove polling
             logLevel: process.env.LOG_LEVEL || 'info',
         });
 
@@ -234,6 +227,33 @@ export default class MCLinkerAPI extends EventEmitter {
             this.emitToAllShards(request.url, request);
             done();
         });
+    }
+
+    /**
+     * Dynamically loads all route classes from the routes directory.
+     * @returns {Promise<void>}
+     */
+    async _loadRoutes() {
+        const routesPath = path.resolve(this.client.config.routesPath);
+
+        await fs.ensureDir(routesPath);
+        const files = await fs.readdir(routesPath);
+
+        for(const file of files) {
+            if(!file.endsWith('.js')) continue;
+
+            const { default: RouteClass } = await import(path.join(routesPath, file));
+            const route = new RouteClass();
+
+            if(route.endpoint) {
+                this.restRoutes.push(route);
+                logger.info('Loaded route:', route.endpoint, route.event);
+            }
+            if(route.event) {
+                this.wsRoutes.set(route.event, route);
+                logger.info('Loaded WS route:', route.event);
+            }
+        }
     }
 
     /**
@@ -256,61 +276,22 @@ export default class MCLinkerAPI extends EventEmitter {
     }
 
     async startServer() {
-        async function _getServerFastify(request, reply, client, rateLimiter = null) {
-            try {
-                if(rateLimiter) await rateLimiter.consume(request.ip);
+        await this._loadRoutes();
 
-                if(request.method === 'GET') return;
-                else if(!request.body || !request.body.id || !request.body.ip) {
-                    reply.status(400).send({ message: 'Bad Request: Missing id and ip' });
-                    return;
-                }
-
-                /** @type {ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.id === request.body.id);
-                //If no connection on that guild send disconnection status
-                if(!server) reply.status(403).send({});
-
-                //check authorization: Bearer <token>
-                if(!request.headers.authorization || createHash(server.token) !== request.headers.authorization?.split(' ')[1]) {
-                    reply.status(401).send({});
-                    return;
-                }
-
-                return server;
-            }
-            catch(err) {
-                if(err instanceof RateLimiterRes) {
-                    reply.status(429).headers({
-                        'Retry-After': err.msBeforeNext / 1000,
-                        'X-RateLimit-Limit': rateLimiter.points,
-                        'X-RateLimit-Remaining': err.remainingPoints,
-                        'X-RateLimit-Reset': Math.ceil((Date.now() + rateLimiterRes.msBeforeNext) / 1000),
-                    }).send({ message: 'Too many requests' });
-                }
-                else {
-                    logger.error(err, 'Error while processing request');
-                    reply.status(500).send({ message: 'Internal Server Error' });
-                }
-            }
-        }
-
-        for(const route of this.routes) {
-            if(!route.method || !route.endpoint) continue;
+        for(const route of this.restRoutes) {
+            if(!route.endpoint) continue;
             if(route.customBot && process.env.CUSTOM_BOT !== 'true') continue;
 
-            this.fastify[route.method.toLowerCase()](route.endpoint, async (request, reply) => {
-                const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(request.body) : route.rateLimiter;
-                const server = route.requiresServer ? await _getServerFastify(request, reply, this.client, rateLimiter) : null;
-                if(!server && route.requiresServer) return;
+            for(const method of route.methods) {
+                this.fastify[method.toLowerCase()](route.endpoint, async (request, reply) => {
+                    if(route.customBot && process.env.COMMUNICATION_TOKEN !== request.headers['x-communication-token'])
+                        return reply.status(401).send({ message: 'Unauthorized' });
 
-                if(route.customBot && process.env.COMMUNICATION_TOKEN !== request.headers['x-communication-token'])
-                    return reply.status(401).send({ message: 'Unauthorized' });
-
-                const response = await route.handler(request.body, server);
-                logger.debug(`[Fastify] Response for ${route.method} ${route.endpoint}: ${response}`);
-                reply.status(response?.status ?? 200).send(response?.body ?? {});
-            });
+                    const response = await route[method.toLowerCase()](request, reply);
+                    logger.debug(`[Fastify] Response for ${method} ${route.endpoint}: ${response.toString()}`);
+                    reply.status(response?.status ?? 200).send(response?.body ?? {});
+                });
+            }
         }
 
         this.fastify.get('/linked-role', async (request, reply) => {
@@ -375,118 +356,9 @@ export default class MCLinkerAPI extends EventEmitter {
             },
         });
 
+        this.websocket.use(this.wsHandleConnection);
+
         this.websocket.engine.on('connection_error', err => logger.error(err, '[Socket.io] Websocket connection error'));
-
-        this.websocket.on('connection', socket => {
-            logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
-
-            if(socket.handshake.auth.token) {
-                //Reconnection
-                const token = socket.handshake.auth.token;
-                const hash = createHash(token);
-
-                /** @type {?ServerConnection} */
-                const server = this.client.serverConnections.cache.find(server => server.hash === hash);
-                if(!server) {
-                    if(socket.handshake.auth.code) {
-                        //New Connection
-                        const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
-
-                        /** @type {Connect} */
-                        const connectCommand = this.client.commands.get('connect');
-                        const wsVerification = connectCommand.wsVerification;
-
-                        if(wsVerification.has(id)) {
-                            const {
-                                code: serverCode,
-                                shard,
-                                requiredRoleToJoin,
-                                displayIp,
-                                online,
-                            } = wsVerification.get(id);
-                            try {
-                                if(!serverCode || serverCode !== userCode) {
-                                    logger.debug(`[Socket.io] New Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
-                                    return socket.disconnect(true);
-                                }
-
-                                wsVerification.delete(id);
-                                socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
-
-                                const hash = createHash(socket.handshake.auth.token);
-                                /** @type {WebSocketServerConnectionData} */
-                                const serverConnectionData = {
-                                    id,
-                                    ip: socket.handshake.address,
-                                    path: socket.handshake.query.path,
-                                    chatChannels: [],
-                                    statChannels: [],
-                                    syncedRoles: [],
-                                    online: online ?? socket.handshake.query.online === 'true',
-                                    forceOnlineMode: online !== undefined,
-                                    floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                                    version: Number(socket.handshake.query.version.split('.')[1]),
-                                    worldPath: socket.handshake.query.worldPath,
-                                    protocol: 'websocket',
-                                    socket,
-                                    hash,
-                                    requiredRoleToJoin,
-                                    displayIp,
-                                };
-
-                                connectCommand.disconnectOldServer(this.client, id);
-                                this.addWebsocketListeners(socket, id, hash);
-                                this.client.serverConnections.connect(serverConnectionData).then(server => {
-                                    logger.debug(`[Socket.io] Successfully connected ${server.displayIp} from ${server.id} to websocket`);
-                                    this.client.shard.broadcastEval(
-                                        (c, { id }) => c.emit('editConnectResponse', id, 'success'),
-                                        { context: { id }, shard },
-                                    );
-                                });
-                            }
-                            catch(err) {
-                                logger.error(err, '[Socket.io] Error while processing websocket connection');
-                                this.client.shard.broadcastEval(
-                                    (c, {
-                                        id,
-                                        error,
-                                    }) => c.emit('editConnectResponse', id, 'error', { error_stack: error }),
-                                    { context: { id, error: err.stack }, shard },
-                                );
-                                socket.disconnect(true);
-                            }
-                        }
-                        else {
-                            logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} provided invalid verification. Disconnecting socket.`);
-                            return socket.disconnect();
-                        }
-                    }
-                    else {
-                        logger.debug(`[Socket.io] No server connection found. Disconnecting socket.`);
-                        return socket.disconnect();
-                    }
-                }
-                else {
-                    //Update data
-                    server.edit({
-                        ip: socket.handshake.address,
-                        path: socket.handshake.query.path,
-                        online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
-                        floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                        version: Number(socket.handshake.query.version.split('.')[1]),
-                        worldPath: socket.handshake.query.worldPath,
-                    });
-
-                    server.protocol.updateSocket(socket);
-                    this.addWebsocketListeners(socket, server, hash);
-                    logger.debug(`[Socket.io] Successfully reconnected ${server.displayIp} from ${server.id} to websocket`);
-                }
-            }
-            else {
-                logger.debug(`[Socket.io] Connection from ${socket.handshake.address} provided invalid verification. Disconnecting socket.`);
-                return socket.disconnect(true);
-            }
-        });
 
         await this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
             if(err) {
@@ -501,16 +373,164 @@ export default class MCLinkerAPI extends EventEmitter {
         return this.fastify;
     }
 
-    async notifyMainBotOfStart() {
-        const res = await fetch(`http://mc-linker/custom-bot-api-ready`, {
-            method: 'POST',
-            headers: { 'x-communication-token': process.env.COMMUNICATION_TOKEN },
-        });
-        if(!res.ok) {
-            logger.fatal(res, 'Could not notify main bot of custom bot start');
-            process.exit(1);
+    /**
+     * Handles a websocket connection (authentication, reconnection, new connection).
+     * @param {Socket} socket - The socket that is trying to connect.
+     * @param {Function} next - Callback to continue or close the connection.
+     */
+    async wsHandleConnection(socket, next) {
+        logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
+
+        if(!socket.handshake.auth.token) {
+            logger.debug(`[Socket.io] Connection from ${socket.handshake.address} provided invalid verification. Disconnecting socket.`);
+            return next(new Error('Unauthorized'));
         }
-        logger.info('Notified main bot of custom bot start');
+
+        const token = socket.handshake.auth.token;
+        const hash = createHash(token);
+
+        // Find existing server connection
+        /** @type {?ServerConnection} */
+        const server = this.client.serverConnections.cache.find(server => server.hash === hash);
+
+        if(server) {
+            // Reconnection
+            // Update data
+            await server.edit({
+                ip: socket.handshake.address,
+                path: socket.handshake.query.path,
+                online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
+                floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                version: Number(socket.handshake.query.version.split('.')[1]),
+                worldPath: socket.handshake.query.worldPath,
+            });
+            server.protocol.updateSocket(socket);
+
+            this.addWebsocketListeners(socket, server, hash);
+            logger.debug(`[Socket.io] Successfully reconnected ${server.displayIp} from ${server.id} to websocket`);
+            return next();
+        }
+
+        if(!server && socket.handshake.auth.code) {
+            // New Connection
+            const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
+
+            /** @type {Connect} */
+            const connectCommand = this.client.commands.get('connect');
+            const wsVerification = connectCommand.wsVerification;
+
+            if(wsVerification.has(id)) {
+                const {
+                    code: serverCode,
+                    shard,
+                    requiredRoleToJoin,
+                    displayIp,
+                    online,
+                } = wsVerification.get(id);
+                try {
+                    if(!serverCode || serverCode !== userCode) {
+                        logger.debug(`[Socket.io] New Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
+                        return next(new Error('Unauthorized'));
+                    }
+
+                    wsVerification.delete(id);
+                    socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
+
+                    const hash = createHash(socket.handshake.auth.token);
+                    /** @type {WebSocketServerConnectionData} */
+                    const serverConnectionData = {
+                        id,
+                        ip: socket.handshake.address,
+                        path: socket.handshake.query.path,
+                        chatChannels: [],
+                        statChannels: [],
+                        syncedRoles: [],
+                        online: online ?? socket.handshake.query.online === 'true',
+                        forceOnlineMode: online !== undefined,
+                        floodgatePrefix: socket.handshake.query.floodgatePrefix,
+                        version: Number(socket.handshake.query.version.split('.')[1]),
+                        worldPath: socket.handshake.query.worldPath,
+                        protocol: 'websocket',
+                        socket,
+                        hash,
+                        requiredRoleToJoin,
+                        displayIp,
+                    };
+
+                    await connectCommand.disconnectOldServer(this.client, id);
+                    this.addWebsocketListeners(socket, id, hash);
+                    this.client.serverConnections.connect(serverConnectionData).then(server => {
+                        logger.debug(`[Socket.io] Successfully connected ${server.displayIp} from ${server.id} to websocket`);
+                        this.client.shard.broadcastEval(
+                            (c, { id }) => c.emit('editConnectResponse', id, 'success'),
+                            { context: { id }, shard },
+                        );
+                    });
+                    next();
+                }
+                catch(err) {
+                    logger.error(err, '[Socket.io] Error while processing websocket connection');
+                    this.client.shard.broadcastEval(
+                        (c, {
+                            id,
+                            error,
+                        }) => c.emit('editConnectResponse', id, 'error', { error_stack: error }),
+                        { context: { id, error: err.stack }, shard },
+                    );
+                    next(new Error('Server Error'));
+                }
+            }
+            else {
+                logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} provided invalid verification. Disconnecting socket.`);
+                next(new Error('Unauthorized'));
+            }
+        }
+        else {
+            logger.debug(`[Socket.io] No server connection found. Disconnecting socket.`);
+            next(new Error('Unauthorized'));
+        }
+    }
+
+    /**
+     * Handles a websocket event (rate limit, server lookup, response)
+     * @param {Socket} socket - The socket that sent the event.
+     * @param {string} eventName - The name of the event.
+     * @param {string} hash - The hash to use for verifying server-connections.
+     * @param {Object|string} data - The data sent with the event.
+     * @param {Function} callback - The callback to send the response to.
+     */
+    async wsEventHandler(socket, eventName, hash, data, callback) {
+        logger.debug(`[Socket.IO] Received event ${eventName} with data: ${data.toString()}`);
+
+        try {
+            data = typeof data === 'string' ? JSON.parse(data) : {};
+        }
+        catch(err) {
+            logger.error(err, `[Socket.IO] Error parsing data for event ${eventName}`);
+            return callback?.({ message: 'invalid_json' });
+        }
+
+        const route = this.wsRoutes.get(eventName);
+        const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
+        try {
+            await rateLimiter.consume(socket.handshake.address);
+
+            //Update server variable to ensure it wasn't disconnected in the meantime
+            /** @type {?ServerConnection} */
+            const server = this.client.serverConnections.cache.find(server => server.hash === hash);
+
+            logger.debug(`[Socket.IO] Server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
+
+            //If no connection on that guild, disconnect socket
+            if(!server && route.requiresServer) return socket.disconnect();
+
+            const response = await route.ws(data, server, this.client);
+            logger.debug(`[Socket.IO] Response for event ${route.event}: ${response.toString()}`);
+            callback?.(response?.body ?? {});
+        }
+        catch(rejRes) {
+            callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
+        }
     }
 
     /**
@@ -520,41 +540,9 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {string} hash - The hash to use for verifying server-connections.
      */
     addWebsocketListeners(socket, serverResolvable, hash) {
-        async function getServerWebsocket(client, rateLimiter = null, callback) {
-            try {
-                if(rateLimiter) await rateLimiter.consume(socket.handshake.address);
-
-                //Update server variable to ensure it wasn't disconnected in the meantime
-                /** @type {?ServerConnection} */
-                const server = client.serverConnections.cache.find(server => server.hash === hash);
-
-                //If no connection on that guild, disconnect socket
-                if(!server) {
-                    socket.disconnect();
-                    return;
-                }
-                return server;
-            }
-            catch(rejRes) {
-                callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
-            }
-        }
-
-        for(const route of this.routes) {
+        for(const route of this.wsRoutes.values()) {
             if(!route.event) continue;
-            socket.on(route.event, async (data, callback) => {
-                logger.debug(`[Socket.IO] Received event ${route.event} with data: ${JSON.stringify(data)}`);
-
-                data = typeof data === 'string' ? JSON.parse(data) : {};
-                const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
-                const server = route.requiresServer ? await getServerWebsocket(this.client, rateLimiter, callback) : null;
-                logger.debug(`[Socket.IO] Server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
-                if(!server && route.requiresServer) return;
-
-                const response = await route.handler(data, server);
-                logger.debug(`[Socket.IO] Response for event ${route.event}: ${JSON.stringify(response)}`);
-                callback?.(response?.body ?? {});
-            });
+            socket.on(route.event, this.wsEventHandler.bind(this, socket, route.event, hash));
         }
 
         socket.on('disconnect', reason => {
@@ -575,6 +563,18 @@ export default class MCLinkerAPI extends EventEmitter {
         });
     }
 
+    async notifyMainBotOfStart() {
+        const res = await fetch(`http://mc-linker/custom-bot-api-ready`, {
+            method: 'POST',
+            headers: { 'x-communication-token': process.env.COMMUNICATION_TOKEN },
+        });
+        if(!res.ok) {
+            logger.fatal(res, 'Could not notify main bot of custom bot start');
+            process.exit(1);
+        }
+        logger.info('Notified main bot of custom bot start');
+    }
+
     /**
      * Handles chat messages.
      * @param {Object} data - The request data.
@@ -583,166 +583,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * @private
      */
     async chat(data, server) {
-        const { message, type, player } = data;
-        const guildId = server.id;
-        const authorURL = await getMinecraftAvatarURL(player);
 
-        const channels = server.chatChannels.filter(c => c.types.includes(type));
-        if(channels.length === 0) return; //No channels to send to
-
-        const argPlaceholder = { username: player, author_url: authorURL, message };
-        //Check whether command is blocked
-        if(['player_command', 'console_command', 'block_command'].includes(type)) {
-            const commandName = message.replace(/^\//, '').split(/\s+/)[0];
-            if(server.settings.isDisabled('chatCommands', commandName)) return;
-        }
-
-        const guild = await this.client.guilds.fetch(guildId);
-
-        //Add special placeholders for advancements
-        if(type === 'advancement') {
-            let advancementTitle;
-            let advancementDesc;
-
-            if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
-
-            const [category, id] = message.replace('minecraft:', '').split('/');
-            const advancement = searchAdvancements(id, category, false, true, 1);
-
-            if(!advancement[0]) return; // Advancement not found
-
-            advancementTitle = advancement[0]?.name ?? message;
-            advancementDesc = advancement[0]?.description ?? keys.commands.advancements.no_description_available;
-
-            // Add placeholder to argPlaceholder so it can be used later
-            argPlaceholder.advancement_title = advancementTitle;
-            argPlaceholder.advancement_description = advancementDesc;
-        }
-        else if(type === 'death' && (!message || message === '')) argPlaceholder.message = addPh(keys.api.plugin.success.default_death_message, argPlaceholder);
-
-        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, { 'timestamp_now': Date.now() });
-        if(type !== 'chat') {
-            for(const channel of channels) {
-                if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
-
-                /** @type {?Discord.TextChannel} */
-                let discordChannel;
-                try {
-                    discordChannel = await guild.channels.fetch(channel.id);
-                    if(!discordChannel) continue;
-                    await discordChannel?.send({ embeds: [chatEmbed] });
-                }
-                catch(err) {
-                    if(err.code === RESTJSONErrorCodes.UnknownChannel) {
-                        const regChannel = await server.protocol.removeChatChannel(channel);
-                        if(!regChannel) continue;
-                        await server.edit({ chatChannels: regChannel.data });
-                    }
-                }
-            }
-            return;
-        }
-
-        //type === 'chat'
-
-        if(message === '' || message === null) return; //Ignore empty messages
-
-        //Parse pings (@name)
-        const mentions = message.match(/@(\S+)/g);
-        for(const mention of mentions ?? []) {
-            if(mention.length > 101) continue; //101 because of the @
-            const users = await guild.members.search({ query: mention.replace('@', ''), limit: 1 });
-            if(users.first()?.username !== mention.replace('@', '')) continue;
-            argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
-        }
-
-        const allWebhooks = await guild.fetchWebhooks().catch(() => {});
-
-        for(const channel of channels) {
-            if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
-
-            /** @type {?Discord.TextChannel} */
-            let discordChannel;
-            try {
-                discordChannel = await guild.channels.fetch(channel.id);
-                if(!discordChannel) continue;
-            }
-            catch(err) {
-                if(err.code === RESTJSONErrorCodes.UnknownChannel) {
-                    const regChannel = await server.protocol.removeChatChannel(channel);
-                    if(!regChannel) continue;
-                    await server.edit({ chatChannels: regChannel.data });
-                }
-                continue;
-            }
-
-            if(!allWebhooks) {
-                await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] });
-                return;
-            }
-
-            if(!channel.webhook) {
-                await discordChannel.send({ embeds: [chatEmbed] }).catch(() => {});
-                continue;
-            }
-
-            try {
-                let webhook = allWebhooks.get(channel.webhook);
-
-                //Create new webhook if old one doesn't exist
-                if(!webhook) {
-                    const options = {
-                        name: 'MC Linker',
-                        reason: 'ChatChannel to Minecraft',
-                        avatar: 'https://mclinker.com/assets/mclinkerlogo.png',
-                    };
-                    if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
-                    else webhook = await discordChannel.createWebhook(options);
-
-                    const regChannel = await server.protocol.addChatChannel({
-                        types: channel.types,
-                        webhook: webhook.id,
-                        id: channel.id,
-                    });
-                    if(!regChannel) {
-                        await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook)] });
-                        await webhook.delete();
-                        return;
-                    }
-
-                    await server.edit({ chatChannels: regChannel.data });
-                }
-
-                if(discordChannel.isThread()) await webhook.send({
-                    threadId: discordChannel.id,
-                    content: argPlaceholder.message,
-                    username: player,
-                    avatarURL: authorURL,
-                    allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-                });
-                else await webhook.send({
-                    content: argPlaceholder.message,
-                    username: player,
-                    avatarURL: authorURL,
-                    allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-                });
-            }
-            catch(err) {
-                try {
-                    if(discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.ManageWebhooks)) {
-                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] });
-                    }
-                    else {
-                        await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.unknown_chat_error, ph.error(err))] });
-                    }
-                }
-                catch(_) {
-                    const regChannel = await server.protocol.removeChatChannel(channel);
-                    if(!regChannel) continue;
-                    await server.edit({ chatChannels: regChannel.data });
-                }
-            }
-        }
     }
 
     /**

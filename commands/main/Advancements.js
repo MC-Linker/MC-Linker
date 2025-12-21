@@ -4,7 +4,7 @@ import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
-import { FilePath } from '../../structures/Protocol.js';
+import { FilePath } from '../../structures/protocol/Protocol.js';
 import * as d3 from 'd3-hierarchy';
 import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };

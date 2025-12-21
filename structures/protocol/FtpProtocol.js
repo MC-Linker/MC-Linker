@@ -1,6 +1,6 @@
 import Protocol from './Protocol.js';
-import FtpClient from './ftp/FtpClient.js';
-import SftpClient from './ftp/SftpClient.js';
+import FtpClient from '../ftp/FtpClient.js';
+import SftpClient from '../ftp/SftpClient.js';
 import fs from 'fs-extra';
 
 // @deprecated

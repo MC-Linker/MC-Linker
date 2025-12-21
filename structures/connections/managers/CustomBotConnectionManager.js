@@ -1,8 +1,8 @@
-import CustomBotConnection from './CustomBotConnection.js';
+import CustomBotConnection from '../CustomBotConnection.js';
 import ConnectionManager from './ConnectionManager.js';
-import Wizard from './helpers/Wizard.js';
-import keys from '../utilities/keys.js';
-import { addTranslatedResponses, getComponent, getModal, getReplyOptions, ph } from '../utilities/messages.js';
+import Wizard from '../../helpers/Wizard.js';
+import keys from '../../../utilities/keys.js';
+import { addTranslatedResponses, getComponent, getModal, getReplyOptions, ph } from '../../../utilities/messages.js';
 import Discord, {
     ActionRowBuilder,
     AttachmentBuilder,
@@ -12,8 +12,8 @@ import Discord, {
     InteractionType,
     MessageFlags,
 } from 'discord.js';
-import { disableComponents, generateDefaultInvite } from '../utilities/utils.js';
-import logger from '../utilities/logger.js';
+import { disableComponents, generateDefaultInvite } from '../../../utilities/utils.js';
+import logger from '../../../utilities/logger.js';
 
 export default class CustomBotConnectionManager extends ConnectionManager {
 

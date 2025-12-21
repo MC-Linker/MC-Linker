@@ -1,4 +1,4 @@
-import ServerSettingsConnection from './ServerSettingsConnection.js';
+import ServerSettingsConnection from '../ServerSettingsConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 
 export default class ServerSettingsConnectionManager extends ConnectionManager {

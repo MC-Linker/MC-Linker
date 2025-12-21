@@ -1,4 +1,4 @@
-import UserSettingsConnection from './UserSettingsConnection.js';
+import UserSettingsConnection from '../UserSettingsConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 
 export default class UserSettingsConnectionManager extends ConnectionManager {

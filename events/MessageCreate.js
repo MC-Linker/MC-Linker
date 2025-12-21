@@ -2,7 +2,7 @@ import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
-import ServerConnection from '../structures/ServerConnection.js';
+import ServerConnection from '../structures/connections/ServerConnection.js';
 import { Events } from 'discord.js';
 
 /**
@@ -18,6 +18,7 @@ export default class MessageCreate extends Event {
 
     async execute(client, message) {
         if(message.author.bot) return;
+
         message = addTranslatedResponses(message);
         if(!message.inGuild()) {
             // Handle DM messages (verification codes)
@@ -34,6 +35,7 @@ export default class MessageCreate extends Event {
                     }
                     catch(err) { return null; }
                 }));
+
                 const arrayOfServers = promises.map(p => p.value).filter(p => p);
                 for(const [conn, guild, member] of arrayOfServers) await conn.syncRoles(guild, member, userConnection);
                 client.api.usersAwaitingVerification.delete(message.content);

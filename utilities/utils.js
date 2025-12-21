@@ -25,10 +25,10 @@ import mojangson from 'mojangson';
 import { Authflow } from 'prismarine-auth';
 import util from 'util';
 import { exec } from 'child_process';
-import WebSocketProtocol from '../structures/WebSocketProtocol.js';
-import { FilePath } from '../structures/Protocol.js';
-import HttpProtocol from '../structures/HttpProtocol.js';
-import FtpProtocol from '../structures/FtpProtocol.js';
+import WebSocketProtocol from '../structures/protocol/WebSocketProtocol.js';
+import { FilePath } from '../structures/protocol/Protocol.js';
+import HttpProtocol from '../structures/protocol/HttpProtocol.js';
+import FtpProtocol from '../structures/protocol/FtpProtocol.js';
 import fs from 'fs-extra';
 import path from 'path';
 import logger from './logger.js';
@@ -490,7 +490,7 @@ export async function getLivePlayerNbt(server, user, interaction) {
 
 /**
  * Gets the configured floodgate prefix of a server by downloading the floodgate config file.
- * @param {import('../structures/Protocol.js')} protocol - The protocol to get the config with.
+ * @param {import('../structures/protocol/Protocol.js')} protocol - The protocol to get the config with.
  * @param {string} path - The path to the server.
  * @param {string} id - The id of the server.
  * @returns {Promise<?string>} - The configured prefix or undefined if floodgate is not installed or an error occurred.

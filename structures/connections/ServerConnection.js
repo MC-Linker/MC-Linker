@@ -1,5 +1,5 @@
 import Connection from './Connection.js';
-import WebSocketProtocol from './WebSocketProtocol.js';
+import WebSocketProtocol from '../protocol/WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
 import fs from 'fs-extra';
 

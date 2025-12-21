@@ -2,7 +2,7 @@ import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
-import { FilePath } from '../../structures/Protocol.js';
+import { FilePath } from '../../structures/protocol/Protocol.js';
 import Canvas from 'skia-canvas';
 import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
 import MinecraftData from 'minecraft-data';
