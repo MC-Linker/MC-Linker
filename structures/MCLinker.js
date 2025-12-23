@@ -26,7 +26,8 @@ export default class MCLinker extends Discord.Client {
      * @property {string} commandsPath - The path to the commands folder.
      * @property {string} componentsPath - The path to the components folder.
      * @property {string} eventsPath - The path to the events folder.
-     * @property {string} routesPath - The path to the API routes folder.
+     * @property {string} restRoutesPath - The path to the API routes folder.
+     * @property {string} wsEventsPath - The path to the API websocket events folder.
      * @property {import('discord.js').PresenceData} presence - The presence data for the bot.
      * @property {string} pluginVersion - The latest version of the Minecraft plugin.
      * @property {string} supportServerInvite - The invite link to the support server.

@@ -3,7 +3,8 @@
     "commandsPath": "./commands",
     "componentsPath": "./components",
     "eventsPath": "./events",
-    "routesPath": "./api/routes",
+    "restRoutesPath": "./api/routes",
+    "wsEventsPath": "./api/events",
     "presence": {
         "status": "online",
         "activities": [

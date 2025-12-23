@@ -10,162 +10,19 @@ import fastifyCookie from '@fastify/cookie';
 import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
-import Discord, { Collection, RESTJSONErrorCodes } from 'discord.js';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
+import { Collection } from 'discord.js';
 import logger from '../../utilities/logger.js';
 import path from 'path';
-import MCLinker from '../MCLinker.js';
 import fs from 'fs-extra';
 
 
 export default class MCLinkerAPI extends EventEmitter {
 
     /**
-     * @typedef {object} RouteResponse
-     * @property {number?} status - The status code of the response.
-     * @property {object?} body - The body of the response.
-     */
-
-    /**
      * The websocket instance for the api.
      * @type {import('socket.io').Server}
      */
     websocket;
-
-    /**
-     * The rate limiter for stats-channel endpoints.
-     * @type {RateLimiterMemory}
-     */
-    rateLimiterMemberCounter = new RateLimiterMemory({
-        keyPrefix: 'member-counters',
-        points: 2, // 2 updates
-        duration: 60 * 5, // per 5 minutes
-    });
-
-    /**
-     * The routes for the rest and ws api.
-     * @type {Object[]}
-     * @property {string} method
-     * @property {string} endpoint
-     * @property {string} event
-     * @property {boolean} requiresServer
-     * @property {boolean=false} customBot
-     * @property {(data: Object, server: ?ServerConnection) => ?RouteResponse|Promise<?RouteResponse>} handler
-     * @property {RateLimiterMemory|((data: Object) => ?RateLimiterMemory)} rateLimiter
-     */
-    routesOld = [
-        {
-            method: 'POST',
-            endpoint: '/chat',
-            event: 'chat',
-            requiresServer: true,
-            // Direct method reference not possible because client is not loaded when routes are loaded
-            handler: (data, server) => this.chat(data, server),
-            rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
-        },
-        {
-            method: 'POST',
-            endpoint: '/update-stats-channels',
-            event: 'update-stats-channels',
-            requiresServer: true,
-            handler: (data, server) => this.updateStatsChannel(data, server),
-            rateLimiter: data => data.event === 'members' ? this.rateLimiterMemberCounter : null,
-        },
-        {
-            method: 'POST',
-            endpoint: '/add-synced-role-member',
-            event: 'add-synced-role-member',
-            requiresServer: true,
-            handler: (data, server) => this.addSyncedRoleMember(data, server),
-        },
-        {
-            method: 'POST',
-            endpoint: '/remove-synced-role-member',
-            event: 'remove-synced-role-member',
-            requiresServer: true,
-            handler: (data, server) => this.removeSyncedRoleMember(data, server),
-        }, {
-            method: 'POST',
-            endpoint: '/remove-synced-role',
-            event: 'remove-synced-role',
-            requiresServer: true,
-            handler: (data, server) => this.removeSyncedRole(data, server),
-        },
-        {
-            method: 'POST',
-            endpoint: '/disconnect-force',
-            event: 'disconnect-force',
-            requiresServer: true,
-            handler: (data, server) => this.client.serverConnections.disconnect(server),
-        },
-        {
-            method: 'POST',
-            endpoint: '/has-required-role',
-            event: 'has-required-role',
-            requiresServer: true,
-            handler: (data, server) => this.hasRequiredRoleToJoin(data, server),
-        },
-        {
-            method: 'POST',
-            endpoint: '/verify-user',
-            event: 'verify-user',
-            requiresServer: true,
-            handler: data => this.verifyUser(data),
-        },
-        {
-            method: 'POST',
-            endpoint: '/invite-url',
-            event: 'invite-url',
-            requiresServer: true,
-            handler: (data, server) => this.getInviteUrl(data, server),
-        },
-        {
-            method: 'GET',
-            endpoint: '/version',
-            event: 'version',
-            requiresServer: false,
-            handler: () => {
-                return { body: this.client.config.pluginVersion };
-            },
-        },
-        {
-            method: 'POST',
-            endpoint: '/presence',
-            requiresServer: false,
-            customBot: true,
-            handler: async (data, _) => {
-                try {
-                    await this.client.user.setPresence(data);
-                    this.client.config.presence = data;
-                    await MCLinker.writeConfig(this.client.config);
-                }
-                catch(err) {
-                    logger.error(err, 'Error while setting custom bot presence');
-                    return { status: 500, body: err };
-                }
-            },
-        },
-        {
-            method: 'POST',
-            endpoint: '/pre-delete-cleanup',
-            requiresServer: false,
-            customBot: true,
-            handler: async (_, __) => {
-                for(const server of this.client.serverConnections.cache.values())
-                    await this.client.serverConnections.disconnect(server);
-                console.log('All server connections disconnected.');
-
-                this.client.mongo.connection.db.dropDatabase();
-                console.log(`${this.client.mongo.connection.db.databaseName} database dropped.`);
-            },
-        },
-        {
-            method: 'POST',
-            endpoint: '/custom-bot-api-ready',
-            requiresServer: false,
-            handler: async (_, __) => {}, // Just acknowledge the custom bot is ready (send 200)
-        },
-    ];
 
     /**
      * A map of users that are awaiting verification. The map consists of verification codes and their username and uuid.
@@ -190,10 +47,10 @@ export default class MCLinkerAPI extends EventEmitter {
         this.restRoutes = [];
 
         /**
-         * The WS routes for the api mapped by event name.
-         * @type {Collection<string, Route>}
+         * The WS events for the api mapped by event name.
+         * @type {Collection<string, WSEvent>}
          */
-        this.wsRoutes = new Collection();
+        this.wsEvents = new Collection();
 
         /**
          * The fastify instance for the api.
@@ -211,7 +68,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 origin: ['https://admin.socket.io'],
                 credentials: true,
             },
-            transports: ['polling', 'websocket'], //TODO remove polling
+            transports: ['websocket'],
             logLevel: process.env.LOG_LEVEL || 'info',
         });
 
@@ -230,11 +87,11 @@ export default class MCLinkerAPI extends EventEmitter {
     }
 
     /**
-     * Dynamically loads all route classes from the routes directory.
+     * Dynamically loads all rest route classes from the routes directory.
      * @returns {Promise<void>}
      */
     async _loadRoutes() {
-        const routesPath = path.resolve(this.client.config.routesPath);
+        const routesPath = path.resolve(this.client.config.restRoutesPath);
 
         await fs.ensureDir(routesPath);
         const files = await fs.readdir(routesPath);
@@ -243,16 +100,33 @@ export default class MCLinkerAPI extends EventEmitter {
             if(!file.endsWith('.js')) continue;
 
             const { default: RouteClass } = await import(path.join(routesPath, file));
+            /** @type {Route} */
             const route = new RouteClass();
 
-            if(route.endpoint) {
-                this.restRoutes.push(route);
-                logger.info('Loaded route:', route.endpoint, route.event);
-            }
-            if(route.event) {
-                this.wsRoutes.set(route.event, route);
-                logger.info('Loaded WS route:', route.event);
-            }
+            this.restRoutes.push(route);
+            logger.info('Loaded route:', route.endpoint);
+        }
+    }
+
+    /**
+     * Dynamically loads all events classes from the wsEvents directory.
+     * @returns {Promise<void>}
+     */
+    async _loadWSEvents() {
+        const wsEventsPath = path.resolve(this.client.config.wsEventsPath);
+
+        await fs.ensureDir(wsEventsPath);
+        const files = await fs.readdir(wsEventsPath);
+
+        for(const file of files) {
+            if(!file.endsWith('.js')) continue;
+
+            const { default: WSEventClass } = await import(path.join(wsEventsPath, file));
+            /** @type {WSEvent} */
+            const wsEvent = new WSEventClass();
+
+            this.wsEvents.set(wsEvent.event, wsEvent);
+            logger.info('Loaded WS event:', wsEvent.event);
         }
     }
 
@@ -277,9 +151,9 @@ export default class MCLinkerAPI extends EventEmitter {
 
     async startServer() {
         await this._loadRoutes();
+        await this._loadWSEvents();
 
         for(const route of this.restRoutes) {
-            if(!route.endpoint) continue;
             if(route.customBot && process.env.CUSTOM_BOT !== 'true') continue;
 
             for(const method of route.methods) {
@@ -287,7 +161,7 @@ export default class MCLinkerAPI extends EventEmitter {
                     if(route.customBot && process.env.COMMUNICATION_TOKEN !== request.headers['x-communication-token'])
                         return reply.status(401).send({ message: 'Unauthorized' });
 
-                    const response = await route[method.toLowerCase()](request, reply);
+                    const response = await route[method.toLowerCase()](this.client, request, reply);
                     logger.debug(`[Fastify] Response for ${method} ${route.endpoint}: ${response.toString()}`);
                     reply.status(response?.status ?? 200).send(response?.body ?? {});
                 });
@@ -510,7 +384,7 @@ export default class MCLinkerAPI extends EventEmitter {
             return callback?.({ message: 'invalid_json' });
         }
 
-        const route = this.wsRoutes.get(eventName);
+        const route = this.wsEvents.get(eventName);
         const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
         try {
             await rateLimiter.consume(socket.handshake.address);
@@ -522,11 +396,11 @@ export default class MCLinkerAPI extends EventEmitter {
             logger.debug(`[Socket.IO] Server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
 
             //If no connection on that guild, disconnect socket
-            if(!server && route.requiresServer) return socket.disconnect();
+            if(!server) return socket.disconnect();
 
-            const response = await route.ws(data, server, this.client);
+            const response = await route.execute(data, server, this.client);
             logger.debug(`[Socket.IO] Response for event ${route.event}: ${response.toString()}`);
-            callback?.(response?.body ?? {});
+            callback?.(response);
         }
         catch(rejRes) {
             callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
@@ -540,10 +414,8 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {string} hash - The hash to use for verifying server-connections.
      */
     addWebsocketListeners(socket, serverResolvable, hash) {
-        for(const route of this.wsRoutes.values()) {
-            if(!route.event) continue;
+        for(const route of this.wsEvents.values())
             socket.on(route.event, this.wsEventHandler.bind(this, socket, route.event, hash));
-        }
 
         socket.on('disconnect', reason => {
             logger.debug(`[Socket.IO] Disconnected from ${socket.handshake.address} with reason: ${reason}`);
@@ -576,179 +448,25 @@ export default class MCLinkerAPI extends EventEmitter {
     }
 
     /**
-     * Handles chat messages.
-     * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
-     * @returns {Promise<void>}
-     * @private
-     */
-    async chat(data, server) {
-
-    }
-
-    /**
-     * Handles stats-channel updates.
-     * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
-     * @returns {Promise<void>}
-     * @private
-     */
-    async updateStatsChannel(data, server) {
-        // event can be one of: 'online', 'offline', 'members'
-        const { event } = data;
-
-        const eventToTypeMap = {
-            'online': 'status',
-            'offline': 'status',
-            'members': 'member-counter',
-        };
-
-        const channels = server.statChannels.filter(c => c.type === eventToTypeMap[event]);
-        if(channels.length === 0) return; //No channels to update
-
-        for(const channel of channels) {
-            try {
-                const discordChannel = await this.client.channels.fetch(channel.id);
-                //Replace %count% with the actual count
-                let newName;
-                if(event === 'members') newName = channel.names[event].replace('%count%', data.members);
-                else newName = channel.names[event];
-                await discordChannel.setName(newName);
-            }
-            catch(err) {
-                if(err.code === RESTJSONErrorCodes.UnknownChannel) {
-                    const regChannel = await server.protocol.removeStatsChannel(channel);
-                    if(!regChannel) continue;
-                    await server.edit({ statChannels: regChannel.data });
-                }
-            }
-        }
-    }
-
-    /**
-     * Checks whether the minecraft-user has the required role to join the server.
-     * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
-     * @returns {RouteResponse} - Whether the user has the required role.
-     * @private
-     */
-    async hasRequiredRoleToJoin(data, server) {
-        if(!server.requiredRoleToJoin) return true;
-        const user = this.client.userConnections.cache.find(u => u.uuid === data.uuid);
-        if(!user) return { body: { response: 'not_connected' } };
-
-        try {
-            const guild = await this.client.guilds.fetch(server.id);
-            const member = await guild.members.fetch({ user: user.id, force: true });
-
-            const canJoin = server.requiredRoleToJoin.method === 'any' && server.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id)) ||
-                server.requiredRoleToJoin.method === 'all' && server.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id));
-            return { body: { response: canJoin } };
-        }
-        catch(err) {
-            if(err.code === RESTJSONErrorCodes.UnknownMember) return false; // Member not in server
-            else return { body: { response: 'error', status: 500 } };
-        }
-    }
-
-    /**
-     * Listens to a dm message of the user containing the code to verify the user.
-     * @param {Object} data - The request data.
-     * @returns {Promise<void>}
-     * @private
-     */
-    verifyUser(data) {
-        this.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
-        setTimeout(() => this.usersAwaitingVerification.delete(data.code), 180_000);
-    }
-
-    /**
-     * Returns an existing invite url or creates a new one if none exists.
-     * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
-     * @returns {RouteResponse} - The invite url.
-     * @private
-     */
-    async getInviteUrl(data, server) {
-        let invites;
-        let guild;
-        try {
-            guild = await this.client.guilds.fetch(server.id);
-            if(guild.vanityURLCode) return { body: { url: `https://discord.gg/${guild.vanityURLCode}` } };
-            invites = await guild.invites.fetch();
-        }
-        catch(_) {}
-
-        if(!guild) return { status: 500 };
-
-        if(invites?.size) return { body: { url: invites.first().url } };
-        else {
-            /** @type {?Discord.BaseGuildTextChannel} */
-            const channel = guild.channels.cache.find(c =>
-                c.isTextBased() && c.permissionsFor?.(guild.members.me)?.has(Discord.PermissionFlagsBits.CreateInstantInvite),
-            );
-            if(!channel) return { status: 500 };
-            const invite = await channel.createInvite({ maxAge: 0, maxUses: 0, unique: true });
-            return { body: { url: invite.url } };
-        }
-    }
-
-    /**
-     * Adds a member to the synced role in the discord server.
-     * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
-     * @returns {?RouteResponse}
-     * @private
-     */
-    async addSyncedRoleMember(data, server) {
-        await this.updateSyncedRoleMember(data.id, data.uuid, server, 'add');
-    }
-
-    /**
-     * Removes a member from the synced role in the discord server.
-     * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
-     * @returns {?RouteResponse}
-     * @private
-     */
-    async removeSyncedRoleMember(data, server) {
-        await this.updateSyncedRoleMember(data.id, data.uuid, server, 'remove');
-    }
-
-    /**
-     * Removes the synced role from the discord server.
-     * @param {Object} data - The request data.
-     * @param {ServerConnection} server - The server connection.
-     * @returns {Promise<void>}
-     * @private
-     */
-    async removeSyncedRole(data, server) {
-        const roleIndex = server.syncedRoles?.findIndex(role => role.id === data.id);
-        if(roleIndex === undefined || roleIndex === -1) return;
-        server.syncedRoles.splice(roleIndex, 1);
-        await server.edit({});
-    }
-
-    /**
      * Updates a member in the synced role in the discord server.
      * @param {string} roleId - The id of the role.
      * @param {string} uuid - The uuid of the member.
      * @param {ServerConnection} server - The server connection.
      * @param {'add'|'remove'} addOrRemove - Whether to add or remove the member.
-     * @returns {Promise<?RouteResponse>}
+     * @returns {Promise<void>}
      */
     async updateSyncedRoleMember(roleId, uuid, server, addOrRemove) {
+        const connection = this.client.userConnections.cache.find(conn => conn.uuid === uuid);
+        if(!connection) return;
+
         const guild = await this.client.guilds.fetch(server.id);
-        if(!guild) return { status: 500 };
+        if(!guild) return;
 
         const role = guild.roles.cache.get(roleId);
-        if(!role) return { status: 500 };
-
-        const connection = this.client.userConnections.cache.find(conn => conn.uuid === uuid);
-        if(!connection) return { status: 404 };
+        if(!role) return;
 
         const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
-        if(roleIndex === undefined || roleIndex === -1) return { status: 400 };
+        if(roleIndex === undefined || roleIndex === -1) return;
         if(addOrRemove === 'add') server.syncedRoles[roleIndex].players.push(connection.uuid);
         else if(addOrRemove === 'remove') server.syncedRoles[roleIndex].players.splice(server.syncedRoles[roleIndex].players.indexOf(connection.uuid), 1);
         await server.edit({});
@@ -758,8 +476,6 @@ export default class MCLinkerAPI extends EventEmitter {
             if(addOrRemove === 'add') await member.roles.add(role);
             else if(addOrRemove === 'remove') await member.roles.remove(role);
         }
-        catch(_) {
-            return { status: 500 };
-        }
+        catch(_) {}
     }
 }

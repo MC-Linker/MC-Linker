@@ -1,18 +1,18 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import Discord, { RESTJSONErrorCodes } from 'discord.js';
-import Route from '../../structures/api/Route.js';
+import WSEvent from '../../structures/api/WSEvent.js';
 import keys from '../../utilities/keys.js';
 import { getMinecraftAvatarURL, searchAdvancements } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 
 
-export default class Chat extends Route {
+export default class Chat extends WSEvent {
 
     /**
      * @typedef {Object} ChatRequest
      * @property {'chat'|'join'|'quit'|'death'|'advancement'|'player_command'|'console_command'|'block_command'|'start'|'close'} type
      * @property {string} message
-     * @property {string} [player]
+     * @property {string} [player] - Required for type 'chat', 'join', 'quit', 'death', 'advancement', 'player_command'
      */
 
     /**
@@ -43,13 +43,13 @@ export default class Chat extends Route {
     }
 
     /**
-     * Handles a WS event for this route.
+     * Handles chat channel messages.
      * @param {ChatRequest} data - The data sent with the request.
      * @param {ServerConnection} server - The server the request is sent for.
      * @param {MCLinker} client - The client the request is sent to.
      * @returns {Promise<void>}
      */
-    async ws(data, server, client) {
+    async execute(data, server, client) {
         const { message, type, player } = data;
 
         const channels = server.chatChannels.filter(c => c.types.includes(type));
