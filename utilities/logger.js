@@ -19,6 +19,22 @@ function setLogLevel(client, newLevel) {
 }
 
 /**
+ * Sets the log level for a specific shard.
+ * @param {MCLinker} client - The MCLinker client instance.
+ * @param {number} shard - The shard ID to set the log level for.
+ * @param {import('pino').LevelOrString} newLevel - The new log level to set.
+ */
+function setLogLevelForShard(client, shard, newLevel) {
+    client.shard.broadcastEval((c, { newLevel }) => {
+        c.logger.level = newLevel;
+        c.logger.info(`Log level changed to: ${newLevel}`);
+    }, {
+        context: { newLevel },
+        shard,
+    });
+}
+
+/**
  * Sets the shard ID for the logger.
  * @param {number} newShardId - The new shard ID to set.
  */
@@ -30,7 +46,6 @@ export const pinoTransport = {
     targets: [
         {
             target: 'pino-pretty',
-            level: 'debug',
             options: {
                 colorize: true,
                 translateTime: 'SYS:standard',
@@ -40,7 +55,6 @@ export const pinoTransport = {
         },
         {
             target: 'pino/file',
-            level: 'trace',
             options: {
                 destination: path.resolve(`./logs/${new Date().toISOString().split('T')[0]}.log`),
                 mkdir: true,
@@ -57,6 +71,7 @@ const logger = pino({
     transport: pinoTransport,
 });
 logger.setLogLevel = setLogLevel;
+logger.setLogLevelForShard = setLogLevelForShard;
 logger.setShardId = setShardId;
 logger.shardId = shardId;
 logger.info(`[Pino] Logger initialized at level: ${logger.level}`);
