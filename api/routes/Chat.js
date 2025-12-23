@@ -3,7 +3,7 @@ import Discord, { RESTJSONErrorCodes } from 'discord.js';
 import Route from '../../structures/api/Route.js';
 import keys from '../../utilities/keys.js';
 import { getMinecraftAvatarURL, searchAdvancements } from '../../utilities/utils.js';
-import { getEmbed } from '../../utilities/messages.js';
+import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 
 
 export default class Chat extends Route {
@@ -12,8 +12,7 @@ export default class Chat extends Route {
      * @typedef {Object} ChatRequest
      * @property {'chat'|'join'|'quit'|'death'|'advancement'|'player_command'|'console_command'|'block_command'|'start'|'close'} type
      * @property {string} message
-     * @property {string} player
-     * @property {string} [uuid]
+     * @property {string} [player]
      */
 
     /**
@@ -52,26 +51,23 @@ export default class Chat extends Route {
      */
     async ws(data, server, client) {
         const { message, type, player } = data;
-        const guildId = server.id;
-        const authorURL = await getMinecraftAvatarURL(player);
 
         const channels = server.chatChannels.filter(c => c.types.includes(type));
         if(channels.length === 0) return; //No channels to send to
 
-        const argPlaceholder = { username: player, author_url: authorURL, message };
         //Check whether command is blocked
         if(['player_command', 'console_command', 'block_command'].includes(type)) {
             const commandName = message.replace(/^\//, '').split(/\s+/)[0];
             if(server.settings.isDisabled('chatCommands', commandName)) return;
         }
 
-        const guild = await this.client.guilds.fetch(guildId);
+        const guildId = server.id;
+        const authorURL = player ? await getMinecraftAvatarURL(player) : null;
+
+        const placeholders = { username: player, author_url: authorURL, message };
 
         //Add special placeholders for advancements
         if(type === 'advancement') {
-            let advancementTitle;
-            let advancementDesc;
-
             if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
             const [category, id] = message.replace('minecraft:', '').split('/');
@@ -79,24 +75,22 @@ export default class Chat extends Route {
 
             if(!advancement[0]) return; // Advancement not found
 
-            advancementTitle = advancement[0]?.name ?? message;
-            advancementDesc = advancement[0]?.description ?? keys.commands.advancements.no_description_available;
+            const advancementTitle = advancement[0]?.name ?? message;
+            const advancementDesc = advancement[0]?.description ?? keys.commands.advancements.no_description_available;
 
             // Add placeholder to argPlaceholder so it can be used later
-            argPlaceholder.advancement_title = advancementTitle;
-            argPlaceholder.advancement_description = advancementDesc;
+            placeholders.advancement_title = advancementTitle;
+            placeholders.advancement_description = advancementDesc;
         }
-        else if(type === 'death' && (!message || message === '')) argPlaceholder.message = addPh(keys.api.plugin.success.default_death_message, argPlaceholder);
+        else if(type === 'death' && (!message || message === '')) placeholders.message = addPh(keys.api.plugin.success.default_death_message, placeholders);
 
-        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], argPlaceholder, { 'timestamp_now': Date.now() });
+        const guild = await this.client.guilds.fetch(guildId);
+        const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() });
         if(type !== 'chat') {
             for(const channel of channels) {
-                if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
-
                 /** @type {?Discord.TextChannel} */
-                let discordChannel;
                 try {
-                    discordChannel = await guild.channels.fetch(channel.id);
+                    const discordChannel = await guild.channels.fetch(channel.id);
                     if(!discordChannel) continue;
                     await discordChannel?.send({ embeds: [chatEmbed] });
                 }
@@ -121,14 +115,12 @@ export default class Chat extends Route {
             if(mention.length > 101) continue; //101 because of the @
             const users = await guild.members.search({ query: mention.replace('@', ''), limit: 1 });
             if(users.first()?.username !== mention.replace('@', '')) continue;
-            argPlaceholder.message = argPlaceholder.message.replace(mention, users.first()?.toString() ?? mention);
+            placeholders.message = placeholders.message.replace(mention, users.first()?.toString() ?? mention);
         }
 
         const allWebhooks = await guild.fetchWebhooks().catch(() => {});
 
         for(const channel of channels) {
-            if(!server.chatChannels.some(c => c.id === channel.id)) continue; //Skip if channel is not registered
-
             /** @type {?Discord.TextChannel} */
             let discordChannel;
             try {
@@ -183,13 +175,13 @@ export default class Chat extends Route {
 
                 if(discordChannel.isThread()) await webhook.send({
                     threadId: discordChannel.id,
-                    content: argPlaceholder.message,
+                    content: placeholders.message,
                     username: player,
                     avatarURL: authorURL,
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
                 });
                 else await webhook.send({
-                    content: argPlaceholder.message,
+                    content: placeholders.message,
                     username: player,
                     avatarURL: authorURL,
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
@@ -197,12 +189,10 @@ export default class Chat extends Route {
             }
             catch(err) {
                 try {
-                    if(discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.ManageWebhooks)) {
+                    if(discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.ManageWebhooks))
                         await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] });
-                    }
-                    else {
+                    else
                         await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.unknown_chat_error, ph.error(err))] });
-                    }
                 }
                 catch(_) {
                     const regChannel = await server.protocol.removeChatChannel(channel);
