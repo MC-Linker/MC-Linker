@@ -2,28 +2,28 @@
     "completions": {
         "success": {
             "author": {
-                "name": "Success",
+                "name": "성공",
                 "icon_url": "https://cdn.discordapp.com/emojis/1432518917548544144.webp"
             },
             "color": "%color_success%"
         },
         "warnings": {
             "author": {
-                "name": "Warning",
+                "name": "주의",
                 "icon_url": "https://cdn.discordapp.com/emojis/1432518918596984917.webp"
             },
             "color": "%color_warning%"
         },
         "errors": {
             "author": {
-                "name": "Error",
+                "name": "오류",
                 "icon_url": "https://cdn.discordapp.com/emojis/1433545543455604856.webp"
             },
             "color": "%color_error%"
         },
         "no_access": {
             "author": {
-                "name": "No Access",
+                "name": "접근 불가",
                 "icon_url": "https://cdn.discordapp.com/emojis/1432509026846900317.webp"
             },
             "color": "%color_error%"
@@ -37,7 +37,7 @@
             "not_in_guild": {
                 "embeds": [
                     {
-                        "title": "Guild-Only",
+                        "title": "길드만",
                         "description": "I can only be used in server channels!"
                     }
                 ],
@@ -55,7 +55,7 @@
             "no_permission_component": {
                 "embeds": [
                     {
-                        "title": "No Permission",
+                        "title": "권한 없음",
                         "description": "Only the command sender can use this!"
                     }
                 ],
@@ -64,7 +64,7 @@
             "no_permission_command": {
                 "embeds": [
                     {
-                        "title": "No Permission",
+                        "title": "권한 없음",
                         "description": "You do not have permission to use this command!\nRequired Permission: **%permission%**"
                     }
                 ],
@@ -84,7 +84,7 @@
             "could_not_execute_command": {
                 "embeds": [
                     {
-                        "title": "Unknown Error",
+                        "title": "알 수 없는 오류",
                         "description": "An unknown error occurred while executing this command. Please try again."
                     }
                 ],
@@ -93,7 +93,7 @@
             "could_not_execute_button": {
                 "embeds": [
                     {
-                        "title": "Unknown Error",
+                        "title": "알 수 없는 오류",
                         "description": "An unknown error occurred while executing this button. Please try again."
                     }
                 ],
@@ -422,7 +422,7 @@
             "buttons": {
                 "start": {
                     "type": "Button",
-                    "style": "Success",
+                    "style": "성공",
                     "label": "Start",
                     "emoji": "🟢",
                     "custom_id": "custom_bot_start"
@@ -461,7 +461,7 @@
                 "components": [
                     {
                         "type": "Label",
-                        "label": "Warning",
+                        "label": "주의",
                         "description": "Deleting your Custom MC Linker will stop the bot and delete all its data. Type 'delete' to confirm.",
                         "component": {
                             "type": "TextInput",
@@ -782,7 +782,7 @@
                 "unknown_error": {
                     "embeds": [
                         {
-                            "title": "Unknown Error",
+                            "title": "알 수 없는 오류",
                             "description": "%output_error%"
                         }
                     ],
@@ -2461,7 +2461,7 @@
                 "unknown_chat_error": {
                     "embeds": [
                         {
-                            "title": "Unknown Error",
+                            "title": "알 수 없는 오류",
                             "description": "Could not send the message to the chatchannel using webhooks. Please re-add the channel using `/chatchannel add`!"
                         }
                     ],
@@ -2697,7 +2697,7 @@
                 "no_author": {
                     "embeds": [
                         {
-                            "title": "No Permission",
+                            "title": "권한 없음",
                             "description": "Only the command sender can use this component."
                         }
                     ],
@@ -2706,7 +2706,7 @@
                 "no_permission": {
                     "embeds": [
                         {
-                            "title": "No Permission",
+                            "title": "권한 없음",
                             "description": "This component can only be used with the `%permission%` permission!"
                         }
                     ],
@@ -2801,7 +2801,7 @@
                 "no_permission": {
                     "embeds": [
                         {
-                            "title": "No Permission",
+                            "title": "권한 없음",
                             "description": "This command can only be used with the `%permission%` permission!"
                         }
                     ],
@@ -2810,7 +2810,7 @@
                 "no_unknown_permission": {
                     "embeds": [
                         {
-                            "title": "No Permission",
+                            "title": "권한 없음",
                             "description": "You do not have permission to execute this command!"
                         }
                     ],
@@ -2897,7 +2897,7 @@
             "components": [
                 {
                     "type": "Button",
-                    "style": "Success",
+                    "style": "성공",
                     "custom_id": "yes",
                     "label": "Yes"
                 },
