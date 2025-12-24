@@ -34,5 +34,7 @@ export default class WSEvent {
      * @returns {?object|void|Promise<object|void>} - The response data.
      * @abstract
      */
-    execute(data, server, client);
+    execute(data, server, client) {
+        throw new Error(`The execute method has not been implemented for the ${this.event} event.`);
+    }
 }

@@ -55,7 +55,10 @@ export default class Route {
      * @returns {RouteResponse|void|Promise<?RouteResponse|void>} - The response data.
      * @abstract
      */
-    get(client, req, res);
+    get(client, req, res) {
+        if(this.methods.includes('get'))
+            throw new Error(`The get method has not been implemented for the ${this.endpoint} route.`);
+    }
 
     /**
      * Handles a POST request to this route.
@@ -65,5 +68,8 @@ export default class Route {
      * @returns {RouteResponse|void|Promise<?RouteResponse|void>} - The response data.
      * @abstract
      */
-    post(client, req, res);
+    post(client, req, res) {
+        if(this.methods.includes('post'))
+            throw new Error(`The post method has not been implemented for the ${this.endpoint} route.`);
+    }
 }
