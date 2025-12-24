@@ -207,6 +207,9 @@ export default class MCLinkerAPI extends EventEmitter {
     async wsMiddleware(socket, next) {
         logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
 
+        // Basic auth for admin-ui
+        if(socket.handshake.auth.username && socket.handshake.auth.password) return next();
+
         if(!socket.handshake.auth.token) {
             logger.debug(`[Socket.io] Connection from ${socket.handshake.address} provided invalid verification. Disconnecting socket.`);
             return next(new Error('Unauthorized'));
