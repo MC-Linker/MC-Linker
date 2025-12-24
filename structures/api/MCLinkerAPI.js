@@ -179,7 +179,9 @@ export default class MCLinkerAPI extends EventEmitter {
             },
         });
 
-        this.websocket.use(this.wsHandleConnection.bind(this)); // Bind this as it's called in a different context
+        this.websocket.use(this.wsMiddleware.bind(this)); // Bind this as it's called in a different context
+
+        this.websocket.on('connection', this.wsHandleConnection.bind(this));
 
         this.websocket.engine.on('connection_error', err => logger.error(err, '[Socket.io] Websocket connection error'));
 
@@ -201,7 +203,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {Socket} socket - The socket that is trying to connect.
      * @param {Function} next - Callback to continue or close the connection.
      */
-    async wsHandleConnection(socket, next) {
+    async wsMiddleware(socket, next) {
         logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
 
         if(!socket.handshake.auth.token) {
@@ -256,9 +258,6 @@ export default class MCLinkerAPI extends EventEmitter {
                         return next(new Error('Unauthorized'));
                     }
 
-                    wsVerification.delete(id);
-                    socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
-
                     const hash = createHash(socket.handshake.auth.token);
                     /** @type {WebSocketServerConnectionData} */
                     const serverConnectionData = {
@@ -289,6 +288,7 @@ export default class MCLinkerAPI extends EventEmitter {
                             { context: { id }, shard },
                         );
                     });
+
                     next();
                 }
                 catch(err) {
@@ -312,6 +312,23 @@ export default class MCLinkerAPI extends EventEmitter {
             logger.debug(`[Socket.io] No server connection found. Disconnecting socket.`);
             next(new Error('Unauthorized'));
         }
+    }
+
+    /**
+     * Handles a successful websocket connection (emitting event to acknowledge auth-success and send setup data).
+     * @param {Socket} socket - The socket that connected.
+     */
+    async wsHandleConnection(socket) {
+        const [id] = socket.handshake.auth.code?.split(':') ?? [];
+
+        /** @type {Connect} */
+        const connectCommand = this.client.commands.get('connect');
+        const wsVerification = connectCommand.wsVerification;
+
+        const { requiredRoleToJoin } = wsVerification.get(id);
+        wsVerification.delete(id);
+
+        socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
     }
 
     /**
