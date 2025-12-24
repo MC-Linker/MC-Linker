@@ -20,7 +20,7 @@ export default class ClientReady extends Event {
     async execute(client, _) {
         logger.info(addPh(
             keys.main.success.login.console,
-            ph.client(client),
+            ph.client(),
             { prefix: client.config.prefix, 'guild_count': client.guilds.cache.size },
         ));
 

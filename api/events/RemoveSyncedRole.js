@@ -2,17 +2,17 @@ import WSEvent from '../../structures/api/WSEvent.js';
 
 export default class AddSyncedRoleMember extends WSEvent {
 
-    /**
-     * @typedef {Object} RemoveSyncedRoleRequest
-     * @property {string} id - The ID of the synced role.
-     * @property {string} uuid - The UUID of the member to remove.
-     */
-
     constructor() {
         super({
             event: 'remove-synced-role',
         });
     }
+
+    /**
+     * @typedef {Object} RemoveSyncedRoleRequest
+     * @property {string} id - The ID of the synced role.
+     * @property {string} uuid - The UUID of the member to remove.
+     */
 
     /**
      * Removes a synced role from the discord server.

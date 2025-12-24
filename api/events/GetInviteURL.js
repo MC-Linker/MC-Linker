@@ -3,16 +3,16 @@ import WSEvent from '../../structures/api/WSEvent.js';
 
 export default class GetInviteURL extends WSEvent {
 
-    /**
-     * @typedef {Object} GetInviteURLResponse
-     * @property {?string} url - The invite URL, or null if one could not be created.
-     */
-
     constructor() {
         super({
             event: 'invite-url',
         });
     }
+
+    /**
+     * @typedef {Object} GetInviteURLResponse
+     * @property {?string} url - The invite URL, or null if one could not be created.
+     */
 
     /**
      * Returns an existing invite url or creates a new one if none exists.

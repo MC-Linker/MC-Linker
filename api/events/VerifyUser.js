@@ -2,18 +2,18 @@ import WSEvent from '../../structures/api/WSEvent.js';
 
 export default class VerifyUser extends WSEvent {
 
+    constructor() {
+        super({
+            event: 'verify-user',
+        });
+    }
+
     /**
      * @typedef {Object} VerifyUserRequest
      * @property {string} code - The verification code.
      * @property {string} uuid - The UUID of the user.
      * @property {string} username - The username of the user.
      */
-
-    constructor() {
-        super({
-            event: 'verify-user',
-        });
-    }
 
     /**
      * Listens to a dm message of the user containing the code to verify the user.

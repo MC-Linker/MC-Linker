@@ -2,17 +2,17 @@ import WSEvent from '../../structures/api/WSEvent.js';
 
 export default class AddSyncedRoleMember extends WSEvent {
 
-    /**
-     * @typedef {Object} AddSyncedRoleMemberRequest
-     * @property {string} id - The ID of the synced role.
-     * @property {string} uuid - The UUID of the member to add.
-     */
-
     constructor() {
         super({
             event: 'add-synced-role-member',
         });
     }
+
+    /**
+     * @typedef {Object} AddSyncedRoleMemberRequest
+     * @property {string} id - The ID of the synced role.
+     * @property {string} uuid - The UUID of the member to add.
+     */
 
     /**
      * Adds a member to the synced role in the discord server.
