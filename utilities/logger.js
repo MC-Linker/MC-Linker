@@ -1,7 +1,7 @@
 import pino from 'pino';
 import path from 'path';
 
-const logLevel = process.env.LOG_LEVEL || 'trace';
+const logLevel = process.env.LOG_LEVEL || 'info';
 let shardId = undefined;
 
 /**

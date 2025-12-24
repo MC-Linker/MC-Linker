@@ -141,6 +141,7 @@ export default class Pagination {
             exitButton: getComponent(keys.api.component.success.exit_button, { id: Pagination.NAVIGATION_BUTTON_IDS.EXIT }),
             timeout: Pagination.DEFAULT_TIMEOUT,
             showSelectedButton: true,
+            highlightSelectedButton: true,
             showStartPageOnce: false,
             ...options,
         };
