@@ -171,17 +171,18 @@ export default class MCLinkerAPI extends EventEmitter {
         await this.fastify.ready(); //Await websocket plugin loading
         this.websocket = this.fastify.io;
 
+        this.websocket.use(this.wsMiddleware.bind(this)); // Bind this as it's called in a different context
+        
+        this.websocket.on('connection', this.wsHandleConnection.bind(this));
+
         instrument(this.websocket, {
             auth: {
                 type: 'basic',
                 username: process.env.IO_USERNAME,
                 password: process.env.IO_PASSWORD,
             },
+            mode: 'development',
         });
-
-        this.websocket.use(this.wsMiddleware.bind(this)); // Bind this as it's called in a different context
-
-        this.websocket.on('connection', this.wsHandleConnection.bind(this));
 
         this.websocket.engine.on('connection_error', err => logger.error(err, '[Socket.io] Websocket connection error'));
 
