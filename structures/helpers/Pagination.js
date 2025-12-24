@@ -1,6 +1,7 @@
 import {
     BaseInteraction,
     ButtonBuilder,
+    ButtonStyle,
     ComponentType,
     InteractionCollector,
     InteractionResponse,
