@@ -104,7 +104,7 @@ export default class MCLinkerAPI extends EventEmitter {
             const route = new RouteClass();
 
             this.restRoutes.push(route);
-            logger.info('Loaded route:', route.endpoint);
+            logger.info(`Loaded REST route: ${route.endpoint}`);
         }
     }
 
@@ -126,7 +126,7 @@ export default class MCLinkerAPI extends EventEmitter {
             const wsEvent = new WSEventClass();
 
             this.wsEvents.set(wsEvent.event, wsEvent);
-            logger.info('Loaded WS event:', wsEvent.event);
+            logger.info(`Loaded WS event: ${wsEvent.event}`);
         }
     }
 
