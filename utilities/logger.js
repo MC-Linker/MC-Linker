@@ -46,6 +46,7 @@ export const pinoTransport = {
     targets: [
         {
             target: 'pino-pretty',
+            level: 'debug',
             options: {
                 colorize: true,
                 translateTime: 'SYS:standard',
@@ -55,6 +56,7 @@ export const pinoTransport = {
         },
         {
             target: 'pino/file',
+            level: 'debug',
             options: {
                 destination: path.resolve(`./logs/${new Date().toISOString().split('T')[0]}.log`),
                 mkdir: true,
