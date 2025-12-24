@@ -1,7 +1,6 @@
 // noinspection HttpUrlsUsage
 
 import Fastify from 'fastify';
-import { getOAuthURL, getTokens, getUser } from '../../utilities/oauth.js';
 import { createHash } from '../../utilities/utils.js';
 import { getEmbed } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
@@ -162,62 +161,12 @@ export default class MCLinkerAPI extends EventEmitter {
                         return reply.status(401).send({ message: 'Unauthorized' });
 
                     const response = await route[method.toLowerCase()](this.client, request, reply);
-                    logger.debug(`[Fastify] Response for ${method} ${route.endpoint}: ${response.toString()}`);
+                    if(!response) return; //Response already sent
+                    logger.debug(`[Fastify] Response for ${method} ${route.endpoint}: ${response?.toString()}`);
                     reply.status(response?.status ?? 200).send(response?.body ?? {});
                 });
             }
         }
-
-        this.fastify.get('/linked-role', async (request, reply) => {
-            // Generate state
-            const { state, url } = getOAuthURL();
-            reply.setCookie('state', state, { maxAge: 1000 * 60 * 5, signed: true });
-            reply.redirect(url);
-        });
-
-        this.fastify.get('/linked-role/callback', async (request, reply) => {
-            const { code, state: discordState } = request.query;
-
-            //Check state
-            const clientState = reply.unsignCookie(request.cookies.state);
-            if(clientState.valid && clientState.value !== discordState) return reply.status(403).send();
-
-            //Get access and refresh token
-            const tokens = await getTokens(code);
-            if(!tokens) return reply.status(403).send();
-
-            //Get user
-            const user = await getUser(this.client, tokens.accessToken);
-            if(!user) return reply.status(403).send();
-
-            let settings = this.client.userSettingsConnections.cache.get(user.id);
-            if(settings) await settings.edit({
-                tokens: {
-                    accessToken: tokens.accessToken,
-                    refreshToken: tokens.refreshToken,
-                    expires: tokens.expires,
-                },
-            });
-            else settings = await this.client.userSettingsConnections.connect({
-                id: user.id,
-                tokens: {
-                    accessToken: tokens.accessToken,
-                    refreshToken: tokens.refreshToken,
-                    expires: tokens.expires,
-                },
-            });
-
-            const userConnection = this.client.userConnections.cache.get(user.id);
-            await settings.updateRoleConnection(userConnection?.username, {
-                'connectedaccount': userConnection ? 1 : 0,
-            });
-
-            reply.send(`You have been authorized as ${user.tag}! You can now close this window and go back to Discord.`);
-        });
-
-        this.fastify.get('/', (request, reply) => {
-            reply.redirect('https://mclinker.com');
-        });
 
         await this.fastify.ready(); //Await websocket plugin loading
         this.websocket = this.fastify.io;
@@ -399,7 +348,7 @@ export default class MCLinkerAPI extends EventEmitter {
             if(!server) return socket.disconnect();
 
             const response = await route.execute(data, server, this.client);
-            logger.debug(`[Socket.IO] Response for event ${route.event}: ${response.toString()}`);
+            logger.debug(`[Socket.IO] Response for event ${route.event}: ${response?.toString()}`);
             callback?.(response);
         }
         catch(rejRes) {
