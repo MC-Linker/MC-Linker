@@ -138,6 +138,8 @@ The MC-Linker project is organized as follows:
 - `commands/`: Discord bot commands
 - `buttons/`: Discord button interactions
 - `events/`: Discord events
+- `api/routes`: REST API Routes
+- `api/events`: WS event handlers
 - `structures/`: Core classes and data structures
 - `utilities/`: Utility functions and helpers
 - `resources/`: Static resources (languages, images, etc.)
