@@ -158,7 +158,7 @@ export default class ServerInfo extends Command {
         /** @type {Discord.InteractionReplyOptions} */
         const startingMessage = {
             embeds: [getEmbed(keys.commands.serverinfo.success.general, {
-                server_name: propertiesObject['server-name'] ?? keys.commands.serverinfo.unknown,
+                server_name: serverName ?? keys.commands.serverinfo.unknown,
                 motd: motd.join('\n'),
                 max_players: propertiesObject['max-players'],
                 online_players: onlinePlayers,
