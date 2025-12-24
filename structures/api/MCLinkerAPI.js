@@ -172,7 +172,7 @@ export default class MCLinkerAPI extends EventEmitter {
         this.websocket = this.fastify.io;
 
         this.websocket.use(this.wsMiddleware.bind(this)); // Bind this as it's called in a different context
-        
+
         this.websocket.on('connection', this.wsHandleConnection.bind(this));
 
         instrument(this.websocket, {
@@ -316,7 +316,7 @@ export default class MCLinkerAPI extends EventEmitter {
     }
 
     /**
-     * Handles a successful websocket connection (emitting event to acknowledge auth-success and send setup data).
+     * Handles a new successful websocket connection (emitting event to acknowledge auth-success and send setup data).
      * @param {Socket} socket - The socket that connected.
      */
     async wsHandleConnection(socket) {
@@ -325,6 +325,8 @@ export default class MCLinkerAPI extends EventEmitter {
         /** @type {Connect} */
         const connectCommand = this.client.commands.get('connect');
         const wsVerification = connectCommand.wsVerification;
+
+        if(!wsVerification.has(id)) return; //Not a new connection
 
         const { requiredRoleToJoin } = wsVerification.get(id);
         wsVerification.delete(id);
