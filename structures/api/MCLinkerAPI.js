@@ -179,7 +179,7 @@ export default class MCLinkerAPI extends EventEmitter {
             },
         });
 
-        this.websocket.use(this.wsHandleConnection);
+        this.websocket.use(this.wsHandleConnection.bind(this)); // Bind this as it's called in a different context
 
         this.websocket.engine.on('connection_error', err => logger.error(err, '[Socket.io] Websocket connection error'));
 
