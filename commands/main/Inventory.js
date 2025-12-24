@@ -350,7 +350,7 @@ export default class Inventory extends Command {
                     count: item.count ?? item.Count,
                     max_count: itemStats?.stackSize ?? 64,
                     username: username,
-                    avatar: getMinecraftAvatarURL(username),
+                    avatar: await getMinecraftAvatarURL(username),
                 },
             );
             const isSpecialItem = this.addInfo(itemEmbed, item.components ?? item.tag, itemStats);
