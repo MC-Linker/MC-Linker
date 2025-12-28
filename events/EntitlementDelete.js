@@ -14,6 +14,6 @@ export default class EntitlementDelete extends Event {
     }
 
     async execute(client, entitlement) {
-        // No logic implemented yet
+        // TODO No logic implemented yet
     }
 } 
