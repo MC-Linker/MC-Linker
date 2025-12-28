@@ -27,6 +27,7 @@ export default class ServerConnectionManager extends ConnectionManager {
     async disconnect(connectionResolvable) {
         /** @type {ServerConnection} */
         const connection = this.resolve(connectionResolvable);
+        if(!connection) return false;
 
         for(const channel of connection?.chatChannels ?? []) {
             if(channel.webhook) {

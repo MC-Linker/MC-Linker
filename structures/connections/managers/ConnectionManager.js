@@ -70,6 +70,7 @@ export default class ConnectionManager extends CachedManager {
      */
     async disconnect(connectionResolvable) {
         const connection = this.resolve(connectionResolvable);
+        if(!connection) return false;
 
         if(connection && await connection._delete()) {
             //Broadcast to all shards
