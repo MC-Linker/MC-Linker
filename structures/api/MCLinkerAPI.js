@@ -359,10 +359,11 @@ export default class MCLinkerAPI extends EventEmitter {
         const route = this.wsEvents.get(eventName);
         const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
         try {
-            await rateLimiter.consume(socket.handshake.address);
+            await rateLimiter?.consume(socket.handshake.address);
         }
         catch(rejRes) {
             callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
+            return;
         }
 
         //Update server variable to ensure it wasn't disconnected in the meantime
