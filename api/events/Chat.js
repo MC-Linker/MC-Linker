@@ -4,6 +4,7 @@ import WSEvent from '../../structures/api/WSEvent.js';
 import keys from '../../utilities/keys.js';
 import { getMinecraftAvatarURL, searchAdvancements } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';
+import logger from '../../utilities/logger.js';
 
 
 export default class Chat extends WSEvent {
@@ -124,24 +125,29 @@ export default class Chat extends WSEvent {
             /** @type {?Discord.TextChannel} */
             let discordChannel;
             try {
+                logger.debug(`[Socket.io][Chat] Fetching channel`);
                 discordChannel = await guild.channels.fetch(channel.id);
                 if(!discordChannel) continue;
             }
             catch(err) {
                 if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                    logger.debug(`[Socket.io][Chat] Removing unknown channel from chat channels`);
                     const regChannel = await server.protocol.removeChatChannel(channel);
                     if(!regChannel) continue;
                     await server.edit({ chatChannels: regChannel.data });
                 }
+                logger.error(`[Socket.io][Chat] Error fetching channel: ${err.message}`);
                 continue;
             }
 
             if(!allWebhooks) {
+                logger.debug(`[Socket.io][Chat] Could not fetch webhooks for guild ${guild.id}. Sending warning.`);
                 await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] });
                 return;
             }
 
             if(!channel.webhook) {
+                logger.debug(`[Socket.io][Chat] No webhook registered for channel ${discordChannel.id}. Sending message normally.`);
                 await discordChannel.send({ embeds: [chatEmbed] }).catch(() => {});
                 continue;
             }
@@ -151,6 +157,7 @@ export default class Chat extends WSEvent {
 
                 //Create new webhook if old one doesn't exist
                 if(!webhook) {
+                    logger.debug(`[Socket.io][Chat] Creating new webhook for channel ${discordChannel.id}.`);
                     const options = {
                         name: 'MC Linker',
                         reason: 'ChatChannel to Minecraft',
@@ -173,6 +180,7 @@ export default class Chat extends WSEvent {
                     await server.edit({ chatChannels: regChannel.data });
                 }
 
+                logger.debug(`[Socket.io][Chat] Sending message to channel ${discordChannel.id} via webhook.`);
                 if(discordChannel.isThread()) await webhook.send({
                     threadId: discordChannel.id,
                     content: placeholders.message,
@@ -189,6 +197,7 @@ export default class Chat extends WSEvent {
             }
             catch(err) {
                 try {
+                    logger.error(`[Socket.io][Chat] Error sending message via webhook: ${err.message}`);
                     if(discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.ManageWebhooks))
                         await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] });
                     else
