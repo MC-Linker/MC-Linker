@@ -78,9 +78,9 @@ export default class MCLinkerAPI extends EventEmitter {
         });
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
-        this.fastify.addHook('preHandler', (request, reply, done) => {
-            logger.debug(`[Fastify] ${request.method} request to ${request.url} from ${request.ip}: ${request.body}`);
-            this.emitToAllShards(request.url, request);
+        this.fastify.addHook('preHandler', (req, res, done) => {
+            logger.debug(`[Fastify] ${req.method} request to ${req.url} from ${req.ip}: ${req.body}`);
+            this.emitToAllShards(req.url, req);
             done();
         });
     }
@@ -132,13 +132,13 @@ export default class MCLinkerAPI extends EventEmitter {
     /**
      * Emits an event across all shards.
      * @param {string} event - The event to emit (the REST endpoint).
-     * @param {import('fastify').FastifyRequest} request - The request object.
+     * @param {import('fastify').FastifyRequest} req - The request object.
      */
-    emitToAllShards(event, request) {
+    emitToAllShards(event, req) {
         const args = {
-            method: request.method,
-            body: request.body,
-            headers: request.headers,
+            method: req.method,
+            body: req.body,
+            headers: req.headers,
         };
         this.client.shard.broadcastEval((c, { event, args }) => c.api.emit(event, args), {
             context: {
@@ -156,14 +156,14 @@ export default class MCLinkerAPI extends EventEmitter {
             if(route.customBot && process.env.CUSTOM_BOT !== 'true') continue;
 
             for(const method of route.methods) {
-                this.fastify[method.toLowerCase()](route.endpoint, async (request, reply) => {
-                    if(route.customBot && process.env.COMMUNICATION_TOKEN !== request.headers['x-communication-token'])
-                        return reply.status(401).send({ message: 'Unauthorized' });
+                this.fastify[method.toLowerCase()](route.endpoint, async (req, res) => {
+                    if(route.customBot && process.env.COMMUNICATION_TOKEN !== req.headers['x-communication-token'])
+                        return res.status(401).send({ message: 'Unauthorized' });
 
-                    const response = await route[method.toLowerCase()](this.client, request, reply);
+                    const response = await route[method.toLowerCase()](this.client, req, res);
                     if(!response) return; //Response already sent
                     logger.debug(`[Fastify] Response for ${method} ${route.endpoint}: ${response?.toString()}`);
-                    reply.status(response?.status ?? 200).send(response?.body ?? {});
+                    res.status(response?.status ?? 200).send(response?.body ?? {});
                 });
             }
         }
