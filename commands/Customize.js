@@ -30,11 +30,13 @@ export default class Customize extends Command {
                 });
             }
 
-            const message = getReplyOptions(keys.commands.customize.warnings.no_entitlement);
+            const messageOptions = getReplyOptions(keys.commands.customize.warnings.no_entitlement);
             const additionalButton = client.isCustomBot() ?
                 getComponent(keys.commands.customize.buttons.custom_bot_change_presence) :
                 getComponent(keys.commands.customize.buttons.customize_sku);
-            message.components[0].components.push(additionalButton);
+            messageOptions.components[0].components.push(additionalButton);
+
+            const message = await interaction.reply(messageOptions);
 
             const buttonCollector = message.createMessageComponentCollector({
                 time: 60_000 * 14,
