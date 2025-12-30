@@ -36,7 +36,7 @@ export default class Customize extends Command {
                 getComponent(keys.commands.customize.buttons.customize_sku);
             messageOptions.components[0].components.push(additionalButton);
 
-            const message = await interaction.reply(messageOptions);
+            const message = await interaction.followUp(messageOptions);
 
             const buttonCollector = message.createMessageComponentCollector({
                 time: 60_000 * 14,

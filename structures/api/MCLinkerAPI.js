@@ -362,10 +362,11 @@ export default class MCLinkerAPI extends EventEmitter {
             await rateLimiter.consume(socket.handshake.address);
 
             //Update server variable to ensure it wasn't disconnected in the meantime
+            //TODO optimize lookup with hash map
             /** @type {?ServerConnection} */
             const server = this.client.serverConnections.cache.find(server => server.hash === hash);
 
-            logger.debug(`[Socket.IO] Server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
+            logger.debug(`[Socket.IO] Found server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
 
             //If no connection on that guild, disconnect socket
             if(!server) return socket.disconnect();

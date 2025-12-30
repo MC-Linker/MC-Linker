@@ -91,16 +91,20 @@ export default class Chat extends WSEvent {
             for(const channel of channels) {
                 /** @type {?Discord.TextChannel} */
                 try {
+                    logger.debug(`[Socket.io][Chat] Fetching channel for non-chat message`);
                     const discordChannel = await guild.channels.fetch(channel.id);
                     if(!discordChannel) continue;
+                    logger.debug(`[Socket.io][Chat] Sending non-chat message to channel`);
                     await discordChannel?.send({ embeds: [chatEmbed] });
                 }
                 catch(err) {
                     if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                        logger.debug(`[Socket.io][Chat] Removing unknown channel from chat channels`);
                         const regChannel = await server.protocol.removeChatChannel(channel);
                         if(!regChannel) continue;
                         await server.edit({ chatChannels: regChannel.data });
                     }
+                    logger.error(`[Socket.io][Chat] Error fetching channel: ${err.message}`);
                 }
             }
             return;
