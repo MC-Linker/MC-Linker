@@ -360,23 +360,29 @@ export default class MCLinkerAPI extends EventEmitter {
         const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
         try {
             await rateLimiter.consume(socket.handshake.address);
+        }
+        catch(rejRes) {
+            callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
+        }
 
-            //Update server variable to ensure it wasn't disconnected in the meantime
-            //TODO optimize lookup with hash map
-            /** @type {?ServerConnection} */
-            const server = this.client.serverConnections.cache.find(server => server.hash === hash);
+        //Update server variable to ensure it wasn't disconnected in the meantime
+        //TODO optimize lookup with hash map
+        /** @type {?ServerConnection} */
+        const server = this.client.serverConnections.cache.find(server => server.hash === hash);
 
-            logger.debug(`[Socket.IO] Found server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
+        logger.debug(`[Socket.IO] Found server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
 
-            //If no connection on that guild, disconnect socket
-            if(!server) return socket.disconnect();
+        //If no connection on that guild, disconnect socket
+        if(!server) return socket.disconnect();
 
+        try {
             const response = await route.execute(data, server, this.client);
             logger.debug(`[Socket.IO] Response for event ${route.event}: ${response?.toString()}`);
             callback?.(response);
         }
-        catch(rejRes) {
-            callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
+        catch(err) {
+            logger.error(err, `[Socket.IO] Error executing event ${route.event}`);
+            callback?.({ message: 'server_error' });
         }
     }
 
