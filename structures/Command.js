@@ -114,8 +114,8 @@ export default class Command {
         }
 
         if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
-            if(process.env.NODE_ENV === 'production' && process.env.CUSTOM_BOT !== 'true') {
-                await interaction.replyTl(keys.custom_bot.warnings.no_entitlement);
+            if(process.env.NODE_ENV === 'production' && !client.isCustomBot()) {
+                await interaction.replyTl(keys.commands.customize.warnings.no_entitlement);
                 return false;
             }
         }
