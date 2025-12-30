@@ -26,11 +26,11 @@ export default class HasRequiredRoleToJoin extends WSEvent {
      */
     async execute(data, server, client) {
         if(!server.requiredRoleToJoin) return true;
-        const user = this.client.userConnections.cache.find(u => u.uuid === data.uuid);
+        const user = client.userConnections.cache.find(u => u.uuid === data.uuid);
         if(!user) return 'not_connected';
 
         try {
-            const guild = await this.client.guilds.fetch(server.id);
+            const guild = await client.guilds.fetch(server.id);
             const member = await guild.members.fetch({ user: user.id, force: true });
 
             return server.requiredRoleToJoin.method === 'any' && server.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id)) ||

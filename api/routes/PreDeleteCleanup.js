@@ -18,11 +18,11 @@ export default class PreDeleteCleanup extends Route {
      * @returns {Promise<RouteResponse>}
      */
     async post(client, req, res) {
-        for(const server of this.client.serverConnections.cache.values())
-            await this.client.serverConnections.disconnect(server);
+        for(const server of client.serverConnections.cache.values())
+            await client.serverConnections.disconnect(server);
         console.log('All server connections disconnected.');
 
-        this.client.mongo.connection.db.dropDatabase();
-        console.log(`${this.client.mongo.connection.db.databaseName} database dropped.`);
+        client.mongo.connection.db.dropDatabase();
+        console.log(`${client.mongo.connection.db.databaseName} database dropped.`);
     }
 }

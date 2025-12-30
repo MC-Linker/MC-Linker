@@ -85,7 +85,7 @@ export default class Chat extends WSEvent {
         }
         else if(type === 'death' && (!message || message === '')) placeholders.message = addPh(keys.api.plugin.success.default_death_message, placeholders);
 
-        const guild = await this.client.guilds.fetch(guildId);
+        const guild = await client.guilds.fetch(guildId);
         const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() });
         if(type !== 'chat') {
             for(const channel of channels) {

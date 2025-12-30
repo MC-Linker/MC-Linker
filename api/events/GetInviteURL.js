@@ -25,7 +25,7 @@ export default class GetInviteURL extends WSEvent {
         let invites;
         let guild;
         try {
-            guild = await this.client.guilds.fetch(server.id);
+            guild = await client.guilds.fetch(server.id);
             if(guild.vanityURLCode) return { url: `https://discord.gg/${guild.vanityURLCode}` };
             invites = await guild.invites.fetch();
         }

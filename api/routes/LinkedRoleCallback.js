@@ -29,10 +29,10 @@ export default class LinkedRole extends Route {
         if(!tokens) return { status: 403 };
 
         //Get user
-        const user = await getUser(this.client, tokens.accessToken);
+        const user = await getUser(client, tokens.accessToken);
         if(!user) return { status: 403 };
 
-        let settings = this.client.userSettingsConnections.cache.get(user.id);
+        let settings = client.userSettingsConnections.cache.get(user.id);
         if(settings) await settings.edit({
             tokens: {
                 accessToken: tokens.accessToken,
@@ -40,7 +40,7 @@ export default class LinkedRole extends Route {
                 expires: tokens.expires,
             },
         });
-        else settings = await this.client.userSettingsConnections.connect({
+        else settings = await client.userSettingsConnections.connect({
             id: user.id,
             tokens: {
                 accessToken: tokens.accessToken,
@@ -49,7 +49,7 @@ export default class LinkedRole extends Route {
             },
         });
 
-        const userConnection = this.client.userConnections.cache.get(user.id);
+        const userConnection = client.userConnections.cache.get(user.id);
         await settings.updateRoleConnection(userConnection?.username, {
             'connectedaccount': userConnection ? 1 : 0,
         });

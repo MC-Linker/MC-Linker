@@ -51,7 +51,7 @@ export default class UpdateStatsChannel extends WSEvent {
 
         for(const channel of channels) {
             try {
-                const discordChannel = await this.client.channels.fetch(channel.id);
+                const discordChannel = await client.channels.fetch(channel.id);
 
                 let newName;
                 //Replace %count% with the actual count
