@@ -1717,6 +1717,15 @@
                 }
             },
             "success": {
+                "disconnect": {
+                    "embeds": [
+                        {
+                            "title": "Account Disconnected",
+                            "description": "Successfully disconnected your account."
+                        }
+                    ],
+                    "console": "Account disconnected"
+                },
                 "verified": {
                     "embeds": [
                         {
