@@ -1,7 +1,7 @@
 import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBits } from 'discord.js';
-import { addTranslatedResponses, getModal } from '../utilities/messages.js';
+import { addTranslatedResponses, getComponent, getModal, getReplyOptions } from '../utilities/messages.js';
 import logger from '../utilities/logger.js';
 import { disableComponents } from '../utilities/utils.js';
 
@@ -20,6 +20,7 @@ export default class Customize extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
+        // If user is not subscribed, let them customize server appearance
         if(!interaction.entitlements.find(e => e.skuId === '1166098447665995807')) {
             if(!interaction.inGuild()) return await interaction.replyTl(keys.commands.customize.warnings.no_entitlement_guild);
 
@@ -29,15 +30,22 @@ export default class Customize extends Command {
                 });
             }
 
-            //TODO dont add sku button if within custom bot
-            const message = await interaction.replyTl(keys.commands.customize.warnings.no_entitlement);
+            const message = getReplyOptions(keys.commands.customize.warnings.no_entitlement);
+            const additionalButton = client.isCustomBot() ?
+                getComponent(keys.commands.customize.buttons.custom_bot_change_presence) :
+                getComponent(keys.commands.customize.buttons.customize_sku);
+            message.components[0].components.push(additionalButton);
 
             const buttonCollector = message.createMessageComponentCollector({
                 time: 60_000 * 14,
                 componentType: ComponentType.Button,
             });
-            buttonCollector.on('collect', async buttonInteraction =>
-                await buttonInteraction.showModal(getModal(keys.commands.customize.customize_guild_appearance_modal)));
+            buttonCollector.on('collect', async btnInteraction => {
+                if(btnInteraction.customId === additionalButton.data.custom_id)
+                    // Must be change presence button, because sku button does not emit event
+                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.change_presence_modal));
+                else await btnInteraction.showModal(getModal(keys.commands.customize.customize_guild_appearance_modal));
+            });
             buttonCollector.on('end', () => message.edit({ components: disableComponents(message.components) }));
 
             const modalCollector = new InteractionCollector(client, {
@@ -48,25 +56,33 @@ export default class Customize extends Command {
             modalCollector.on('collect', async modalInteraction => {
                 modalInteraction = addTranslatedResponses(modalInteraction);
 
-                const nick = modalInteraction.fields.getTextInputValue('nickname') ?? null;
-                const bio = modalInteraction.fields.getTextInputValue('bio') ?? null;
-                const avatar = modalInteraction.fields.getUploadedFiles('avatar')?.first()?.url ?? null;
-                const banner = modalInteraction.fields.getUploadedFiles('banner')?.first()?.url ?? null;
+                if(modalInteraction.customId === keys.custom_bot.custom_bot_manager.change_presence_modal.data.custom_id) {
+                    // Change custom bot presence modal
+                    const newPresence = client.customBots.parsePresenceModal(modalInteraction);
+                    client.user.setPresence(newPresence);
+                    await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
+                }
+                else { // Customize guild bot appearance modal
+                    const nick = modalInteraction.fields.getTextInputValue('nickname') ?? null;
+                    const bio = modalInteraction.fields.getTextInputValue('bio') ?? null;
+                    const avatar = modalInteraction.fields.getUploadedFiles('avatar')?.first()?.url ?? null;
+                    const banner = modalInteraction.fields.getUploadedFiles('banner')?.first()?.url ?? null;
 
-                try {
-                    await interaction.guild.members.editMe({
-                        nick,
-                        avatar,
-                        banner,
-                        bio,
-                        reason: `Customized bot appearance by ${interaction.user.displayName} (${interaction.user.id})`,
-                    });
+                    try {
+                        await interaction.guild.members.editMe({
+                            nick,
+                            avatar,
+                            banner,
+                            bio,
+                            reason: `Customized bot appearance by ${interaction.user.displayName} (${interaction.user.id})`,
+                        });
+                    }
+                    catch(err) {
+                        logger.error(err, `Failed to customize guild bot appearance for guild ${interaction.guild.id}`);
+                        return await modalInteraction.replyTl(keys.commands.customize.errors.guild_appearance_update_failed);
+                    }
+                    await modalInteraction.replyTl(keys.commands.customize.success.guild_appearance_updated);
                 }
-                catch(err) {
-                    logger.error(err, `Failed to customize guild bot appearance for guild ${interaction.guild.id}`);
-                    return await modalInteraction.replyTl(keys.commands.customize.errors.guild_appearance_update_failed);
-                }
-                await modalInteraction.replyTl(keys.commands.customize.success.guild_appearance_updated);
             });
             return;
         }

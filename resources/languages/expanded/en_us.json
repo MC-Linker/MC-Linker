@@ -688,6 +688,19 @@
                     }
                 ]
             },
+            "buttons": {
+                "customize_sku": {
+                    "type": "Button",
+                    "style": "Premium",
+                    "sku_id": "1166098447665995807"
+                },
+                "custom_bot_change_presence": {
+                    "type": "Button",
+                    "style": "Primary",
+                    "label": "Change Bot Presence",
+                    "custom_id": "custom_bot_change_presence"
+                }
+            },
             "success": {
                 "guild_appearance_updated": {
                     "embeds": [
@@ -717,11 +730,6 @@
                             "style": "Secondary",
                             "label": "Change Server Appearance",
                             "custom_id": "customize_guild_appearance"
-                        },
-                        {
-                            "type": "Button",
-                            "style": "Premium",
-                            "sku_id": "1166098447665995807"
                         }
                     ]
                 },

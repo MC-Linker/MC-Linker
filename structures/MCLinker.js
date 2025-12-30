@@ -222,6 +222,10 @@ export default class MCLinker extends Discord.Client {
         await fs.outputJson(path, configCopy, { spaces: 4 });
     }
 
+    isCustomBot() {
+        return process.env.CUSTOM_BOT !== 'true';
+    }
+
     async _loadCommands() {
         const loadCommand = async (file, category = null) => {
             // noinspection LocalVariableNamingConventionJS

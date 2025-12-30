@@ -221,26 +221,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             else if(modalInteraction.customId === 'customize_set_presence') {
                 await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
 
-                /** @type {import('discord.js').PresenceStatus} */
-                const status = modalInteraction.fields.getStringSelectValues('presence_status')[0];
-                const activityName = modalInteraction.fields.getTextInputValue('activity_name');
-                /** @type {import('discord.js').ActivityType} */
-                const activityType = modalInteraction.fields.getStringSelectValues('activity_type')[0];
-                const activityState = modalInteraction.fields.getTextInputValue('activity_state');
-
-                /** @type {import('discord.js').PresenceData} */
-                const newPresence = {
-                    status,
-                    activities: [],
-                };
-
-                if(activityName) {
-                    newPresence.activities.push({
-                        name: activityName,
-                        state: activityState,
-                        type: Discord.ActivityType[activityType],
-                    });
-                }
+                const newPresence = this.parsePresenceModal(modalInteraction);
 
                 const success = await customBotConnection.setPresence(newPresence);
                 if(!success)
@@ -248,6 +229,36 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
             }
         });
+    }
+
+    /**
+     * Parses the modal interaction to extract and construct presence data.
+     * @param {import('discord.js').ModalSubmitInteraction} modalInteraction - The modal interaction that contains status and activity information.
+     * @return {import('discord.js').PresenceData}
+     */
+    parsePresenceModal(modalInteraction) {
+        /** @type {import('discord.js').PresenceStatus} */
+        const status = modalInteraction.fields.getStringSelectValues('presence_status')[0];
+        const activityName = modalInteraction.fields.getTextInputValue('activity_name');
+        /** @type {import('discord.js').ActivityType} */
+        const activityType = modalInteraction.fields.getStringSelectValues('activity_type')[0];
+        const activityState = modalInteraction.fields.getTextInputValue('activity_state');
+
+        /** @type {import('discord.js').PresenceData} */
+        const newPresence = {
+            status,
+            activities: [],
+        };
+
+        if(activityName) {
+            newPresence.activities.push({
+                name: activityName,
+                state: activityState,
+                type: Discord.ActivityType[activityType],
+            });
+        }
+
+        return newPresence;
     }
 
     /**
