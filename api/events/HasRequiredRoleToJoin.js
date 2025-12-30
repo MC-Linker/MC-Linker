@@ -14,7 +14,8 @@ export default class HasRequiredRoleToJoin extends WSEvent {
      */
 
     /**
-     * @typedef {'not_connected'|'error'|boolean} HasRequiredRoleToJoinResponse - Whether the user has the required role to join, 'not_connected' if the user is not connected to the Discord bot, or 'error' if an error occurred.
+     * @typedef {object} HasRequiredRoleToJoinResponse
+     * @property {'not_connected'|'error'|boolean} response - Whether the user has the required role to join, 'not_connected' if the user is not connected to the Discord bot, or 'error' if an error occurred.
      */
 
     /**
@@ -27,18 +28,20 @@ export default class HasRequiredRoleToJoin extends WSEvent {
     async execute(data, server, client) {
         if(!server.requiredRoleToJoin) return true;
         const user = client.userConnections.cache.find(u => u.uuid === data.uuid);
-        if(!user) return 'not_connected';
+        if(!user) return { response: 'not_connected' };
 
         try {
             const guild = await client.guilds.fetch(server.id);
             const member = await guild.members.fetch({ user: user.id, force: true });
 
-            return server.requiredRoleToJoin.method === 'any' && server.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id)) ||
-                server.requiredRoleToJoin.method === 'all' && server.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id));
+            return {
+                response: server.requiredRoleToJoin.method === 'any' && server.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id)) ||
+                    server.requiredRoleToJoin.method === 'all' && server.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id)),
+            };
         }
         catch(err) {
-            if(err.code === RESTJSONErrorCodes.UnknownMember) return false; // Member not in server
-            else return 'error';
+            if(err.code === RESTJSONErrorCodes.UnknownMember) return { response: false }; // Member not in server
+            else return { response: 'error' };
         }
     }
 }
