@@ -54,6 +54,6 @@ export default class LinkedRole extends Route {
             'connectedaccount': userConnection ? 1 : 0,
         });
 
-        return `You have been authorized as ${user.tag}! You can now close this window and go back to Discord.`;
+        return { body: `You have been authorized as ${user.tag}! You can now close this window and go back to Discord.` };
     }
 }
