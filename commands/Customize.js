@@ -28,6 +28,8 @@ export default class Customize extends Command {
                     permission: 'Administrator / Manage Server',
                 });
             }
+
+            //TODO dont add sku button if within custom bot
             const message = await interaction.replyTl(keys.commands.customize.warnings.no_entitlement);
 
             const buttonCollector = message.createMessageComponentCollector({

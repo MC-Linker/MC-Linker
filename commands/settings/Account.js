@@ -27,6 +27,8 @@ export default class Account extends Command {
 
         const subcommand = args[0];
         if(subcommand === 'connect') {
+            if(!server) return interaction.replyTl(keys.api.command.errors.server_not_connected);
+
             const usernameOrUUID = args[1];
             if(usernameOrUUID.match(Discord.MessageMentions.UsersPattern)) {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
