@@ -136,7 +136,7 @@ The MC-Linker project is organized as follows:
 - `bot.js`: Main bot implementation
 - `main.js`: Entry point that sets up sharding
 - `commands/`: Discord bot commands
-- `buttons/`: Discord button interactions
+- `components/`: Discord component interactions
 - `events/`: Discord events
 - `api/routes`: REST API Routes
 - `api/events`: WS event handlers
