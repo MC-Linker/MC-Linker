@@ -170,7 +170,13 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     start() {
-        const composeProcess = spawn('docker', ['compose', '-f', './docker-compose-custom.yml', 'up', '-d', 'custom-mc-linker'], {
+        const composeProcess = spawn('docker', [
+            'compose',
+            '-p', this.containerName,
+            '-f', './docker-compose-custom.yml',
+            'up',
+            '-d', 'custom-mc-linker',
+        ], {
             env: this.dockerEnv,
             stdio: 'inherit',
         });
