@@ -262,11 +262,12 @@ export default class CustomBotConnectionManager extends ConnectionManager {
     }
 
     /**
-     * Updates all custom bot connections.
-     * @return {Promise<PromiseSettledResult[]>} - A promise that resolves when all custom bot connections have been updated.
+     * Updates all custom bot connections (sequentially to prevent docker issues)
      */
-    updateAllBots() {
-        return Promise.allSettled(this.cache.map(connection => connection.update()));
+    async updateAllBots() {
+        for(const connection of this.cache.values()) {
+            await connection.update();
+        }
     }
 
     /**
