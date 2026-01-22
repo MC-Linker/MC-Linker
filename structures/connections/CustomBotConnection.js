@@ -156,7 +156,7 @@ export default class CustomBotConnection extends Connection {
 
     /**
      * Updates the custom bot connection by rebuilding the docker image and restarting the container.
-     * Equivalent to calling `build()`, `stop()`, and `start()` in sequence.
+     * Equivalent to calling `build()` and `start()` in sequence.
      * @return {Promise<void>}
      */
     async update() {
