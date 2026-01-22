@@ -188,9 +188,10 @@ export default class CustomBotConnection extends Connection {
                 if(req.headers['x-communication-token'] !== this.communicationToken) return;
                 logger.info('Custom bot is ready!');
                 resolve();
+                this.client.api.off('/custom-bot-api-ready', readyListener);
                 clearTimeout(waitForStartTimeout);
             };
-            this.client.api.once('/custom-bot-api-ready', readyListener);
+            this.client.api.on('/custom-bot-api-ready', readyListener);
 
             waitForStartTimeout = setTimeout(() => {
                 reject(new Error('Timeout waiting for bot to start'));
