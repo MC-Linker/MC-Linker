@@ -22,7 +22,6 @@ import { getReplyOptions, ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import mojangson from 'mojangson';
-import { Authflow } from 'prismarine-auth';
 import util from 'util';
 import { exec } from 'child_process';
 import WebSocketProtocol from '../structures/protocol/WebSocketProtocol.js';
@@ -61,16 +60,16 @@ export const ComponentSizeInActionRow = {
 const mcData = MinecraftData(MinecraftDataVersion);
 
 // Password Auth:
-const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && process.env.AZURE_CLIENT_ID ?
+/*const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && process.env.AZURE_CLIENT_ID ?
     new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
         authTitle: process.env.AZURE_CLIENT_ID,
         flow: 'msal', // required, but will be ignored because password field is set
         password: process.env.MICROSOFT_PASSWORD,
-    }) : null;
+    }) : null;*/
 // MSAL Auth:
-// const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
-//     console.log(res);
-// });
+/*const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
+    console.log(res);
+});*/
 
 /**
  * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.
@@ -285,14 +284,8 @@ export async function fetchUsername(uuid) {
  */
 export async function fetchFloodgateUUID(username) {
     try {
-        const { userHash, XSTSToken: xstsToken } = await flow.getXboxToken();
-        const data = await fetch(`https://profile.xboxlive.com/users/gt(${username})/profile/settings`, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `XBL3.0 x=${userHash};${xstsToken}`,
-                'x-xbl-contract-version': '3',
-            },
-        }).then(data => data.json());
+        const data = await fetch(`https://api.geysermc.org/v2/xbox/xuid/${username}`)
+            .then(data => data.json());
 
         if(!data.profileUsers?.[0]?.id) return undefined;
         const xuid = parseInt(data.profileUsers[0].id);
