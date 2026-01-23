@@ -287,8 +287,9 @@ export async function fetchFloodgateUUID(username) {
         const data = await fetch(`https://api.geysermc.org/v2/xbox/xuid/${username}`)
             .then(data => data.json());
 
-        if(!data.profileUsers?.[0]?.id) return undefined;
-        const xuid = parseInt(data.profileUsers[0].id);
+        if(!data?.xuid) return undefined;
+        /** @type {number} */
+        const xuid = data.xuid;
         // Floodate UUID Format: 00000000-0000-0000-000x-xxxxxxxxxxxx (xuid)
         const uuid = `0000000000000000000${xuid.toString(16)}`;
         return addHyphen(uuid);
