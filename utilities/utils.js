@@ -301,6 +301,7 @@ export async function fetchFloodgateUUID(username) {
         return addHyphen(uuid);
     }
     catch(err) {
+        logger.error(err, `Error fetching floodgate UUID for ${username}`);
         return undefined;
     }
 }
