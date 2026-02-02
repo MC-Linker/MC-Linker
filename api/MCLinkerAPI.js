@@ -1,16 +1,16 @@
 // noinspection HttpUrlsUsage
 
 import Fastify from 'fastify';
-import { createHash } from '../../utilities/utils.js';
-import { getEmbed } from '../../utilities/messages.js';
-import keys from '../../utilities/keys.js';
+import { createHash } from '../utilities/utils.js';
+import { getEmbed } from '../utilities/messages.js';
+import keys from '../utilities/keys.js';
 import { EventEmitter } from 'node:events';
 import fastifyCookie from '@fastify/cookie';
 import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
 import { Collection } from 'discord.js';
-import logger from '../../utilities/logger.js';
+import logger from '../utilities/logger.js';
 import path from 'path';
 import fs from 'fs-extra';
 

@@ -1,4 +1,4 @@
-import WSEvent from '../../structures/api/WSEvent.js';
+import WSEvent from '../WSEvent.js';
 import { RESTJSONErrorCodes } from 'discord.js';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 

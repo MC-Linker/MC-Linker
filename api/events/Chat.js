@@ -1,6 +1,6 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import Discord, { RESTJSONErrorCodes } from 'discord.js';
-import WSEvent from '../../structures/api/WSEvent.js';
+import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
 import { getMinecraftAvatarURL, searchAdvancements } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';

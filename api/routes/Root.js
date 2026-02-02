@@ -1,4 +1,4 @@
-import Route from '../../structures/api/Route.js';
+import Route from '../Route.js';
 
 export default class Root extends Route {
 

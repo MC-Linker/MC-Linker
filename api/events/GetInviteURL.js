@@ -1,5 +1,5 @@
 import { PermissionFlagsBits } from 'discord.js';
-import WSEvent from '../../structures/api/WSEvent.js';
+import WSEvent from '../WSEvent.js';
 
 export default class GetInviteURL extends WSEvent {
 

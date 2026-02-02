@@ -11,7 +11,7 @@ import path from 'path';
 import Command from './Command.js';
 import Component from './Component.js';
 import Event from './Event.js';
-import MCLinkerAPI from './api/MCLinkerAPI.js';
+import MCLinkerAPI from '../api/MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';

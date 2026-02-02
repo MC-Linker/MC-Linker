@@ -1,4 +1,4 @@
-import WSEvent from '../../structures/api/WSEvent.js';
+import WSEvent from '../WSEvent.js';
 
 export default class HasRequiredRoleToJoin extends WSEvent {
 

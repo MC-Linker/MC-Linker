@@ -1,4 +1,4 @@
-import Route from '../../structures/api/Route.js';
+import Route from '../Route.js';
 import MCLinker from '../../structures/MCLinker.js';
 import logger from '../../utilities/logger.js';
 

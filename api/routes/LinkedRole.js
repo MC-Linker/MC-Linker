@@ -1,4 +1,4 @@
-import Route from '../../structures/api/Route.js';
+import Route from '../Route.js';
 import { getOAuthURL } from '../../utilities/oauth.js';
 
 export default class LinkedRole extends Route {
