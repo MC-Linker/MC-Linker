@@ -412,6 +412,11 @@ export default class MCLinkerAPI extends EventEmitter {
             }
 
             server.protocol.updateSocket(null);
+
+            if(reason === 'client namespace disconnect') {
+                // Plugin initialized a disconnect, so we fully disconnect the server
+                this.client.serverConnections.disconnect(server);
+            }
         });
     }
 
