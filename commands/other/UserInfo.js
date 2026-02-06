@@ -40,9 +40,6 @@ export default class UserInfo extends Command {
         /** @type {UserResponse} */
         const user = args[0];
 
-        const batch = await server.protocol.startBatch();
-        if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
-
         let onlinePlayers = [];
         const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
         if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
@@ -56,7 +53,6 @@ export default class UserInfo extends Command {
         let bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.path, server.id));
 
         const playerDat = await utils.getLivePlayerNbt(server, user, null);
-        await server.protocol.endBatch();
 
         operators = operators?.status === 200 ? JSON.parse(operators.data.toString()) : [];
         whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString()) : [];
