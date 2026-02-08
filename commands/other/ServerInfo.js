@@ -22,9 +22,6 @@ export default class ServerInfo extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const batch = await server.protocol.startBatch();
-        if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
-
         const serverProperties = await server.protocol.get(...FilePath.ServerProperties(server.path, server.id));
         const levelDat = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
@@ -32,7 +29,7 @@ export default class ServerInfo extends Command {
         }, { category: 'server-info' })) return await server.protocol.endBatch();
 
         const datObject = await utils.nbtBufferToObject(levelDat.data, interaction);
-        if(!datObject) return await server.protocol.endBatch();
+        if(!datObject) return;
         const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
 
         const serverIcon = await server.protocol.get(...FilePath.ServerIcon(server.path, server.id));
@@ -69,7 +66,6 @@ export default class ServerInfo extends Command {
                 }
             }
         }
-        await server.protocol.endBatch();
 
         let onlinePlayers = await server.protocol.getOnlinePlayers();
         if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;

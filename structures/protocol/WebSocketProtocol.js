@@ -267,7 +267,7 @@ export default class WebSocketProtocol extends Protocol {
                     if(typeof response === 'string') {
                         c.logger.debug(`[Socket.IO] Received response for event ${name}: ${response}`);
                         const responseObj = JSON.parse(response);
-                        if(!responseObj.status === 'success') responseObj.status = 200;
+                        if(responseObj.status === 'success') responseObj.status = 200;
                         resolve(responseObj);
                     }
                     else {
