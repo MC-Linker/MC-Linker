@@ -4,6 +4,7 @@ import { cleanEmojis } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import ServerConnection from '../structures/connections/ServerConnection.js';
 import { Events } from 'discord.js';
+import logger from '../utilities/logger.js';
 
 /**
  * Handles the Discord messageCreate event for the MC-Linker bot.
@@ -57,6 +58,12 @@ export default class MessageCreate extends Event {
                 repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
             }
             const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? repliedMessage.author.username : null;
+            logger.debug('Relaying chat message to Minecraft server', {
+                content,
+                author: message.author.tag,
+                channel: message.channel.name,
+                guild: message.guild.name,
+            });
             server.protocol.chat(content, message.member?.nickname ?? message.author.username, repliedContent, repliedUser);
         }
 
