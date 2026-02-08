@@ -28,7 +28,7 @@
         "fastify-socket.io": "^5.1.0",
         "fs-extra": "^11.1.0",
         "minecraft-data": "^3.55.0",
-        "mojangson": "^2.0.2",
+        "mojangson": "^2.0.4",
         "mongoose": "^8.0.1",
         "oci-common": "^2.113.0",
         "oci-core": "^2.113.0",
