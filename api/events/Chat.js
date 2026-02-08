@@ -51,14 +51,18 @@ export default class Chat extends WSEvent {
      * @returns {Promise<void>}
      */
     async execute(data, server, client) {
-        const { message, type, player } = data;
+        const { type, player } = data;
+        let message = data.message ?? '';
 
         const channels = server.chatChannels.filter(c => c.types.includes(type));
         if(channels.length === 0) return; //No channels to send to
 
         //Check whether command is blocked
         if(['player_command', 'console_command', 'block_command'].includes(type)) {
-            const commandName = message.replace(/^\//, '').split(/\s+/)[0];
+            // Strip leading slash
+            message = message.replace(/^\//, '');
+
+            const commandName = message.split(/\s+/)[0];
             if(server.settings.isDisabled('chatCommands', commandName)) return;
         }
 
