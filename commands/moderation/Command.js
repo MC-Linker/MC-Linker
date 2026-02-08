@@ -19,6 +19,7 @@ export default class Command extends AutocompleteCommand {
         super({
             name: 'command',
             category: 'moderation',
+            ephemeral: true,
         });
     }
 

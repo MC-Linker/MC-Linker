@@ -13,6 +13,7 @@ export default class Disable extends AutocompleteCommand {
             name: 'disable',
             requiresConnectedServer: false,
             category: 'settings',
+            ephemeral: true,
         });
     }
 

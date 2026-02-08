@@ -45,10 +45,9 @@ export default class Eval extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const command = args?.join(' ')?.replace(/^```(js|javascript)?|```$/g, '')?.trim();
-        if(!command) {
-            return interaction.replyTl(keys.api.command.warnings.no_argument, { argument: 'command' });
-        }
+        let command = interaction.content.substring(client.config.prefix.length + this.name.length).trim();
+        command = command.replace(/^```(?:js|javascript)?\s*([\s\S]*?)\s*```$/g, '$1').trim();
+        if(!command) return interaction.replyTl(keys.api.command.warnings.no_argument, { argument: 'command' });
 
         const evalOut = new ConsoleOutput();
         evalOut.setEncoding('utf8');
@@ -83,7 +82,7 @@ export default class Eval extends Command {
                     catch(err) {
                         return err;
                     }
-                })()`),
+                })();`),
             );
 
             //Auto-add return if no console.log or return present

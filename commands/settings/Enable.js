@@ -11,6 +11,7 @@ export default class Enable extends AutocompleteCommand {
             name: 'enable',
             category: 'settings',
             requiresConnectedServer: false,
+            ephemeral: true,
         });
     }
 

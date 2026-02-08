@@ -9,6 +9,7 @@ export default class Gamemode extends Command {
             name: 'gamemode',
             requiresUserIndex: 0,
             category: 'moderation',
+            ephemeral: true,
         });
     }
 

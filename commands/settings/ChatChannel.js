@@ -12,6 +12,7 @@ export default class ChatChannel extends Command {
         super({
             name: 'chatchannel',
             category: 'settings',
+            ephemeral: true,
         });
     }
 

@@ -12,6 +12,7 @@ export default class RoleSync extends AutocompleteCommand {
         super({
             name: 'rolesync',
             category: 'settings',
+            ephemeral: true,
         });
     }
 

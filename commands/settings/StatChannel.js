@@ -11,6 +11,7 @@ export default class StatChannel extends Command {
         super({
             name: 'statchannel',
             category: 'settings',
+            ephemeral: true,
         });
     }
 
