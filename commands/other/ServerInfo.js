@@ -127,7 +127,8 @@ export default class ServerInfo extends Command {
             keys.commands.serverinfo.difficulty[propertiesObject['difficulty']] :
             propertiesObject['difficulty'].toTitleCase();
 
-        const filteredGamerules = Object.entries(datObject.Data.GameRules)
+        const gamerulesObject = datObject.Data.GameRules ?? {};
+        const filteredGamerules = Object.entries(gamerulesObject)
             .filter(([key, value]) => {
                 const rule = gamerules.find(rule => rule.name === key);
                 if(!rule) return true;
