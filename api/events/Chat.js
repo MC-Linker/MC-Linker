@@ -124,8 +124,9 @@ export default class Chat extends WSEvent {
             if(mention.length > 101) continue; //101 because of the @
             const search = mention.replace('@', '').toLowerCase();
             const foundMember = (await guild.members.search({ query: search, limit: 1 })).first();
+            if(!foundMember) continue;
             if(foundMember?.user.username !== search && foundMember?.nickname !== search) continue;
-            placeholders.message = placeholders.message.replace(mention, foundMember.first()?.toString() ?? mention);
+            placeholders.message = placeholders.message.replace(mention, foundMember.toString());
         }
 
         const allWebhooks = await guild.fetchWebhooks().catch(() => {});
