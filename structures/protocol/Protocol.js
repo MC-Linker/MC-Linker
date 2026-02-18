@@ -192,10 +192,18 @@ export const ProtocolError = Object.freeze({
     INVALID_JSON: 'invalid_json',
     /** Request was rate-limited. */
     RATE_LIMITED: 'rate_limited',
-    /** Unhandled server-side error. */
-    SERVER_ERROR: 'server_error',
     /** The user is not connected/linked. */
     NOT_CONNECTED: 'not_connected',
+    /** The target group or team does not exist. */
+    INVALID_GROUP_OR_TEAM: 'invalid_group_or_team',
+    /** An I/O error occurred (file read/write, connection file, etc.). */
+    IO_ERROR: 'io_error',
+    /** The received Socket.IO event is not recognized. */
+    UNKNOWN_EVENT: 'unknown_event',
+    /** Could not retrieve NBT data for the player. */
+    NBT_ERROR: 'nbt_error',
+    /** The connection configuration file is missing. */
+    CONN_JSON_MISSING: 'conn_json_missing',
 });
 
 export default class Protocol extends Base {

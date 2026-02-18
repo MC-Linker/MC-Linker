@@ -334,7 +334,7 @@ export default class MCLinkerAPI extends EventEmitter {
         const { requiredRoleToJoin } = wsVerification.get(id);
         wsVerification.delete(id);
 
-        socket.emit('auth-success', { requiredRoleToJoin }); //Tell the plugin that the auth was successful
+        socket.emit('auth-success', { status: 'success', data: requiredRoleToJoin }); //Tell the plugin that the auth was successful
     }
 
     /**

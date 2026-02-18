@@ -60,8 +60,7 @@ export default class WebSocketProtocol extends Protocol {
             error: response.error ?? ProtocolError.UNKNOWN,
             data: null,
         };
-        if(response.type !== 'Buffer') return { status: 'error', error: ProtocolError.UNKNOWN, data: null };
-        const buffer = Buffer.from(response.data);
+        const buffer = Buffer.from(response.data, 'base64');
 
         fs.outputFile(putPath, buffer)
             .catch(err => logger.error(err, 'Error while writing file from get-file response'));
