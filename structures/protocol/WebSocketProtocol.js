@@ -1,5 +1,6 @@
 import Protocol from './Protocol.js';
 import fs from 'fs-extra';
+import logger from '../../utilities/logger.js';
 
 export default class WebSocketProtocol extends Protocol {
 
@@ -54,10 +55,13 @@ export default class WebSocketProtocol extends Protocol {
     async get(getPath, putPath) {
         const response = await this._sendRaw('get-file', { path: getPath });
         if(!response) return null;
+        if(response.status !== 200) return { status: response.status, data: null };
         if(response.type !== 'Buffer') return { status: response.status, data: null };
+        const buffer = Buffer.from(response.data);
 
-        await fs.outputFile(putPath, Buffer.from(response.data));
-        return { status: 200, data: await fs.readFile(putPath) };
+        void fs.outputFile(putPath, buffer)
+            .catch(err => logger.error(err, 'Error while writing file from get-file response'));
+        return { status: 200, data: buffer };
     }
 
     async put(getPath, putPath) {
