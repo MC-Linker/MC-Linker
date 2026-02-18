@@ -34,7 +34,7 @@ export default class Pagination {
      * @property {ButtonBuilder} [backButton] - The button to use for going to the previous page
      * @property {ButtonBuilder} [exitButton] - The button to use for exiting the nested pagination
      * @property {boolean} [showSelectedButton=true] - Whether the currently selected button should be shown
-     * @property {boolean} [showStartPageOnce=false] - Whether the starting page should only be shown once (removes the button)
+     * @property {boolean} [showStartPageOnce=false] - Whether the starting page should only be shown once
      * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
      * @property {Pagination} [parent] - The parent of this pagination (only used for nested paginations)
      * @property {ButtonStyle} [highlightSelectedButton] - The style to use for the selected button

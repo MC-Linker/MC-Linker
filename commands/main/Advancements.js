@@ -194,26 +194,21 @@ export default class Advancements extends Command {
             const advancementEmbed = getEmbed(keys.commands.advancements.success.details, allPlaceholders);
             const advancementButton = getComponent(keys.commands.advancements.success.details_button, allPlaceholders, { style: advancement.obtained ? 'Primary' : 'Secondary' });
 
-            if(advancement.value === 'root') {
-                paginationPages[advancementButton.data.custom_id] = {
-                    button: advancementButton,
-                    startPage: true,
-                    options: {
-                        embeds: [advancementsEmbed],
-                        files: [advancementsAttach],
-                    },
-                };
-                continue;
-            }
-
             paginationPages[advancementButton.data.custom_id] = {
                 button: advancementButton,
-                startPage: advancement.value === 'root',
                 options: {
                     embeds: [advancementsEmbed, advancementEmbed],
                 },
             };
         }
+
+        paginationPages['advancement_start'] = {
+            startPage: true,
+            options: {
+                embeds: [advancementsEmbed],
+                files: [advancementsAttach],
+            },
+        };
 
         return paginationPages;
     }
