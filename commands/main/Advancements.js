@@ -154,6 +154,7 @@ export default class Advancements extends Command {
         const pagination = new Pagination(client, interaction, paginationPages, {
             showStartPageOnce: true,
             timeout: 60000 * 5, // 5 minutes
+            highlightSelectedButton: false,
         });
         await pagination.start();
     }
