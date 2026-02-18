@@ -1,4 +1,4 @@
-import Protocol from './Protocol.js';
+import Protocol, { ProtocolError } from './Protocol.js';
 import fs from 'fs-extra';
 import logger from '../../utilities/logger.js';
 
@@ -55,13 +55,17 @@ export default class WebSocketProtocol extends Protocol {
     async get(getPath, putPath) {
         const response = await this._sendRaw('get-file', { path: getPath });
         if(!response) return null;
-        if(response.status !== 200) return { status: response.status, data: null };
-        if(response.type !== 'Buffer') return { status: response.status, data: null };
+        if(response.status !== 'success') return {
+            status: 'error',
+            error: response.error ?? ProtocolError.UNKNOWN,
+            data: null,
+        };
+        if(response.type !== 'Buffer') return { status: 'error', error: ProtocolError.UNKNOWN, data: null };
         const buffer = Buffer.from(response.data);
 
-        void fs.outputFile(putPath, buffer)
+        fs.outputFile(putPath, buffer)
             .catch(err => logger.error(err, 'Error while writing file from get-file response'));
-        return { status: 200, data: buffer };
+        return { status: 'success', data: buffer };
     }
 
     async put(getPath, putPath) {
@@ -76,9 +80,9 @@ export default class WebSocketProtocol extends Protocol {
         return this.client.shard.broadcastEval(async (c, { id }) => {
             /** @type {WebSocketProtocol} */
             const protocol = c.serverConnections.cache.get(id).protocol;
-            if(!protocol.socket) return { status: 200 };
+            if(!protocol.socket) return { status: 'success', data: null };
             await protocol.socket.disconnect(true);
-            return { status: 200 };
+            return { status: 'success', data: null };
         }, { context: { id: this.id }, shard: 0 });
     }
 
@@ -271,7 +275,6 @@ export default class WebSocketProtocol extends Protocol {
                     if(typeof response === 'string') {
                         c.logger.debug(`[Socket.IO] Received response for event ${name}: ${response}`);
                         const responseObj = JSON.parse(response);
-                        if(responseObj.status === 'success') responseObj.status = 200;
                         resolve(responseObj);
                     }
                     else {

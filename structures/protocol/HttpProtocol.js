@@ -386,7 +386,7 @@ export default class HttpProtocol extends Protocol {
                 const writeStream = fs.createWriteStream(putPath);
                 await Readable.fromWeb(response.body).pipe(writeStream);
                 writeStream.on('finish', async () => resolve({
-                    status: response.status,
+                    status: 'success',
                     data: await fs.readFile(putPath),
                 }));
                 writeStream.on('error', () => resolve(null));
@@ -608,8 +608,13 @@ export default class HttpProtocol extends Protocol {
 async function fetchToProtocolResponse(response) {
     if(!response) return null;
 
-    return {
-        status: response.status,
-        data: await response.json(),
-    };
+    const data = await response.json().catch(() => null);
+    if(response.ok) return { status: 'success', data };
+
+    let error = 'unknown';
+    if(response.status === 401) error = 'unauthorized';
+    else if(response.status === 404) error = 'not_found';
+    else if(response.status >= 500) error = 'server_error';
+
+    return { status: 'error', error, data };
 }

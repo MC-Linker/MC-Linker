@@ -2,7 +2,7 @@ import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
-import { FilePath } from '../../structures/protocol/Protocol.js';
+import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
 import Canvas from 'skia-canvas';
 import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
 import MinecraftData from 'minecraft-data';
@@ -45,7 +45,7 @@ export default class Stats extends Command {
 
         const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./download-cache/stats/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
-            404: keys.api.command.errors.could_not_download_user_files,
+            [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download_user_files,
         }, { category: 'stats' })) return;
 
         let stats;

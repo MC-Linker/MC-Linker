@@ -4,7 +4,7 @@ import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
-import { FilePath } from '../../structures/protocol/Protocol.js';
+import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
 import * as d3 from 'd3-hierarchy';
 import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
@@ -39,7 +39,7 @@ export default class Advancements extends Command {
 
         const amFile = await server.protocol.get(FilePath.Advancements(server.worldPath, user.uuid), `./download-cache/advancements/${user.uuid}.json`);
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
-            404: keys.api.command.errors.could_not_download_user_files,
+            [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download_user_files,
         }, { category: 'advancements' }, ph.colors())) return;
         const completedAdvancements = JSON.parse(amFile.data.toString());
 

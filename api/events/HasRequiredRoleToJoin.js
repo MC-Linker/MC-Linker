@@ -1,4 +1,5 @@
 import WSEvent from '../WSEvent.js';
+import { RESTJSONErrorCodes } from 'discord.js';
 
 export default class HasRequiredRoleToJoin extends WSEvent {
 
@@ -15,7 +16,9 @@ export default class HasRequiredRoleToJoin extends WSEvent {
 
     /**
      * @typedef {object} HasRequiredRoleToJoinResponse
-     * @property {'not_connected'|'error'|boolean} response - Whether the user has the required role to join, 'not_connected' if the user is not connected to the Discord bot, or 'error' if an error occurred.
+     * @property {'success'|'error'} status - The status of the response.
+     * @property {{ hasRole: boolean }} [data] - The response data (present on success).
+     * @property {string} [error] - The error code (present on error).
      */
 
     /**
@@ -26,22 +29,22 @@ export default class HasRequiredRoleToJoin extends WSEvent {
      * @returns {HasRequiredRoleToJoinResponse}
      */
     async execute(data, server, client) {
-        if(!server.requiredRoleToJoin) return true;
+        if(!server.requiredRoleToJoin) return { status: 'success', data: { hasRole: true } };
         const user = client.userConnections.cache.find(u => u.uuid === data.uuid);
-        if(!user) return { response: 'not_connected' };
+        if(!user) return { status: 'error', error: 'not_connected' };
 
         try {
             const guild = await client.guilds.fetch(server.id);
             const member = await guild.members.fetch({ user: user.id, force: true });
 
-            return {
-                response: server.requiredRoleToJoin.method === 'any' && server.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id)) ||
-                    server.requiredRoleToJoin.method === 'all' && server.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id)),
-            };
+            const hasRole = server.requiredRoleToJoin.method === 'any' && server.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id)) ||
+                server.requiredRoleToJoin.method === 'all' && server.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id));
+
+            return { status: 'success', data: { hasRole } };
         }
         catch(err) {
-            if(err.code === RESTJSONErrorCodes.UnknownMember) return { response: false }; // Member not in server
-            else return { response: 'error' };
+            if(err.code === RESTJSONErrorCodes.UnknownMember) return { status: 'success', data: { hasRole: false } }; // Member not in server
+            else return { status: 'error', error: 'unknown' };
         }
     }
 }

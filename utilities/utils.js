@@ -24,10 +24,7 @@ import emoji from 'emojione';
 import mojangson from 'mojangson';
 import util from 'util';
 import { exec } from 'child_process';
-import WebSocketProtocol from '../structures/protocol/WebSocketProtocol.js';
-import { FilePath } from '../structures/protocol/Protocol.js';
-import HttpProtocol from '../structures/protocol/HttpProtocol.js';
-import FtpProtocol from '../structures/protocol/FtpProtocol.js';
+import { FilePath, ProtocolError } from '../structures/protocol/Protocol.js';
 import fs from 'fs-extra';
 import path from 'path';
 import logger from './logger.js';
@@ -369,10 +366,11 @@ export async function getUsersFromMention(client, mention) {
 }
 
 
-const defaultStatusRespones = {
-    400: keys.api.plugin.errors.status_400,
-    401: keys.api.plugin.errors.status_401,
-    404: keys.api.plugin.errors.status_404,
+const defaultErrorResponses = {
+    [ProtocolError.UNKNOWN]: keys.api.plugin.errors.status_400,
+    [ProtocolError.UNAUTHORIZED]: keys.api.plugin.errors.status_401,
+    [ProtocolError.NOT_FOUND]: keys.api.plugin.errors.status_404,
+    [ProtocolError.SERVER_ERROR]: keys.api.plugin.errors.status_500,
 };
 
 /**
@@ -380,27 +378,19 @@ const defaultStatusRespones = {
  * @param {?ProtocolResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
- * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
+ * @param {Object.<string, MessagePayload>} [errorResponses={}] - The responses to use for each error code string. See {@link ProtocolError} for known codes.
  * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether the response was successful.
  */
-export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}, ...placeholders) {
+export async function handleProtocolResponse(response, protocol, interaction, errorResponses = {}, ...placeholders) {
     placeholders.push({ data: JSON.stringify(response?.data ?? '') });
 
-    if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
+    if(!response) {
         await interaction.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
         return false;
     }
-    else if(!response && protocol instanceof FtpProtocol) {
-        await interaction.replyTl(keys.api.ftp.errors.could_not_connect, ...placeholders);
-        return false;
-    }
-    else if(response.status >= 500 && response.status < 600) {
-        await interaction.replyTl(keys.api.plugin.errors.status_500, ...placeholders);
-        return false;
-    }
-    else if(response.status !== 200) {
-        const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
+    else if(response.status !== 'success') {
+        const responseKey = errorResponses[response.error] ?? defaultErrorResponses[response.error] ?? defaultErrorResponses[ProtocolError.SERVER_ERROR];
         if(responseKey) {
             await interaction.replyTl(responseKey, ...placeholders);
             return false;
@@ -415,13 +405,13 @@ export async function handleProtocolResponse(response, protocol, interaction, st
  * @param {?ProtocolResponse[]} responses - The responses to handle.
  * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
- * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
+ * @param {Object.<string, MessagePayload>} [errorResponses={}] - The responses to use for each error code string. See {@link ProtocolError} for known codes.
  * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether all responses were successful.
  */
-export async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}, ...placeholders) {
+export async function handleProtocolResponses(responses, protocol, interaction, errorResponses = {}, ...placeholders) {
     for(const response of responses) {
-        if(!await handleProtocolResponse(response, protocol, interaction, statusResponses, ...placeholders)) return false;
+        if(!await handleProtocolResponse(response, protocol, interaction, errorResponses, ...placeholders)) return false;
     }
     return true;
 }
@@ -464,10 +454,10 @@ export function stringifyMinecraftJson(json, stripColors = true) {
  */
 export async function getLivePlayerNbt(server, user, interaction) {
     const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-    const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
+    const onlinePlayers = onlinePlayersResponse?.status === 'success' ? onlinePlayersResponse.data : [];
     if(onlinePlayers.includes(user.username)) {
         const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
-        if(playerNbtResponse?.status === 200 && playerNbtResponse.data.data !== '') {
+        if(playerNbtResponse?.status === 'success' && playerNbtResponse.data.data !== '') {
             const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
             if(parsed) return parsed;
             // else fall back to downloading the nbt file
@@ -479,7 +469,7 @@ export async function getLivePlayerNbt(server, user, interaction) {
 
     // handleProtocolResponse if interaction is set, otherwise manually check the status code
     if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;
-    else if(nbtResponse?.status === 200) return nbtBufferToObject(nbtResponse.data, interaction);
+    else if(nbtResponse?.status === 'success') return nbtBufferToObject(nbtResponse.data, interaction);
     else return null;
 }
 
@@ -492,7 +482,7 @@ export async function getLivePlayerNbt(server, user, interaction) {
  */
 export async function getFloodgatePrefix(protocol, path, id) {
     const response = await protocol.get(...FilePath.FloodgateConfig(path, id));
-    if(response?.status === 200) {
+    if(response?.status === 'success') {
         //parse yml without module
         const searchKey = 'username-prefix:';
         const lines = response.data.toString().split('\n');

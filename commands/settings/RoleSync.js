@@ -23,7 +23,7 @@ export default class RoleSync extends AutocompleteCommand {
         if(!server) return;
 
         const response = await server.protocol.getTeamsAndGroups();
-        if(response?.status !== 200) return;
+        if(response?.status !== 'success') return;
 
         const commandResponse = [];
         for(const group of response.data.groups) {
@@ -80,8 +80,8 @@ export default class RoleSync extends AutocompleteCommand {
                 players: role.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u),
             });
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction, {
-                404: keys.commands.rolesync.errors.group_not_found,
-                501: keys.commands.rolesync.errors.luckperms_not_loaded,
+                not_found: keys.commands.rolesync.errors.group_not_found,
+                luckperms_not_loaded: keys.commands.rolesync.errors.luckperms_not_loaded,
             }, { name })) return;
 
             const respRole = resp.data.find(r => r.id === role.id);

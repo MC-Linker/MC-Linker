@@ -171,6 +171,33 @@ export const FilePath = {
     },
 };
 
+/**
+ * Standardized error codes for protocol responses.
+ * @type {Readonly<Object.<string, string>>}
+ */
+export const ProtocolError = Object.freeze({
+    /** Generic/unhandled client error. */
+    UNKNOWN: 'unknown',
+    /** Wrong authorization credentials. */
+    UNAUTHORIZED: 'unauthorized',
+    /** Requested resource/player/file not found. */
+    NOT_FOUND: 'not_found',
+    /** The targeted player is not online. */
+    PLAYER_NOT_ONLINE: 'player_not_online',
+    /** The LuckPerms plugin is not loaded on the server. */
+    LUCKPERMS_NOT_LOADED: 'luckperms_not_loaded',
+    /** The plugin did not respond (timeout or no connection). */
+    NO_RESPONSE: 'no_response',
+    /** Malformed JSON in event data. */
+    INVALID_JSON: 'invalid_json',
+    /** Request was rate-limited. */
+    RATE_LIMITED: 'rate_limited',
+    /** Unhandled server-side error. */
+    SERVER_ERROR: 'server_error',
+    /** The user is not connected/linked. */
+    NOT_CONNECTED: 'not_connected',
+});
+
 export default class Protocol extends Base {
 
     /**
@@ -185,8 +212,9 @@ export default class Protocol extends Base {
 
     /**
      * @typedef {object} ProtocolResponse - The response from a protocol call.
-     * @property {any} data - The data of the response.
-     * @property {number} status - The http status code of the response.
+     * @property {'success'|'error'} status - The status of the response.
+     * @property {any} [data] - The data of the response.
+     * @property {string} [error] - A snake_case error code (only present when status is 'error'). See {@link ProtocolError} for known codes.
      */
 
     /**
@@ -244,7 +272,7 @@ export default class Protocol extends Base {
      * @returns {Promise<ProtocolResponse>}
      */
     async startBatch() {
-        return { data: null, status: 200 };
+        return { status: 'success', data: null };
     }
 
     /**
@@ -252,6 +280,6 @@ export default class Protocol extends Base {
      * @returns {Promise<ProtocolResponse>}
      */
     async endBatch() {
-        return { data: null, status: 200 };
+        return { status: 'success', data: null };
     }
 }

@@ -11,7 +11,8 @@ export default class GetInviteURL extends WSEvent {
 
     /**
      * @typedef {Object} GetInviteURLResponse
-     * @property {?string} url - The invite URL, or null if one could not be created.
+     * @property {'success'} status - The status of the response.
+     * @property {{ url: ?string }} data - The response data containing the invite URL.
      */
 
     /**
@@ -26,23 +27,26 @@ export default class GetInviteURL extends WSEvent {
         let guild;
         try {
             guild = await client.guilds.fetch(server.id);
-            if(guild.vanityURLCode) return { url: `https://discord.gg/${guild.vanityURLCode}` };
+            if(guild.vanityURLCode) return {
+                status: 'success',
+                data: { url: `https://discord.gg/${guild.vanityURLCode}` },
+            };
             invites = await guild.invites.fetch();
         }
         catch(_) {}
 
-        if(!guild) return { url: null };
+        if(!guild) return { status: 'success', data: { url: null } };
 
-        if(invites?.size) return { url: invites.first().url };
+        if(invites?.size) return { status: 'success', data: { url: invites.first().url } };
         else {
             /** @type {?import('discord.js').BaseGuildTextChannel} */
             const channel = guild.channels.cache.find(c =>
                 c.isTextBased() && c.permissionsFor?.(guild.members.me)?.has(PermissionFlagsBits.CreateInstantInvite),
             );
-            if(!channel) return { url: null };
+            if(!channel) return { status: 'success', data: { url: null } };
 
             const invite = await channel.createInvite({ maxAge: 0, maxUses: 0, unique: true });
-            return { url: invite.url };
+            return { status: 'success', data: { url: invite.url } };
         }
     }
 }

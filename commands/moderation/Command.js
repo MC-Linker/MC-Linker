@@ -165,7 +165,7 @@ export default class Command extends AutocompleteCommand {
         const resp = await server.protocol.execute(`${command} ${args.join(' ')}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        let respMessage = resp.status === 200 && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
+        let respMessage = resp.status === 'success' && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
         respMessage = codeBlockFromCommandResponse(respMessage);
         return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
     }
@@ -229,7 +229,7 @@ async function getPlaceholder(key, args) {
             }
 
             const resp = await server?.protocol?.getOnlinePlayers?.();
-            const onlinePlayers = resp?.status === 200 ? resp.data : [];
+            const onlinePlayers = resp?.status === 'success' ? resp.data : [];
             onlinePlayers.forEach(player => placeholder[player] = player);
             break;
         case 'attributes':
@@ -4497,7 +4497,7 @@ async function getPlaceholder(key, args) {
     async function getNBTFile(getPath, putPath) {
         if(!server) return {};
         const nbtResponse = await server.protocol.get(getPath, putPath);
-        if(nbtResponse?.status !== 200) return {};
+        if(nbtResponse?.status !== 'success') return {};
         return utils.nbtBufferToObject(nbtResponse.data, null);
     }
 
@@ -4508,13 +4508,13 @@ async function getPlaceholder(key, args) {
         const allFunctions = [];
 
         const datapacks = await server.protocol.list(FilePath.DataPacks(worldPath));
-        if(datapacks?.status !== 200) return [];
+        if(datapacks?.status !== 'success') return [];
 
         for(const datapack of datapacks.data) {
             if(!datapack.isDirectory) continue;
 
             const namespaces = await server.protocol.list(`${FilePath.DataPacks(worldPath)}/${datapack.name}/data/`);
-            if(namespaces?.status !== 200) continue;
+            if(namespaces?.status !== 'success') continue;
 
             for(const namespace of namespaces.data) {
                 if(!namespace.isDirectory) continue;
@@ -4524,7 +4524,7 @@ async function getPlaceholder(key, args) {
 
         async function listFunctions(datapack, namespace, path) {
             const functions = await server.protocol.list(`${FilePath.DataPacks(worldPath)}/${datapack}/data/${namespace}/functions/${path}`);
-            if(functions?.status !== 200) return;
+            if(functions?.status !== 'success') return;
 
             for(const func of functions.data) {
                 const funcPath = `${path}/${func.name}`.replace(/^\/+/, '');

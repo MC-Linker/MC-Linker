@@ -353,7 +353,7 @@ export default class MCLinkerAPI extends EventEmitter {
         }
         catch(err) {
             logger.error(err, `[Socket.IO] Error parsing data for event ${eventName}`);
-            return callback?.({ message: 'invalid_json' });
+            return callback?.({ status: 'error', error: 'invalid_json' });
         }
 
         const route = this.wsEvents.get(eventName);
@@ -362,7 +362,7 @@ export default class MCLinkerAPI extends EventEmitter {
             await rateLimiter?.consume(socket.handshake.address);
         }
         catch(rejRes) {
-            callback?.({ message: 'blocked', 'retry-ms': rejRes.msBeforeNext });
+            callback?.({ status: 'error', error: 'rate_limited', data: { retryMs: rejRes.msBeforeNext } });
             return;
         }
 
@@ -383,7 +383,7 @@ export default class MCLinkerAPI extends EventEmitter {
         }
         catch(err) {
             logger.error(err, `[Socket.IO] Error executing event ${route.event}`);
-            callback?.({ message: 'server_error' });
+            callback?.({ status: 'error', error: 'server_error' });
         }
     }
 

@@ -1,6 +1,6 @@
 import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
-import { FilePath } from '../../structures/protocol/Protocol.js';
+import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../utilities/utils.js';
 import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
@@ -25,7 +25,7 @@ export default class ServerInfo extends Command {
         const serverProperties = await server.protocol.get(...FilePath.ServerProperties(server.path, server.id));
         const levelDat = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
-            404: keys.api.command.errors.could_not_download,
+            [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download,
         }, { category: 'server-info' })) return await server.protocol.endBatch();
 
         const datObject = await utils.nbtBufferToObject(levelDat.data, interaction);
@@ -50,12 +50,12 @@ export default class ServerInfo extends Command {
             plugins = await server.protocol.list(FilePath.Plugins(server.path));
             mods = await server.protocol.list(FilePath.Mods(server.path));
 
-            operators = operators?.status === 200 ? JSON.parse(operators.data.toString()) : null;
-            whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString()) : null;
-            bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString()) : null;
-            bannedIPs = bannedIPs?.status === 200 ? JSON.parse(bannedIPs.data.toString()) : null;
-            plugins = plugins?.status === 200 ? plugins.data.filter(file => !file.isDirectory && file.name.endsWith('.jar')).map(plugin => plugin.name.replace('.jar', '')) : [];
-            mods = mods?.status === 200 ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
+            operators = operators?.status === 'success' ? JSON.parse(operators.data.toString()) : null;
+            whitelistedUsers = whitelistedUsers?.status === 'success' ? JSON.parse(whitelistedUsers.data.toString()) : null;
+            bannedUsers = bannedUsers?.status === 'success' ? JSON.parse(bannedUsers.data.toString()) : null;
+            bannedIPs = bannedIPs?.status === 'success' ? JSON.parse(bannedIPs.data.toString()) : null;
+            plugins = plugins?.status === 'success' ? plugins.data.filter(file => !file.isDirectory && file.name.endsWith('.jar')).map(plugin => plugin.name.replace('.jar', '')) : [];
+            mods = mods?.status === 'success' ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
 
             datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').toTitleCase(true)) ?? [];
 
@@ -68,7 +68,7 @@ export default class ServerInfo extends Command {
         }
 
         let onlinePlayers = await server.protocol.getOnlinePlayers();
-        if(onlinePlayers === null || onlinePlayers.status !== 200) onlinePlayers = 0;
+        if(onlinePlayers === null || onlinePlayers.status !== 'success') onlinePlayers = 0;
         else onlinePlayers = onlinePlayers.data.length;
 
         const serverName = propertiesObject['server-name'] || server.displayIp;

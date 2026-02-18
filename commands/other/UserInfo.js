@@ -42,7 +42,7 @@ export default class UserInfo extends Command {
 
         let onlinePlayers = [];
         const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-        if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
+        if(onlinePlayersResponse?.status === 'success') onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
 
         const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
         const levelDatResponse = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
@@ -54,16 +54,16 @@ export default class UserInfo extends Command {
 
         const playerDat = await utils.getLivePlayerNbt(server, user, null);
 
-        operators = operators?.status === 200 ? JSON.parse(operators.data.toString()) : [];
-        whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString()) : [];
-        bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString()) : [];
-        stats = stats?.status === 200 ? JSON.parse(stats.data.toString()) : [];
+        operators = operators?.status === 'success' ? JSON.parse(operators.data.toString()) : [];
+        whitelistedUsers = whitelistedUsers?.status === 'success' ? JSON.parse(whitelistedUsers.data.toString()) : [];
+        bannedUsers = bannedUsers?.status === 'success' ? JSON.parse(bannedUsers.data.toString()) : [];
+        stats = stats?.status === 'success' ? JSON.parse(stats.data.toString()) : [];
 
         let scoreboardDat = null;
         let levelDat = null;
-        if(scoreboardDatResponse?.status === 200) scoreboardDat = await utils.nbtBufferToObject(scoreboardDatResponse.data, interaction);
+        if(scoreboardDatResponse?.status === 'success') scoreboardDat = await utils.nbtBufferToObject(scoreboardDatResponse.data, interaction);
         if(scoreboardDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
-        if(levelDatResponse?.status === 200) levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
+        if(levelDatResponse?.status === 'success') levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
         if(levelDatResponse === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
 
         const matchingOp = operators.find(o => o.uuid === user.uuid);

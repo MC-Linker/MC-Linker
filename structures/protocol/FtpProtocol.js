@@ -48,15 +48,18 @@ export default class FtpProtocol extends Protocol {
         return await ftpClient.connect();
     }
 
-    static dataToProtocolResponse(data, status = 200) {
+    static dataToProtocolResponse(data) {
         if(data instanceof Error) {
-            if(data.message.toLowerCase().includes('no such file')) status = 404;
+            if(data.message.toLowerCase().includes('no such file')) return {
+                status: 'error',
+                error: 'not_found',
+                data: { message: data.message },
+            };
             else return null;
-            return { status, data: { message: data.message } };
         }
 
         if(data === null || data === undefined || data === false) return null;
-        return { data, status };
+        return { status: 'success', data };
     }
 
     _patch(data) {
