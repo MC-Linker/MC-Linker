@@ -2,7 +2,6 @@ import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
-import ServerConnection from '../structures/connections/ServerConnection.js';
 import { Events } from 'discord.js';
 import logger from '../utilities/logger.js';
 
@@ -27,20 +26,18 @@ export default class MessageCreate extends Event {
                 const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
                 const userConnection = await client.userConnections.connect({ id: message.author.id, username, uuid });
 
-                //TODO improve
-                const promises = await Promise.allSettled(client.serverConnections.cache.map(async conn => {
-                    if(!(conn instanceof ServerConnection)) return null;
-                    if(!conn.syncedRoles || !conn.syncedRoles.length) return null;
+                await Promise.allSettled(client.serverConnections.cache.map(async conn => {
+                    if(!conn.syncedRoles?.length) return;
                     try {
                         const guild = await client.guilds.fetch(conn.id);
                         const member = await guild.members.fetch(message.author.id);
-                        return [conn, member];
+                        await conn.syncRolesOfMember(member, userConnection);
                     }
-                    catch(err) { return null; }
+                    catch(err) {
+                        logger.debug(`Skipping role sync for server ${conn.id} of ${username}: ${err.message}`);
+                    }
                 }));
 
-                const arrayOfServers = promises.map(p => p.value).filter(p => p);
-                for(const [conn, member] of arrayOfServers) await conn.syncRolesOfMember(member, userConnection);
                 client.api.usersAwaitingVerification.delete(message.content);
                 return await message.replyTl(keys.commands.account.success.verified);
             }
