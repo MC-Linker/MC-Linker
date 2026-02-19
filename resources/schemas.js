@@ -35,6 +35,7 @@ export default {
             name: String,
             isGroup: Boolean,
             players: [String],
+            direction: { type: String, enum: ['both', 'to_minecraft', 'to_discord'], default: 'both' },
         }],
         serverSettings: { type: String, ref: 'ServerSettingsConnections' },
     },

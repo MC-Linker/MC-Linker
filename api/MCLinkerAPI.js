@@ -13,6 +13,7 @@ import { Collection } from 'discord.js';
 import logger from '../utilities/logger.js';
 import path from 'path';
 import fs from 'fs-extra';
+import { ProtocolError } from '../structures/protocol/Protocol.js';
 
 
 export default class MCLinkerAPI extends EventEmitter {
@@ -237,6 +238,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
             this.addWebsocketListeners(socket, server, hash);
             logger.debug(`[Socket.io] Successfully reconnected ${server.displayIp} from ${server.id} to websocket`);
+
             return next();
         }
 
@@ -353,7 +355,7 @@ export default class MCLinkerAPI extends EventEmitter {
         }
         catch(err) {
             logger.error(err, `[Socket.IO] Error parsing data for event ${eventName}`);
-            return callback?.({ status: 'error', error: 'invalid_json' });
+            return callback?.({ status: 'error', error: ProtocolError.INVALID_JSON });
         }
 
         const route = this.wsEvents.get(eventName);
@@ -362,7 +364,7 @@ export default class MCLinkerAPI extends EventEmitter {
             await rateLimiter?.consume(socket.handshake.address);
         }
         catch(rejRes) {
-            callback?.({ status: 'error', error: 'rate_limited', data: { retryMs: rejRes.msBeforeNext } });
+            callback?.({ status: 'error', error: ProtocolError.RATE_LIMITED, data: { retryMs: rejRes.msBeforeNext } });
             return;
         }
 
@@ -383,7 +385,7 @@ export default class MCLinkerAPI extends EventEmitter {
         }
         catch(err) {
             logger.error(err, `[Socket.IO] Error executing event ${route.event}`);
-            callback?.({ status: 'error', error: 'server_error' });
+            callback?.({ status: 'error', error: ProtocolError.UNKNOWN });
         }
     }
 
@@ -447,15 +449,23 @@ export default class MCLinkerAPI extends EventEmitter {
 
         const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
         if(roleIndex === undefined || roleIndex === -1) return;
-        if(addOrRemove === 'add') server.syncedRoles[roleIndex].players.push(connection.uuid);
-        else if(addOrRemove === 'remove') server.syncedRoles[roleIndex].players.splice(server.syncedRoles[roleIndex].players.indexOf(connection.uuid), 1);
+        const syncedRole = server.syncedRoles[roleIndex];
+
+        // Always update the players list to reflect MC-side reality
+        if(addOrRemove === 'add') syncedRole.players.push(connection.uuid);
+        else if(addOrRemove === 'remove') syncedRole.players.splice(syncedRole.players.indexOf(connection.uuid), 1);
         await server.edit({});
+
+        // Skip Discord role change if direction is to_minecraft (Discord→MC only)
+        if(syncedRole.direction === 'to_minecraft') return;
 
         try {
             const member = await guild.members.fetch(connection.id);
             if(addOrRemove === 'add') await member.roles.add(role);
             else if(addOrRemove === 'remove') await member.roles.remove(role);
         }
-        catch(_) {}
+        catch(err) {
+            logger.error(err, `Failed to update Discord role ${roleId} for member ${connection.id}`);
+        }
     }
 }

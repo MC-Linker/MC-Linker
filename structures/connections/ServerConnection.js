@@ -2,6 +2,7 @@ import Connection from './Connection.js';
 import WebSocketProtocol from '../protocol/WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
 import fs from 'fs-extra';
+import logger from '../../utilities/logger.js';
 
 export default class ServerConnection extends Connection {
 
@@ -29,6 +30,7 @@ export default class ServerConnection extends Connection {
      * @property {string} name - The name of the group/team.
      * @property {boolean} isGroup - Whether the role is a luckperms group or a Minecraft team.
      * @property {string[]} players - The player's uuids that are in the team/group.
+     * @property {'both'|'to_minecraft'|'to_discord'} direction - The sync direction for this role.
      */
 
     /**
@@ -220,28 +222,31 @@ export default class ServerConnection extends Connection {
 
     /**
      * Syncs the roles of a user with the server.
-     * @param {Guild} guild - The guild to sync the roles of the user in.
-     * @param {import('discord.js').GuildMember} member - The user to sync the roles of.
+     * @param {import('discord.js').GuildMember} member - The member to sync the roles of.
      * @param {UserConnection} userConnection - The user connection to sync the roles of.
      * @returns {Promise<void>}
      */
-    async syncRoles(guild, member, userConnection) {
+    async syncRolesOfMember(member, userConnection) {
+        const guild = member.guild;
+
         if(this.syncedRoles && this.syncedRoles.length > 0) {
-            //If user has a synced-role, tell the plugin
+            // Discord→MC: User has Discord role but not in MC group, tell the plugin
             for(const syncedRole of this.syncedRoles.filter(r =>
-                !r.players.includes(userConnection.uuid) && member.roles.cache.has(r.id))) {
+                r.direction !== 'to_discord' && !r.players.includes(userConnection.uuid) && member.roles.cache.has(r.id))) {
                 await this.protocol.addSyncedRoleMember(syncedRole, userConnection.uuid);
             }
 
-            // Add missing synced roles
+            // MC→Discord: User is in MC group but doesn't have Discord role
             for(const syncedRole of this.syncedRoles.filter(r =>
-                r.players.includes(userConnection.uuid) && !member.roles.cache.has(r.id))) {
+                r.direction !== 'to_minecraft' && r.players.includes(userConnection.uuid) && !member.roles.cache.has(r.id))) {
                 try {
                     const discordMember = await guild.members.fetch(userConnection.id);
                     const role = await guild.roles.fetch(syncedRole.id);
                     await discordMember.roles.add(role);
                 }
-                catch(_) {}
+                catch(err) {
+                    logger.warn(err, `Failed to add Discord role ${syncedRole.id} during sync reconciliation`);
+                }
             }
         }
     }

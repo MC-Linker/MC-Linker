@@ -5,6 +5,7 @@ import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import { ButtonStyle } from 'discord.js';
+import logger from '../../utilities/logger.js';
 
 export default class RoleSync extends AutocompleteCommand {
 
@@ -62,8 +63,11 @@ export default class RoleSync extends AutocompleteCommand {
             const role = args[1];
             const name = args[2].split(' ')[0];
             const isGroup = args[2].split(' ')[1] === 'group'; //If nothing is specified, default to team
+            const direction = args[3] ?? 'both';
 
-            if(!role.editable) return interaction.replyTl(keys.commands.rolesync.errors.not_editable, { role });
+            // Only check role.editable if we need to manage the Discord role (both or to_discord)
+            if(direction !== 'to_minecraft' && !role.editable)
+                return interaction.replyTl(keys.commands.rolesync.errors.not_editable, { role });
 
             if(server.syncedRoles?.some(r => r.id === role.id))
                 return interaction.replyTl(keys.commands.rolesync.errors.role_already_synced);
@@ -77,6 +81,7 @@ export default class RoleSync extends AutocompleteCommand {
                 id: role.id,
                 name,
                 isGroup,
+                direction,
                 players: role.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u),
             });
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction, {
@@ -85,21 +90,29 @@ export default class RoleSync extends AutocompleteCommand {
             }, { name })) return;
 
             const respRole = resp.data.find(r => r.id === role.id);
-            //Map uuids to discord ids
-            const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.uuid === p)?.id).filter(u => u);
 
-            //Add the role to the members that are in the group
-            const membersToAdd = userIds.filter(id => !role.members.has(id));
-            for(const member of membersToAdd) {
-                try {
-                    const discordMember = await interaction.guild.members.fetch(member);
-                    await discordMember.roles.add(role);
+            // Only grant Discord roles if direction allows MC→Discord sync
+            if(direction !== 'to_minecraft') {
+                //Map uuids to discord ids
+                const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.uuid === p)?.id).filter(u => u);
+
+                //Add the role to the members that are in the group
+                const membersToAdd = userIds.filter(id => !role.members.has(id));
+                for(const member of membersToAdd) {
+                    try {
+                        const discordMember = await interaction.guild.members.fetch(member);
+                        await discordMember.roles.add(role);
+                    }
+                    catch(err) {
+                        logger.error(err, `Failed to add Discord role during rolesync setup`);
+                    }
                 }
-                catch(_) {}
             }
 
             const respRoleIndex = resp.data.indexOf(respRole);
-            respRole.players = role.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
+            if(direction !== 'to_minecraft')
+                respRole.players = role.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
+            respRole.direction = direction;
             resp.data[respRoleIndex] = respRole;
 
             await server.edit({ syncedRoles: resp.data });
@@ -125,6 +138,11 @@ export default class RoleSync extends AutocompleteCommand {
             const pages = {};
 
             for(const role of server.syncedRoles) {
+                let directionLabel;
+                if(role.direction === 'to_minecraft') directionLabel = keys.commands.rolesync.direction_to_minecraft;
+                else if(role.direction === 'to_discord') directionLabel = keys.commands.rolesync.direction_to_discord;
+                else directionLabel = keys.commands.rolesync.direction_both;
+
                 const roleEmbed = getEmbed(
                     keys.commands.rolesync.success.list,
                     ph.std(interaction),
@@ -133,6 +151,7 @@ export default class RoleSync extends AutocompleteCommand {
                         group_or_team: role.isGroup ? keys.commands.rolesync.group : keys.commands.rolesync.team,
                         group_or_team_value: role.name,
                         member_count: role.players.length,
+                        direction: directionLabel,
                     },
                 );
 

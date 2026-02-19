@@ -30,17 +30,21 @@ export default class GuildMemberUpdate extends Event {
             ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
         }
 
-        const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
+        const changedRoleId = addedRole?.id ?? removedRole?.id;
+        const roleIndex = server.syncedRoles.findIndex(r => r.id === changedRoleId);
         if(roleIndex === -1) return;
-        const role = server.syncedRoles[roleIndex];
+        const syncedRole = server.syncedRoles[roleIndex];
+
+        // Skip if direction is to_discord (MC→Discord only, Discord changes shouldn't propagate to MC)
+        if(syncedRole.direction === 'to_discord') return;
 
         let resp;
-        if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
-        if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
+        if(addedRole) resp = await server.protocol.addSyncedRoleMember(syncedRole, user.uuid);
+        else if(removedRole) resp = await server.protocol.removeSyncedRoleMember(syncedRole, user.uuid);
         if(!resp || resp.status !== 'success') return;
 
-        role.players = resp.data;
-        server.syncedRoles[roleIndex] = role;
-        if(resp.status === 'success') await server.edit({});
+        syncedRole.players = resp.data;
+        server.syncedRoles[roleIndex] = syncedRole;
+        await server.edit({});
     }
 } 

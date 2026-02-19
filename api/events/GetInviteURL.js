@@ -1,5 +1,7 @@
 import { PermissionFlagsBits } from 'discord.js';
 import WSEvent from '../WSEvent.js';
+import logger from '../../utilities/logger.js';
+import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 export default class GetInviteURL extends WSEvent {
 
@@ -11,8 +13,9 @@ export default class GetInviteURL extends WSEvent {
 
     /**
      * @typedef {Object} GetInviteURLResponse
-     * @property {'success'} status - The status of the response.
-     * @property {{ url: ?string }} data - The response data containing the invite URL.
+     * @property {'success'|'error'} status - The status of the response.
+     * @property {string} [error] - The error code.
+     * @property {{ url: string }} [data] - The response data containing the invite URL.
      */
 
     /**
@@ -33,9 +36,11 @@ export default class GetInviteURL extends WSEvent {
             };
             invites = await guild.invites.fetch();
         }
-        catch(_) {}
+        catch(err) {
+            logger.debug(`Failed to fetch invites for guild ${server.id} in GetInviteURL`, err);
+        }
 
-        if(!guild) return { status: 'success', data: { url: null } };
+        if(!guild) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
         if(invites?.size) return { status: 'success', data: { url: invites.first().url } };
         else {
@@ -43,9 +48,14 @@ export default class GetInviteURL extends WSEvent {
             const channel = guild.channels.cache.find(c =>
                 c.isTextBased() && c.permissionsFor?.(guild.members.me)?.has(PermissionFlagsBits.CreateInstantInvite),
             );
-            if(!channel) return { status: 'success', data: { url: null } };
+            if(!channel) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
-            const invite = await channel.createInvite({ maxAge: 0, maxUses: 0, unique: true });
+            const invite = await channel.createInvite({
+                maxAge: 0,
+                maxUses: 0,
+                unique: false,
+                reason: 'Invite URL requested by Minecraft',
+            });
             return { status: 'success', data: { url: invite.url } };
         }
     }

@@ -1,4 +1,4 @@
-import Protocol from './Protocol.js';
+import Protocol, { ProtocolError } from './Protocol.js';
 import FtpClient from '../ftp/FtpClient.js';
 import SftpClient from '../ftp/SftpClient.js';
 import fs from 'fs-extra';
@@ -52,7 +52,7 @@ export default class FtpProtocol extends Protocol {
         if(data instanceof Error) {
             if(data.message.toLowerCase().includes('no such file')) return {
                 status: 'error',
-                error: 'not_found',
+                error: ProtocolError.NOT_FOUND,
                 data: { message: data.message },
             };
             else return null;

@@ -1,5 +1,6 @@
 import WSEvent from '../WSEvent.js';
 import { RESTJSONErrorCodes } from 'discord.js';
+import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 export default class HasRequiredRoleToJoin extends WSEvent {
 
@@ -17,8 +18,8 @@ export default class HasRequiredRoleToJoin extends WSEvent {
     /**
      * @typedef {object} HasRequiredRoleToJoinResponse
      * @property {'success'|'error'} status - The status of the response.
-     * @property {{ hasRole: boolean }} [data] - The response data (present on success).
-     * @property {string} [error] - The error code (present on error).
+     * @property {{ hasRole: boolean }} [data] - The response data.
+     * @property {string} [error] - The error code.
      */
 
     /**
@@ -31,7 +32,7 @@ export default class HasRequiredRoleToJoin extends WSEvent {
     async execute(data, server, client) {
         if(!server.requiredRoleToJoin) return { status: 'success', data: { hasRole: true } };
         const user = client.userConnections.cache.find(u => u.uuid === data.uuid);
-        if(!user) return { status: 'error', error: 'not_connected' };
+        if(!user) return { status: 'error', error: ProtocolError.NOT_CONNECTED };
 
         try {
             const guild = await client.guilds.fetch(server.id);
@@ -44,7 +45,7 @@ export default class HasRequiredRoleToJoin extends WSEvent {
         }
         catch(err) {
             if(err.code === RESTJSONErrorCodes.UnknownMember) return { status: 'success', data: { hasRole: false } }; // Member not in server
-            else return { status: 'error', error: 'unknown' };
+            else return { status: 'error', error: ProtocolError.UNKNOWN };
         }
     }
 }

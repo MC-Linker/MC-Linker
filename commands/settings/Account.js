@@ -89,7 +89,7 @@ export default class Account extends Command {
                         const { interaction, timeout } = accountCommand.pendingInteractions.get(id);
 
                         const connection = c.userConnections.cache.get(id);
-                        await c.serverConnections.cache.get(serverId).syncRoles(interaction.guild, interaction.member, connection);
+                        await c.serverConnections.cache.get(serverId).syncRolesOfMember(interaction.member, connection);
                         clearTimeout(timeout); // Works because event is called on same shard
                         await interaction.replyTl(c.keys.commands.account.success.verified);
                     }, {

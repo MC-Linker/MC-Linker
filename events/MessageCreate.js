@@ -26,19 +26,21 @@ export default class MessageCreate extends Event {
             if(client.api.usersAwaitingVerification.has(message.content)) {
                 const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
                 const userConnection = await client.userConnections.connect({ id: message.author.id, username, uuid });
+
+                //TODO improve
                 const promises = await Promise.allSettled(client.serverConnections.cache.map(async conn => {
                     if(!(conn instanceof ServerConnection)) return null;
                     if(!conn.syncedRoles || !conn.syncedRoles.length) return null;
                     try {
                         const guild = await client.guilds.fetch(conn.id);
                         const member = await guild.members.fetch(message.author.id);
-                        return [conn, guild, member];
+                        return [conn, member];
                     }
                     catch(err) { return null; }
                 }));
 
                 const arrayOfServers = promises.map(p => p.value).filter(p => p);
-                for(const [conn, guild, member] of arrayOfServers) await conn.syncRoles(guild, member, userConnection);
+                for(const [conn, member] of arrayOfServers) await conn.syncRolesOfMember(member, userConnection);
                 client.api.usersAwaitingVerification.delete(message.content);
                 return await message.replyTl(keys.commands.account.success.verified);
             }
@@ -58,13 +60,14 @@ export default class MessageCreate extends Event {
                 repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
             }
             const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? repliedMessage.author.username : null;
+
             logger.debug('Relaying chat message to Minecraft server', {
                 content,
                 author: message.author.tag,
                 channel: message.channel.name,
                 guild: message.guild.name,
             });
-            server.protocol.chat(content, message.member?.nickname ?? message.author.username, repliedContent, repliedUser);
+            void server.protocol.chat(content, message.member?.nickname ?? message.author.username, repliedContent, repliedUser);
         }
 
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);

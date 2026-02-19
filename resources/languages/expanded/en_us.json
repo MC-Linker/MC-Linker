@@ -2323,7 +2323,7 @@
                     "embeds": [
                         {
                             "title": "Role Not Editable",
-                            "description": "I do not have permission to edit members of the role **%role%**."
+                            "description": "I do not have permission to edit members of the role **%role%**.\nYou can either move my role above that role to give me permission or change the `direction` option to `To Minecraft` to only sync the role from Discord to Minecraft."
                         }
                     ],
                     "console": "Role not editable"
@@ -2391,6 +2391,10 @@
                                 {
                                     "name": "Members",
                                     "value": "%member_count%"
+                                },
+                                {
+                                    "name": "Direction",
+                                    "value": "%direction%"
                                 }
                             ]
                         }
@@ -2409,7 +2413,10 @@
                 }
             },
             "group": "Group",
-            "team": "Team"
+            "team": "Team",
+            "direction_both": "Both",
+            "direction_to_minecraft": "To Minecraft (Ignore changes from Minecraft)",
+            "direction_to_discord": "To Discord (Ignore changes from Discord)"
         }
     },
     "api": {
@@ -4009,6 +4016,26 @@
                             "description": "Set the Minecraft team or Luckperms group you want to sync to.",
                             "autocomplete": true,
                             "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "direction",
+                            "description": "Set the sync direction. Defaults to both.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Both",
+                                    "value": "both"
+                                },
+                                {
+                                    "name": "To Minecraft (Ignore changes from Minecraft)",
+                                    "value": "to_minecraft"
+                                },
+                                {
+                                    "name": "To Discord (Ignore changes from Discord)",
+                                    "value": "to_discord"
+                                }
+                            ]
                         }
                     ]
                 },
