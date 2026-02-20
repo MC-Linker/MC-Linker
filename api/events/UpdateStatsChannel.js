@@ -28,18 +28,56 @@ export default class UpdateStatsChannel extends WSEvent {
      * Fetches the current name for a stats channel by querying fresh data from the plugin.
      * @param {StatsChannelData} channel - The stats channel configuration.
      * @param {ServerConnection} server - The server connection.
+     * @param {boolean} [isOnline] - Explicit override for server online status. If omitted, determined by socket connectivity.
      * @returns {Promise<?string>} - The computed channel name, or null if unavailable.
      */
-    static async fetchCurrentName(channel, server) {
+    static async fetchCurrentName(channel, server, isOnline) {
         if(channel.type === 'member-counter') {
+            if(isOnline === false) return channel.names.members.replace('%count%', '0');
             const onlinePlayers = await server.protocol.getOnlinePlayers();
             if(!onlinePlayers?.data) return null;
             return channel.names.members.replace('%count%', onlinePlayers.data.length);
         }
         else if(channel.type === 'status') {
-            return server.protocol.isConnected() ? channel.names.online : channel.names.offline;
+            const online = isOnline ?? server.protocol.isConnected();
+            return online ? channel.names.online : channel.names.offline;
         }
         return null;
+    }
+
+    /**
+     * Syncs all stat channels for a server to reflect the current state.
+     * Used on reconnect (isOnline=true) and unexpected disconnect (isOnline=false).
+     * @param {ServerConnection} server - The server connection.
+     * @param {MCLinker} client - The MCLinker client.
+     * @param {boolean} isOnline - Whether the server should be considered online.
+     */
+    static async syncAllStatChannels(server, client, isOnline) {
+        for(const channel of server.statChannels) {
+            // If there's already a pending retry for this channel, skip it.
+            // The retry will fetch fresh data when it fires.
+            if(pendingRetries.has(channel.id)) continue;
+
+            try {
+                const discordChannel = await client.channels.fetch(channel.id);
+                const newName = await UpdateStatsChannel.fetchCurrentName(channel, server, isOnline);
+                if(!newName) continue;
+
+                await discordChannel.setName(newName);
+            }
+            catch(err) {
+                if(err instanceof RateLimitError) {
+                    logger.debug(`[StatsChannel] Rate limited syncing channel ${channel.id}, scheduling retry in ${err.retryAfter}ms`);
+                    UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, channel, server.id, client);
+                }
+                else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                    const regChannel = await server.protocol.removeStatsChannel(channel);
+                    if(!regChannel) continue;
+                    await server.edit({ statChannels: regChannel.data });
+                }
+                else logger.debug(`[StatsChannel] Failed to sync channel ${channel.id}: ${err.message}`);
+            }
+        }
     }
 
     /**

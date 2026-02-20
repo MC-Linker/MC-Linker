@@ -14,6 +14,7 @@ import logger from '../utilities/logger.js';
 import path from 'path';
 import fs from 'fs-extra';
 import { ProtocolError } from '../structures/protocol/Protocol.js';
+import UpdateStatsChannel from './events/UpdateStatsChannel.js';
 
 
 export default class MCLinkerAPI extends EventEmitter {
@@ -239,6 +240,9 @@ export default class MCLinkerAPI extends EventEmitter {
             this.addWebsocketListeners(socket, server, hash);
             logger.debug(`[Socket.io] Successfully reconnected ${server.displayIp} from ${server.id} to websocket`);
 
+            // Sync all stat channels with fresh data from the plugin
+            void UpdateStatsChannel.syncAllStatChannels(server, this.client, true);
+
             return next();
         }
 
@@ -411,6 +415,9 @@ export default class MCLinkerAPI extends EventEmitter {
                     const channel = this.client.channels.cache.get(chatChannel.id);
                     if(channel) channel.send({ embeds: [getEmbed(keys.api.plugin.warnings.server_disconnected)] });
                 });
+
+                // Update stat channels to reflect offline state
+                void UpdateStatsChannel.syncAllStatChannels(server, this.client, false);
             }
 
             server.protocol.updateSocket(null);
