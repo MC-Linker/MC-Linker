@@ -49,7 +49,7 @@ export default class WebSocketProtocol extends Protocol {
     }
 
     isConnected() {
-        return this.socket && this.socket.connected;
+        return this.socket?.connected;
     }
 
     async get(getPath, putPath) {

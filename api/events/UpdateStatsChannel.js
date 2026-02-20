@@ -1,7 +1,14 @@
 import WSEvent from '../WSEvent.js';
-import { RESTJSONErrorCodes } from 'discord.js';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
+import { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
+import logger from '../../utilities/logger.js';
 
+
+/**
+ * Pending retry timer Ids by channel Id.
+ * When a rate limit is hit, we schedule a deferred re-sync for that channel and drop any subsequent updates until the retry fires.
+ * @type {Map<string, number>}
+ */
+const pendingRetries = new Map();
 
 export default class UpdateStatsChannel extends WSEvent {
 
@@ -11,22 +18,74 @@ export default class UpdateStatsChannel extends WSEvent {
      * @property {number} [members] - Required if event is 'members'
      */
 
-    /**
-     * The rate limiter for stats-channel endpoints.
-     * @type {RateLimiterMemory}
-     */
-    rateLimiterMemberCounter = new RateLimiterMemory({
-        keyPrefix: 'member-counters',
-        points: 2, // 2 updates
-        duration: 60 * 5, // per 5 minutes
-    });
-
-
     constructor() {
         super({
             event: 'update-stats-channels',
-            rateLimiter: () => this.rateLimiterMemberCounter,
         });
+    }
+
+    /**
+     * Fetches the current name for a stats channel by querying fresh data from the plugin.
+     * @param {StatsChannelData} channel - The stats channel configuration.
+     * @param {ServerConnection} server - The server connection.
+     * @returns {Promise<?string>} - The computed channel name, or null if unavailable.
+     */
+    static async fetchCurrentName(channel, server) {
+        if(channel.type === 'member-counter') {
+            const onlinePlayers = await server.protocol.getOnlinePlayers();
+            if(!onlinePlayers?.data) return null;
+            return channel.names.members.replace('%count%', onlinePlayers.data.length);
+        }
+        else if(channel.type === 'status') {
+            return server.protocol.isConnected() ? channel.names.online : channel.names.offline;
+        }
+        return null;
+    }
+
+    /**
+     * Schedules a deferred re-sync for a stats channel after a rate limit expires.
+     * @param {string} channelId - The channel Id.
+     * @param {number} retryAfter - Milliseconds until the rate limit resets.
+     * @param {StatsChannelData} channel - The stats channel configuration.
+     * @param {string} serverId - The server Id to re-resolve.
+     * @param {MCLinker} client - The MCLinker client.
+     */
+    static scheduleRetry(channelId, retryAfter, channel, serverId, client) {
+        const timer = setTimeout(async () => {
+            // Re-resolve server to ensure it still exists
+            const server = client.serverConnections.cache.get(serverId);
+            if(!server) return pendingRetries.delete(channelId);
+
+            // Verify this stat channel is still configured
+            if(!server.statChannels.some(c => c.id === channelId))
+                return pendingRetries.delete(channelId);
+
+            try {
+                const discordChannel = await client.channels.fetch(channelId);
+                const newName = await UpdateStatsChannel.fetchCurrentName(channel, server);
+                if(!newName) return pendingRetries.delete(channelId);
+
+                await discordChannel.setName(newName);
+                pendingRetries.delete(channelId);
+            }
+            catch(err) {
+                pendingRetries.delete(channelId);
+
+                if(err instanceof RateLimitError) {
+                    // Still rate limited — re-schedule
+                    logger.debug(`[StatsChannel] Still rate limited for channel ${channelId}, retrying in ${err.retryAfter}ms`);
+                    UpdateStatsChannel.scheduleRetry(channelId, err.retryAfter, channel, serverId, client);
+                }
+                else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                    const regChannel = await server.protocol.removeStatsChannel(channel);
+                    if(!regChannel) return;
+                    await server.edit({ statChannels: regChannel.data });
+                }
+                else logger.debug(`[StatsChannel] Failed to update channel ${channelId} on retry: ${err.message}`);
+            }
+        }, retryAfter);
+
+        pendingRetries.set(channelId, timer);
     }
 
     /**
@@ -50,6 +109,10 @@ export default class UpdateStatsChannel extends WSEvent {
         if(channels.length === 0) return; //No channels to update
 
         for(const channel of channels) {
+            // If there's already a pending retry for this channel, drop this event.
+            // The retry will fetch fresh data from the plugin when it fires.
+            if(pendingRetries.has(channel.id)) continue;
+
             try {
                 const discordChannel = await client.channels.fetch(channel.id);
 
@@ -61,11 +124,16 @@ export default class UpdateStatsChannel extends WSEvent {
                 await discordChannel.setName(newName);
             }
             catch(err) {
-                if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                if(err instanceof RateLimitError) {
+                    logger.debug(`[StatsChannel] Rate limited for channel ${channel.id}, scheduling retry in ${err.retryAfter}ms`);
+                    UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, channel, server.id, client);
+                }
+                else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
                     const regChannel = await server.protocol.removeStatsChannel(channel);
                     if(!regChannel) continue;
                     await server.edit({ statChannels: regChannel.data });
                 }
+                else logger.debug(`[StatsChannel] Failed to update channel ${channel.id}: ${err.message}`);
             }
         }
     }

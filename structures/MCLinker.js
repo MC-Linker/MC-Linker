@@ -112,6 +112,11 @@ export default class MCLinker extends Discord.Client {
             // Disable @everyone and @here mentions
             allowedMentions: { parse: ['users', 'roles'] },
             presence: config.presence,
+            rest: {
+                // Reject rate limits on channel name changes (PATCH /channels/:id) instead of silently queuing.
+                // This allows us to catch the error and schedule a deferred re-sync with fresh data.
+                rejectOnRateLimit: data => data.method === 'PATCH' && data.route === '/channels/:id',
+            },
         });
 
         logger.setShardId(this.shard.ids[0]);
