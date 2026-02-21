@@ -194,8 +194,6 @@ export const ProtocolError = Object.freeze({
     RATE_LIMITED: 'rate_limited',
     /** The user is not connected/linked. */
     NOT_CONNECTED: 'not_connected',
-    /** The target group or team does not exist. */
-    INVALID_GROUP_OR_TEAM: 'invalid_group_or_team',
     /** An I/O error occurred (file read/write, connection file, etc.). */
     IO_ERROR: 'io_error',
     /** The received Socket.IO event is not recognized. */

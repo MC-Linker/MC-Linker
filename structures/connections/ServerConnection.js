@@ -178,19 +178,19 @@ export default class ServerConnection extends Connection {
 
         /**
          * The chatchannels connected to this server.
-         * @type {?ChatChannelData[]}
+         * @type {ChatChannelData[]}
          * */
         this.chatChannels = data.chatChannels ?? this.chatChannels ?? [];
 
         /**
          * The data for stats channels.
-         * @type {?StatsChannelData[]}
+         * @type {StatsChannelData[]}
          */
         this.statChannels = data.statChannels ?? this.statChannels ?? [];
 
         /**
          * The data for syncedRoles.
-         * @type {?SyncedRoleData[]}
+         * @type {SyncedRoleData[]}
          */
         this.syncedRoles = data.syncedRoles ?? this.syncedRoles ?? [];
 

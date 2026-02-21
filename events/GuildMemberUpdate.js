@@ -16,13 +16,27 @@ export default class GuildMemberUpdate extends Event {
         if(!oldMember.roles) return;
         if(oldMember.roles.cache.size === newMember.roles.cache.size) return;
 
-        const user = client.userConnections.cache.get(newMember.id);
-        if(!user) return;
         const server = client.serverConnections.cache.get(newMember.guild.id);
         if(!server) return;
+        const roleIndex = server.syncedRoles.findIndex(r => r.id === changedRoleId);
+        if(roleIndex === -1) return;
+        const syncedRole = server.syncedRoles[roleIndex];
 
         const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
         const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
+
+        // Cancel event if direction is to_discord (MC→Discord only, Discord changes shouldn't propagate to MC)
+        if(syncedRole.direction === 'to_discord') {
+            // Re-add the removed role if mc is authoritative
+            if(addedRole) newMember.roles.remove(addedRole.id).catch(() => {});
+            // Remove the added role if mc is authoritativee
+            if(removedRole) newMember.roles.add(removedRole.id).catch(() => {});
+            return;
+        }
+
+        const user = client.userConnections.cache.get(newMember.id);
+        if(!user) return;
+
         if(server.requiredRoleToJoin) {
             if(
                 server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
@@ -31,12 +45,6 @@ export default class GuildMemberUpdate extends Event {
         }
 
         const changedRoleId = addedRole?.id ?? removedRole?.id;
-        const roleIndex = server.syncedRoles.findIndex(r => r.id === changedRoleId);
-        if(roleIndex === -1) return;
-        const syncedRole = server.syncedRoles[roleIndex];
-
-        // Skip if direction is to_discord (MC→Discord only, Discord changes shouldn't propagate to MC)
-        if(syncedRole.direction === 'to_discord') return;
 
         let resp;
         if(addedRole) resp = await server.protocol.addSyncedRoleMember(syncedRole, user.uuid);

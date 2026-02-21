@@ -2310,7 +2310,7 @@
                 }
             },
             "errors": {
-                "group_not_found": {
+                "group_or_team_not_found": {
                     "embeds": [
                         {
                             "title": "Group Or Team Not Found",
