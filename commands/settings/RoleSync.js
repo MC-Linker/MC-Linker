@@ -4,7 +4,7 @@ import * as utils from '../../utilities/utils.js';
 import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import { ButtonStyle } from 'discord.js';
+import { ButtonStyle, Routes } from 'discord.js';
 import logger from '../../utilities/logger.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
@@ -76,8 +76,9 @@ export default class RoleSync extends AutocompleteCommand {
                 return interaction.replyTl(keys.commands.rolesync.errors.team_group_already_synced);
 
             // If cache differs, fetch all members to ensure their roles are cached
-            console.log(interaction.guild.memberCount, interaction.guild.members.cache.size);
-            if(interaction.guild.memberCount !== interaction.guild.members.cache.size) await interaction.guild.members.fetch();
+            const roleMembers = await client.rest.get(Routes.guildRoleMemberCounts(interaction.guildId));
+            console.log(interaction.guild.memberCount, interaction.guild.members.cache.size, role.members.size, roleMembers[role.id]);
+            if(roleMembers[role.id] !== role.members.size) await interaction.guild.members.fetch();
 
             const resp = await server.protocol.addSyncedRole({
                 id: role.id,
