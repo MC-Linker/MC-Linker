@@ -1046,7 +1046,7 @@ export async function sortChannels(guild) {
 export async function fetchMembersIfRoleCacheDiffers(client, roles, guild) {
     const roleMembers = await client.rest.get(Routes.guildRoleMemberCounts(guild.id));
     // If cache differs for any of the roles, fetch all members to ensure their roles are cached
-    const shouldFetch = roles.some(role => roleMembers[role.id] !== role.members.size);
+    const shouldFetch = roles.some(role => roleMembers[role.id] !== role.members?.size);
     if(shouldFetch) await guild.members.fetch();
 }
 
