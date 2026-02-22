@@ -1,6 +1,7 @@
 import WSEvent from '../WSEvent.js';
 import logger from '../../utilities/logger.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
+import { fetchMembersIfRoleCacheDiffers } from '../../utilities/utils.js';
 
 export default class SyncSyncedRoleMembers extends WSEvent {
 
@@ -41,17 +42,19 @@ export default class SyncSyncedRoleMembers extends WSEvent {
         const direction = syncedRole.direction ?? 'both';
 
         let guild;
+        let discordRole;
         try {
             guild = await client.guilds.fetch(server.id);
-            await guild.members.fetch();
+
+            discordRole = guild.roles.fetch(data.id);
+            if(!discordRole) return { status: 'error', error: ProtocolError.NOT_FOUND };
+
+            await fetchMembersIfRoleCacheDiffers(client, [discordRole], guild);
         }
         catch(err) {
             logger.error(err, `Failed to fetch guild ${server.id} for synced role sync`);
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
-
-        const discordRole = guild.roles.cache.get(data.id);
-        if(!discordRole) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
         // Build map of player UUID → Discord member for all members that currently have the Discord role
         const discordPlayerUUIDs = new Map();

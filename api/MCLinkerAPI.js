@@ -384,7 +384,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
         try {
             const response = await route.execute(data, server, this.client);
-            logger.debug(`[Socket.IO] Response for event ${route.event}: ${response?.toString()}`);
+            logger.debug(`[Socket.IO] Response for event ${route.event}: ${response}`);
             callback?.(response);
         }
         catch(err) {

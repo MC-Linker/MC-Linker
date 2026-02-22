@@ -1038,6 +1038,19 @@ export async function sortChannels(guild) {
 }
 
 /**
+ * Fetches all members of a guild if the member count of any of the given roles differs from the cache.
+ * @param {Client} client - The client to use for fetching.
+ * @param {Role[]} roles - The roles to check the member count of.
+ * @param {Guild} guild - The guild to fetch the members of if the member count differs.
+ */
+export async function fetchMembersIfRoleCacheDiffers(client, roles, guild) {
+    const roleMembers = await client.rest.get(Routes.guildRoleMemberCounts(guild.id));
+    // If cache differs for any of the roles, fetch all members to ensure their roles are cached
+    const shouldFetch = roles.some(role => roleMembers[role.id] !== role.members.size);
+    if(shouldFetch) await guild.members.fetch();
+}
+
+/**
  * Generates a default invite link for a bot.
  * Default Scopes:
  * - bot
