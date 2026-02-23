@@ -27,6 +27,14 @@ export default class GuildMemberUpdate extends Event {
         if(roleIndex === -1) return;
         const syncedRole = server.syncedRoles[roleIndex];
 
+        const user = client.userConnections.cache.get(newMember.id);
+        if(!user) return;
+        const uuid = user.getUUID(server);
+
+        // Skip if the change is already reflected in players — this was a bot-initiated update
+        if(addedRole && syncedRole.players.includes(uuid)) return;
+        if(removedRole && !syncedRole.players.includes(uuid)) return;
+
         // Cancel event if direction is to_discord (MC→Discord only, Discord changes shouldn't propagate to MC)
         if(syncedRole.direction === 'to_discord') {
             // Re-add the removed role if mc is authoritative
@@ -35,14 +43,6 @@ export default class GuildMemberUpdate extends Event {
             if(removedRole) newMember.roles.add(removedRole.id).catch(() => {});
             return;
         }
-
-        const user = client.userConnections.cache.get(newMember.id);
-        if(!user) return;
-        const uuid = user.getUUID(server);
-
-        // Skip if the change is already reflected in players — this was a bot-initiated update
-        if(addedRole && syncedRole.players.includes(uuid)) return;
-        if(removedRole && !syncedRole.players.includes(uuid)) return;
 
         if(server.requiredRoleToJoin) {
             if(

@@ -34,9 +34,8 @@ export default class SyncSyncedRoleMembers extends WSEvent {
      * @returns {Promise<SyncSyncedRoleMembersResponse>}
      */
     async execute(data, server, client) {
-        const roleIndex = server.syncedRoles?.findIndex(r => r.id === data.id);
-        if(roleIndex === undefined || roleIndex === -1)
-            return { status: 'error', error: ProtocolError.NOT_FOUND };
+        const roleIndex = server.syncedRoles.findIndex(r => r.id === data.id);
+        if(roleIndex === -1) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
         const syncedRole = server.syncedRoles[roleIndex];
         const direction = syncedRole.direction ?? 'both';
