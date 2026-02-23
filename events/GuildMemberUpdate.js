@@ -40,6 +40,10 @@ export default class GuildMemberUpdate extends Event {
         if(!user) return;
         const uuid = user.getUUID(server);
 
+        // Skip if the change is already reflected in players — this was a bot-initiated update
+        if(addedRole && syncedRole.players.includes(uuid)) return;
+        if(removedRole && !syncedRole.players.includes(uuid)) return;
+
         if(server.requiredRoleToJoin) {
             if(
                 server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||

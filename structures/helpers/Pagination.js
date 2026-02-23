@@ -233,7 +233,10 @@ export default class Pagination {
         this.collector.on('end', async (_, reason) => {
             if(['nested_pagination', 'exit_to_parent'].includes(reason)) return;
 
-            message = await message.fetch(); // Get the latest components
+            try {
+                message = await message.fetch(); // Get the latest components
+            }
+            catch {}
             if(!message?.components) return;
 
             await message.edit({ components: disableComponents(message.components) });
