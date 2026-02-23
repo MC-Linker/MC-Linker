@@ -20,7 +20,7 @@ import {
 
 export default class Pagination {
 
-    static DEFAULT_TIMEOUT = 120_000;
+    static DEFAULT_TIMEOUT = 100_000;
 
     static NAVIGATION_BUTTON_IDS = {
         NEXT: 'pagination_next',
