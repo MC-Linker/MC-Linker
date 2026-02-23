@@ -30,8 +30,6 @@ export default class GuildMemberUpdate extends Event {
         const user = client.userConnections.cache.get(newMember.id);
         const uuid = user?.getUUID(server);
 
-        // Cancel event if user isnt linked or direction is to_discord (MC→Discord only)
-
         const noPlayerChange =
             addedRole && syncedRole.players.includes(uuid) ||
             removedRole && !syncedRole.players.includes(uuid);

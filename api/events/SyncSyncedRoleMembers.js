@@ -62,7 +62,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             if(userConn) discordPlayerUUIDs.set(userConn.getUUID(server), member);
             else {
                 // If authoritative side is Discord, remove this member from the role
-                if(direction === 'to_minecraft') {
+                if(direction === 'to_discord') {
                     try {
                         await member.roles.remove(discordRole);
                     }
