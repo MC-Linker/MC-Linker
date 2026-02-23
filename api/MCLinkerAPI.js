@@ -452,11 +452,11 @@ export default class MCLinkerAPI extends EventEmitter {
         const guild = await this.client.guilds.fetch(server.id);
         if(!guild) return;
 
-        const role = guild.roles.cache.get(roleId);
+        const role = await guild.roles.fetch(roleId);
         if(!role) return;
 
-        const roleIndex = server.syncedRoles?.findIndex(r => r.id === role.id);
-        if(roleIndex === undefined || roleIndex === -1) return;
+        const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
+        if(roleIndex === -1) return;
         const syncedRole = server.syncedRoles[roleIndex];
 
         // Always update the players list to reflect MC-side reality

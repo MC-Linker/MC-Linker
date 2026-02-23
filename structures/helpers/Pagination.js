@@ -20,7 +20,8 @@ import {
 
 export default class Pagination {
 
-    static DEFAULT_TIMEOUT = 100_000;
+    // 3 minutes (token valid for 15 minutes)
+    static DEFAULT_TIMEOUT = 180_000;
 
     static NAVIGATION_BUTTON_IDS = {
         NEXT: 'pagination_next',
@@ -239,6 +240,7 @@ export default class Pagination {
             catch {}
             if(!message?.components) return;
 
+            //TODO fix breaks with ephemerals
             await message.edit({ components: disableComponents(message.components) });
         });
     }
