@@ -85,10 +85,8 @@ export default class UserInfo extends Command {
         const adminMessage = getReplyOptions(keys.commands.userinfo.success.admin, placeholders, ph.colors());
         const survivalMessage = getReplyOptions(keys.commands.userinfo.success.survival, placeholders, ph.colors());
 
-        const id = client.userConnections.cache.find(c => c.uuid === user.uuid)?.id;
-        if(id) {
-            generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));
-        }
+        const id = client.userConnections.cache.find(u => u.getUUID(server) === user.uuid)?.id;
+        if(id) generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));
 
         const newAdminFields = [];
         const newSurvivalFields = [];

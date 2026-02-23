@@ -32,7 +32,7 @@ export default class HasRequiredRoleToJoin extends WSEvent {
      */
     async execute(data, server, client) {
         if(!server.requiredRoleToJoin) return { status: 'success', data: { hasRole: true } };
-        const user = client.userConnections.cache.find(u => u.uuid === data.uuid);
+        const user = client.userConnections.cache.find(u => u.getUUID(server) === data.uuid);
         if(!user) return { status: 'error', error: ProtocolError.NOT_CONNECTED };
 
         try {

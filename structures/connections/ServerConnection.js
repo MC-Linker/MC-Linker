@@ -228,17 +228,18 @@ export default class ServerConnection extends Connection {
      */
     async syncRolesOfMember(member, userConnection) {
         const guild = member.guild;
+        const uuid = userConnection.getUUID(this);
 
         if(this.syncedRoles && this.syncedRoles.length > 0) {
             // Discord→MC: User has Discord role but not in MC group, tell the plugin
             for(const syncedRole of this.syncedRoles.filter(r =>
-                r.direction !== 'to_discord' && !r.players.includes(userConnection.uuid) && member.roles.cache.has(r.id))) {
-                await this.protocol.addSyncedRoleMember(syncedRole, userConnection.uuid);
+                r.direction !== 'to_discord' && !r.players.includes(uuid) && member.roles.cache.has(r.id))) {
+                await this.protocol.addSyncedRoleMember(syncedRole, uuid);
             }
 
             // MC→Discord: User is in MC group but doesn't have Discord role
             for(const syncedRole of this.syncedRoles.filter(r =>
-                r.direction !== 'to_minecraft' && r.players.includes(userConnection.uuid) && !member.roles.cache.has(r.id))) {
+                r.direction !== 'to_minecraft' && r.players.includes(uuid) && !member.roles.cache.has(r.id))) {
                 try {
                     const discordMember = await guild.members.fetch(userConnection.id);
                     const role = await guild.roles.fetch(syncedRole.id);

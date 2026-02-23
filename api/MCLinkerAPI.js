@@ -445,8 +445,9 @@ export default class MCLinkerAPI extends EventEmitter {
      * @returns {Promise<void>}
      */
     async updateSyncedRoleMember(roleId, uuid, server, addOrRemove) {
-        const connection = this.client.userConnections.cache.find(conn => conn.uuid === uuid);
+        const connection = this.client.userConnections.cache.find(conn => conn.getUUID(server) === uuid);
         if(!connection) return;
+        uuid = connection.getUUID(server);
 
         const guild = await this.client.guilds.fetch(server.id);
         if(!guild) return;
@@ -459,8 +460,8 @@ export default class MCLinkerAPI extends EventEmitter {
         const syncedRole = server.syncedRoles[roleIndex];
 
         // Always update the players list to reflect MC-side reality
-        if(addOrRemove === 'add') syncedRole.players.push(connection.uuid);
-        else if(addOrRemove === 'remove') syncedRole.players.splice(syncedRole.players.indexOf(connection.uuid), 1);
+        if(addOrRemove === 'add') syncedRole.players.push(uuid);
+        else if(addOrRemove === 'remove') syncedRole.players.splice(syncedRole.players.indexOf(uuid), 1);
         await server.edit({});
 
         // Skip Discord role change if direction is to_minecraft (Discord→MC only)

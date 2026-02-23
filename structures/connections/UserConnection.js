@@ -28,7 +28,7 @@ export default class UserConnection extends Connection {
 
     /**
      * Gets the uuid of this user respecting whether the server is online mode.
-     * @param {string|ServerConnection} server - The server to get the online mode property from.
+     * @param {ServerConnectionResolvable} server - The server to get the online mode property from.
      * @returns {string} - The uuid of the user.
      */
     getUUID(server) {
@@ -44,8 +44,9 @@ export default class UserConnection extends Connection {
          */
         this.id = data.id ?? this.id;
         /**
-         * The minecraft uuid of this user.
+         * The minecraft uuid of this user. Always use getUUID(server) instead of this property directly to respect offline mode servers.
          * @type {string}
+         * @private
          */
         this.uuid = data.uuid ?? this.uuid;
         /**

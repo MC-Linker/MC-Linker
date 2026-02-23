@@ -60,7 +60,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
         const discordPlayerUUIDs = new Map();
         for(const [memberId, member] of discordRole.members) {
             const userConn = client.userConnections.cache.get(memberId);
-            if(userConn) discordPlayerUUIDs.set(userConn.uuid, member);
+            if(userConn) discordPlayerUUIDs.set(userConn.getUUID(server), member);
             else {
                 // If authoritative side is Discord, remove this member from the role
                 if(direction === 'to_minecraft' || direction === 'both') {
@@ -84,7 +84,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             if(!discordPlayerUUIDs.has(uuid)) {
                 if(direction === 'both' || direction === 'to_discord') {
                     // MC is authoritative for this direction → grant Discord role
-                    const conn = client.userConnections.cache.find(c => c.uuid === uuid);
+                    const conn = client.userConnections.cache.find(u => u.getUUID(server) === uuid);
                     if(conn) {
                         try {
                             const member = await guild.members.fetch(conn.id);

@@ -38,6 +38,7 @@ export default class GuildMemberUpdate extends Event {
 
         const user = client.userConnections.cache.get(newMember.id);
         if(!user) return;
+        const uuid = user.getUUID(server);
 
         if(server.requiredRoleToJoin) {
             if(
@@ -47,8 +48,8 @@ export default class GuildMemberUpdate extends Event {
         }
 
         let resp;
-        if(addedRole) resp = await server.protocol.addSyncedRoleMember(syncedRole, user.uuid);
-        else if(removedRole) resp = await server.protocol.removeSyncedRoleMember(syncedRole, user.uuid);
+        if(addedRole) resp = await server.protocol.addSyncedRoleMember(syncedRole, uuid);
+        else if(removedRole) resp = await server.protocol.removeSyncedRoleMember(syncedRole, uuid);
         if(!resp || resp.status !== 'success') return;
 
         syncedRole.players = resp.data;

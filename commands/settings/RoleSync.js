@@ -82,7 +82,7 @@ export default class RoleSync extends AutocompleteCommand {
                 name,
                 isGroup,
                 direction,
-                players: role.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u),
+                players: role.members.map(m => client.userConnections.cache.get(m.id)?.getUUID(server)).filter(u => u),
             });
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction, {
                 [ProtocolError.NOT_FOUND]: keys.commands.rolesync.errors.group_or_team_not_found,
@@ -95,7 +95,7 @@ export default class RoleSync extends AutocompleteCommand {
             // Only grant Discord roles if direction allows MC→Discord sync
             if(direction !== 'to_minecraft') {
                 //Map uuids to discord ids
-                const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.uuid === p)?.id).filter(u => u);
+                const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.getUUID(server) === p)?.id).filter(u => u);
 
                 //Add the role to the members that are in the group
                 const membersToAdd = userIds.filter(id => !role.members.has(id));
@@ -125,7 +125,7 @@ export default class RoleSync extends AutocompleteCommand {
             }
 
             if(direction === 'to_minecraft')
-                respRole.players = role.members.map(m => client.userConnections.cache.get(m.id)?.uuid).filter(u => u);
+                respRole.players = role.members.map(m => client.userConnections.cache.get(m.id)?.getUUID(server)).filter(u => u);
             respRole.direction = direction;
             resp.data[respRoleIndex] = respRole;
 

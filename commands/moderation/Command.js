@@ -292,7 +292,7 @@ async function getPlaceholder(key, args) {
             break;
         case 'player_coordinates':
         case 'player_coordinates_xz':
-            const uuid = userConn?.uuid;
+            const uuid = userConn?.getUUID(server);
             if(!uuid || !server) return {};
             const playerData = await getNBTFile(FilePath.PlayerData(server.path, uuid), `./download-cache/playernbt/${uuid}.dat`);
 
