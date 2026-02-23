@@ -2466,7 +2466,7 @@
                     "embeds": [
                         {
                             "title": "Server Disconnected",
-                            "description": "The server has lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
+                            "description": "The server has suddenly lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
                         }
                     ]
                 }
