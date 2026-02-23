@@ -46,7 +46,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
         try {
             guild = await client.guilds.fetch(server.id);
 
-            discordRole = guild.roles.fetch(data.id);
+            discordRole = await guild.roles.fetch(data.id);
             if(!discordRole) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
             await fetchMembersIfRoleCacheDiffers(client, [discordRole], guild);

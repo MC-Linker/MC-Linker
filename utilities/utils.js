@@ -1046,27 +1046,15 @@ export async function sortChannels(guild) {
 export async function fetchMembersIfRoleCacheDiffers(client, roles, guild) {
     const roleMembers = await client.rest.get(Routes.guildRoleMemberCounts(guild.id));
     // If cache differs for any of the roles, fetch all members to ensure their roles are cached
-    const shouldFetch = roles.some(role => roleMembers[role.id] !== role.members?.size);
+    const shouldFetch = roles.some(role => roleMembers[role.id] !== role.members.size);
     if(shouldFetch) await guild.members.fetch();
 }
 
 /**
  * Generates a default invite link for a bot.
- * Default Scopes:
- * - bot
- * - applications.commands
- * Default Permissions:
- * - Create Instant Invite
- * - Manage Webhooks
- * - View Channel
- * - Send Messages
- * - Send Messages in Threads
- * - Embed Links
- * - Attach Files
- * - Use External Emojis
- * - Manage Roles
+ * Will include the permissions set up in the developer portal.
  * @param {string} botId - The id of the bot to generate the invite for.
- * @return {'https://discord.com/api/oauth2/authorize?client_id=${botId}&scope=${scopes}&permissions=${permissions}'}
+ * @return {'https://discord.com/api/oauth2/authorize?client_id=${botId}'}
  */
 export function generateDefaultInvite(botId) {
     const permissions = PermissionsBitField.Flags.CreateInstantInvite |
@@ -1079,7 +1067,7 @@ export function generateDefaultInvite(botId) {
         PermissionsBitField.Flags.UseExternalEmojis |
         PermissionsBitField.Flags.ManageRoles;
 
-    return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}&scope=applications.commands+bot&permissions=${permissions}`;
+    return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}`;
 }
 
 /**
