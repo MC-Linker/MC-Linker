@@ -28,21 +28,27 @@ export default class GuildMemberUpdate extends Event {
         const syncedRole = server.syncedRoles[roleIndex];
 
         const user = client.userConnections.cache.get(newMember.id);
-        if(!user) return;
-        const uuid = user.getUUID(server);
+        const uuid = user?.getUUID(server);
 
-        // Skip if the change is already reflected in players — this was a bot-initiated update
-        if(addedRole && syncedRole.players.includes(uuid)) return;
-        if(removedRole && !syncedRole.players.includes(uuid)) return;
+        // Cancel event if user isnt linked or direction is to_discord (MC→Discord only)
 
-        // Cancel event if direction is to_discord (MC→Discord only, Discord changes shouldn't propagate to MC)
-        if(syncedRole.direction === 'to_discord') {
-            // Re-add the removed role if mc is authoritative
+        const noPlayerChange =
+            addedRole && syncedRole.players.includes(uuid) ||
+            removedRole && !syncedRole.players.includes(uuid);
+
+        // Cancel event if user isn't linked or if the change is already reflected in players (bot-initiated update)
+        // and the direction is to_discord (MC authoritative)
+        if((!user || noPlayerChange) && syncedRole.direction === 'to_discord') {
+            // Re-remove the added role if mc is authoritative
             if(addedRole) newMember.roles.remove(addedRole.id).catch(() => {});
-            // Remove the added role if mc is authoritative
+            // Re-add the removed role if mc is authoritative
             if(removedRole) newMember.roles.add(removedRole.id).catch(() => {});
             return;
         }
+
+        if(!user) return;
+        // Skip if the change is already reflected in players — this was a bot-initiated update
+        if(noPlayerChange) return;
 
         if(server.requiredRoleToJoin) {
             if(
