@@ -2415,8 +2415,8 @@
             "group": "Group",
             "team": "Team",
             "direction_both": "Both",
-            "direction_to_minecraft": "To Minecraft (Ignore changes from Minecraft)",
-            "direction_to_discord": "To Discord (Ignore changes from Discord)"
+            "direction_to_minecraft": "To Minecraft (MC→Discord ❌, Discord→MC ✅)",
+            "direction_to_discord": "To Discord (MC→Discord ✅, Discord→MC ❌)"
         }
     },
     "api": {
@@ -4028,11 +4028,11 @@
                                     "value": "both"
                                 },
                                 {
-                                    "name": "To Minecraft (Ignore changes from Minecraft)",
+                                    "name": "To Minecraft (MC→Discord ❌, Discord→MC ✅)",
                                     "value": "to_minecraft"
                                 },
                                 {
-                                    "name": "To Discord (Ignore changes from Discord)",
+                                    "name": "To Discord (MC→Discord ✅, Discord→MC ❌)",
                                     "value": "to_discord"
                                 }
                             ]
