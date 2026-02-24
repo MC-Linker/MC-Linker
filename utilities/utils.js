@@ -775,7 +775,7 @@ const formattingCodesToAnsi = {
 /**
  * Matches both \"§aGreen Text\" and §aGreenText, capturing the color code and the text separately.
  */
-const colorPattern = /(?<=")[&§]([0-9a-fk-or])(.+)(?=\\")|[&§]([0-9a-fk-or])([\w.\-]+)/gi;
+const colorPattern = /(?<=")[&§]([0-9a-fk-or])(.+)(?=\\?")|[&§]([0-9a-fk-or])([\w.\-]+)/gi;
 
 /**
  * Removes all minecraft color codes from a string.
@@ -792,20 +792,19 @@ export function stripColorCodes(text) {
  * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
  */
 export function codeBlockFromCommandResponse(response) {
+    //Parse color codes to ansi
+    response = response.replace(colorPattern, (_, color1, word1, color2, word2) => {
+        const color = color1 ?? color2;
+        const ansi = colorCodesToAnsi[color];
+        const format = formattingCodesToAnsi[color];
+        if(!ansi && !format) return '';
+
+        // Reset after every word
+        return `\u001b[${format ?? '0'};${ansi ?? '37'}m${word1 ?? ''}${word2 ?? ''}\u001b[0m`;
+    });
+
     // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
     if(response.length >= 1015) response = stripColorCodes(response);
-    else {
-        //Parse color codes to ansi
-        response = response.replace(colorPattern, (_, color1, word1, color2, word2) => {
-            const color = color1 ?? color2;
-            const ansi = colorCodesToAnsi[color];
-            const format = formattingCodesToAnsi[color];
-            if(!ansi && !format) return '';
-
-            // Reset after every word
-            return `\u001b[${format ?? '0'};${ansi ?? '37'}m${word1 ?? ''}${word2 ?? ''}\u001b[0m`;
-        });
-    }
 
     // -12 for code block (```ansi\n\n```)
     if(response.length > MaxEmbedDescriptionLength - 12) response = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
