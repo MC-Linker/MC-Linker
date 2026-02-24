@@ -88,6 +88,9 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         try {
                             // Add to synced role's player list
                             syncedRole.players.push(uuid);
+                            server.syncedRoles[roleIndex] = syncedRole;
+                            // Required to do before to prevent feedback loop in GuildMemberUpdateEvent
+                            await server.edit({});
 
                             const member = await guild.members.fetch(conn.id);
                             await member.roles.add(discordRole);
@@ -110,8 +113,13 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                 if(direction === 'to_discord') {
                     // MC is authoritative → revoke Discord role
                     try {
-                        // Remove from synced role's player list
-                        syncedRole.players = syncedRole.players.filter(p => p !== uuid);
+                        if(syncedRole.players.includes(uuid)) {
+                            // Remove from synced role's player list
+                            syncedRole.players = syncedRole.players.filter(p => p !== uuid);
+                            server.syncedRoles[roleIndex] = syncedRole;
+                            // Required to do before to prevent feedback loop in GuildMemberUpdateEvent
+                            await server.edit({});
+                        }
 
                         await member.roles.remove(discordRole);
                     }
