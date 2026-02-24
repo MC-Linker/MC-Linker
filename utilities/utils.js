@@ -775,7 +775,7 @@ const formattingCodesToAnsi = {
 /**
  * Matches both \"§aGreen Text\" and §aGreenText, capturing the color code and the text separately.
  */
-const colorPattern = /(?<=")[&§]([0-9a-fk-or])(.+)(?=\\?")|[&§]([0-9a-fk-or])([\w.\-]+)/gi;
+const colorPattern = /(?<=")[&§]([0-9a-fk-or])([^"]+)(?=\\?")|[&§]([0-9a-fk-or])([\w.\-]+)/gi;
 
 /**
  * Removes all minecraft color codes from a string.
@@ -783,7 +783,7 @@ const colorPattern = /(?<=")[&§]([0-9a-fk-or])(.+)(?=\\?")|[&§]([0-9a-fk-or])(
  * @returns {string} - The text without color codes.
  */
 export function stripColorCodes(text) {
-    return text.replace(colorPattern, '');
+    return text.replace(/[&§]([0-9a-fk-or])/gi, '');
 }
 
 /**
@@ -792,8 +792,11 @@ export function stripColorCodes(text) {
  * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
  */
 export function codeBlockFromCommandResponse(response) {
+    let parsedResponse;
+
     //Parse color codes to ansi
-    response = response.replace(colorPattern, (_, color1, word1, color2, word2) => {
+    parsedResponse = response.replace(colorPattern, (_, color1, word1, color2, word2) => {
+        console.log(_, color1, word1, color2, word2);
         const color = color1 ?? color2;
         const ansi = colorCodesToAnsi[color];
         const format = formattingCodesToAnsi[color];
@@ -804,13 +807,13 @@ export function codeBlockFromCommandResponse(response) {
     });
 
     // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
-    if(response.length >= 1015) response = stripColorCodes(response);
+    if(parsedResponse.length >= 1015) parsedResponse = stripColorCodes(response);
 
     // -12 for code block (```ansi\n\n```)
-    if(response.length > MaxEmbedDescriptionLength - 12) response = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
+    if(parsedResponse.length > MaxEmbedDescriptionLength - 12) parsedResponse = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
     //Wrap in discord code block for color
-    return Discord.codeBlock('ansi', response);
+    return Discord.codeBlock('ansi', parsedResponse);
 }
 
 /**
