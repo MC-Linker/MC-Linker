@@ -8,7 +8,6 @@ import Discord, {
     MessageMentions,
     MessagePayload,
     PermissionFlagsBits,
-    PermissionsBitField,
     Routes,
     User,
 } from 'discord.js';
@@ -807,7 +806,7 @@ export function codeBlockFromCommandResponse(response) {
     if(response.length > MaxEmbedDescriptionLength - 12) response = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
     //Wrap in discord code block for color
-    return Discord.codeBlock('ansi', `${response}`);
+    return Discord.codeBlock('ansi', response);
 }
 
 /**
@@ -1057,16 +1056,6 @@ export async function fetchMembersIfRoleCacheDiffers(client, roles, guild) {
  * @return {'https://discord.com/api/oauth2/authorize?client_id=${botId}'}
  */
 export function generateDefaultInvite(botId) {
-    const permissions = PermissionsBitField.Flags.CreateInstantInvite |
-        PermissionsBitField.Flags.ManageWebhooks |
-        PermissionsBitField.Flags.ViewChannel |
-        PermissionsBitField.Flags.SendMessages |
-        PermissionsBitField.Flags.SendMessagesInThreads |
-        PermissionsBitField.Flags.EmbedLinks |
-        PermissionsBitField.Flags.AttachFiles |
-        PermissionsBitField.Flags.UseExternalEmojis |
-        PermissionsBitField.Flags.ManageRoles;
-
     return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}`;
 }
 

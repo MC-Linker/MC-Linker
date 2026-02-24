@@ -50,21 +50,20 @@ export default class MessageCreate extends Event {
             if(!channel || channel.allowDiscordToMinecraft === false) return;
             let content = cleanEmojis(message.cleanContent);
             message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
-            const repliedMessage = message.type === 19 ? await message.fetchReference() : null;
-            let repliedContent = repliedMessage ? cleanEmojis(repliedMessage.cleanContent) : null;
-            if(repliedContent?.length === 0 && repliedMessage.attachments.size !== 0) {
-                const firstAttach = repliedMessage.attachments.first();
-                repliedContent = `[${firstAttach.name}](${firstAttach.url})`;
+            const repliedMessage = message.type === MessageType.Reply ? await message.fetchReference() : null;
+            let repliedContent = repliedMessage ? cleanEmojis(repliedMessage.cleanContent) : '';
+            if(repliedContent?.length === 0 && repliedMessage.attachments.size) {
+                repliedContent = repliedMessage.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ');
             }
-            const repliedUser = repliedMessage ? repliedMessage.member?.nickname ?? repliedMessage.author.username : null;
+            const repliedUser = repliedMessage ? repliedMessage.member.displayName : null;
 
-            logger.debug('Relaying chat message to Minecraft server', {
+            logger.debug({
                 content,
                 author: message.author.tag,
                 channel: message.channel.name,
                 guild: message.guild.name,
-            });
-            void server.protocol.chat(content, message.member?.nickname ?? message.author.username, repliedContent, repliedUser);
+            }, 'Relaying chat message to Minecraft server');
+            void server.protocol.chat(content, message.member.displayName, repliedContent, repliedUser);
         }
 
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
