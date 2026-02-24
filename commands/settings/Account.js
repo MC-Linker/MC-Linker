@@ -41,7 +41,7 @@ export default class Account extends Command {
                 username = await utils.fetchUsername(uuid);
             }
             else {
-                uuid = await utils.fetchUUID(usernameOrUUID);
+                uuid = server.online ? await utils.fetchUUID(usernameOrUUID) : utils.createUUIDv3(usernameOrUUID);
                 username = usernameOrUUID;
             }
             if(!uuid || !username) return await interaction.replyTl(keys.commands.account.errors.could_not_fetch_uuid, { user: usernameOrUUID });

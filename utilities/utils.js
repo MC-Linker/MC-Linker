@@ -800,6 +800,9 @@ export function codeBlockFromCommandResponse(response) {
 
             return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
         });
+
+        // Reset before spaces, commans colons and braces
+        response = response.replace(/([\s,:;{}\[\]])/g, '\u001b[0m$1');
     }
 
     // -12 for code block (```ansi\n\n```)
