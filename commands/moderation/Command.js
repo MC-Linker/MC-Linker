@@ -165,7 +165,7 @@ export default class Command extends AutocompleteCommand {
         const resp = await server.protocol.execute(`${command} ${args.join(' ')}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        let respMessage = resp.status === 'success' && resp.data?.message ? resp.data.message : keys.api.plugin.warnings.no_response_message;
+        let respMessage = resp.status === 'success' ? resp.data.message : keys.api.plugin.warnings.no_response_message;
         respMessage = codeBlockFromCommandResponse(respMessage);
         return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
     }
