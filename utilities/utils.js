@@ -806,8 +806,8 @@ export function codeBlockFromCommandResponse(response) {
         return `\u001b[${format ?? '0'};${ansi ?? '37'}m${word1 ?? ''}${word2 ?? ''}\u001b[0m`;
     });
 
-    // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
-    if(parsedResponse.length >= 1015) parsedResponse = stripColorCodes(response);
+    // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
+    if(parsedResponse.length >= 1000) parsedResponse = stripColorCodes(response);
 
     // -12 for code block (```ansi\n\n```)
     if(parsedResponse.length > MaxEmbedDescriptionLength - 12) parsedResponse = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
