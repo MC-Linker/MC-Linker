@@ -772,7 +772,7 @@ const formattingCodesToAnsi = {
     'r': '0', //Reset
 };
 
-const colorPattern = /[&§]([0-9a-fk-or])/gi;
+const colorPattern = /[&§]([0-9a-fk-or])(\w+)([\s,;:\[\]{}])/gi;
 
 /**
  * Removes all minecraft color codes from a string.
@@ -793,16 +793,14 @@ export function codeBlockFromCommandResponse(response) {
     if(response.length >= 1015) response = stripColorCodes(response);
     else {
         //Parse color codes to ansi
-        response = response.replace(colorPattern, (_, color) => {
+        response = response.replace(colorPattern, (_, color, word, endChar) => {
             const ansi = colorCodesToAnsi[color];
             const format = formattingCodesToAnsi[color];
             if(!ansi && !format) return '';
 
-            return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
+            // Reset after every word
+            return `\u001b[${format ?? '0'};${ansi ?? '37'}m${word}\u001b[0m${endChar}`;
         });
-
-        // Reset before spaces, commans colons and braces
-        response = response.replace(/([\s,:;{}\[\]])/g, '\u001b[0m$1');
     }
 
     // -12 for code block (```ansi\n\n```)
