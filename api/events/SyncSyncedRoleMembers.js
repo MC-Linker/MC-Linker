@@ -86,6 +86,9 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                     const conn = client.userConnections.cache.find(u => u.getUUID(server) === uuid);
                     if(conn) {
                         try {
+                            // Add to synced role's player list
+                            syncedRole.players.push(uuid);
+
                             const member = await guild.members.fetch(conn.id);
                             await member.roles.add(discordRole);
                         }
@@ -107,6 +110,9 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                 if(direction === 'to_discord') {
                     // MC is authoritative → revoke Discord role
                     try {
+                        // Remove from synced role's player list
+                        syncedRole.players = syncedRole.players.filter(p => p !== uuid);
+
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
