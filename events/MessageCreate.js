@@ -51,11 +51,14 @@ export default class MessageCreate extends Event {
             let content = cleanEmojis(message.cleanContent);
             message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
             const repliedMessage = message.type === MessageType.Reply ? await message.fetchReference() : null;
-            let repliedContent = repliedMessage ? cleanEmojis(repliedMessage.cleanContent) : '';
-            if(repliedContent?.length === 0 && repliedMessage.attachments.size) {
-                repliedContent = repliedMessage.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ');
+            let repliedContent = null;
+            let repliedUser = null;
+            if(repliedMessage) {
+                repliedContent = cleanEmojis(repliedMessage.cleanContent);
+                const attachmentsString = repliedMessage.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ');
+                repliedContent = `${attachmentsString}\n${repliedContent}`;
+                repliedUser = repliedMessage.member.displayName;
             }
-            const repliedUser = repliedMessage ? repliedMessage.member.displayName : null;
 
             logger.debug({
                 content,
