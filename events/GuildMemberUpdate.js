@@ -30,16 +30,16 @@ export default class GuildMemberUpdate extends Event {
         const user = client.userConnections.cache.get(newMember.id);
         const uuid = user?.getUUID(server);
 
-        const noPlayerChange = uuid ?
+        const noChangeToPlayers = uuid ?
             addedRole && syncedRole.players.includes(uuid) ||
             removedRole && !syncedRole.players.includes(uuid) : false;
 
         // Cancel events if mc is authoritative
         if(syncedRole.direction === 'to_discord') {
-            // Re-remove the added role if user isnt linked or if there is no player change (change was bot-initiated)
-            if((!user || noPlayerChange) && addedRole) newMember.roles.remove(addedRole.id).catch(() => {});
-            // Re-add the removed role if there is no player change (change was bot-initiated)
-            else if(removedRole && noPlayerChange) newMember.roles.add(removedRole.id).catch(() => {});
+            // Re-remove the added role if user isnt linked or if the change is not reflected in the players array already (change was bot-initiated)
+            if((!user || !noChangeToPlayers) && addedRole) newMember.roles.remove(addedRole.id).catch(() => {});
+            // Re-add the removed role if the change is not reflected in the players array already (change was bot-initiated)
+            else if(removedRole && !noChangeToPlayers) newMember.roles.add(removedRole.id).catch(() => {});
             return;
         }
 

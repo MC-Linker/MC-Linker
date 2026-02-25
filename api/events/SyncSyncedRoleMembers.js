@@ -86,11 +86,13 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                     const conn = client.userConnections.cache.find(u => u.getUUID(server) === uuid);
                     if(conn) {
                         try {
-                            // Add to synced role's player list
-                            syncedRole.players.push(uuid);
-                            server.syncedRoles[roleIndex] = syncedRole;
-                            // Required to do before to prevent feedback loop in GuildMemberUpdateEvent
-                            await server.edit({});
+                            if(!syncedRole.players.includes(uuid)) {
+                                // Add to synced role's player list
+                                syncedRole.players.push(uuid);
+                                server.syncedRoles[roleIndex] = syncedRole;
+                                // Required to do before to prevent feedback loop in GuildMemberUpdateEvent
+                                await server.edit({});
+                            }
 
                             const member = await guild.members.fetch(conn.id);
                             await member.roles.add(discordRole);

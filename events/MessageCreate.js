@@ -2,7 +2,7 @@ import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
-import { Events } from 'discord.js';
+import { Events, MessageType } from 'discord.js';
 import logger from '../utilities/logger.js';
 
 /**
