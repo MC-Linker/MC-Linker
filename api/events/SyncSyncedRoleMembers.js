@@ -99,6 +99,13 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         }
                         catch(err) {
                             logger.error(err, `Failed to grant Discord role ${data.id} to ${uuid} during sync`);
+
+                            // Revert players list change if role grant fails
+                            if(syncedRole.players.includes(uuid)) {
+                                syncedRole.players = syncedRole.players.filter(p => p !== uuid);
+                                server.syncedRoles[roleIndex] = syncedRole;
+                                await server.edit({});
+                            }
                         }
                     }
                 }
@@ -127,6 +134,13 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                     }
                     catch(err) {
                         logger.error(err, `Failed to revoke Discord role ${data.id} from ${uuid} during sync`);
+
+                        // Revert players list change if role revoke fails
+                        if(!syncedRole.players.includes(uuid)) {
+                            syncedRole.players.push(uuid);
+                            server.syncedRoles[roleIndex] = syncedRole;
+                            await server.edit({});
+                        }
                     }
                 }
                 else {
