@@ -2715,7 +2715,7 @@
         },
         "component": {
             "clicked": {
-                "console": "%author_tag% has clicked component %interaction_id% in %guild_name%"
+                "console": "%author_username% has clicked component %interaction_id% in %guild_name%"
             },
             "no_access": {
                 "no_author": {
@@ -2772,7 +2772,7 @@
         },
         "command": {
             "executed": {
-                "console": "%author_tag% executed /%interaction_name% %args% in %guild_name%"
+                "console": "%author_username% executed /%interaction_name% %args% in %guild_name%"
             },
             "errors": {
                 "server_not_connected": {
