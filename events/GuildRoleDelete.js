@@ -19,8 +19,8 @@ export default class GuildMemberUpdate extends Event {
         const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
         if(roleIndex === -1) return;
 
-        server.syncedRoles.splice(roleIndex, 1);
         await server.protocol.removeSyncedRole(server.syncedRoles[roleIndex]);
+        server.syncedRoles.splice(roleIndex, 1);
         await server.edit({});
     }
 } 
