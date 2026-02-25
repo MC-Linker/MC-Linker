@@ -49,7 +49,7 @@ export default class MessageCreate extends Event {
             const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
             if(!channel || channel.allowDiscordToMinecraft === false) return;
             let content = cleanEmojis(message.cleanContent);
-            message.attachments?.forEach(attach => content += ` \n [${attach.name}](${attach.url})`);
+            message += message.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ');
             const repliedMessage = message.type === MessageType.Reply ? await message.fetchReference() : null;
             let repliedContent = null;
             let repliedUser = null;
