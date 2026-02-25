@@ -44,20 +44,20 @@ export default class MessageCreate extends Event {
         }
 
         const server = client.serverConnections.cache.get(message.guildId);
-        if(!message.content.startsWith(client.config.prefix)) {
+        if(server && !message.content.startsWith(client.config.prefix)) {
             // Relay chat messages to Minecraft server
-            const channel = server?.chatChannels?.find(c => c.id === message.channel.id);
+            const channel = server.chatChannels.find(c => c.id === message.channel.id);
             if(!channel || channel.allowDiscordToMinecraft === false) return;
-            let content = cleanEmojis(message.cleanContent);
-            content += message.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ');
+            let content = message.attachments.size ?
+                `${message.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ')}\n${cleanEmojis(message.cleanContent)}` :
+                cleanEmojis(message.cleanContent);
+
             const repliedMessage = message.type === MessageType.Reply ? await message.fetchReference() : null;
             let repliedContent = null;
-            let repliedUser = null;
             if(repliedMessage) {
-                repliedContent = cleanEmojis(repliedMessage.cleanContent);
-                const attachmentsString = repliedMessage.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ');
-                repliedContent = `${attachmentsString}\n${repliedContent}`;
-                repliedUser = repliedMessage.member.displayName;
+                repliedContent = repliedMessage.attachments.size ?
+                    `${repliedMessage.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ')}\n${cleanEmojis(repliedMessage.cleanContent)}` :
+                    cleanEmojis(repliedMessage.cleanContent);
             }
 
             logger.debug({
@@ -66,7 +66,7 @@ export default class MessageCreate extends Event {
                 channel: message.channel.name,
                 guild: message.guild.name,
             }, 'Relaying chat message to Minecraft server');
-            void server.protocol.chat(content, message.member.displayName, repliedContent, repliedUser);
+            void server.protocol.chat(content, message.member.displayName, repliedContent, repliedMessage?.member.displayName);
         }
 
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
