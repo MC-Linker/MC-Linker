@@ -62,7 +62,7 @@ export default class MessageCreate extends Event {
 
             logger.debug({
                 content,
-                author: message.author.tag,
+                author: message.member.displayName,
                 channel: message.channel.name,
                 guild: message.guild.name,
             }, 'Relaying chat message to Minecraft server');
