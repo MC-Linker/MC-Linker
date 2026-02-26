@@ -89,14 +89,16 @@ export default class UpdateStatsChannel extends WSEvent {
      * @param {MCLinker} client - The MCLinker client.
      */
     static scheduleRetry(channelId, retryAfter, channel, serverId, client) {
+        if(pendingRetries.has(channelId)) return; // Already a pending retry for this channel
+
         const timer = setTimeout(async () => {
             // Re-resolve server to ensure it still exists
             const server = client.serverConnections.cache.get(serverId);
             if(!server) return pendingRetries.delete(channelId);
 
-            // Verify this stat channel is still configured
-            if(!server.statChannels.some(c => c.id === channelId))
-                return pendingRetries.delete(channelId);
+            // Verify this stat channel is still configured and get updated channel
+            channel = server.statChannels.find(c => c.id === channelId);
+            if(!channel) return pendingRetries.delete(channelId);
 
             try {
                 const discordChannel = await client.channels.fetch(channelId);
