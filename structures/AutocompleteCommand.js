@@ -1,5 +1,5 @@
 import { AutocompleteInteraction, CommandInteraction } from 'discord.js';
-import { MaxAutoCompleteChoices } from '../utilities/utils.js';
+import { MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import { ph } from '../utilities/messages.js';
 import Command from './Command.js';
@@ -7,7 +7,6 @@ import Command from './Command.js';
 export default class AutocompleteCommand extends Command {
 
     static autocompleteTokenPrefix = '__mcl_ac:';
-    static autocompleteChoiceMaxLength = 100;
     static autocompleteTokenTtlMs = 2 * 60 * 1000;
 
     /**
@@ -41,13 +40,15 @@ export default class AutocompleteCommand extends Command {
     }
 
     async autocompleteFromCommandCompletions(interaction, client) {
-        const focused = interaction.options.getFocused();
         const server = client.serverConnections.cache.get(interaction.guildId);
-
         if(!server) {
             return interaction.respond([])
                 .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
         }
+
+        let focused = interaction.options.getFocused();
+        const resolvedFocus = this.resolveAutocompleteValue(focused, interaction);
+        if(resolvedFocus !== null) focused = resolvedFocus;
 
         const userConnection = client.userConnections.cache.get(interaction.user.id);
         const response = await server.protocol.commandCompletions(focused, userConnection?.getUUID(server));
@@ -101,7 +102,7 @@ export default class AutocompleteCommand extends Command {
                 `${focusedWithoutLastWord}${completionString}` :
                 `${focused}${completionString}`;
 
-            if(fullValue.length <= AutocompleteCommand.autocompleteChoiceMaxLength) {
+            if(fullValue.length <= MaxCommandChoiceLength) {
                 normalizedChoices.push({ name: fullValue, value: fullValue });
                 continue;
             }
@@ -131,7 +132,7 @@ export default class AutocompleteCommand extends Command {
     }
 
     getAutocompletePreview(fullValue) {
-        const maxLength = AutocompleteCommand.autocompleteChoiceMaxLength;
+        const maxLength = MaxCommandChoiceLength;
         if(fullValue.length <= maxLength) return fullValue;
 
         const tailLength = maxLength - 1;

@@ -39,6 +39,7 @@ export const MaxActionRows = 5;
 export const MaxActionRowSize = 5;
 export const MaxEmbedDescriptionLength = 4096;
 export const MaxAutoCompleteChoices = 25;
+export const MaxCommandChoiceLength = 100;
 export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
 export const MinecraftDataVersion = '1.21.8';
 
