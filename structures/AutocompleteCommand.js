@@ -6,12 +6,12 @@ import Command from './Command.js';
 
 export default class AutocompleteCommand extends Command {
 
-    static autocompleteTokenPrefix = '__mcl_ac:';
+    static autocompletePreviewPrefix = '…';
     static autocompleteTokenTtlMs = 2 * 60 * 1000;
 
     /**
-     * Stores the mapping of autocomplete tokens to their corresponding full values and metadata.
-     * @type {Map<string, { fullValue: string, expiresAt: number, guildId: string, userId: string, commandName: string }>}
+     * Stores autocomplete selections by context (`userId:commandName`) and preview key.
+     * @type {Map<string, Map<string, { fullValue: string, expiresAt: number }>>}
      */
     static autocompleteSelectionCache = new Map();
 
@@ -47,8 +47,11 @@ export default class AutocompleteCommand extends Command {
         }
 
         let focused = interaction.options.getFocused();
-        const resolvedFocus = this.resolveAutocompleteValue(focused, interaction);
-        if(resolvedFocus !== null) focused = resolvedFocus;
+        focused = this.resolveAutocompleteValue(focused, interaction, false);
+        if(focused == null) {
+            return interaction.respond([])
+                .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
+        }
 
         const userConnection = client.userConnections.cache.get(interaction.user.id);
         const response = await server.protocol.commandCompletions(focused, userConnection?.getUUID(server));
@@ -65,28 +68,20 @@ export default class AutocompleteCommand extends Command {
             .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
     }
 
-    resolveAutocompleteValue(value, interaction) {
+    resolveAutocompleteValue(value, interaction, consume = true) {
         if(typeof value !== 'string') return value;
 
         this.cleanupAutocompleteTokens();
 
-        if(!value.startsWith(AutocompleteCommand.autocompleteTokenPrefix)) return value;
+        if(!value.startsWith(AutocompleteCommand.autocompletePreviewPrefix)) return value;
 
-        const tokenData = AutocompleteCommand.autocompleteSelectionCache.get(value);
-        if(!tokenData) return null;
+        const match = this.findAutocompleteSelectionMatch(value, interaction);
+        if(!match) return value;
 
-        const isExpired = tokenData.expiresAt <= Date.now();
-        const invalidContext = tokenData.guildId !== interaction.guildId ||
-            tokenData.userId !== interaction.user.id ||
-            tokenData.commandName !== interaction.commandName;
+        const resolvedValue = `${match.entry.fullValue}${match.suffix}`;
+        if(consume) this.removeAutocompleteSelection(match.key, match.entry, interaction);
 
-        if(isExpired || invalidContext) {
-            AutocompleteCommand.autocompleteSelectionCache.delete(value);
-            return null;
-        }
-
-        AutocompleteCommand.autocompleteSelectionCache.delete(value);
-        return tokenData.fullValue;
+        return resolvedValue;
     }
 
     normalizeCompletions(data, focused, interaction) {
@@ -107,44 +102,83 @@ export default class AutocompleteCommand extends Command {
                 continue;
             }
 
-            const token = this.createAutocompleteToken(interaction, fullValue);
             const displayValue = this.getAutocompletePreview(fullValue);
+            this.cacheAutocompleteSelection(displayValue, interaction, fullValue);
 
-            normalizedChoices.push({ name: displayValue, value: token });
+            normalizedChoices.push({ name: displayValue, value: displayValue });
         }
 
         return normalizedChoices;
     }
 
-    createAutocompleteToken(interaction, fullValue) {
-        const token = `${AutocompleteCommand.autocompleteTokenPrefix}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+    cacheAutocompleteSelection(key, interaction, fullValue) {
+        let contextMap = this.getAutocompleteContextMap(interaction);
+        if(!contextMap) {
+            contextMap = new Map();
+            AutocompleteCommand.autocompleteSelectionCache.set(this.getAutocompleteContextKey(interaction), contextMap);
+        }
         const expiresAt = Date.now() + AutocompleteCommand.autocompleteTokenTtlMs;
-
-        AutocompleteCommand.autocompleteSelectionCache.set(token, {
+        contextMap.set(key, {
             fullValue,
             expiresAt,
-            guildId: interaction.guildId,
-            userId: interaction.user.id,
-            commandName: interaction.commandName,
         });
-
-        return token;
     }
 
     getAutocompletePreview(fullValue) {
         const maxLength = MaxCommandChoiceLength;
         if(fullValue.length <= maxLength) return fullValue;
 
-        const tailLength = maxLength - 1;
-        return `…${fullValue.slice(-tailLength)}`;
+        const tailLength = maxLength - AutocompleteCommand.autocompletePreviewPrefix.length;
+        return `${AutocompleteCommand.autocompletePreviewPrefix}${fullValue.slice(-tailLength)}`;
+    }
+
+    findAutocompleteSelectionMatch(inputValue, interaction) {
+        const contextMap = this.getAutocompleteContextMap(interaction);
+        if(!contextMap) return null;
+
+        for(const key of contextMap.keys()) {
+            if(inputValue.startsWith(key)) return {
+                key,
+                entry: contextMap.get(key),
+                suffix: inputValue.slice(key.length),
+            };
+        }
+        return null;
+    }
+
+    removeAutocompleteSelection(key, targetEntry, interaction) {
+        const contextMap = this.getAutocompleteContextMap(interaction);
+        if(!contextMap) return;
+
+        const entry = contextMap.get(key);
+        if(!entry || entry !== targetEntry) return;
+
+        contextMap.delete(key);
+        if(contextMap.size === 0) {
+            AutocompleteCommand.autocompleteSelectionCache.delete(this.getAutocompleteContextKey(interaction));
+        }
+    }
+
+    getAutocompleteContextKey(interaction) {
+        return `${interaction.user.id}:${interaction.commandName}`;
+    }
+
+    getAutocompleteContextMap(interaction) {
+        const contextKey = this.getAutocompleteContextKey(interaction);
+        return AutocompleteCommand.autocompleteSelectionCache.get(contextKey);
     }
 
     cleanupAutocompleteTokens() {
         const now = Date.now();
 
-        for(const [token, value] of AutocompleteCommand.autocompleteSelectionCache.entries()) {
-            if(value.expiresAt <= now) AutocompleteCommand.autocompleteSelectionCache.delete(token);
+        for(const [contextKey, contextMap] of AutocompleteCommand.autocompleteSelectionCache.entries()) {
+            for(const [key, entry] of contextMap.entries()) {
+                if(entry.expiresAt <= now) {
+                    contextMap.delete(key);
+                }
+            }
+
+            if(contextMap.size === 0) AutocompleteCommand.autocompleteSelectionCache.delete(contextKey);
         }
     }
-
 }
