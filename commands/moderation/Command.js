@@ -81,12 +81,13 @@ export default class Command extends AutocompleteCommand {
     normalizeCompletions(data, focused) {
         const rawCompletions = Array.isArray(data) ? data : [];
 
+        // Remove the last word (respecting brackets and braces) as it will be replaced by completion
+        const focusedWithoutLastWord = focused.replace(/[^\[\]\s{}=,]+$/gm, '');
         return rawCompletions.map(completion => {
-            // Prepend the focused value to the completion
-            return {
-                name: `${focused} ${completion}`,
-                value: `${focused} ${completion}`,
-            };
+            const value = !/[,\]}]/.test(completion) ?
+                `${focusedWithoutLastWord}${completion}` :
+                `${focused}${completion}`;
+            return { name: value, value };
         });
     }
 }

@@ -775,7 +775,7 @@ const formattingCodesToAnsi = {
 /**
  * Matches both \"§aGreen Text\" and §aGreenText, capturing the color code and the text separately.
  */
-const colorPattern = /(?<=")[&§]([0-9a-fk-or])([^"]+)(?=\\?")|[&§]([0-9a-fk-or])([\w.\-]+)/gi;
+const colorPattern = /(?<=["'])[&§]([0-9a-fk-or])(?:[&§]([0-9a-fk-or]))?([^'"§&]+)(?=["'])|[&§]([0-9a-fk-or])(?:[&§]([0-9a-fk-or]))?([^&§":,]+)/gi;
 
 /**
  * Removes all minecraft color codes from a string.
@@ -792,28 +792,28 @@ export function stripColorCodes(text) {
  * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
  */
 export function codeBlockFromCommandResponse(response) {
-    let parsedResponse;
-
     //Parse color codes to ansi
-    parsedResponse = response.replace(colorPattern, (_, color1, word1, color2, word2) => {
-        console.log(_, color1, word1, color2, word2);
+    response = response.replace(colorPattern, (_, color1, format1, word1, color2, format2, word2) => {
+        console.log(_, color1, format1, word1, color2, format2, word2);
         const color = color1 ?? color2;
-        const ansi = colorCodesToAnsi[color];
-        const format = formattingCodesToAnsi[color];
-        if(!ansi && !format) return '';
+        const format = format1 ?? format2;
+        const ansiColor = colorCodesToAnsi[color] ?? formattingCodesToAnsi[color];
+        const ansiFormat = colorCodesToAnsi[format] ?? formattingCodesToAnsi[format];
+        if(!ansiColor && !ansiFormat) return '';
 
+        console.log(`Replacing ${word1 ?? word2 ?? ''} with ansi code ${ansiColor} and format code ${ansiFormat}`);
         // Reset after every word
-        return `\u001b[${format ?? '0'};${ansi ?? '37'}m${word1 ?? ''}${word2 ?? ''}\u001b[0m`;
+        return `\u001b[${ansiFormat ?? '0'};${ansiColor ?? '37'}m${word1 ?? word2 ?? ''}\u001b[0m`;
     });
 
     // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
-    if(parsedResponse.length >= 1000) parsedResponse = stripColorCodes(response);
+    if(response.length >= 1000) response = stripColorCodes(response);
 
     // -12 for code block (```ansi\n\n```)
-    if(parsedResponse.length > MaxEmbedDescriptionLength - 12) parsedResponse = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
+    if(response.length > MaxEmbedDescriptionLength - 12) response = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
     //Wrap in discord code block for color
-    return Discord.codeBlock('ansi', parsedResponse);
+    return Discord.codeBlock('ansi', response);
 }
 
 /**
