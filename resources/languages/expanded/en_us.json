@@ -1186,6 +1186,15 @@
             "warnings": {
                 "could_not_find_placeholders": {
                     "console": "Could not find placeholder value for %placeholder%"
+                },
+                "autocomplete_selection_expired": {
+                    "embeds": [
+                        {
+                            "title": "Selection Expired",
+                            "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
+                        }
+                    ],
+                    "console": "Autocomplete selection token expired or invalid"
                 }
             },
             "success": {
@@ -2191,6 +2200,15 @@
                         }
                     ],
                     "console": "Disabled command specified"
+                },
+                "autocomplete_selection_expired": {
+                    "embeds": [
+                        {
+                            "title": "Selection Expired",
+                            "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
+                        }
+                    ],
+                    "console": "Disable autocomplete selection token expired or invalid"
                 }
             },
             "errors": {

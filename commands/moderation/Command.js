@@ -1,7 +1,6 @@
-import { ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
-import { codeBlockFromCommandResponse, MaxAutoCompleteChoices } from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse } from '../../utilities/utils.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 
 export default class Command extends AutocompleteCommand {
@@ -15,33 +14,16 @@ export default class Command extends AutocompleteCommand {
     }
 
     async autocomplete(interaction, client) {
-        const focused = interaction.options.getFocused();
-        const server = client.serverConnections.cache.get(interaction.guildId);
-
-        if(!server) {
-            return interaction.respond([])
-                .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
-        }
-
-        const userConnection = client.userConnections.cache.get(interaction.user.id);
-        const response = await server.protocol.commandCompletions(focused, userConnection?.getUUID(server));
-
-        if(response?.status !== 'success') {
-            return interaction.respond([])
-                .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
-        }
-
-        const respondArray = this.normalizeCompletions(response.data, focused);
-        if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = MaxAutoCompleteChoices;
-
-        return interaction.respond(respondArray)
-            .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
+        return this.autocompleteFromCommandCompletions(interaction, client);
     }
 
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const commandInput = args.join(' ').trim();
+        const selectedValue = args.join(' ').trim();
+        const commandInput = this.resolveAutocompleteValue(selectedValue, interaction);
+        if(commandInput === null) return interaction.replyTl(keys.commands.command.warnings.autocomplete_selection_expired);
+
         const command = this.replaceMentionsWithUsernames(commandInput, interaction, client);
         if(command === null) return;
 
@@ -76,18 +58,5 @@ export default class Command extends AutocompleteCommand {
         }
 
         return command;
-    }
-
-    normalizeCompletions(data, focused) {
-        const rawCompletions = Array.isArray(data) ? data : [];
-
-        // Remove the last word (respecting brackets and braces) as it will be replaced by completion
-        const focusedWithoutLastWord = focused.replace(/[^\[\]\s{}=,]+$/gm, '');
-        return rawCompletions.map(completion => {
-            const value = !/[,\]}]/.test(completion) ?
-                `${focusedWithoutLastWord}${completion}` :
-                `${focused}${completion}`;
-            return { name: value, value };
-        });
     }
 }

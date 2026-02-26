@@ -793,7 +793,7 @@ export function stripColorCodes(text) {
  */
 export function codeBlockFromCommandResponse(response) {
     //Parse color codes to ansi
-    response = response.replace(colorPattern, (_, color1, format1, word1, color2, format2, word2) => {
+    let parsedResponse = response.replace(colorPattern, (_, color1, format1, word1, color2, format2, word2) => {
         console.log(_, color1, format1, word1, color2, format2, word2);
         const color = color1 ?? color2;
         const format = format1 ?? format2;
@@ -807,13 +807,13 @@ export function codeBlockFromCommandResponse(response) {
     });
 
     // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
-    if(response.length >= 1000) response = stripColorCodes(response);
+    if(parsedResponse.length >= 1000) parsedResponse = stripColorCodes(response);
 
     // -12 for code block (```ansi\n\n```)
-    if(response.length > MaxEmbedDescriptionLength - 12) response = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
+    if(parsedResponse.length > MaxEmbedDescriptionLength - 12) parsedResponse = `${parsedResponse.substring(0, MaxEmbedDescriptionLength - 15)}...`;
 
     //Wrap in discord code block for color
-    return Discord.codeBlock('ansi', response);
+    return Discord.codeBlock('ansi', parsedResponse);
 }
 
 /**
