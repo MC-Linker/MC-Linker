@@ -98,6 +98,9 @@
                     }
                 ],
                 "components": []
+            },
+            "could_not_autocomplete_command": {
+                "console": "An unknown error occurred while autocompleting command %command%: %error_stack%"
             }
         },
         "warnings": {
@@ -3457,71 +3460,8 @@
                 {
                     "type": "String",
                     "name": "command",
-                    "description": "Set the command name.",
+                    "description": "Set the full command input.",
                     "required": true,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument1",
-                    "description": "Set the first command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument2",
-                    "description": "Set the second command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument3",
-                    "description": "Set the third command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument4",
-                    "description": "Set the fourth command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument5",
-                    "description": "Set the fifth command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument6",
-                    "description": "Set the sixth command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument7",
-                    "description": "Set the seventh command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument8",
-                    "description": "Set the eighth command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument9",
-                    "description": "Set the ninth command argument.",
-                    "required": false,
                     "autocomplete": true
                 }
             ]

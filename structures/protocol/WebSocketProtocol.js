@@ -216,6 +216,16 @@ export default class WebSocketProtocol extends Protocol {
     }
 
     /**
+     * Gets command completions for a partial command input.
+     * @param {string} input - The partial command input.
+     * @param {?string} uuid - The uuid of the user who requested completions.
+     * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
+     */
+    commandCompletions(input, uuid = null) {
+        return this._sendRaw('command-completions', { cmd: encodeURIComponent(input ?? ''), uuid });
+    }
+
+    /**
      * Gets the live snbt-data of a player. The Player has to be online for this endpoint to work.
      * @param {string} uuid - The uuid of the player to get the snbt-data of.
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
