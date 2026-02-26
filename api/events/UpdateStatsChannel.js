@@ -29,14 +29,19 @@ export default class UpdateStatsChannel extends WSEvent {
      * @param {StatsChannelData} channel - The stats channel configuration.
      * @param {ServerConnection} server - The server connection.
      * @param {boolean} [isOnline] - Explicit override for server online status. If omitted, determined by socket connectivity.
-     * @returns {Promise<?string>} - The computed channel name, or null if unavailable.
+     * @returns {Promise<?string>} - The computed channel name, or null if an error occurred.
      */
     static async fetchCurrentName(channel, server, isOnline) {
         if(channel.type === 'member-counter') {
             if(isOnline === false) return channel.names.members.replace('%count%', '0');
-            const onlinePlayers = await server.protocol.getOnlinePlayers();
-            if(!onlinePlayers?.data) return null;
-            return channel.names.members.replace('%count%', onlinePlayers.data.length);
+            let onlinePlayers = await server.protocol.getOnlinePlayers();
+            if(onlinePlayers == null) onlinePlayers = 0; // Assume 0 online if we can't reach server
+            else if(onlinePlayers.status === 'error') {
+                logger.debug(`[StatsChannel] Failed to fetch online players for channel ${channel.id}: ${onlinePlayers.error}`);
+                return null;
+            }
+            else onlinePlayers = onlinePlayers.data.length;
+            return channel.names.members.replace('%count%', onlinePlayers);
         }
         else if(channel.type === 'status') {
             const online = isOnline ?? server.protocol.isConnected();
