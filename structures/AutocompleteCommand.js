@@ -47,7 +47,7 @@ export default class AutocompleteCommand extends Command {
         }
 
         let focused = interaction.options.getFocused();
-        focused = this.resolveAutocompleteValue(focused, interaction, false);
+        focused = this.resolveAutocompleteValue(focused, interaction);
         if(focused == null) {
             return interaction.respond([])
                 .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
@@ -68,20 +68,17 @@ export default class AutocompleteCommand extends Command {
             .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
     }
 
-    resolveAutocompleteValue(value, interaction, consume = true) {
+    resolveAutocompleteValue(value, interaction) {
         if(typeof value !== 'string') return value;
 
         this.cleanupAutocompleteTokens();
 
         if(!value.startsWith(AutocompleteCommand.autocompletePreviewPrefix)) return value;
 
-        const match = this.findAutocompleteSelectionMatch(value, interaction);
+        const match = this.findAutocompleteSelectionValue(value, interaction);
         if(!match) return value;
 
-        const resolvedValue = `${match.entry.fullValue}${match.suffix}`;
-        if(consume) this.removeAutocompleteSelection(match.key, match.entry, interaction);
-
-        return resolvedValue;
+        return `${match.fullValue}${match.suffix}`;
     }
 
     normalizeCompletions(data, focused, interaction) {
@@ -92,10 +89,8 @@ export default class AutocompleteCommand extends Command {
         const normalizedChoices = [];
 
         for(const completion of rawCompletions) {
-            const completionString = typeof completion === 'string' ? completion : String(completion ?? '');
-            const fullValue = !/[,\]}]/.test(completionString) ?
-                `${focusedWithoutLastWord}${completionString}` :
-                `${focused}${completionString}`;
+            const fullValue = this.createFullCompletionValue(completion, focused, focusedWithoutLastWord);
+            if(!fullValue) continue;
 
             if(fullValue.length <= MaxCommandChoiceLength) {
                 normalizedChoices.push({ name: fullValue, value: fullValue });
@@ -109,6 +104,13 @@ export default class AutocompleteCommand extends Command {
         }
 
         return normalizedChoices;
+    }
+
+    createFullCompletionValue(completion, focused, focusedWithoutLastWord) {
+        const clampedStart = Math.max(0, Math.min(completion.start, focused.length));
+        const clampedEnd = Math.max(clampedStart, Math.min(completion.end, focused.length));
+
+        return `${focused.slice(0, clampedStart)}${completion.text}${focused.slice(clampedEnd)}`;
     }
 
     cacheAutocompleteSelection(key, interaction, fullValue) {
@@ -132,31 +134,46 @@ export default class AutocompleteCommand extends Command {
         return `${AutocompleteCommand.autocompletePreviewPrefix}${fullValue.slice(-tailLength)}`;
     }
 
-    findAutocompleteSelectionMatch(inputValue, interaction) {
+    findAutocompleteSelectionValue(inputValue, interaction) {
         const contextMap = this.getAutocompleteContextMap(interaction);
         if(!contextMap) return null;
 
+        const directMatches = [];
+        const partialMatches = [];
         for(const key of contextMap.keys()) {
-            if(inputValue.startsWith(key)) return {
+            if(inputValue.startsWith(key)) {
+                directMatches.push(key);
+                continue;
+            }
+
+            if(key.startsWith(inputValue)) partialMatches.push(key);
+        }
+
+        directMatches.sort((a, b) => b.length - a.length);
+        for(const key of directMatches) {
+            const entry = contextMap.get(key);
+            if(!entry || entry.expiresAt <= Date.now()) continue;
+
+            return {
                 key,
-                entry: contextMap.get(key),
+                fullValue: entry.fullValue,
                 suffix: inputValue.slice(key.length),
             };
         }
-        return null;
-    }
 
-    removeAutocompleteSelection(key, targetEntry, interaction) {
-        const contextMap = this.getAutocompleteContextMap(interaction);
-        if(!contextMap) return;
+        partialMatches.sort((a, b) => b.length - a.length);
+        for(const key of partialMatches) {
+            const entry = contextMap.get(key);
+            if(!entry || entry.expiresAt <= Date.now()) continue;
 
-        const entry = contextMap.get(key);
-        if(!entry || entry !== targetEntry) return;
-
-        contextMap.delete(key);
-        if(contextMap.size === 0) {
-            AutocompleteCommand.autocompleteSelectionCache.delete(this.getAutocompleteContextKey(interaction));
+            return {
+                key,
+                fullValue: entry.fullValue.slice(0, entry.fullValue.length - (key.length - inputValue.length)),
+                suffix: '',
+            };
         }
+
+        return null;
     }
 
     getAutocompleteContextKey(interaction) {
