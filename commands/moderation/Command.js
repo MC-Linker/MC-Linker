@@ -31,7 +31,7 @@ export default class Command extends AutocompleteCommand {
                 .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
         }
 
-        const respondArray = normalizeCompletions(response.data, focused);
+        const respondArray = this.normalizeCompletions(response.data, focused);
         if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = MaxAutoCompleteChoices;
 
         return interaction.respond(respondArray)
@@ -77,16 +77,16 @@ export default class Command extends AutocompleteCommand {
 
         return command;
     }
-}
 
-function normalizeCompletions(data, focused) {
-    const rawCompletions = Array.isArray(data) ? data : [];
+    normalizeCompletions(data, focused) {
+        const rawCompletions = Array.isArray(data) ? data : [];
 
-    return rawCompletions.map(completion => {
-        // Prepend the focused value to the completion
-        return {
-            name: `${focused} ${completion}`,
-            value: `${focused} ${completion}`,
-        };
-    });
+        return rawCompletions.map(completion => {
+            // Prepend the focused value to the completion
+            return {
+                name: `${focused} ${completion}`,
+                value: `${focused} ${completion}`,
+            };
+        });
+    }
 }

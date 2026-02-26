@@ -2,9 +2,6 @@ import { MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
-import commands from '../../resources/data/commands.json' with { type: 'json' };
-
-const commandNames = Object.keys(commands);
 
 export default class Disable extends AutocompleteCommand {
 
@@ -17,25 +14,27 @@ export default class Disable extends AutocompleteCommand {
         });
     }
 
-    autocomplete(interaction, client) {
-        const subcommand = interaction.options.getSubcommand();
-        const focused = interaction.options.getFocused().toLowerCase();
+    async autocomplete(interaction, client) {
+        const focused = interaction.options.getFocused();
+        const server = client.serverConnections.cache.get(interaction.guildId);
 
-        const matchingKeys = [];
-        if(subcommand === 'chat-commands') {
-            for(const name of commandNames) {
-                if(!name.includes(focused)) continue;
-
-                matchingKeys.push({
-                    name,
-                    value: name,
-                });
-            }
-
-            if(matchingKeys.length > MaxAutoCompleteChoices) matchingKeys.length = 25;
+        if(!server) {
+            return interaction.respond([])
+                .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
         }
 
-        interaction.respond(matchingKeys)
+        const userConnection = client.userConnections.cache.get(interaction.user.id);
+        const response = await server.protocol.commandCompletions(focused, userConnection?.getUUID(server));
+
+        if(response?.status !== 'success') {
+            return interaction.respond([])
+                .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
+        }
+
+        const respondArray = this.normalizeCompletions(response.data, focused);
+        if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = MaxAutoCompleteChoices;
+
+        return interaction.respond(respondArray)
             .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
     }
 
@@ -95,5 +94,17 @@ export default class Disable extends AutocompleteCommand {
         function getFormattedName(type, name) {
             return name;
         }
+    }
+
+    normalizeCompletions(data, focused) {
+        const rawCompletions = Array.isArray(data) ? data : [];
+
+        return rawCompletions.map(completion => {
+            // Prepend the focused value to the completion
+            return {
+                name: `${focused} ${completion}`,
+                value: `${focused} ${completion}`,
+            };
+        });
     }
 }
