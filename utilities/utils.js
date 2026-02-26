@@ -794,14 +794,12 @@ export function stripColorCodes(text) {
 export function codeBlockFromCommandResponse(response) {
     //Parse color codes to ansi
     let parsedResponse = response.replace(colorPattern, (_, color1, format1, word1, color2, format2, word2) => {
-        console.log(_, color1, format1, word1, color2, format2, word2);
         const color = color1 ?? color2;
         const format = format1 ?? format2;
         const ansiColor = colorCodesToAnsi[color] ?? formattingCodesToAnsi[color];
         const ansiFormat = colorCodesToAnsi[format] ?? formattingCodesToAnsi[format];
         if(!ansiColor && !ansiFormat) return '';
 
-        console.log(`Replacing ${word1 ?? word2 ?? ''} with ansi code ${ansiColor} and format code ${ansiFormat}`);
         // Reset after every word
         return `\u001b[${ansiFormat ?? '0'};${ansiColor ?? '37'}m${word1 ?? word2 ?? ''}\u001b[0m`;
     });
