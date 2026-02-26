@@ -1,7 +1,7 @@
 import WSEvent from '../WSEvent.js';
 import logger from '../../utilities/logger.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
-import { fetchMembersIfRoleCacheDiffers } from '../../utilities/utils.js';
+import { fetchMembersIfCacheDiffers } from '../../utilities/utils.js';
 
 export default class SyncSyncedRoleMembers extends WSEvent {
 
@@ -48,7 +48,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             discordRole = await guild.roles.fetch(data.id);
             if(!discordRole) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
-            await fetchMembersIfRoleCacheDiffers(client, [discordRole], guild);
+            await fetchMembersIfCacheDiffers(client, guild);
         }
         catch(err) {
             logger.error(err, `Failed to fetch guild ${server.id} for synced role sync`);

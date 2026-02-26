@@ -1,7 +1,7 @@
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
-import { fetchMembersIfRoleCacheDiffers, MaxAutoCompleteChoices } from '../../utilities/utils.js';
+import { fetchMembersIfCacheDiffers, MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import { ButtonStyle } from 'discord.js';
@@ -75,7 +75,7 @@ export default class RoleSync extends AutocompleteCommand {
             else if(server.syncedRoles?.some(r => r.name === name && r.isGroup === isGroup))
                 return interaction.replyTl(keys.commands.rolesync.errors.team_group_already_synced);
 
-            await fetchMembersIfRoleCacheDiffers(client, [role], interaction.guild);
+            await fetchMembersIfCacheDiffers(client, interaction.guild);
 
             const resp = await server.protocol.addSyncedRole({
                 id: role.id,
