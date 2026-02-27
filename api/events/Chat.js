@@ -33,7 +33,7 @@ export default class Chat extends WSEvent {
     });
 
     /**
-     * The rate limiter for chat-channel endpoints of type chat.
+     * The rate limiter for chat-channel endpoints of type chat or console.
      * @type {RateLimiterMemory}
      */
     rateLimiterChats = new RateLimiterMemory({
@@ -45,7 +45,7 @@ export default class Chat extends WSEvent {
     constructor() {
         super({
             event: 'chat',
-            rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
+            rateLimiter: data => data.type === 'chat' || data.type === 'console' ? this.rateLimiterChats : this.rateLimiterChatChannels,
         });
     }
 
@@ -111,7 +111,8 @@ export default class Chat extends WSEvent {
                     const appendedRaw = lastConsoleMessage ? `${lastConsoleMessage.raw}\n${message}` : message;
                     const appendedContent = toAnsiCodeBlock(appendedRaw); // Console is already sent with ansi
 
-                    if(lastConsoleMessage && appendedContent.length <= 2000) {
+                    // 1
+                    if(lastConsoleMessage && appendedContent.length <= 1000) {
                         try {
                             const previousMessage = await discordChannel.messages.fetch(lastConsoleMessage.id);
                             await previousMessage.edit({ content: appendedContent });
