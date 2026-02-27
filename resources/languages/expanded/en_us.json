@@ -1898,13 +1898,18 @@
                             "type": "SelectMenu",
                             "custom_id": "log",
                             "min_values": 1,
-                            "max_values": 10,
-                            "placeholder": "Select up to 10 message types.",
+                            "max_values": 11,
+                            "placeholder": "Select up to 11 message types.",
                             "options": [
                                 {
                                     "label": "Chat Messages",
                                     "description": "Send a message whenever a player chats.",
                                     "value": "chat"
+                                },
+                                {
+                                    "label": "Console Messages",
+                                    "description": "Sends the console output to the channel.",
+                                    "value": "console"
                                 },
                                 {
                                     "label": "Join Messages",

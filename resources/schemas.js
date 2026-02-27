@@ -16,7 +16,7 @@ export default {
             _id: { type: String },
             types: [{
                 type: String,
-                enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
+                enum: ['chat', 'console', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
             }],
             allowDiscordToMinecraft: Boolean,
             webhook: String,

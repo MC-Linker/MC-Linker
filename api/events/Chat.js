@@ -1,8 +1,8 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import Discord, { RESTJSONErrorCodes } from 'discord.js';
+import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
-import { getMinecraftAvatarURL, searchAdvancements } from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse, getMinecraftAvatarURL, searchAdvancements } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 import logger from '../../utilities/logger.js';
 
@@ -10,8 +10,14 @@ import logger from '../../utilities/logger.js';
 export default class Chat extends WSEvent {
 
     /**
+     * Tracks the latest console message per discord channel for append-by-edit behavior.
+     * @type {Map<string, { id: string, raw: string }>}
+     */
+    lastConsoleMessages = new Map();
+
+    /**
      * @typedef {Object} ChatRequest
-     * @property {'chat'|'join'|'quit'|'death'|'advancement'|'player_command'|'console_command'|'block_command'|'start'|'close'} type
+     * @property {'chat'|'console'|'join'|'quit'|'death'|'advancement'|'player_command'|'console_command'|'block_command'|'start'|'close'} type
      * @property {string} message
      * @property {string} [player] - Required for type 'chat', 'join', 'quit', 'death', 'advancement', 'player_command'
      */
@@ -53,6 +59,7 @@ export default class Chat extends WSEvent {
     async execute(data, server, client) {
         const { type, player } = data;
         let message = data.message ?? '';
+        const isRateLimitedError = err => err instanceof RateLimitError || err?.status === 429 || err?.code === RESTJSONErrorCodes.ChannelSendRateLimit || err?.code === RESTJSONErrorCodes.ServerSendRateLimit;
 
         const channels = server.chatChannels.filter(c => c.types.includes(type));
         if(channels.length === 0) return; //No channels to send to
@@ -90,6 +97,68 @@ export default class Chat extends WSEvent {
         else if(type === 'death' && (!message || message === '')) placeholders.message = addPh(keys.api.plugin.success.default_death_message, placeholders);
 
         const guild = await client.guilds.fetch(guildId);
+
+        if(type === 'console') {
+            if(!message) return;
+
+            for(const channel of channels) {
+                try {
+                    logger.debug(`[Socket.io][Chat] Fetching channel for console message`);
+                    const discordChannel = await guild.channels.fetch(channel.id);
+                    if(!discordChannel) continue;
+
+                    const lastConsoleMessage = this.lastConsoleMessages.get(channel.id);
+                    const appendedRaw = lastConsoleMessage ? `${lastConsoleMessage.raw}\n${message}` : message;
+                    const appendedContent = codeBlockFromCommandResponse(appendedRaw);
+
+                    if(lastConsoleMessage && appendedContent.length <= 2000) {
+                        try {
+                            const previousMessage = await discordChannel.messages.fetch(lastConsoleMessage.id);
+                            await previousMessage.edit({ content: appendedContent });
+                            this.lastConsoleMessages.set(channel.id, {
+                                id: lastConsoleMessage.id,
+                                raw: appendedRaw,
+                            });
+                            continue;
+                        }
+                        catch(err) {
+                            if(isRateLimitedError(err)) {
+                                logger.debug(`[Socket.io][Chat] Rate limited while editing console message in channel ${channel.id}`);
+                                continue;
+                            }
+                        }
+                    }
+
+                    const content = codeBlockFromCommandResponse(message);
+                    logger.debug(`[Socket.io][Chat] Sending console message to channel`);
+                    const sentMessage = await discordChannel.send({ content });
+                    this.lastConsoleMessages.set(channel.id, {
+                        id: sentMessage.id,
+                        raw: message,
+                    });
+                }
+                catch(err) {
+                    if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                        logger.debug(`[Socket.io][Chat] Removing unknown channel from chat channels`);
+                        this.lastConsoleMessages.delete(channel.id);
+                        const regChannel = await server.protocol.removeChatChannel(channel);
+                        if(!regChannel) continue;
+                        await server.edit({ chatChannels: regChannel.data });
+                        continue;
+                    }
+
+                    if(isRateLimitedError(err)) {
+                        logger.debug(`[Socket.io][Chat] Rate limited while sending console message to channel ${channel.id}`);
+                        continue;
+                    }
+
+                    logger.error(`[Socket.io][Chat] Error sending console message: ${err.message}`);
+                }
+            }
+
+            return;
+        }
+
         const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() });
         if(type !== 'chat') {
             for(const channel of channels) {
@@ -108,6 +177,7 @@ export default class Chat extends WSEvent {
                         if(!regChannel) continue;
                         await server.edit({ chatChannels: regChannel.data });
                     }
+                    else if(isRateLimitedError(err)) logger.debug(`[Socket.io][Chat] Rate limited while sending non-chat message to channel ${channel.id}`);
                     logger.error(`[Socket.io][Chat] Error fetching channel: ${err.message}`);
                 }
             }
@@ -158,7 +228,9 @@ export default class Chat extends WSEvent {
 
             if(!channel.webhook) {
                 logger.debug(`[Socket.io][Chat] No webhook registered for channel ${discordChannel.id}. Sending message normally.`);
-                await discordChannel.send({ embeds: [chatEmbed] }).catch(() => {});
+                await discordChannel.send({ embeds: [chatEmbed] }).catch(err => {
+                    if(isRateLimitedError(err)) logger.debug(`[Socket.io][Chat] Rate limited while sending chat message to channel ${discordChannel.id}`);
+                });
                 continue;
             }
 
@@ -207,6 +279,11 @@ export default class Chat extends WSEvent {
             }
             catch(err) {
                 try {
+                    if(isRateLimitedError(err)) {
+                        logger.debug(`[Socket.io][Chat] Rate limited while sending webhook message to channel ${discordChannel.id}`);
+                        continue;
+                    }
+
                     logger.error(`[Socket.io][Chat] Error sending message via webhook: ${err.message}`);
                     if(discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionFlagsBits.ManageWebhooks))
                         await discordChannel?.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] });
