@@ -28,24 +28,24 @@ export default class Chat extends WSEvent {
      */
     rateLimiterChatChannels = new RateLimiterMemory({
         keyPrefix: 'chatchannels',
-        points: 2, // 2 updates
+        points: 10, // 5 updates
         duration: 1, // per second
     });
 
     /**
-     * The rate limiter for chat-channel endpoints of type chat or console.
+     * The rate limiter for chat-channel endpoints of type chat.
      * @type {RateLimiterMemory}
      */
     rateLimiterChats = new RateLimiterMemory({
         keyPrefix: 'chats',
-        points: 5, // 5 messages
-        duration: 2, // per 2 seconds
+        points: 10, // 10 messages
+        duration: 1, // per 1 seconds
     });
 
     constructor() {
         super({
             event: 'chat',
-            rateLimiter: data => data.type === 'chat' || data.type === 'console' ? this.rateLimiterChats : this.rateLimiterChatChannels,
+            rateLimiter: data => data.type === 'chat' ? this.rateLimiterChats : this.rateLimiterChatChannels,
         });
     }
 
