@@ -28,17 +28,17 @@ export default class Chat extends WSEvent {
      */
     rateLimiterChatChannels = new RateLimiterMemory({
         keyPrefix: 'chatchannels',
-        points: 10, // 5 updates
+        points: 5, // 5 updates
         duration: 1, // per second
     });
 
     /**
-     * The rate limiter for chat-channel endpoints of type chat.
+     * The rate limiter for chat-channel endpoints of type chat (webhooks).
      * @type {RateLimiterMemory}
      */
     rateLimiterChats = new RateLimiterMemory({
         keyPrefix: 'chats',
-        points: 20, // 20 messages
+        points: 5, // 5 messages
         duration: 1, // per 1 seconds
     });
 
