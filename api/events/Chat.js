@@ -108,36 +108,36 @@ export default class Chat extends WSEvent {
                     if(!discordChannel) continue;
 
                     const lastConsoleMessage = this.lastConsoleMessages.get(channel.id);
-                    // newlines already included
-                    const appendedRaw = lastConsoleMessage ? `${lastConsoleMessage.raw}${message}` : message;
-                    const appendedContent = toAnsiCodeBlock(appendedRaw); // Console is already sent with ansi
 
                     // after 1000 chars, ansi coloring vanishes
-                    if(lastConsoleMessage && appendedContent.length <= 1000) {
-                        try {
-                            const previousMessage = await discordChannel.messages.fetch(lastConsoleMessage.id);
-                            await previousMessage.edit({ content: appendedContent });
-                            this.lastConsoleMessages.set(channel.id, {
-                                id: lastConsoleMessage.id,
-                                raw: appendedRaw,
-                            });
-                            continue;
-                        }
-                        catch(err) {
-                            if(isRateLimitedError(err)) {
-                                logger.debug(`[Socket.io][Chat] Rate limited while editing console message in channel ${channel.id}`);
-                                continue;
-                            }
-                        }
+                    if(!lastConsoleMessage || lastConsoleMessage.raw.length + message.length > 1000) {
+                        const content = toAnsiCodeBlock(message);
+                        logger.debug(`[Socket.io][Chat] Sending console message to channel`);
+                        const sentMessage = await discordChannel.send({ content });
+                        this.lastConsoleMessages.set(channel.id, {
+                            id: sentMessage.id,
+                            raw: message,
+                        });
+                        continue;
                     }
 
-                    const content = toAnsiCodeBlock(message);
-                    logger.debug(`[Socket.io][Chat] Sending console message to channel`);
-                    const sentMessage = await discordChannel.send({ content });
-                    this.lastConsoleMessages.set(channel.id, {
-                        id: sentMessage.id,
-                        raw: message,
-                    });
+                    // newlines already included
+                    const appendedRaw = lastConsoleMessage ? `${lastConsoleMessage.raw}${message}` : message;
+                    const appendedContent = toAnsiCodeBlock(appendedRaw); // Console is sent with ansi
+
+                    try {
+                        const previousMessage = await discordChannel.messages.fetch(lastConsoleMessage.id);
+                        await previousMessage.edit({ content: appendedContent });
+                        this.lastConsoleMessages.set(channel.id, {
+                            id: lastConsoleMessage.id,
+                            raw: appendedRaw,
+                        });
+                    }
+                    catch(err) {
+                        if(isRateLimitedError(err)) {
+                            logger.debug(`[Socket.io][Chat] Rate limited while editing console message in channel ${channel.id}`);
+                        }
+                    }
                 }
                 catch(err) {
                     if(err.code === RESTJSONErrorCodes.UnknownChannel) {

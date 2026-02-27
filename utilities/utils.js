@@ -799,14 +799,14 @@ export function stripAnsiCodes(text) {
 /**
  * Wraps a string in a discord code block with the ansi language for color formatting.
  * If the string is too long, it will be truncated and an ellipsis will be added at the end.
- * If the string contains more than 1000 characters, all ansi codes will be stripped to prevent them from vanishing.
+ * If the string contains more than 1000 characters, all ansi codes will be stripped (discord won't parse them).
  * @param {string} text - The text to wrap in a code block.
  * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
  */
 export function toAnsiCodeBlock(text) {
+    text = text.replace(/\u001b\[m/g, '\u001b[0m'); // Discord things
     // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
     if(text.length >= 1000) text = stripAnsiCodes(text);
-    else text = text.replace(/\u001b\[m/g, '\u001b[0m'); // Discord things
 
     // -12 for code block (```ansi\n\n```)
     if(text.length > MaxEmbedDescriptionLength - 12) text = `${text.substring(0, MaxEmbedDescriptionLength - 13)}…`;
