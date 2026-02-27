@@ -2,7 +2,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
-import { codeBlockFromCommandResponse, getMinecraftAvatarURL, searchAdvancements } from '../../utilities/utils.js';
+import { getMinecraftAvatarURL, searchAdvancements, toAnsiCodeBlock } from '../../utilities/utils.js';
 import { addPh, getEmbed, ph } from '../../utilities/messages.js';
 import logger from '../../utilities/logger.js';
 
@@ -109,7 +109,7 @@ export default class Chat extends WSEvent {
 
                     const lastConsoleMessage = this.lastConsoleMessages.get(channel.id);
                     const appendedRaw = lastConsoleMessage ? `${lastConsoleMessage.raw}\n${message}` : message;
-                    const appendedContent = codeBlockFromCommandResponse(appendedRaw);
+                    const appendedContent = toAnsiCodeBlock(appendedRaw); // Console is already sent with ansi
 
                     if(lastConsoleMessage && appendedContent.length <= 2000) {
                         try {
@@ -129,7 +129,7 @@ export default class Chat extends WSEvent {
                         }
                     }
 
-                    const content = codeBlockFromCommandResponse(message);
+                    const content = toAnsiCodeBlock(message);
                     logger.debug(`[Socket.io][Chat] Sending console message to channel`);
                     const sentMessage = await discordChannel.send({ content });
                     this.lastConsoleMessages.set(channel.id, {

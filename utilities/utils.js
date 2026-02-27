@@ -788,6 +788,34 @@ export function stripColorCodes(text) {
 }
 
 /**
+ * Removes all ansi codes from a string.
+ * @param {string} text - The text to remove ansi codes from.
+ * @returns {string} - The text without ansi codes.
+ */
+export function stripAnsiCodes(text) {
+    return text.replace(/\u001b\[[0-9;]*m/g, '');
+}
+
+/**
+ * Wraps a string in a discord code block with the ansi language for color formatting.
+ * If the string is too long, it will be truncated and an ellipsis will be added at the end.
+ * If the string contains more than 1000 characters, all ansi codes will be stripped to prevent them from vanishing.
+ * @param {string} text - The text to wrap in a code block.
+ * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
+ */
+export function toAnsiCodeBlock(text) {
+    // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
+    if(text.length >= 1000) text = stripAnsiCodes(text);
+    else text = text.replace(/\u001b\[m/g, '\u001b[0m'); // Discord things
+
+    // -12 for code block (```ansi\n\n```)
+    if(text.length > MaxEmbedDescriptionLength - 12) text = `${text.substring(0, MaxEmbedDescriptionLength - 13)}…`;
+
+    //Wrap in discord code block for color
+    return Discord.codeBlock('ansi', text);
+}
+
+/**
  * Creates a discord code block from a minecraft command response (with colors codes using ansi).
  * @param {string} response - The command response.
  * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
@@ -805,14 +833,7 @@ export function codeBlockFromCommandResponse(response) {
         return `\u001b[${ansiFormat ?? '0'};${ansiColor ?? '37'}m${word1 ?? word2 ?? ''}\u001b[0m`;
     });
 
-    // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
-    if(parsedResponse.length >= 1000) parsedResponse = stripColorCodes(response);
-
-    // -12 for code block (```ansi\n\n```)
-    if(parsedResponse.length > MaxEmbedDescriptionLength - 12) parsedResponse = `${parsedResponse.substring(0, MaxEmbedDescriptionLength - 15)}...`;
-
-    //Wrap in discord code block for color
-    return Discord.codeBlock('ansi', parsedResponse);
+    return toAnsiCodeBlock(parsedResponse);
 }
 
 /**
