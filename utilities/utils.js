@@ -74,7 +74,7 @@ const mcData = MinecraftData(MinecraftDataVersion);
  * @returns {Promise<string>} - The url of the avatar.
  */
 export async function getMinecraftAvatarURL(username) {
-    const url = `https://minotar.net/helm/${username}?rnd=${Math.random()}`; //Random query to prevent caching
+    const url = `https://minotar.net/helm/${username}`;
     try {
         const res = await fetch(url);
         //If the user doesn't exist, return steve

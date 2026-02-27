@@ -38,7 +38,7 @@ export default class Chat extends WSEvent {
      */
     rateLimiterChats = new RateLimiterMemory({
         keyPrefix: 'chats',
-        points: 10, // 10 messages
+        points: 20, // 20 messages
         duration: 1, // per 1 seconds
     });
 
@@ -108,10 +108,11 @@ export default class Chat extends WSEvent {
                     if(!discordChannel) continue;
 
                     const lastConsoleMessage = this.lastConsoleMessages.get(channel.id);
-                    const appendedRaw = lastConsoleMessage ? `${lastConsoleMessage.raw}\n${message}` : message;
+                    // newlines already included
+                    const appendedRaw = lastConsoleMessage ? `${lastConsoleMessage.raw}${message}` : message;
                     const appendedContent = toAnsiCodeBlock(appendedRaw); // Console is already sent with ansi
 
-                    // 1
+                    // after 1000 chars, ansi coloring vanishes
                     if(lastConsoleMessage && appendedContent.length <= 1000) {
                         try {
                             const previousMessage = await discordChannel.messages.fetch(lastConsoleMessage.id);
