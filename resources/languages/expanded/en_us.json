@@ -3799,12 +3799,6 @@
                             "name": "discord-to-minecraft",
                             "description": "Enable chat messages from Discord to Minecraft. (Default: true)",
                             "required": false
-                        },
-                        {
-                            "type": "Boolean",
-                            "name": "webhooks",
-                            "description": "Enable webhook mode for chat messages. (Default: true)",
-                            "required": false
                         }
                     ]
                 },

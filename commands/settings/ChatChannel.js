@@ -26,12 +26,8 @@ export default class ChatChannel extends Command {
             /** @type {Discord.BaseGuildTextChannel} */
             const channel = args[1];
             const allowDiscordToMinecraft = args[2] ?? true;
-            const useWebhooks = args[3] ?? true;
 
             if(!canSendMessages(interaction.guild.members.me, channel)) return interaction.replyTl(keys.api.utils.errors.not_sendable);
-            else if(useWebhooks && !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageWebhooks)) {
-                return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
-            }
 
             const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
             let menu;
@@ -48,16 +44,19 @@ export default class ChatChannel extends Command {
 
             //Create webhook for channel
             let webhook;
-            if(useWebhooks && menu.values.includes('chat')) {
+            if(menu.values.includes('chat')) {
+                if(!channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageWebhooks))
+                    return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
+
                 try {
-                    if(channel.isThread()) webhook = await channel.parent.createWebhook({
+                    const options = {
                         name: 'ChatChannel',
                         reason: 'ChatChannel to Minecraft',
-                    });
-                    else webhook = await channel.createWebhook({
-                        name: 'ChatChannel',
-                        reason: 'ChatChannel to Minecraft',
-                    });
+                        avatarURL: 'https://mclinker.com/mc-linker.svg',
+                    };
+
+                    if(channel.isThread()) webhook = await channel.parent.createWebhook(options);
+                    else webhook = await channel.createWebhook(options);
                 }
                 catch(_) {
                     return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook);
