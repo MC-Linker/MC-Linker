@@ -4,6 +4,7 @@ import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBi
 import { addTranslatedResponses, getComponent, getModal, getReplyOptions } from '../utilities/messages.js';
 import logger from '../utilities/logger.js';
 import { disableComponents } from '../utilities/utils.js';
+import CustomBotConnectionManager from '../structures/connections/managers/CustomBotConnectionManager.js';
 
 export default class Customize extends Command {
 
@@ -21,7 +22,7 @@ export default class Customize extends Command {
         if(!await super.execute(interaction, client, args, server)) return;
 
         // If user is not subscribed, let them customize server appearance
-        if(!interaction.entitlements.find(e => e.skuId === '1166098447665995807')) {
+        if(!interaction.entitlements.find(e => e.skuId === CustomBotConnectionManager.CUSTOM_BOT_SKU_ID)) {
             if(!interaction.inGuild()) return await interaction.replyTl(keys.commands.customize.warnings.no_entitlement_guild);
 
             if(!interaction.memberPermissions.any([PermissionFlagsBits.Administrator, PermissionFlagsBits.ManageGuild])) {

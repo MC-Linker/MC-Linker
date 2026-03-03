@@ -2,6 +2,7 @@ import Event from '../structures/Event.js';
 import { getReplyOptions, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { Events } from 'discord.js';
+import logger from '../utilities/logger.js';
 
 /**
  * Handles the Discord entitlementCreate event for the MC-Linker bot.
@@ -16,6 +17,7 @@ export default class EntitlementCreate extends Event {
 
     async execute(client, entitlement) {
         const user = await entitlement.fetchUser();
+        logger.info(`Entitlement created by user ${user.displayName} (${user.id})`);
         const dm = await user.createDM();
         await dm.send(getReplyOptions(keys.custom_bot.success.subscribed, await ph.commandName('customize', true)));
     }

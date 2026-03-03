@@ -24,6 +24,12 @@ export default class CustomBotConnectionManager extends ConnectionManager {
     static STARTING_PORT = 30_000;
 
     /**
+     * The SKU required for custom bot entitlement.
+     * @type {string}
+     */
+    static CUSTOM_BOT_SKU_ID = '1166098447665995807';
+
+    /**
      * @type {import('discord.js').Collection<string, CustomBotConnection>}
      */
     cache;
@@ -267,6 +273,53 @@ export default class CustomBotConnectionManager extends ConnectionManager {
      */
     updateAllBots() {
         return Promise.allSettled(this.cache.map(c => c.update()));
+    }
+
+    /**
+     * Checks whether the user has an active entitlement for custom bots.
+     * @param {string} userId - The user id to check.
+     * @returns {Promise<boolean>}
+     */
+    async hasCustomBotEntitlement(userId) {
+        const entitlements = await this.client.application.entitlements.fetch({
+            user: userId,
+            skus: [CustomBotConnectionManager.CUSTOM_BOT_SKU_ID],
+            excludeEnded: true,
+        }).catch(err => {
+            logger.error(err, `Failed to fetch entitlements for user ${userId}`);
+            return null;
+        });
+        if(!entitlements) return true;
+
+        return entitlements.some(entitlement => entitlement.skuId === CustomBotConnectionManager.CUSTOM_BOT_SKU_ID);
+    }
+
+    /**
+     * Disconnects all custom bots whose owners no longer have the custom bot entitlement.
+     */
+    async disconnectUsersWithoutEntitlement() {
+        const customBots = [...this.cache.values()];
+        if(customBots.length === 0) return;
+
+        const skus = await this.client.application.fetchSKUs()
+            .catch(err => {
+                logger.error(err, 'Failed to fetch application SKUs for startup entitlement reconciliation');
+                return null;
+            });
+        if(!skus || skus.size === 0) return;
+
+        for(const customBotConnection of customBots) {
+            const hasEntitlement = await this.hasCustomBotEntitlement(customBotConnection.ownerId);
+            if(hasEntitlement) continue;
+
+            try {
+                await this.disconnect(customBotConnection);
+                logger.info(`Disconnected custom bot for user ${customBotConnection.ownerId} due to missing entitlement`);
+            }
+            catch(err) {
+                logger.error(err, `Failed to disconnect custom bot for user ${customBotConnection.ownerId} after entitlement check`);
+            }
+        }
     }
 
     /**
