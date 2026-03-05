@@ -17,6 +17,7 @@ export default class ChatDispatchHandler {
      * @property {boolean} batchMode
      */
 
+
     /**
      * Result returned by the onProcess callback to control queue consumption and scheduling.
      * @typedef {Object} ProcessResult
@@ -28,8 +29,7 @@ export default class ChatDispatchHandler {
     /**
      * @param {Object} options
      * @param {number} [options.batchThreshold=5]
-     * @param {number} [options.chatPoints=5]
-     * @param {number} [options.channelPoints=5]
+     * @param {number} [options.points=4]
      * @param {number} [options.duration=1]
      * @param {(params: { key: string, bucket: QueueBucket, items: Object[], batchMode: boolean }) => Promise<{ consumed: number, retryMs?: number, batchMode?: boolean }>} options.onProcess
      */
@@ -47,22 +47,12 @@ export default class ChatDispatchHandler {
         this.onProcess = options.onProcess;
 
         /**
-         * Rate limiter for chat (webhook) destinations.
+         * Rate limiter for webhook destinations (all chat channels use webhooks).
          * @type {RateLimiterMemory}
          */
-        this.chatLimiter = new RateLimiterMemory({
+        this.limiter = new RateLimiterMemory({
             keyPrefix: 'chat-dispatch-webhook',
-            points: options.chatPoints ?? 4, // 1 less than discord
-            duration: options.duration ?? 1,
-        });
-
-        /**
-         * Rate limiter for channel (non-chat) destinations.
-         * @type {RateLimiterMemory}
-         */
-        this.channelLimiter = new RateLimiterMemory({
-            keyPrefix: 'chat-dispatch-channel',
-            points: options.channelPoints ?? 4, // 1 less than discord
+            points: options.points ?? 4, // 1 less than discord
             duration: options.duration ?? 1,
         });
 
@@ -138,7 +128,7 @@ export default class ChatDispatchHandler {
             while(state.items.length > 0 && iterations < 12) {
                 iterations++;
 
-                const limiter = state.bucket === 'chat' ? this.chatLimiter : this.channelLimiter;
+                const limiter = this.limiter;
                 try {
                     await limiter.consume(key);
                 }

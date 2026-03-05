@@ -1995,10 +1995,6 @@
                                     "value": "%channel_types%"
                                 },
                                 {
-                                    "name": "Webhook Mode",
-                                    "value": "%webhooks%"
-                                },
-                                {
                                     "name": "Discord To Minecraft",
                                     "value": "%discord_to_minecraft%"
                                 }
@@ -2521,7 +2517,7 @@
                     "embeds": [
                         {
                             "title": "No Webhook Permission",
-                            "description": "The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission."
+                            "description": "The Bot does not have the `Manage Webhooks` permission. Please add the permission."
                         }
                     ],
                     "console": "No webhook permission"

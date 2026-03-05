@@ -42,34 +42,32 @@ export default class ChatChannel extends Command {
                 return interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
             }
 
-            //Create webhook for channel
+            //Create webhook for channel (all chat channels use webhooks for separate rate limit bucket)
+            if(!channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageWebhooks))
+                return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
+
             let webhook;
-            if(menu.values.includes('chat')) {
-                if(!channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageWebhooks))
-                    return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
+            try {
+                const options = {
+                    name: 'ChatChannel',
+                    reason: 'ChatChannel to Minecraft',
+                    avatarURL: 'https://mclinker.com/mc-linker.svg',
+                };
 
-                try {
-                    const options = {
-                        name: 'ChatChannel',
-                        reason: 'ChatChannel to Minecraft',
-                        avatarURL: 'https://mclinker.com/mc-linker.svg',
-                    };
-
-                    if(channel.isThread()) webhook = await channel.parent.createWebhook(options);
-                    else webhook = await channel.createWebhook(options);
-                }
-                catch(_) {
-                    return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook);
-                }
+                if(channel.isThread()) webhook = await channel.parent.createWebhook(options);
+                else webhook = await channel.createWebhook(options);
+            }
+            catch(_) {
+                return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook);
             }
 
             const resp = await server.protocol.addChatChannel({
                 id: channel.id,
-                webhook: webhook?.id,
+                webhook: webhook.id,
                 types: menu.values,
                 allowDiscordToMinecraft,
             });
-            if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook?.delete();
+            if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook.delete();
 
             await server.edit({ chatChannels: resp.data });
 
@@ -103,7 +101,6 @@ export default class ChatChannel extends Command {
                     ph.std(interaction),
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
-                        webhooks: channel.webhook ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
                         discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
                         channel_types: formattedTypes,
                     },

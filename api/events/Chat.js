@@ -42,6 +42,7 @@ export default class Chat extends WSEvent {
      * @property {string} serverId
      * @property {string} guildId
      * @property {string} channelId
+     * @property {string} webhookId
      * @property {string} raw
      */
 
@@ -52,6 +53,7 @@ export default class Chat extends WSEvent {
      * @property {string} serverId
      * @property {string} guildId
      * @property {string} channelId
+     * @property {string} webhookId
      * @property {Discord.EmbedBuilder} embed
      */
 
@@ -69,8 +71,7 @@ export default class Chat extends WSEvent {
 
         this.dispatchHandler = new ChatDispatchHandler({
             batchThreshold: 5,
-            chatPoints: 5,
-            channelPoints: 5,
+            points: 4,
             duration: 1,
             onProcess: this.processDispatchQueue.bind(this),
         });
@@ -152,12 +153,16 @@ export default class Chat extends WSEvent {
             if(!message) return;
 
             for(const channel of channels) {
-                this.dispatchHandler.enqueue(channel.id, 'channel', {
+                const webhookId = await this.ensureWebhookForChatChannel(channel, server, guild);
+                if(!webhookId) continue;
+
+                this.dispatchHandler.enqueue(webhookId, 'channel', {
                     kind: 'console',
                     client,
                     serverId: server.id,
                     guildId,
                     channelId: channel.id,
+                    webhookId,
                     raw: message,
                 });
             }
@@ -166,12 +171,16 @@ export default class Chat extends WSEvent {
             const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() });
 
             for(const channel of channels) {
-                this.dispatchHandler.enqueue(channel.id, 'channel', {
+                const webhookId = await this.ensureWebhookForChatChannel(channel, server, guild);
+                if(!webhookId) continue;
+
+                this.dispatchHandler.enqueue(webhookId, 'channel', {
                     kind: 'embed',
                     client,
                     serverId: server.id,
                     guildId,
                     channelId: channel.id,
+                    webhookId,
                     embed: chatEmbed,
                 });
             }
@@ -286,25 +295,30 @@ export default class Chat extends WSEvent {
         const firstItem = items[0];
         if(!firstItem) return { consumed: 0 };
 
-        const { client, serverId, guildId, channelId } = firstItem;
+        const { client, serverId, guildId, channelId, webhookId } = firstItem;
         const server = client.serverConnections.cache.get(serverId);
         if(!server) return { consumed: items.length };
 
         const guild = await client.guilds.fetch(guildId).catch(() => null);
         if(!guild) return { consumed: items.length };
 
+        const chatChannel = server.chatChannels.find(c => c.id === channelId);
+        if(!chatChannel) return { consumed: items.length };
+
         const discordChannel = await guild.channels.fetch(channelId)
             .catch(async err => {
                 if(err?.code === RESTJSONErrorCodes.UnknownChannel) {
-                    const chatChannel = server.chatChannels.find(c => c.id === channelId);
                     if(chatChannel) await this.removeChatChannel(server, chatChannel);
                 }
                 return null;
             });
         if(!discordChannel) return { consumed: items.length };
 
+        const webhook = await this.resolveWebhook(client, guild, server, chatChannel, webhookId);
+        if(!webhook) return { consumed: items.length };
+
         try {
-            if(firstItem.kind === 'console') return this.processConsoleQueue(discordChannel, items);
+            if(firstItem.kind === 'console') return this.processConsoleQueue(webhook, discordChannel, items);
 
             const embeds = [];
             let consumed = 0;
@@ -317,12 +331,25 @@ export default class Chat extends WSEvent {
 
             if(consumed <= 0) return { consumed: 1 };
 
-            await discordChannel.send({ embeds });
+            await webhook.send({
+                embeds,
+                username: 'MC Linker',
+                avatarURL: 'https://mclinker.com/mc-linker.svg',
+                ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
+            });
             return { consumed };
         }
         catch(err) {
+            if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
+                chatChannel.webhook = await this.ensureWebhookForChatChannel(chatChannel, server, guild, true);
+                if(chatChannel.webhook) {
+                    await server.edit({});
+                    return { consumed: 0, retryMs: 100 };
+                }
+                return { consumed: items.length };
+            }
+
             if(err?.code === RESTJSONErrorCodes.UnknownChannel) {
-                const chatChannel = server.chatChannels.find(c => c.id === channelId);
                 if(chatChannel) await this.removeChatChannel(server, chatChannel);
                 return { consumed: items.length };
             }
@@ -336,11 +363,12 @@ export default class Chat extends WSEvent {
      * Processes queued console output for a single channel.
      * Combines consecutive console items and attempts to append to the last console message via edit.
      * Falls back to sending a new message if appending would exceed the ANSI formatting limit (~1000 chars).
+     * @param {Discord.Webhook} webhook - The webhook to send messages with.
      * @param {Discord.TextChannel} discordChannel - The Discord channel to send to.
      * @param {ConsoleQueueItem[]} items - The queued console items to process.
      * @returns {Promise<import('./handlers/ChatDispatchHandler.js').ProcessResult>}
      */
-    async processConsoleQueue(discordChannel, items) {
+    async processConsoleQueue(webhook, discordChannel, items) {
         let consumed = 0;
         let combinedRaw = '';
 
@@ -357,6 +385,12 @@ export default class Chat extends WSEvent {
         }
 
         if(consumed <= 0) return { consumed: 1 };
+
+        const webhookSendOptions = {
+            username: 'MC Linker',
+            avatarURL: 'https://mclinker.com/mc-linker.svg',
+            ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
+        };
 
         const lastMessage = this.lastConsoleMessages.get(discordChannel.id);
         if(lastMessage && lastMessage.raw.length + combinedRaw.length <= 1000) {
@@ -378,12 +412,12 @@ export default class Chat extends WSEvent {
                     return { consumed: items.length };
                 }
 
-                logger.error(err, `[Socket.io][Chat] Failed sending queued channel payload for channel ${discordChannel.id}`);
+                logger.error(err, `[Socket.io][Chat] Failed editing console message for channel ${discordChannel.id}`);
                 return { consumed: 1 };
             }
         }
 
-        const sentMessage = await discordChannel.send({ content: toAnsiCodeBlock(combinedRaw) });
+        const sentMessage = await webhook.send({ content: toAnsiCodeBlock(combinedRaw), ...webhookSendOptions });
         this.lastConsoleMessages.set(discordChannel.id, {
             id: sentMessage.id,
             raw: combinedRaw,
