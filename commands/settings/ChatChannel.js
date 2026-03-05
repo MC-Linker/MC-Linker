@@ -51,7 +51,7 @@ export default class ChatChannel extends Command {
                 const options = {
                     name: 'ChatChannel',
                     reason: 'ChatChannel to Minecraft',
-                    avatarURL: 'https://mclinker.com/mc-linker.svg',
+                    avatarURL: 'https://mclinker.com/logo.png',
                 };
 
                 if(channel.isThread()) webhook = await channel.parent.createWebhook(options);

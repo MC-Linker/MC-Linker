@@ -243,7 +243,7 @@ export default class Chat extends WSEvent {
                 await webhook.send({
                     content: payload.content,
                     username: 'Minecraft Chat',
-                    avatarURL: 'https://mclinker.com/mc-linker.svg',
+                    avatarURL: 'https://mclinker.com/logo.png',
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                 });
@@ -334,7 +334,7 @@ export default class Chat extends WSEvent {
             await webhook.send({
                 embeds,
                 username: 'MC Linker',
-                avatarURL: 'https://mclinker.com/mc-linker.svg',
+                avatarURL: 'https://mclinker.com/logo.png',
                 ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
             });
             return { consumed };
@@ -388,7 +388,7 @@ export default class Chat extends WSEvent {
 
         const webhookSendOptions = {
             username: 'MC Linker',
-            avatarURL: 'https://mclinker.com/mc-linker.svg',
+            avatarURL: 'https://mclinker.com/logo.png',
             ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
         };
 
