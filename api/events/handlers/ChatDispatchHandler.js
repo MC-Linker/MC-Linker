@@ -52,7 +52,7 @@ export default class ChatDispatchHandler {
          */
         this.chatLimiter = new RateLimiterMemory({
             keyPrefix: 'chat-dispatch-webhook',
-            points: options.chatPoints ?? 5,
+            points: options.chatPoints ?? 4, // 1 less than discord
             duration: options.duration ?? 1,
         });
 
@@ -62,7 +62,7 @@ export default class ChatDispatchHandler {
          */
         this.channelLimiter = new RateLimiterMemory({
             keyPrefix: 'chat-dispatch-channel',
-            points: options.channelPoints ?? 5,
+            points: options.channelPoints ?? 4, // 1 less than discord
             duration: options.duration ?? 1,
         });
 
