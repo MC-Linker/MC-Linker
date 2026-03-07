@@ -391,10 +391,8 @@ export async function handleProtocolResponse(response, protocol, interaction, er
     }
     else if(response.status !== 'success') {
         const responseKey = errorResponses[response.error] ?? defaultErrorResponses[response.error] ?? defaultErrorResponses[ProtocolError.SERVER_ERROR];
-        if(responseKey) {
-            await interaction.replyTl(responseKey, ...placeholders);
-            return false;
-        }
+        await interaction.replyTl(responseKey, ...placeholders);
+        return false;
     }
 
     return true;
@@ -450,11 +448,10 @@ export function stringifyMinecraftJson(json, stripColors = true) {
  * Falls back to cached data if the server is offline.
  * @param {ServerConnection} server - The server to get the nbt data from.
  * @param {UserResponse} user - The uuid of the player.
- * @param {?string} [userId=null] - The Discord user ID for cache path resolution. If provided, uses FilePath spread pattern for caching.
  * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
  * @returns {Promise<?{data: Object, cached: boolean}>} - The parsed and simplified nbt data with a cached flag, or null if an error occurred.
  */
-export async function getLivePlayerNbt(server, user, userId = null, interaction) {
+export async function getLivePlayerNbt(server, user, interaction) {
     const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
     if(playerNbtResponse?.status === 'success' && playerNbtResponse.data.data !== '') {
         const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
@@ -465,7 +462,9 @@ export async function getLivePlayerNbt(server, user, userId = null, interaction)
     const nbtResponse = await server.protocol.getWithCache(...FilePath.PlayerData(server.worldPath, user.uuid));
 
     // handleProtocolResponse if interaction is set, otherwise manually check the status code
-    if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;
+    if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction, {
+        [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download_user_files,
+    }, { category: 'nbt' })) return null;
     else if(nbtResponse?.status === 'success') {
         const parsed = await nbtBufferToObject(nbtResponse.data, interaction);
         return parsed ? { data: parsed, cached: nbtResponse.cached ?? false } : null;
