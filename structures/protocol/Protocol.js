@@ -11,29 +11,25 @@ export const FilePath = {
      * Constructs the path to the user's advancements file.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @param {?string} [userId=null] - The user's ID. If provided, this method will return an array of the remote and the local path.
-     * @returns {string[]|`${string}/advancements/${string}.json`} - The path to the advancements file.
+     * @returns {[`${worldPath}/advancements/${uuid}.json`, `./download-cache/advancements/${uuid}.json`]} - The path to the advancements file on the server and the local cache.
      */
-    Advancements: (worldPath, uuid, userId = null) => {
-        const advancementPath = `${worldPath}/advancements/${uuid}.json`;
-        return userId ? [advancementPath, `./download-cache/userConnection/${userId}/advancements.json`] : advancementPath;
+    Advancements: (worldPath, uuid) => {
+        return [`${worldPath}/advancements/${uuid}.json`, `./download-cache/advancements/${uuid}.json`];
     },
     /**
      * Constructs the path to the user's stats file.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @param {?string} [userId=null] - The user's ID. If provided, this method will return an array of the remote and the local path.
-     * @returns {string[]|`${string}/stats/${string}.json`} - The path to the stats file.
+     * @returns {[`${worldPath}/stats/${uuid}.json`, `./download-cache/stats/${uuid}.json`]} - The path to the stats file on the server and the local cache.
      */
-    Stats: (worldPath, uuid, userId) => {
-        const statPath = `${worldPath}/stats/${uuid}.json`;
-        return userId ? [statPath, `./download-cache/userConnection/${userId}/stats.json`] : statPath;
+    Stats: (worldPath, uuid) => {
+        return [`${worldPath}/stats/${uuid}.json`, `./download-cache/stats/${uuid}.json`];
     },
     /**
      * Constructs the path to the user's playerdata folder.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
-     * @returns {[`${worldPath}/playerdata/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`]} - The path to the playerdata folder.
+     * @returns {[`${worldPath}/playerdata/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`]} - The path to the playerdata folder on the server and the local cache.
      */
     PlayerData: (worldPath, uuid) => {
         return [`${worldPath}/playerdata/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`];

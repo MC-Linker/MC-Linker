@@ -43,7 +43,7 @@ export default class Stats extends Command {
 
         const argPlaceholder = { 'stat_category': category, 'username': user.username };
 
-        const statFile = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid, interaction.user.id));
+        const statFile = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid));
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download_user_files,
         }, { category: 'stats' })) return;

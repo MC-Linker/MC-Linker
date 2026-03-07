@@ -48,7 +48,7 @@ export default class UserInfo extends Command {
         const scoreboardDatResponse = await server.protocol.getWithCache(...FilePath.Scoreboards(server.worldPath, server.id));
         const levelDatResponse = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
 
-        let stats = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid, interaction.user.id));
+        let stats = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid));
         let operators = await server.protocol.getWithCache(...FilePath.Operators(server.path, server.id));
         let whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
         let bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
