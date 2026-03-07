@@ -575,7 +575,7 @@ export default class Chat extends WSEvent {
             const options = {
                 name: 'MC Linker',
                 reason: 'ChatChannel to Minecraft',
-                avatar: 'https://mclinker.com/assets/mclinkerlogo.png',
+                avatar: 'https://mclinker.com/logo.png',
             };
 
             if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
