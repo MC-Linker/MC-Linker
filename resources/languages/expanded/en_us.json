@@ -2824,15 +2824,6 @@
                         }
                     ],
                     "console": "Could not download %category% files"
-                },
-                "could_not_download_user_files": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Download",
-                            "description": "Could not download %category% files. The user most likely never joined the server."
-                        }
-                    ],
-                    "console": "Could not download %category% files"
                 }
             },
             "no_access": {
@@ -2865,6 +2856,15 @@
                 }
             },
             "warnings": {
+                "could_not_download_user_files": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Download",
+                            "description": "Could not download %category% files. The user most likely never joined the server."
+                        }
+                    ],
+                    "console": "Could not download %category% files"
+                },
                 "no_argument": {
                     "embeds": [
                         {

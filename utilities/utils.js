@@ -463,7 +463,7 @@ export async function getLivePlayerNbt(server, user, interaction) {
 
     // handleProtocolResponse if interaction is set, otherwise manually check the status code
     if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction, {
-        [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download_user_files,
+        [ProtocolError.NOT_FOUND]: keys.api.command.warnings.could_not_download_user_files,
     }, { category: 'nbt' })) return null;
     else if(nbtResponse?.status === 'success') {
         const parsed = await nbtBufferToObject(nbtResponse.data, interaction);
