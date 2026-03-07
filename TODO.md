@@ -1,7 +1,7 @@
 # TODO BOT
 
 + **Create isometric block, item and entity renders in code**
-+ Move `/disable chat-commands` to `/chatchannel filter chat-commands`
++ Move `/disable|enable chat-commands` to `/chatchannel filter-commands add|remove`
 + Internal Statistics
 + Proxy-Server Support (Link multiple servers)
 + Mod support (get textures and names of mod items, etc.)

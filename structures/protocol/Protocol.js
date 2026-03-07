@@ -38,7 +38,7 @@ export const FilePath = {
      */
     PlayerData: (worldPath, uuid, userId) => {
         const playerdataPath = `${worldPath}/playerdata/${uuid}.dat`;
-        return userId ? [playerdataPath, `./download-cache/userConnection/${userId}/playerdata.dat`] : playerdataPath;
+        return userId ? [playerdataPath, `./download-cache/playerdata/${userId}/playerdata.dat`] : playerdataPath;
     },
 
     /**
