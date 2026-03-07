@@ -95,7 +95,7 @@ export default class ServerInfo extends Command {
         ctx.drawImage(background, 0, 0, listCanvas.width, listCanvas.height);
         const onlineIcon = await Canvas.loadImage('./resources/images/misc/online.png');
         ctx.drawImage(onlineIcon, listCanvas.width - 40, 4, 32, 32);
-        const iconBuffer = Buffer.isBuffer(serverIcon.data) ? serverIcon.data : await fs.readFile('./resources/images/misc/unknown_server.png');
+        const iconBuffer = Buffer.isBuffer(serverIcon?.data) ? serverIcon.data : await fs.readFile('./resources/images/misc/unknown_server.png');
         const iconImage = await Canvas.loadImage(iconBuffer);
         ctx.drawImage(iconImage, 0, 0, 128, 128);
 
