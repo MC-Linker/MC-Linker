@@ -462,11 +462,7 @@ export async function getLivePlayerNbt(server, user, userId = null, interaction)
         // else fall back to downloading the nbt file
     }
 
-    // If the server is not connected using the plugin or the player is not online or the getPlayerNbt endpoint failed, download the nbt file
-    const getArgs = userId
-        ? FilePath.PlayerData(server.worldPath, user.uuid, userId)
-        : [FilePath.PlayerData(server.worldPath, user.uuid), `./download-cache/playerdata/${user.uuid}.dat`];
-    const nbtResponse = await server.protocol.getWithCache(...getArgs);
+    const nbtResponse = await server.protocol.getWithCache(...FilePath.PlayerData(server.worldPath, user.uuid));
 
     // handleProtocolResponse if interaction is set, otherwise manually check the status code
     if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;

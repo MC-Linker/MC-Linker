@@ -101,7 +101,7 @@ export default class Inventory extends Command {
         const user = args[0];
         const showDetails = args[1];
 
-        const playerDataResult = await getLivePlayerNbt(server, user, interaction.user.id, interaction);
+        const playerDataResult = await getLivePlayerNbt(server, user, interaction);
         if(!playerDataResult) return;
 
         const playerData = playerDataResult.data;

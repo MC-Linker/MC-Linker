@@ -53,7 +53,7 @@ export default class UserInfo extends Command {
         let whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
         let bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
 
-        const playerDatResult = await utils.getLivePlayerNbt(server, user, interaction.user.id, null);
+        const playerDatResult = await utils.getLivePlayerNbt(server, user, null);
         const playerDat = playerDatResult?.data ?? null;
 
         let isCached = scoreboardDatResponse?.cached || levelDatResponse?.cached || stats?.cached
