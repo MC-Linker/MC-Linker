@@ -2491,7 +2491,8 @@
                             "description": "The server has suddenly lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
                         }
                     ]
-                }
+                },
+                "cached_result": "⚠️ Cached Result"
             },
             "errors": {
                 "no_response": {

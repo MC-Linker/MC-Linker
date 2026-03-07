@@ -978,3 +978,22 @@ export async function fetchCommand(commandManager, name) {
     }
     return slashCommand;
 }
+
+/**
+ * Sets a cached result footer on one or more embeds.
+ * If the embed already has a footer, the cached text is prepended with a separator.
+ * @param {EmbedBuilder|EmbedBuilder[]} embeds - The embed(s) to add the cached footer to.
+ * @returns {EmbedBuilder|EmbedBuilder[]} - The same embed(s) with the footer set.
+ */
+export function setCachedFooter(embeds) {
+    const cachedText = getLanguageKey(keys.api.plugin.warnings.cached_result);
+    const applyFooter = embed => {
+        const existing = embed.data.footer?.text;
+        const text = existing ? `${cachedText} | ${existing}` : cachedText;
+        embed.setFooter({ text, iconURL: embed.data.footer?.icon_url });
+        return embed;
+    };
+
+    if(Array.isArray(embeds)) return embeds.map(applyFooter);
+    return applyFooter(embeds);
+}

@@ -1,6 +1,6 @@
 import MinecraftData from 'minecraft-data';
 import Discord, { time } from 'discord.js';
-import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
+import { addPh, getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
@@ -37,7 +37,7 @@ export default class Advancements extends Command {
         const user = args[1];
         const showDetails = args[2];
 
-        const amFile = await server.protocol.get(FilePath.Advancements(server.worldPath, user.uuid), `./download-cache/advancements/${user.uuid}.json`);
+        const amFile = await server.protocol.getWithCache(...FilePath.Advancements(server.worldPath, user.uuid, interaction.user.id));
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download_user_files,
         }, { category: 'advancements' }, ph.colors())) return;
@@ -144,6 +144,7 @@ export default class Advancements extends Command {
             { name: 'Advancements_Player.png', description: keys.commands.advancements.advancements_description },
         );
         const advancementsEmbed = getEmbed(keys.commands.advancements.success.final, { username: user.username });
+        if(amFile.cached) setCachedFooter(advancementsEmbed);
 
         if(!showDetails) return await interaction.replyOptions({
             embeds: [advancementsEmbed],

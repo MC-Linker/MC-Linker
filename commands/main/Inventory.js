@@ -1,7 +1,7 @@
 import Canvas from 'skia-canvas';
 import Discord, { ButtonStyle } from 'discord.js';
 import MinecraftData from 'minecraft-data';
-import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
+import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -101,8 +101,11 @@ export default class Inventory extends Command {
         const user = args[0];
         const showDetails = args[1];
 
-        const playerData = await getLivePlayerNbt(server, user, interaction);
-        if(!playerData) return;
+        const playerDataResult = await getLivePlayerNbt(server, user, interaction, interaction.user.id);
+        if(!playerDataResult) return;
+
+        const playerData = playerDataResult.data;
+        const isCached = playerDataResult.cached;
 
         //Convert slots to network slots
         playerData.Inventory = playerData.Inventory.map(item => {
@@ -142,6 +145,7 @@ export default class Inventory extends Command {
             { name: 'Inventory_Player.png', description: keys.commands.inventory.inventory_description },
         );
         const invEmbed = getEmbed(keys.commands.inventory.success.final, { username: user.username });
+        if(isCached) setCachedFooter(invEmbed);
         // Send without buttons if showDetails is false
         if(!showDetails) return await interaction.replyOptions({ files: [invAttach], embeds: [invEmbed] });
 

@@ -3,7 +3,7 @@ import keys from '../../utilities/keys.js';
 import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../utilities/utils.js';
-import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
+import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
 import gamerules from '../../resources/data/gamerules.json' with { type: 'json' };
 import { unraw } from 'unraw';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -22,17 +22,20 @@ export default class ServerInfo extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const serverProperties = await server.protocol.get(...FilePath.ServerProperties(server.path, server.id));
-        const levelDat = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
+        const serverProperties = await server.protocol.getWithCache(...FilePath.ServerProperties(server.path, server.id));
+        const levelDat = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download,
         }, { category: 'server-info' })) return await server.protocol.endBatch();
+
+        let isCached = serverProperties?.cached || levelDat?.cached;
 
         const datObject = await utils.nbtBufferToObject(levelDat.data, interaction);
         if(!datObject) return;
         const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
 
-        const serverIcon = await server.protocol.get(...FilePath.ServerIcon(server.path, server.id));
+        const serverIcon = await server.protocol.getWithCache(...FilePath.ServerIcon(server.path, server.id));
+        if(serverIcon?.cached) isCached = true;
 
         let operators = [];
         let whitelistedUsers = [];
@@ -43,12 +46,14 @@ export default class ServerInfo extends Command {
         let datapacks = [];
         const isAdmin = interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator);
         if(isAdmin) {
-            operators = await server.protocol.get(...FilePath.Operators(server.path, server.id));
-            whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.path, server.id));
-            bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.path, server.id));
-            bannedIPs = await server.protocol.get(...FilePath.BannedIPs(server.path, server.id));
+            operators = await server.protocol.getWithCache(...FilePath.Operators(server.path, server.id));
+            whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
+            bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
+            bannedIPs = await server.protocol.getWithCache(...FilePath.BannedIPs(server.path, server.id));
             plugins = await server.protocol.list(FilePath.Plugins(server.path));
             mods = await server.protocol.list(FilePath.Mods(server.path));
+
+            if(operators?.cached || whitelistedUsers?.cached || bannedUsers?.cached || bannedIPs?.cached) isCached = true;
 
             operators = operators?.status === 'success' ? JSON.parse(operators.data.toString()) : null;
             whitelistedUsers = whitelistedUsers?.status === 'success' ? JSON.parse(whitelistedUsers.data.toString()) : null;
@@ -152,18 +157,23 @@ export default class ServerInfo extends Command {
             worldEmbed.data.fields[2] = addPh(keys.commands.serverinfo.success.hardcore_enabled.embeds[0].fields[0], { difficulty });
         }
 
+        const generalEmbed = getEmbed(keys.commands.serverinfo.success.general, {
+            server_name: serverName ?? keys.commands.serverinfo.unknown,
+            motd: motd.join('\n'),
+            max_players: propertiesObject['max-players'],
+            online_players: onlinePlayers,
+            ip: serverIp,
+            version: datObject.Data.Version.Name,
+        });
+        if(isCached) setCachedFooter(generalEmbed);
+
         /** @type {Discord.InteractionReplyOptions} */
         const startingMessage = {
-            embeds: [getEmbed(keys.commands.serverinfo.success.general, {
-                server_name: serverName ?? keys.commands.serverinfo.unknown,
-                motd: motd.join('\n'),
-                max_players: propertiesObject['max-players'],
-                online_players: onlinePlayers,
-                ip: serverIp,
-                version: datObject.Data.Version.Name,
-            })],
+            embeds: [generalEmbed],
             files: [iconAttachment, serverListAttachment],
         };
+        if(isCached) setCachedFooter(worldEmbed);
+
         /** @type {PaginationPages} */
         const pages = {
             serverinfo_general: {
@@ -192,6 +202,7 @@ export default class ServerInfo extends Command {
             if(operators) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[6], { operators: operators.length }));
             newFields.push(adminEmbed.data.fields[7], adminEmbed.data.fields[8]); //Copy seed and whitelist fields
             adminEmbed.setFields(...newFields);
+            if(isCached) setCachedFooter(adminEmbed);
 
             pages['serverinfo_admin'] = {
                 button: getComponent(keys.commands.serverinfo.success.admin_button),

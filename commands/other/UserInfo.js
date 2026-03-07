@@ -16,6 +16,7 @@ import {
     getComponent,
     getReplyOptions,
     ph,
+    setCachedFooter,
 } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
@@ -44,15 +45,19 @@ export default class UserInfo extends Command {
         const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
         if(onlinePlayersResponse?.status === 'success') onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
 
-        const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
-        const levelDatResponse = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
+        const scoreboardDatResponse = await server.protocol.getWithCache(...FilePath.Scoreboards(server.worldPath, server.id));
+        const levelDatResponse = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
 
-        let stats = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./download-cache/playerdata/${user.uuid}.dat`);
-        let operators = await server.protocol.get(...FilePath.Operators(server.path, server.id));
-        let whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.path, server.id));
-        let bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.path, server.id));
+        let stats = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid, interaction.user.id));
+        let operators = await server.protocol.getWithCache(...FilePath.Operators(server.path, server.id));
+        let whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
+        let bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
 
-        const playerDat = await utils.getLivePlayerNbt(server, user, null);
+        const playerDatResult = await utils.getLivePlayerNbt(server, user, null, interaction.user.id);
+        const playerDat = playerDatResult?.data ?? null;
+
+        let isCached = scoreboardDatResponse?.cached || levelDatResponse?.cached || stats?.cached
+            || operators?.cached || whitelistedUsers?.cached || bannedUsers?.cached || playerDatResult?.cached;
 
         operators = operators?.status === 'success' ? JSON.parse(operators.data.toString()) : [];
         whitelistedUsers = whitelistedUsers?.status === 'success' ? JSON.parse(whitelistedUsers.data.toString()) : [];
@@ -84,6 +89,12 @@ export default class UserInfo extends Command {
         const generalMessage = getReplyOptions(keys.commands.userinfo.success.general, placeholders, ph.colors());
         const adminMessage = getReplyOptions(keys.commands.userinfo.success.admin, placeholders, ph.colors());
         const survivalMessage = getReplyOptions(keys.commands.userinfo.success.survival, placeholders, ph.colors());
+
+        if(isCached) {
+            setCachedFooter(generalMessage.embeds);
+            setCachedFooter(adminMessage.embeds);
+            setCachedFooter(survivalMessage.embeds);
+        }
 
         const id = client.userConnections.cache.find(u => u.getUUID(server) === user.uuid)?.id;
         if(id) generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));

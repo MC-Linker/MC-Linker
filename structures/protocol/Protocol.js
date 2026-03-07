@@ -1,4 +1,6 @@
 import { Base } from 'discord.js';
+import fs from 'fs-extra';
+import logger from '../../utilities/logger.js';
 
 /**
  * Paths to minecraft server files.
@@ -242,6 +244,14 @@ export default class Protocol extends Base {
     }
 
     /**
+     * Checks if the protocol is currently connected.
+     * @returns {boolean} - Whether the protocol is connected.
+     */
+    isConnected() {
+        return false;
+    }
+
+    /**
      * Gets a file from the server.
      * @param {string} getPath - The remote path where the file is located.
      * @param {string} putPath - The local path where the file should be written.
@@ -271,6 +281,42 @@ export default class Protocol extends Base {
      */
     async list(folder) {
         throw new Error('Not implemented');
+    }
+
+    /**
+     * Gets a file from the server with cache fallback.
+     * If the server is not connected, attempts to read the file from the local cache.
+     * If the server is connected but the request fails, also falls back to the cache.
+     * @param {string} getPath - The remote path where the file is located.
+     * @param {string} putPath - The local path where the file should be written / read from cache.
+     * @returns {Promise<?ProtocolResponse & { data: Buffer, cached: boolean }>} - The response, with a `cached` flag indicating if the data came from the local cache. Returns null if both live and cache fail.
+     */
+    async getWithCache(getPath, putPath) {
+        if(this.isConnected()) {
+            const response = await this.get(getPath, putPath);
+            if(response?.status === 'success') return { ...response, cached: false };
+
+            // Live request failed — try cache fallback
+            try {
+                const buffer = await fs.readFile(putPath);
+                logger.debug(`Live request failed for ${getPath}, serving cached file from ${putPath}`);
+                return { status: 'success', data: buffer, cached: true };
+            }
+            catch {
+                // No cache available either — return original failed response
+                return response;
+            }
+        }
+
+        // Not connected — try cache
+        try {
+            const buffer = await fs.readFile(putPath);
+            logger.info(`Server offline, serving cached file from ${putPath}`);
+            return { status: 'success', data: buffer, cached: true };
+        }
+        catch {
+            return null;
+        }
     }
 
     /**

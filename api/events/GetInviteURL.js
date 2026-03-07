@@ -26,7 +26,6 @@ export default class GetInviteURL extends WSEvent {
      * @returns {GetInviteURLResponse}
      */
     async execute(data, server, client) {
-        let invites;
         let guild;
         try {
             guild = await client.guilds.fetch(server.id);
@@ -34,7 +33,7 @@ export default class GetInviteURL extends WSEvent {
                 status: 'success',
                 data: { url: `https://discord.gg/${guild.vanityURLCode}` },
             };
-            invites = await guild.invites.fetch();
+            await guild.invites.fetch();
         }
         catch(err) {
             logger.debug(`Failed to fetch invites for guild ${server.id} in GetInviteURL`, err);
@@ -42,21 +41,33 @@ export default class GetInviteURL extends WSEvent {
 
         if(!guild) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
-        if(invites?.size) return { status: 'success', data: { url: invites.first().url } };
-        else {
-            /** @type {?import('discord.js').BaseGuildTextChannel} */
-            const channel = guild.channels.cache.find(c =>
-                c.isTextBased() && c.permissionsFor?.(guild.members.me)?.has(PermissionFlagsBits.CreateInstantInvite),
-            );
-            if(!channel) return { status: 'error', error: ProtocolError.NOT_FOUND };
-
-            const invite = await channel.createInvite({
-                maxAge: 0,
-                maxUses: 0,
-                unique: false,
-                reason: 'Invite URL requested by Minecraft',
-            });
-            return { status: 'success', data: { url: invite.url } };
+        if(guild.invites.cache.size) {
+            let invite = guild.invites.cache.find(i => i.maxUses === 0 && i.maxAge === 0);
+            if(!invite) invite = guild.invites.cache.find(i => i.maxUses === 0);
+            if(!invite) invite = guild.invites.cache.find(i => i.maxAge === 0);
+            if(!invite) invite = guild.invites.cache.first();
+            if(invite) return { status: 'success', data: { url: invite.url } };
         }
+
+        try {
+            await guild.channels.fetch(); // cache channels
+        }
+        catch(err) {
+            logger.debug(`Failed to fetch channels for guild ${server.id} in GetInviteURL`, err);
+        }
+
+        /** @type {?import('discord.js').BaseGuildTextChannel} */
+        const channel = guild.channels.cache.find(c =>
+            c.isTextBased() && c.permissionsFor?.(guild.members.me)?.has(PermissionFlagsBits.CreateInstantInvite),
+        );
+        if(!channel) return { status: 'error', error: ProtocolError.NOT_FOUND };
+
+        const invite = await channel.createInvite({
+            maxAge: 0,
+            maxUses: 0,
+            unique: false,
+            reason: 'Invite URL requested by Minecraft',
+        });
+        return { status: 'success', data: { url: invite.url } };
     }
 }

@@ -447,29 +447,37 @@ export function stringifyMinecraftJson(json, stripColors = true) {
 /**
  * Gets the live player nbt data from the server.
  * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise (or if previous method fails) it will download the nbt file.
+ * Falls back to cached data if the server is offline.
  * @param {ServerConnection} server - The server to get the nbt data from.
  * @param {UserResponse} user - The uuid of the player.
  * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
- * @returns {Promise<?Object>} - The parsed and simplified nbt data or null if an error occurred.
+ * @param {?string} [discordUserId=null] - The Discord user ID for cache path resolution. If provided, uses FilePath spread pattern for caching.
+ * @returns {Promise<?{data: Object, cached: boolean}>} - The parsed and simplified nbt data with a cached flag, or null if an error occurred.
  */
-export async function getLivePlayerNbt(server, user, interaction) {
+export async function getLivePlayerNbt(server, user, interaction, discordUserId = null) {
     const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
     const onlinePlayers = onlinePlayersResponse?.status === 'success' ? onlinePlayersResponse.data : [];
     if(onlinePlayers.includes(user.username)) {
         const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
         if(playerNbtResponse?.status === 'success' && playerNbtResponse.data.data !== '') {
             const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
-            if(parsed) return parsed;
+            if(parsed) return { data: parsed, cached: false };
             // else fall back to downloading the nbt file
         }
     }
 
     // If the server is not connected using the plugin or the player is not online or the getPlayerNbt endpoint failed, download the nbt file
-    const nbtResponse = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./download-cache/playerdata/${user.uuid}.dat`);
+    const getArgs = discordUserId
+        ? FilePath.PlayerData(server.worldPath, user.uuid, discordUserId)
+        : [FilePath.PlayerData(server.worldPath, user.uuid), `./download-cache/playerdata/${user.uuid}.dat`];
+    const nbtResponse = await server.protocol.getWithCache(...getArgs);
 
     // handleProtocolResponse if interaction is set, otherwise manually check the status code
     if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;
-    else if(nbtResponse?.status === 'success') return nbtBufferToObject(nbtResponse.data, interaction);
+    else if(nbtResponse?.status === 'success') {
+        const parsed = await nbtBufferToObject(nbtResponse.data, interaction);
+        return parsed ? { data: parsed, cached: nbtResponse.cached ?? false } : null;
+    }
     else return null;
 }
 
