@@ -796,6 +796,15 @@ export function stripAnsiCodes(text) {
 }
 
 /**
+ * Checks whether a string contains any ANSI escape codes.
+ * @param {string} text - The text to check.
+ * @returns {boolean} - Whether the text contains ANSI codes.
+ */
+export function containsAnsiCodes(text) {
+    return /\u001b\[[0-9;]*m/.test(text);
+}
+
+/**
  * Wraps a string in a discord code block with the ansi language for color formatting.
  * If the string is too long, it will be truncated and an ellipsis will be added at the end.
  * If the string contains more than 1000 characters, all ansi codes will be stripped (discord won't parse them).

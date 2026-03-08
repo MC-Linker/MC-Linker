@@ -1,7 +1,12 @@
 import Discord, { PermissionFlagsBits, RESTJSONErrorCodes } from 'discord.js';
 import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
-import { getMinecraftAvatarURL, searchAdvancements, toAnsiCodeBlock } from '../../utilities/utils.js';
+import {
+    containsAnsiCodes,
+    getMinecraftAvatarURL,
+    searchAdvancements,
+    toAnsiCodeBlock,
+} from '../../utilities/utils.js';
 import { addPh, getEmbed } from '../../utilities/messages.js';
 import logger from '../../utilities/logger.js';
 import ChatDispatchHandler from './handlers/ChatDispatchHandler.js';
@@ -362,7 +367,8 @@ export default class Chat extends WSEvent {
     /**
      * Processes queued console output for a single channel.
      * Combines consecutive console items and attempts to append to the last console message via edit.
-     * Falls back to sending a new message if appending would exceed the ANSI formatting limit (~1000 chars).
+     * Falls back to sending a new message if appending would exceed the character limit.
+     * The limit is ~1000 chars when ANSI codes are present (Discord stops rendering them beyond that), or ~2000 otherwise.
      * @param {Discord.Webhook} webhook - The webhook to send messages with.
      * @param {Discord.TextChannel} discordChannel - The Discord channel to send to.
      * @param {ConsoleQueueItem[]} items - The queued console items to process.
@@ -371,16 +377,19 @@ export default class Chat extends WSEvent {
     async processConsoleQueue(webhook, discordChannel, items) {
         let consumed = 0;
         let combinedRaw = '';
+        let hasAnsi = false;
 
         for(const item of items) {
             if(item.kind !== 'console') break;
 
             // newlines included
             const candidate = `${combinedRaw}${item.raw}`;
-            if(candidate.length > 1000 && consumed > 0) break;
+            const candidateHasAnsi = hasAnsi || containsAnsiCodes(item.raw);
+            const charLimit = candidateHasAnsi ? 1000 : 2000;
+            if(candidate.length > charLimit && consumed > 0) break;
 
-            // Single message over 1000
             combinedRaw = candidate;
+            hasAnsi = candidateHasAnsi;
             consumed++;
         }
 
@@ -393,7 +402,9 @@ export default class Chat extends WSEvent {
         };
 
         const lastMessage = this.lastConsoleMessages.get(discordChannel.id);
-        if(lastMessage && lastMessage.raw.length + combinedRaw.length <= 1000) {
+        const appendHasAnsi = hasAnsi || (lastMessage?.hasAnsi ?? false);
+        const appendCharLimit = appendHasAnsi ? 1000 : 2000;
+        if(lastMessage && lastMessage.raw.length + combinedRaw.length <= appendCharLimit) {
             try {
                 const previousMessage = await discordChannel.messages.fetch(lastMessage.id);
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
@@ -401,6 +412,7 @@ export default class Chat extends WSEvent {
                 this.lastConsoleMessages.set(discordChannel.id, {
                     id: previousMessage.id,
                     raw: nextRaw,
+                    hasAnsi: appendHasAnsi,
                 });
                 return { consumed };
             }
@@ -421,6 +433,7 @@ export default class Chat extends WSEvent {
         this.lastConsoleMessages.set(discordChannel.id, {
             id: sentMessage.id,
             raw: combinedRaw,
+            hasAnsi,
         });
 
         return { consumed };
