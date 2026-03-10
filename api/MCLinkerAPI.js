@@ -207,7 +207,10 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {Function} next - Callback to continue or close the connection.
      */
     async wsMiddleware(socket, next) {
-        logger.debug(`[Socket.io] Websocket connection from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
+        logger.debug(`[Socket.io] Websocket connection to ${socket.nsp.name} from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
+
+        // Skip middleware for admin-ui
+        if(socket.nsp.name === '/admin') return next();
 
         // Basic auth for admin-ui
         if(socket.handshake.auth.username && socket.handshake.auth.password) return next();
