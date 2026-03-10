@@ -1,12 +1,15 @@
 import Discord, { ButtonStyle, PermissionFlagsBits } from 'discord.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import keys, { getLanguageKey } from '../../utilities/keys.js';
-import Command from '../../structures/Command.js';
 import * as utils from '../../utilities/utils.js';
-import { canSendMessages } from '../../utilities/utils.js';
+import { canSendMessages, MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../../utilities/utils.js';
+import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import { getChatWebhookCreationOptions } from '../../api/events/Chat.js';
 
-export default class ChatChannel extends Command {
+const CHAT_COMMANDS_LABEL = 'chat commands';
+
+export default class ChatChannel extends AutocompleteCommand {
 
     constructor() {
         super({
@@ -16,10 +19,85 @@ export default class ChatChannel extends Command {
         });
     }
 
+    async autocomplete(interaction, client) {
+        const subcommandGroup = interaction.options.getSubcommandGroup(false);
+        const subcommand = interaction.options.getSubcommand(false);
+        if(subcommandGroup !== 'filter-commands') return;
+
+        if(subcommand === 'add') {
+            return this.autocompleteFromCommandCompletions(interaction, client);
+        }
+        else if(subcommand === 'remove') {
+            const settings = await client.serverSettingsConnections.getOrConnect(interaction.guildId);
+            const filteredCommands = settings.filteredCommands ?? [];
+            const focused = interaction.options.getFocused().toLowerCase();
+
+            const matchingDisabled = filteredCommands
+                .filter(command => command.toLowerCase().includes(focused));
+
+            const respondArray = [];
+            for(const command of matchingDisabled) {
+                if(command.length <= MaxCommandChoiceLength) {
+                    respondArray.push({
+                        name: command,
+                        value: command,
+                    });
+                    continue;
+                }
+
+                const displayValue = this.getAutocompletePreview(command);
+                this.cacheAutocompleteSelection(displayValue, interaction, command);
+                respondArray.push({
+                    name: displayValue,
+                    value: displayValue,
+                });
+            }
+
+            if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = MaxAutoCompleteChoices;
+            return interaction.respond(respondArray);
+        }
+    }
+
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const subcommand = args[0];
+        const subcommandGroup = args[0];
+        const subcommand = subcommandGroup === 'filter-commands' ? args[1] : args[0];
+
+        if(subcommandGroup === 'filter-commands') {
+            const selectedValue = args.slice(2).join(' ').trim();
+            const resolvedValue = this.resolveAutocompleteValue(selectedValue, interaction);
+            if(resolvedValue === null) {
+                return interaction.replyTl(keys.commands.chatchannel.filter_commands.warnings.autocomplete_selection_expired);
+            }
+
+            const commandName = resolvedValue.toLowerCase();
+            const settings = await client.serverSettingsConnections.getOrConnect(interaction.guildId);
+
+            if(subcommand === 'add') {
+                await settings.addFilteredCommand(commandName);
+                return interaction.replyTl(keys.commands.chatchannel.filter_commands.success.disabled, {
+                    type: CHAT_COMMANDS_LABEL,
+                    disable: commandName,
+                });
+            }
+            else if(subcommand === 'remove') {
+                const hasExactFilter = settings.filteredCommands
+                    .some(command => command.replace(/^\//, '').trim().toLowerCase() === commandName);
+                if(!hasExactFilter) {
+                    return interaction.replyTl(keys.commands.chatchannel.filter_commands.warnings.already_enabled, {
+                        type: CHAT_COMMANDS_LABEL,
+                        enable: commandName,
+                    });
+                }
+
+                await settings.removeFilteredCommand(commandName);
+                return interaction.replyTl(keys.commands.chatchannel.filter_commands.success.enabled, {
+                    type: CHAT_COMMANDS_LABEL,
+                    enable: commandName,
+                });
+            }
+        }
 
         //Add chatchannel
         if(subcommand === 'add') {
@@ -48,12 +126,7 @@ export default class ChatChannel extends Command {
 
             let webhook;
             try {
-                const options = {
-                    name: 'ChatChannel',
-                    reason: 'ChatChannel to Minecraft',
-                    avatarURL: 'https://mclinker.com/logo.png',
-                };
-
+                const options = getChatWebhookCreationOptions();
                 if(channel.isThread()) webhook = await channel.parent.createWebhook(options);
                 else webhook = await channel.createWebhook(options);
             }

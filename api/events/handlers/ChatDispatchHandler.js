@@ -15,6 +15,10 @@ export default class ChatDispatchHandler {
      * @property {?number} timer
      * @property {boolean} processing
      * @property {boolean} batchMode
+     * @property {boolean} highLoadActive
+     * @property {number} skippedCount
+     * @property {number} lastSummaryAt
+     * @property {?QueueItem} lastItem
      */
 
 
@@ -31,7 +35,11 @@ export default class ChatDispatchHandler {
      * @param {number} [options.batchThreshold=5]
      * @param {number} [options.points=4]
      * @param {number} [options.duration=1]
+     * @param {number} [options.highLoadEnterThreshold=120]
+     * @param {number} [options.highLoadExitThreshold=60]
+     * @param {number} [options.highLoadSummaryIntervalMs=10000]
      * @param {(params: { key: string, bucket: QueueBucket, items: Object[], batchMode: boolean }) => Promise<{ consumed: number, retryMs?: number, batchMode?: boolean }>} options.onProcess
+     * @param {(params: { key: string, bucket: QueueBucket, item: QueueItem, skippedCount: number, force: boolean }) => Promise<void>} [options.onHighLoadSkipped]
      */
     constructor(options) {
         /**
@@ -47,12 +55,36 @@ export default class ChatDispatchHandler {
         this.onProcess = options.onProcess;
 
         /**
+         * Callback invoked to emit skipped-message summaries during high-load drop mode.
+         * @type {(params: { key: string, bucket: QueueBucket, item: QueueItem, skippedCount: number, force: boolean }) => Promise<void>}
+         */
+        this.onHighLoadSkipped = options.onHighLoadSkipped ?? null;
+
+        /**
+         * Queue-size threshold to enter high-load drop mode.
+         * @type {number}
+         */
+        this.highLoadEnterThreshold = options.highLoadEnterThreshold ?? 120;
+
+        /**
+         * Queue-size threshold to leave high-load drop mode.
+         * @type {number}
+         */
+        this.highLoadExitThreshold = options.highLoadExitThreshold ?? 60;
+
+        /**
+         * Minimum interval between skipped summaries while high-load mode is active.
+         * @type {number}
+         */
+        this.highLoadSummaryIntervalMs = options.highLoadSummaryIntervalMs ?? 10_000;
+
+        /**
          * Rate limiter for webhook destinations (all chat channels use webhooks).
          * @type {RateLimiterMemory}
          */
         this.limiter = new RateLimiterMemory({
             keyPrefix: 'chat-dispatch-webhook',
-            points: options.points ?? 4, // 1 less than discord
+            points: options.points ?? 5,
             duration: options.duration ?? 1,
         });
 
@@ -79,11 +111,16 @@ export default class ChatDispatchHandler {
                 timer: null,
                 processing: false,
                 batchMode: false,
+                highLoadActive: false,
+                skippedCount: 0,
+                lastSummaryAt: 0,
+                lastItem: null,
             });
         }
 
         const state = this.states.get(key);
         state.items.push(item);
+        state.lastItem = item;
         // Enable batch mode if we exceed the threshold or cancel batch mode if we drop to 2 or fewer items
         state.batchMode = state.items.length > this.batchThreshold || state.batchMode && state.items.length > 2;
 
@@ -112,6 +149,35 @@ export default class ChatDispatchHandler {
     }
 
     /**
+     * Emits a high-load skipped summary if configured and due.
+     * @param {string} key - Unique identifier for the queue.
+     * @param {QueueState} state - The queue state.
+     * @param {boolean} force - If true, emit immediately regardless of interval.
+     * @returns {Promise<void>}
+     */
+    async emitHighLoadSummary(key, state, force) {
+        if(!this.onHighLoadSkipped || state.skippedCount <= 0 || !state.lastItem) return;
+
+        const now = Date.now();
+        if(!force && now - state.lastSummaryAt < this.highLoadSummaryIntervalMs) return;
+
+        try {
+            await this.onHighLoadSkipped({
+                key,
+                bucket: state.bucket,
+                item: state.lastItem,
+                skippedCount: state.skippedCount,
+                force,
+            });
+            state.lastSummaryAt = now;
+            state.skippedCount = 0;
+        }
+        catch(err) {
+            logger.error(err, `[ChatDispatch] Failed sending high-load summary for queue ${key}`);
+        }
+    }
+
+    /**
      * Process the queue for the given key. It will consume items from the queue based on the rate limiter and call the onProcess callback.
      * @param {string} key - Unique identifier for the queue.
      * @returns {Promise<void>}
@@ -127,6 +193,21 @@ export default class ChatDispatchHandler {
             // Safety guard of 12 iterations to even out scheduling
             while(state.items.length > 0 && iterations < 12) {
                 iterations++;
+
+                if(!state.highLoadActive && state.items.length > this.highLoadEnterThreshold) state.highLoadActive = true;
+                if(state.highLoadActive && state.items.length < this.highLoadExitThreshold) {
+                    await this.emitHighLoadSummary(key, state, true);
+                    state.highLoadActive = false;
+                }
+
+                if(state.highLoadActive) {
+                    state.skippedCount += state.items.length;
+                    state.items.splice(0, state.items.length);
+                    await this.emitHighLoadSummary(key, state, false);
+                    this.scheduleProcess(key, this.highLoadSummaryIntervalMs);
+                    return;
+                }
+                else if(state.skippedCount > 0) await this.emitHighLoadSummary(key, state, true);
 
                 const limiter = this.limiter;
                 try {
@@ -161,7 +242,13 @@ export default class ChatDispatchHandler {
                 }
             }
 
+            if(state.highLoadActive && state.items.length === 0) {
+                await this.emitHighLoadSummary(key, state, true);
+                state.highLoadActive = false;
+            }
+
             if(state.items.length > 0) this.scheduleProcess(key, 0);
+            else if(state.highLoadActive || state.skippedCount > 0) this.scheduleProcess(key, this.highLoadSummaryIntervalMs);
             else this.states.delete(key);
         }
         catch(err) {

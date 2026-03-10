@@ -4,26 +4,15 @@ export default class ServerSettingsConnection extends Connection {
 
     /** @type {Omit<ServerSettingsConnectionData, 'id'>} */
     static defaultSettingsData = {
-        disabled: {
-            advancements: [],
-            stats: [],
-            chatCommands: [],
-        },
+        filteredCommands: [],
         language: 'en_us',
     };
 
     /**
      * @typedef {object} ServerSettingsConnectionData - The data for the server settings.
-     * @property {DisableData} disabled - The data for disabled commands, advancements or stats.
+     * @property {string[]} filteredCommands - Command filters for Minecraft -> Discord command messages.
      * @property {string} language - The language code id this server uses.
      * @property {string} id - The id of the server the settings are connected to.
-     */
-
-    /**
-     * @typedef {object} DisableData - The data for disabled commands, advancements or stats.
-     * @property {string[]} advancements - The disabled advancements.
-     * @property {string[]} stats - The disabled stats.
-     * @property {string[]} chatCommands - The disabled chatchannel-commands.
      */
 
     /**
@@ -64,58 +53,66 @@ export default class ServerSettingsConnection extends Connection {
         this.language = data.language ?? this.language;
 
         /**
-         * The data for disabled commands, advancements or stats.
-         * @type {DisableData}
+         * Command filters for Minecraft -> Discord command messages.
+         * @type {string[]}
          */
-        this.disabled = data.disabled ?? this.disabled;
+        this.filteredCommands = data.filteredCommands ?? data.disabled?.chatCommands ?? this.filteredCommands ?? [];
     }
 
     /**
-     * Disables a command, advancement or stat.
-     * @param {keyof DisableData} type - The type of the value to disable.
-     * @param {string} value - The value to disable.
+     * Normalizes a command value by removing leading slashes, trimming whitespace, and converting to lowercase.
+     * @private
+     */
+    _normalizeCommandValue(value) {
+        return value.replace(/^\//, '').trim().toLowerCase();
+    }
+
+    /**
+     * Adds a command filter for Minecraft -> Discord command messages.
+     * @param {string} value - The command/prefix to filter.
      * @returns {Promise<?ServerSettingsConnection>} - The settings instance that has been edited.
      */
-    async disable(type, value) {
-        const currentValues = this.disabled[type];
-        if(!currentValues.includes(value)) {
-            currentValues.push(value);
-            this.disabled[type] = currentValues;
-            return await this.edit({ disabled: this.disabled });
+    async addFilteredCommand(value) {
+        // Replace leading slash and trim
+        const normalizedValue = this._normalizeCommandValue(value);
+        const hasNormalizedMatch = this.filteredCommands.some(command => command === normalizedValue);
+        if(!hasNormalizedMatch) {
+            this.filteredCommands.push(normalizedValue);
+            return await this.edit({});
         }
         return this;
     }
 
     /**
-     * Enables a command, advancement or stat.
-     * @param {keyof DisableData} type - The type of the value to enable.
-     * @param {string} value - The value to enable.
+     * Removes a command filter for Minecraft -> Discord command messages.
+     * @param {string} value - The command/prefix to unfilter.
      * @returns {Promise<ServerSettingsConnection>}
      */
-    async enable(type, value) {
-        const currentValues = this.disabled[type];
-        if(currentValues.includes(value)) return this;
-        const index = currentValues.indexOf(value);
-        if(index !== -1) currentValues.splice(index, 1);
+    async removeFilteredCommand(value) {
+        const normalizedValue = this._normalizeCommandValue(value);
 
-        this.disabled[type] = currentValues;
-        return await this.edit({ disabled: this.disabled });
+        const nextValues = this.filteredCommands.filter(command => command !== normalizedValue);
+        if(nextValues.length === this.filteredCommands.length) return this;
+
+        return await this.edit({ filteredCommands: nextValues });
     }
 
     /**
-     * Checks whether a command, advancement or stat is disabled.
-     * @param {keyof DisableData} type - The type of the value to check.
-     * @param {string} value - The value to check.
+     * Checks whether a command message should be filtered.
+     * A filter matches when the message equals the filter or starts with the filter followed by a space.
+     * @param {string} value - The command message (without leading slash).
      * @returns {boolean}
      */
-    isDisabled(type, value) {
-        if(!this.disabled[type]) return false;
-        return this.disabled[type].includes(value);
+    isFilteredCommand(value) {
+        const normalizedValue = this._normalizeCommandValue(value);
+        if(!normalizedValue) return false;
+
+        return this.filteredCommands.some(command => normalizedValue === command || normalizedValue.startsWith(`${command} `));
     }
 
     getData() {
         return {
-            disabled: this.disabled,
+            filteredCommands: this.filteredCommands,
             language: this.language,
             id: this.id,
         };

@@ -41,11 +41,7 @@ export default {
     },
     ServerSettingsConnection: {
         _id: { type: String },
-        disabled: {
-            advancements: [String],
-            stats: [String],
-            chatCommands: [String],
-        },
+        filteredCommands: [String],
         language: String,
         server: { type: String, ref: 'ServerConnection' },
     },

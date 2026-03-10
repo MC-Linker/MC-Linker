@@ -11,12 +11,42 @@ import { addPh, getEmbed } from '../../utilities/messages.js';
 import logger from '../../utilities/logger.js';
 import ChatDispatchHandler from './handlers/ChatDispatchHandler.js';
 
+const CHAT_WEBHOOK_NAME = 'MC Linker Chat';
+const CHAT_WEBHOOK_AVATAR_URL = 'https://mclinker.com/logo.png';
+const CHAT_WEBHOOK_LEGACY_NAMES = new Set(['MC Linker', 'ChatChannel']);
+const DISPATCH_HIGH_LOAD_ENTER_THRESHOLD = 120;
+const DISPATCH_HIGH_LOAD_EXIT_THRESHOLD = 60;
+const DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS = 10_000;
+
+/**
+ * Returns the default webhook identity used for chat-channel webhook messages.
+ * @returns {import('discord.js').WebhookMessageCreateOptions['username'|'avatarURL']}
+ */
+export function getChatWebhookIdentity() {
+    return {
+        username: CHAT_WEBHOOK_NAME,
+        avatarURL: CHAT_WEBHOOK_AVATAR_URL,
+    };
+}
+
+/**
+ * Returns the default webhook creation options for chat channels.
+ * @returns {import('discord.js').ChannelWebhookCreateOptions}
+ */
+export function getChatWebhookCreationOptions() {
+    return {
+        name: CHAT_WEBHOOK_NAME,
+        reason: 'ChatChannel to Minecraft',
+        avatar: CHAT_WEBHOOK_AVATAR_URL,
+    };
+}
+
 
 export default class Chat extends WSEvent {
 
     /**
      * Tracks the latest console message per discord channel for append-by-edit behavior.
-     * @type {Map<string, { id: string, raw: string }>}
+     * @type {Map<string, { id: string, raw: string, hasAnsi: boolean }>}
      */
     lastConsoleMessages = new Map();
 
@@ -76,9 +106,13 @@ export default class Chat extends WSEvent {
 
         this.dispatchHandler = new ChatDispatchHandler({
             batchThreshold: 5,
-            points: 4,
+            points: 5,
             duration: 1,
+            highLoadEnterThreshold: DISPATCH_HIGH_LOAD_ENTER_THRESHOLD,
+            highLoadExitThreshold: DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
+            highLoadSummaryIntervalMs: DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS,
             onProcess: this.processDispatchQueue.bind(this),
+            onHighLoadSkipped: this.handleHighLoadSkipped.bind(this),
         });
     }
 
@@ -97,13 +131,7 @@ export default class Chat extends WSEvent {
         if(channels.length === 0) return; //No channels to send to
 
         //Check whether command is blocked
-        if(['player_command', 'console_command', 'block_command'].includes(type)) {
-            // Strip leading slash
-            message = message.replace(/^\//, '');
-
-            const commandName = message.split(/\s+/)[0];
-            if(server.settings.isDisabled('chatCommands', commandName)) return;
-        }
+        if(['player_command', 'console_command', 'block_command'].includes(type) && server.settings.isFilteredCommand(message)) return;
 
         const guildId = server.id;
         // TODO - this is expensive, cache or disable in batch mode
@@ -207,6 +235,40 @@ export default class Chat extends WSEvent {
     }
 
     /**
+     * Emits a skipped-message summary for a queue in high-load drop mode.
+     * @param {{ item: QueueItem, skippedCount: number }} params
+     * @returns {Promise<void>}
+     */
+    async handleHighLoadSkipped({ item, skippedCount }) {
+        if(!item || skippedCount <= 0) return;
+
+        const { client, serverId, guildId, channelId, webhookId } = item;
+        const server = client.serverConnections.cache.get(serverId);
+        if(!server) return;
+
+        const guild = await client.guilds.fetch(guildId).catch(() => null);
+        if(!guild) return;
+
+        const chatChannel = server.chatChannels.find(c => c.id === channelId);
+        if(!chatChannel) return;
+
+        const discordChannel = await guild.channels.fetch(channelId)
+            .catch(async err => {
+                if(err?.code === RESTJSONErrorCodes.UnknownChannel) await this.removeChatChannel(server, chatChannel);
+                return null;
+            });
+        if(!discordChannel) return;
+
+        const webhook = await this.resolveWebhook(client, guild, server, chatChannel, webhookId);
+        if(!webhook) return;
+
+        await webhook.send({
+            embeds: [getEmbed(keys.api.plugin.warnings.high_load_skipped, { count: skippedCount })],
+            ...this.getSystemWebhookSendOptions(discordChannel),
+        });
+    }
+
+    /**
      * Processes queued chat messages for a single webhook destination.
      * In normal mode, combines consecutive messages from the same player into one webhook send.
      * In batch mode, combines all messages into a compact markdown format with a static webhook identity.
@@ -247,10 +309,8 @@ export default class Chat extends WSEvent {
 
                 await webhook.send({
                     content: payload.content,
-                    username: 'Minecraft Chat',
-                    avatarURL: 'https://mclinker.com/logo.png',
+                    ...this.getSystemWebhookSendOptions(discordChannel),
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-                    ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                 });
 
                 return { consumed: payload.consumed, batchMode: items.length - payload.consumed > 2 };
@@ -261,10 +321,8 @@ export default class Chat extends WSEvent {
 
                 await webhook.send({
                     content: payload.content,
-                    username: payload.username,
-                    avatarURL: payload.avatarURL,
+                    ...this.getSystemWebhookSendOptions(discordChannel),
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-                    ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                 });
 
                 return { consumed: payload.consumed, batchMode: false };
@@ -338,9 +396,7 @@ export default class Chat extends WSEvent {
 
             await webhook.send({
                 embeds,
-                username: 'MC Linker',
-                avatarURL: 'https://mclinker.com/logo.png',
-                ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
+                ...this.getSystemWebhookSendOptions(discordChannel),
             });
             return { consumed };
         }
@@ -395,22 +451,20 @@ export default class Chat extends WSEvent {
 
         if(consumed <= 0) return { consumed: 1 };
 
-        const webhookSendOptions = {
-            username: 'MC Linker',
-            avatarURL: 'https://mclinker.com/logo.png',
-            ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
-        };
+        const webhookSendOptions = this.getSystemWebhookSendOptions(discordChannel);
 
         const lastMessage = this.lastConsoleMessages.get(discordChannel.id);
         const appendHasAnsi = hasAnsi || (lastMessage?.hasAnsi ?? false);
         const appendCharLimit = appendHasAnsi ? 1000 : 2000;
         if(lastMessage && lastMessage.raw.length + combinedRaw.length <= appendCharLimit) {
             try {
-                const previousMessage = await discordChannel.messages.fetch(lastMessage.id);
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
-                await previousMessage.edit({ content: toAnsiCodeBlock(nextRaw) });
+                await webhook.editMessage(lastMessage.id, {
+                    content: toAnsiCodeBlock(nextRaw),
+                    ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
+                });
                 this.lastConsoleMessages.set(discordChannel.id, {
-                    id: previousMessage.id,
+                    id: lastMessage.id,
                     raw: nextRaw,
                     hasAnsi: appendHasAnsi,
                 });
@@ -424,8 +478,10 @@ export default class Chat extends WSEvent {
                     return { consumed: items.length };
                 }
 
-                logger.error(err, `[Socket.io][Chat] Failed editing console message for channel ${discordChannel.id}`);
-                return { consumed: 1 };
+                if(err?.code === RESTJSONErrorCodes.UnknownWebhook) throw err;
+                // Previous console message no longer editable/deleted; reset and send a fresh message below.
+                this.lastConsoleMessages.delete(discordChannel.id);
+                logger.debug(`[Socket.io][Chat] Falling back to fresh console webhook send for channel ${discordChannel.id}: ${err?.code ?? err?.message ?? 'unknown error'}`);
             }
         }
 
@@ -440,23 +496,36 @@ export default class Chat extends WSEvent {
     }
 
     /**
+     * Returns options used for system-style webhook messages in chat channels.
+     * @param {Discord.TextChannel} discordChannel - The destination channel.
+     * @returns {{ username: string, avatarURL: string, threadId?: string }}
+     */
+    getSystemWebhookSendOptions(discordChannel) {
+        return {
+            ...getChatWebhookIdentity(),
+            ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
+        };
+    }
+
+    /**
      * Builds a webhook payload for chat messages, combining consecutive messages from the same player
      * into one message with line breaks, up to Discord's 2000-character limit.
      * @param {ChatQueueItem[]} items - The queued chat items (only leading items from the same player are consumed).
-     * @returns {{ consumed: number, content: string, username: string, avatarURL: ?string }}
+     * @returns {{ consumed: number, content: string }}
      */
     buildChatPayload(items) {
         const first = items[0];
-        const username = first.player || 'Minecraft';
+        const playerName = first.player || 'Minecraft';
 
         let consumed = 0;
         let content = '';
         for(const item of items) {
             if(item.kind !== 'chat') break;
-            if((item.player || 'Minecraft') !== username) break;
+            if((item.player || 'Minecraft') !== playerName) break;
 
             const nextLine = item.message || '';
-            const nextContent = content ? `${content}\n${nextLine}` : nextLine;
+            const prefixedLine = consumed === 0 ? `**${playerName}**: ${nextLine}` : nextLine;
+            const nextContent = content ? `${content}\n${prefixedLine}` : prefixedLine;
             if(nextContent.length > 2000 && consumed > 0) break;
 
             // Single message over 2000
@@ -464,12 +533,7 @@ export default class Chat extends WSEvent {
             consumed++;
         }
 
-        return {
-            consumed,
-            content,
-            username,
-            avatarURL: first.authorURL,
-        };
+        return { consumed, content };
     }
 
     /**
@@ -547,12 +611,24 @@ export default class Chat extends WSEvent {
             if(!webhookId) return null;
         }
 
-        let webhook = await client.fetchWebhook(webhookId).catch(() => null);
+        let webhook = null;
+        try {
+            webhook = await client.fetchWebhook(webhookId);
+        }
+        catch(err) {
+            if(err?.code !== RESTJSONErrorCodes.UnknownWebhook) {
+                logger.error(err, `[Socket.io][Chat] Failed fetching webhook ${webhookId} for channel ${channelConfig.id}`);
+                return null;
+            }
+        }
 
         if(!webhook) {
             const recreatedWebhookId = await this.ensureWebhookForChatChannel(channelConfig, server, guild, true);
             if(!recreatedWebhookId) return null;
-            webhook = await client.fetchWebhook(recreatedWebhookId).catch(() => null);
+            webhook = await client.fetchWebhook(recreatedWebhookId).catch(err => {
+                logger.error(err, `[Socket.io][Chat] Failed fetching recreated webhook ${recreatedWebhookId} for channel ${channelConfig.id}`);
+                return null;
+            });
         }
 
         return webhook;
@@ -583,20 +659,26 @@ export default class Chat extends WSEvent {
             return null;
         }
 
+        const webhookChannel = discordChannel.isThread() ? discordChannel.parent : discordChannel;
+        if(!webhookChannel) return null;
+
+        if(forceRecreate && channel.webhook) {
+            await guild.client.fetchWebhook(channel.webhook)
+                .then(oldWebhook => oldWebhook.delete())
+                .catch(() => {});
+        }
+
         let webhook;
         try {
-            const options = {
-                name: 'MC Linker',
-                reason: 'ChatChannel to Minecraft',
-                avatar: 'https://mclinker.com/logo.png',
-            };
-
-            if(discordChannel.isThread()) webhook = await discordChannel.parent.createWebhook(options);
-            else webhook = await discordChannel.createWebhook(options);
+            webhook = await webhookChannel.createWebhook(getChatWebhookCreationOptions());
         }
-        catch {
-            await discordChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_create_webhook)] }).catch(() => {});
-            return null;
+        catch(err) {
+            webhook = await this.findReusableChatWebhook(webhookChannel, guild.client.user.id);
+            if(!webhook) {
+                logger.error(err, `[Socket.io][Chat] Failed creating webhook for channel ${channel.id}`);
+                await discordChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_create_webhook)] }).catch(() => {});
+                return null;
+            }
         }
 
         const regChannel = await server.protocol.addChatChannel({
@@ -629,5 +711,21 @@ export default class Chat extends WSEvent {
 
         this.lastConsoleMessages.delete(channel.id);
         await server.edit({ chatChannels: regChannel.data });
+    }
+
+    /**
+     * Attempts to find an existing bot-owned webhook in the channel that can be reused.
+     * @param {Discord.TextChannel} channel - The webhook container channel (thread parent or text channel).
+     * @param {string} botId - The current bot user id.
+     * @returns {Promise<?Discord.Webhook>}
+     */
+    async findReusableChatWebhook(channel, botId) {
+        const existingWebhooks = await channel.fetchWebhooks().catch(() => null);
+        if(!existingWebhooks) return null;
+
+        return existingWebhooks.find(webhook => {
+            if(webhook.owner?.id !== botId) return false;
+            return webhook.name === CHAT_WEBHOOK_NAME || CHAT_WEBHOOK_LEGACY_NAMES.has(webhook.name);
+        }) ?? null;
     }
 }

@@ -1873,6 +1873,48 @@
                     ]
                 }
             },
+            "filter_commands": {
+                "warnings": {
+                    "autocomplete_selection_expired": {
+                        "embeds": [
+                            {
+                                "title": "Selection Expired",
+                                "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
+                            }
+                        ],
+                        "console": "Filter-command autocomplete selection token expired or invalid"
+                    },
+                    "already_enabled": {
+                        "embeds": [
+                            {
+                                "title": "Already Unfiltered",
+                                "description": "%type% **%enable%** is already unfiltered for the Minecraft → Discord bridge."
+                            }
+                        ],
+                        "console": "Already unfiltered %enable%"
+                    }
+                },
+                "success": {
+                    "disabled": {
+                        "embeds": [
+                            {
+                                "title": "Successfully Filtered",
+                                "description": "Successfully filtered %type% **%disable%** for the Minecraft → Discord bridge. Messages are filtered when the command starts with this value."
+                            }
+                        ],
+                        "console": "Successfully filtered %type% %disable%"
+                    },
+                    "enabled": {
+                        "embeds": [
+                            {
+                                "title": "Successfully Unfiltered",
+                                "description": "Successfully unfiltered %type% **%enable%** for the Minecraft → Discord bridge."
+                            }
+                        ],
+                        "console": "Successfully unfiltered %type% %enable%"
+                    }
+                }
+            },
             "errors": {
                 "could_not_create_webhook": {
                     "embeds": [
@@ -2182,92 +2224,6 @@
                 }
             }
         },
-        "disable": {
-            "warnings": {
-                "command_does_not_exist": {
-                    "embeds": [
-                        {
-                            "title": "Command Does Not Exist",
-                            "description": "Command **%disable%** does not exist."
-                        }
-                    ],
-                    "console": "Command does not exist"
-                },
-                "disabled_command": {
-                    "embeds": [
-                        {
-                            "title": "Disabled Command Specified",
-                            "description": "You cannot disable the command **%disable%**."
-                        }
-                    ],
-                    "console": "Disabled command specified"
-                },
-                "autocomplete_selection_expired": {
-                    "embeds": [
-                        {
-                            "title": "Selection Expired",
-                            "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
-                        }
-                    ],
-                    "console": "Disable autocomplete selection token expired or invalid"
-                }
-            },
-            "errors": {
-                "could_not_disable": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Disable",
-                            "description": "Could not disable %type% **%disable%**."
-                        }
-                    ],
-                    "console": "Could not disable %disable%"
-                }
-            },
-            "success": {
-                "nothing_disabled": {
-                    "embeds": [
-                        {
-                            "title": "Nothing Disabled",
-                            "description": "There are no disabled %type%."
-                        }
-                    ],
-                    "console": "Nothing disabled"
-                },
-                "disabled": {
-                    "embeds": [
-                        {
-                            "title": "Successfully Disabled",
-                            "description": "Successfully disabled %type% **%disable%**."
-                        }
-                    ],
-                    "console": "Successfully disabled %type% %disable%"
-                },
-                "list": {
-                    "base": {
-                        "embeds": [
-                            {
-                                "title": "Disable List",
-                                "description": "Here's a list of all disabled **%type%**:"
-                            }
-                        ]
-                    },
-                    "entry": "- `%disable%`",
-                    "final": {
-                        "embeds": [
-                            {
-                                "fields": [
-                                    {
-                                        "name": "​",
-                                        "value": "%list%",
-                                        "inline": true
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            }
-        },
         "disconnect": {
             "success": {
                 "embeds": [
@@ -2277,37 +2233,6 @@
                     }
                 ],
                 "console": "Disconnected from the plugin"
-            }
-        },
-        "enable": {
-            "warnings": {
-                "command_does_not_exist": {
-                    "embeds": [
-                        {
-                            "title": "Command Does Not Exist",
-                            "description": "Command **%enable%** does not exist."
-                        }
-                    ],
-                    "console": "Command does not exist"
-                },
-                "already_enabled": {
-                    "embeds": [
-                        {
-                            "title": "Already Enabled",
-                            "description": "%type% **%enable%** is already enabled."
-                        }
-                    ],
-                    "console": "Already enabled %enable%"
-                }
-            },
-            "success": {
-                "embeds": [
-                    {
-                        "title": "Successfully Enabled",
-                        "description": "Successfully enabled %type% **%enable%**."
-                    }
-                ],
-                "console": "Successfully enabled %type% %enable%"
             }
         },
         "rolesync": {
@@ -2489,6 +2414,14 @@
                         {
                             "title": "Server Disconnected",
                             "description": "The server has suddenly lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
+                        }
+                    ]
+                },
+                "high_load_skipped": {
+                    "embeds": [
+                        {
+                            "title": "High Server Load",
+                            "description": "%count% messages skipped due to high load."
                         }
                     ]
                 },
@@ -3825,6 +3758,41 @@
                     "type": "Subcommand",
                     "name": "list",
                     "description": "List all chatchannels."
+                },
+                {
+                    "type": "SubcommandGroup",
+                    "name": "filter-commands",
+                    "description": "Manage command filters for messages sent from Minecraft to Discord.",
+                    "options": [
+                        {
+                            "type": "Subcommand",
+                            "name": "add",
+                            "description": "Filter command messages from Minecraft to Discord when they start with this value.",
+                            "options": [
+                                {
+                                    "type": "String",
+                                    "name": "command",
+                                    "description": "Set the command prefix you want to filter.",
+                                    "required": true,
+                                    "autocomplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Subcommand",
+                            "name": "remove",
+                            "description": "Remove a command filter for messages sent from Minecraft to Discord.",
+                            "options": [
+                                {
+                                    "type": "String",
+                                    "name": "command",
+                                    "description": "Select the filtered command prefix you want to remove.",
+                                    "required": true,
+                                    "autocomplete": true
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -3870,49 +3838,6 @@
                 }
             ]
         },
-        "disable": {
-            "name": "disable",
-            "type": "ChatInput",
-            "default_member_permissions": ["Administrator"],
-            "long_description": "Disable a specific command preventing it from being sent in a chatchannel. List disabled chat-commands with `/disable list`.",
-            "description": "Disable a specific command preventing it from being sent in a chatchannel",
-            "contexts": ["Guild"],
-            "options": [
-                {
-                    "type": "Subcommand",
-                    "name": "chat-commands",
-                    "description": "Disable a command preventing it from being sent in any chatchannel.",
-                    "options": [
-                        {
-                            "type": "String",
-                            "name": "command",
-                            "description": "Set the command you want to disable",
-                            "required": true,
-                            "autocomplete": true
-                        }
-                    ]
-                },
-                {
-                    "type": "Subcommand",
-                    "name": "list",
-                    "description": "Get a list of all disabled commands/stats/advancements",
-                    "options": [
-                        {
-                            "type": "String",
-                            "name": "category",
-                            "description": "Set the category which you want to list",
-                            "required": true,
-                            "choices": [
-                                {
-                                    "name": "Chat Commands",
-                                    "value": "chatCommands"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
         "disconnect": {
             "name": "disconnect",
             "type": "ChatInput",
@@ -3920,30 +3845,6 @@
             "long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
             "description": "Disconnect your Minecraft server from the bot.",
             "contexts": ["Guild"]
-        },
-        "enable": {
-            "name": "enable",
-            "type": "ChatInput",
-            "default_member_permissions": ["Administrator"],
-            "long_description": "Enable a disabled command allowing it from being sent in a chatchannel again. (They're all enabled by default.)",
-            "description": "Enable a command allowing it from being sent in a chatchannel.",
-            "contexts": ["Guild"],
-            "options": [
-                {
-                    "type": "Subcommand",
-                    "name": "chat-commands",
-                    "description": "Enable a command allowing it to be sent in a chatchannel.",
-                    "options": [
-                        {
-                            "type": "String",
-                            "name": "command",
-                            "description": "Set the command you want to enable",
-                            "required": true,
-                            "autocomplete": true
-                        }
-                    ]
-                }
-            ]
         },
         "rolesync": {
             "name": "rolesync",
