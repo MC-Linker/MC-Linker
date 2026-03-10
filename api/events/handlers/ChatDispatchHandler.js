@@ -84,7 +84,7 @@ export default class ChatDispatchHandler {
          */
         this.limiter = new RateLimiterMemory({
             keyPrefix: 'chat-dispatch-webhook',
-            points: options.points ?? 5,
+            points: options.points ?? 4, // 1 less than Discord
             duration: options.duration ?? 1,
         });
 

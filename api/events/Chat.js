@@ -106,7 +106,7 @@ export default class Chat extends WSEvent {
 
         this.dispatchHandler = new ChatDispatchHandler({
             batchThreshold: 5,
-            points: 5,
+            points: 4, // 1 less than Discord
             duration: 1,
             highLoadEnterThreshold: DISPATCH_HIGH_LOAD_ENTER_THRESHOLD,
             highLoadExitThreshold: DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
