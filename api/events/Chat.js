@@ -17,6 +17,9 @@ const CHAT_WEBHOOK_LEGACY_NAMES = new Set(['MC Linker', 'ChatChannel']);
 const DISPATCH_HIGH_LOAD_ENTER_THRESHOLD = 120;
 const DISPATCH_HIGH_LOAD_EXIT_THRESHOLD = 60;
 const DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS = 10_000;
+const MAX_WEBHOOKS_PER_CHANNEL = 15;
+const IDLE_WEBHOOK_PRUNE_COOLDOWN_MS = 60_000;
+const PRUNE_CHECK_INTERVAL_MS = 30_000;
 
 /**
  * Returns the default webhook identity used for chat-channel webhook messages.
@@ -49,6 +52,18 @@ export default class Chat extends WSEvent {
      * @type {Map<string, { id: string, raw: string, hasAnsi: boolean }>}
      */
     lastConsoleMessages = new Map();
+
+    /**
+     * Tracks the last time each webhook was actively used for enqueueing.
+     * @type {Map<string, number>}
+     */
+    webhookLastActive = new Map();
+
+    /**
+     * Tracks the last time idle-webhook pruning was checked per channel.
+     * @type {Map<string, number>}
+     */
+    lastPruneCheck = new Map();
 
     /**
      * @typedef {Object} ChatRequest
@@ -106,8 +121,8 @@ export default class Chat extends WSEvent {
 
         this.dispatchHandler = new ChatDispatchHandler({
             batchThreshold: 5,
-            points: 4, // 1 less than Discord
-            duration: 1,
+            points: 5,
+            duration: 2,
             highLoadEnterThreshold: DISPATCH_HIGH_LOAD_ENTER_THRESHOLD,
             highLoadExitThreshold: DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
             highLoadSummaryIntervalMs: DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS,
@@ -166,7 +181,7 @@ export default class Chat extends WSEvent {
             placeholders.message = await this.parseMentions(placeholders.message, guild);
 
             for(const channel of channels) {
-                const webhookId = await this.ensureWebhookForChatChannel(channel, server, guild);
+                const webhookId = await this.selectWebhook(channel, server, guild);
                 if(!webhookId) continue;
 
                 logger.debug(`[Socket.io][Chat] Enqueue chat message for channel ${channel.id} via webhook ${webhookId}`);
@@ -188,7 +203,7 @@ export default class Chat extends WSEvent {
             if(!message) return;
 
             for(const channel of channels) {
-                const webhookId = await this.ensureWebhookForChatChannel(channel, server, guild);
+                const webhookId = await this.selectWebhook(channel, server, guild);
                 if(!webhookId) continue;
 
                 logger.debug(`[Socket.io][Chat] Enqueue console payload for channel ${channel.id} via webhook ${webhookId}`);
@@ -208,7 +223,7 @@ export default class Chat extends WSEvent {
             const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() });
 
             for(const channel of channels) {
-                const webhookId = await this.ensureWebhookForChatChannel(channel, server, guild);
+                const webhookId = await this.selectWebhook(channel, server, guild);
                 if(!webhookId) continue;
 
                 logger.debug(`[Socket.io][Chat] Enqueue ${type} embed for channel ${channel.id} via webhook ${webhookId}`);
@@ -343,8 +358,10 @@ export default class Chat extends WSEvent {
         }
         catch(err) {
             if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
-                chatChannel.webhook = await this.ensureWebhookForChatChannel(chatChannel, server, guild, true);
-                if(chatChannel.webhook) {
+                chatChannel.webhooks = (chatChannel.webhooks ?? []).filter(id => id !== webhookId);
+                this.webhookLastActive.delete(webhookId);
+                const newId = await this.ensureWebhookForChatChannel(chatChannel, server, guild);
+                if(newId) {
                     await server.edit({});
                     return { consumed: 0, retryMs: 100 };
                 }
@@ -417,8 +434,10 @@ export default class Chat extends WSEvent {
         }
         catch(err) {
             if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
-                chatChannel.webhook = await this.ensureWebhookForChatChannel(chatChannel, server, guild, true);
-                if(chatChannel.webhook) {
+                chatChannel.webhooks = (chatChannel.webhooks ?? []).filter(id => id !== webhookId);
+                this.webhookLastActive.delete(webhookId);
+                const newId = await this.ensureWebhookForChatChannel(chatChannel, server, guild);
+                if(newId) {
                     await server.edit({});
                     return { consumed: 0, retryMs: 100 };
                 }
@@ -600,6 +619,7 @@ export default class Chat extends WSEvent {
             if(mention.length > 101) continue;
 
             const search = mention.replace('@', '').toLowerCase();
+            //TODO api call - disable under high load
             const foundMember = (await guild.members.search({ query: search, limit: 1 }).catch(() => null))?.first();
             if(!foundMember) continue;
 
@@ -617,24 +637,207 @@ export default class Chat extends WSEvent {
     }
 
     /**
-     * Resolves the appropriate webhook for a chat channel, attempting to recreate if missing.
+     * Selects the best webhook for a chat channel, distributing load across the webhook pool.
+     * Creates additional webhooks when all existing ones are under pressure, up to the channel's available capacity.
+     * Periodically prunes idle excess webhooks.
+     * @param {ChatChannelData} channelConfig - The chat channel configuration.
+     * @param {ServerConnection} server - The server connection.
+     * @param {Discord.Guild} guild - The guild the channel belongs to.
+     * @returns {Promise<?string>} The selected webhook ID, or null if no webhook could be ensured.
+     */
+    async selectWebhook(channelConfig, server, guild) {
+        const firstId = await this.ensureWebhookForChatChannel(channelConfig, server, guild);
+        if(!firstId) return null;
+
+        const now = Date.now();
+
+        // Periodically prune idle webhooks (at most once per interval per channel)
+        const lastPrune = this.lastPruneCheck.get(channelConfig.id) ?? 0;
+        if(now - lastPrune > PRUNE_CHECK_INTERVAL_MS && channelConfig.webhooks.length > 1) {
+            this.lastPruneCheck.set(channelConfig.id, now);
+            await this.pruneIdleWebhooks(channelConfig, server, guild);
+        }
+
+        const webhooks = channelConfig.webhooks;
+        if(webhooks.length <= 1) {
+            this.webhookLastActive.set(firstId, now);
+            return firstId;
+        }
+
+        // Find the least-loaded webhook by queue size
+        let bestId = webhooks[0];
+        let bestSize = this.dispatchHandler.getQueueSize(webhooks[0]);
+        for(let i = 1; i < webhooks.length; i++) {
+            const size = this.dispatchHandler.getQueueSize(webhooks[i]);
+            if(size < bestSize) {
+                bestId = webhooks[i];
+                bestSize = size;
+            }
+        }
+
+        // Scale up if all webhooks are under pressure
+        if(bestSize > this.dispatchHandler.batchThreshold) {
+            const newId = await this.tryScaleUp(channelConfig, server, guild);
+            if(newId) {
+                this.webhookLastActive.set(newId, now);
+                return newId;
+            }
+        }
+
+        this.webhookLastActive.set(bestId, now);
+        return bestId;
+    }
+
+    /**
+     * Attempts to scale up the webhook pool by creating an additional webhook.
+     * Checks the channel's remaining webhook capacity before creating.
+     * @param {ChatChannelData} channelConfig - The chat channel configuration.
+     * @param {ServerConnection} server - The server connection.
+     * @param {Discord.Guild} guild - The guild the channel belongs to.
+     * @returns {Promise<?string>} The new webhook ID, or null if capacity is exhausted or creation failed.
+     */
+    async tryScaleUp(channelConfig, server, guild) {
+        const discordChannel = await guild.channels.fetch(channelConfig.id).catch(() => null);
+        if(!discordChannel) return null;
+
+        const webhookChannel = discordChannel.isThread() ? discordChannel.parent : discordChannel;
+        if(!webhookChannel) return null;
+
+        const availableSlots = await this.getAvailableWebhookSlots(webhookChannel);
+        if(availableSlots <= 0) return null;
+
+        return this.createAdditionalWebhook(channelConfig, server, guild, webhookChannel);
+    }
+
+    /**
+     * Returns the number of additional webhooks that can be created in a channel.
+     * Accounts for all existing webhooks (from any source) against Discord's per-channel limit of 15.
+     * @param {Discord.TextChannel} channel - The webhook-container channel (thread parent or text channel).
+     * @returns {Promise<number>} The number of available webhook slots.
+     */
+    async getAvailableWebhookSlots(channel) {
+        const existingWebhooks = await channel.fetchWebhooks().catch(() => null);
+        if(!existingWebhooks) return 0;
+        return Math.max(0, MAX_WEBHOOKS_PER_CHANNEL - existingWebhooks.size);
+    }
+
+    /**
+     * Creates an additional webhook and adds it to the channel's webhook pool.
+     * Does not check capacity — callers should verify via {@link getAvailableWebhookSlots} first.
+     * @param {ChatChannelData} channelConfig - The chat channel configuration.
+     * @param {ServerConnection} server - The server connection.
+     * @param {Discord.Guild} guild - The guild the channel belongs to.
+     * @param {Discord.TextChannel} [webhookChannel] - The channel to create the webhook in (resolved if not provided).
+     * @returns {Promise<?string>} The new webhook ID, or null if creation failed.
+     */
+    async createAdditionalWebhook(channelConfig, server, guild, webhookChannel) {
+        if(!webhookChannel) {
+            const discordChannel = await guild.channels.fetch(channelConfig.id).catch(() => null);
+            if(!discordChannel) return null;
+            webhookChannel = discordChannel.isThread() ? discordChannel.parent : discordChannel;
+            if(!webhookChannel) return null;
+        }
+
+        const canManageWebhooks = webhookChannel.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.ManageWebhooks);
+        if(!canManageWebhooks) return null;
+
+        let webhook;
+        try {
+            webhook = await webhookChannel.createWebhook(getChatWebhookCreationOptions());
+        }
+        catch(err) {
+            logger.debug(`[Socket.io][Chat] Failed creating additional webhook for channel ${channelConfig.id}: ${err?.message}`);
+            return null;
+        }
+
+        if(!channelConfig.webhooks) channelConfig.webhooks = [];
+        channelConfig.webhooks.push(webhook.id);
+
+        const regChannel = await server.protocol.addChatChannel({
+            id: channelConfig.id,
+            webhooks: channelConfig.webhooks,
+            types: channelConfig.types,
+            allowDiscordToMinecraft: channelConfig.allowDiscordToMinecraft,
+        });
+
+        if(!regChannel) {
+            channelConfig.webhooks.pop();
+            await webhook.delete().catch(() => {});
+            return null;
+        }
+
+        await server.edit({ chatChannels: regChannel.data });
+        logger.debug(`[Socket.io][Chat] Scaled up webhook pool for channel ${channelConfig.id} (total=${channelConfig.webhooks.length})`);
+        return webhook.id;
+    }
+
+    /**
+     * Prunes idle webhooks from a channel's pool, keeping at least one webhook.
+     * A webhook is considered idle if it hasn't been used for enqueueing within the prune cooldown period
+     * and its dispatch queue is empty.
+     * @param {ChatChannelData} channelConfig - The chat channel configuration.
+     * @param {ServerConnection} server - The server connection.
+     * @param {Discord.Guild} guild - The guild the channel belongs to.
+     * @returns {Promise<void>}
+     */
+    async pruneIdleWebhooks(channelConfig, server, guild) {
+        if(!channelConfig.webhooks || channelConfig.webhooks.length <= 1) return;
+
+        const now = Date.now();
+        const toRemove = [];
+
+        for(const webhookId of channelConfig.webhooks) {
+            if(channelConfig.webhooks.length - toRemove.length <= 1) break; // Keep at least one
+            const lastActive = this.webhookLastActive.get(webhookId) ?? 0;
+            const queueSize = this.dispatchHandler.getQueueSize(webhookId);
+            if(queueSize === 0 && now - lastActive > IDLE_WEBHOOK_PRUNE_COOLDOWN_MS) {
+                toRemove.push(webhookId);
+            }
+        }
+
+        if(toRemove.length === 0) return;
+
+        for(const webhookId of toRemove) {
+            try {
+                await guild.client.deleteWebhook(webhookId);
+            }
+            catch(_) {}
+            this.webhookLastActive.delete(webhookId);
+        }
+
+        channelConfig.webhooks = channelConfig.webhooks.filter(id => !toRemove.includes(id));
+
+        const regChannel = await server.protocol.addChatChannel({
+            id: channelConfig.id,
+            webhooks: channelConfig.webhooks,
+            types: channelConfig.types,
+            allowDiscordToMinecraft: channelConfig.allowDiscordToMinecraft,
+        });
+
+        if(regChannel) await server.edit({ chatChannels: regChannel.data });
+
+        logger.debug(`[Socket.io][Chat] Pruned ${toRemove.length} idle webhook(s) for channel ${channelConfig.id} (remaining=${channelConfig.webhooks.length})`);
+    }
+
+    /**
+     * Resolves a Discord Webhook object for the given webhook ID, falling back to other pool
+     * members or creating a replacement if the requested webhook is dead.
      * @param {Discord.Client} client - The Discord client used to fetch webhooks.
      * @param {Discord.Guild} guild - The guild the channel belongs to.
      * @param {ServerConnection} server - The server connection.
      * @param {ChatChannelData} channelConfig - The chat channel configuration object.
-     * @param {string} fallbackWebhookId - Webhook ID to use if channelConfig.webhook is not set.
+     * @param {string} webhookId - The webhook ID to resolve.
      * @returns {Promise<?Discord.Webhook>} The resolved webhook, or null if it could not be resolved or created.
      */
-    async resolveWebhook(client, guild, server, channelConfig, fallbackWebhookId) {
-        let webhookId = channelConfig.webhook ?? fallbackWebhookId;
+    async resolveWebhook(client, guild, server, channelConfig, webhookId) {
         if(!webhookId) {
             webhookId = await this.ensureWebhookForChatChannel(channelConfig, server, guild);
             if(!webhookId) return null;
         }
 
-        let webhook = null;
         try {
-            webhook = await client.fetchWebhook(webhookId);
+            // TODO called every time - use WebhookClient instead and cache tokens
+            return await client.fetchWebhook(webhookId);
         }
         catch(err) {
             if(err?.code !== RESTJSONErrorCodes.UnknownWebhook) {
@@ -643,29 +846,43 @@ export default class Chat extends WSEvent {
             }
         }
 
-        if(!webhook) {
-            const recreatedWebhookId = await this.ensureWebhookForChatChannel(channelConfig, server, guild, true);
-            if(!recreatedWebhookId) return null;
-            webhook = await client.fetchWebhook(recreatedWebhookId).catch(err => {
-                logger.error(err, `[Socket.io][Chat] Failed fetching recreated webhook ${recreatedWebhookId} for channel ${channelConfig.id}`);
-                return null;
-            });
+        // Webhook is dead — remove from pool and try alternatives
+        channelConfig.webhooks = (channelConfig.webhooks ?? []).filter(id => id !== webhookId);
+        this.webhookLastActive.delete(webhookId);
+
+        // Try remaining pool webhooks
+        for(const altId of [...(channelConfig.webhooks ?? [])]) {
+            try {
+                return await client.fetchWebhook(altId);
+            }
+            catch(err) {
+                if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
+                    channelConfig.webhooks = channelConfig.webhooks.filter(id => id !== altId);
+                    this.webhookLastActive.delete(altId);
+                }
+            }
         }
 
-        return webhook;
+        // Pool exhausted, create new (ensureWebhookForChatChannel persists)
+        const newId = await this.ensureWebhookForChatChannel(channelConfig, server, guild);
+        if(!newId) return null;
+
+        return await client.fetchWebhook(newId)
+            .catch(err => {
+                logger.error(err, `[Socket.io][Chat] Failed fetching replacement webhook ${newId} for channel ${channelConfig.id}`);
+                return null;
+            });
     }
 
     /**
-     * Ensures a webhook exists for the given chat channel configuration, creating one if necessary.
-     * If the webhook is missing or `forceRecreate` is true, a new webhook is created and registered with the server protocol.
+     * Ensures at least one webhook exists for the given chat channel configuration, creating one if necessary.
      * @param {ChatChannelData} channel - The chat channel configuration to ensure a webhook for.
      * @param {ServerConnection} server - The server connection that owns this chat channel.
      * @param {Discord.Guild} guild - The guild the channel belongs to.
-     * @param {boolean} [forceRecreate=false] - If true, always create a new webhook even if one is already set.
-     * @returns {Promise<?string>} The webhook ID, or null if it could not be ensured.
+     * @returns {Promise<?string>} The first webhook ID, or null if it could not be ensured.
      */
-    async ensureWebhookForChatChannel(channel, server, guild, forceRecreate = false) {
-        if(!forceRecreate && channel.webhook) return channel.webhook;
+    async ensureWebhookForChatChannel(channel, server, guild) {
+        if(channel.webhooks?.length > 0) return channel.webhooks[0];
 
         const discordChannel = await guild.channels.fetch(channel.id)
             .catch(async err => {
@@ -683,12 +900,6 @@ export default class Chat extends WSEvent {
         const webhookChannel = discordChannel.isThread() ? discordChannel.parent : discordChannel;
         if(!webhookChannel) return null;
 
-        if(forceRecreate && channel.webhook) {
-            await guild.client.fetchWebhook(channel.webhook)
-                .then(oldWebhook => oldWebhook.delete())
-                .catch(() => {});
-        }
-
         let webhook;
         try {
             webhook = await webhookChannel.createWebhook(getChatWebhookCreationOptions());
@@ -702,21 +913,24 @@ export default class Chat extends WSEvent {
             }
         }
 
+        if(!channel.webhooks) channel.webhooks = [];
+        channel.webhooks.push(webhook.id);
+
         const regChannel = await server.protocol.addChatChannel({
             id: channel.id,
-            webhook: webhook.id,
+            webhooks: channel.webhooks,
             types: channel.types,
             allowDiscordToMinecraft: channel.allowDiscordToMinecraft,
         });
 
         if(!regChannel) {
+            channel.webhooks.pop();
             await webhook.delete().catch(() => {});
             await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook)] }).catch(() => {});
             return null;
         }
 
         await server.edit({ chatChannels: regChannel.data });
-        channel.webhook = webhook.id;
         return webhook.id;
     }
 
@@ -731,6 +945,10 @@ export default class Chat extends WSEvent {
         if(!regChannel) return;
 
         this.lastConsoleMessages.delete(channel.id);
+        this.lastPruneCheck.delete(channel.id);
+        for(const webhookId of channel.webhooks ?? []) {
+            this.webhookLastActive.delete(webhookId);
+        }
         await server.edit({ chatChannels: regChannel.data });
     }
 

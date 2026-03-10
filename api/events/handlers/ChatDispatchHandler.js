@@ -84,8 +84,8 @@ export default class ChatDispatchHandler {
          */
         this.limiter = new RateLimiterMemory({
             keyPrefix: 'chat-dispatch-webhook',
-            points: options.points ?? 4, // 1 less than Discord
-            duration: options.duration ?? 1,
+            points: options.points ?? 5,
+            duration: options.duration ?? 2,
         });
 
         /**
@@ -125,6 +125,15 @@ export default class ChatDispatchHandler {
         state.batchMode = state.items.length > this.batchThreshold || state.batchMode && state.items.length > 2;
 
         this.scheduleProcess(key, 0);
+    }
+
+    /**
+     * Returns the current queue size for a given key.
+     * @param {string} key - Unique identifier for the queue.
+     * @returns {number} The number of items in the queue, or 0 if the queue does not exist.
+     */
+    getQueueSize(key) {
+        return this.states.get(key)?.items.length ?? 0;
     }
 
     /**

@@ -136,7 +136,7 @@ export default class ChatChannel extends AutocompleteCommand {
 
             const resp = await server.protocol.addChatChannel({
                 id: channel.id,
-                webhook: webhook.id,
+                webhooks: [webhook.id],
                 types: menu.values,
                 allowDiscordToMinecraft,
             });

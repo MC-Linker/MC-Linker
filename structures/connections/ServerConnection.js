@@ -11,7 +11,7 @@ export default class ServerConnection extends Connection {
      * @property {string} id - The id of the channel.
      * @property {string[]} types - The enabled types of the chatchannel.
      * @property {string} [allowDiscordToMinecraft] - Whether the chatchannel should send messages from discord to minecraft.
-     * @property {string} [webhook] - The webhook id of the chatchannel.
+     * @property {string[]} [webhooks] - The webhook ids of the chatchannel.
      */
 
     /**
@@ -181,6 +181,12 @@ export default class ServerConnection extends Connection {
          * @type {ChatChannelData[]}
          * */
         this.chatChannels = data.chatChannels ?? this.chatChannels ?? [];
+
+        // Migrate legacy singular webhook field to webhooks array
+        for(const channel of this.chatChannels) {
+            if(!channel.webhooks) channel.webhooks = channel.webhook ? [channel.webhook] : [];
+            delete channel.webhook;
+        }
 
         /**
          * The data for stats channels.

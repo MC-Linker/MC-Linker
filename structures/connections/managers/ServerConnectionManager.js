@@ -30,9 +30,9 @@ export default class ServerConnectionManager extends ConnectionManager {
         if(!connection) return false;
 
         for(const channel of connection?.chatChannels ?? []) {
-            if(channel.webhook) {
+            for(const webhookId of channel.webhooks ?? []) {
                 try {
-                    const webhook = await this.client.fetchWebhook(channel.webhook);
+                    const webhook = await this.client.fetchWebhook(webhookId);
                     await webhook.delete();
                 }
                 catch(_) {}
