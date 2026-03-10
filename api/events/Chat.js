@@ -236,6 +236,7 @@ export default class Chat extends WSEvent {
      * @returns {Promise<import('./handlers/ChatDispatchHandler.js').ProcessResult>}
      */
     async processDispatchQueue({ bucket, items, batchMode }) {
+        logger.debug(`[Socket.io][Chat] Processing dispatch queue for bucket ${bucket} (items=${items.length}, batchMode=${batchMode})`);
         if(bucket === 'chat') return this.processChatQueue(items, batchMode);
         return this.processChannelQueue(items);
     }
@@ -331,7 +332,9 @@ export default class Chat extends WSEvent {
 
                 await webhook.send({
                     content: payload.content,
-                    ...this.getSystemWebhookSendOptions(discordChannel),
+                    username: payload.username,
+                    avatarURL: payload.avatarURL,
+                    ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                     allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
                 });
 
@@ -391,10 +394,7 @@ export default class Chat extends WSEvent {
         if(!webhook) return { consumed: items.length };
 
         try {
-            if(firstItem.kind === 'console') {
-                logger.debug(`[Socket.io][Chat] Processing console queue for channel ${channelId} (items=${items.length})`);
-                return this.processConsoleQueue(webhook, discordChannel, items);
-            }
+            if(firstItem.kind === 'console') return this.processConsoleQueue(webhook, discordChannel, items);
 
             const embeds = [];
             let consumed = 0;
@@ -528,7 +528,7 @@ export default class Chat extends WSEvent {
      * Builds a webhook payload for chat messages, combining consecutive messages from the same player
      * into one message with line breaks, up to Discord's 2000-character limit.
      * @param {ChatQueueItem[]} items - The queued chat items (only leading items from the same player are consumed).
-     * @returns {{ consumed: number, content: string }}
+     * @returns {{ consumed: number, content: string, username: string, avatarURL: ?string }}
      */
     buildChatPayload(items) {
         const first = items[0];
@@ -541,8 +541,7 @@ export default class Chat extends WSEvent {
             if((item.player || 'Minecraft') !== playerName) break;
 
             const nextLine = item.message || '';
-            const prefixedLine = consumed === 0 ? `**${playerName}**: ${nextLine}` : nextLine;
-            const nextContent = content ? `${content}\n${prefixedLine}` : prefixedLine;
+            const nextContent = content ? `${content}\n${nextLine}` : nextLine;
             if(nextContent.length > 2000 && consumed > 0) break;
 
             // Single message over 2000
@@ -550,7 +549,12 @@ export default class Chat extends WSEvent {
             consumed++;
         }
 
-        return { consumed, content };
+        return {
+            consumed,
+            content,
+            username: playerName,
+            avatarURL: first.authorURL,
+        };
     }
 
     /**
