@@ -169,6 +169,8 @@ export default class Chat extends WSEvent {
                 const webhookId = await this.ensureWebhookForChatChannel(channel, server, guild);
                 if(!webhookId) continue;
 
+                logger.debug(`[Socket.io][Chat] Enqueue chat message for channel ${channel.id} via webhook ${webhookId}`);
+
                 this.dispatchHandler.enqueue(webhookId, 'chat', {
                     kind: 'chat',
                     client,
@@ -189,6 +191,8 @@ export default class Chat extends WSEvent {
                 const webhookId = await this.ensureWebhookForChatChannel(channel, server, guild);
                 if(!webhookId) continue;
 
+                logger.debug(`[Socket.io][Chat] Enqueue console payload for channel ${channel.id} via webhook ${webhookId}`);
+
                 this.dispatchHandler.enqueue(webhookId, 'channel', {
                     kind: 'console',
                     client,
@@ -206,6 +210,8 @@ export default class Chat extends WSEvent {
             for(const channel of channels) {
                 const webhookId = await this.ensureWebhookForChatChannel(channel, server, guild);
                 if(!webhookId) continue;
+
+                logger.debug(`[Socket.io][Chat] Enqueue ${type} embed for channel ${channel.id} via webhook ${webhookId}`);
 
                 this.dispatchHandler.enqueue(webhookId, 'channel', {
                     kind: 'embed',
@@ -307,6 +313,8 @@ export default class Chat extends WSEvent {
                 const payload = this.buildChatBatchPayload(items);
                 if(payload.consumed <= 0) return { consumed: 1 };
 
+                logger.debug(`[Socket.io][Chat] Sending batched chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
+
                 await webhook.send({
                     content: payload.content,
                     ...this.getSystemWebhookSendOptions(discordChannel),
@@ -318,6 +326,8 @@ export default class Chat extends WSEvent {
             else {
                 const payload = this.buildChatPayload(items);
                 if(payload.consumed <= 0) return { consumed: 1 };
+
+                logger.debug(`[Socket.io][Chat] Sending chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
 
                 await webhook.send({
                     content: payload.content,
@@ -381,7 +391,10 @@ export default class Chat extends WSEvent {
         if(!webhook) return { consumed: items.length };
 
         try {
-            if(firstItem.kind === 'console') return this.processConsoleQueue(webhook, discordChannel, items);
+            if(firstItem.kind === 'console') {
+                logger.debug(`[Socket.io][Chat] Processing console queue for channel ${channelId} (items=${items.length})`);
+                return this.processConsoleQueue(webhook, discordChannel, items);
+            }
 
             const embeds = [];
             let consumed = 0;
@@ -393,6 +406,8 @@ export default class Chat extends WSEvent {
             }
 
             if(consumed <= 0) return { consumed: 1 };
+
+            logger.debug(`[Socket.io][Chat] Sending embed payload to channel ${channelId} (embeds=${embeds.length}, consumed=${consumed})`);
 
             await webhook.send({
                 embeds,
@@ -459,6 +474,7 @@ export default class Chat extends WSEvent {
         if(lastMessage && lastMessage.raw.length + combinedRaw.length <= appendCharLimit) {
             try {
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
+                logger.debug(`[Socket.io][Chat] Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
                 await webhook.editMessage(lastMessage.id, {
                     content: toAnsiCodeBlock(nextRaw),
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
@@ -485,6 +501,7 @@ export default class Chat extends WSEvent {
             }
         }
 
+        logger.debug(`[Socket.io][Chat] Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
         const sentMessage = await webhook.send({ content: toAnsiCodeBlock(combinedRaw), ...webhookSendOptions });
         this.lastConsoleMessages.set(discordChannel.id, {
             id: sentMessage.id,

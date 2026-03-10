@@ -214,6 +214,7 @@ export default class ChatDispatchHandler {
                     await limiter.consume(key);
                 }
                 catch(rejected) {
+                    logger.debug(`[ChatDispatch] Rate limited queue ${key}; retry in ${rejected?.msBeforeNext ?? 250}ms (items=${state.items.length}, batchMode=${state.batchMode})`);
                     this.scheduleProcess(key, rejected?.msBeforeNext ?? 250);
                     return;
                 }
