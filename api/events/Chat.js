@@ -20,9 +20,9 @@ const DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS = 10_000;
 const MAX_WEBHOOKS_PER_CHANNEL = 15;
 const IDLE_WEBHOOK_PRUNE_COOLDOWN_MS = 60_000;
 const PRUNE_CHECK_INTERVAL_MS = 30_000;
-const AVATAR_CACHE_TTL_MS = 5 * 60_000;
+const AVATAR_CACHE_TTL_MS = 60 * 60_000; // 1 hour
 const WEBHOOK_TOKEN_REFRESH_TTL_MS = 14 * 60_000;
-const CONSOLE_SCALE_CHAR_THRESHOLD = 6_000;
+const CONSOLE_SCALE_CHAR_THRESHOLD = 4_000;
 
 /**
  * Returns the default webhook identity used for chat-channel webhook messages.
@@ -726,10 +726,6 @@ export default class Chat extends WSEvent {
         }
 
         const webhooks = channelConfig.webhooks;
-        if(webhooks.length <= 1) {
-            this.webhookLastActive.set(firstId, now);
-            return firstId;
-        }
 
         // Find the least-loaded webhook by queue size
         let bestId = webhooks[0];
