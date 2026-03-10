@@ -22,7 +22,7 @@ const IDLE_WEBHOOK_PRUNE_COOLDOWN_MS = 60_000;
 const PRUNE_CHECK_INTERVAL_MS = 30_000;
 const AVATAR_CACHE_TTL_MS = 60 * 60_000; // 1 hour
 const WEBHOOK_TOKEN_REFRESH_TTL_MS = 14 * 60_000;
-const CONSOLE_SCALE_CHAR_THRESHOLD = 4_000;
+const CONSOLE_SCALE_CHAR_THRESHOLD = 6_000;
 
 /**
  * Returns the default webhook identity used for chat-channel webhook messages.
@@ -727,21 +727,35 @@ export default class Chat extends WSEvent {
 
         const webhooks = channelConfig.webhooks;
 
-        // Find the least-loaded webhook by queue size
-        let bestId = webhooks[0];
-        let bestSize = this.dispatchHandler.getQueueSize(webhooks[0]);
-        for(let i = 1; i < webhooks.length; i++) {
-            const size = this.dispatchHandler.getQueueSize(webhooks[i]);
-            if(size < bestSize) {
-                bestId = webhooks[i];
-                bestSize = size;
+        let bestId = webhooks[0]; // Default to the first webhook
+        let bestSize;
+        if(mode === 'console') {
+            // Or find the least queued console webhook by character count
+            bestSize = this.dispatchHandler.getQueuedConsoleChars(webhooks[0]);
+            for(let i = 1; i < webhooks.length; i++) {
+                const chars = this.dispatchHandler.getQueuedConsoleChars(webhooks[i]);
+                if(chars < bestSize) {
+                    bestId = webhooks[i];
+                    bestSize = chars;
+                }
+            }
+        }
+        else {
+            // For chat, find the least-loaded webhook by queue size
+            bestSize = this.dispatchHandler.getQueueSize(webhooks[0]);
+            for(let i = 1; i < webhooks.length; i++) {
+                const size = this.dispatchHandler.getQueueSize(webhooks[i]);
+                if(size < bestSize) {
+                    bestId = webhooks[i];
+                    bestSize = size;
+                }
             }
         }
 
         // Scale up only when mode-specific pressure threshold is exceeded.
-        // Chat uses batch threshold, console uses queued character pressure, embeds use queue size.
+        // Chat and embeds use batch threshold, console uses queued character pressure.
         const shouldScaleUp = mode === 'console' ?
-            this.getMinimumQueuedConsoleChars(webhooks) > CONSOLE_SCALE_CHAR_THRESHOLD :
+            bestSize > CONSOLE_SCALE_CHAR_THRESHOLD :
             bestSize > this.dispatchHandler.batchThreshold;
 
         if(shouldScaleUp) {
@@ -754,22 +768,6 @@ export default class Chat extends WSEvent {
 
         this.webhookLastActive.set(bestId, now);
         return bestId;
-    }
-
-    /**
-     * Returns the minimum queued console character count across a set of webhooks.
-     * Used to determine whether console load is high enough to warrant scaling up.
-     * @param {string[]} webhookIds - The webhook IDs in the pool.
-     * @returns {number}
-     */
-    getMinimumQueuedConsoleChars(webhookIds) {
-        if(!webhookIds?.length) return 0;
-        let minChars = this.dispatchHandler.getQueuedConsoleChars(webhookIds[0]);
-        for(let i = 1; i < webhookIds.length; i++) {
-            const chars = this.dispatchHandler.getQueuedConsoleChars(webhookIds[i]);
-            if(chars < minChars) minChars = chars;
-        }
-        return minChars;
     }
 
     /**
