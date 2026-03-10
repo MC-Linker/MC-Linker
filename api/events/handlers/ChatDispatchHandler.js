@@ -162,6 +162,7 @@ export default class ChatDispatchHandler {
         if(!force && now - state.lastSummaryAt < this.highLoadSummaryIntervalMs) return;
 
         try {
+            logger.debug(`[ChatDispatch] Emitting high-load summary for queue ${key} (skippedCount=${state.skippedCount}, force=${force})`);
             await this.onHighLoadSkipped({
                 key,
                 bucket: state.bucket,
