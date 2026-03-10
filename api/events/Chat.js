@@ -20,6 +20,9 @@ const DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS = 10_000;
 const MAX_WEBHOOKS_PER_CHANNEL = 15;
 const IDLE_WEBHOOK_PRUNE_COOLDOWN_MS = 60_000;
 const PRUNE_CHECK_INTERVAL_MS = 30_000;
+const AVATAR_CACHE_TTL_MS = 5 * 60_000;
+const WEBHOOK_TOKEN_REFRESH_TTL_MS = 14 * 60_000;
+const CONSOLE_SCALE_CHAR_THRESHOLD = 6_000;
 
 /**
  * Returns the default webhook identity used for chat-channel webhook messages.
@@ -64,6 +67,19 @@ export default class Chat extends WSEvent {
      * @type {Map<string, number>}
      */
     lastPruneCheck = new Map();
+
+    /**
+     * Caches Minecraft avatar URLs by player name to avoid repeated HTTP HEAD calls.
+     * @type {Map<string, { url: string, cachedAt: number }>}
+     */
+    avatarCache = new Map();
+
+    /**
+     * Caches webhook tokens by webhook ID for use with WebhookClient.
+     * Tokens are periodically refreshed to avoid stale-cache send failures.
+     * @type {Map<string, { token: string, cachedAt: number }>}
+     */
+    webhookTokens = new Map();
 
     /**
      * @typedef {Object} ChatRequest
@@ -149,8 +165,7 @@ export default class Chat extends WSEvent {
         if(['player_command', 'console_command', 'block_command'].includes(type) && server.settings.isFilteredCommand(message)) return;
 
         const guildId = server.id;
-        // TODO - this is expensive, cache or disable in batch mode
-        const authorURL = player ? await getMinecraftAvatarURL(player) : null;
+        const authorURL = player ? await this.getCachedAvatarURL(player) : null;
 
         const placeholders = { username: player, author_url: authorURL, message };
 
@@ -178,10 +193,10 @@ export default class Chat extends WSEvent {
         if(type === 'chat') {
             if(!message) return;
 
-            placeholders.message = await this.parseMentions(placeholders.message, guild);
+            if(!this.isUnderHighLoad(channels)) placeholders.message = await this.parseMentions(placeholders.message, guild);
 
             for(const channel of channels) {
-                const webhookId = await this.selectWebhook(channel, server, guild);
+                const webhookId = await this.selectWebhook(channel, server, guild, 'chat');
                 if(!webhookId) continue;
 
                 logger.debug(`[Socket.io][Chat] Enqueue chat message for channel ${channel.id} via webhook ${webhookId}`);
@@ -203,7 +218,7 @@ export default class Chat extends WSEvent {
             if(!message) return;
 
             for(const channel of channels) {
-                const webhookId = await this.selectWebhook(channel, server, guild);
+                const webhookId = await this.selectWebhook(channel, server, guild, 'console');
                 if(!webhookId) continue;
 
                 logger.debug(`[Socket.io][Chat] Enqueue console payload for channel ${channel.id} via webhook ${webhookId}`);
@@ -223,7 +238,7 @@ export default class Chat extends WSEvent {
             const chatEmbed = getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() });
 
             for(const channel of channels) {
-                const webhookId = await this.selectWebhook(channel, server, guild);
+                const webhookId = await this.selectWebhook(channel, server, guild, 'embed');
                 if(!webhookId) continue;
 
                 logger.debug(`[Socket.io][Chat] Enqueue ${type} embed for channel ${channel.id} via webhook ${webhookId}`);
@@ -284,10 +299,21 @@ export default class Chat extends WSEvent {
         const webhook = await this.resolveWebhook(client, guild, server, chatChannel, webhookId);
         if(!webhook) return;
 
-        await webhook.send({
-            embeds: [getEmbed(keys.api.plugin.warnings.high_load_skipped, { count: skippedCount })],
-            ...this.getSystemWebhookSendOptions(discordChannel),
-        });
+        try {
+            await webhook.send({
+                embeds: [getEmbed(keys.api.plugin.warnings.high_load_skipped, { count: skippedCount })],
+                ...this.getSystemWebhookSendOptions(discordChannel),
+            });
+        }
+        catch(err) {
+            if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) {
+                this.webhookTokens.delete(webhookId);
+                chatChannel.webhooks = (chatChannel.webhooks ?? []).filter(id => id !== webhookId);
+                this.webhookLastActive.delete(webhookId);
+                return;
+            }
+            logger.error(err, `[Socket.io][Chat] Failed sending high-load skipped summary for channel ${channelId}`);
+        }
     }
 
     /**
@@ -357,7 +383,8 @@ export default class Chat extends WSEvent {
             }
         }
         catch(err) {
-            if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
+            if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) {
+                this.webhookTokens.delete(webhookId);
                 chatChannel.webhooks = (chatChannel.webhooks ?? []).filter(id => id !== webhookId);
                 this.webhookLastActive.delete(webhookId);
                 const newId = await this.ensureWebhookForChatChannel(chatChannel, server, guild);
@@ -433,7 +460,8 @@ export default class Chat extends WSEvent {
             return { consumed };
         }
         catch(err) {
-            if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
+            if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) {
+                this.webhookTokens.delete(webhookId);
                 chatChannel.webhooks = (chatChannel.webhooks ?? []).filter(id => id !== webhookId);
                 this.webhookLastActive.delete(webhookId);
                 const newId = await this.ensureWebhookForChatChannel(chatChannel, server, guild);
@@ -459,7 +487,7 @@ export default class Chat extends WSEvent {
      * Combines consecutive console items and attempts to append to the last console message via edit.
      * Falls back to sending a new message if appending would exceed the character limit.
      * The limit is ~1000 chars when ANSI codes are present (Discord stops rendering them beyond that), or ~2000 otherwise.
-     * @param {Discord.Webhook} webhook - The webhook to send messages with.
+     * @param {Discord.WebhookClient|Discord.Webhook} webhook - The webhook to send messages with.
      * @param {Discord.TextChannel} discordChannel - The Discord channel to send to.
      * @param {ConsoleQueueItem[]} items - The queued console items to process.
      * @returns {Promise<import('./handlers/ChatDispatchHandler.js').ProcessResult>}
@@ -513,15 +541,25 @@ export default class Chat extends WSEvent {
                     return { consumed: items.length };
                 }
 
-                if(err?.code === RESTJSONErrorCodes.UnknownWebhook) throw err;
+                if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) throw err;
                 // Previous console message no longer editable/deleted; reset and send a fresh message below.
                 this.lastConsoleMessages.delete(discordChannel.id);
-                logger.debug(`[Socket.io][Chat] Falling back to fresh console webhook send for channel ${discordChannel.id}: ${err?.code ?? err?.message ?? 'unknown error'}`);
+                logger.debug(`[Socket.io][Chat] Falling back to fresh console webhook send for channel ${discordChannel.id}: ${err?.message ?? 'unknown error'}`);
             }
         }
 
         logger.debug(`[Socket.io][Chat] Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
-        const sentMessage = await webhook.send({ content: toAnsiCodeBlock(combinedRaw), ...webhookSendOptions });
+        let sentMessage;
+        try {
+            sentMessage = await webhook.send({ content: toAnsiCodeBlock(combinedRaw), ...webhookSendOptions });
+        }
+        catch(err) {
+            if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken || err?.code === RESTJSONErrorCodes.UnknownChannel) throw err;
+
+            logger.error(err, `[Socket.io][Chat] Failed sending new console payload for channel ${discordChannel.id}`);
+            return { consumed: 1 };
+        }
+
         this.lastConsoleMessages.set(discordChannel.id, {
             id: sentMessage.id,
             raw: combinedRaw,
@@ -606,6 +644,35 @@ export default class Chat extends WSEvent {
     }
 
     /**
+     * Returns a cached Minecraft avatar URL, only making the HTTP call when the cache is expired or missing.
+     * @param {string} player - The player username.
+     * @returns {Promise<string>} The avatar URL.
+     */
+    async getCachedAvatarURL(player) {
+        const cached = this.avatarCache.get(player);
+        if(cached && Date.now() - cached.cachedAt < AVATAR_CACHE_TTL_MS) return cached.url;
+
+        const url = await getMinecraftAvatarURL(player);
+        this.avatarCache.set(player, { url, cachedAt: Date.now() });
+        return url;
+    }
+
+    /**
+     * Returns whether any webhook queue for the given channels exceeds the batch threshold,
+     * indicating the system is under enough load to skip expensive operations like mention parsing.
+     * @param {ChatChannelData[]} channels - The chat channels to check.
+     * @returns {boolean}
+     */
+    isUnderHighLoad(channels) {
+        for(const channel of channels) {
+            for(const webhookId of channel.webhooks ?? []) {
+                if(this.dispatchHandler.getQueueSize(webhookId) > this.dispatchHandler.batchThreshold) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Parses `@username` mentions in a message string and replaces them with Discord member mentions.
      * Only exact matches against display name, nickname, or username are replaced.
      * @param {string} message - The raw message text potentially containing `@username` mentions.
@@ -619,7 +686,6 @@ export default class Chat extends WSEvent {
             if(mention.length > 101) continue;
 
             const search = mention.replace('@', '').toLowerCase();
-            //TODO api call - disable under high load
             const foundMember = (await guild.members.search({ query: search, limit: 1 }).catch(() => null))?.first();
             if(!foundMember) continue;
 
@@ -643,9 +709,10 @@ export default class Chat extends WSEvent {
      * @param {ChatChannelData} channelConfig - The chat channel configuration.
      * @param {ServerConnection} server - The server connection.
      * @param {Discord.Guild} guild - The guild the channel belongs to.
+     * @param {QueueItem['kind']} mode - The payload mode used to determine scale-up pressure.
      * @returns {Promise<?string>} The selected webhook ID, or null if no webhook could be ensured.
      */
-    async selectWebhook(channelConfig, server, guild) {
+    async selectWebhook(channelConfig, server, guild, mode) {
         const firstId = await this.ensureWebhookForChatChannel(channelConfig, server, guild);
         if(!firstId) return null;
 
@@ -675,8 +742,13 @@ export default class Chat extends WSEvent {
             }
         }
 
-        // Scale up if all webhooks are under pressure
-        if(bestSize > this.dispatchHandler.batchThreshold) {
+        // Scale up only when mode-specific pressure threshold is exceeded.
+        // Chat uses batch threshold, console uses queued character pressure, embeds use queue size.
+        const shouldScaleUp = mode === 'console' ?
+            this.getMinimumQueuedConsoleChars(webhooks) > CONSOLE_SCALE_CHAR_THRESHOLD :
+            bestSize > this.dispatchHandler.batchThreshold;
+
+        if(shouldScaleUp) {
             const newId = await this.tryScaleUp(channelConfig, server, guild);
             if(newId) {
                 this.webhookLastActive.set(newId, now);
@@ -686,6 +758,22 @@ export default class Chat extends WSEvent {
 
         this.webhookLastActive.set(bestId, now);
         return bestId;
+    }
+
+    /**
+     * Returns the minimum queued console character count across a set of webhooks.
+     * Used to determine whether console load is high enough to warrant scaling up.
+     * @param {string[]} webhookIds - The webhook IDs in the pool.
+     * @returns {number}
+     */
+    getMinimumQueuedConsoleChars(webhookIds) {
+        if(!webhookIds?.length) return 0;
+        let minChars = this.dispatchHandler.getQueuedConsoleChars(webhookIds[0]);
+        for(let i = 1; i < webhookIds.length; i++) {
+            const chars = this.dispatchHandler.getQueuedConsoleChars(webhookIds[i]);
+            if(chars < minChars) minChars = chars;
+        }
+        return minChars;
     }
 
     /**
@@ -752,6 +840,7 @@ export default class Chat extends WSEvent {
 
         if(!channelConfig.webhooks) channelConfig.webhooks = [];
         channelConfig.webhooks.push(webhook.id);
+        if(webhook.token) this.webhookTokens.set(webhook.id, { token: webhook.token, cachedAt: Date.now() });
 
         const regChannel = await server.protocol.addChatChannel({
             id: channelConfig.id,
@@ -762,6 +851,7 @@ export default class Chat extends WSEvent {
 
         if(!regChannel) {
             channelConfig.webhooks.pop();
+            this.webhookTokens.delete(webhook.id);
             await webhook.delete().catch(() => {});
             return null;
         }
@@ -803,6 +893,7 @@ export default class Chat extends WSEvent {
             }
             catch(_) {}
             this.webhookLastActive.delete(webhookId);
+            this.webhookTokens.delete(webhookId);
         }
 
         channelConfig.webhooks = channelConfig.webhooks.filter(id => !toRemove.includes(id));
@@ -820,14 +911,15 @@ export default class Chat extends WSEvent {
     }
 
     /**
-     * Resolves a Discord Webhook object for the given webhook ID, falling back to other pool
-     * members or creating a replacement if the requested webhook is dead.
-     * @param {Discord.Client} client - The Discord client used to fetch webhooks.
+     * Resolves a sendable webhook for the given webhook ID, using the token cache to avoid API calls.
+     * Returns a WebhookClient constructed from cached tokens when possible,
+     * falling back to fetchWebhook on cache miss, and trying pool alternatives on dead webhooks.
+     * @param {Discord.Client} client - The Discord client used to fetch webhooks on cache miss.
      * @param {Discord.Guild} guild - The guild the channel belongs to.
      * @param {ServerConnection} server - The server connection.
      * @param {ChatChannelData} channelConfig - The chat channel configuration object.
      * @param {string} webhookId - The webhook ID to resolve.
-     * @returns {Promise<?Discord.Webhook>} The resolved webhook, or null if it could not be resolved or created.
+     * @returns {Promise<?(Discord.WebhookClient|Discord.Webhook)>} A sendable webhook, or null.
      */
     async resolveWebhook(client, guild, server, channelConfig, webhookId) {
         if(!webhookId) {
@@ -835,9 +927,20 @@ export default class Chat extends WSEvent {
             if(!webhookId) return null;
         }
 
+        const cachedEntry = this.webhookTokens.get(webhookId);
+        const cachedTokenFresh = cachedEntry && Date.now() - cachedEntry.cachedAt < WEBHOOK_TOKEN_REFRESH_TTL_MS;
+
+        // Fast path: use fresh cached token to create WebhookClient without an API call
+        if(cachedTokenFresh) return new Discord.WebhookClient({ id: webhookId, token: cachedEntry.token });
+
+        // Cache miss/stale cache: fetch to discover and refresh token
         try {
-            // TODO called every time - use WebhookClient instead and cache tokens
-            return await client.fetchWebhook(webhookId);
+            const webhook = await client.fetchWebhook(webhookId);
+            if(webhook.token) {
+                this.webhookTokens.set(webhookId, { token: webhook.token, cachedAt: Date.now() });
+                return new Discord.WebhookClient({ id: webhookId, token: webhook.token });
+            }
+            return webhook;
         }
         catch(err) {
             if(err?.code !== RESTJSONErrorCodes.UnknownWebhook) {
@@ -846,26 +949,39 @@ export default class Chat extends WSEvent {
             }
         }
 
-        // Webhook is dead — remove from pool and try alternatives
+        // Webhook is dead — evict and try pool alternatives
+        this.webhookTokens.delete(webhookId);
         channelConfig.webhooks = (channelConfig.webhooks ?? []).filter(id => id !== webhookId);
         this.webhookLastActive.delete(webhookId);
 
-        // Try remaining pool webhooks
         for(const altId of [...(channelConfig.webhooks ?? [])]) {
+            const altEntry = this.webhookTokens.get(altId);
+            const altFresh = altEntry && Date.now() - altEntry.cachedAt < WEBHOOK_TOKEN_REFRESH_TTL_MS;
+            if(altFresh) return new Discord.WebhookClient({ id: altId, token: altEntry.token });
+
             try {
-                return await client.fetchWebhook(altId);
+                const webhook = await client.fetchWebhook(altId);
+                if(webhook.token) {
+                    this.webhookTokens.set(altId, { token: webhook.token, cachedAt: Date.now() });
+                    return new Discord.WebhookClient({ id: altId, token: webhook.token });
+                }
+                return webhook;
             }
             catch(err) {
                 if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
+                    this.webhookTokens.delete(altId);
                     channelConfig.webhooks = channelConfig.webhooks.filter(id => id !== altId);
                     this.webhookLastActive.delete(altId);
                 }
             }
         }
 
-        // Pool exhausted, create new (ensureWebhookForChatChannel persists)
+        // Pool exhausted — create new
         const newId = await this.ensureWebhookForChatChannel(channelConfig, server, guild);
         if(!newId) return null;
+
+        const newEntry = this.webhookTokens.get(newId);
+        if(newEntry) return new Discord.WebhookClient({ id: newId, token: newEntry.token });
 
         return await client.fetchWebhook(newId)
             .catch(err => {
@@ -915,6 +1031,7 @@ export default class Chat extends WSEvent {
 
         if(!channel.webhooks) channel.webhooks = [];
         channel.webhooks.push(webhook.id);
+        if(webhook.token) this.webhookTokens.set(webhook.id, { token: webhook.token, cachedAt: Date.now() });
 
         const regChannel = await server.protocol.addChatChannel({
             id: channel.id,
@@ -925,6 +1042,7 @@ export default class Chat extends WSEvent {
 
         if(!regChannel) {
             channel.webhooks.pop();
+            this.webhookTokens.delete(webhook.id);
             await webhook.delete().catch(() => {});
             await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_add_webhook)] }).catch(() => {});
             return null;
@@ -948,6 +1066,7 @@ export default class Chat extends WSEvent {
         this.lastPruneCheck.delete(channel.id);
         for(const webhookId of channel.webhooks ?? []) {
             this.webhookLastActive.delete(webhookId);
+            this.webhookTokens.delete(webhookId);
         }
         await server.edit({ chatChannels: regChannel.data });
     }

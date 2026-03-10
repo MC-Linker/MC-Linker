@@ -137,6 +137,23 @@ export default class ChatDispatchHandler {
     }
 
     /**
+     * Returns the total estimated console character backlog for a queue key.
+     * Only counts items where kind === 'console'.
+     * @param {string} key - Unique identifier for the queue.
+     * @returns {number} Total console characters currently queued.
+     */
+    getQueuedConsoleChars(key) {
+        const items = this.states.get(key)?.items;
+        if(!items?.length) return 0;
+
+        let total = 0;
+        for(const item of items) {
+            if(item?.kind === 'console') total += item.raw?.length ?? 0;
+        }
+        return total;
+    }
+
+    /**
      * Schedule processing of the queue after a delay. If already scheduled, it will reschedule with the new delay.
      * @param {string} key - Unique identifier for the queue.
      * @param {number} delayMs - Delay in milliseconds before processing the queue.
