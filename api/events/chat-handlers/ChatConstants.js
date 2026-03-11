@@ -1,14 +1,13 @@
 export const CHAT_WEBHOOK_NAME = 'MC Linker Chat';
 export const CHAT_WEBHOOK_AVATAR_URL = 'https://mclinker.com/logo.png';
 export const CHAT_WEBHOOK_LEGACY_NAMES = new Set(['MC Linker', 'ChatChannel']);
-export const DISPATCH_HIGH_LOAD_ENTER_THRESHOLD = 120;
-export const DISPATCH_HIGH_LOAD_EXIT_THRESHOLD = 60;
+export const DISPATCH_HIGH_LOAD_ENTER_THRESHOLD = 5000; //TODO - should be dynamically entered when all webhooks are rate limited
+export const DISPATCH_HIGH_LOAD_EXIT_THRESHOLD = 2000;
 export const DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS = 10_000;
 export const MAX_WEBHOOKS_PER_CHANNEL = 15;
 export const IDLE_WEBHOOK_PRUNE_COOLDOWN_MS = 60_000;
 export const PRUNE_CHECK_INTERVAL_MS = 30_000;
 export const WEBHOOK_TOKEN_REFRESH_TTL_MS = 14 * 60_000;
-export const CONSOLE_SCALE_CHAR_THRESHOLD = 6_000;
 export const CONSOLE_AFFINITY_HEADROOM = 150;
 
 /**

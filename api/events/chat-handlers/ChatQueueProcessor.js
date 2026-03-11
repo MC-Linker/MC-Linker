@@ -68,8 +68,8 @@ export default class ChatQueueProcessor {
          */
         this.limiter = new RateLimiterMemory({
             keyPrefix: 'chat-process-webhook',
-            points: points ?? 5,
-            duration: duration ?? 2,
+            points: points,
+            duration: duration,
         });
     }
 

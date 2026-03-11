@@ -38,7 +38,7 @@ export default class ChatDispatchHandler {
          * Number of queued items above which a destination switches to batch mode.
          * @type {number}
          */
-        this.batchThreshold = options.batchThreshold ?? 5;
+        this.batchThreshold = options.batchThreshold;
 
         /**
          * Callback invoked to process a batch of queued items for a given destination.
@@ -56,19 +56,19 @@ export default class ChatDispatchHandler {
          * Queue-size threshold to enter high-load drop mode.
          * @type {number}
          */
-        this.highLoadEnterThreshold = options.highLoadEnterThreshold ?? 120;
+        this.highLoadEnterThreshold = options.highLoadEnterThreshold;
 
         /**
          * Queue-size threshold to leave high-load drop mode.
          * @type {number}
          */
-        this.highLoadExitThreshold = options.highLoadExitThreshold ?? 60;
+        this.highLoadExitThreshold = options.highLoadExitThreshold;
 
         /**
          * Minimum interval between skipped summaries while high-load mode is active.
          * @type {number}
          */
-        this.highLoadSummaryIntervalMs = options.highLoadSummaryIntervalMs ?? 10_000;
+        this.highLoadSummaryIntervalMs = options.highLoadSummaryIntervalMs;
 
         /**
          * Per-destination queue state, keyed by channel id.
