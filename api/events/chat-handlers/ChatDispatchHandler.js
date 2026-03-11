@@ -5,12 +5,7 @@ import logger from '../../../utilities/logger.js';
 export default class ChatDispatchHandler {
 
     /**
-     * @typedef {'chat'|'channel'} QueueBucket
-     */
-
-    /**
      * @typedef {Object} QueueState
-     * @property {QueueBucket} bucket
      * @property {QueueItem[]} items
      * @property {?number} timer
      * @property {boolean} processing
@@ -38,8 +33,8 @@ export default class ChatDispatchHandler {
      * @param {number} [options.highLoadEnterThreshold=120]
      * @param {number} [options.highLoadExitThreshold=60]
      * @param {number} [options.highLoadSummaryIntervalMs=10000]
-     * @param {(params: { key: string, bucket: QueueBucket, items: Object[], batchMode: boolean }) => Promise<{ consumed: number, retryMs?: number, batchMode?: boolean }>} options.onProcess
-     * @param {(params: { key: string, bucket: QueueBucket, item: QueueItem, skippedCount: number, force: boolean }) => Promise<void>} [options.onHighLoadSkipped]
+     * @param {(params: { key: string, items: Object[], batchMode: boolean }) => Promise<{ consumed: number, retryMs?: number, batchMode?: boolean }>} options.onProcess
+     * @param {(params: { key: string, item: QueueItem, skippedCount: number, force: boolean }) => Promise<void>} [options.onHighLoadSkipped]
      */
     constructor(options) {
         /**
@@ -50,13 +45,13 @@ export default class ChatDispatchHandler {
 
         /**
          * Callback invoked to process a batch of queued items for a given destination.
-         * @type {(params: { key: string, bucket: QueueBucket, items: QueueItem[], batchMode: boolean }) => Promise<ProcessResult>}
+         * @type {(params: { key: string, items: QueueItem[], batchMode: boolean }) => Promise<ProcessResult>}
          */
         this.onProcess = options.onProcess;
 
         /**
          * Callback invoked to emit skipped-message summaries during high-load drop mode.
-         * @type {(params: { key: string, bucket: QueueBucket, item: QueueItem, skippedCount: number, force: boolean }) => Promise<void>}
+         * @type {(params: { key: string, item: QueueItem, skippedCount: number, force: boolean }) => Promise<void>}
          */
         this.onHighLoadSkipped = options.onHighLoadSkipped ?? null;
 
@@ -98,15 +93,13 @@ export default class ChatDispatchHandler {
     /**
      * Enqueue a chat for processing.
      * @param {string} key - Unique identifier for the queue (webhook Id for chat, channel Id for channel).
-     * @param {QueueBucket} bucket - The bucket to which this item belongs ('chat' or 'channel').
      * @param {QueueItem} item - The item to be processed, e.g. chat message or channel event.
      */
-    enqueue(key, bucket, item) {
+    enqueue(key, item) {
         if(!key) return;
 
         if(!this.states.has(key)) {
             this.states.set(key, {
-                bucket,
                 items: [],
                 timer: null,
                 processing: false,
@@ -191,7 +184,6 @@ export default class ChatDispatchHandler {
             logger.debug(`[ChatDispatch] Emitting high-load summary for queue ${key} (skippedCount=${state.skippedCount}, force=${force})`);
             await this.onHighLoadSkipped({
                 key,
-                bucket: state.bucket,
                 item: state.lastItem,
                 skippedCount: state.skippedCount,
                 force,
@@ -248,7 +240,6 @@ export default class ChatDispatchHandler {
 
                 const result = await this.onProcess({
                     key,
-                    bucket: state.bucket,
                     items: state.items,
                     batchMode: state.batchMode,
                 });

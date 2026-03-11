@@ -5,7 +5,7 @@ import * as utils from '../../utilities/utils.js';
 import { canSendMessages, MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../../utilities/utils.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import { getChatWebhookCreationOptions } from '../../api/events/Chat.js';
+import { getChatWebhookCreationOptions } from '../../api/events/chat-handlers/ChatConstants.js';
 
 const CHAT_COMMANDS_LABEL = 'chat commands';
 

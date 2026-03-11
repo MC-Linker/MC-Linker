@@ -1920,7 +1920,7 @@
                     "embeds": [
                         {
                             "title": "Could not Create Webhook",
-                            "description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel."
+                            "description": "Could not create a webhook in this channel. This is most likely due to the bot not having `Manage Webhooks` permission or there being 15 webhooks already in this channel."
                         }
                     ],
                     "console": "Could not create webhook",
@@ -2456,11 +2456,11 @@
                     ],
                     "console": "No webhook permission"
                 },
-                "could_not_add_webhook": {
+                "could_not_sync_webhooks": {
                     "embeds": [
                         {
-                            "title": "Could Not Add Webhook",
-                            "description": "The chatchannel webhook got deleted for an unknown reason and could not be re-added."
+                            "title": "Could Not Sync Webhook",
+                            "description": "The chatchannel webhooks changed and could not be synced with the plugin."
                         }
                     ],
                     "console": "Could not re-add webhook"

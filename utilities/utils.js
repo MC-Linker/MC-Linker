@@ -86,6 +86,57 @@ export async function getMinecraftAvatarURL(username) {
     }
 }
 
+const AVATAR_CACHE_TTL_MS = 60 * 60_000; // 1 hour
+
+/**
+ * @type {Map<string, { url: string, cachedAt: number }>}
+ */
+const avatarCache = new Map();
+
+/**
+ * Returns a cached Minecraft avatar URL, only making the HTTP call when the cache is expired or missing.
+ * @param {string} player - The player username.
+ * @returns {Promise<string>} The avatar URL.
+ */
+export async function getCachedAvatarURL(player) {
+    const cached = avatarCache.get(player);
+    if(cached && Date.now() - cached.cachedAt < AVATAR_CACHE_TTL_MS) return cached.url;
+
+    const url = await getMinecraftAvatarURL(player);
+    avatarCache.set(player, { url, cachedAt: Date.now() });
+    return url;
+}
+
+/**
+ * Parses `@username` mentions in a message string and replaces them with Discord member mentions.
+ * Only exact matches against display name, nickname, or username are replaced.
+ * @param {string} message - The raw message text potentially containing `@username` mentions.
+ * @param {import('discord.js').Guild} guild - The guild to search for members in.
+ * @returns {Promise<string>} The message with matched mentions replaced by Discord mention strings.
+ */
+export async function parseMentions(message, guild) {
+    let parsedMessage = message;
+    const mentions = parsedMessage.match(/@(\S+)/g);
+    for(const mention of mentions ?? []) {
+        if(mention.length > 101) continue;
+
+        const search = mention.replace('@', '').toLowerCase();
+        const foundMember = (await guild.members.search({ query: search, limit: 1 }).catch(() => null))?.first();
+        if(!foundMember) continue;
+
+        // Only exact matches
+        if(
+            foundMember?.user.displayName.toLowerCase() !== search &&
+            foundMember?.displayName.toLowerCase() !== search &&
+            foundMember?.user.username.toLowerCase() !== search
+        ) continue;
+
+        parsedMessage = parsedMessage.replace(mention, foundMember.toString());
+    }
+
+    return parsedMessage;
+}
+
 /**
  * @typedef {object} AdvancementData
  * @property {string} name - The name of the advancement.
