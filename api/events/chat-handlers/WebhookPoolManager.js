@@ -215,9 +215,17 @@ export default class WebhookPoolManager {
             try {
                 await guild.client.deleteWebhook(webhookId);
             }
-            catch(_) {}
-            this.webhookLastActive.delete(webhookId);
-            this.webhookTokens.delete(webhookId);
+            catch(err) {
+                if(err?.code !== RESTJSONErrorCodes.UnknownWebhook && err?.code !== RESTJSONErrorCodes.UnknownChannel) {
+                    // Return and try pruning again later
+                    logger.error(err, `[Socket.io][Chat] Failed deleting idle webhook ${webhookId} for channel ${channelConfig.id}`);
+                    return;
+                }
+            }
+            finally {
+                this.webhookLastActive.delete(webhookId);
+                this.webhookTokens.delete(webhookId);
+            }
         }
 
         channelConfig.webhooks = channelConfig.webhooks.filter(id => !toRemove.includes(id));

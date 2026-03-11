@@ -28,8 +28,8 @@ export default class ChatDispatchHandler {
     /**
      * @param {Object} options
      * @param {number} [options.batchThreshold=5]
-     * @param {number} [options.points=4]
-     * @param {number} [options.duration=1]
+     * @param {number} [options.points=5]
+     * @param {number} [options.duration=2]
      * @param {number} [options.highLoadEnterThreshold=120]
      * @param {number} [options.highLoadExitThreshold=60]
      * @param {number} [options.highLoadSummaryIntervalMs=10000]
