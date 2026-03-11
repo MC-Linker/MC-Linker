@@ -1944,12 +1944,12 @@
                             "placeholder": "Select up to 11 message types.",
                             "options": [
                                 {
-                                    "label": "Chat Messages",
+                                    "label": "💬 Chat Messages",
                                     "description": "Send a message whenever a player chats.",
                                     "value": "chat"
                                 },
                                 {
-                                    "label": "Console Messages",
+                                    "label": "🖥 Console Messages",
                                     "description": "Sends the console output to the channel.",
                                     "value": "console"
                                 },
