@@ -1949,52 +1949,52 @@
                                     "value": "chat"
                                 },
                                 {
-                                    "label": "💻 Console Messages",
+                                    "label": "🖥️ Console Messages",
                                     "description": "Sends the console output to the channel.",
                                     "value": "console"
                                 },
                                 {
-                                    "label": "Join Messages",
+                                    "label": "👋 Join Messages",
                                     "description": "Send a message whenever a player joins the server.",
                                     "value": "join"
                                 },
                                 {
-                                    "label": "Quit Messages",
+                                    "label": "👋 Quit Messages",
                                     "description": "Send a message whenever a player leaves the server.",
                                     "value": "quit"
                                 },
                                 {
-                                    "label": "Advancement Messages",
+                                    "label": "🏆 Advancement Messages",
                                     "description": "Send a message whenever a player completes an advancement.",
                                     "value": "advancement"
                                 },
                                 {
-                                    "label": "Death Messages",
+                                    "label": "💀 Death Messages",
                                     "description": "Send a message whenever a player dies.",
                                     "value": "death"
                                 },
                                 {
-                                    "label": "Player Command Messages",
+                                    "label": "⚡ Player Command Messages",
                                     "description": "Send a message whenever a command is sent by a player.",
                                     "value": "player_command"
                                 },
                                 {
-                                    "label": "Console Command Messages",
+                                    "label": "🖥️ Console Command Messages",
                                     "description": "Send a message whenever a command is sent by the console.",
                                     "value": "console_command"
                                 },
                                 {
-                                    "label": "Block Command Messages",
+                                    "label": "🧱 Block Command Messages",
                                     "description": "Send a message whenever a command block is executed.",
                                     "value": "block_command"
                                 },
                                 {
-                                    "label": "Startup Messages",
+                                    "label": "🟢 Startup Messages",
                                     "description": "Send a message whenever the server starts up.",
                                     "value": "start"
                                 },
                                 {
-                                    "label": "Shutdown Messages",
+                                    "label": "🔴 Shutdown Messages",
                                     "description": "Send a message whenever the server shuts down.",
                                     "value": "close"
                                 }
