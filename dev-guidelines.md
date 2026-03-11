@@ -94,40 +94,7 @@ This will start:
 
 ## Testing
 
-The project doesn't have a formal testing framework set up, but you can use Node.js's built-in `assert` module for basic
-testing.
-
-### Creating Tests
-
-1. Create test files in the `tests` directory
-2. Use the Node.js `assert` module for assertions
-3. Follow the naming convention: `*.test.js` for test files
-
-### Example Test
-
-Here's an example of a simple test file:
-
-```javascript
-import assert from 'assert';
-import { formatUsername } from './testUtils.js';
-
-console.log('Testing formatUsername function:');
-
-// Test case
-console.log('Test: Format username with spaces');
-assert.strictEqual(formatUsername('Player One'), 'PlayerOne', 'Should remove spaces');
-console.log('✅ Test passed');
-```
-
-### Running Tests
-
-Run tests using Node.js:
-
-```bash
-node tests/your-test-file.test.js
-```
-
-For more complex testing needs, consider adding Jest or Mocha to the project.
+The project doesn't have a formal testing framework set up.
 
 ## Project Structure
 
