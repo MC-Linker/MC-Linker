@@ -29,3 +29,4 @@
 + `/dm` (dm discord username)
 + `/discord`: customizable message
 + Hook into Chat Plugins/Mods and Vault
++ Add version identifier/endpoint so bot can reject connections from unsupported versions

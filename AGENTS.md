@@ -291,7 +291,10 @@ objects are not serializable and must be excluded from broadcasts.
 
 ## Code Style & Linting
 
-Run ESLint before committing. The full ruleset is in `.eslintrc.json`. Key conventions:
+Use JSDoc to describe all classes, methods, and to declare types. This is crucial for maintainability and helps with
+editor autocompletion.
+
+Adhere to the code style of this project for all edits. The full ruleset is in `.eslintrc.json`. Key conventions:
 
 ### Formatting
 
@@ -306,78 +309,11 @@ Run ESLint before committing. The full ruleset is in `.eslintrc.json`. Key conve
 - **Max 1 empty line** between code blocks, max 1 at end of file
 - **No trailing whitespace**
 
-### Naming
-
-- **Files:** PascalCase (`ServerConnection.js`, `Chat.js`, `Advancements.js`)
-- **Classes:** PascalCase (`MCLinker`, `ServerConnection`, `AutocompleteCommand`)
-- **Variables/functions:** camelCase (`chatChannels`, `getCachedAvatarURL`, `parseMentions`)
-- **Constants:** camelCase or UPPER_SNAKE_CASE for true constants (`ProtocolError`,
-  `DISPATCH_HIGH_LOAD_ENTER_THRESHOLD`)
-
-### Code
-
-- **`const`/`let`** only — no `var`
-- **`prefer-const`** — use `const` unless reassigned
-- **Strict equality** (`===`/`!==`) — never `==`/`!=`
-- **No magic numbers** — extract to named constants (0, 1, -1 exempt)
-- **ES module imports** — `import`/`export`, no `require()`
-- **Sort imports** alphabetically (case-insensitive, declaration order not enforced)
-- **JSDoc** on class constructors, methods, and typedefs
-
-### Example of Correct Style
-
-```javascript
-import { RateLimiterMemory } from 'rate-limiter-flexible';
-import WSEvent from '../WSEvent.js';
-
-const MAX_RETRIES = 3;
-
-export default class MyEvent extends WSEvent {
-
-    constructor() {
-        super({
-            event: 'my-event',
-            rateLimiter: new RateLimiterMemory({ points: 5, duration: 2 }),
-        });
-    }
-
-    async execute(data, server, client) {
-        if(!server) return { status: 'error', error: 'not_connected' };
-
-        const { uuid, message } = data;
-        for(const channel of server.chatChannels) {
-            if(channel.types.includes('chat')) {
-                await client.channels.fetch(channel.id);
-            }
-        }
-
-        return { status: 'success', data: { sent: true } };
-    }
-}
-```
-
-## Plugin-Side Change Indicators
-
-Flag that the **MC-Linker Plugin** (separate repository) needs changes when:
-
-- **WebSocket events** are added, removed, renamed, or have their data schema changed
-- **Authentication/handshake** flow is modified (token format, query params, auth object)
-- **Response format** changes (status codes, error codes, envelope structure)
-- **Protocol methods** change (new commands sent to plugin, changed parameters)
-- **Synced role** logic changes (direction behavior, sync algorithm)
-- **Account linking/verification** flow changes
-- **Plugin version** requirement is bumped (`config.json` → `pluginVersion`)
-- **Any outbound event** is changed (events the bot emits TO the plugin — see `websocket_api.md` "Events (Outbound from
-  Bot)")
-
-When in doubt, check `websocket_api.md` — if your change touches anything documented there, the plugin likely needs an
-update too.
-
 ## Environment & Deployment
 
 - **Environment variables:** See `dev-guidelines.md` for the full list. Key ones: `TOKEN`, `DATABASE_URL`, `BOT_PORT`,
   `PLUGIN_VERSION`
 - **Entry point:** `node main.js` (starts sharding manager)
 - **Production:** `docker-compose up -d` (bot + MongoDB + Mongo Express)
-- **No formal test framework** — use Node.js `assert` module for basic tests in `tests/`
+- **No formal test framework**
 - **API server** runs only on shard 0, listening on `BOT_PORT` (default 3000)
