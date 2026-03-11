@@ -304,6 +304,7 @@ export default class WebhookPoolManager {
         let webhook;
         try {
             webhook = await webhookChannel.createWebhook(getChatWebhookCreationOptions());
+            logger.debug(`[Socket.io][Chat] Created new webhook ${webhook.id} for channel ${channelConfig.id}`);
         }
         catch(err) {
             webhook = await this.findReusableChatWebhook(webhookChannel, guild.client.user.id);
