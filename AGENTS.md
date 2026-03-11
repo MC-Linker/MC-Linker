@@ -302,7 +302,7 @@ Adhere to the code style of this project for all edits. The full ruleset is in `
 - **Single quotes** for strings
 - **Always semicolons**
 - **Trailing commas** in multiline objects/arrays (`always-multiline`)
-- **1TBS brace style** (`} else {`), single-line blocks allowed
+- **Stroustrup brace style** (`else`, `catch`, etc. on a new line after `}`), single-line blocks allowed
 - **No space** between control keywords and parentheses: `if(`, `for(`, `while(`, `catch(`, `switch(`
 - **Space before blocks:** `if(condition) {`
 - **Space inside object braces:** `{ key: value }`, but **not** inside array brackets: `[1, 2]`

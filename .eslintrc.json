@@ -20,7 +20,7 @@
         "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }],
         "object-curly-spacing": ["error", "always"],
         "array-bracket-spacing": ["error", "never"],
-        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
         "comma-dangle": ["error", "always-multiline"],
         "no-empty": ["error", { "allowEmptyCatch": true }],
         "no-magic-numbers": ["warn", { "ignore": [0, 1, -1], "ignoreArrayIndexes": true, "enforceConst": true }],
