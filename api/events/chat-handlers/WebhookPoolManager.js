@@ -6,7 +6,6 @@ import {
     CHAT_WEBHOOK_LEGACY_NAMES,
     CHAT_WEBHOOK_NAME,
     CONSOLE_AFFINITY_HEADROOM,
-    CONSOLE_SCALE_CHAR_THRESHOLD,
     getChatWebhookCreationOptions,
     IDLE_WEBHOOK_PRUNE_COOLDOWN_MS,
     MAX_WEBHOOKS_PER_CHANNEL,
@@ -49,21 +48,19 @@ export default class WebhookPoolManager {
      */
     isUnderHighLoad(channels) {
         for(const channel of channels) {
-            for(const webhookId of channel.webhooks ?? []) {
-                if(this.dispatchHandler.getQueueSize(webhookId) > this.dispatchHandler.batchThreshold) return true;
-            }
+            if(this.dispatchHandler.getQueueSize(channel.id) > this.dispatchHandler.batchThreshold) return true;
         }
         return false;
     }
 
     /**
-     * Selects the best webhook for a chat channel, distributing load across the webhook pool.
-     * Creates additional webhooks when all existing ones are under pressure, up to the channel's available capacity.
+     * Selects the best webhook for a chat channel.
+     * For console messages, prefers the webhook that sent the last console message (edit affinity).
      * Periodically prunes idle excess webhooks.
      * @param {ChatChannelData} channelConfig - The chat channel configuration.
      * @param {ServerConnection} server - The server connection.
      * @param {import('discord.js').Guild} guild - The guild the channel belongs to.
-     * @param {QueueItem['kind']} kind - The payload kind used to determine scale-up pressure.
+     * @param {QueueItem['kind']} kind - The payload kind used for console affinity selection.
      * @returns {Promise<?string>} The selected webhook ID, or null if no webhook could be ensured.
      */
     async selectWebhook(channelConfig, server, guild, kind) {
@@ -81,8 +78,6 @@ export default class WebhookPoolManager {
 
         const webhooks = channelConfig.webhooks;
 
-        let bestId = webhooks[0]; // Default to the first webhook
-        let bestSize;
         if(kind === 'console') {
             // Prefer the webhook that sent the last console message (only it can edit),
             // but only while the message has enough headroom for more content.
@@ -94,45 +89,10 @@ export default class WebhookPoolManager {
                     return lastMsg.webhookId;
                 }
             }
-
-            // Fall through to least-loaded by queued character count
-            bestSize = this.dispatchHandler.getQueuedConsoleChars(webhooks[0]);
-            for(let i = 1; i < webhooks.length; i++) {
-                const chars = this.dispatchHandler.getQueuedConsoleChars(webhooks[i]);
-                if(chars < bestSize) {
-                    bestId = webhooks[i];
-                    bestSize = chars;
-                }
-            }
-        }
-        else {
-            // For chat, find the least-loaded webhook by queue size
-            bestSize = this.dispatchHandler.getQueueSize(webhooks[0]);
-            for(let i = 1; i < webhooks.length; i++) {
-                const size = this.dispatchHandler.getQueueSize(webhooks[i]);
-                if(size < bestSize) {
-                    bestId = webhooks[i];
-                    bestSize = size;
-                }
-            }
         }
 
-        // Scale up only when mode-specific pressure threshold is exceeded.
-        // Chat and embeds use batch threshold, console uses queued character pressure.
-        const shouldScaleUp = kind === 'console' ?
-            bestSize > CONSOLE_SCALE_CHAR_THRESHOLD :
-            bestSize > this.dispatchHandler.batchThreshold;
-
-        if(shouldScaleUp) {
-            const newId = await this.tryScaleUp(channelConfig, server, guild);
-            if(newId) {
-                this.webhookLastActive.set(newId, now);
-                return newId;
-            }
-        }
-
-        this.webhookLastActive.set(bestId, now);
-        return bestId;
+        this.webhookLastActive.set(webhooks[0], now);
+        return webhooks[0];
     }
 
     /**
@@ -153,7 +113,9 @@ export default class WebhookPoolManager {
         const availableSlots = await this.getAvailableWebhookSlots(webhookChannel);
         if(availableSlots <= 0) return null;
 
-        return this.createAdditionalWebhook(channelConfig, server, guild, webhookChannel);
+        const webhookId = await this.createWebhook(channelConfig, server, guild, webhookChannel, webhookChannel);
+        logger.debug(`[Socket.io][Chat] Scaled up webhook pool for channel ${channelConfig.id} (total=${channelConfig.webhooks.length})`);
+        return webhookId;
     }
 
     /**
@@ -169,27 +131,8 @@ export default class WebhookPoolManager {
     }
 
     /**
-     * Creates an additional webhook and adds it to the channel's webhook pool.
-     * Does not check capacity — callers should verify via {@link getAvailableWebhookSlots} first.
-     * @param {ChatChannelData} channelConfig - The chat channel configuration.
-     * @param {ServerConnection} server - The server connection.
-     * @param {import('discord.js').Guild} guild - The guild the channel belongs to.
-     * @param {import('discord.js').TextChannel} webhookChannel - The channel to create the webhook in.
-     * @returns {Promise<?string>} The new webhook ID, or null if creation failed.
-     */
-    async createAdditionalWebhook(channelConfig, server, guild, webhookChannel) {
-        const canManageWebhooks = webhookChannel.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.ManageWebhooks);
-        if(!canManageWebhooks) return null;
-
-        const webhookId = await this.createWebhook(channelConfig, server, guild, webhookChannel, webhookChannel);
-        if(webhookId) logger.debug(`[Socket.io][Chat] Scaled up webhook pool for channel ${channelConfig.id} (total=${channelConfig.webhooks.length})`);
-        return webhookId;
-    }
-
-    /**
      * Prunes idle webhooks from a channel's pool, keeping at least one webhook.
-     * A webhook is considered idle if it hasn't been used for enqueueing within the prune cooldown period
-     * and its dispatch queue is empty.
+     * A webhook is considered idle if it hasn't been used within the prune cooldown period.
      * @param {ChatChannelData} channelConfig - The chat channel configuration.
      * @param {ServerConnection} server - The server connection.
      * @param {import('discord.js').Guild} guild - The guild the channel belongs to.
@@ -204,8 +147,7 @@ export default class WebhookPoolManager {
         for(const webhookId of channelConfig.webhooks) {
             if(channelConfig.webhooks.length - toRemove.length <= 1) break; // Keep at least one
             const lastActive = this.webhookLastActive.get(webhookId) ?? 0;
-            const queueSize = this.dispatchHandler.getQueueSize(webhookId);
-            if(queueSize === 0 && now - lastActive > IDLE_WEBHOOK_PRUNE_COOLDOWN_MS)
+            if(now - lastActive > IDLE_WEBHOOK_PRUNE_COOLDOWN_MS)
                 toRemove.push(webhookId);
         }
 

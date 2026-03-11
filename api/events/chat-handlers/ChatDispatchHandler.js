@@ -1,4 +1,3 @@
-import { RateLimiterMemory } from 'rate-limiter-flexible';
 import logger from '../../../utilities/logger.js';
 
 
@@ -28,8 +27,6 @@ export default class ChatDispatchHandler {
     /**
      * @param {Object} options
      * @param {number} [options.batchThreshold=5]
-     * @param {number} [options.points=5]
-     * @param {number} [options.duration=2]
      * @param {number} [options.highLoadEnterThreshold=120]
      * @param {number} [options.highLoadExitThreshold=60]
      * @param {number} [options.highLoadSummaryIntervalMs=10000]
@@ -74,17 +71,7 @@ export default class ChatDispatchHandler {
         this.highLoadSummaryIntervalMs = options.highLoadSummaryIntervalMs ?? 10_000;
 
         /**
-         * Rate limiter for webhook destinations (all chat channels use webhooks).
-         * @type {RateLimiterMemory}
-         */
-        this.limiter = new RateLimiterMemory({
-            keyPrefix: 'chat-dispatch-webhook',
-            points: options.points ?? 5,
-            duration: options.duration ?? 2,
-        });
-
-        /**
-         * Per-destination queue state, keyed by webhook or channel id.
+         * Per-destination queue state, keyed by channel id.
          * @type {Map<string, QueueState>}
          */
         this.states = new Map();
@@ -92,7 +79,7 @@ export default class ChatDispatchHandler {
 
     /**
      * Enqueue a chat for processing.
-     * @param {string} key - Unique identifier for the queue (webhook Id for chat, channel Id for channel).
+     * @param {string} key - Unique identifier for the queue (channel Id).
      * @param {QueueItem} item - The item to be processed, e.g. chat message or channel event.
      */
     enqueue(key, item) {
@@ -127,23 +114,6 @@ export default class ChatDispatchHandler {
      */
     getQueueSize(key) {
         return this.states.get(key)?.items.length ?? 0;
-    }
-
-    /**
-     * Returns the total estimated console character backlog for a queue key.
-     * Only counts items where kind === 'console'.
-     * @param {string} key - Unique identifier for the queue.
-     * @returns {number} Total console characters currently queued.
-     */
-    getQueuedConsoleChars(key) {
-        const items = this.states.get(key)?.items;
-        if(!items?.length) return 0;
-
-        let total = 0;
-        for(const item of items) {
-            if(item?.kind === 'console') total += item.raw?.length ?? 0;
-        }
-        return total;
     }
 
     /**
@@ -197,7 +167,7 @@ export default class ChatDispatchHandler {
     }
 
     /**
-     * Process the queue for the given key. It will consume items from the queue based on the rate limiter and call the onProcess callback.
+     * Process the queue for the given key. Iterates through queued items and calls the onProcess callback.
      * @param {string} key - Unique identifier for the queue.
      * @returns {Promise<void>}
      */
@@ -227,16 +197,6 @@ export default class ChatDispatchHandler {
                     return;
                 }
                 else if(state.skippedCount > 0) await this.emitHighLoadSummary(key, state, true);
-
-                const limiter = this.limiter;
-                try {
-                    await limiter.consume(key);
-                }
-                catch(rejected) {
-                    logger.debug(`[ChatDispatch] Rate limited queue ${key}; retry in ${rejected?.msBeforeNext ?? 250}ms (items=${state.items.length}, batchMode=${state.batchMode})`);
-                    this.scheduleProcess(key, rejected?.msBeforeNext ?? 250);
-                    return;
-                }
 
                 const result = await this.onProcess({
                     key,

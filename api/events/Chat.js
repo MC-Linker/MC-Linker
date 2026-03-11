@@ -49,12 +49,12 @@ export default class Chat extends WSEvent {
         this.queueProcessor = new ChatQueueProcessor({
             resolver: this.resolver,
             poolManager: this.poolManager,
+            points: 5,
+            duration: 2,
         });
 
         this.dispatchHandler = new ChatDispatchHandler({
             batchThreshold: 5,
-            points: 5,
-            duration: 2,
             highLoadEnterThreshold: DISPATCH_HIGH_LOAD_ENTER_THRESHOLD,
             highLoadExitThreshold: DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
             highLoadSummaryIntervalMs: DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS,
@@ -120,15 +120,15 @@ export default class Chat extends WSEvent {
         const chatEmbed = !isChat && !isConsole ? getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() }) : null;
 
         for(const channel of channels) {
-            const webhookId = await this.poolManager.selectWebhook(channel, server, guild, mode);
-            if(!webhookId) continue;
+            const hasWebhook = await this.poolManager.ensureWebhookForChatChannel(channel, server, guild);
+            if(!hasWebhook) continue;
 
-            logger.debug(`[Socket.io][Chat] Enqueue ${mode} payload for channel ${channel.id} via webhook ${webhookId}`);
+            logger.debug(`[Socket.io][Chat] Enqueue ${mode} payload for channel ${channel.id}`);
 
-            const base = { client, serverId: server.id, guildId, channelId: channel.id, webhookId };
+            const base = { client, serverId: server.id, guildId, channelId: channel.id };
 
             if(isChat)
-                this.dispatchHandler.enqueue(webhookId, {
+                this.dispatchHandler.enqueue(channel.id, {
                     ...base,
                     kind: 'chat',
                     player,
@@ -136,9 +136,9 @@ export default class Chat extends WSEvent {
                     message: placeholders.message,
                 });
             else if(isConsole)
-                this.dispatchHandler.enqueue(webhookId, { ...base, kind: 'console', raw: message });
+                this.dispatchHandler.enqueue(channel.id, { ...base, kind: 'console', raw: message });
             else
-                this.dispatchHandler.enqueue(webhookId, { ...base, kind: 'embed', embed: chatEmbed });
+                this.dispatchHandler.enqueue(channel.id, { ...base, kind: 'embed', embed: chatEmbed });
         }
     }
 }

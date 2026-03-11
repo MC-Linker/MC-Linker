@@ -1,4 +1,5 @@
 import Discord, { RESTJSONErrorCodes } from 'discord.js';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 import keys from '../../../utilities/keys.js';
 import { getEmbed } from '../../../utilities/messages.js';
 import { containsAnsiCodes, toAnsiCodeBlock } from '../../../utilities/utils.js';
@@ -12,7 +13,6 @@ import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } 
  * @property {string} serverId
  * @property {string} guildId
  * @property {string} channelId
- * @property {string} webhookId
  * @property {string} player
  * @property {?string} authorURL
  * @property {string} message
@@ -25,7 +25,6 @@ import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } 
  * @property {string} serverId
  * @property {string} guildId
  * @property {string} channelId
- * @property {string} webhookId
  * @property {string} raw
  */
 
@@ -36,7 +35,6 @@ import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } 
  * @property {string} serverId
  * @property {string} guildId
  * @property {string} channelId
- * @property {string} webhookId
  * @property {Discord.EmbedBuilder} embed
  */
 
@@ -57,29 +55,41 @@ export default class ChatQueueProcessor {
      * @param {Object} options
      * @param {WebhookResolver} options.resolver
      * @param {WebhookPoolManager} options.poolManager
+     * @param {number} [options.points=5]
+     * @param {number} [options.duration=2]
      */
-    constructor({ resolver, poolManager }) {
+    constructor({ resolver, poolManager, points, duration }) {
         this.resolver = resolver;
         this.poolManager = poolManager;
+
+        /**
+         * Per-webhook rate limiter applied at process time.
+         * @type {RateLimiterMemory}
+         */
+        this.limiter = new RateLimiterMemory({
+            keyPrefix: 'chat-process-webhook',
+            points: points ?? 5,
+            duration: duration ?? 2,
+        });
     }
 
     /**
-     * @typedef {Object} ResolvedQueueContext
+     * @typedef {Object} ResolvedChannelContext
+     * @property {MCLinker} client
      * @property {ServerConnection} server
      * @property {Discord.Guild} guild
      * @property {ChatChannelData} chatChannel
      * @property {Discord.TextChannel} discordChannel
-     * @property {Discord.WebhookClient|Discord.Webhook} webhook
      */
 
     /**
-     * Resolves the full context needed to process a queue: server, guild, channel, chat config, and webhook.
+     * Resolves the channel context needed to process a queue: server, guild, channel config, and discord channel.
      * Returns null (and clears the queue) if any resolution step fails.
      * @param {QueueItem} firstItem - The first item in the queue, used to extract IDs.
-     * @returns {Promise<?ResolvedQueueContext>}
+     * @returns {Promise<?ResolvedChannelContext>}
      */
-    async resolveQueueContext(firstItem) {
-        const { client, serverId, guildId, channelId, webhookId } = firstItem;
+    async resolveChannelContext(firstItem) {
+        const { client, serverId, guildId, channelId } = firstItem;
         const server = client.serverConnections.cache.get(serverId);
         if(!server) return null;
 
@@ -96,10 +106,56 @@ export default class ChatQueueProcessor {
             });
         if(!discordChannel) return null;
 
-        const webhook = await this.resolver.resolve(client, guild, server, chatChannel, webhookId);
-        if(!webhook) return null;
+        return { client, server, guild, chatChannel, discordChannel };
+    }
 
-        return { server, guild, chatChannel, discordChannel, webhook };
+    /**
+     * Selects a webhook for the given channel context and consumes a rate-limit point.
+     * Tries the preferred webhook first (via selectWebhook), then falls back to other
+     * webhooks in the pool, and finally attempts to scale up if all are rate-limited.
+     * @param {ResolvedChannelContext} ctx - The resolved channel context.
+     * @param {QueueItem['kind']} kind - The payload kind (for console affinity selection).
+     * @returns {Promise<{ webhookId: ?string, retryMs?: number }>}
+     */
+    async selectRateLimitedWebhook(ctx, kind) {
+        const { chatChannel, server, guild } = ctx;
+
+        const preferredId = await this.poolManager.selectWebhook(chatChannel, server, guild, kind);
+        if(!preferredId) return { webhookId: null };
+
+        // Try preferred webhook first
+        try {
+            await this.limiter.consume(preferredId);
+            return { webhookId: preferredId };
+        }
+        catch(rejected) {
+            // Preferred webhook rate-limited — try alternatives in pool
+            let bestRetryMs = rejected?.msBeforeNext ?? 250;
+
+            for(const altId of chatChannel.webhooks) {
+                if(altId === preferredId) continue;
+                try {
+                    await this.limiter.consume(altId);
+                    this.poolManager.webhookLastActive.set(altId, Date.now());
+                    return { webhookId: altId };
+                }
+                catch(altRejected) {
+                    bestRetryMs = Math.min(bestRetryMs, altRejected?.msBeforeNext ?? 250);
+                }
+            }
+
+            // All webhooks rate-limited — try scaling up
+            const newId = await this.poolManager.tryScaleUp(chatChannel, server, guild);
+            if(newId) {
+                try {
+                    await this.limiter.consume(newId);
+                    return { webhookId: newId };
+                }
+                catch { /* should not happen on a fresh webhook */ }
+            }
+
+            return { webhookId: null, retryMs: bestRetryMs };
+        }
     }
 
     /**
@@ -138,7 +194,8 @@ export default class ChatQueueProcessor {
 
     /**
      * Callback invoked by the dispatch handler to process a batch of queued items.
-     * Routes to the appropriate processor based on the first item's kind.
+     * Selects a webhook and applies per-webhook rate limiting at process time,
+     * then routes to the appropriate processor based on the first item's kind.
      * @param {Object} params - The parameters from the dispatch handler.
      * @param {QueueItem[]} params.items - The queued items to process.
      * @param {boolean} params.batchMode - Whether batch mode is active for this destination.
@@ -148,18 +205,30 @@ export default class ChatQueueProcessor {
         const firstItem = items[0];
         if(!firstItem) return { consumed: 0 };
 
-        logger.debug(`[Socket.io][Chat] Processing dispatch queue (kind=${firstItem.kind}, items=${items.length}, batchMode=${batchMode})`);
-
-        const ctx = await this.resolveQueueContext(firstItem);
+        const ctx = await this.resolveChannelContext(firstItem);
         if(!ctx) return { consumed: items.length };
 
+        // Select webhook at process time and apply per-webhook rate limiting.
+        // If the preferred webhook is rate-limited, try alternatives in the pool, then scale up.
+        const { webhookId, retryMs } = await this.selectRateLimitedWebhook(ctx, firstItem.kind);
+        if(retryMs) {
+            logger.debug(`[Socket.io][Chat] All webhooks rate limited for channel ${firstItem.channelId}; retry in ${retryMs}ms (items=${items.length}, batchMode=${batchMode})`);
+            return { consumed: 0, retryMs };
+        }
+        if(!webhookId) return { consumed: items.length };
+
+        logger.debug(`[Socket.io][Chat] Processing dispatch queue (kind=${firstItem.kind}, items=${items.length}, batchMode=${batchMode}, webhook=${webhookId})`);
+
+        const webhook = await this.resolver.resolve(ctx.client, ctx.guild, ctx.server, ctx.chatChannel, webhookId);
+        if(!webhook) return { consumed: items.length };
+
         try {
-            if(firstItem.kind === 'chat') return await this.processChatQueue(ctx, items, batchMode);
-            if(firstItem.kind === 'console') return await this.processConsoleQueue(ctx.webhook, ctx.discordChannel, items);
-            return await this.processEmbedQueue(ctx, items);
+            if(firstItem.kind === 'chat') return await this.processChatQueue(ctx.discordChannel, webhook, items, batchMode);
+            if(firstItem.kind === 'console') return await this.processConsoleQueue(ctx.discordChannel, webhook, items);
+            return await this.processEmbedQueue(ctx.discordChannel, webhook, items);
         }
         catch(err) {
-            return this.handleWebhookSendError(err, items, firstItem.webhookId, ctx.chatChannel, ctx.server, ctx.guild, firstItem.kind);
+            return this.handleWebhookSendError(err, items, webhookId, ctx.chatChannel, ctx.server, ctx.guild, firstItem.kind);
         }
     }
 
@@ -171,37 +240,31 @@ export default class ChatQueueProcessor {
     async handleHighLoadSkipped({ item, skippedCount }) {
         if(!item || skippedCount <= 0) return;
 
-        const ctx = await this.resolveQueueContext(item);
+        const ctx = await this.resolveChannelContext(item);
         if(!ctx) return;
 
         try {
-            await ctx.webhook.send({
+            // High load skip messages are sent by bot itself
+            await ctx.discordChannel.send({
                 embeds: [getEmbed(keys.api.plugin.warnings.high_load_skipped, { count: skippedCount })],
-                ...getSystemWebhookSendOptions(ctx.discordChannel),
             });
         }
         catch(err) {
-            if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) {
-                this.poolManager.webhookTokens.delete(item.webhookId);
-                ctx.chatChannel.webhooks = ctx.chatChannel.webhooks.filter(id => id !== item.webhookId);
-                this.poolManager.webhookLastActive.delete(item.webhookId);
-                return;
-            }
             logger.error(err, `[Socket.io][Chat] Failed sending high-load skipped summary for channel ${item.channelId}`);
         }
     }
 
     /**
-     * Processes queued chat messages for a single webhook destination.
+     * Processes queued chat messages for a single channel destination.
      * In normal mode, combines consecutive messages from the same player into one webhook send.
      * In batch mode, combines all messages into a compact markdown format with a static webhook identity.
-     * @param {ResolvedQueueContext} ctx - The resolved queue context.
+     * @param {Discord.TextChannel} discordChannel - The Discord channel to send to.
+     * @param {Discord.WebhookClient|Discord.Webhook} webhook - The webhook to send messages with.
      * @param {ChatQueueItem[]} items - The queued chat items to process.
      * @param {boolean} batchMode - Whether batch mode is active.
      * @returns {Promise<import('./ChatDispatchHandler.js').ProcessResult>}
      */
-    async processChatQueue(ctx, items, batchMode) {
-        const { discordChannel, webhook } = ctx;
+    async processChatQueue(discordChannel, webhook, items, batchMode) {
         const { channelId } = items[0];
 
         if(batchMode || items.length > 5) {
@@ -239,12 +302,12 @@ export default class ChatQueueProcessor {
     /**
      * Processes queued embed events for a single channel destination.
      * Concatenates up to 10 embeds into a single webhook message.
-     * @param {ResolvedQueueContext} ctx - The resolved queue context.
+     * @param {Discord.TextChannel} discordChannel - The Discord channel to send to.
+     * @param {Discord.WebhookClient|Discord.Webhook} webhook - The webhook to send messages with.
      * @param {EmbedQueueItem[]} items - The queued embed items to process.
      * @returns {Promise<import('./ChatDispatchHandler.js').ProcessResult>}
      */
-    async processEmbedQueue(ctx, items) {
-        const { discordChannel, webhook } = ctx;
+    async processEmbedQueue(discordChannel, webhook, items) {
         const { channelId } = items[0];
 
         const embeds = [];
@@ -258,7 +321,7 @@ export default class ChatQueueProcessor {
 
         if(consumed <= 0) return { consumed: 1 };
 
-        logger.debug(`[Socket.io][Chat] Sending embed payload to channel ${channelId} (embeds=${embeds.length}, consumed=${consumed})`);
+        logger.debug(`[Socket.io][Chat] Sending embed payload to channel ${channelId} (consumed=${consumed}, embeds=${embeds.length})`);
 
         await webhook.send({
             embeds,
@@ -272,12 +335,12 @@ export default class ChatQueueProcessor {
      * Combines consecutive console items and attempts to append to the last console message via edit.
      * Falls back to sending a new message if appending would exceed the character limit.
      * The limit is ~1000 chars when ANSI codes are present (Discord stops rendering them beyond that), or ~2000 otherwise.
-     * @param {Discord.WebhookClient|Discord.Webhook} webhook - The webhook to send messages with.
      * @param {Discord.TextChannel} discordChannel - The Discord channel to send to.
+     * @param {Discord.WebhookClient|Discord.Webhook} webhook - The webhook to send messages with.
      * @param {ConsoleQueueItem[]} items - The queued console items to process.
      * @returns {Promise<import('./ChatDispatchHandler.js').ProcessResult>}
      */
-    async processConsoleQueue(webhook, discordChannel, items) {
+    async processConsoleQueue(discordChannel, webhook, items) {
         let consumed = 0;
         let combinedRaw = '';
         let hasAnsi = false;
