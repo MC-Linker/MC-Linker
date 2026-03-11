@@ -1949,7 +1949,7 @@
                                     "value": "chat"
                                 },
                                 {
-                                    "label": "🖥 Console Messages",
+                                    "label": "💻 Console Messages",
                                     "description": "Sends the console output to the channel.",
                                     "value": "console"
                                 },
