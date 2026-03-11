@@ -87,7 +87,7 @@ export default class WebhookPoolManager {
             // Prefer the webhook that sent the last console message (only it can edit),
             // but only while the message has enough headroom for more content.
             const lastMsg = this.lastConsoleMessages.get(channelConfig.id);
-            if(webhooks.includes(lastMsg.webhookId)) {
+            if(lastMsg && webhooks.includes(lastMsg.webhookId)) {
                 const charLimit = lastMsg.hasAnsi ? 1000 : 2000;
                 if(lastMsg.raw.length < charLimit - CONSOLE_AFFINITY_HEADROOM) {
                     this.webhookLastActive.set(lastMsg.webhookId, now);
