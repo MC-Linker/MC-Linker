@@ -5,7 +5,12 @@ import { getEmbed } from '../../../utilities/messages.js';
 import { containsAnsiCodes, toAnsiCodeBlock } from '../../../utilities/utils.js';
 import logger from '../../../utilities/logger.js';
 import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } from './ChatPayloadBuilder.js';
-import { RATE_LIMITER_DURATION, RATE_LIMITER_POINTS } from './ChatConstants.js';
+import {
+    RATE_LIMITER_BURST_DURATION,
+    RATE_LIMITER_BURST_POINTS,
+    RATE_LIMITER_DURATION,
+    RATE_LIMITER_POINTS,
+} from './ChatConstants.js';
 
 /**
  * @typedef {Object} ChatQueueItem
