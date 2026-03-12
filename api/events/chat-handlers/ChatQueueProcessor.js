@@ -286,12 +286,13 @@ export default class ChatQueueProcessor {
             if(payload.consumed <= 0) return { consumed: 1 };
 
             logger.debug(`[Socket.io][Chat] Sending batched chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
-
+            const start = Date.now();
             await webhook.send({
                 content: payload.content,
                 ...getSystemWebhookSendOptions(discordChannel),
                 allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
             });
+            logger.debug(`[Socket.io][Chat] Finished sending batched chat payload to channel ${channelId} (time=${Date.now() - start}ms)`);
 
             return { consumed: payload.consumed, batchMode: items.length - payload.consumed > 2 };
         }
@@ -300,7 +301,7 @@ export default class ChatQueueProcessor {
             if(payload.consumed <= 0) return { consumed: 1 };
 
             logger.debug(`[Socket.io][Chat] Sending chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
-
+            const start = Date.now();
             await webhook.send({
                 content: payload.content,
                 username: payload.username,
@@ -308,6 +309,7 @@ export default class ChatQueueProcessor {
                 ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                 allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
             });
+            logger.debug(`[Socket.io][Chat] Finished sending chat payload to channel ${channelId} (time=${Date.now() - start}ms)`);
 
             return { consumed: payload.consumed, batchMode: false };
         }
@@ -336,11 +338,12 @@ export default class ChatQueueProcessor {
         if(consumed <= 0) return { consumed: 1 };
 
         logger.debug(`[Socket.io][Chat] Sending embed payload to channel ${channelId} (consumed=${consumed}, embeds=${embeds.length})`);
-
+        const start = Date.now();
         await webhook.send({
             embeds,
             ...getSystemWebhookSendOptions(discordChannel),
         });
+        logger.debug(`[Socket.io][Chat] Finished sending embed payload to channel ${channelId} (time=${Date.now() - start}ms)`);
         return { consumed };
     }
 
@@ -383,10 +386,12 @@ export default class ChatQueueProcessor {
             try {
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
                 logger.debug(`[Socket.io][Chat] Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
+                const start = Date.now();
                 await webhook.editMessage(lastMessage.id, {
                     content: toAnsiCodeBlock(nextRaw),
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                 });
+                logger.debug(`[Socket.io][Chat] Finished appending console payload to previous message in channel ${discordChannel.id} (time=${Date.now() - start}ms)`);
                 this.lastConsoleMessages.set(discordChannel.id, {
                     id: lastMessage.id,
                     raw: nextRaw,
@@ -411,10 +416,12 @@ export default class ChatQueueProcessor {
         }
 
         logger.debug(`[Socket.io][Chat] Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
+        const start = Date.now();
         let sentMessage = await webhook.send({
             content: toAnsiCodeBlock(combinedRaw),
             ...getSystemWebhookSendOptions(discordChannel),
         });
+        logger.debug(`[Socket.io][Chat] Finished sending console payload to channel ${discordChannel.id} (time=${Date.now() - start}ms)`);
 
         this.lastConsoleMessages.set(discordChannel.id, {
             id: sentMessage.id,
