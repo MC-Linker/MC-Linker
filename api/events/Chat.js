@@ -11,8 +11,6 @@ import {
     DISPATCH_HIGH_LOAD_ENTER_THRESHOLD,
     DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
     DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS,
-    RATE_LIMITER_DURATION,
-    RATE_LIMITER_POINTS,
 } from './chat-handlers/ChatConstants.js';
 
 /**
@@ -51,8 +49,6 @@ export default class Chat extends WSEvent {
         this.queueProcessor = new ChatQueueProcessor({
             resolver: this.resolver,
             poolManager: this.poolManager,
-            points: RATE_LIMITER_POINTS,
-            duration: RATE_LIMITER_DURATION,
         });
 
         this.dispatchHandler = new ChatDispatchHandler({
