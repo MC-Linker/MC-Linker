@@ -140,6 +140,8 @@ export default class ChatQueueProcessor {
             return { webhookId: preferredId };
         }
         catch(rejected) {
+            logger.debug(`[Socket.io][Chat] Preferred webhook ${preferredId} rate-limited for channel ${chatChannel.id}; retry in ${rejected?.msBeforeNext ?? 250}ms`);
+
             // Preferred webhook rate-limited — try alternatives in pool
             let bestRetryMs = rejected?.msBeforeNext ?? 250;
 
@@ -151,6 +153,7 @@ export default class ChatQueueProcessor {
                     return { webhookId: altId };
                 }
                 catch(altRejected) {
+                    logger.debug(`[Socket.io][Chat] Webhook ${altId} also rate-limited for channel ${chatChannel.id}; retry in ${altRejected?.msBeforeNext ?? 250}ms`);
                     bestRetryMs = Math.min(bestRetryMs, altRejected?.msBeforeNext ?? 250);
                 }
             }
