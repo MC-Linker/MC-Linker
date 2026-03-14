@@ -1,16 +1,11 @@
 import Discord, { RESTJSONErrorCodes } from 'discord.js';
-import { BurstyRateLimiter, RateLimiterMemory } from 'rate-limiter-flexible';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 import keys from '../../../utilities/keys.js';
 import { getEmbed } from '../../../utilities/messages.js';
 import { containsAnsiCodes, toAnsiCodeBlock } from '../../../utilities/utils.js';
 import logger from '../../../utilities/logger.js';
 import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } from './ChatPayloadBuilder.js';
-import {
-    RATE_LIMITER_BURST_DURATION,
-    RATE_LIMITER_BURST_POINTS,
-    RATE_LIMITER_DURATION,
-    RATE_LIMITER_POINTS,
-} from './ChatConstants.js';
+import { RATE_LIMITER_DURATION, RATE_LIMITER_POINTS } from './ChatConstants.js';
 
 /**
  * @typedef {Object} ChatQueueItem
@@ -70,18 +65,11 @@ export default class ChatQueueProcessor {
          * Per-webhook rate limiter applied at process time.
          * @type {RateLimiterMemory}
          */
-        this.limiter = new BurstyRateLimiter(
-            new RateLimiterMemory({
-                keyPrefix: 'chat-process-webhook',
-                points: RATE_LIMITER_POINTS,
-                duration: RATE_LIMITER_DURATION,
-            }),
-            new RateLimiterMemory({
-                keyPrefix: 'chat-process-webhook-burst',
-                points: RATE_LIMITER_BURST_POINTS,
-                duration: RATE_LIMITER_BURST_DURATION,
-            }),
-        );
+        this.limiter = new RateLimiterMemory({
+            keyPrefix: 'chat-process-webhook',
+            points: RATE_LIMITER_POINTS,
+            duration: RATE_LIMITER_DURATION,
+        });
     }
 
     /**
