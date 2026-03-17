@@ -26,7 +26,7 @@ services:
         target: /var/run/docker.sock
     environment:
       - WORKING_DIR=$PWD
-      - LOG_LEVEL=$LOG_LEVEL
+      - LOG_LEVEL=${LOG_LEVEL:-info}
       - CONVERT=$CONVERT # true or false
       - NODE_ENV=production
       - NODE_MAX_HEAP_SIZE=8192

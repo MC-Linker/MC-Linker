@@ -2,9 +2,9 @@ import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
-import { FilePath } from '../../structures/Protocol.js';
+import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
 import Canvas from 'skia-canvas';
-import { addPh, getComponent, getEmbed } from '../../utilities/messages.js';
+import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
 import MinecraftData from 'minecraft-data';
 import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
@@ -43,9 +43,9 @@ export default class Stats extends Command {
 
         const argPlaceholder = { 'stat_category': category, 'username': user.username };
 
-        const statFile = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./download-cache/stats/${user.uuid}.json`);
+        const statFile = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid));
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
-            404: keys.api.command.errors.could_not_download_user_files,
+            [ProtocolError.NOT_FOUND]: keys.api.command.warnings.could_not_download_user_files,
         }, { category: 'stats' })) return;
 
         let stats;
@@ -228,6 +228,7 @@ export default class Stats extends Command {
                 { name: 'Statistics_Player.png', description: keys.commands.stats.stats_description },
             );
             const statsEmbed = getEmbed(keys.commands.stats.success.final, { username: user.username });
+            if(statFile.cached) setCachedFooter(statsEmbed);
 
             const endIndex = currentStatAmounts[0] * (category === 'custom' ? maxCustomStatsAmountY : maxStatsAmountsY) + currentStatAmounts[1];
             paginationPages[`stats_${pageNumber}`] = {

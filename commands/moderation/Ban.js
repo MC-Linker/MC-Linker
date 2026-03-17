@@ -9,6 +9,7 @@ export default class Ban extends Command {
             name: 'ban',
             requiresUserIndex: 0,
             category: 'moderation',
+            ephemeral: true,
         });
     }
 

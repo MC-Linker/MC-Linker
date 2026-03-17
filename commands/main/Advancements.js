@@ -1,10 +1,10 @@
 import MinecraftData from 'minecraft-data';
 import Discord, { time } from 'discord.js';
-import { addPh, getComponent, getEmbed, ph } from '../../utilities/messages.js';
+import { addPh, getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
-import { FilePath } from '../../structures/Protocol.js';
+import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
 import * as d3 from 'd3-hierarchy';
 import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
@@ -37,9 +37,9 @@ export default class Advancements extends Command {
         const user = args[1];
         const showDetails = args[2];
 
-        const amFile = await server.protocol.get(FilePath.Advancements(server.worldPath, user.uuid), `./download-cache/advancements/${user.uuid}.json`);
+        const amFile = await server.protocol.getWithCache(...FilePath.Advancements(server.worldPath, user.uuid));
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
-            404: keys.api.command.errors.could_not_download_user_files,
+            [ProtocolError.NOT_FOUND]: keys.api.command.warnings.could_not_download_user_files,
         }, { category: 'advancements' }, ph.colors())) return;
         const completedAdvancements = JSON.parse(amFile.data.toString());
 
@@ -144,6 +144,7 @@ export default class Advancements extends Command {
             { name: 'Advancements_Player.png', description: keys.commands.advancements.advancements_description },
         );
         const advancementsEmbed = getEmbed(keys.commands.advancements.success.final, { username: user.username });
+        if(amFile.cached) setCachedFooter(advancementsEmbed);
 
         if(!showDetails) return await interaction.replyOptions({
             embeds: [advancementsEmbed],
@@ -154,6 +155,7 @@ export default class Advancements extends Command {
         const pagination = new Pagination(client, interaction, paginationPages, {
             showStartPageOnce: true,
             timeout: 60000 * 5, // 5 minutes
+            highlightSelectedButton: false,
         });
         await pagination.start();
     }
@@ -194,26 +196,21 @@ export default class Advancements extends Command {
             const advancementEmbed = getEmbed(keys.commands.advancements.success.details, allPlaceholders);
             const advancementButton = getComponent(keys.commands.advancements.success.details_button, allPlaceholders, { style: advancement.obtained ? 'Primary' : 'Secondary' });
 
-            if(advancement.value === 'root') {
-                paginationPages[advancementButton.data.custom_id] = {
-                    button: advancementButton,
-                    startPage: true,
-                    options: {
-                        embeds: [advancementsEmbed],
-                        files: [advancementsAttach],
-                    },
-                };
-                continue;
-            }
-
             paginationPages[advancementButton.data.custom_id] = {
                 button: advancementButton,
-                startPage: advancement.value === 'root',
                 options: {
                     embeds: [advancementsEmbed, advancementEmbed],
                 },
             };
         }
+
+        paginationPages['advancement_start'] = {
+            startPage: true,
+            options: {
+                embeds: [advancementsEmbed],
+                files: [advancementsAttach],
+            },
+        };
 
         return paginationPages;
     }

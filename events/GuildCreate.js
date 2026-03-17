@@ -23,6 +23,7 @@ export default class GuildCreate extends Event {
             keys.main.success.invite,
             await ph.commandName('connect', true),
             await ph.commandName('chatchannel add', true),
+            await ph.commandName('customize', true),
         );
     }
 } 

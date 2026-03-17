@@ -27,6 +27,8 @@ export default class Account extends Command {
 
         const subcommand = args[0];
         if(subcommand === 'connect') {
+            if(!server) return interaction.replyTl(keys.api.command.errors.server_not_connected);
+
             const usernameOrUUID = args[1];
             if(usernameOrUUID.match(Discord.MessageMentions.UsersPattern)) {
                 return interaction.replyTl(keys.commands.account.warnings.mention);
@@ -39,7 +41,7 @@ export default class Account extends Command {
                 username = await utils.fetchUsername(uuid);
             }
             else {
-                uuid = await utils.fetchUUID(usernameOrUUID);
+                uuid = server.online ? await utils.fetchUUID(usernameOrUUID) : utils.createUUIDv3(usernameOrUUID);
                 username = usernameOrUUID;
             }
             if(!uuid || !username) return await interaction.replyTl(keys.commands.account.errors.could_not_fetch_uuid, { user: usernameOrUUID });
@@ -87,7 +89,7 @@ export default class Account extends Command {
                         const { interaction, timeout } = accountCommand.pendingInteractions.get(id);
 
                         const connection = c.userConnections.cache.get(id);
-                        await c.serverConnections.cache.get(serverId).syncRoles(interaction.guild, interaction.member, connection);
+                        await c.serverConnections.cache.get(serverId).syncRolesOfMember(interaction.member, connection);
                         clearTimeout(timeout); // Works because event is called on same shard
                         await interaction.replyTl(c.keys.commands.account.success.verified);
                     }, {
@@ -124,10 +126,7 @@ export default class Account extends Command {
             await client.userConnections.disconnect(interaction.user.id);
 
             if(server.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
-            await interaction.replyTl(keys.commands.disconnect.success, {
-                protocol: 'account',
-                protocol_cap: 'Account',
-            });
+            await interaction.replyTl(keys.commands.account.success.disconnect);
         }
     }
 }

@@ -15,27 +15,52 @@ export default class GuildMemberUpdate extends Event {
     async execute(client, oldMember, newMember) {
         if(!oldMember.roles) return;
         if(oldMember.roles.cache.size === newMember.roles.cache.size) return;
-        const user = client.userConnections.cache.get(newMember.id);
-        if(!user) return;
+
         const server = client.serverConnections.cache.get(newMember.guild.id);
         if(!server) return;
+
         const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
         const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
+        const changedRoleId = addedRole?.id ?? removedRole?.id;
+
+        const roleIndex = server.syncedRoles.findIndex(r => r.id === changedRoleId);
+        if(roleIndex === -1) return;
+        const syncedRole = server.syncedRoles[roleIndex];
+
+        const user = client.userConnections.cache.get(newMember.id);
+        const uuid = user?.getUUID(server);
+
+        const noChangeToPlayers = uuid ?
+            addedRole && syncedRole.players.includes(uuid) ||
+            removedRole && !syncedRole.players.includes(uuid) : false;
+
+        // Cancel events if mc is authoritative
+        if(syncedRole.direction === 'to_discord') {
+            // Re-remove the added role if user isnt linked or if the change is not reflected in the players array already (change was bot-initiated)
+            if((!user || !noChangeToPlayers) && addedRole) newMember.roles.remove(addedRole.id).catch(() => {});
+            // Re-add the removed role if the change is not reflected in the players array already (change was bot-initiated)
+            else if(removedRole && !noChangeToPlayers) newMember.roles.add(removedRole.id).catch(() => {});
+            return;
+        }
+
+        if(!user) return;
+        // Skip if the change is already reflected in players — this was a bot-initiated update
+        if(noPlayerChange) return;
+
         if(server.requiredRoleToJoin) {
             if(
                 server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
                 server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
             ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
         }
-        const role = server.syncedRoles?.find(role => role.id === addedRole?.id || role.id === removedRole?.id);
-        if(!role) return;
+
         let resp;
-        if(addedRole) resp = await server.protocol.addSyncedRoleMember(role, user.uuid);
-        if(removedRole) resp = await server.protocol.removeSyncedRoleMember(role, user.uuid);
-        const roleIndex = server.syncedRoles.findIndex(r => r.id === role.id);
-        if(roleIndex === -1 || !resp) return;
-        role.players = resp.data;
-        server.syncedRoles[roleIndex] = role;
-        if(resp.status === 200) await server.edit({});
+        if(addedRole) resp = await server.protocol.addSyncedRoleMember(syncedRole, uuid);
+        else if(removedRole) resp = await server.protocol.removeSyncedRoleMember(syncedRole, uuid);
+        if(!resp || resp.status !== 'success') return;
+
+        syncedRole.players = resp.data;
+        server.syncedRoles[roleIndex] = syncedRole;
+        await server.edit({});
     }
 } 

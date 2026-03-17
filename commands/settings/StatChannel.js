@@ -3,7 +3,8 @@ import keys from '../../utilities/keys.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
-import { ButtonStyle, GuildChannel } from 'discord.js';
+import { ButtonStyle, GuildChannel, RateLimitError } from 'discord.js';
+import UpdateStatsChannel from '../../api/events/UpdateStatsChannel.js';
 
 export default class StatChannel extends Command {
 
@@ -11,6 +12,7 @@ export default class StatChannel extends Command {
         super({
             name: 'statchannel',
             category: 'settings',
+            ephemeral: true,
         });
     }
 
@@ -50,7 +52,16 @@ export default class StatChannel extends Command {
                 message = statChannel.names.members.replace('%count%', onlinePlayers.data.length);
             }
             else message = statChannel.names.online;
-            await channel.setName(message);
+
+            try {
+                await channel.setName(message);
+            }
+            catch(err) {
+                if(err instanceof RateLimitError) {
+                    // Channel rename is rate limited — schedule a deferred re-sync
+                    UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, statChannel, server.id, client);
+                }
+            }
 
             await interaction.replyTl(keys.commands.statchannel.success.add);
         }

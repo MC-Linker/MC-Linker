@@ -8,7 +8,6 @@ import Discord, {
     MessageMentions,
     MessagePayload,
     PermissionFlagsBits,
-    PermissionsBitField,
     Routes,
     User,
 } from 'discord.js';
@@ -22,13 +21,9 @@ import { getReplyOptions, ph } from './messages.js';
 import { Canvas, loadImage } from 'skia-canvas';
 import emoji from 'emojione';
 import mojangson from 'mojangson';
-import { Authflow } from 'prismarine-auth';
 import util from 'util';
 import { exec } from 'child_process';
-import WebSocketProtocol from '../structures/WebSocketProtocol.js';
-import { FilePath } from '../structures/Protocol.js';
-import HttpProtocol from '../structures/HttpProtocol.js';
-import FtpProtocol from '../structures/FtpProtocol.js';
+import { FilePath, ProtocolError } from '../structures/protocol/Protocol.js';
 import fs from 'fs-extra';
 import path from 'path';
 import logger from './logger.js';
@@ -44,6 +39,7 @@ export const MaxActionRows = 5;
 export const MaxActionRowSize = 5;
 export const MaxEmbedDescriptionLength = 4096;
 export const MaxAutoCompleteChoices = 25;
+export const MaxCommandChoiceLength = 100;
 export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
 export const MinecraftDataVersion = '1.21.8';
 
@@ -61,16 +57,16 @@ export const ComponentSizeInActionRow = {
 const mcData = MinecraftData(MinecraftDataVersion);
 
 // Password Auth:
-const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && process.env.AZURE_CLIENT_ID ?
+/*const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && process.env.AZURE_CLIENT_ID ?
     new Authflow(process.env.MICROSOFT_EMAIL, './microsoft-cache', {
         authTitle: process.env.AZURE_CLIENT_ID,
         flow: 'msal', // required, but will be ignored because password field is set
         password: process.env.MICROSOFT_PASSWORD,
-    }) : null;
+    }) : null;*/
 // MSAL Auth:
-// const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
-//     console.log(res);
-// });
+/*const flow = new Authflow('Lianecx', './microsoft-cache', { flow: 'msal' }, res => {
+    console.log(res);
+});*/
 
 /**
  * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.
@@ -78,7 +74,7 @@ const flow = process.env.MICROSOFT_EMAIL && process.env.MICROSOFT_PASSWORD && pr
  * @returns {Promise<string>} - The url of the avatar.
  */
 export async function getMinecraftAvatarURL(username) {
-    const url = `https://minotar.net/helm/${username}?rnd=${Math.random()}`; //Random query to prevent caching
+    const url = `https://minotar.net/helm/${username}`;
     try {
         const res = await fetch(url);
         //If the user doesn't exist, return steve
@@ -88,6 +84,57 @@ export async function getMinecraftAvatarURL(username) {
     catch(err) {
         return url.replace(username, 'MHF_STEVE');
     }
+}
+
+const AVATAR_CACHE_TTL_MS = 60 * 60_000; // 1 hour
+
+/**
+ * @type {Map<string, { url: string, cachedAt: number }>}
+ */
+const avatarCache = new Map();
+
+/**
+ * Returns a cached Minecraft avatar URL, only making the HTTP call when the cache is expired or missing.
+ * @param {string} player - The player username.
+ * @returns {Promise<string>} The avatar URL.
+ */
+export async function getCachedAvatarURL(player) {
+    const cached = avatarCache.get(player);
+    if(cached && Date.now() - cached.cachedAt < AVATAR_CACHE_TTL_MS) return cached.url;
+
+    const url = await getMinecraftAvatarURL(player);
+    avatarCache.set(player, { url, cachedAt: Date.now() });
+    return url;
+}
+
+/**
+ * Parses `@username` mentions in a message string and replaces them with Discord member mentions.
+ * Only exact matches against display name, nickname, or username are replaced.
+ * @param {string} message - The raw message text potentially containing `@username` mentions.
+ * @param {import('discord.js').Guild} guild - The guild to search for members in.
+ * @returns {Promise<string>} The message with matched mentions replaced by Discord mention strings.
+ */
+export async function parseMentions(message, guild) {
+    let parsedMessage = message;
+    const mentions = parsedMessage.match(/@(\S+)/g);
+    for(const mention of mentions ?? []) {
+        if(mention.length > 101) continue;
+
+        const search = mention.replace('@', '').toLowerCase();
+        const foundMember = (await guild.members.search({ query: search, limit: 1 }).catch(() => null))?.first();
+        if(!foundMember) continue;
+
+        // Only exact matches
+        if(
+            foundMember?.user.displayName.toLowerCase() !== search &&
+            foundMember?.displayName.toLowerCase() !== search &&
+            foundMember?.user.username.toLowerCase() !== search
+        ) continue;
+
+        parsedMessage = parsedMessage.replace(mention, foundMember.toString());
+    }
+
+    return parsedMessage;
 }
 
 /**
@@ -285,22 +332,18 @@ export async function fetchUsername(uuid) {
  */
 export async function fetchFloodgateUUID(username) {
     try {
-        const { userHash, XSTSToken: xstsToken } = await flow.getXboxToken();
-        const data = await fetch(`https://profile.xboxlive.com/users/gt(${username})/profile/settings`, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `XBL3.0 x=${userHash};${xstsToken}`,
-                'x-xbl-contract-version': '3',
-            },
-        }).then(data => data.json());
+        const data = await fetch(`https://api.geysermc.org/v2/xbox/xuid/${username}`)
+            .then(data => data.json());
 
-        if(!data.profileUsers?.[0]?.id) return undefined;
-        const xuid = parseInt(data.profileUsers[0].id);
+        if(!data?.xuid) return undefined;
+        /** @type {number} */
+        const xuid = data.xuid;
         // Floodate UUID Format: 00000000-0000-0000-000x-xxxxxxxxxxxx (xuid)
         const uuid = `0000000000000000000${xuid.toString(16)}`;
         return addHyphen(uuid);
     }
     catch(err) {
+        logger.error(err, `Error fetching floodgate UUID for ${username}`);
         return undefined;
     }
 }
@@ -374,10 +417,11 @@ export async function getUsersFromMention(client, mention) {
 }
 
 
-const defaultStatusRespones = {
-    400: keys.api.plugin.errors.status_400,
-    401: keys.api.plugin.errors.status_401,
-    404: keys.api.plugin.errors.status_404,
+const defaultErrorResponses = {
+    [ProtocolError.UNKNOWN]: keys.api.plugin.errors.status_400,
+    [ProtocolError.UNAUTHORIZED]: keys.api.plugin.errors.status_401,
+    [ProtocolError.NOT_FOUND]: keys.api.plugin.errors.status_404,
+    [ProtocolError.SERVER_ERROR]: keys.api.plugin.errors.status_500,
 };
 
 /**
@@ -385,31 +429,21 @@ const defaultStatusRespones = {
  * @param {?ProtocolResponse} response - The response to handle.
  * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
- * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
+ * @param {Object.<string, MessagePayload>} [errorResponses={}] - The responses to use for each error code string. See {@link ProtocolError} for known codes.
  * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether the response was successful.
  */
-export async function handleProtocolResponse(response, protocol, interaction, statusResponses = {}, ...placeholders) {
+export async function handleProtocolResponse(response, protocol, interaction, errorResponses = {}, ...placeholders) {
     placeholders.push({ data: JSON.stringify(response?.data ?? '') });
 
-    if(!response && (protocol instanceof HttpProtocol || protocol instanceof WebSocketProtocol)) {
+    if(!response) {
         await interaction.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
         return false;
     }
-    else if(!response && protocol instanceof FtpProtocol) {
-        await interaction.replyTl(keys.api.ftp.errors.could_not_connect, ...placeholders);
+    else if(response.status !== 'success') {
+        const responseKey = errorResponses[response.error] ?? defaultErrorResponses[response.error] ?? defaultErrorResponses[ProtocolError.SERVER_ERROR];
+        await interaction.replyTl(responseKey, ...placeholders);
         return false;
-    }
-    else if(response.status >= 500 && response.status < 600) {
-        await interaction.replyTl(keys.api.plugin.errors.status_500, ...placeholders);
-        return false;
-    }
-    else if(response.status !== 200) {
-        const responseKey = statusResponses[response.status] ?? defaultStatusRespones[response.status];
-        if(responseKey) {
-            await interaction.replyTl(responseKey, ...placeholders);
-            return false;
-        }
     }
 
     return true;
@@ -420,13 +454,13 @@ export async function handleProtocolResponse(response, protocol, interaction, st
  * @param {?ProtocolResponse[]} responses - The responses to handle.
  * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
- * @param {Object.<int, MessagePayload>} [statusResponses={400: MessagePayload,401: MessagePayload,404: MessagePayload}] - The responses to use for each status code.
+ * @param {Object.<string, MessagePayload>} [errorResponses={}] - The responses to use for each error code string. See {@link ProtocolError} for known codes.
  * @param {...Object.<string, string>[]} [placeholders=[]] - The placeholders to use in the response.
  * @returns {Promise<boolean>} - Whether all responses were successful.
  */
-export async function handleProtocolResponses(responses, protocol, interaction, statusResponses = {}, ...placeholders) {
+export async function handleProtocolResponses(responses, protocol, interaction, errorResponses = {}, ...placeholders) {
     for(const response of responses) {
-        if(!await handleProtocolResponse(response, protocol, interaction, statusResponses, ...placeholders)) return false;
+        if(!await handleProtocolResponse(response, protocol, interaction, errorResponses, ...placeholders)) return false;
     }
     return true;
 }
@@ -462,42 +496,43 @@ export function stringifyMinecraftJson(json, stripColors = true) {
 /**
  * Gets the live player nbt data from the server.
  * If the server is connected using the plugin and the player is online it will use the getPlayerNbt endpoint, otherwise (or if previous method fails) it will download the nbt file.
+ * Falls back to cached data if the server is offline.
  * @param {ServerConnection} server - The server to get the nbt data from.
  * @param {UserResponse} user - The uuid of the player.
  * @param {?TranslatedResponses} interaction - The interaction to respond to in case of an error.
- * @returns {Promise<?Object>} - The parsed and simplified nbt data or null if an error occurred.
+ * @returns {Promise<?{data: Object, cached: boolean}>} - The parsed and simplified nbt data with a cached flag, or null if an error occurred.
  */
 export async function getLivePlayerNbt(server, user, interaction) {
-    const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-    const onlinePlayers = onlinePlayersResponse?.status === 200 ? onlinePlayersResponse.data : [];
-    if(onlinePlayers.includes(user.username)) {
-        const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
-        if(playerNbtResponse?.status === 200 && playerNbtResponse.data.data !== '') {
-            const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
-            if(parsed) return parsed;
-            // else fall back to downloading the nbt file
-        }
+    const playerNbtResponse = await server.protocol.getPlayerNbt(user.uuid);
+    if(playerNbtResponse?.status === 'success' && playerNbtResponse.data.data !== '') {
+        const parsed = nbtStringToObject(playerNbtResponse.data.data, null);
+        if(parsed) return { data: parsed, cached: false };
+        // else fall back to downloading the nbt file
     }
 
-    // If the server is not connected using the plugin or the player is not online or the getPlayerNbt endpoint failed, download the nbt file
-    const nbtResponse = await server.protocol.get(FilePath.PlayerData(server.worldPath, user.uuid), `./download-cache/playerdata/${user.uuid}.dat`);
+    const nbtResponse = await server.protocol.getWithCache(...FilePath.PlayerData(server.worldPath, user.uuid));
 
-    // handProtocolResponse if interaction is set, otherwise manually check the status code
-    if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction)) return null;
-    else if(nbtResponse?.status === 200) return nbtBufferToObject(nbtResponse.data, interaction);
+    // handleProtocolResponse if interaction is set, otherwise manually check the status code
+    if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction, {
+        [ProtocolError.NOT_FOUND]: keys.api.command.warnings.could_not_download_user_files,
+    }, { category: 'nbt' })) return null;
+    else if(nbtResponse?.status === 'success') {
+        const parsed = await nbtBufferToObject(nbtResponse.data, interaction);
+        return parsed ? { data: parsed, cached: nbtResponse.cached ?? false } : null;
+    }
     else return null;
 }
 
 /**
  * Gets the configured floodgate prefix of a server by downloading the floodgate config file.
- * @param {import('../structures/Protocol.js')} protocol - The protocol to get the config with.
+ * @param {import('../structures/protocol/Protocol.js')} protocol - The protocol to get the config with.
  * @param {string} path - The path to the server.
  * @param {string} id - The id of the server.
  * @returns {Promise<?string>} - The configured prefix or undefined if floodgate is not installed or an error occurred.
  */
 export async function getFloodgatePrefix(protocol, path, id) {
     const response = await protocol.get(...FilePath.FloodgateConfig(path, id));
-    if(response?.status === 200) {
+    if(response?.status === 'success') {
         //parse yml without module
         const searchKey = 'username-prefix:';
         const lines = response.data.toString().split('\n');
@@ -788,7 +823,10 @@ const formattingCodesToAnsi = {
     'r': '0', //Reset
 };
 
-const colorPattern = /[&§]([0-9a-fk-or])/gi;
+/**
+ * Matches both \"§aGreen Text\" and §aGreenText, capturing the color code and the text separately.
+ */
+const colorPattern = /(?<=["'])[&§]([0-9a-fk-or])(?:[&§]([0-9a-fk-or]))?([^'"§&]+)(?=["'])|[&§]([0-9a-fk-or])(?:[&§]([0-9a-fk-or]))?([^&§":,]+)/gi;
 
 /**
  * Removes all minecraft color codes from a string.
@@ -796,7 +834,44 @@ const colorPattern = /[&§]([0-9a-fk-or])/gi;
  * @returns {string} - The text without color codes.
  */
 export function stripColorCodes(text) {
-    return text.replace(colorPattern, '');
+    return text.replace(/[&§]([0-9a-fk-or])/gi, '');
+}
+
+/**
+ * Removes all ansi codes from a string.
+ * @param {string} text - The text to remove ansi codes from.
+ * @returns {string} - The text without ansi codes.
+ */
+export function stripAnsiCodes(text) {
+    return text.replace(/\u001b\[[0-9;]*m/g, '');
+}
+
+/**
+ * Checks whether a string contains any ANSI escape codes.
+ * @param {string} text - The text to check.
+ * @returns {boolean} - Whether the text contains ANSI codes.
+ */
+export function containsAnsiCodes(text) {
+    return /\u001b\[[0-9;]*m/.test(text);
+}
+
+/**
+ * Wraps a string in a discord code block with the ansi language for color formatting.
+ * If the string is too long, it will be truncated and an ellipsis will be added at the end.
+ * If the string contains more than 1000 characters, all ansi codes will be stripped (discord won't parse them).
+ * @param {string} text - The text to wrap in a code block.
+ * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
+ */
+export function toAnsiCodeBlock(text) {
+    text = text.replace(/\u001b\[m/g, '\u001b[0m'); // Discord things
+    // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
+    if(text.length >= 1000) text = stripAnsiCodes(text);
+
+    // -12 for code block (```ansi\n\n```)
+    if(text.length > MaxEmbedDescriptionLength - 12) text = `${text.substring(0, MaxEmbedDescriptionLength - 13)}…`;
+
+    //Wrap in discord code block for color
+    return Discord.codeBlock('ansi', text);
 }
 
 /**
@@ -805,24 +880,19 @@ export function stripColorCodes(text) {
  * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
  */
 export function codeBlockFromCommandResponse(response) {
-    // Ansi formatting vanishes with more than 1015 characters ¯\_(ツ)_/¯
-    if(response.length >= 1015) response = stripColorCodes(response);
-    else {
-        //Parse color codes to ansi
-        response = response.replace(colorPattern, (_, color) => {
-            const ansi = colorCodesToAnsi[color];
-            const format = formattingCodesToAnsi[color];
-            if(!ansi && !format) return '';
+    //Parse color codes to ansi
+    let parsedResponse = response.replace(colorPattern, (_, color1, format1, word1, color2, format2, word2) => {
+        const color = color1 ?? color2;
+        const format = format1 ?? format2;
+        const ansiColor = colorCodesToAnsi[color] ?? formattingCodesToAnsi[color];
+        const ansiFormat = colorCodesToAnsi[format] ?? formattingCodesToAnsi[format];
+        if(!ansiColor && !ansiFormat) return '';
 
-            return `\u001b[${format ?? '0'};${ansi ?? '37'}m`;
-        });
-    }
+        // Reset after every word
+        return `\u001b[${ansiFormat ?? '0'};${ansiColor ?? '37'}m${word1 ?? word2 ?? ''}\u001b[0m`;
+    });
 
-    // -12 for code block (```ansi\n\n```)
-    if(response.length > MaxEmbedDescriptionLength - 12) response = `${response.substring(0, MaxEmbedDescriptionLength - 15)}...`;
-
-    //Wrap in discord code block for color
-    return Discord.codeBlock('ansi', `${response}`);
+    return toAnsiCodeBlock(parsedResponse);
 }
 
 /**
@@ -1053,35 +1123,23 @@ export async function sortChannels(guild) {
 }
 
 /**
+ * Fetches all members of a guild if the member count differs from the cache.
+ * @param {Client} client - The client to use for fetching.
+ * @param {Guild} guild - The guild to fetch the members of if the member count differs.
+ */
+export async function fetchMembersIfCacheDiffers(client, guild) {
+    // If cache differs, fetch all members to ensure their roles are cached
+    if(guild.memberCount !== guild.members.cache.size) await guild.members.fetch();
+}
+
+/**
  * Generates a default invite link for a bot.
- * Default Scopes:
- * - bot
- * - applications.commands
- * Default Permissions:
- * - Create Instant Invite
- * - Manage Webhooks
- * - View Channel
- * - Send Messages
- * - Send Messages in Threads
- * - Embed Links
- * - Attach Files
- * - Use External Emojis
- * - Manage Roles
+ * Will include the permissions set up in the developer portal.
  * @param {string} botId - The id of the bot to generate the invite for.
- * @return {'https://discord.com/api/oauth2/authorize?client_id=${botId}&scope=${scopes}&permissions=${permissions}'}
+ * @return {'https://discord.com/api/oauth2/authorize?client_id=${botId}'}
  */
 export function generateDefaultInvite(botId) {
-    const permissions = PermissionsBitField.Flags.CreateInstantInvite |
-        PermissionsBitField.Flags.ManageWebhooks |
-        PermissionsBitField.Flags.ViewChannel |
-        PermissionsBitField.Flags.SendMessages |
-        PermissionsBitField.Flags.SendMessagesInThreads |
-        PermissionsBitField.Flags.EmbedLinks |
-        PermissionsBitField.Flags.AttachFiles |
-        PermissionsBitField.Flags.UseExternalEmojis |
-        PermissionsBitField.Flags.ManageRoles;
-
-    return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}&scope=applications.commands+bot&permissions=${permissions}`;
+    return `https://discord.com/api${Routes.oauth2Authorization()}?client_id=${botId}`;
 }
 
 /**

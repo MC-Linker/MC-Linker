@@ -1,6 +1,7 @@
 import {
     BaseInteraction,
     ButtonBuilder,
+    ButtonStyle,
     ComponentType,
     InteractionCollector,
     InteractionResponse,
@@ -19,7 +20,8 @@ import {
 
 export default class Pagination {
 
-    static DEFAULT_TIMEOUT = 120_000;
+    // 3 minutes (token valid for 15 minutes)
+    static DEFAULT_TIMEOUT = 180_000;
 
     static NAVIGATION_BUTTON_IDS = {
         NEXT: 'pagination_next',
@@ -33,7 +35,7 @@ export default class Pagination {
      * @property {ButtonBuilder} [backButton] - The button to use for going to the previous page
      * @property {ButtonBuilder} [exitButton] - The button to use for exiting the nested pagination
      * @property {boolean} [showSelectedButton=true] - Whether the currently selected button should be shown
-     * @property {boolean} [showStartPageOnce=false] - Whether the starting page should only be shown once (removes the button)
+     * @property {boolean} [showStartPageOnce=false] - Whether the starting page should only be shown once
      * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
      * @property {Pagination} [parent] - The parent of this pagination (only used for nested paginations)
      * @property {ButtonStyle} [highlightSelectedButton] - The style to use for the selected button
@@ -141,6 +143,7 @@ export default class Pagination {
             exitButton: getComponent(keys.api.component.success.exit_button, { id: Pagination.NAVIGATION_BUTTON_IDS.EXIT }),
             timeout: Pagination.DEFAULT_TIMEOUT,
             showSelectedButton: true,
+            highlightSelectedButton: ButtonStyle.Primary,
             showStartPageOnce: false,
             ...options,
         };
@@ -231,9 +234,13 @@ export default class Pagination {
         this.collector.on('end', async (_, reason) => {
             if(['nested_pagination', 'exit_to_parent'].includes(reason)) return;
 
-            message = await message.fetch(); // Get the latest components
+            try {
+                message = await message.fetch(); // Get the latest components
+            }
+            catch {}
             if(!message?.components) return;
 
+            //TODO fix breaks with ephemerals
             await message.edit({ components: disableComponents(message.components) });
         });
     }

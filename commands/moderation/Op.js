@@ -10,6 +10,7 @@ export default class Op extends Command {
             name: 'op',
             requiresUserIndex: 0,
             category: 'moderation',
+            ephemeral: true,
         });
     }
 

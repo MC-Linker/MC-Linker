@@ -9,6 +9,7 @@ export default class Unban extends Command {
             name: 'unban',
             requiresUserIndex: 0,
             category: 'moderation',
+            ephemeral: true,
         });
     }
 

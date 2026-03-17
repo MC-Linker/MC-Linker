@@ -1,6 +1,6 @@
 import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
-import { FilePath } from '../../structures/Protocol.js';
+import { FilePath } from '../../structures/protocol/Protocol.js';
 import * as utils from '../../utilities/utils.js';
 import {
     codeBlockFromCommandResponse,
@@ -16,6 +16,7 @@ import {
     getComponent,
     getReplyOptions,
     ph,
+    setCachedFooter,
 } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
@@ -40,34 +41,34 @@ export default class UserInfo extends Command {
         /** @type {UserResponse} */
         const user = args[0];
 
-        const batch = await server.protocol.startBatch();
-        if(!await utils.handleProtocolResponse(batch, server.protocol, interaction)) return;
-
         let onlinePlayers = [];
         const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
-        if(onlinePlayersResponse?.status === 200) onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
+        if(onlinePlayersResponse?.status === 'success') onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
 
-        const scoreboardDatResponse = await server.protocol.get(...FilePath.Scoreboards(server.worldPath, server.id));
-        const levelDatResponse = await server.protocol.get(...FilePath.LevelDat(server.worldPath, server.id));
+        const scoreboardDatResponse = await server.protocol.getWithCache(...FilePath.Scoreboards(server.worldPath, server.id));
+        const levelDatResponse = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
 
-        let stats = await server.protocol.get(FilePath.Stats(server.worldPath, user.uuid), `./download-cache/playerdata/${user.uuid}.dat`);
-        let operators = await server.protocol.get(...FilePath.Operators(server.path, server.id));
-        let whitelistedUsers = await server.protocol.get(...FilePath.Whitelist(server.path, server.id));
-        let bannedUsers = await server.protocol.get(...FilePath.BannedPlayers(server.path, server.id));
+        let stats = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid));
+        let operators = await server.protocol.getWithCache(...FilePath.Operators(server.path, server.id));
+        let whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
+        let bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
 
-        const playerDat = await utils.getLivePlayerNbt(server, user, null);
-        await server.protocol.endBatch();
+        const playerDatResult = await utils.getLivePlayerNbt(server, user, null);
+        const playerDat = playerDatResult?.data ?? null;
 
-        operators = operators?.status === 200 ? JSON.parse(operators.data.toString()) : [];
-        whitelistedUsers = whitelistedUsers?.status === 200 ? JSON.parse(whitelistedUsers.data.toString()) : [];
-        bannedUsers = bannedUsers?.status === 200 ? JSON.parse(bannedUsers.data.toString()) : [];
-        stats = stats?.status === 200 ? JSON.parse(stats.data.toString()) : [];
+        let isCached = scoreboardDatResponse?.cached || levelDatResponse?.cached || stats?.cached
+            || operators?.cached || whitelistedUsers?.cached || bannedUsers?.cached || playerDatResult?.cached;
+
+        operators = operators?.status === 'success' ? JSON.parse(operators.data.toString()) : [];
+        whitelistedUsers = whitelistedUsers?.status === 'success' ? JSON.parse(whitelistedUsers.data.toString()) : [];
+        bannedUsers = bannedUsers?.status === 'success' ? JSON.parse(bannedUsers.data.toString()) : [];
+        stats = stats?.status === 'success' ? JSON.parse(stats.data.toString()) : [];
 
         let scoreboardDat = null;
         let levelDat = null;
-        if(scoreboardDatResponse?.status === 200) scoreboardDat = await utils.nbtBufferToObject(scoreboardDatResponse.data, interaction);
+        if(scoreboardDatResponse?.status === 'success') scoreboardDat = await utils.nbtBufferToObject(scoreboardDatResponse.data, interaction);
         if(scoreboardDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
-        if(levelDatResponse?.status === 200) levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
+        if(levelDatResponse?.status === 'success') levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
         if(levelDatResponse === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
 
         const matchingOp = operators.find(o => o.uuid === user.uuid);
@@ -89,10 +90,14 @@ export default class UserInfo extends Command {
         const adminMessage = getReplyOptions(keys.commands.userinfo.success.admin, placeholders, ph.colors());
         const survivalMessage = getReplyOptions(keys.commands.userinfo.success.survival, placeholders, ph.colors());
 
-        const id = client.userConnections.cache.find(c => c.uuid === user.uuid)?.id;
-        if(id) {
-            generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));
+        if(isCached) {
+            setCachedFooter(generalMessage.embeds);
+            setCachedFooter(adminMessage.embeds);
+            setCachedFooter(survivalMessage.embeds);
         }
+
+        const id = client.userConnections.cache.find(u => u.getUUID(server) === user.uuid)?.id;
+        if(id) generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));
 
         const newAdminFields = [];
         const newSurvivalFields = [];
@@ -137,7 +142,7 @@ export default class UserInfo extends Command {
             ));
         }
         if(scoreboardDat) {
-            const teams = scoreboardDat.data.Teams.filter(team => team.Players.includes(user.username));
+            const teams = scoreboardDat.data.Teams?.filter(team => team.Players?.includes(user.username));
             if(teams.length > 0) placeholders.teams = teams.map(team => stringifyMinecraftJson(team.DisplayName)).join('\n');
             if(placeholders.teams) newSurvivalFields.push(addPh(
                 keys.commands.userinfo.success.survival.embeds[0].fields[9], placeholders,

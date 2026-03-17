@@ -9,6 +9,7 @@ export default class Deop extends Command {
             name: 'deop',
             requiresUserIndex: 0,
             category: 'moderation',
+            ephemeral: true,
         });
     }
 

@@ -1,9 +1,9 @@
 import Discord, { Options } from 'discord.js';
-import ServerConnectionManager from './ServerConnectionManager.js';
-import UserConnectionManager from './UserConnectionManager.js';
-import ServerSettingsConnectionManager from './ServerSettingsConnectionManager.js';
-import UserSettingsConnectionManager from './UserSettingsConnectionManager.js';
-import CustomBotConnectionManager from './CustomBotConnectionManager.js';
+import ServerConnectionManager from './connections/managers/ServerConnectionManager.js';
+import UserConnectionManager from './connections/managers/UserConnectionManager.js';
+import ServerSettingsConnectionManager from './connections/managers/ServerSettingsConnectionManager.js';
+import UserSettingsConnectionManager from './connections/managers/UserSettingsConnectionManager.js';
+import CustomBotConnectionManager from './connections/managers/CustomBotConnectionManager.js';
 import fs from 'fs-extra';
 import { addPh, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
@@ -11,7 +11,7 @@ import path from 'path';
 import Command from './Command.js';
 import Component from './Component.js';
 import Event from './Event.js';
-import MCLinkerAPI from './MCLinkerAPI.js';
+import MCLinkerAPI from '../api/MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
@@ -26,6 +26,8 @@ export default class MCLinker extends Discord.Client {
      * @property {string} commandsPath - The path to the commands folder.
      * @property {string} componentsPath - The path to the components folder.
      * @property {string} eventsPath - The path to the events folder.
+     * @property {string} restRoutesPath - The path to the API routes folder.
+     * @property {string} wsEventsPath - The path to the API websocket events folder.
      * @property {import('discord.js').PresenceData} presence - The presence data for the bot.
      * @property {string} pluginVersion - The latest version of the Minecraft plugin.
      * @property {string} supportServerInvite - The invite link to the support server.
@@ -110,6 +112,11 @@ export default class MCLinker extends Discord.Client {
             // Disable @everyone and @here mentions
             allowedMentions: { parse: ['users', 'roles'] },
             presence: config.presence,
+            rest: {
+                // Reject rate limits on channel name changes (PATCH /channels/:id) instead of silently queuing.
+                // This allows us to catch the error and schedule a deferred re-sync with fresh data.
+                rejectOnRateLimit: data => data.method === 'PATCH' && data.route === '/channels/:id',
+            },
         });
 
         logger.setShardId(this.shard.ids[0]);
@@ -197,7 +204,6 @@ export default class MCLinker extends Discord.Client {
      * Loads the configuration from the config.json file.
      * @param {string} [path=./config.json] - The path to the config file.
      * @return {Promise<MCLinkerConfig>}
-     * @private
      */
     static async loadConfig(path = `./config.json`) {
         const config = await fs.readJson(path);
@@ -219,6 +225,10 @@ export default class MCLinker extends Discord.Client {
         for(const activity of configCopy.presence.activities)
             activity.type = Object.keys(Discord.ActivityType).find(k => Discord.ActivityType[k] === activity.type) ?? activity.type;
         await fs.outputJson(path, configCopy, { spaces: 4 });
+    }
+
+    isCustomBot() {
+        return process.env.CUSTOM_BOT !== 'true';
     }
 
     async _loadCommands() {

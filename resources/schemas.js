@@ -16,10 +16,10 @@ export default {
             _id: { type: String },
             types: [{
                 type: String,
-                enum: ['chat', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
+                enum: ['chat', 'console', 'join', 'quit', 'advancement', 'death', 'player_command', 'console_command', 'block_command', 'start', 'close'],
             }],
             allowDiscordToMinecraft: Boolean,
-            webhook: String,
+            webhooks: [String],
         }],
         statChannels: [{
             _id: { type: String },
@@ -35,16 +35,13 @@ export default {
             name: String,
             isGroup: Boolean,
             players: [String],
+            direction: { type: String, enum: ['both', 'to_minecraft', 'to_discord'], default: 'both' },
         }],
         serverSettings: { type: String, ref: 'ServerSettingsConnections' },
     },
     ServerSettingsConnection: {
         _id: { type: String },
-        disabled: {
-            advancements: [String],
-            stats: [String],
-            chatCommands: [String],
-        },
+        filteredCommands: [String],
         language: String,
         server: { type: String, ref: 'ServerConnection' },
     },

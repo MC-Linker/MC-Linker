@@ -9,6 +9,7 @@ export default class Kick extends Command {
             name: 'kick',
             requiresUserIndex: 0,
             category: 'moderation',
+            ephemeral: true,
         });
     }
 

@@ -50,14 +50,13 @@ export const ph = {
     /**
      * Placeholders for an author.
      * @param {User} author - The author to get placeholders for.
-     * @returns {{}|{author_id: string, author_avatar: string, author_username: string, author_timestamp: `<t:${bigint}>`, author_tag: string}}
+     * @returns {{}|{author_id: string, author_avatar: string, author_username: string, author_timestamp: `<t:${bigint}>`}}
      */
     author(author) {
         if(!(author instanceof Discord.User)) return {};
 
         return {
             'author_username': author.username,
-            'author_tag': author.tag,
             'author_id': author.id,
             'author_avatar': author.displayAvatarURL({ extension: Discord.ImageFormat.PNG }),
             'author_timestamp': Discord.time(new Date(author.createdTimestamp)),
@@ -978,4 +977,23 @@ export async function fetchCommand(commandManager, name) {
         return commands.find(cmd => cmd.name === name);
     }
     return slashCommand;
+}
+
+/**
+ * Sets a cached result footer on one or more embeds.
+ * If the embed already has a footer, the cached text is prepended with a separator.
+ * @param {EmbedBuilder|EmbedBuilder[]} embeds - The embed(s) to add the cached footer to.
+ * @returns {EmbedBuilder|EmbedBuilder[]} - The same embed(s) with the footer set.
+ */
+export function setCachedFooter(embeds) {
+    const cachedText = getLanguageKey(keys.api.plugin.warnings.cached_result);
+    const applyFooter = embed => {
+        const existing = embed.data.footer?.text;
+        const text = existing ? `${cachedText} | ${existing}` : cachedText;
+        embed.setFooter({ text, iconURL: embed.data.footer?.icon_url });
+        return embed;
+    };
+
+    if(Array.isArray(embeds)) return embeds.map(applyFooter);
+    return applyFooter(embeds);
 }
