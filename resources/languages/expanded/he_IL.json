@@ -98,6 +98,9 @@
                     }
                 ],
                 "components": []
+            },
+            "could_not_autocomplete_command": {
+                "console": "An unknown error occurred while autocompleting command %command%: %error_stack%"
             }
         },
         "warnings": {
@@ -148,7 +151,7 @@
                 "embeds": [
                     {
                         "title": "Thanks for inviting MC Linker!",
-                        "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute %connect_command_mention% in Discord.\n• Run the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using %chatchannel_add_command_mention% or check out any of the other commands!\n\n*Tip: Manage permissions for commands by going to `Server Settings > Integrations > MC Linker`!*\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
+                        "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute %connect_command_mention% in Discord.\n• Run the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using %chatchannel_add_command_mention% or check out any of the other commands!\n\n*Tip: Manage permissions for commands by going to `Server Settings > Integrations > MC Linker`!*\n*Tip: Run %customize_command_mention% to set the bot's avatar, name and more.!*\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
                     }
                 ]
             }
@@ -688,6 +691,19 @@
                     }
                 ]
             },
+            "buttons": {
+                "customize_sku": {
+                    "type": "Button",
+                    "style": "Premium",
+                    "sku_id": "1166098447665995807"
+                },
+                "custom_bot_change_presence": {
+                    "type": "Button",
+                    "style": "Primary",
+                    "label": "Change Bot Presence",
+                    "custom_id": "custom_bot_change_presence"
+                }
+            },
             "success": {
                 "guild_appearance_updated": {
                     "embeds": [
@@ -717,11 +733,6 @@
                             "style": "Secondary",
                             "label": "Change Server Appearance",
                             "custom_id": "customize_guild_appearance"
-                        },
-                        {
-                            "type": "Button",
-                            "style": "Premium",
-                            "sku_id": "1166098447665995807"
                         }
                     ]
                 },
@@ -1175,6 +1186,15 @@
             "warnings": {
                 "could_not_find_placeholders": {
                     "console": "Could not find placeholder value for %placeholder%"
+                },
+                "autocomplete_selection_expired": {
+                    "embeds": [
+                        {
+                            "title": "Selection Expired",
+                            "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
+                        }
+                    ],
+                    "console": "Autocomplete selection token expired or invalid"
                 }
             },
             "success": {
@@ -1404,7 +1424,7 @@
                 "general_button": {
                     "label": "General Information",
                     "type": "Button",
-                    "style": "Primary",
+                    "style": "Secondary",
                     "custom_id": "serverinfo_general"
                 },
                 "world_button": {
@@ -1709,6 +1729,15 @@
                 }
             },
             "success": {
+                "disconnect": {
+                    "embeds": [
+                        {
+                            "title": "Account Disconnected",
+                            "description": "Successfully disconnected your account."
+                        }
+                    ],
+                    "console": "Account disconnected"
+                },
                 "verified": {
                     "embeds": [
                         {
@@ -1844,12 +1873,54 @@
                     ]
                 }
             },
+            "filter_commands": {
+                "warnings": {
+                    "autocomplete_selection_expired": {
+                        "embeds": [
+                            {
+                                "title": "Selection Expired",
+                                "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
+                            }
+                        ],
+                        "console": "Filter-command autocomplete selection token expired or invalid"
+                    },
+                    "already_enabled": {
+                        "embeds": [
+                            {
+                                "title": "Already Unfiltered",
+                                "description": "%type% **%enable%** is already unfiltered for the Minecraft → Discord bridge."
+                            }
+                        ],
+                        "console": "Already unfiltered %enable%"
+                    }
+                },
+                "success": {
+                    "disabled": {
+                        "embeds": [
+                            {
+                                "title": "Successfully Filtered",
+                                "description": "Successfully filtered %type% **%disable%** for the Minecraft → Discord bridge. Messages are filtered when the command starts with this value."
+                            }
+                        ],
+                        "console": "Successfully filtered %type% %disable%"
+                    },
+                    "enabled": {
+                        "embeds": [
+                            {
+                                "title": "Successfully Unfiltered",
+                                "description": "Successfully unfiltered %type% **%enable%** for the Minecraft → Discord bridge."
+                            }
+                        ],
+                        "console": "Successfully unfiltered %type% %enable%"
+                    }
+                }
+            },
             "errors": {
                 "could_not_create_webhook": {
                     "embeds": [
                         {
                             "title": "Could not Create Webhook",
-                            "description": "Could not create a webhook in this channel. This is most likely due to there being 15 webhooks already in this channel."
+                            "description": "Could not create a webhook in this channel. This is most likely due to the bot not having `Manage Webhooks` permission or there being 15 webhooks already in this channel."
                         }
                     ],
                     "console": "Could not create webhook",
@@ -1869,56 +1940,61 @@
                             "type": "SelectMenu",
                             "custom_id": "log",
                             "min_values": 1,
-                            "max_values": 10,
-                            "placeholder": "Select up to 10 message types.",
+                            "max_values": 11,
+                            "placeholder": "Select up to 11 message types.",
                             "options": [
                                 {
-                                    "label": "Chat Messages",
+                                    "label": "💬 Chat Messages",
                                     "description": "Send a message whenever a player chats.",
                                     "value": "chat"
                                 },
                                 {
-                                    "label": "Join Messages",
+                                    "label": "🖥️ Console Messages",
+                                    "description": "Sends the console output to the channel.",
+                                    "value": "console"
+                                },
+                                {
+                                    "label": "👋 Join Messages",
                                     "description": "Send a message whenever a player joins the server.",
                                     "value": "join"
                                 },
                                 {
-                                    "label": "Quit Messages",
+                                    "label": "👋 Quit Messages",
                                     "description": "Send a message whenever a player leaves the server.",
                                     "value": "quit"
                                 },
                                 {
-                                    "label": "Advancement Messages",
+                                    "label": "🏆 Advancement Messages",
                                     "description": "Send a message whenever a player completes an advancement.",
                                     "value": "advancement"
                                 },
                                 {
-                                    "label": "Death Messages",
+                                    "label": "💀 Death Messages",
                                     "description": "Send a message whenever a player dies.",
                                     "value": "death"
                                 },
                                 {
-                                    "label": "Player Command Messages",
+                                    "label": "⚡ Player Command Messages",
                                     "description": "Send a message whenever a command is sent by a player.",
                                     "value": "player_command"
                                 },
                                 {
-                                    "label": "Console Command Messages",
+                                    "label": "🖥️ Console Command Messages",
                                     "description": "Send a message whenever a command is sent by the console.",
                                     "value": "console_command"
                                 },
                                 {
-                                    "label": "Block Command Messages",
+                                    "label": "🧱 Block Command Messages",
                                     "description": "Send a message whenever a command block is executed.",
                                     "value": "block_command"
                                 },
                                 {
-                                    "label": "Startup Messages",
+                                    "label": "🟢 Startup Messages",
                                     "description": "Send a message whenever the server starts up.",
                                     "value": "start"
                                 },
                                 {
-                                    "label": "Shutdown Messages",
+                                    "label": "🔴 Shutdown Messages",
                                     "description": "Send a message whenever the server shuts down.",
                                     "value": "close"
                                 }
@@ -1959,10 +2035,6 @@
                                 {
                                     "name": "Logging",
                                     "value": "%channel_types%"
-                                },
-                                {
-                                    "name": "Webhook Mode",
-                                    "value": "%webhooks%"
                                 },
                                 {
                                     "name": "Discord To Minecraft",
@@ -2152,83 +2224,6 @@
                 }
             }
         },
-        "disable": {
-            "warnings": {
-                "command_does_not_exist": {
-                    "embeds": [
-                        {
-                            "title": "Command Does Not Exist",
-                            "description": "Command **%disable%** does not exist."
-                        }
-                    ],
-                    "console": "Command does not exist"
-                },
-                "disabled_command": {
-                    "embeds": [
-                        {
-                            "title": "Disabled Command Specified",
-                            "description": "You cannot disable the command **%disable%**."
-                        }
-                    ],
-                    "console": "Disabled command specified"
-                }
-            },
-            "errors": {
-                "could_not_disable": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Disable",
-                            "description": "Could not disable %type% **%disable%**."
-                        }
-                    ],
-                    "console": "Could not disable %disable%"
-                }
-            },
-            "success": {
-                "nothing_disabled": {
-                    "embeds": [
-                        {
-                            "title": "Nothing Disabled",
-                            "description": "There are no disabled %type%."
-                        }
-                    ],
-                    "console": "Nothing disabled"
-                },
-                "disabled": {
-                    "embeds": [
-                        {
-                            "title": "Successfully Disabled",
-                            "description": "Successfully disabled %type% **%disable%**."
-                        }
-                    ],
-                    "console": "Successfully disabled %type% %disable%"
-                },
-                "list": {
-                    "base": {
-                        "embeds": [
-                            {
-                                "title": "Disable List",
-                                "description": "Here's a list of all disabled **%type%**:"
-                            }
-                        ]
-                    },
-                    "entry": "- `%disable%`",
-                    "final": {
-                        "embeds": [
-                            {
-                                "fields": [
-                                    {
-                                        "name": "​",
-                                        "value": "%list%",
-                                        "inline": true
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            }
-        },
         "disconnect": {
             "success": {
                 "embeds": [
@@ -2238,37 +2233,6 @@
                     }
                 ],
                 "console": "Disconnected from the plugin"
-            }
-        },
-        "enable": {
-            "warnings": {
-                "command_does_not_exist": {
-                    "embeds": [
-                        {
-                            "title": "Command Does Not Exist",
-                            "description": "Command **%enable%** does not exist."
-                        }
-                    ],
-                    "console": "Command does not exist"
-                },
-                "already_enabled": {
-                    "embeds": [
-                        {
-                            "title": "Already Enabled",
-                            "description": "%type% **%enable%** is already enabled."
-                        }
-                    ],
-                    "console": "Already enabled %enable%"
-                }
-            },
-            "success": {
-                "embeds": [
-                    {
-                        "title": "Successfully Enabled",
-                        "description": "Successfully enabled %type% **%enable%**."
-                    }
-                ],
-                "console": "Successfully enabled %type% %enable%"
             }
         },
         "rolesync": {
@@ -2293,7 +2257,7 @@
                 }
             },
             "errors": {
-                "group_not_found": {
+                "group_or_team_not_found": {
                     "embeds": [
                         {
                             "title": "Group Or Team Not Found",
@@ -2306,7 +2270,7 @@
                     "embeds": [
                         {
                             "title": "Role Not Editable",
-                            "description": "I do not have permission to edit members of the role **%role%**."
+                            "description": "I do not have permission to edit members of the role **%role%**.\nYou can either move my role above that role to give me permission or change the `direction` option to `To Minecraft` to only sync the role from Discord to Minecraft."
                         }
                     ],
                     "console": "Role not editable"
@@ -2374,6 +2338,10 @@
                                 {
                                     "name": "Members",
                                     "value": "%member_count%"
+                                },
+                                {
+                                    "name": "Direction",
+                                    "value": "%direction%"
                                 }
                             ]
                         }
@@ -2392,7 +2360,10 @@
                 }
             },
             "group": "Group",
-            "team": "Team"
+            "team": "Team",
+            "direction_both": "Both",
+            "direction_to_minecraft": "To Minecraft (MC→Discord ❌, Discord→MC ✅)",
+            "direction_to_discord": "To Discord (MC→Discord ✅, Discord→MC ❌)"
         }
     },
     "api": {
@@ -2442,10 +2413,19 @@
                     "embeds": [
                         {
                             "title": "Server Disconnected",
-                            "description": "The server has lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
+                            "description": "The server has suddenly lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
                         }
                     ]
-                }
+                },
+                "high_load_skipped": {
+                    "embeds": [
+                        {
+                            "title": "High Server Load",
+                            "description": "%count% messages skipped due to high load."
+                        }
+                    ]
+                },
+                "cached_result": "☑ Cached Result"
             },
             "errors": {
                 "no_response": {
@@ -2471,16 +2451,16 @@
                     "embeds": [
                         {
                             "title": "No Webhook Permission",
-                            "description": "The Bot does not have the `Manage Webhooks` permission. Please disable webhooks for this chatchannel or add the permission."
+                            "description": "The Bot does not have the `Manage Webhooks` permission. Please add the permission."
                         }
                     ],
                     "console": "No webhook permission"
                 },
-                "could_not_add_webhook": {
+                "could_not_sync_webhooks": {
                     "embeds": [
                         {
-                            "title": "Could Not Add Webhook",
-                            "description": "The chatchannel webhook got deleted for an unknown reason and could not be re-added."
+                            "title": "Could Not Sync Webhook",
+                            "description": "The chatchannel webhooks changed and could not be synced with the plugin."
                         }
                     ],
                     "console": "Could not re-add webhook"
@@ -2691,7 +2671,7 @@
         },
         "component": {
             "clicked": {
-                "console": "%author_tag% has clicked component %interaction_id% in %guild_name%"
+                "console": "%author_username% has clicked component %interaction_id% in %guild_name%"
             },
             "no_access": {
                 "no_author": {
@@ -2748,7 +2728,7 @@
         },
         "command": {
             "executed": {
-                "console": "%author_tag% executed /%interaction_name% %args% in %guild_name%"
+                "console": "%author_username% executed /%interaction_name% %args% in %guild_name%"
             },
             "errors": {
                 "server_not_connected": {
@@ -2774,15 +2754,6 @@
                         {
                             "title": "Could Not Download",
                             "description": "Could not download %category% files."
-                        }
-                    ],
-                    "console": "Could not download %category% files"
-                },
-                "could_not_download_user_files": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Download",
-                            "description": "Could not download %category% files. The user most likely never joined the server."
                         }
                     ],
                     "console": "Could not download %category% files"
@@ -2818,6 +2789,15 @@
                 }
             },
             "warnings": {
+                "could_not_download_user_files": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Download",
+                            "description": "Could not download %category% files. The user most likely never joined the server."
+                        }
+                    ],
+                    "console": "Could not download %category% files"
+                },
                 "no_argument": {
                     "embeds": [
                         {
@@ -3453,71 +3433,8 @@
                 {
                     "type": "String",
                     "name": "פקודה",
-                    "description": "Set the command name.",
+                    "description": "Set the full command input.",
                     "required": true,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument1",
-                    "description": "Set the first command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument2",
-                    "description": "Set the second command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument3",
-                    "description": "Set the third command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument4",
-                    "description": "Set the fourth command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument5",
-                    "description": "Set the fifth command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument6",
-                    "description": "Set the sixth command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument7",
-                    "description": "Set the seventh command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument8",
-                    "description": "Set the eighth command argument.",
-                    "required": false,
-                    "autocomplete": true
-                },
-                {
-                    "type": "String",
-                    "name": "argument9",
-                    "description": "Set the ninth command argument.",
-                    "required": false,
                     "autocomplete": true
                 }
             ]
@@ -3868,12 +3785,6 @@
                             "name": "discord-to-minecraft",
                             "description": "Enable chat messages from Discord to Minecraft. (Default: true)",
                             "required": false
-                        },
-                        {
-                            "type": "Boolean",
-                            "name": "webhooks",
-                            "description": "Enable webhook mode for chat messages. (Default: true)",
-                            "required": false
                         }
                     ]
                 },
@@ -3903,6 +3814,41 @@
                     "type": "Subcommand",
                     "name": "list",
                     "description": "List all chatchannels."
+                },
+                {
+                    "type": "SubcommandGroup",
+                    "name": "filter-commands",
+                    "description": "Manage command filters for messages sent from Minecraft to Discord.",
+                    "options": [
+                        {
+                            "type": "Subcommand",
+                            "name": "add",
+                            "description": "Filter command messages from Minecraft to Discord when they start with this value.",
+                            "options": [
+                                {
+                                    "type": "String",
+                                    "name": "פקודה",
+                                    "description": "Set the command prefix you want to filter.",
+                                    "required": true,
+                                    "autocomplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Subcommand",
+                            "name": "remove",
+                            "description": "Remove a command filter for messages sent from Minecraft to Discord.",
+                            "options": [
+                                {
+                                    "type": "String",
+                                    "name": "פקודה",
+                                    "description": "Select the filtered command prefix you want to remove.",
+                                    "required": true,
+                                    "autocomplete": true
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -3952,53 +3898,6 @@
                 }
             ]
         },
-        "disable": {
-            "name": "מבוטל",
-            "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
-            "long_description": "Disable a specific command preventing it from being sent in a chatchannel. List disabled chat-commands with `/disable list`.",
-            "description": "Disable a specific command preventing it from being sent in a chatchannel",
-            "contexts": [
-                "Guild"
-            ],
-            "options": [
-                {
-                    "type": "Subcommand",
-                    "name": "chat-commands",
-                    "description": "Disable a command preventing it from being sent in any chatchannel.",
-                    "options": [
-                        {
-                            "type": "String",
-                            "name": "פקודה",
-                            "description": "Set the command you want to disable",
-                            "required": true,
-                            "autocomplete": true
-                        }
-                    ]
-                },
-                {
-                    "type": "Subcommand",
-                    "name": "list",
-                    "description": "Get a list of all disabled commands/stats/advancements",
-                    "options": [
-                        {
-                            "type": "String",
-                            "name": "category",
-                            "description": "Set the category which you want to list",
-                            "required": true,
-                            "choices": [
-                                {
-                                    "name": "Chat Commands",
-                                    "value": "chatCommands"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
         "disconnect": {
             "name": "התנתק",
             "type": "ChatInput",
@@ -4009,34 +3908,6 @@
             "description": "Disconnect your Minecraft server from the bot.",
             "contexts": [
                 "Guild"
-            ]
-        },
-        "enable": {
-            "name": "הפעל/י",
-            "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
-            "long_description": "Enable a disabled command allowing it from being sent in a chatchannel again. (They're all enabled by default.)",
-            "description": "Enable a command allowing it from being sent in a chatchannel.",
-            "contexts": [
-                "Guild"
-            ],
-            "options": [
-                {
-                    "type": "Subcommand",
-                    "name": "chat-commands",
-                    "description": "Enable a command allowing it to be sent in a chatchannel.",
-                    "options": [
-                        {
-                            "type": "String",
-                            "name": "פקודה",
-                            "description": "Set the command you want to enable",
-                            "required": true,
-                            "autocomplete": true
-                        }
-                    ]
-                }
             ]
         },
         "rolesync": {
@@ -4068,6 +3939,26 @@
                             "description": "Set the Minecraft team or Luckperms group you want to sync to.",
                             "autocomplete": true,
                             "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "direction",
+                            "description": "Set the sync direction. Defaults to both.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Both",
+                                    "value": "both"
+                                },
+                                {
+                                    "name": "To Minecraft (MC→Discord ❌, Discord→MC ✅)",
+                                    "value": "to_minecraft"
+                                },
+                                {
+                                    "name": "To Discord (MC→Discord ✅, Discord→MC ❌)",
+                                    "value": "to_discord"
+                                }
+                            ]
                         }
                     ]
                 },
