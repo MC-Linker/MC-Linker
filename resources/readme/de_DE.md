@@ -1,10 +1,8 @@
 [![Crowdin](https://badges.crowdin.net/minecraft-smp-bot/localized.svg)](https://crowdin.com/project/minecraft-smp-bot) [![Commit-Aktivität](https://img.shields.io/github/commit-activity/m/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![Gesamte Commits](https://badgen.net/github/commits/MC-Linker/MC-Linker/main)](https://github.com/MC-Linker/MC-Linker) [![Code-Größe](https://img.shields.io/github/languages/code-size/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![Repo-Größe](https://img.shields.io/github/repo-size/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![Lizenz](https://img.shields.io/badge/license-CC%20BY--NC%204.0-red)](https://github.com/MC-Linker/MC-Linker/blob/main/LICENSE.md)
 
-Lass dir Statistiken, Erfolge und Inventare deines Minecraft Servers innerhalb von Discord anzeigen, führe Befehle aus und erstelle eine Chat-Brücke mit MC Linker!
+# Beschreibung
 
-## Beschreibung
-
-Moderiere und verbinde deinen Minecraft-Server mit Discord! Dieser Bot erlaubt dir, Minecraft-Statistiken, Fortschritte und sogar Inventare von jedem Mitglied in Discord anzuzeigen. Unterstützt auch einen umfangreichen Zwei-Wege-Chat mit Minecraft, Befehlsausführung und viele andere hilfreiche Funktionen.
+MC Linker is the easiest way to connect your Minecraft server with Discord. NO custom bot creation or configuration files needed! Add chat bridges, view player stats, advancements, and inventories, run commands and moderate your server all within Discord.
 
 ## Einrichtung
 
