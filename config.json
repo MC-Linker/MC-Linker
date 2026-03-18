@@ -14,7 +14,7 @@
             }
         ]
     },
-    "pluginVersion": "3.6",
+    "pluginVersion": "4.0.0",
     "supportServerInvite": "https://discord.gg/rX36kZUGNK",
     "colors": {
         "success": "#43611a",
