@@ -192,6 +192,7 @@ export default class WebhookPoolManager {
      * @returns {Promise<?string>} The first webhook ID, or null if it could not be ensured.
      */
     async ensureWebhookForChatChannel(channel, server, guild) {
+        if(!channel.id) return null;
         if(channel.webhooks?.length > 0) return channel.webhooks[0];
 
         const discordChannel = await guild.channels.fetch(channel.id)
