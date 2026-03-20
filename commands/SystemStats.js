@@ -57,22 +57,31 @@ export default class SystemStats extends Command {
         }, ph.colors()));
     }
 
-    getCPUUsage() {
+    async getCPUUsage() {
         const start = this.getCPUInfo();
-        return new Promise(resolve => setTimeout(() => {
-            const end = this.getCPUInfo();
-            resolve(1 - (end.idle - start.idle) / (end.total - start.total));
-        }, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const end = this.getCPUInfo();
+
+        const idleDiff = end.idle - start.idle;
+        const totalDiff = end.total - start.total;
+
+        // Ensure we don't divide by zero if the interval was too short
+        if(totalDiff === 0) return 0;
+
+        const usage = 1 - idleDiff / totalDiff;
+        return Math.max(0, Math.min(1, usage)); // Clamp between 0 and 1
     }
 
     getCPUInfo() {
-        let total = 0;
-        let idle = 0;
         const cpus = os.cpus();
+        let idle = 0;
+        let total = 0;
+
         for(const cpu of cpus) {
-            total += cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.irq;
+            for(const type in cpu.times) total += cpu.times[type];
             idle += cpu.times.idle;
         }
-        return { idle, total: total + idle };
+
+        return { idle, total };
     }
 }
