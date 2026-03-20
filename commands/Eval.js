@@ -75,18 +75,16 @@ export default class Eval extends Command {
             outputConsole.log(
                 await eval(`(async () => {
                     try {
-                        return await (async () => {
-                            ${command.includes('return') || command.includes('console.log') ? command : `return ${command}`};
-                        })();
+                        return (await (async () => {
+                            ${command};
+                        })()) ?? '';
                     }
                     catch(err) {
                         return err;
                     }
                 })();`),
             );
-
-            //Auto-add return if no console.log or return present
-            if(command.includes('return') || !command.includes('console.log')) out += evalOut._read();
+            out += evalOut._read();
 
             //Redact tokens
             const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET, process.env.MICROSOFT_EMAIL, process.env.MICROSOFT_PASSWORD, process.env.IO_USERNAME, process.env.IO_PASSWORD, process.env.AZURE_CLIENT_I, process.env.TOPGG_TOKEN, process.env.COMMUNICATION_TOKEN]
