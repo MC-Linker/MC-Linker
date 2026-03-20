@@ -96,7 +96,7 @@ export default class ChatQueueProcessor {
         if(!guild) return null;
 
         const chatChannel = server.chatChannels.find(c => c.id === channelId);
-        if(!chatChannel) return null;
+        if(!chatChannel || !chatChannel.id) return null;
 
         const discordChannel = await guild.channels.fetch(channelId)
             .catch(async err => {

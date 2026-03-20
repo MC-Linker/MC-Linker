@@ -160,6 +160,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async update() {
+        //TODO update config.json and .env
         logger.info(`Updating custom bot ${this.containerName}`);
         await this.build();
         return await this.start();
