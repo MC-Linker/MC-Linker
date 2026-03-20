@@ -62,11 +62,11 @@ export default class MessageCreate extends Event {
 
             logger.debug({
                 content,
-                author: message.member.displayName,
+                author: message.member?.displayName ?? message.author.username,
                 channel: message.channel.name,
                 guild: message.guild.name,
             }, 'Relaying chat message to Minecraft server');
-            void server.protocol.chat(content, message.member.displayName, repliedContent, repliedMessage?.member.displayName);
+            void server.protocol.chat(content, message.member?.displayName ?? message.author.username, repliedContent, repliedMessage?.member?.displayName ?? repliedMessage?.author.username);
         }
 
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);

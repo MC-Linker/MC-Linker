@@ -20,7 +20,6 @@ import {
  * @property {string} [player] - Required for type 'chat', 'join', 'quit', 'death', 'advancement', 'player_command'
  */
 
-
 export default class Chat extends WSEvent {
 
     /** @type {ChatDispatchHandler} */
@@ -73,6 +72,8 @@ export default class Chat extends WSEvent {
      * @returns {Promise<void>}
      */
     async execute(data, server, client) {
+        this.queueProcessor.client ??= client;
+
         const { type, player } = data;
         let message = data.message ?? '';
 
@@ -123,7 +124,7 @@ export default class Chat extends WSEvent {
 
             logger.debug(`[Socket.io][Chat] Enqueue ${mode} payload for channel ${channel.id}`);
 
-            const base = { client, serverId: server.id, guildId, channelId: channel.id };
+            const base = { serverId: server.id, guildId, channelId: channel.id };
 
             if(isChat)
                 this.dispatchHandler.enqueue(channel.id, {
