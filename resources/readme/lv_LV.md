@@ -1,6 +1,6 @@
 [![Crowdin](https://badges.crowdin.net/minecraft-smp-bot/localized.svg)](https://crowdin.com/project/minecraft-smp-bot) [![Commit Activity](https://img.shields.io/github/commit-activity/m/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![Total Commits](https://badgen.net/github/commits/MC-Linker/MC-Linker/main)](https://github.com/MC-Linker/MC-Linker) [![Code Size](https://img.shields.io/github/languages/code-size/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![Repo Size](https://img.shields.io/github/repo-size/MC-Linker/MC-Linker)](https://github.com/MC-Linker/MC-Linker) [![License](https://img.shields.io/badge/license-CC%20BY--NC%204.0-red)](https://github.com/MC-Linker/MC-Linker/blob/main/LICENSE.md)
 
-# Description
+## Description
 
 MC Linker is the easiest way to connect your Minecraft server with Discord. NO custom bot creation or configuration files needed! Add chat bridges, view player stats, advancements, and inventories, run commands and moderate your server all within Discord.
 
@@ -8,7 +8,7 @@ MC Linker is the easiest way to connect your Minecraft server with Discord. NO c
 
 To use most of the commands you’ll have to connect your Minecraft Java Edition server with the bot. This can be done by following these steps:
 
-+ Add the "Discord-Linker" plugin to your Minecraft server from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.80691/), [Modrinth](https://modrinth.com/plugin/discord-linker), the [PaperHangar](https://hangar.papermc.io/Lianecx/Discord-Linker) or the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749)
++ Add the "Discord-Linker" plugin/mod to your Minecraft server from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.80691/), [Modrinth](https://modrinth.com/plugin/discord-linker), the [PaperHangar](https://hangar.papermc.io/Lianecx/Discord-Linker), [Curseforge](https://legacy.curseforge.com/minecraft/mc-mods/discord-linker) or the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749)
 + Restartē savu Minecraft serveri vai izpildi kommandu `/reload confirm` savā Minecraft serverī
 + Execute `/connect` in Discord
 + Follow the instructions in the embed
