@@ -72,11 +72,15 @@ export default class Eval extends Command {
                 },
             };
 
+            // Prepend `return` only for expressions — not for statements like const/let/var/etc.
+            const startsWithStatement = /^\s*(const|let|var|function|class|if|for|while|do|switch|try|throw)\b/.test(command);
+            const evalCode = startsWithStatement ? command : `return ${command}`;
+
             outputConsole.log(
                 await eval(`(async () => {
                     try {
                         return (await (async () => {
-                            ${command};
+                            ${evalCode};
                         })()) ?? '';
                     }
                     catch(err) {
