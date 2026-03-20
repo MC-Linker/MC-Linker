@@ -4,7 +4,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const sharder = new ShardingManager('./bot.js', { token: process.env.TOKEN });
+const sharder = new ShardingManager('./bot.js', {
+    token: process.env.TOKEN,
+    execArgv: [`--max-old-space-size=${process.env.SHARD_MAX_HEAP_SIZE ?? 1024}`],
+});
 
 if(process.env.TOPGG_TOKEN) {
     const poster = AutoPoster(process.env.TOPGG_TOKEN, sharder);

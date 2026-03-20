@@ -29,7 +29,8 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - CONVERT=$CONVERT # true or false
       - NODE_ENV=production
-      - NODE_MAX_HEAP_SIZE=8192
+      - NODE_MAX_HEAP_SIZE=512
+      - SHARD_MAX_HEAP_SIZE=1024
     networks:
       - mongo-network
 

@@ -87,6 +87,7 @@ export async function getMinecraftAvatarURL(username) {
 }
 
 const AVATAR_CACHE_TTL_MS = 60 * 60_000; // 1 hour
+const AVATAR_CACHE_MAX_SIZE = 5000;
 
 /**
  * @type {Map<string, { url: string, cachedAt: number }>}
@@ -104,6 +105,14 @@ export async function getCachedAvatarURL(player) {
 
     const url = await getMinecraftAvatarURL(player);
     avatarCache.set(player, { url, cachedAt: Date.now() });
+
+    // Evict oldest entries when cache grows too large
+    if(avatarCache.size > AVATAR_CACHE_MAX_SIZE) {
+        const deleteCount = avatarCache.size - AVATAR_CACHE_MAX_SIZE;
+        const iterator = avatarCache.keys();
+        for(let i = 0; i < deleteCount; i++) avatarCache.delete(iterator.next().value);
+    }
+
     return url;
 }
 
