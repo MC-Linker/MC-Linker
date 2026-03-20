@@ -1,5 +1,6 @@
 services:
   dev-mc-linker:
+    build: .
     image: lianecx/dev-mc-linker
     container_name: dev-mc-linker
     restart: on-failure

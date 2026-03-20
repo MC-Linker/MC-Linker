@@ -1,6 +1,6 @@
-version: '3.5'
 services:
   mc-linker:
+    build: .
     image: lianecx/mc-linker
     container_name: mc-linker
     restart: on-failure
