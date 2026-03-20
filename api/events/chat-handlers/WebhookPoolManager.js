@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, RESTJSONErrorCodes } from 'discord.js';
+import Discord, { PermissionFlagsBits, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
 import { getEmbed } from '../../../utilities/messages.js';
 import logger from '../../../utilities/logger.js';
@@ -16,11 +16,11 @@ import {
 export default class WebhookPoolManager {
 
     /**
-     * Caches webhook tokens by webhook ID for use with WebhookClient.
-     * Tokens are periodically refreshed to avoid stale-cache send failures.
-     * @type {Map<string, { token: string, cachedAt: number }>}
+     * Caches WebhookClient instances by webhook ID, reused across sends.
+     * Clients are periodically refreshed to avoid stale-token send failures.
+     * @type {Map<string, { client: Discord.WebhookClient, cachedAt: number }>}
      */
-    webhookTokens = new Map();
+    webhookClients = new Map();
 
     /**
      * Tracks the last time each webhook was actively used for enqueueing.
@@ -166,7 +166,7 @@ export default class WebhookPoolManager {
             }
             finally {
                 this.webhookLastActive.delete(webhookId);
-                this.webhookTokens.delete(webhookId);
+                this.evictWebhookClient(webhookId);
             }
         }
 
@@ -202,7 +202,11 @@ export default class WebhookPoolManager {
             });
         if(!discordChannel) return null;
 
-        const canManageWebhooks = discordChannel.permissionsFor(guild.members.me).has(PermissionFlagsBits.ManageWebhooks);
+        if(!discordChannel.permissionsFor) {
+            logger.warn(`[Socket.io][Chat] permissionsFor not available on channel ${discordChannel.id} (type=${discordChannel.type})`);
+            return null;
+        }
+        const canManageWebhooks = discordChannel.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.ManageWebhooks);
         if(!canManageWebhooks) {
             await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] }).catch(() => {});
             return null;
@@ -212,6 +216,18 @@ export default class WebhookPoolManager {
         if(!webhookChannel) return null;
 
         return this.createWebhook(channel, server, guild, webhookChannel, discordChannel);
+    }
+
+    /**
+     * Destroys and removes a cached WebhookClient for the given webhook ID.
+     * @param {string} webhookId - The webhook ID to evict.
+     */
+    evictWebhookClient(webhookId) {
+        const entry = this.webhookClients.get(webhookId);
+        if(entry) {
+            entry.client.destroy();
+            this.webhookClients.delete(webhookId);
+        }
     }
 
     /**
@@ -228,7 +244,7 @@ export default class WebhookPoolManager {
         this.lastPruneCheck.delete(channel.id);
         for(const webhookId of channel.webhooks ?? []) {
             this.webhookLastActive.delete(webhookId);
-            this.webhookTokens.delete(webhookId);
+            this.evictWebhookClient(webhookId);
         }
         await server.edit({ chatChannels: regChannel.data });
     }
@@ -260,7 +276,12 @@ export default class WebhookPoolManager {
 
         if(!channelConfig.webhooks) channelConfig.webhooks = [];
         channelConfig.webhooks.push(webhook.id);
-        this.webhookTokens.set(webhook.id, { token: webhook.token, cachedAt: Date.now() });
+        this.webhookClients.set(webhook.id, {
+            client: new Discord.WebhookClient({
+                id: webhook.id,
+                token: webhook.token,
+            }), cachedAt: Date.now(),
+        });
 
         const regChannel = await server.protocol.addChatChannel({
             id: channelConfig.id,
@@ -271,7 +292,7 @@ export default class WebhookPoolManager {
 
         if(!regChannel) {
             channelConfig.webhooks.pop();
-            this.webhookTokens.delete(webhook.id);
+            this.evictWebhookClient(webhook.id);
             await webhook.delete().catch(() => {});
             await errorChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_sync_webhooks)] }).catch(() => {});
             return null;

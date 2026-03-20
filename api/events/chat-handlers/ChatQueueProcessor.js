@@ -10,7 +10,6 @@ import { RATE_LIMITER_DURATION, RATE_LIMITER_POINTS } from './ChatConstants.js';
 /**
  * @typedef {Object} ChatQueueItem
  * @property {'chat'} kind
- * @property {MCLinker} client
  * @property {string} serverId
  * @property {string} guildId
  * @property {string} channelId
@@ -22,7 +21,6 @@ import { RATE_LIMITER_DURATION, RATE_LIMITER_POINTS } from './ChatConstants.js';
 /**
  * @typedef {Object} ConsoleQueueItem
  * @property {'console'} kind
- * @property {MCLinker} client
  * @property {string} serverId
  * @property {string} guildId
  * @property {string} channelId
@@ -32,7 +30,6 @@ import { RATE_LIMITER_DURATION, RATE_LIMITER_POINTS } from './ChatConstants.js';
 /**
  * @typedef {Object} EmbedQueueItem
  * @property {'embed'} kind
- * @property {MCLinker} client
  * @property {string} serverId
  * @property {string} guildId
  * @property {string} channelId
@@ -51,6 +48,12 @@ export default class ChatQueueProcessor {
      * @type {Map<string, { id: string, raw: string, hasAnsi: boolean, webhookId: string }>}
      */
     lastConsoleMessages = new Map();
+
+    /**
+     * The MCLinker client instance, set lazily on the first execute call.
+     * @type {?MCLinker}
+     */
+    client = null;
 
     /**
      * @param {Object} options
@@ -74,7 +77,6 @@ export default class ChatQueueProcessor {
 
     /**
      * @typedef {Object} ResolvedChannelContext
-     * @property {MCLinker} client
      * @property {ServerConnection} server
      * @property {Discord.Guild} guild
      * @property {ChatChannelData} chatChannel
@@ -88,11 +90,11 @@ export default class ChatQueueProcessor {
      * @returns {Promise<?ResolvedChannelContext>}
      */
     async resolveChannelContext(firstItem) {
-        const { client, serverId, guildId, channelId } = firstItem;
-        const server = client.serverConnections.cache.get(serverId);
+        const { serverId, guildId, channelId } = firstItem;
+        const server = this.client.serverConnections.cache.get(serverId);
         if(!server) return null;
 
-        const guild = await client.guilds.fetch(guildId).catch(() => null);
+        const guild = await this.client.guilds.fetch(guildId).catch(() => null);
         if(!guild) return null;
 
         const chatChannel = server.chatChannels.find(c => c.id === channelId);
@@ -105,7 +107,7 @@ export default class ChatQueueProcessor {
             });
         if(!discordChannel) return null;
 
-        return { client, server, guild, chatChannel, discordChannel };
+        return { server, guild, chatChannel, discordChannel };
     }
 
     /**
@@ -174,7 +176,7 @@ export default class ChatQueueProcessor {
      */
     async handleWebhookSendError(err, items, webhookId, chatChannel, server, guild, logContext) {
         if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) {
-            this.poolManager.webhookTokens.delete(webhookId);
+            this.poolManager.evictWebhookClient(webhookId);
             chatChannel.webhooks = chatChannel.webhooks.filter(id => id !== webhookId);
             this.poolManager.webhookLastActive.delete(webhookId);
             const newId = await this.poolManager.ensureWebhookForChatChannel(chatChannel, server, guild);
@@ -221,7 +223,7 @@ export default class ChatQueueProcessor {
 
         logger.debug(`[Socket.io][Chat] Processing dispatch queue (kind=${firstItem.kind}, items=${items.length}, batchMode=${batchMode}, webhook=${webhookId})`);
 
-        const webhook = await this.resolver.resolve(ctx.client, ctx.guild, ctx.server, ctx.chatChannel, webhookId);
+        const webhook = await this.resolver.resolve(this.client, ctx.guild, ctx.server, ctx.chatChannel, webhookId);
         if(!webhook) return { consumed: items.length };
 
         try {
