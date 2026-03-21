@@ -230,6 +230,7 @@ export default class MCLinkerAPI extends EventEmitter {
         if(server) {
             // Reconnection
             // Update data
+            const oldSocket = server.protocol.socket;
             await server.edit({
                 ip: socket.handshake.address,
                 path: socket.handshake.query.path,
@@ -241,6 +242,9 @@ export default class MCLinkerAPI extends EventEmitter {
             server.protocol.updateSocket(socket);
 
             this.addWebsocketListeners(socket, server, hash);
+            // Disconnect the old socket after the new one is set up so its disconnect
+            // event sees the replacement and skips the "server disconnected" logic
+            if(oldSocket && oldSocket !== socket) oldSocket.disconnect(true);
             logger.debug(`[Socket.io] Successfully reconnected ${server.displayIp} from ${server.id} to websocket`);
 
             // Sync all stat channels with fresh data from the plugin
@@ -411,6 +415,9 @@ export default class MCLinkerAPI extends EventEmitter {
 
             /** @type {ServerConnection<WebSocketProtocol>} */
             const server = this.client.serverConnections.resolve(serverResolvable);
+
+            // Skip if this socket has already been replaced by a reconnection
+            if(!server || server.protocol.socket !== socket) return;
 
             if(!['server namespace disconnect', 'client namespace disconnect'].includes(reason)) {
                 server.chatChannels.forEach(chatChannel => {

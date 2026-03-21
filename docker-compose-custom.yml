@@ -1,5 +1,6 @@
 services:
   custom-mc-linker:
+    build: .
     image: lianecx/${CONTAINER_NAME}
     container_name: ${CONTAINER_NAME}
     restart: on-failure
