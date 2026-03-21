@@ -7,6 +7,7 @@ import ChatDispatchHandler from './chat-handlers/ChatDispatchHandler.js';
 import WebhookPoolManager from './chat-handlers/WebhookPoolManager.js';
 import WebhookResolver from './chat-handlers/WebhookResolver.js';
 import ChatQueueProcessor from './chat-handlers/ChatQueueProcessor.js';
+import ChatMonitor from './chat-handlers/ChatMonitor.js';
 import {
     DISPATCH_HIGH_LOAD_ENTER_THRESHOLD,
     DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
@@ -34,11 +35,15 @@ export default class Chat extends WSEvent {
     /** @type {ChatQueueProcessor} */
     queueProcessor;
 
+    /** @type {ChatMonitor} */
+    monitor;
+
     constructor() {
         super({
             event: 'chat',
         });
 
+        this.monitor = new ChatMonitor();
         this.poolManager = new WebhookPoolManager();
 
         this.resolver = new WebhookResolver({
@@ -48,6 +53,7 @@ export default class Chat extends WSEvent {
         this.queueProcessor = new ChatQueueProcessor({
             resolver: this.resolver,
             poolManager: this.poolManager,
+            monitor: this.monitor,
         });
 
         this.dispatchHandler = new ChatDispatchHandler({
@@ -62,6 +68,7 @@ export default class Chat extends WSEvent {
         // Back-patch references that require circular wiring
         this.poolManager.dispatchHandler = this.dispatchHandler;
         this.poolManager.lastConsoleMessages = this.queueProcessor.lastConsoleMessages;
+        this.monitor.dispatchHandler = this.dispatchHandler;
     }
 
     /**
@@ -73,71 +80,80 @@ export default class Chat extends WSEvent {
      */
     async execute(data, server, client) {
         this.queueProcessor.client ??= client;
+        this.monitor.recordIncoming();
+        this.monitor.enterExecute();
+        const executeStart = Date.now();
 
-        const { type, player } = data;
-        let message = data.message ?? '';
+        try {
+            const { type, player } = data;
+            let message = data.message ?? '';
 
-        const channels = server.chatChannels.filter(c => c.types.includes(type));
-        if(channels.length === 0) return; //No channels to send to
+            const channels = server.chatChannels.filter(c => c.types.includes(type));
+            if(channels.length === 0) return; //No channels to send to
 
-        //Check whether command is blocked
-        if(['player_command', 'console_command', 'block_command'].includes(type) && server.settings.isFilteredCommand(message)) return;
+            //Check whether command is blocked
+            if(['player_command', 'console_command', 'block_command'].includes(type) && server.settings.isFilteredCommand(message)) return;
 
-        const guildId = server.id;
-        const authorURL = player ? await getCachedAvatarURL(player) : null;
+            const guildId = server.id;
+            const authorURL = player ? await this.monitor.track('avatarURL', () => getCachedAvatarURL(player)) : null;
 
-        const placeholders = { username: player, author_url: authorURL, message };
+            const placeholders = { username: player, author_url: authorURL, message };
 
-        //Add special placeholders for advancements
-        if(type === 'advancement') {
-            if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
+            //Add special placeholders for advancements
+            if(type === 'advancement') {
+                if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
-            const [category, id] = message.replace('minecraft:', '').split('/');
-            const advancement = searchAdvancements(id, category, false, true, 1)[0];
+                const [category, id] = message.replace('minecraft:', '').split('/');
+                const advancement = searchAdvancements(id, category, false, true, 1)[0];
 
-            if(!advancement) return; // Advancement not found
+                if(!advancement) return; // Advancement not found
 
-            const advancementTitle = advancement?.name ?? message;
-            const advancementDesc = advancement?.description ?? keys.commands.advancements.no_description_available;
+                const advancementTitle = advancement?.name ?? message;
+                const advancementDesc = advancement?.description ?? keys.commands.advancements.no_description_available;
 
-            // Add placeholder to argPlaceholder so it can be used later
-            placeholders.advancement_title = advancementTitle;
-            placeholders.advancement_description = advancementDesc;
+                // Add placeholder to argPlaceholder so it can be used later
+                placeholders.advancement_title = advancementTitle;
+                placeholders.advancement_description = advancementDesc;
+            }
+            else if(type === 'death' && (!message || message === '')) placeholders.message = addPh(keys.api.plugin.success.default_death_message, placeholders);
+
+            const guild = await this.monitor.track('guilds.fetch', () => client.guilds.fetch(guildId).catch(() => null));
+            if(!guild) return;
+
+            const isChat = type === 'chat';
+            const isConsole = type === 'console';
+
+            if((isChat || isConsole) && !message) return;
+            if(isChat && !this.poolManager.isUnderHighLoad(channels)) placeholders.message = await this.monitor.track('parseMentions', () => parseMentions(placeholders.message, guild));
+
+            const mode = isChat ? 'chat' : isConsole ? 'console' : 'embed';
+            const chatEmbed = !isChat && !isConsole ? getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() }) : null;
+
+            for(const channel of channels) {
+                const hasWebhook = await this.monitor.track('ensureWebhook', () => this.poolManager.ensureWebhookForChatChannel(channel, server, guild));
+                if(!hasWebhook) continue;
+
+                logger.debug(`[Socket.io][Chat] Enqueue ${mode} payload for channel ${channel.id}`);
+                this.monitor.recordEnqueue();
+
+                const base = { serverId: server.id, guildId, channelId: channel.id };
+
+                if(isChat)
+                    this.dispatchHandler.enqueue(channel.id, {
+                        ...base,
+                        kind: 'chat',
+                        player,
+                        authorURL,
+                        message: placeholders.message,
+                    });
+                else if(isConsole)
+                    this.dispatchHandler.enqueue(channel.id, { ...base, kind: 'console', raw: message });
+                else
+                    this.dispatchHandler.enqueue(channel.id, { ...base, kind: 'embed', embed: chatEmbed });
+            }
         }
-        else if(type === 'death' && (!message || message === '')) placeholders.message = addPh(keys.api.plugin.success.default_death_message, placeholders);
-
-        const guild = await client.guilds.fetch(guildId).catch(() => null);
-        if(!guild) return;
-
-        const isChat = type === 'chat';
-        const isConsole = type === 'console';
-
-        if((isChat || isConsole) && !message) return;
-        if(isChat && !this.poolManager.isUnderHighLoad(channels)) placeholders.message = await parseMentions(placeholders.message, guild);
-
-        const mode = isChat ? 'chat' : isConsole ? 'console' : 'embed';
-        const chatEmbed = !isChat && !isConsole ? getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() }) : null;
-
-        for(const channel of channels) {
-            const hasWebhook = await this.poolManager.ensureWebhookForChatChannel(channel, server, guild);
-            if(!hasWebhook) continue;
-
-            logger.debug(`[Socket.io][Chat] Enqueue ${mode} payload for channel ${channel.id}`);
-
-            const base = { serverId: server.id, guildId, channelId: channel.id };
-
-            if(isChat)
-                this.dispatchHandler.enqueue(channel.id, {
-                    ...base,
-                    kind: 'chat',
-                    player,
-                    authorURL,
-                    message: placeholders.message,
-                });
-            else if(isConsole)
-                this.dispatchHandler.enqueue(channel.id, { ...base, kind: 'console', raw: message });
-            else
-                this.dispatchHandler.enqueue(channel.id, { ...base, kind: 'embed', embed: chatEmbed });
+        finally {
+            this.monitor.exitExecute(executeStart);
         }
     }
 }
