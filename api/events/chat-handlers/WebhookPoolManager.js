@@ -200,6 +200,7 @@ export default class WebhookPoolManager {
 
         const regChannel = await server.protocol.addChatChannel({
             id: channelConfig.id,
+            webhook: channelConfig.webhooks[0],
             webhooks: channelConfig.webhooks,
             types: channelConfig.types,
             allowDiscordToMinecraft: channelConfig.allowDiscordToMinecraft,
@@ -350,6 +351,7 @@ export default class WebhookPoolManager {
 
         const regChannel = await server.protocol.addChatChannel({
             id: channelConfig.id,
+            webhook: channelConfig.webhooks[0],
             webhooks: channelConfig.webhooks,
             types: channelConfig.types,
             allowDiscordToMinecraft: channelConfig.allowDiscordToMinecraft,
