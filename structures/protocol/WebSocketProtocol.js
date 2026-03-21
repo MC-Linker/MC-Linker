@@ -300,7 +300,6 @@ export default class WebSocketProtocol extends Protocol {
      * @param {import('socket.io').Socket} socket - The new socket to use.
      */
     updateSocket(socket) {
-        if(this.socket && this.socket !== socket) this.socket.disconnect(true);
         this.socket = socket;
     }
 }
