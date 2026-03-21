@@ -69,7 +69,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 origin: ['https://admin.socket.io'],
                 credentials: true,
             },
-            transports: ['websocket'],
+            // transports: ['websocket'], //TODO enable back after most people migrated
             logLevel: process.env.LOG_LEVEL || 'info',
         });
 
@@ -183,7 +183,6 @@ export default class MCLinkerAPI extends EventEmitter {
                 username: process.env.IO_USERNAME,
                 password: process.env.IO_PASSWORD,
             },
-            mode: 'development',
         });
 
         this.websocket.engine.on('connection_error', err => logger.error(err, '[Socket.io] Websocket connection error'));
