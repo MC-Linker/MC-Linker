@@ -358,7 +358,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {Function} callback - The callback to send the response to.
      */
     async wsEventHandler(socket, eventName, hash, data, callback) {
-        logger.debug(`[Socket.IO] Received event ${eventName} with data: ${data.toString()}`);
+        logger.debug(`[Socket.IO] Received event ${eventName} with data: ${data?.toString?.()}`);
 
         try {
             data = typeof data === 'string' ? JSON.parse(data) : {};
