@@ -6,6 +6,7 @@ import {
     CHAT_WEBHOOK_LEGACY_NAMES,
     CHAT_WEBHOOK_NAME,
     CONSOLE_AFFINITY_HEADROOM,
+    CREATION_FAILURE_COOLDOWN_MS,
     getChatWebhookCreationOptions,
     IDLE_WEBHOOK_PRUNE_COOLDOWN_MS,
     MAX_WEBHOOKS_PER_CHANNEL,
@@ -39,6 +40,13 @@ export default class WebhookPoolManager {
      * @type {Map<string, number>}
      */
     pendingCreations = new Map();
+
+    /**
+     * Cooldown timestamps for channels where webhook creation failed (permission denied, API error).
+     * Prevents retrying the same channel on every incoming message.
+     * @type {Map<string, number>}
+     */
+    failedCreations = new Map();
 
     /** @type {import('./ChatDispatchHandler.js').default} */
     dispatchHandler;
@@ -229,6 +237,10 @@ export default class WebhookPoolManager {
         if(channel.webhooks?.length > 0) return channel.webhooks[0];
         if(this.pendingCreations.has(channel.id)) return null;
 
+        const failedUntil = this.failedCreations.get(channel.id);
+        if(failedUntil && Date.now() < failedUntil) return null;
+        this.failedCreations.delete(channel.id);
+
         const discordChannel = await guild.channels.fetch(channel.id)
             .catch(async err => {
                 if(err instanceof RateLimitError) {
@@ -247,6 +259,7 @@ export default class WebhookPoolManager {
         const canManageWebhooks = discordChannel.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.ManageWebhooks);
         if(!canManageWebhooks) {
             this.monitor?.recordPermissionFailure(channel.id);
+            this.failedCreations.set(channel.id, Date.now() + CREATION_FAILURE_COOLDOWN_MS);
             await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] }).catch(() => {});
             return null;
         }
@@ -345,6 +358,7 @@ export default class WebhookPoolManager {
             webhook = await this.findReusableChatWebhook(webhookChannel, guild.client.user.id);
             if(!webhook) {
                 this.monitor?.recordCreationFailure();
+                this.failedCreations.set(channelConfig.id, Date.now() + CREATION_FAILURE_COOLDOWN_MS);
                 logger.error(err, `[Socket.io][Chat] Failed creating webhook for channel ${channelConfig.id}`);
                 await errorChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_create_webhook)] }).catch(() => {});
                 return null;
