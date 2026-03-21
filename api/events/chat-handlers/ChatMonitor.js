@@ -1,7 +1,7 @@
 import { RateLimitError } from 'discord.js';
 import logger from '../../../utilities/logger.js';
 
-const SUMMARY_INTERVAL_MS = 30_000;
+const SUMMARY_INTERVAL_MS = 60_000;
 
 
 export default class ChatMonitor {
@@ -32,6 +32,18 @@ export default class ChatMonitor {
 
     /** Unique channel IDs seen with empty webhooks this interval. */
     emptyWebhookChannels = new Set();
+
+    /** Rate limit rejections by category (e.g. 'webhook.send', 'createWebhook'). */
+    rateLimitsByCategory = new Map();
+
+    /** Channels where webhook creation failed due to missing ManageWebhooks permission. */
+    permissionFailures = 0;
+
+    /** Unique channel IDs that hit permission failures this interval. */
+    permissionFailureChannels = new Set();
+
+    /** Webhook creation failures (non-rate-limit, non-permission). */
+    creationFailures = 0;
 
     /** Currently suspended execute() calls. */
     executeConcurrent = 0;
@@ -99,6 +111,25 @@ export default class ChatMonitor {
     recordProcessed(n = 1) { this.processed += n; }
 
     /**
+     * Records a rate limit rejection for a specific category.
+     * @param {string} category - The operation that was rate-limited (e.g. 'createWebhook', 'deleteWebhook').
+     */
+    recordRateLimit(category) {
+        this.rateLimitsByCategory.set(category, (this.rateLimitsByCategory.get(category) ?? 0) + 1);
+    }
+
+    /**
+     * Records a webhook creation failure due to missing ManageWebhooks permission.
+     * @param {string} channelId - The channel ID that failed.
+     */
+    recordPermissionFailure(channelId) {
+        this.permissionFailures++;
+        this.permissionFailureChannels.add(channelId);
+    }
+
+    recordCreationFailure() { this.creationFailures++; }
+
+    /**
      * Records the webhook state of a chat channel encountered during execute().
      * @param {object} channel - The chat channel config object.
      */
@@ -148,6 +179,16 @@ export default class ChatMonitor {
             `  channels: ready=${this.readyWebhooks} empty=${this.emptyWebhooks} (${this.emptyWebhookChannels.size} unique) noArray=${this.skippedNoWebhooks} legacyProp=${this.legacyWebhookProp}`,
         ];
 
+        if(this.rateLimitsByCategory.size > 0) {
+            const rlParts = [];
+            for(const [cat, count] of this.rateLimitsByCategory) rlParts.push(`${cat}=${count}`);
+            lines.push('  rateLimits: ' + rlParts.join(' '));
+        }
+
+        if(this.permissionFailures > 0 || this.creationFailures > 0) {
+            lines.push(`  failures: noPermission=${this.permissionFailures} (${this.permissionFailureChannels.size} unique) creation=${this.creationFailures}`);
+        }
+
         if(this.operations.size > 0) {
             const parts = [];
             for(const [name, op] of this.operations) {
@@ -175,6 +216,10 @@ export default class ChatMonitor {
         this.emptyWebhooks = 0;
         this.readyWebhooks = 0;
         this.emptyWebhookChannels.clear();
+        this.rateLimitsByCategory.clear();
+        this.permissionFailures = 0;
+        this.permissionFailureChannels.clear();
+        this.creationFailures = 0;
         this.operations.clear();
     }
 }
