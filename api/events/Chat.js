@@ -130,8 +130,19 @@ export default class Chat extends WSEvent {
             const chatEmbed = !isChat && !isConsole ? getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() }) : null;
 
             for(const channel of channels) {
-                const hasWebhook = await this.monitor.track('ensureWebhook', () => this.poolManager.ensureWebhookForChatChannel(channel, server, guild));
-                if(!hasWebhook) continue;
+                this.monitor.recordChannelState(channel);
+
+                if(!channel.webhooks) {
+                    // Channel has no webhooks array at all (outdated plugin data) — skip entirely
+                    continue;
+                }
+
+                if(channel.webhooks.length === 0) {
+                    // No webhook yet — fire-and-forget creation, skip enqueuing this message.
+                    this.poolManager.ensureWebhookForChatChannel(channel, server, guild)
+                        .catch(err => logger.error(err, `[Socket.io][Chat] Background webhook creation failed for channel ${channel.id}`));
+                    continue;
+                }
 
                 logger.debug(`[Socket.io][Chat] Enqueue ${mode} payload for channel ${channel.id}`);
                 this.monitor.recordEnqueue();

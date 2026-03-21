@@ -18,6 +18,18 @@ export default class ChatMonitor {
     /** Items consumed (processed) by queue processors this interval. */
     processed = 0;
 
+    /** Channels skipped because they had no webhooks array. */
+    skippedNoWebhooks = 0;
+
+    /** Channels that still had the legacy singular `webhook` property. */
+    legacyWebhookProp = 0;
+
+    /** Channels with a `webhooks` array that was empty. */
+    emptyWebhooks = 0;
+
+    /** Channels with a filled `webhooks` array (healthy). */
+    readyWebhooks = 0;
+
     /** Currently suspended execute() calls. */
     executeConcurrent = 0;
 
@@ -83,6 +95,17 @@ export default class ChatMonitor {
 
     recordProcessed(n = 1) { this.processed += n; }
 
+    /**
+     * Records the webhook state of a chat channel encountered during execute().
+     * @param {object} channel - The chat channel config object.
+     */
+    recordChannelState(channel) {
+        if(channel.webhook !== undefined) this.legacyWebhookProp++;
+        if(!channel.webhooks) this.skippedNoWebhooks++;
+        else if(channel.webhooks.length === 0) this.emptyWebhooks++;
+        else this.readyWebhooks++;
+    }
+
     enterExecute() {
         this.executeConcurrent++;
         if(this.executeConcurrent > this.executePeak) this.executePeak = this.executeConcurrent;
@@ -116,6 +139,7 @@ export default class ChatMonitor {
             `  throughput: in=${this.incoming} (${(this.incoming / secs).toFixed(1)}/s) enqueued=${this.enqueued} processed=${this.processed}`,
             `  execute(): concurrent=${this.executeConcurrent} peak=${this.executePeak} completed=${this.executeCompleted} avg=${executeAvg}ms`,
             `  dispatch: ${queueDestinations} destinations, ${queueItems} queued items`,
+            `  channels: ready=${this.readyWebhooks} empty=${this.emptyWebhooks} noArray=${this.skippedNoWebhooks} legacyProp=${this.legacyWebhookProp}`,
         ];
 
         if(this.operations.size > 0) {
@@ -140,6 +164,10 @@ export default class ChatMonitor {
         this.executePeak = this.executeConcurrent;
         this.executeCompleted = 0;
         this.executeTotalMs = 0;
+        this.skippedNoWebhooks = 0;
+        this.legacyWebhookProp = 0;
+        this.emptyWebhooks = 0;
+        this.readyWebhooks = 0;
         this.operations.clear();
     }
 }
