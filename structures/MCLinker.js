@@ -121,6 +121,9 @@ export default class MCLinker extends Discord.Client {
                     // Webhook sends (POST) and message edits (PATCH) for chat channels
                     if(data.method === 'POST' && data.route === '/webhooks/:id/:token') return true;
                     if(data.method === 'PATCH' && data.route === '/webhooks/:id/:token/messages/:id') return true;
+                    // Webhook management: fetchWebhooks, createWebhook, fetchWebhook, deleteWebhook
+                    if(data.route === '/channels/:id/webhooks') return true;
+                    if(data.route === '/webhooks/:id') return true;
                     return false;
                 },
             },
