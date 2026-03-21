@@ -139,13 +139,6 @@ export default class Chat extends WSEvent {
                     continue;
                 }
 
-                if(channel.webhooks.length === 0) {
-                    // No webhook yet — fire-and-forget creation, skip enqueuing this message.
-                    this.poolManager.ensureWebhookForChatChannel(channel, server, guild)
-                        .catch(err => logger.error(err, `[Socket.io][Chat] Background webhook creation failed for channel ${channel.id}`));
-                    continue;
-                }
-
                 logger.debug(`[Socket.io][Chat] Enqueue ${mode} payload for channel ${channel.id}`);
                 this.monitor.recordEnqueue();
 
