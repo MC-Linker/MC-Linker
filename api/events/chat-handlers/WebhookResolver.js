@@ -1,4 +1,4 @@
-import Discord, { RESTJSONErrorCodes } from 'discord.js';
+import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import logger from '../../../utilities/logger.js';
 import { WEBHOOK_TOKEN_REFRESH_TTL_MS } from './ChatConstants.js';
 
@@ -64,6 +64,10 @@ export default class WebhookResolver {
             return await client.fetchWebhook(webhookId);
         }
         catch(err) {
+            if(err instanceof RateLimitError) {
+                logger.debug(`[Socket.io][Chat] Rate-limited refreshing webhook ${webhookId} for channel ${channelConfig.id}`);
+                return null;
+            }
             if(err?.code !== RESTJSONErrorCodes.UnknownWebhook) {
                 logger.error(err, `[Socket.io][Chat] Failed fetching webhook ${webhookId} for channel ${channelConfig.id}`);
                 return null;
@@ -87,6 +91,7 @@ export default class WebhookResolver {
                 return await client.fetchWebhook(altId);
             }
             catch(err) {
+                if(err instanceof RateLimitError) continue;
                 if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
                     this.poolManager.evictWebhookClient(altId);
                     channelConfig.webhooks = channelConfig.webhooks.filter(id => id !== altId);

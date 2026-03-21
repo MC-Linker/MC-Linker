@@ -1,4 +1,4 @@
-import Discord, { PermissionFlagsBits, RESTJSONErrorCodes } from 'discord.js';
+import Discord, { PermissionFlagsBits, RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
 import { getEmbed } from '../../../utilities/messages.js';
 import logger from '../../../utilities/logger.js';
@@ -33,6 +33,12 @@ export default class WebhookPoolManager {
      * @type {Map<string, number>}
      */
     lastPruneCheck = new Map();
+
+    /**
+     * Tracks channels with pending deferred webhook creation timers to avoid duplicate attempts.
+     * @type {Map<string, number>}
+     */
+    pendingCreations = new Map();
 
     /** @type {import('./ChatDispatchHandler.js').default} */
     dispatchHandler;
@@ -104,18 +110,27 @@ export default class WebhookPoolManager {
      * @returns {Promise<?string>} The new webhook ID, or null if capacity is exhausted or creation failed.
      */
     async tryScaleUp(channelConfig, server, guild) {
-        const discordChannel = await guild.channels.fetch(channelConfig.id).catch(() => null);
-        if(!discordChannel) return null;
+        try {
+            const discordChannel = await guild.channels.fetch(channelConfig.id).catch(() => null);
+            if(!discordChannel) return null;
 
-        const webhookChannel = discordChannel.isThread() ? discordChannel.parent : discordChannel;
-        if(!webhookChannel) return null;
+            const webhookChannel = discordChannel.isThread() ? discordChannel.parent : discordChannel;
+            if(!webhookChannel) return null;
 
-        const availableSlots = await this.getAvailableWebhookSlots(webhookChannel);
-        if(availableSlots <= 0) return null;
+            const availableSlots = await this.getAvailableWebhookSlots(webhookChannel);
+            if(availableSlots <= 0) return null;
 
-        const webhookId = await this.createWebhook(channelConfig, server, guild, webhookChannel, webhookChannel);
-        logger.debug(`[Socket.io][Chat] Scaled up webhook pool for channel ${channelConfig.id} (total=${channelConfig.webhooks.length})`);
-        return webhookId;
+            const webhookId = await this.createWebhook(channelConfig, server, guild, webhookChannel, webhookChannel);
+            logger.debug(`[Socket.io][Chat] Scaled up webhook pool for channel ${channelConfig.id} (total=${channelConfig.webhooks.length})`);
+            return webhookId;
+        }
+        catch(err) {
+            if(err instanceof RateLimitError) {
+                logger.debug(`[Socket.io][Chat] Rate-limited scaling up webhook pool for channel ${channelConfig.id}`);
+                return null;
+            }
+            throw err;
+        }
     }
 
     /**
@@ -153,27 +168,39 @@ export default class WebhookPoolManager {
 
         if(toRemove.length === 0) return;
 
+        const removed = [];
         for(const webhookId of toRemove) {
             try {
                 await guild.client.deleteWebhook(webhookId);
+                removed.push(webhookId);
             }
             catch(err) {
-                if(err?.code !== RESTJSONErrorCodes.UnknownWebhook && err?.code !== RESTJSONErrorCodes.UnknownChannel) {
-                    // Return and try pruning again later
-                    logger.error(err, `[Socket.io][Chat] Failed deleting idle webhook ${webhookId} for channel ${channelConfig.id}`);
-                    return;
+                if(err instanceof RateLimitError) {
+                    logger.debug(`[Socket.io][Chat] Rate-limited deleting idle webhook ${webhookId}, deferring prune`);
+                    break;
                 }
-            }
-            finally {
-                this.webhookLastActive.delete(webhookId);
-                this.evictWebhookClient(webhookId);
+                if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.UnknownChannel) {
+                    removed.push(webhookId);
+                }
+                else {
+                    logger.error(err, `[Socket.io][Chat] Failed deleting idle webhook ${webhookId} for channel ${channelConfig.id}`);
+                    break;
+                }
             }
         }
 
-        channelConfig.webhooks = channelConfig.webhooks.filter(id => !toRemove.includes(id));
+        if(removed.length === 0) return;
+
+        for(const webhookId of removed) {
+            this.webhookLastActive.delete(webhookId);
+            this.evictWebhookClient(webhookId);
+        }
+
+        channelConfig.webhooks = channelConfig.webhooks.filter(id => !removed.includes(id));
 
         const regChannel = await server.protocol.addChatChannel({
             id: channelConfig.id,
+            webhook: channelConfig.webhooks[0],
             webhooks: channelConfig.webhooks,
             types: channelConfig.types,
             allowDiscordToMinecraft: channelConfig.allowDiscordToMinecraft,
@@ -186,6 +213,7 @@ export default class WebhookPoolManager {
 
     /**
      * Ensures at least one webhook exists for the given chat channel configuration, creating one if necessary.
+     * If creation is rate-limited, schedules a deferred retry and returns null immediately.
      * @param {ChatChannelData} channel - The chat channel configuration to ensure a webhook for.
      * @param {ServerConnection} server - The server connection that owns this chat channel.
      * @param {import('discord.js').Guild} guild - The guild the channel belongs to.
@@ -194,9 +222,11 @@ export default class WebhookPoolManager {
     async ensureWebhookForChatChannel(channel, server, guild) {
         if(!channel.id) return null;
         if(channel.webhooks?.length > 0) return channel.webhooks[0];
+        if(this.pendingCreations.has(channel.id)) return null;
 
         const discordChannel = await guild.channels.fetch(channel.id)
             .catch(async err => {
+                if(err instanceof RateLimitError) return null;
                 if(err?.code === RESTJSONErrorCodes.UnknownChannel) await this.removeChatChannel(server, channel);
                 return null;
             });
@@ -215,7 +245,42 @@ export default class WebhookPoolManager {
         const webhookChannel = discordChannel.isThread() ? discordChannel.parent : discordChannel;
         if(!webhookChannel) return null;
 
-        return this.createWebhook(channel, server, guild, webhookChannel, discordChannel);
+        try {
+            return await this.createWebhook(channel, server, guild, webhookChannel, discordChannel);
+        }
+        catch(err) {
+            if(err instanceof RateLimitError) {
+                this.scheduleWebhookCreation(channel, server, guild, err.retryAfter);
+                return null;
+            }
+            throw err;
+        }
+    }
+
+    /**
+     * Schedules a deferred webhook creation attempt after a rate limit expires.
+     * Prevents duplicate timers per channel.
+     * @param {ChatChannelData} channel - The chat channel configuration.
+     * @param {ServerConnection} server - The server connection.
+     * @param {import('discord.js').Guild} guild - The guild.
+     * @param {number} retryAfter - Milliseconds until the rate limit resets.
+     */
+    scheduleWebhookCreation(channel, server, guild, retryAfter) {
+        if(this.pendingCreations.has(channel.id)) return;
+
+        logger.debug(`[Socket.io][Chat] Scheduling deferred webhook creation for channel ${channel.id} in ${retryAfter}ms`);
+
+        const timer = setTimeout(async () => {
+            this.pendingCreations.delete(channel.id);
+            try {
+                await this.ensureWebhookForChatChannel(channel, server, guild);
+            }
+            catch(err) {
+                logger.debug(`[Socket.io][Chat] Deferred webhook creation failed for channel ${channel.id}: ${err.message}`);
+            }
+        }, retryAfter + 1000);
+
+        this.pendingCreations.set(channel.id, timer);
     }
 
     /**
@@ -266,6 +331,7 @@ export default class WebhookPoolManager {
             logger.debug(`[Socket.io][Chat] Created new webhook ${webhook.id} for channel ${channelConfig.id}`);
         }
         catch(err) {
+            if(err instanceof RateLimitError) throw err;
             webhook = await this.findReusableChatWebhook(webhookChannel, guild.client.user.id);
             if(!webhook) {
                 logger.error(err, `[Socket.io][Chat] Failed creating webhook for channel ${channelConfig.id}`);
@@ -285,6 +351,7 @@ export default class WebhookPoolManager {
 
         const regChannel = await server.protocol.addChatChannel({
             id: channelConfig.id,
+            webhook: channelConfig.webhooks[0],
             webhooks: channelConfig.webhooks,
             types: channelConfig.types,
             allowDiscordToMinecraft: channelConfig.allowDiscordToMinecraft,

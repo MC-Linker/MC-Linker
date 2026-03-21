@@ -176,16 +176,28 @@ export default class ServerConnection extends Connection {
          * */
         this.forceOnlineMode = data.forceOnlineMode ?? this.forceOnlineMode ?? true;
 
+        // Snapshot locally-managed webhooks before overwriting with plugin response data.
+        // The bot is the source of truth for webhooks — outdated plugins may send back
+        // only a singular `webhook` field, dropping the full array.
+        const previousWebhooks = new Map();
+        for(const channel of this.chatChannels ?? []) {
+            if(channel.webhooks?.length) previousWebhooks.set(channel.id, channel.webhooks);
+        }
+
         /**
          * The chatchannels connected to this server.
          * @type {ChatChannelData[]}
          * */
         this.chatChannels = data.chatChannels ?? this.chatChannels ?? [];
 
-        // Migrate legacy singular webhook field to webhooks array
         for(const channel of this.chatChannels) {
+            // Migrate legacy singular webhook field to webhooks array
             if(!channel.webhooks) channel.webhooks = channel.webhook ? [channel.webhook] : [];
             delete channel.webhook;
+
+            // Preserve locally-managed webhooks over potentially lossy plugin response
+            const localWebhooks = previousWebhooks.get(channel.id);
+            if(localWebhooks) channel.webhooks = localWebhooks;
         }
 
         /**
