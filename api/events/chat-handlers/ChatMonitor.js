@@ -30,6 +30,9 @@ export default class ChatMonitor {
     /** Channels with a filled `webhooks` array (healthy). */
     readyWebhooks = 0;
 
+    /** Unique channel IDs seen with empty webhooks this interval. */
+    emptyWebhookChannels = new Set();
+
     /** Currently suspended execute() calls. */
     executeConcurrent = 0;
 
@@ -102,7 +105,10 @@ export default class ChatMonitor {
     recordChannelState(channel) {
         if(channel.webhook !== undefined) this.legacyWebhookProp++;
         if(!channel.webhooks) this.skippedNoWebhooks++;
-        else if(channel.webhooks.length === 0) this.emptyWebhooks++;
+        else if(channel.webhooks.length === 0) {
+            this.emptyWebhooks++;
+            this.emptyWebhookChannels.add(channel.id);
+        }
         else this.readyWebhooks++;
     }
 
@@ -139,7 +145,7 @@ export default class ChatMonitor {
             `  throughput: in=${this.incoming} (${(this.incoming / secs).toFixed(1)}/s) enqueued=${this.enqueued} processed=${this.processed}`,
             `  execute(): concurrent=${this.executeConcurrent} peak=${this.executePeak} completed=${this.executeCompleted} avg=${executeAvg}ms`,
             `  dispatch: ${queueDestinations} destinations, ${queueItems} queued items`,
-            `  channels: ready=${this.readyWebhooks} empty=${this.emptyWebhooks} noArray=${this.skippedNoWebhooks} legacyProp=${this.legacyWebhookProp}`,
+            `  channels: ready=${this.readyWebhooks} empty=${this.emptyWebhooks} (${this.emptyWebhookChannels.size} unique) noArray=${this.skippedNoWebhooks} legacyProp=${this.legacyWebhookProp}`,
         ];
 
         if(this.operations.size > 0) {
@@ -168,6 +174,7 @@ export default class ChatMonitor {
         this.legacyWebhookProp = 0;
         this.emptyWebhooks = 0;
         this.readyWebhooks = 0;
+        this.emptyWebhookChannels.clear();
         this.operations.clear();
     }
 }
