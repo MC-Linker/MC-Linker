@@ -8,9 +8,11 @@ export default class WebhookResolver {
     /**
      * @param {Object} options
      * @param {import('./WebhookPoolManager.js').default} options.poolManager
+     * @param {import('./ChatMonitor.js').default} [options.monitor]
      */
-    constructor({ poolManager }) {
+    constructor({ poolManager, monitor }) {
         this.poolManager = poolManager;
+        this.monitor = monitor;
     }
 
     /**
@@ -65,6 +67,7 @@ export default class WebhookResolver {
         }
         catch(err) {
             if(err instanceof RateLimitError) {
+                this.monitor?.recordRateLimit('fetchWebhook');
                 logger.debug(`[Socket.io][Chat] Rate-limited refreshing webhook ${webhookId} for channel ${channelConfig.id}`);
                 return null;
             }
@@ -91,7 +94,10 @@ export default class WebhookResolver {
                 return await client.fetchWebhook(altId);
             }
             catch(err) {
-                if(err instanceof RateLimitError) continue;
+                if(err instanceof RateLimitError) {
+                    this.monitor?.recordRateLimit('fetchWebhook');
+                    continue;
+                }
                 if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
                     this.poolManager.evictWebhookClient(altId);
                     channelConfig.webhooks = channelConfig.webhooks.filter(id => id !== altId);

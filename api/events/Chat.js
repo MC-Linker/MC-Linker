@@ -48,6 +48,7 @@ export default class Chat extends WSEvent {
 
         this.resolver = new WebhookResolver({
             poolManager: this.poolManager,
+            monitor: this.monitor,
         });
 
         this.queueProcessor = new ChatQueueProcessor({
@@ -68,6 +69,7 @@ export default class Chat extends WSEvent {
         // Back-patch references that require circular wiring
         this.poolManager.dispatchHandler = this.dispatchHandler;
         this.poolManager.lastConsoleMessages = this.queueProcessor.lastConsoleMessages;
+        this.poolManager.monitor = this.monitor;
         this.monitor.dispatchHandler = this.dispatchHandler;
     }
 

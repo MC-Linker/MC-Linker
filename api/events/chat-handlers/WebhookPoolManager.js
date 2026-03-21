@@ -43,6 +43,9 @@ export default class WebhookPoolManager {
     /** @type {import('./ChatDispatchHandler.js').default} */
     dispatchHandler;
 
+    /** @type {import('./ChatMonitor.js').default} */
+    monitor;
+
     /** @type {Map<string, { id: string, raw: string, hasAnsi: boolean, webhookId: string }>} */
     lastConsoleMessages;
 
@@ -126,6 +129,7 @@ export default class WebhookPoolManager {
         }
         catch(err) {
             if(err instanceof RateLimitError) {
+                this.monitor?.recordRateLimit('scaleUp');
                 logger.debug(`[Socket.io][Chat] Rate-limited scaling up webhook pool for channel ${channelConfig.id}`);
                 return null;
             }
@@ -176,6 +180,7 @@ export default class WebhookPoolManager {
             }
             catch(err) {
                 if(err instanceof RateLimitError) {
+                    this.monitor?.recordRateLimit('deleteWebhook');
                     logger.debug(`[Socket.io][Chat] Rate-limited deleting idle webhook ${webhookId}, deferring prune`);
                     break;
                 }
@@ -226,7 +231,10 @@ export default class WebhookPoolManager {
 
         const discordChannel = await guild.channels.fetch(channel.id)
             .catch(async err => {
-                if(err instanceof RateLimitError) return null;
+                if(err instanceof RateLimitError) {
+                    this.monitor?.recordRateLimit('channels.fetch');
+                    return null;
+                }
                 if(err?.code === RESTJSONErrorCodes.UnknownChannel) await this.removeChatChannel(server, channel);
                 return null;
             });
@@ -238,6 +246,7 @@ export default class WebhookPoolManager {
         }
         const canManageWebhooks = discordChannel.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.ManageWebhooks);
         if(!canManageWebhooks) {
+            this.monitor?.recordPermissionFailure(channel.id);
             await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] }).catch(() => {});
             return null;
         }
@@ -250,6 +259,7 @@ export default class WebhookPoolManager {
         }
         catch(err) {
             if(err instanceof RateLimitError) {
+                this.monitor?.recordRateLimit('createWebhook');
                 this.scheduleWebhookCreation(channel, server, guild, err.retryAfter);
                 return null;
             }
@@ -334,6 +344,7 @@ export default class WebhookPoolManager {
             if(err instanceof RateLimitError) throw err;
             webhook = await this.findReusableChatWebhook(webhookChannel, guild.client.user.id);
             if(!webhook) {
+                this.monitor?.recordCreationFailure();
                 logger.error(err, `[Socket.io][Chat] Failed creating webhook for channel ${channelConfig.id}`);
                 await errorChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_create_webhook)] }).catch(() => {});
                 return null;

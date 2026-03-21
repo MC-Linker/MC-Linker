@@ -189,6 +189,7 @@ export default class ChatQueueProcessor {
             }
             catch(err) {
                 if(err instanceof RateLimitError) {
+                    this.monitor.recordRateLimit('webhook.send');
                     const retryMs = err.retryAfter ?? 1000;
                     bestRetryMs = bestRetryMs === null ? retryMs : Math.min(bestRetryMs, retryMs);
                     logger.debug(`[Socket.io][Chat] Webhook ${webhookId} rate-limited for channel ${chatChannel.id}; retry in ${retryMs}ms`);
@@ -211,6 +212,7 @@ export default class ChatQueueProcessor {
                 }
                 catch(err) {
                     if(err instanceof RateLimitError) {
+                        this.monitor.recordRateLimit('webhook.send');
                         bestRetryMs = Math.min(bestRetryMs ?? Infinity, err.retryAfter ?? 1000);
                     }
                     else {

@@ -1,7 +1,7 @@
 import { RateLimitError } from 'discord.js';
 import logger from '../../../utilities/logger.js';
 
-const SUMMARY_INTERVAL_MS = 30_000;
+const SUMMARY_INTERVAL_MS = 60_000;
 
 
 export default class ChatMonitor {
@@ -29,6 +29,21 @@ export default class ChatMonitor {
 
     /** Channels with a filled `webhooks` array (healthy). */
     readyWebhooks = 0;
+
+    /** Unique channel IDs seen with empty webhooks this interval. */
+    emptyWebhookChannels = new Set();
+
+    /** Rate limit rejections by category (e.g. 'webhook.send', 'createWebhook'). */
+    rateLimitsByCategory = new Map();
+
+    /** Channels where webhook creation failed due to missing ManageWebhooks permission. */
+    permissionFailures = 0;
+
+    /** Unique channel IDs that hit permission failures this interval. */
+    permissionFailureChannels = new Set();
+
+    /** Webhook creation failures (non-rate-limit, non-permission). */
+    creationFailures = 0;
 
     /** Currently suspended execute() calls. */
     executeConcurrent = 0;
@@ -96,13 +111,35 @@ export default class ChatMonitor {
     recordProcessed(n = 1) { this.processed += n; }
 
     /**
+     * Records a rate limit rejection for a specific category.
+     * @param {string} category - The operation that was rate-limited (e.g. 'createWebhook', 'deleteWebhook').
+     */
+    recordRateLimit(category) {
+        this.rateLimitsByCategory.set(category, (this.rateLimitsByCategory.get(category) ?? 0) + 1);
+    }
+
+    /**
+     * Records a webhook creation failure due to missing ManageWebhooks permission.
+     * @param {string} channelId - The channel ID that failed.
+     */
+    recordPermissionFailure(channelId) {
+        this.permissionFailures++;
+        this.permissionFailureChannels.add(channelId);
+    }
+
+    recordCreationFailure() { this.creationFailures++; }
+
+    /**
      * Records the webhook state of a chat channel encountered during execute().
      * @param {object} channel - The chat channel config object.
      */
     recordChannelState(channel) {
         if(channel.webhook !== undefined) this.legacyWebhookProp++;
         if(!channel.webhooks) this.skippedNoWebhooks++;
-        else if(channel.webhooks.length === 0) this.emptyWebhooks++;
+        else if(channel.webhooks.length === 0) {
+            this.emptyWebhooks++;
+            this.emptyWebhookChannels.add(channel.id);
+        }
         else this.readyWebhooks++;
     }
 
@@ -139,8 +176,18 @@ export default class ChatMonitor {
             `  throughput: in=${this.incoming} (${(this.incoming / secs).toFixed(1)}/s) enqueued=${this.enqueued} processed=${this.processed}`,
             `  execute(): concurrent=${this.executeConcurrent} peak=${this.executePeak} completed=${this.executeCompleted} avg=${executeAvg}ms`,
             `  dispatch: ${queueDestinations} destinations, ${queueItems} queued items`,
-            `  channels: ready=${this.readyWebhooks} empty=${this.emptyWebhooks} noArray=${this.skippedNoWebhooks} legacyProp=${this.legacyWebhookProp}`,
+            `  channels: ready=${this.readyWebhooks} empty=${this.emptyWebhooks} (${this.emptyWebhookChannels.size} unique) noArray=${this.skippedNoWebhooks} legacyProp=${this.legacyWebhookProp}`,
         ];
+
+        if(this.rateLimitsByCategory.size > 0) {
+            const rlParts = [];
+            for(const [cat, count] of this.rateLimitsByCategory) rlParts.push(`${cat}=${count}`);
+            lines.push('  rateLimits: ' + rlParts.join(' '));
+        }
+
+        if(this.permissionFailures > 0 || this.creationFailures > 0) {
+            lines.push(`  failures: noPermission=${this.permissionFailures} (${this.permissionFailureChannels.size} unique) creation=${this.creationFailures}`);
+        }
 
         if(this.operations.size > 0) {
             const parts = [];
@@ -168,6 +215,11 @@ export default class ChatMonitor {
         this.legacyWebhookProp = 0;
         this.emptyWebhooks = 0;
         this.readyWebhooks = 0;
+        this.emptyWebhookChannels.clear();
+        this.rateLimitsByCategory.clear();
+        this.permissionFailures = 0;
+        this.permissionFailureChannels.clear();
+        this.creationFailures = 0;
         this.operations.clear();
     }
 }
