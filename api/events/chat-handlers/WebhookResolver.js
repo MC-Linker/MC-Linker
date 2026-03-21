@@ -25,7 +25,10 @@ export default class WebhookResolver {
         if(!webhook.token) return null;
 
         this.poolManager.evictWebhookClient(webhookId);
-        const webhookClient = new Discord.WebhookClient({ id: webhookId, token: webhook.token });
+        const webhookClient = new Discord.WebhookClient(
+            { id: webhookId, token: webhook.token },
+            { rest: { rejectOnRateLimit: () => true } },
+        );
         this.poolManager.webhookClients.set(webhookId, { client: webhookClient, cachedAt: Date.now() });
         return webhookClient;
     }

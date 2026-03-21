@@ -1,11 +1,9 @@
-import Discord, { RESTJSONErrorCodes } from 'discord.js';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
+import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
 import { getEmbed } from '../../../utilities/messages.js';
 import { containsAnsiCodes, toAnsiCodeBlock } from '../../../utilities/utils.js';
 import logger from '../../../utilities/logger.js';
 import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } from './ChatPayloadBuilder.js';
-import { RATE_LIMITER_DURATION, RATE_LIMITER_POINTS } from './ChatConstants.js';
 
 /**
  * @typedef {Object} ChatQueueItem
@@ -63,16 +61,6 @@ export default class ChatQueueProcessor {
     constructor({ resolver, poolManager }) {
         this.resolver = resolver;
         this.poolManager = poolManager;
-
-        /**
-         * Per-webhook rate limiter applied at process time.
-         * @type {RateLimiterMemory}
-         */
-        this.limiter = new RateLimiterMemory({
-            keyPrefix: 'chat-process-webhook',
-            points: RATE_LIMITER_POINTS,
-            duration: RATE_LIMITER_DURATION,
-        });
     }
 
     /**
@@ -111,55 +99,18 @@ export default class ChatQueueProcessor {
     }
 
     /**
-     * Selects a webhook for the given channel context and consumes a rate-limit point.
-     * Tries the preferred webhook first (via selectWebhook), then falls back to other
-     * webhooks in the pool, and finally attempts to scale up if all are rate-limited.
-     * @param {ResolvedChannelContext} ctx - The resolved channel context.
-     * @param {QueueItem['kind']} kind - The payload kind (for console affinity selection).
-     * @returns {Promise<{ webhookId: ?string, retryMs?: number }>}
+     * Dispatches items to the appropriate kind-specific queue processor.
+     * @param {QueueItem['kind']} kind - The payload kind.
+     * @param {Discord.TextChannel} discordChannel - The Discord channel to send to.
+     * @param {Discord.WebhookClient|Discord.Webhook} webhook - The webhook to send messages with.
+     * @param {QueueItem[]} items - The queued items to process.
+     * @param {boolean} batchMode - Whether batch mode is active.
+     * @returns {Promise<import('./ChatDispatchHandler.js').ProcessResult>}
      */
-    async selectRateLimitedWebhook(ctx, kind) {
-        const { chatChannel, server, guild } = ctx;
-
-        const preferredId = await this.poolManager.selectWebhook(chatChannel, server, guild, kind);
-        if(!preferredId) return { webhookId: null };
-
-        // Try preferred webhook first
-        try {
-            await this.limiter.consume(preferredId);
-            return { webhookId: preferredId };
-        }
-        catch(rejected) {
-            logger.debug(`[Socket.io][Chat] Preferred webhook ${preferredId} rate-limited for channel ${chatChannel.id}; retry in ${rejected?.msBeforeNext ?? 250}ms`);
-
-            // Preferred webhook rate-limited — try alternatives in pool
-            let bestRetryMs = rejected?.msBeforeNext ?? 250;
-
-            for(const altId of chatChannel.webhooks) {
-                if(altId === preferredId) continue;
-                try {
-                    await this.limiter.consume(altId);
-                    this.poolManager.webhookLastActive.set(altId, Date.now());
-                    return { webhookId: altId };
-                }
-                catch(altRejected) {
-                    logger.debug(`[Socket.io][Chat] Webhook ${altId} also rate-limited for channel ${chatChannel.id}; retry in ${altRejected?.msBeforeNext ?? 250}ms`);
-                    bestRetryMs = Math.min(bestRetryMs, altRejected?.msBeforeNext ?? 250);
-                }
-            }
-
-            // All webhooks rate-limited — try scaling up
-            const newId = await this.poolManager.tryScaleUp(chatChannel, server, guild);
-            if(newId) {
-                try {
-                    await this.limiter.consume(newId);
-                    return { webhookId: newId };
-                }
-                catch { /* should not happen on a fresh webhook */ }
-            }
-
-            return { webhookId: null, retryMs: bestRetryMs };
-        }
+    _dispatchToProcessor(kind, discordChannel, webhook, items, batchMode) {
+        if(kind === 'chat') return this.processChatQueue(discordChannel, webhook, items, batchMode);
+        if(kind === 'console') return this.processConsoleQueue(discordChannel, webhook, items);
+        return this.processEmbedQueue(discordChannel, webhook, items);
     }
 
     /**
@@ -198,8 +149,8 @@ export default class ChatQueueProcessor {
 
     /**
      * Callback invoked by the dispatch handler to process a batch of queued items.
-     * Selects a webhook and applies per-webhook rate limiting at process time,
-     * then routes to the appropriate processor based on the first item's kind.
+     * Selects a preferred webhook, attempts to send, and falls back to alternative webhooks
+     * in the pool if Discord rejects with a rate limit. Scales up the pool as a last resort.
      * @param {Object} params - The parameters from the dispatch handler.
      * @param {QueueItem[]} params.items - The queued items to process.
      * @param {boolean} params.batchMode - Whether batch mode is active for this destination.
@@ -212,28 +163,57 @@ export default class ChatQueueProcessor {
         const ctx = await this.resolveChannelContext(firstItem);
         if(!ctx) return { consumed: items.length };
 
-        // Select webhook at process time and apply per-webhook rate limiting.
-        // If the preferred webhook is rate-limited, try alternatives in the pool, then scale up.
-        const { webhookId, retryMs } = await this.selectRateLimitedWebhook(ctx, firstItem.kind);
-        if(retryMs) {
-            logger.debug(`[Socket.io][Chat] All webhooks rate limited for channel ${firstItem.channelId}; retry in ${retryMs}ms (items=${items.length}, batchMode=${batchMode})`);
-            return { consumed: 0, retryMs };
-        }
-        if(!webhookId) return { consumed: items.length };
+        const { chatChannel, server, guild, discordChannel } = ctx;
+        const kind = firstItem.kind;
 
-        logger.debug(`[Socket.io][Chat] Processing dispatch queue (kind=${firstItem.kind}, items=${items.length}, batchMode=${batchMode}, webhook=${webhookId})`);
+        // Build ordered candidate list: preferred webhook first, then alternatives
+        const preferredId = await this.poolManager.selectWebhook(chatChannel, server, guild, kind);
+        if(!preferredId) return { consumed: items.length };
 
-        const webhook = await this.resolver.resolve(this.client, ctx.guild, ctx.server, ctx.chatChannel, webhookId);
-        if(!webhook) return { consumed: items.length };
+        const candidates = [preferredId, ...(chatChannel.webhooks ?? []).filter(id => id !== preferredId)];
+        let bestRetryMs = null;
 
-        try {
-            if(firstItem.kind === 'chat') return await this.processChatQueue(ctx.discordChannel, webhook, items, batchMode);
-            if(firstItem.kind === 'console') return await this.processConsoleQueue(ctx.discordChannel, webhook, items);
-            return await this.processEmbedQueue(ctx.discordChannel, webhook, items);
+        for(const webhookId of candidates) {
+            const webhook = await this.resolver.resolve(this.client, guild, server, chatChannel, webhookId);
+            if(!webhook) continue;
+
+            try {
+                logger.debug(`[Socket.io][Chat] Processing dispatch queue (kind=${kind}, items=${items.length}, batchMode=${batchMode}, webhook=${webhookId})`);
+                return await this._dispatchToProcessor(kind, discordChannel, webhook, items, batchMode);
+            }
+            catch(err) {
+                if(err instanceof RateLimitError) {
+                    const retryMs = err.retryAfter ?? 1000;
+                    bestRetryMs = bestRetryMs === null ? retryMs : Math.min(bestRetryMs, retryMs);
+                    logger.debug(`[Socket.io][Chat] Webhook ${webhookId} rate-limited for channel ${chatChannel.id}; retry in ${retryMs}ms`);
+                    continue;
+                }
+                return this.handleWebhookSendError(err, items, webhookId, chatChannel, server, guild, kind);
+            }
         }
-        catch(err) {
-            return this.handleWebhookSendError(err, items, webhookId, ctx.chatChannel, ctx.server, ctx.guild, firstItem.kind);
+
+        // All webhooks rate-limited — try scaling up
+        const newId = await this.poolManager.tryScaleUp(chatChannel, server, guild);
+        if(newId) {
+            const webhook = await this.resolver.resolve(this.client, guild, server, chatChannel, newId);
+            if(webhook) {
+                try {
+                    logger.debug(`[Socket.io][Chat] Processing dispatch queue with scaled-up webhook (kind=${kind}, items=${items.length}, webhook=${newId})`);
+                    return await this._dispatchToProcessor(kind, discordChannel, webhook, items, batchMode);
+                }
+                catch(err) {
+                    if(err instanceof RateLimitError) {
+                        bestRetryMs = Math.min(bestRetryMs ?? Infinity, err.retryAfter ?? 1000);
+                    }
+                    else {
+                        return this.handleWebhookSendError(err, items, newId, chatChannel, server, guild, kind);
+                    }
+                }
+            }
         }
+
+        logger.debug(`[Socket.io][Chat] All webhooks rate-limited for channel ${chatChannel.id}; retry in ${bestRetryMs}ms (items=${items.length}, batchMode=${batchMode})`);
+        return { consumed: 0, retryMs: bestRetryMs ?? 1000 };
     }
 
     /**
@@ -391,6 +371,8 @@ export default class ChatQueueProcessor {
                 return { consumed };
             }
             catch(err) {
+                if(err instanceof RateLimitError) throw err;
+
                 if(err?.code === RESTJSONErrorCodes.UnknownChannel) {
                     const server = discordChannel.client.serverConnections.cache.get(discordChannel.guildId);
                     const chatChannel = server?.chatChannels.find(c => c.id === discordChannel.id);

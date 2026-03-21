@@ -277,10 +277,10 @@ export default class WebhookPoolManager {
         if(!channelConfig.webhooks) channelConfig.webhooks = [];
         channelConfig.webhooks.push(webhook.id);
         this.webhookClients.set(webhook.id, {
-            client: new Discord.WebhookClient({
-                id: webhook.id,
-                token: webhook.token,
-            }), cachedAt: Date.now(),
+            client: new Discord.WebhookClient(
+                { id: webhook.id, token: webhook.token },
+                { rest: { rejectOnRateLimit: () => true } },
+            ), cachedAt: Date.now(),
         });
 
         const regChannel = await server.protocol.addChatChannel({
