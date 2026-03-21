@@ -57,10 +57,12 @@ export default class ChatQueueProcessor {
      * @param {Object} options
      * @param {WebhookResolver} options.resolver
      * @param {WebhookPoolManager} options.poolManager
+     * @param {import('./ChatMonitor.js').default} options.monitor
      */
-    constructor({ resolver, poolManager }) {
+    constructor({ resolver, poolManager, monitor }) {
         this.resolver = resolver;
         this.poolManager = poolManager;
+        this.monitor = monitor;
     }
 
     /**
@@ -82,17 +84,19 @@ export default class ChatQueueProcessor {
         const server = this.client.serverConnections.cache.get(serverId);
         if(!server) return null;
 
-        const guild = await this.client.guilds.fetch(guildId).catch(() => null);
+        const guild = await this.monitor.track('guilds.fetch', () => this.client.guilds.fetch(guildId).catch(() => null));
         if(!guild) return null;
 
         const chatChannel = server.chatChannels.find(c => c.id === channelId);
         if(!chatChannel || !chatChannel.id) return null;
 
-        const discordChannel = await guild.channels.fetch(channelId)
-            .catch(async err => {
-                if(err?.code === RESTJSONErrorCodes.UnknownChannel) await this.poolManager.removeChatChannel(server, chatChannel);
-                return null;
-            });
+        const discordChannel = await this.monitor.track('channels.fetch', () =>
+            guild.channels.fetch(channelId)
+                .catch(async err => {
+                    if(err?.code === RESTJSONErrorCodes.UnknownChannel) await this.poolManager.removeChatChannel(server, chatChannel);
+                    return null;
+                }),
+        );
         if(!discordChannel) return null;
 
         return { server, guild, chatChannel, discordChannel };
@@ -167,19 +171,21 @@ export default class ChatQueueProcessor {
         const kind = firstItem.kind;
 
         // Build ordered candidate list: preferred webhook first, then alternatives
-        const preferredId = await this.poolManager.selectWebhook(chatChannel, server, guild, kind);
+        const preferredId = await this.monitor.track('selectWebhook', () => this.poolManager.selectWebhook(chatChannel, server, guild, kind));
         if(!preferredId) return { consumed: items.length };
 
         const candidates = [preferredId, ...(chatChannel.webhooks ?? []).filter(id => id !== preferredId)];
         let bestRetryMs = null;
 
         for(const webhookId of candidates) {
-            const webhook = await this.resolver.resolve(this.client, guild, server, chatChannel, webhookId);
+            const webhook = await this.monitor.track('resolve', () => this.resolver.resolve(this.client, guild, server, chatChannel, webhookId));
             if(!webhook) continue;
 
             try {
                 logger.debug(`[Socket.io][Chat] Processing dispatch queue (kind=${kind}, items=${items.length}, batchMode=${batchMode}, webhook=${webhookId})`);
-                return await this._dispatchToProcessor(kind, discordChannel, webhook, items, batchMode);
+                const result = await this._dispatchToProcessor(kind, discordChannel, webhook, items, batchMode);
+                this.monitor.recordProcessed(result.consumed);
+                return result;
             }
             catch(err) {
                 if(err instanceof RateLimitError) {
@@ -193,13 +199,15 @@ export default class ChatQueueProcessor {
         }
 
         // All webhooks rate-limited — try scaling up
-        const newId = await this.poolManager.tryScaleUp(chatChannel, server, guild);
+        const newId = await this.monitor.track('tryScaleUp', () => this.poolManager.tryScaleUp(chatChannel, server, guild));
         if(newId) {
-            const webhook = await this.resolver.resolve(this.client, guild, server, chatChannel, newId);
+            const webhook = await this.monitor.track('resolve', () => this.resolver.resolve(this.client, guild, server, chatChannel, newId));
             if(webhook) {
                 try {
                     logger.debug(`[Socket.io][Chat] Processing dispatch queue with scaled-up webhook (kind=${kind}, items=${items.length}, webhook=${newId})`);
-                    return await this._dispatchToProcessor(kind, discordChannel, webhook, items, batchMode);
+                    const result = await this._dispatchToProcessor(kind, discordChannel, webhook, items, batchMode);
+                    this.monitor.recordProcessed(result.consumed);
+                    return result;
                 }
                 catch(err) {
                     if(err instanceof RateLimitError) {
@@ -256,13 +264,11 @@ export default class ChatQueueProcessor {
             if(payload.consumed <= 0) return { consumed: 1 };
 
             logger.debug(`[Socket.io][Chat] Sending batched chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
-            const start = Date.now();
-            await webhook.send({
+            await this.monitor.track('webhook.send', () => webhook.send({
                 content: payload.content,
                 ...getSystemWebhookSendOptions(discordChannel),
                 allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-            });
-            logger.debug(`[Socket.io][Chat] Finished sending batched chat payload to channel ${channelId} (time=${Date.now() - start}ms)`);
+            }));
 
             return { consumed: payload.consumed, batchMode: items.length - payload.consumed > 2 };
         }
@@ -271,15 +277,13 @@ export default class ChatQueueProcessor {
             if(payload.consumed <= 0) return { consumed: 1 };
 
             logger.debug(`[Socket.io][Chat] Sending chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
-            const start = Date.now();
-            await webhook.send({
+            await this.monitor.track('webhook.send', () => webhook.send({
                 content: payload.content,
                 username: payload.username,
                 avatarURL: payload.avatarURL,
                 ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                 allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
-            });
-            logger.debug(`[Socket.io][Chat] Finished sending chat payload to channel ${channelId} (time=${Date.now() - start}ms)`);
+            }));
 
             return { consumed: payload.consumed, batchMode: false };
         }
@@ -308,12 +312,10 @@ export default class ChatQueueProcessor {
         if(consumed <= 0) return { consumed: 1 };
 
         logger.debug(`[Socket.io][Chat] Sending embed payload to channel ${channelId} (consumed=${consumed}, embeds=${embeds.length})`);
-        const start = Date.now();
-        await webhook.send({
+        await this.monitor.track('webhook.send', () => webhook.send({
             embeds,
             ...getSystemWebhookSendOptions(discordChannel),
-        });
-        logger.debug(`[Socket.io][Chat] Finished sending embed payload to channel ${channelId} (time=${Date.now() - start}ms)`);
+        }));
         return { consumed };
     }
 
@@ -356,12 +358,10 @@ export default class ChatQueueProcessor {
             try {
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
                 logger.debug(`[Socket.io][Chat] Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
-                const start = Date.now();
-                await webhook.editMessage(lastMessage.id, {
+                await this.monitor.track('webhook.editMessage', () => webhook.editMessage(lastMessage.id, {
                     content: toAnsiCodeBlock(nextRaw),
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
-                });
-                logger.debug(`[Socket.io][Chat] Finished appending console payload to previous message in channel ${discordChannel.id} (time=${Date.now() - start}ms)`);
+                }));
                 this.lastConsoleMessages.set(discordChannel.id, {
                     id: lastMessage.id,
                     raw: nextRaw,
@@ -388,12 +388,10 @@ export default class ChatQueueProcessor {
         }
 
         logger.debug(`[Socket.io][Chat] Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
-        const start = Date.now();
-        let sentMessage = await webhook.send({
+        let sentMessage = await this.monitor.track('webhook.send', () => webhook.send({
             content: toAnsiCodeBlock(combinedRaw),
             ...getSystemWebhookSendOptions(discordChannel),
-        });
-        logger.debug(`[Socket.io][Chat] Finished sending console payload to channel ${discordChannel.id} (time=${Date.now() - start}ms)`);
+        }));
 
         this.lastConsoleMessages.set(discordChannel.id, {
             id: sentMessage.id,
