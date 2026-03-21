@@ -113,9 +113,16 @@ export default class MCLinker extends Discord.Client {
             allowedMentions: { parse: ['users', 'roles'] },
             presence: config.presence,
             rest: {
-                // Reject rate limits on channel name changes (PATCH /channels/:id) instead of silently queuing.
-                // This allows us to catch the error and schedule a deferred re-sync with fresh data.
-                rejectOnRateLimit: data => data.method === 'PATCH' && data.route === '/channels/:id',
+                // Reject rate limits instead of silently queuing, so callers can handle them
+                // (e.g. retry with a different webhook, schedule a deferred re-sync).
+                rejectOnRateLimit: data => {
+                    // Channel name changes (stat channels)
+                    if(data.method === 'PATCH' && data.route === '/channels/:id') return true;
+                    // Webhook sends (POST) and message edits (PATCH) for chat channels
+                    if(data.method === 'POST' && data.route === '/webhooks/:id/:token') return true;
+                    if(data.method === 'PATCH' && data.route === '/webhooks/:id/:token/messages/:id') return true;
+                    return false;
+                },
             },
         });
 
