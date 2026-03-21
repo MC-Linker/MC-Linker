@@ -9,6 +9,7 @@ export const IDLE_WEBHOOK_PRUNE_COOLDOWN_MS = 60_000;
 export const PRUNE_CHECK_INTERVAL_MS = 30_000;
 export const WEBHOOK_TOKEN_REFRESH_TTL_MS = 14 * 60_000;
 export const CONSOLE_AFFINITY_HEADROOM = 150;
+export const CREATION_FAILURE_COOLDOWN_MS = 5 * 60_000;
 
 /**
  * Returns the default webhook identity used for chat-channel webhook messages.
