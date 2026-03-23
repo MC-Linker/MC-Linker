@@ -62,7 +62,7 @@ export default class ServerInfo extends Command {
             plugins = plugins?.status === 'success' ? plugins.data.filter(file => !file.isDirectory && file.name.endsWith('.jar')).map(plugin => plugin.name.replace('.jar', '')) : [];
             mods = mods?.status === 'success' ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
 
-            datapacks = datObject.Data.DataPacks.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').toTitleCase(true)) ?? [];
+            datapacks = datObject.Data.DataPacks?.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').toTitleCase(true)) ?? [];
 
             //Reduce plugins, mods and datapacks array so that it doesn't exceed max embed field value length
             for(const array of [plugins, mods, datapacks]) {
@@ -163,7 +163,7 @@ export default class ServerInfo extends Command {
             max_players: propertiesObject['max-players'],
             online_players: onlinePlayers,
             ip: serverIp,
-            version: datObject.Data.Version.Name,
+            version: datObject.Data.Version?.Name ?? keys.commands.serverinfo.unknown,
         });
         if(isCached) setCachedFooter(generalEmbed);
 
@@ -190,7 +190,7 @@ export default class ServerInfo extends Command {
         if(isAdmin) {
             const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
                 enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
-                seed: datObject.Data.WorldGenSettings.seed,
+                seed: datObject.Data.WorldGenSettings?.seed ?? keys.commands.serverinfo.unknown,
             });
             const newFields = [];
             if(plugins.length > 0) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[0], { plugins: plugins.join('\n') }));

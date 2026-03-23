@@ -251,6 +251,7 @@ export default class MCLinkerAPI extends EventEmitter {
             server.protocol.updateSocket(socket);
 
             this.addWebsocketListeners(socket, server, hash);
+
             // Disconnect the old socket after the new one is set up so its disconnect
             // event sees the replacement and skips the "server disconnected" logic
             if(oldSocket && oldSocket !== socket) oldSocket.disconnect(true);
