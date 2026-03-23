@@ -163,7 +163,7 @@ export default class ServerInfo extends Command {
             max_players: propertiesObject['max-players'],
             online_players: onlinePlayers,
             ip: serverIp,
-            version: datObject.Data.Version?.Name ?? keys.commands.serverinfo.unknown,
+            version: datObject.Data.Version?.Name ?? `1.${server.version}`,
         });
         if(isCached) setCachedFooter(generalEmbed);
 
