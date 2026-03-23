@@ -351,6 +351,9 @@ export default class MCLinker extends Discord.Client {
         logger.info(`Loaded all buttons.`);
         await this._loadEvents();
         logger.info(`Loaded all events.`);
+
+        await this.api.loadHandlers();
+        logger.info(`Loaded all API handlers.`);
     }
 
     async loadMongoose() {

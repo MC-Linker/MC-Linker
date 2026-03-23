@@ -5,6 +5,7 @@ export default class VerifyUser extends WSEvent {
     constructor() {
         super({
             event: 'verify-user',
+            dispatchToGuildShard: false,
         });
     }
 

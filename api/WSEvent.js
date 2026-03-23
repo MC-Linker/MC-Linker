@@ -7,6 +7,7 @@ export default class WSEvent {
      * @typedef {object} WSEventOptions
      * @property {string} event - The websocket event of this route.
      * @property {import('rate-limiter-flexible').RateLimiterMemory|((data: Object) => ?RateLimiterMemory)} rateLimiter - The rate limiter for this event or a function that returns a rate limiter based on the request data.
+     * @property {boolean} [dispatchToGuildShard=true] - Whether this event should be dispatched to the shard owning the guild. Set to false for events that must run on shard 0 (e.g. VerifyUser).
      */
 
     /**
@@ -24,6 +25,12 @@ export default class WSEvent {
          * @type {import('rate-limiter-flexible').RateLimiterMemory|((data: Object) => ?RateLimiterMemory)}
          */
         this.rateLimiter = options.rateLimiter ?? null;
+
+        /**
+         * Whether this event should be dispatched to the shard owning the guild.
+         * @type {boolean}
+         */
+        this.dispatchToGuildShard = options.dispatchToGuildShard ?? true;
     }
 
     /**

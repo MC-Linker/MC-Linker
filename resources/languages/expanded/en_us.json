@@ -2279,7 +2279,7 @@
                     "embeds": [
                         {
                             "title": "Luckperms Not Loaded",
-                            "description": "Please install luckperms or sync to a team instead."
+                            "description": "Please install LuckPerms or a vault-supported permissions plugin, or sync to a team instead."
                         }
                     ],
                     "console": "Luckperms not loaded"
@@ -3850,8 +3850,8 @@
             "name": "rolesync",
             "type": "ChatInput",
             "default_member_permissions": ["Administrator"],
-            "long_description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
-            "description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
+            "long_description": "Manage roles that will sync their members to a Minecraft team, LuckPerms group, or vault-supported group.",
+            "description": "Manage roles that will sync their members to a Minecraft team or group (LuckPerms/Vault).",
             "contexts": ["Guild"],
             "options": [
                 {
@@ -3868,7 +3868,7 @@
                         {
                             "type": "String",
                             "name": "group_or_team",
-                            "description": "Set the Minecraft team or Luckperms group you want to sync to.",
+                            "description": "Set the Minecraft team, LuckPerms group, or vault-supported group you want to sync to.",
                             "autocomplete": true,
                             "required": true
                         },
