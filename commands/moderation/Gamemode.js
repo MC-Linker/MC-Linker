@@ -24,7 +24,7 @@ export default class Gamemode extends Command {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
-        return interaction.replyTl(keys.commands.gamemode.success, {
+        return interaction.editReplyTl(keys.commands.gamemode.success, {
             username: user.username,
             gamemode: gamemode.toTitleCase(),
             warning,

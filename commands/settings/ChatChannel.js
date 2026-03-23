@@ -68,7 +68,7 @@ export default class ChatChannel extends AutocompleteCommand {
             const selectedValue = args.slice(2).join(' ').trim();
             const resolvedValue = this.resolveAutocompleteValue(selectedValue, interaction);
             if(resolvedValue === null) {
-                return interaction.replyTl(keys.commands.chatchannel.filter_commands.warnings.autocomplete_selection_expired);
+                return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.warnings.autocomplete_selection_expired);
             }
 
             const commandName = resolvedValue.toLowerCase();
@@ -76,7 +76,7 @@ export default class ChatChannel extends AutocompleteCommand {
 
             if(subcommand === 'add') {
                 await settings.addFilteredCommand(commandName);
-                return interaction.replyTl(keys.commands.chatchannel.filter_commands.success.disabled, {
+                return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.success.disabled, {
                     type: CHAT_COMMANDS_LABEL,
                     disable: commandName,
                 });
@@ -85,14 +85,14 @@ export default class ChatChannel extends AutocompleteCommand {
                 const hasExactFilter = settings.filteredCommands
                     .some(command => command.replace(/^\//, '').trim().toLowerCase() === commandName);
                 if(!hasExactFilter) {
-                    return interaction.replyTl(keys.commands.chatchannel.filter_commands.warnings.already_enabled, {
+                    return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.warnings.already_enabled, {
                         type: CHAT_COMMANDS_LABEL,
                         enable: commandName,
                     });
                 }
 
                 await settings.removeFilteredCommand(commandName);
-                return interaction.replyTl(keys.commands.chatchannel.filter_commands.success.enabled, {
+                return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.success.enabled, {
                     type: CHAT_COMMANDS_LABEL,
                     enable: commandName,
                 });
@@ -105,9 +105,9 @@ export default class ChatChannel extends AutocompleteCommand {
             const channel = args[1];
             const allowDiscordToMinecraft = args[2] ?? true;
 
-            if(!canSendMessages(interaction.guild.members.me, channel)) return interaction.replyTl(keys.api.utils.errors.not_sendable);
+            if(!canSendMessages(interaction.guild.members.me, channel)) return interaction.editReplyTl(keys.api.utils.errors.not_sendable);
 
-            const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
+            const logChooserMsg = await interaction.editReplyTl(keys.commands.chatchannel.step.choose);
             let menu;
             try {
                 menu = await logChooserMsg.awaitMessageComponent({
@@ -117,12 +117,12 @@ export default class ChatChannel extends AutocompleteCommand {
                 });
             }
             catch(_) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
+                return interaction.editReplyTl(keys.commands.chatchannel.warnings.not_collected);
             }
 
             //Create webhook for channel (all chat channels use webhooks for separate rate limit bucket)
             if(!channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageWebhooks))
-                return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
+                return interaction.editReplyTl(keys.api.plugin.errors.no_webhook_permission);
 
             let webhook;
             try {
@@ -131,7 +131,7 @@ export default class ChatChannel extends AutocompleteCommand {
                 else webhook = await channel.createWebhook(options);
             }
             catch(_) {
-                return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook);
+                return interaction.editReplyTl(keys.commands.chatchannel.errors.could_not_create_webhook);
             }
 
             const resp = await server.protocol.addChatChannel({
@@ -145,22 +145,22 @@ export default class ChatChannel extends AutocompleteCommand {
 
             await server.edit({ chatChannels: resp.data });
 
-            return interaction.replyTl(keys.commands.chatchannel.success.add);
+            return interaction.editReplyTl(keys.commands.chatchannel.success.add);
         }
         else if(subcommand === 'remove') {
             const channel = args[1];
 
             const chatChannel = server.chatChannels.find(c => c.id === channel.id);
-            if(!chatChannel) return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
+            if(!chatChannel) return interaction.editReplyTl(keys.commands.chatchannel.warnings.channel_not_added);
 
             const resp = await server.protocol.removeChatChannel(chatChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
             await server.edit({ chatChannels: resp.data });
-            return interaction.replyTl(keys.commands.chatchannel.success.remove);
+            return interaction.editReplyTl(keys.commands.chatchannel.success.remove);
         }
         else if(subcommand === 'list') {
-            if(!server.chatChannels?.length) return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
+            if(!server.chatChannels?.length) return interaction.editReplyTl(keys.commands.chatchannel.warnings.no_channels);
 
             /** @type {PaginationPages} */
             const pages = {};

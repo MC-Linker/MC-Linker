@@ -27,11 +27,11 @@ export default class Account extends Command {
 
         const subcommand = args[0];
         if(subcommand === 'connect') {
-            if(!server) return interaction.replyTl(keys.api.command.errors.server_not_connected);
+            if(!server) return interaction.editReplyTl(keys.api.command.errors.server_not_connected);
 
             const usernameOrUUID = args[1];
             if(usernameOrUUID.match(Discord.MessageMentions.UsersPattern)) {
-                return interaction.replyTl(keys.commands.account.warnings.mention);
+                return interaction.editReplyTl(keys.commands.account.warnings.mention);
             }
 
             let uuid;
@@ -44,20 +44,20 @@ export default class Account extends Command {
                 uuid = server.online ? await utils.fetchUUID(usernameOrUUID) : utils.createUUIDv3(usernameOrUUID);
                 username = usernameOrUUID;
             }
-            if(!uuid || !username) return await interaction.replyTl(keys.commands.account.errors.could_not_fetch_uuid, { user: usernameOrUUID });
+            if(!uuid || !username) return await interaction.editReplyTl(keys.commands.account.errors.could_not_fetch_uuid, { user: usernameOrUUID });
 
             const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
 
             const verifyResponse = await server.protocol.verifyUser(code, uuid);
             if(!await utils.handleProtocolResponse(verifyResponse, server.protocol, interaction)) return;
 
-            await interaction.replyTl(keys.commands.account.step.verification_info, {
+            await interaction.editReplyTl(keys.commands.account.step.verification_info, {
                 code,
                 ip: server.displayIp,
             });
 
             const timeout = setTimeout(async () => {
-                await interaction.replyTl(keys.commands.account.warnings.verification_timeout);
+                await interaction.editReplyTl(keys.commands.account.warnings.verification_timeout);
             }, 180_000);
 
             this.pendingInteractions.set(interaction.user.id, {
@@ -91,7 +91,7 @@ export default class Account extends Command {
                         const connection = c.userConnections.cache.get(id);
                         await c.serverConnections.cache.get(serverId).syncRolesOfMember(interaction.member, connection);
                         clearTimeout(timeout); // Works because event is called on same shard
-                        await interaction.replyTl(c.keys.commands.account.success.verified);
+                        await interaction.editReplyTl(c.keys.commands.account.success.verified);
                     }, {
                         context: { id: userId, serverId },
                         shard,
@@ -115,7 +115,7 @@ export default class Account extends Command {
         else if(subcommand === 'disconnect') {
             const connection = client.userConnections.cache.get(interaction.user.id);
             if(!connection) {
-                return interaction.replyTl(keys.commands.account.warnings.not_connected);
+                return interaction.editReplyTl(keys.commands.account.warnings.not_connected);
             }
 
             const settings = await client.userSettingsConnections.cache.get(interaction.user.id);
@@ -126,7 +126,7 @@ export default class Account extends Command {
             await client.userConnections.disconnect(interaction.user.id);
 
             if(server.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
-            await interaction.replyTl(keys.commands.account.success.disconnect);
+            await interaction.editReplyTl(keys.commands.account.success.disconnect);
         }
     }
 }

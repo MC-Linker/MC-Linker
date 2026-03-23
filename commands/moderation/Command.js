@@ -22,7 +22,7 @@ export default class Command extends AutocompleteCommand {
 
         const selectedValue = args.join(' ').trim();
         const commandInput = this.resolveAutocompleteValue(selectedValue, interaction);
-        if(commandInput === null) return interaction.replyTl(keys.commands.command.warnings.autocomplete_selection_expired);
+        if(commandInput === null) return interaction.editReplyTl(keys.commands.command.warnings.autocomplete_selection_expired);
 
         let command = this.replaceMentionsWithUsernames(commandInput, interaction, client);
         if(command === null) return;
@@ -35,7 +35,7 @@ export default class Command extends AutocompleteCommand {
         let respMessage = resp.status === 'success' ? resp.data.message : keys.api.plugin.warnings.no_response_message;
         respMessage = codeBlockFromCommandResponse(respMessage);
 
-        return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
+        return interaction.editReplyTl(keys.commands.command.success, { 'response': respMessage });
     }
 
     replaceMentionsWithUsernames(commandInput, interaction, client) {

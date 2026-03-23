@@ -26,7 +26,7 @@ export default class StatChannel extends Command {
             /** @type {GuildChannel} */
             const channel = args[2];
             if(!channel.manageable) {
-                return interaction.replyTl(keys.commands.statchannel.errors.not_manageable);
+                return interaction.editReplyTl(keys.commands.statchannel.errors.not_manageable);
             }
 
             /** @type {StatsChannelData} */
@@ -63,7 +63,7 @@ export default class StatChannel extends Command {
                 }
             }
 
-            await interaction.replyTl(keys.commands.statchannel.success.add);
+            await interaction.editReplyTl(keys.commands.statchannel.success.add);
         }
         else if(subcommand === 'remove') {
             const channel = args[1];
@@ -71,7 +71,7 @@ export default class StatChannel extends Command {
             const statChannels = server.statChannels;
             const index = statChannels.findIndex(c => c.id === channel.id);
             if(index === -1) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
+                return interaction.editReplyTl(keys.commands.chatchannel.warnings.channel_not_added);
             }
 
             const response = await server.protocol.removeStatsChannel(statChannels[index]);
@@ -80,7 +80,7 @@ export default class StatChannel extends Command {
             statChannels.splice(index, 1);
             await server.edit({ statChannels: statChannels });
 
-            await interaction.replyTl(keys.commands.statchannel.success.remove);
+            await interaction.editReplyTl(keys.commands.statchannel.success.remove);
         }
         else if(subcommand === 'list') {
             const type = args[1];
@@ -89,7 +89,7 @@ export default class StatChannel extends Command {
             if(type && statChannels) statChannels = statChannels.filter(c => c.type === type);
 
             if(!statChannels?.length) {
-                await interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
+                await interaction.editReplyTl(keys.commands.chatchannel.warnings.no_channels);
                 return;
             }
 
