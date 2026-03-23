@@ -1,7 +1,6 @@
 import { AutocompleteInteraction, CommandInteraction } from 'discord.js';
 import { MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../utilities/utils.js';
-import keys from '../utilities/keys.js';
-import { ph } from '../utilities/messages.js';
+import logger from '../utilities/logger.js';
 import Command from './Command.js';
 
 export default class AutocompleteCommand extends Command {
@@ -43,14 +42,14 @@ export default class AutocompleteCommand extends Command {
         const server = client.serverConnections.cache.get(interaction.guildId);
         if(!server) {
             return interaction.respond([])
-                .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
+                .catch(err => logger.error(err, 'Could not respond to autocomplete'));
         }
 
         let focused = interaction.options.getFocused();
         focused = this.resolveAutocompleteValue(focused, interaction);
         if(focused == null) {
             return interaction.respond([])
-                .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
+                .catch(err => logger.error(err, 'Could not respond to autocomplete'));
         }
 
         const userConnection = client.userConnections.cache.get(interaction.user.id);
@@ -58,14 +57,14 @@ export default class AutocompleteCommand extends Command {
 
         if(response?.status !== 'success') {
             return interaction.respond([])
-                .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
+                .catch(err => logger.error(err, 'Could not respond to autocomplete'));
         }
 
         const respondArray = this.normalizeCompletions(response.data, focused, interaction);
         if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = MaxAutoCompleteChoices;
 
         return interaction.respond(respondArray)
-            .catch(err => interaction.replyTl(keys.main.errors.could_not_autocomplete_command, ph.error(err)));
+            .catch(err => logger.error(err, 'Could not respond to autocomplete'));
     }
 
     resolveAutocompleteValue(value, interaction) {

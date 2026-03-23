@@ -1,7 +1,22 @@
-import { InteractionReplyOptions, Message, MessagePayload, MessageReplyOptions } from 'discord.js';
+import {
+    APIModalInteractionResponseCallbackData,
+    InteractionEditReplyOptions,
+    InteractionReplyOptions,
+    InteractionUpdateOptions,
+    Message,
+    MessageCreateOptions,
+} from 'discord.js';
 
 export interface TranslatedResponses {
-    replyTl(key: string, ...placeholders: Object[]): Promise<Message>,
+    replyTl(key: InteractionReplyOptions, ...placeholders: Object[]): Promise<Message | null>,
 
-    replyOptions(options: string | MessagePayload | InteractionReplyOptions | MessageReplyOptions): Promise<Message>,
+    editReplyTl(key: InteractionEditReplyOptions, ...placeholders: Object[]): Promise<Message | null>,
+
+    followUpTl(key: InteractionReplyOptions, ...placeholders: Object[]): Promise<Message | null>,
+
+    updateTl(key: InteractionUpdateOptions, ...placeholders: Object[]): Promise<Message | null>,
+
+    sendTl(key: MessageCreateOptions, ...placeholders: Object[]): Promise<Message | null>,
+
+    showModalTl(key: APIModalInteractionResponseCallbackData, ...placeholders: Object[]): Promise<void>,
 }

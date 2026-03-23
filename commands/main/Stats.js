@@ -52,10 +52,10 @@ export default class Stats extends Command {
         try {
             const statData = JSON.parse(statFile.data.toString());
             stats = statData.stats[`minecraft:${category}`];
-            if(!stats) return interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
+            if(!stats) return interaction.editReplyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
         catch(err) {
-            await interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
+            await interaction.editReplyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
 
         if(sorting === 'descending')

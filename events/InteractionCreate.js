@@ -33,7 +33,7 @@ export default class InteractionCreate extends Event {
             }
             catch(err) {
                 logger.error(err, `Could not execute command ${interaction.commandName}`);
-                await interaction.replyTl(keys.main.errors.could_not_execute_command);
+                await interaction.editReplyTl(keys.main.errors.could_not_execute_command);
             }
         }
         else if(interaction.isAutocomplete()) {
@@ -56,7 +56,7 @@ export default class InteractionCreate extends Event {
             }
             catch(err) {
                 logger.error(err, `Could not execute component ${interaction.customId}`);
-                await interaction.replyTl(keys.main.errors.could_not_execute_button);
+                await interaction.editReplyTl(keys.main.errors.could_not_execute_button);
             }
         }
     }

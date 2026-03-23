@@ -79,21 +79,21 @@ export default class Component {
             const memberPerms = interaction.member.permissionsIn(interaction.channel);
             if(!memberPerms.has(this.permissions)) {
                 const missingPermission = this.permissions.toArray().find(perm => !memberPerms.has(perm));
-                await interaction.replyTl(keys.api.component.no_access.no_permission, { permission: missingPermission });
+                await interaction.editReplyTl(keys.api.component.no_access.no_permission, { permission: missingPermission });
                 return false;
             }
         }
 
         if(this.author) {
             if(this.author.id !== interaction.user.id) {
-                await interaction.replyTl(keys.api.component.no_access.no_author);
+                await interaction.editReplyTl(keys.api.component.no_access.no_author);
                 return false;
             }
         }
 
         if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
             if(process.env.NODE_ENV === 'production' && (await client.application.fetchSKUs()).size) {
-                await interaction.replyTl(keys.custom_bot.warnings.no_entitlement);
+                await interaction.editReplyTl(keys.custom_bot.warnings.no_entitlement);
                 return false;
             }
         }

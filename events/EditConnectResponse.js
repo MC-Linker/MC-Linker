@@ -22,8 +22,8 @@ export default class EditConnectResponse extends Event {
         clearTimeout(timeout); // Works because event is called on same shard
 
         if(responseType === 'success')
-            await interaction.replyTl(keys.commands.connect.success.websocket, placeholders);
+            await interaction.editReplyTl(keys.commands.connect.success.websocket, placeholders);
         else if(responseType === 'error')
-            await interaction.replyTl(keys.commands.connect.errors.websocket_error, placeholders);
+            await interaction.editReplyTl(keys.commands.connect.errors.websocket_error, placeholders);
     }
 }
