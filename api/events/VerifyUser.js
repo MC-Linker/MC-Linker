@@ -1,4 +1,5 @@
 import WSEvent from '../WSEvent.js';
+import { fetchUUID } from '../../utilities/utils.js';
 
 export default class VerifyUser extends WSEvent {
 
@@ -24,7 +25,8 @@ export default class VerifyUser extends WSEvent {
      * @returns {void}
      */
     async execute(data, server, client) {
-        client.api.usersAwaitingVerification.set(data.code, { uuid: data.uuid, username: data.username });
+        const onlineUUID = server.online ? data.uuid : await fetchUUID(data.username);
+        client.api.usersAwaitingVerification.set(data.code, { uuid: onlineUUID, username: data.username });
         setTimeout(() => client.api.usersAwaitingVerification.delete(data.code), 180_000);
     }
 }

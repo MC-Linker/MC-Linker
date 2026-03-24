@@ -130,8 +130,8 @@ export default class ChatChannel extends AutocompleteCommand {
                 if(channel.isThread()) webhook = await channel.parent.createWebhook(options);
                 else webhook = await channel.createWebhook(options);
             }
-            catch(_) {
-                return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook);
+            catch(err) {
+                return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook, ph.error(err));
             }
 
             const resp = await server.protocol.addChatChannel({

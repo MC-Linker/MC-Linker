@@ -1923,7 +1923,7 @@
                             "description": "Could not create a webhook in this channel. This is most likely due to the bot not having `Manage Webhooks` permission or there being 15 webhooks already in this channel."
                         }
                     ],
-                    "console": "Could not create webhook",
+                    "console": "Could not create webhook: %error_stack%",
                     "components": []
                 }
             },
