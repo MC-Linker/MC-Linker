@@ -1923,7 +1923,7 @@
                             "description": "Could not create a webhook in this channel. This is most likely due to the bot not having `Manage Webhooks` permission or there being 15 webhooks already in this channel."
                         }
                     ],
-                    "console": "Could not create webhook",
+                    "console": "Could not create webhook: %error_stack%",
                     "components": []
                 }
             },
@@ -2279,7 +2279,7 @@
                     "embeds": [
                         {
                             "title": "Luckperms Not Loaded",
-                            "description": "Please install luckperms or sync to a team instead."
+                            "description": "Please install LuckPerms or a vault-supported permissions plugin, or sync to a team instead."
                         }
                     ],
                     "console": "Luckperms not loaded"
@@ -2425,7 +2425,16 @@
                         }
                     ]
                 },
-                "cached_result": "☑ Cached Result"
+                "could_not_sync_webhooks": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Sync Webhook",
+                            "description": "The chatchannel webhooks changed and could not be synced with the plugin."
+                        }
+                    ],
+                    "console": "Could not re-add webhook"
+                },
+                "cached_result": "⚠ Cached Result"
             },
             "errors": {
                 "no_response": {
@@ -2455,15 +2464,6 @@
                         }
                     ],
                     "console": "No webhook permission"
-                },
-                "could_not_sync_webhooks": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Sync Webhook",
-                            "description": "The chatchannel webhooks changed and could not be synced with the plugin."
-                        }
-                    ],
-                    "console": "Could not re-add webhook"
                 },
                 "status_400": {
                     "embeds": [
@@ -3850,8 +3850,8 @@
             "name": "rolesync",
             "type": "ChatInput",
             "default_member_permissions": ["Administrator"],
-            "long_description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
-            "description": "Manage roles that will sync their members to a Minecraft team or luckperms group.",
+            "long_description": "Manage roles that will sync their members to a Minecraft team, LuckPerms group, or vault-supported group.",
+            "description": "Manage roles that will sync their members to a Minecraft team or group (LuckPerms/Vault).",
             "contexts": ["Guild"],
             "options": [
                 {
@@ -3868,7 +3868,7 @@
                         {
                             "type": "String",
                             "name": "group_or_team",
-                            "description": "Set the Minecraft team or Luckperms group you want to sync to.",
+                            "description": "Set the Minecraft team, LuckPerms group, or vault-supported group you want to sync to.",
                             "autocomplete": true,
                             "required": true
                         },

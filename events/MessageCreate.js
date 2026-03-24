@@ -1,6 +1,7 @@
 import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
+import { evalOnGuildShard } from '../utilities/shardingUtils.js';
 import keys from '../utilities/keys.js';
 import { Events, MessageType } from 'discord.js';
 import logger from '../utilities/logger.js';
@@ -29,9 +30,15 @@ export default class MessageCreate extends Event {
                 await Promise.allSettled(client.serverConnections.cache.map(async conn => {
                     if(!conn.syncedRoles?.length) return;
                     try {
-                        const guild = await client.guilds.fetch(conn.id);
-                        const member = await guild.members.fetch(message.author.id);
-                        await conn.syncRolesOfMember(member, userConnection);
+                        await evalOnGuildShard(client, conn.id, async (c, { serverId, userId, userConnId }) => {
+                            const server = c.serverConnections.cache.get(serverId);
+                            if(!server) return;
+                            const guild = await c.guilds.fetch(serverId);
+                            const member = await guild.members.fetch(userId);
+                            const userConn = c.userConnections.cache.get(userConnId);
+                            if(!userConn) return;
+                            await server.syncRolesOfMember(member, userConn);
+                        }, { serverId: conn.id, userId: message.author.id, userConnId: userConnection.id });
                     }
                     catch(err) {
                         logger.debug(`Skipping role sync for server ${conn.id} of ${username}: ${err.message}`);
@@ -62,11 +69,11 @@ export default class MessageCreate extends Event {
 
             logger.debug({
                 content,
-                author: message.member?.displayName ?? message.author.username,
+                author: message.member?.displayName ?? message.author.displayName,
                 channel: message.channel.name,
                 guild: message.guild.name,
             }, 'Relaying chat message to Minecraft server');
-            void server.protocol.chat(content, message.member?.displayName ?? message.author.username, repliedContent, repliedMessage?.member?.displayName ?? repliedMessage?.author.username);
+            void server.protocol.chat(content, message.member?.displayName ?? message.author.displayName, repliedContent, repliedMessage?.member.displayName ?? repliedMessage?.author.displayName);
         }
 
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
