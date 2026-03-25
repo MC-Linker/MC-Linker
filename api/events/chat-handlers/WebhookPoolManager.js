@@ -386,7 +386,7 @@ export default class WebhookPoolManager {
             channelConfig.webhooks.pop();
             this.evictWebhookClient(webhook.id);
             await webhook.delete().catch(() => {});
-            await errorChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_sync_webhooks)] }).catch(() => {});
+            await errorChannel.send({ embeds: [getEmbed(keys.api.plugin.warnings.could_not_sync_webhooks)] }).catch(() => {});
             return null;
         }
 

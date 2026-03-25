@@ -19,6 +19,18 @@ export default class GuildMemberUpdate extends Event {
         const server = client.serverConnections.cache.get(newMember.guild.id);
         if(!server) return;
 
+        const user = client.userConnections.cache.get(newMember.id);
+        const uuid = user?.getUUID(server);
+
+        // Required Role To Join
+        if(server.requiredRoleToJoin) {
+            //TODO make function in server
+            if(
+                server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
+                server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
+            ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
+        }
+
         const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
         const removedRole = oldMember.roles.cache.find(role => !newMember.roles.cache.has(role.id));
         const changedRoleId = addedRole?.id ?? removedRole?.id;
@@ -27,9 +39,7 @@ export default class GuildMemberUpdate extends Event {
         if(roleIndex === -1) return;
         const syncedRole = server.syncedRoles[roleIndex];
 
-        const user = client.userConnections.cache.get(newMember.id);
-        const uuid = user?.getUUID(server);
-
+        // Synced Roles
         const noChangeToPlayers = uuid ?
             addedRole && syncedRole.players.includes(uuid) ||
             removedRole && !syncedRole.players.includes(uuid) : false;
@@ -46,13 +56,6 @@ export default class GuildMemberUpdate extends Event {
         if(!user) return;
         // Skip if the change is already reflected in players — this was a bot-initiated update
         if(noPlayerChange) return;
-
-        if(server.requiredRoleToJoin) {
-            if(
-                server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
-                server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
-            ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
-        }
 
         let resp;
         if(addedRole) resp = await server.protocol.addSyncedRoleMember(syncedRole, uuid);

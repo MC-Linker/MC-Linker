@@ -1,3 +1,18 @@
+import { ShardClientUtil } from 'discord.js';
+
+/**
+ * Executes a function on the shard that owns the given guild.
+ * @param {import('discord.js').Client} client - The client instance.
+ * @param {string} guildId - The guild ID to determine the target shard.
+ * @param {Function} fn - Callback receiving (client, context).
+ * @param {Object} [context={}] - Serializable context passed to the callback.
+ * @returns {Promise<*>} The return value from the target shard.
+ */
+export function evalOnGuildShard(client, guildId, fn, context = {}) {
+    const shardId = ShardClientUtil.shardIdForGuildId(guildId, client.shard.count);
+    return client.shard.broadcastEval(fn, { context, shard: shardId });
+}
+
 //The following checks use `Object.constructor.name` to determine the type of the object.
 //A better way to do this would be to use `instanceof`. However, this is not possible because importing the classes would create circular dependencies.
 export function getManagerString(manager) {

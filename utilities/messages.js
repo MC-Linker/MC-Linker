@@ -194,7 +194,7 @@ export const ph = {
      * @param {boolean} [prependCommandName=false] - Whether to prepend the command name to the placeholder keys.
      * @returns {{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}}
      */
-    command(command, subcommand = null, prependCommandName = false) {
+    command(command, subcommand = null, prependCommandName = true) {
         if(!(command instanceof Discord.ApplicationCommand)) return {};
 
         const subcommandOption = subcommand ? command.options
@@ -257,7 +257,7 @@ export const ph = {
      * @param {boolean} prependCommandName - Whether to prepend the command name to the placeholder keys.
      * @returns {Promise<{}|{command_id: string, command_timestamp: `<t:${bigint}>`, command_name: string, command_description: string, command_mention: string}>}
      */
-    async commandName(commandName, prependCommandName = false) {
+    async commandName(commandName, prependCommandName = true) {
         const splitCommandName = commandName.split(' ');
 
         const rootCommandName = splitCommandName.shift();

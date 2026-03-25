@@ -19,6 +19,6 @@ export default class EntitlementCreate extends Event {
         const user = await entitlement.fetchUser();
         logger.info(`Entitlement created by user ${user.displayName} (${user.id})`);
         const dm = await user.createDM();
-        await dm.send(getReplyOptions(keys.custom_bot.success.subscribed, await ph.commandName('customize', true)));
+        await dm.send(getReplyOptions(keys.custom_bot.success.subscribed, await ph.commandName('customize')));
     }
 }
