@@ -1,10 +1,13 @@
 import Connection from './Connection.js';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import { execAsync } from '../../utilities/utils.js';
 import crypto from 'crypto';
 import MCLinker from '../MCLinker.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.customBot });
 
 export default class CustomBotConnection extends Connection {
     /**
@@ -118,7 +121,7 @@ export default class CustomBotConnection extends Connection {
         await fs.ensureDir(`${this.dataFolder}/download-cache`);
         await fs.ensureDir(`${this.dataFolder}/logs`);
 
-        await logger.info(`Custom bot data folder created at ${this.dataFolder}`);
+        logger.debug(`Custom bot data folder created at ${this.dataFolder}`);
 
         await this.build();
     }
@@ -150,8 +153,8 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async build() {
-        logger.info(`Building custom bot ${this.containerName}`);
-        logger.info((await execAsync(`docker build . -t lianecx/${this.containerName}`)).stdout);
+        logger.debug(`Building custom bot ${this.containerName}`);
+        logger.debug((await execAsync(`docker build . -t lianecx/${this.containerName}`)).stdout);
     }
 
     /**
@@ -161,7 +164,7 @@ export default class CustomBotConnection extends Connection {
      */
     async update() {
         //TODO update config.json and .env
-        logger.info(`Updating custom bot ${this.containerName}`);
+        logger.debug(`Updating custom bot ${this.containerName}`);
         await this.build();
         return await this.start();
     }
@@ -231,7 +234,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<string>} - The output of the docker command.
      */
     async stop() {
-        logger.info(`Stopping custom bot container ${this.containerName}`);
+        logger.debug(`Stopping custom bot container ${this.containerName}`);
 
         return (await execAsync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
             env: this.dockerEnv,
@@ -243,7 +246,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<string>} - The output of the docker command.
      */
     async down() {
-        logger.info(`Shutting down and removing custom bot container ${this.containerName}`);
+        logger.debug(`Shutting down and removing custom bot container ${this.containerName}`);
 
         return (await execAsync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi all --volumes`, {
             env: this.dockerEnv,
@@ -295,7 +298,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async removeData() {
-        logger.info(`Removing custom bot data ${this.dataFolder}`);
+        logger.debug(`Removing custom bot data ${this.dataFolder}`);
         await fs.remove(`${this.dataFolder}/config.json`);
         await fs.remove(`${this.dataFolder}/.env`);
         await fs.remove(`${this.dataFolder}/download-cache`);

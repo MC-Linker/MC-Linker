@@ -1,3 +1,4 @@
+/// <reference path="./types/BroadastEvalType.d.ts" />
 // noinspection HttpUrlsUsage
 
 import Fastify from 'fastify';
@@ -10,11 +11,15 @@ import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
 import { Collection } from 'discord.js';
-import logger from '../utilities/logger.js';
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
 import path from 'path';
 import fs from 'fs-extra';
 import { ProtocolError } from '../structures/protocol/Protocol.js';
 import { evalOnGuildShard } from '../utilities/shardingUtils.js';
+
+const fastifyLogger = rootLogger.child({ feature: features.api.fastify });
+const socketLogger = rootLogger.child({ feature: features.api.socketio });
 
 
 export default class MCLinkerAPI extends EventEmitter {
@@ -70,18 +75,18 @@ export default class MCLinkerAPI extends EventEmitter {
                 credentials: true,
             },
             // transports: ['websocket'], //TODO enable back after most people migrated
-            logLevel: process.env.LOG_LEVEL || 'info',
+            logLevel: 'info',
         });
 
         this.fastify.register(fastifyStatic, {
             root: path.resolve('./socket.io-admin-ui'), // The path to the static files
             prefix: '/admin/', // optional: default '/'
-            logLevel: process.env.LOG_LEVEL || 'info',
+            logLevel: 'info',
         });
         this.fastify.register(fastifyCookie, { secret: process.env.COOKIE_SECRET });
 
         this.fastify.addHook('preHandler', (req, res, done) => {
-            logger.debug(`[Fastify] ${req.method} request to ${req.url} from ${req.ip}: ${req.body}`);
+            fastifyLogger.debug(`${req.method} request to ${req.url} from ${req.ip}: ${req.body}`);
             this.emitToAllShards(req.url, req);
             done();
         });
@@ -105,7 +110,7 @@ export default class MCLinkerAPI extends EventEmitter {
             const route = new RouteClass();
 
             this.restRoutes.push(route);
-            logger.info(`Loaded REST route: ${route.endpoint}`);
+            fastifyLogger.debug(`Loaded REST route: ${route.endpoint}`);
         }
     }
 
@@ -127,7 +132,7 @@ export default class MCLinkerAPI extends EventEmitter {
             const wsEvent = new WSEventClass();
 
             this.wsEvents.set(wsEvent.event, wsEvent);
-            logger.info(`Loaded WS event: ${wsEvent.event}`);
+            socketLogger.debug(`Loaded WS event: ${wsEvent.event}`);
         }
     }
 
@@ -142,7 +147,7 @@ export default class MCLinkerAPI extends EventEmitter {
             body: req.body,
             headers: req.headers,
         };
-        this.client.shard.broadcastEval((c, { event, args }) => c.api.emit(event, args), {
+        void this.client.broadcastEval((c, { event, args }) => c.api.emit(event, args), {
             context: {
                 event,
                 args,
@@ -174,7 +179,7 @@ export default class MCLinkerAPI extends EventEmitter {
 
                     const response = await route[method.toLowerCase()](this.client, req, res);
                     if(!response) return; //Response already sent
-                    logger.debug(`[Fastify] Response for ${method} ${route.endpoint}: ${response?.toString()}`);
+                    fastifyLogger.debug(`Response for ${method} ${route.endpoint}: ${response?.toString()}`);
                     res.status(response?.status ?? 200).send(response?.body ?? {});
                 });
             }
@@ -195,14 +200,14 @@ export default class MCLinkerAPI extends EventEmitter {
             },
         });
 
-        this.websocket.engine.on('connection_error', err => logger.error(err, '[Socket.io] Websocket connection error'));
+        this.websocket.engine.on('connection_error', err => socketLogger.error(err, 'Websocket connection error'));
 
-        await this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
+        this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
             if(err) {
-                logger.fatal(err, 'Error starting API server');
+                fastifyLogger.fatal(err, 'Error starting API server');
                 process.exit(1);
             }
-            logger.info(`Server listening at ${address}`);
+            fastifyLogger.info(`Server listening at ${address}`);
         });
 
         if(process.env.CUSTOM_BOT === 'true') await this.notifyMainBotOfStart();
@@ -216,7 +221,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {Function} next - Callback to continue or close the connection.
      */
     async wsMiddleware(socket, next) {
-        logger.debug(`[Socket.io] Websocket connection to ${socket.nsp.name} from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
+        socketLogger.debug(`Websocket connection to ${socket.nsp.name} from ${socket.handshake.address} with query ${JSON.stringify(socket.handshake.query)}`);
 
         // Skip middleware for admin-ui
         if(socket.nsp.name === '/admin') return next();
@@ -225,7 +230,7 @@ export default class MCLinkerAPI extends EventEmitter {
         if(socket.handshake.auth.username && socket.handshake.auth.password) return next();
 
         if(!socket.handshake.auth.token) {
-            logger.debug(`[Socket.io] Connection from ${socket.handshake.address} provided invalid verification. Disconnecting socket.`);
+            socketLogger.debug(`Connection from ${socket.handshake.address} provided invalid verification. Disconnecting socket.`);
             return next(new Error('Unauthorized'));
         }
 
@@ -255,7 +260,7 @@ export default class MCLinkerAPI extends EventEmitter {
             // Disconnect the old socket after the new one is set up so its disconnect
             // event sees the replacement and skips the "server disconnected" logic
             if(oldSocket && oldSocket !== socket) oldSocket.disconnect(true);
-            logger.debug(`[Socket.io] Successfully reconnected ${server.displayIp} from ${server.id} to websocket`);
+            socketLogger.debug({ guildId: server.id }, `Successfully reconnected ${server.displayIp} to websocket`);
 
             // Sync all stat channels with fresh data from the plugin (on the guild's shard)
             void evalOnGuildShard(this.client, server.id, async (c, { serverId }) => {
@@ -286,7 +291,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 } = wsVerification.get(id);
                 try {
                     if(!serverCode || serverCode !== userCode) {
-                        logger.debug(`[Socket.io] New Connection from ${socket.handshake.address} with id ${id} failed verification. Disconnecting socket.`);
+                        socketLogger.debug({ guildId: id }, `New Connection from ${socket.handshake.address} failed verification. Disconnecting socket.`);
                         return next(new Error('Unauthorized'));
                     }
 
@@ -314,8 +319,8 @@ export default class MCLinkerAPI extends EventEmitter {
                     await connectCommand.disconnectOldServer(this.client, id);
                     this.addWebsocketListeners(socket, id, hash);
                     this.client.serverConnections.connect(serverConnectionData).then(server => {
-                        logger.debug(`[Socket.io] Successfully connected ${server.displayIp} from ${server.id} to websocket`);
-                        this.client.shard.broadcastEval(
+                        socketLogger.debug({ guildId: server.id }, `Successfully connected ${server.displayIp} to websocket`);
+                        this.client.broadcastEval(
                             (c, { id }) => c.emit('editConnectResponse', id, 'success'),
                             { context: { id }, shard },
                         );
@@ -324,8 +329,8 @@ export default class MCLinkerAPI extends EventEmitter {
                     next();
                 }
                 catch(err) {
-                    logger.error(err, '[Socket.io] Error while processing websocket connection');
-                    this.client.shard.broadcastEval(
+                    socketLogger.error(err, 'Error while processing websocket connection');
+                    this.client.broadcastEval(
                         (c, {
                             id,
                             error,
@@ -336,12 +341,12 @@ export default class MCLinkerAPI extends EventEmitter {
                 }
             }
             else {
-                logger.debug(`[Socket.io] Connection from ${socket.handshake.address} with id ${id} provided invalid verification. Disconnecting socket.`);
+                socketLogger.debug({ guildId: id }, `Connection from ${socket.handshake.address} provided invalid verification. Disconnecting socket.`);
                 next(new Error('Unauthorized'));
             }
         }
         else {
-            logger.debug(`[Socket.io] No server connection found. Disconnecting socket.`);
+            socketLogger.debug('No server connection found. Disconnecting socket.');
             next(new Error('Unauthorized'));
         }
     }
@@ -374,13 +379,13 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {Function} callback - The callback to send the response to.
      */
     async wsEventHandler(socket, eventName, hash, data, callback) {
-        logger.debug(`[Socket.IO] Received event ${eventName} with data: ${data?.toString?.()}`);
+        socketLogger.debug(`Received event ${eventName} with data: ${data?.toString?.()}`);
 
         try {
             data = typeof data === 'string' ? JSON.parse(data) : {};
         }
         catch(err) {
-            logger.error(err, `[Socket.IO] Error parsing data for event ${eventName}`);
+            socketLogger.error(err, `Error parsing data for event ${eventName}`);
             return callback?.({ status: 'error', error: ProtocolError.INVALID_JSON });
         }
 
@@ -399,7 +404,7 @@ export default class MCLinkerAPI extends EventEmitter {
         /** @type {?ServerConnection} */
         const server = this.client.serverConnections.cache.find(server => server.hash === hash);
 
-        logger.debug(`[Socket.IO] Found server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
+        socketLogger.debug(`Found server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
 
         //If no connection on that guild, disconnect socket
         if(!server) return socket.disconnect();
@@ -414,11 +419,11 @@ export default class MCLinkerAPI extends EventEmitter {
                 }, { eventName, data, serverId: server.id });
             }
             else response = await route.execute(data, server, this.client);
-            logger.debug({ response }, `[Socket.IO] Response for event ${route.event}`);
+            socketLogger.debug({ response }, `Response for event ${route.event}`);
             callback?.(response);
         }
         catch(err) {
-            logger.error(err, `[Socket.IO] Error executing event ${route.event}`);
+            socketLogger.error(err, `Error executing event ${route.event}`);
             callback?.({ status: 'error', error: ProtocolError.UNKNOWN });
         }
     }
@@ -434,7 +439,7 @@ export default class MCLinkerAPI extends EventEmitter {
             socket.on(route.event, this.wsEventHandler.bind(this, socket, route.event, hash));
 
         socket.on('disconnect', reason => {
-            logger.debug(`[Socket.IO] Disconnected from ${socket.handshake.address} with reason: ${reason}`);
+            socketLogger.debug(`Disconnected from ${socket.handshake.address} with reason: ${reason}`);
 
             /** @type {ServerConnection<WebSocketProtocol>} */
             const server = this.client.serverConnections.resolve(serverResolvable);
@@ -471,10 +476,10 @@ export default class MCLinkerAPI extends EventEmitter {
             headers: { 'x-communication-token': process.env.COMMUNICATION_TOKEN },
         });
         if(!res.ok) {
-            logger.fatal(res, 'Could not notify main bot of custom bot start');
+            socketLogger.fatal(res, 'Could not notify main bot of custom bot start');
             process.exit(1);
         }
-        logger.info('Notified main bot of custom bot start');
+        socketLogger.debug('Notified main bot of custom bot start');
     }
 
     /**
@@ -514,7 +519,7 @@ export default class MCLinkerAPI extends EventEmitter {
             else if(addOrRemove === 'remove') await member.roles.remove(role);
         }
         catch(err) {
-            logger.error(err, `Failed to update Discord role ${roleId} for member ${connection.id}`);
+            socketLogger.error(err, `Failed to update Discord role ${roleId} for member ${connection.id}`);
         }
     }
 }

@@ -1,6 +1,9 @@
 import Protocol, { ProtocolError } from './Protocol.js';
 import fs from 'fs-extra';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.structures.protocol.websocket });
 
 export default class WebSocketProtocol extends Protocol {
 
@@ -76,7 +79,7 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     disconnect() {
-        return this.client.shard.broadcastEval(async (c, { id }) => {
+        return this.client.broadcastEval(async (c, { id }) => {
             /** @type {WebSocketProtocol} */
             const protocol = c.serverConnections.cache.get(id).protocol;
             if(!protocol.socket) return { status: 'success', data: null };
@@ -269,25 +272,26 @@ export default class WebSocketProtocol extends Protocol {
      */
     _sendRaw(name, ...data) {
         // Broadcast the event to shard 0 where the websocket server is running
-        return this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+        return this.client.broadcastEval(async (c, { id, name, data }) => {
+            const clog = c.logger.child({ feature: c.features.structures.protocol.websocket, guildId: id });
             return await new Promise(resolve => {
                 /** @type {WebSocketProtocol} */
                 const protocol = c.serverConnections.cache.get(id).protocol;
                 if(!protocol.socket) return resolve(null);
-                c.logger.debug(`[Socket.IO] Sending event ${name} with data: ${JSON.stringify(data)}`);
+                clog.debug(`Sending event ${name} with data: ${JSON.stringify(data)}`);
                 protocol.socket.timeout(10_000).emit(name, ...data, (err, response) => {
                     if(err) {
-                        c.logger.error(err, `[Socket.IO] Error while sending event ${name}`);
+                        clog.error(err, `Error while sending event ${name}`);
                         return resolve(null);
                     }
 
                     if(typeof response === 'string') {
-                        c.logger.debug(`[Socket.IO] Received response for event ${name}: ${response}`);
+                        clog.debug(`Received response for event ${name}: ${response}`);
                         const responseObj = JSON.parse(response);
                         resolve(responseObj);
                     }
                     else {
-                        c.logger.debug(`[Socket.IO] Received response for event ${name}`);
+                        clog.debug(`Received response for event ${name}`);
                         resolve(response);
                     }
                 });

@@ -5,7 +5,10 @@ import { getReplyOptions, ph } from '../utilities/messages.js';
 import Discord from 'discord.js';
 import { durationString } from '../utilities/utils.js';
 import fs from 'fs-extra';
-import logger from '../utilities/logger.js';
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.commands.systemStats });
 
 export default class SystemStats extends Command {
 
@@ -27,7 +30,7 @@ export default class SystemStats extends Command {
         const stats = await interaction.editReplyTl(keys.commands.systemstats.step.measuring);
 
         for(const [key, value] of Object.entries(process.memoryUsage())) {
-            logger.info(`Memory usage by ${key}, ${value / 1000000}MB`);
+            logger.debug(`Memory usage by ${key}, ${value / 1000000}MB`);
         }
 
         const memoryUsage = ((os.totalmem() - os.freemem()) / this.gigabyte).toFixed(2);

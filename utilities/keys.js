@@ -1,27 +1,29 @@
 import keysJson from '../resources/languages/en_us.json' with { type: 'json' };
 import util from 'util';
 
-const pathSymbol = Symbol('Object path');
+const pathSymbol = Symbol('key path');
 
-function createProxy(path) {
-    //assign keys to keysJson to copy it's type
-    let keys = keysJson;
-    keys = getKeysFromPath(path);
+function createKeysProxy(paths) {
+    let keys = getKeysFromPath(paths);
     if(typeof keys !== 'object') return keys;
 
     //Add hidden property to the proxy that contains the full path to the key
-    keys[pathSymbol] = path;
+    keys[pathSymbol] = paths;
 
     return new Proxy(keys, {
         get(target, key) {
             if(key === pathSymbol) return target[pathSymbol];
+
+            if(key === Symbol.toPrimitive || key === 'toString' || key === 'valueOf') {
+                return () => getLanguageKey(target);
+            }
 
             if(typeof key === 'string') {
                 //If path is a number, convert it to a number (e.g. keys[0] instead of keys['0'])
                 const intKey = parseInt(key, 10);
                 if(key === intKey.toString()) key = intKey;
             }
-            return createProxy([...path, key]);
+            return createKeysProxy([...paths, key]);
         },
     });
 }
@@ -53,6 +55,6 @@ function getKeysFromPath(paths) {
     return key;
 }
 
-const keys = createProxy([]);
-
+const keys = createKeysProxy([]);
+/** @type {typeof keysJson} */
 export default keys;

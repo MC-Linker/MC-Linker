@@ -5,7 +5,7 @@ import ServerSettingsConnectionManager from './connections/managers/ServerSettin
 import UserSettingsConnectionManager from './connections/managers/UserSettingsConnectionManager.js';
 import CustomBotConnectionManager from './connections/managers/CustomBotConnectionManager.js';
 import fs from 'fs-extra';
-import { addPh, ph } from '../utilities/messages.js';
+import { ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import path from 'path';
 import Command from './Command.js';
@@ -15,8 +15,12 @@ import MCLinkerAPI from '../api/MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
-import logger from '../utilities/logger.js';
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
 import { convert } from '../scripts/convert.js';
+import { BroadcastEvalMC } from '../types/BroadcastEvalType.d.ts';
+
+const logger = rootLogger.child({ feature: features.core.startup });
 
 export default class MCLinker extends Discord.Client {
 
@@ -32,6 +36,7 @@ export default class MCLinker extends Discord.Client {
      * @property {string} pluginVersion - The latest version of the Minecraft plugin.
      * @property {string} supportServerInvite - The invite link to the support server.
      * @property {{string, string}} emojis - A map of the bot's emoji names to their codes.
+     * @property {DebugFilter[]} [initialDebugFilters] - Debug filters to apply at startup.
      */
 
     /**
@@ -189,25 +194,37 @@ export default class MCLinker extends Discord.Client {
          * Utility functions for the bot to use in cross-shard communication.
          * @type {typeof utils}
          */
-        this.utils = { ...utils };
+        this.utils = utils;
 
         /**
          * The language keys for the bot to use in cross-shard communication.
          * @type {typeof keys}
          */
-        this.keys = { ...keys };
+        this.keys = keys;
+
+        /**
+         * The log feature names for the bot to use in cross-shard communication.
+         * @type {typeof features}
+         */
+        this.features = features;
 
         /**
          * The logger for the bot to use in cross-shard communication.
          * @type {import('pino').Logger}
          */
-        this.logger = logger;
+        this.logger = rootLogger;
 
         /**
          * The API instance of the bot.
          * @type {MCLinkerAPI}
          */
         this.api = new MCLinkerAPI(this);
+
+        /**
+         * BroadcastEval with MCLinker typing.
+         * @type {BroadcastEvalMC}
+         */
+        this.broadcastEval = this.shard.broadcastEval.bind(this.shard);
     }
 
     /**
@@ -252,10 +269,7 @@ export default class MCLinker extends Discord.Client {
                 const command = new CommandFile();
 
                 this.commands.set(command.name, command);
-                logger.info(addPh(
-                    category ? keys.main.success.command_load_category.console : keys.main.success.command_load.console,
-                    { command: command.name, category: category, shard: this.shard.ids[0] },
-                ));
+                logger.debug(`Successfully loaded command: ${category ? `${category}/` : ''}${command.name}`);
             }
         };
 
@@ -286,11 +300,7 @@ export default class MCLinker extends Discord.Client {
                 const component = new ComponentFile();
 
                 this.components.set(component.id, component);
-                logger.info(addPh(keys.main.success.component_load.console, {
-                    id: component.id,
-                    type: component.type,
-                    shard: this.shard.ids[0],
-                }));
+                logger.debug(`Successfully loaded component of type ${component.type}: ${component.id}`);
             }
         }
     }
@@ -310,10 +320,7 @@ export default class MCLinker extends Discord.Client {
                 this.events.set(event.name, event);
                 if(event.once) this.once(event.name, (...args) => event.execute(this, ...args));
                 else this.on(event.name, (...args) => event.execute(this, ...args));
-                logger.info(addPh(keys.main.success.event_load.console, {
-                    event: event.name,
-                    shard: this.shard.ids[0],
-                }));
+                logger.debug(`Successfully loaded event: ${event.name}`);
             }
         }
     }
@@ -324,10 +331,10 @@ export default class MCLinker extends Discord.Client {
      */
     async loadEverything() {
         ph.initClient(this);
-        logger.info(`Initialized placeholders.`);
+        logger.debug(`Initialized placeholders.`);
 
         await this.loadMongoose();
-        logger.info(`Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
+        logger.debug(`Loaded all mongo models: ${Object.keys(this.mongo.models).join(', ')}`);
 
         if(process.env.CONVERT === 'true' && this.shard.ids[0] === 0) {
             await convert(this, this.mongo);

@@ -13,7 +13,10 @@ import Discord, {
     MessageFlags,
 } from 'discord.js';
 import { disableComponents, generateDefaultInvite } from '../../../utilities/utils.js';
-import logger from '../../../utilities/logger.js';
+import rootLogger from '../../../utilities/logger.js';
+import features from '../../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.customBotManager });
 
 export default class CustomBotConnectionManager extends ConnectionManager {
 

@@ -2,7 +2,10 @@ import Connection from './Connection.js';
 import WebSocketProtocol from '../protocol/WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
 import fs from 'fs-extra';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.server });
 
 export default class ServerConnection extends Connection {
 

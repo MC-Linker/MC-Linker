@@ -1,6 +1,9 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
-import logger from '../../../utilities/logger.js';
+import rootLogger from '../../../utilities/logger.js';
+import features from '../../../utilities/logFeatures.js';
 import { WEBHOOK_TOKEN_REFRESH_TTL_MS } from './ChatConstants.js';
+
+const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.webhookResolver });
 
 
 export default class WebhookResolver {
@@ -68,11 +71,11 @@ export default class WebhookResolver {
         catch(err) {
             if(err instanceof RateLimitError) {
                 this.monitor?.recordRateLimit('fetchWebhook');
-                logger.debug(`[Socket.io][Chat] Rate-limited refreshing webhook ${webhookId} for channel ${channelConfig.id}`);
+                logger.debug(`Rate-limited refreshing webhook ${webhookId} for channel ${channelConfig.id}`);
                 return null;
             }
             if(err?.code !== RESTJSONErrorCodes.UnknownWebhook) {
-                logger.error(err, `[Socket.io][Chat] Failed fetching webhook ${webhookId} for channel ${channelConfig.id}`);
+                logger.error(err, `Failed fetching webhook ${webhookId} for channel ${channelConfig.id}`);
                 return null;
             }
         }
@@ -115,7 +118,7 @@ export default class WebhookResolver {
 
         return await client.fetchWebhook(newId)
             .catch(err => {
-                logger.error(err, `[Socket.io][Chat] Failed fetching replacement webhook ${newId} for channel ${channelConfig.id}`);
+                logger.error(err, `Failed fetching replacement webhook ${newId} for channel ${channelConfig.id}`);
                 return null;
             });
     }

@@ -1,5 +1,8 @@
 import { RateLimitError } from 'discord.js';
-import logger from '../../../utilities/logger.js';
+import rootLogger from '../../../utilities/logger.js';
+import features from '../../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.monitor });
 
 const SUMMARY_INTERVAL_MS = 60_000;
 
@@ -202,7 +205,7 @@ export default class ChatMonitor {
             lines.push('  ops: ' + parts.join('\n       '));
         }
 
-        logger.info(lines.join('\n'));
+        logger.debug(lines.join('\n'));
 
         // Reset for next interval
         this.incoming = 0;

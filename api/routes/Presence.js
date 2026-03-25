@@ -1,6 +1,9 @@
 import Route from '../Route.js';
 import MCLinker from '../../structures/MCLinker.js';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.api.routes.presence });
 
 export default class Version extends Route {
 

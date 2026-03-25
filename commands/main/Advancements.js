@@ -1,6 +1,6 @@
 import MinecraftData from 'minecraft-data';
 import Discord, { time } from 'discord.js';
-import { addPh, getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/messages.js';
+import { getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
 import { MinecraftDataVersion } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
@@ -10,7 +10,10 @@ import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.commands.main.advancements });
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
@@ -114,7 +117,7 @@ export default class Advancements extends Command {
             }
             catch(err) {
                 //Draw name
-                logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': node.data.icon }));
+                logger.debug(`Could not find item image ${node.data.icon}. Applying text...`);
                 ctx.font = '8px Minecraft';
                 ctx.fillStyle = '#000';
                 const lines = utils.wrapText(ctx, mcData.itemsByName[node.data.icon]?.displayName ?? node.data.icon, frameSize);

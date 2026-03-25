@@ -40,8 +40,7 @@
                         "title": "Guild-Only",
                         "description": "I can only be used in server channels!"
                     }
-                ],
-                "console": "Not in guild"
+                ]
             },
             "no_prefix_commands": {
                 "embeds": [
@@ -49,8 +48,7 @@
                         "title": "Use Slash Commands",
                         "description": "Prefixed commands are disabled. Please use [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) instead by typing `/` in a server channel followed by the command name."
                     }
-                ],
-                "console": "%author_username% used prefix command %interaction_name%"
+                ]
             },
             "no_permission_component": {
                 "embeds": [
@@ -72,15 +70,6 @@
             }
         },
         "errors": {
-            "unknown_rejection": {
-                "console": "Unknown promise rejection %error_stack%"
-            },
-            "could_not_post_stats": {
-                "console": "Could not post stats to Top.gg"
-            },
-            "no_connection_file": {
-                "console": "No connection file found for guild: %guild_name%"
-            },
             "could_not_execute_command": {
                 "embeds": [
                     {
@@ -98,9 +87,6 @@
                     }
                 ],
                 "components": []
-            },
-            "could_not_autocomplete_command": {
-                "console": "An unknown error occurred while autocompleting command %command%: %error_stack%"
             }
         },
         "warnings": {
@@ -114,21 +100,6 @@
             }
         },
         "success": {
-            "login": {
-                "console": "Bot logged in as %client_tag% and with prefix: %prefix%\nShard is on %guild_count% servers."
-            },
-            "command_load": {
-                "console": "Successfully loaded command: %command%"
-            },
-            "command_load_category": {
-                "console": "Successfully loaded command: %category%/%command%"
-            },
-            "component_load": {
-                "console": "Successfully loaded component of type %type%: %id%"
-            },
-            "event_load": {
-                "console": "Successfully loaded event: %event%"
-            },
             "ping": {
                 "embeds": [
                     {
@@ -137,15 +108,6 @@
                         "color": "Blue"
                     }
                 ]
-            },
-            "guild_create": {
-                "console": "Joined a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!"
-            },
-            "guild_delete": {
-                "console": "Left a guild: %guild_name%: %guild_member_count% members.\nShard is now on %guild_count% servers!"
-            },
-            "disconnected": {
-                "console": "Successfully deleted connection file of guild: %guild_name%"
             },
             "invite": {
                 "embeds": [
@@ -320,7 +282,6 @@
                             "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                         }
                     ],
-                    "console": "Failed to login to bot because of invalid token",
                     "components": [
                         {
                             "type": "Button",
@@ -776,8 +737,7 @@
                             "title": "No Command Specified",
                             "description": "Please specify a command to evaluate."
                         }
-                    ],
-                    "console": "No command specified"
+                    ]
                 }
             },
             "success": {
@@ -786,8 +746,7 @@
                         "title": "Successfully Evaluated Command",
                         "description": "%output%"
                     }
-                ],
-                "console": "Successfully evaluated command"
+                ]
             },
             "errors": {
                 "unknown_error": {
@@ -796,8 +755,7 @@
                             "title": "Unknown Error",
                             "description": "%output_error%"
                         }
-                    ],
-                    "console": "Unknown error %error_stack%"
+                    ]
                 }
             }
         },
@@ -809,8 +767,7 @@
                             "title": "Command/Category Does Not Exist",
                             "description": "Command/Category **%command_name%** does not exist."
                         }
-                    ],
-                    "console": "Command/Category does not exist"
+                    ]
                 }
             },
             "success": {
@@ -1001,11 +958,6 @@
             }
         },
         "inventory": {
-            "errors": {
-                "no_image": {
-                    "console": "Could not find item image %item_name%. Applying text..."
-                }
-            },
             "success": {
                 "item_button": {
                     "components": [
@@ -1132,11 +1084,6 @@
         },
         "stats": {
             "stats_description": "Image of player's statistics",
-            "warnings": {
-                "no_image": {
-                    "console": "No Image available for %stat_name%"
-                }
-            },
             "errors": {
                 "could_not_parse": {
                     "embeds": [
@@ -1144,8 +1091,7 @@
                             "title": "Could Not Find Category",
                             "description": "%username% has never done anything in this category."
                         }
-                    ],
-                    "console": "Error trying to parse stat json"
+                    ]
                 }
             },
             "success": {
@@ -1184,17 +1130,13 @@
         },
         "command": {
             "warnings": {
-                "could_not_find_placeholders": {
-                    "console": "Could not find placeholder value for %placeholder%"
-                },
                 "autocomplete_selection_expired": {
                     "embeds": [
                         {
                             "title": "Selection Expired",
                             "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
                         }
-                    ],
-                    "console": "Autocomplete selection token expired or invalid"
+                    ]
                 }
             },
             "success": {
@@ -1685,8 +1627,7 @@
                             "title": "No Username Specified",
                             "description": "Don't ping someone. Specify your **Minecraft Java-Edition account name** instead."
                         }
-                    ],
-                    "console": "No username specified"
+                    ]
                 },
                 "not_connected": {
                     "embeds": [
@@ -1694,8 +1635,7 @@
                             "title": "Account Not Connected",
                             "description": "Your Minecraft account is not connected."
                         }
-                    ],
-                    "console": "Account not connected"
+                    ]
                 },
                 "verification_timeout": {
                     "embeds": [
@@ -1703,8 +1643,7 @@
                             "title": "Verification Timeout",
                             "description": "Account verification timed out. Please try again."
                         }
-                    ],
-                    "console": "Verification timed out"
+                    ]
                 }
             },
             "errors": {
@@ -1714,8 +1653,7 @@
                             "title": "Could Not Fetch User",
                             "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate/Cracked accounts can't be verified by name and are therefore not possible to connect."
                         }
-                    ],
-                    "console": "Could not fetch uuid of %user%"
+                    ]
                 }
             },
             "step": {
@@ -1735,15 +1673,13 @@
                             "title": "Account Disconnected",
                             "description": "Successfully disconnected your account."
                         }
-                    ],
-                    "console": "Account disconnected"
+                    ]
                 },
                 "verified": {
                     "embeds": [
                         {
                             "title": "Account Verified",
-                            "description": "Successfully verified your account.",
-                            "console": "Account verified"
+                            "description": "Successfully verified your account."
                         }
                     ]
                 }
@@ -1757,8 +1693,7 @@
                             "title": "Cannot Change Name",
                             "description": "The bot does not have the `Manage Channels` permission to edit the channel's name."
                         }
-                    ],
-                    "console": "Channel not manageable"
+                    ]
                 }
             },
             "success": {
@@ -1768,8 +1703,7 @@
                             "title": "Added Stat Channel",
                             "description": "Successfully added the stat channel."
                         }
-                    ],
-                    "console": "Successfully added stat channel"
+                    ]
                 },
                 "remove": {
                     "embeds": [
@@ -1777,8 +1711,7 @@
                             "title": "Removed Stat Channel",
                             "description": "Successfully removed the stat channel."
                         }
-                    ],
-                    "console": "Successfully removed stat channel"
+                    ]
                 },
                 "status_list": {
                     "embeds": [
@@ -1805,8 +1738,7 @@
                                 }
                             ]
                         }
-                    ],
-                    "console": "Successfully listed stat channels"
+                    ]
                 },
                 "member-counter_list": {
                     "embeds": [
@@ -1830,8 +1762,7 @@
                                 }
                             ]
                         }
-                    ],
-                    "console": "Successfully listed stat channels"
+                    ]
                 }
             }
         },
@@ -1843,8 +1774,7 @@
                             "title": "No Channels Added",
                             "description": "There are no added channels."
                         }
-                    ],
-                    "console": "No channels added"
+                    ]
                 },
                 "channel_not_added": {
                     "embeds": [
@@ -1852,8 +1782,7 @@
                             "title": "Channel Not Added",
                             "description": "The specified channel is not added."
                         }
-                    ],
-                    "console": "Channel not added"
+                    ]
                 },
                 "not_collected": {
                     "embeds": [
@@ -1881,8 +1810,7 @@
                                 "title": "Selection Expired",
                                 "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
                             }
-                        ],
-                        "console": "Filter-command autocomplete selection token expired or invalid"
+                        ]
                     },
                     "already_enabled": {
                         "embeds": [
@@ -1890,8 +1818,7 @@
                                 "title": "Already Unfiltered",
                                 "description": "%type% **%enable%** is already unfiltered for the Minecraft → Discord bridge."
                             }
-                        ],
-                        "console": "Already unfiltered %enable%"
+                        ]
                     }
                 },
                 "success": {
@@ -1901,8 +1828,7 @@
                                 "title": "Successfully Filtered",
                                 "description": "Successfully filtered %type% **%disable%** for the Minecraft → Discord bridge. Messages are filtered when the command starts with this value."
                             }
-                        ],
-                        "console": "Successfully filtered %type% %disable%"
+                        ]
                     },
                     "enabled": {
                         "embeds": [
@@ -1910,8 +1836,7 @@
                                 "title": "Successfully Unfiltered",
                                 "description": "Successfully unfiltered %type% **%enable%** for the Minecraft → Discord bridge."
                             }
-                        ],
-                        "console": "Successfully unfiltered %type% %enable%"
+                        ]
                     }
                 }
             },
@@ -1923,7 +1848,6 @@
                             "description": "Could not create a webhook in this channel. This is most likely due to the bot not having `Manage Webhooks` permission or there being 15 webhooks already in this channel."
                         }
                     ],
-                    "console": "Could not create webhook: %error_stack%",
                     "components": []
                 }
             },
@@ -2011,8 +1935,7 @@
                             "description": "Successfully added the chat channel."
                         }
                     ],
-                    "components": [],
-                    "console": "Successfully added chat channel"
+                    "components": []
                 },
                 "remove": {
                     "embeds": [
@@ -2020,8 +1943,7 @@
                             "title": "Removed Chat Channel",
                             "description": "Successfully removed the chat channel."
                         }
-                    ],
-                    "console": "Successfully removed chat channel"
+                    ]
                 },
                 "list": {
                     "embeds": [
@@ -2042,8 +1964,7 @@
                                 }
                             ]
                         }
-                    ],
-                    "console": "Successfully listed chat channels"
+                    ]
                 },
                 "channel_button": {
                     "components": [
@@ -2099,7 +2020,6 @@
                             "description": "This connection request was canceled by the user."
                         }
                     ],
-                    "console": "Invalid port specified",
                     "components": []
                 },
                 "no_reply_in_time": {
@@ -2108,8 +2028,7 @@
                             "title": "Verification Failed",
                             "description": "You did not reply in time!"
                         }
-                    ],
-                    "console": "No reply in time"
+                    ]
                 },
                 "not_collected": {
                     "embeds": [
@@ -2128,8 +2047,7 @@
                             "title": "Searching For Server...",
                             "description": "%emoji_step% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)"
                         }
-                    ],
-                    "console": "Searching for server.properties..."
+                    ]
                 },
                 "command_verification": {
                     "embeds": [
@@ -2181,8 +2099,7 @@
                             "title": "Could Not Connect",
                             "description": "Could not connect to server with plugin."
                         }
-                    ],
-                    "console": "Could not connect with plugin."
+                    ]
                 },
                 "could_not_find_properties": {
                     "embeds": [
@@ -2190,8 +2107,7 @@
                             "title": "Could Not Find Server",
                             "description": "Could not find server folder. Please specify the server path manually."
                         }
-                    ],
-                    "console": "Could not find server.properties"
+                    ]
                 },
                 "could_not_get_properties": {
                     "embeds": [
@@ -2199,8 +2115,7 @@
                             "title": "Could Not Download",
                             "description": "Could not download server configuration. Please specify the server-path manually."
                         }
-                    ],
-                    "console": "Could not download server.properties"
+                    ]
                 },
                 "websocket_error": {
                     "embeds": [
@@ -2208,8 +2123,7 @@
                             "title": "Verification Failed",
                             "description": "An unknown error occurred while connecting to the plugin."
                         }
-                    ],
-                    "console": "Unknown websocket connection error %error_stack%"
+                    ]
                 }
             },
             "success": {
@@ -2219,8 +2133,7 @@
                             "title": "Connected to Server",
                             "description": "Successfully connected to the plugin."
                         }
-                    ],
-                    "console": "Successfully wrote websocket file"
+                    ]
                 }
             }
         },
@@ -2231,8 +2144,7 @@
                         "title": "Disconnected From Plugin",
                         "description": "The plugin connection was successfully disconnected."
                     }
-                ],
-                "console": "Disconnected from the plugin"
+                ]
             }
         },
         "rolesync": {
@@ -2243,8 +2155,7 @@
                             "title": "No Synced Roles Added",
                             "description": "There are no added synced roles."
                         }
-                    ],
-                    "console": "No synced roles added"
+                    ]
                 },
                 "role_not_added": {
                     "embeds": [
@@ -2252,8 +2163,7 @@
                             "title": "Role Not Added",
                             "description": "The specified role is not added."
                         }
-                    ],
-                    "console": "Role not added"
+                    ]
                 }
             },
             "errors": {
@@ -2263,8 +2173,7 @@
                             "title": "Group Or Team Not Found",
                             "description": "Could not find a group or team with the name **%name%**."
                         }
-                    ],
-                    "console": "Group or team not found"
+                    ]
                 },
                 "not_editable": {
                     "embeds": [
@@ -2272,8 +2181,7 @@
                             "title": "Role Not Editable",
                             "description": "I do not have permission to edit members of the role **%role%**.\nYou can either move my role above that role to give me permission or change the `direction` option to `To Minecraft` to only sync the role from Discord to Minecraft."
                         }
-                    ],
-                    "console": "Role not editable"
+                    ]
                 },
                 "luckperms_not_loaded": {
                     "embeds": [
@@ -2281,8 +2189,7 @@
                             "title": "Luckperms Not Loaded",
                             "description": "Please install LuckPerms or a vault-supported permissions plugin, or sync to a team instead."
                         }
-                    ],
-                    "console": "Luckperms not loaded"
+                    ]
                 },
                 "role_already_synced": {
                     "embeds": [
@@ -2290,8 +2197,7 @@
                             "title": "Role Already Synced",
                             "description": "The specified role is already synced."
                         }
-                    ],
-                    "console": "Role already synced"
+                    ]
                 },
                 "team_group_already_synced": {
                     "embeds": [
@@ -2299,8 +2205,7 @@
                             "title": "Team/Group Already Synced",
                             "description": "The specified team/group is already synced."
                         }
-                    ],
-                    "console": "Team/Group already synced"
+                    ]
                 }
             },
             "success": {
@@ -2310,8 +2215,7 @@
                             "title": "Added Synced Role",
                             "description": "Successfully added the synced role."
                         }
-                    ],
-                    "console": "Successfully added synced role"
+                    ]
                 },
                 "remove": {
                     "embeds": [
@@ -2319,8 +2223,7 @@
                             "title": "Removed Synced Role",
                             "description": "Successfully removed the synced role."
                         }
-                    ],
-                    "console": "Successfully removed synced role"
+                    ]
                 },
                 "list": {
                     "embeds": [
@@ -2345,8 +2248,7 @@
                                 }
                             ]
                         }
-                    ],
-                    "console": "Successfully listed chat channels"
+                    ]
                 },
                 "role_button": {
                     "components": [
@@ -2367,44 +2269,6 @@
         }
     },
     "api": {
-        "messages": {
-            "errors": {
-                "no_command_arguments": {
-                    "console": "Could not get command: No name or type specified"
-                },
-                "no_command_key": {
-                    "console": "Could not get command: No key specified"
-                },
-                "no_embed_key": {
-                    "console": "Could not get embed: No key specified"
-                },
-                "no_component_key": {
-                    "console": "Could not get component: No key specified"
-                },
-                "no_reply_arguments": {
-                    "console": "Could not reply: No message, key or placeholders specified"
-                },
-                "no_reply_key": {
-                    "console": "Could not get reply options: No key specified"
-                },
-                "could_not_reply": {
-                    "console": "Could not reply to interaction %error_stack%\n%interaction%"
-                },
-                "could_not_reply_channel": {
-                    "console": "Could not send message to channel of interaction %error_stack%\n%interaction%"
-                }
-            }
-        },
-        "settings": {
-            "errors": {
-                "could_not_read_file": {
-                    "console": "Could not read disable file %error_stack%"
-                },
-                "could_not_write_file": {
-                    "console": "Could not read disable file %error_stack%"
-                }
-            }
-        },
         "plugin": {
             "warnings": {
                 "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
@@ -2431,8 +2295,7 @@
                             "title": "Could Not Sync Webhook",
                             "description": "The chatchannel webhooks changed and could not be synced with the plugin."
                         }
-                    ],
-                    "console": "Could not re-add webhook"
+                    ]
                 },
                 "cached_result": "⚠ Cached Result"
             },
@@ -2444,7 +2307,6 @@
                             "description": "[Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled."
                         }
                     ],
-                    "console": "Plugin does not respond",
                     "components": []
                 },
                 "unknown_chat_error": {
@@ -2453,8 +2315,7 @@
                             "title": "Unknown Error",
                             "description": "Could not send the message to the chatchannel using webhooks. Please re-add the channel using `/chatchannel add`!"
                         }
-                    ],
-                    "console": "Unknown chat error %error_stack%"
+                    ]
                 },
                 "no_webhook_permission": {
                     "embeds": [
@@ -2462,8 +2323,7 @@
                             "title": "No Webhook Permission",
                             "description": "The Bot does not have the `Manage Webhooks` permission. Please add the permission."
                         }
-                    ],
-                    "console": "No webhook permission"
+                    ]
                 },
                 "status_400": {
                     "embeds": [
@@ -2471,8 +2331,7 @@
                             "title": "Unknown Bot Error",
                             "description": "An unknown bot error occurred."
                         }
-                    ],
-                    "console": "400: Unknown client error, %data%"
+                    ]
                 },
                 "status_401": {
                     "embeds": [
@@ -2480,8 +2339,7 @@
                             "title": "Unknown Bot Error",
                             "description": "An unknown bot error occurred."
                         }
-                    ],
-                    "console": "401: Wrong authorization"
+                    ]
                 },
                 "status_404": {
                     "embeds": [
@@ -2489,8 +2347,7 @@
                             "title": "Data Not Found",
                             "description": "The requested data could not be found on the server."
                         }
-                    ],
-                    "console": "404: Data could not be found, %data%"
+                    ]
                 },
                 "status_500": {
                     "embeds": [
@@ -2498,8 +2355,7 @@
                             "title": "Unknown Plugin Error",
                             "description": "An unknown plugin error occurred."
                         }
-                    ],
-                    "console": "500: Unknown server error, %data%"
+                    ]
                 }
             },
             "success": {
@@ -2619,9 +2475,6 @@
                             }
                         ]
                     }
-                },
-                "listening": {
-                    "console": "Listening on %address%"
                 }
             }
         },
@@ -2633,8 +2486,7 @@
                             "title": "Could Not Connect",
                             "description": "Could not connect to server with ftp. Please check if the ftp server is online."
                         }
-                    ],
-                    "console": "Could not connect with ftp, sftp or ftps."
+                    ]
                 },
                 "could_not_parse": {
                     "embeds": [
@@ -2642,8 +2494,7 @@
                             "title": "Could not Read File",
                             "description": "Could not read the NBT file. File may be corrupted."
                         }
-                    ],
-                    "console": "Could not read nbt file %error_stack%"
+                    ]
                 }
             }
         },
@@ -2655,8 +2506,7 @@
                             "title": "Could Not Fetch User",
                             "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
                         }
-                    ],
-                    "console": "Could not fetch uuid/username of %user%"
+                    ]
                 },
                 "not_sendable": {
                     "embeds": [
@@ -2664,15 +2514,11 @@
                             "title": "Cannot Send Messages",
                             "description": "The bot does not have permission to send messages in this channel."
                         }
-                    ],
-                    "console": "Channel not sendable"
+                    ]
                 }
             }
         },
         "component": {
-            "clicked": {
-                "console": "%author_username% has clicked component %interaction_id% in %guild_name%"
-            },
             "no_access": {
                 "no_author": {
                     "embeds": [
@@ -2727,9 +2573,6 @@
             }
         },
         "command": {
-            "executed": {
-                "console": "%author_username% executed /%interaction_name% %args% in %guild_name%"
-            },
             "errors": {
                 "server_not_connected": {
                     "embeds": [
@@ -2737,8 +2580,7 @@
                             "title": "Server Not Connected",
                             "description": "Your server is not connected. Please use `/connect` first."
                         }
-                    ],
-                    "console": "Server not connected"
+                    ]
                 },
                 "user_not_connected": {
                     "embeds": [
@@ -2746,8 +2588,7 @@
                             "title": "User Not Connected",
                             "description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **Minecraft username**."
                         }
-                    ],
-                    "console": "User not connected"
+                    ]
                 },
                 "could_not_download": {
                     "embeds": [
@@ -2755,8 +2596,7 @@
                             "title": "Could Not Download",
                             "description": "Could not download %category% files."
                         }
-                    ],
-                    "console": "Could not download %category% files"
+                    ]
                 }
             },
             "no_access": {
@@ -2766,8 +2606,7 @@
                             "title": "Command Disabled",
                             "description": "Command **%interaction_name%** disabled!"
                         }
-                    ],
-                    "console": "Command disabled"
+                    ]
                 },
                 "no_permission": {
                     "embeds": [
@@ -2775,8 +2614,7 @@
                             "title": "No Permission",
                             "description": "This command can only be used with the `%permission%` permission!"
                         }
-                    ],
-                    "console": "No permission"
+                    ]
                 },
                 "no_unknown_permission": {
                     "embeds": [
@@ -2784,8 +2622,7 @@
                             "title": "No Permission",
                             "description": "You do not have permission to execute this command!"
                         }
-                    ],
-                    "console": "No permission"
+                    ]
                 }
             },
             "warnings": {
@@ -2795,8 +2632,7 @@
                             "title": "Could Not Download",
                             "description": "Could not download %category% files. The user most likely never joined the server."
                         }
-                    ],
-                    "console": "Could not download %category% files"
+                    ]
                 },
                 "no_argument": {
                     "embeds": [
@@ -2804,8 +2640,7 @@
                             "title": "Missing Required Argument",
                             "description": "Please specify: `%argument%`"
                         }
-                    ],
-                    "console": "Missing required argument"
+                    ]
                 },
                 "no_user": {
                     "embeds": [
@@ -2813,8 +2648,7 @@
                             "title": "No User Specified",
                             "description": "Please ping a user or specify a Minecraft username."
                         }
-                    ],
-                    "console": "No user specified"
+                    ]
                 }
             }
         }
@@ -2828,8 +2662,7 @@
                             "title": "Disabled Command",
                             "description": "Successfully disabled command **%command_name%**."
                         }
-                    ],
-                    "console": "Disabled command %command_name%"
+                    ]
                 },
                 "help": {
                     "embeds": [
@@ -2849,8 +2682,7 @@
                             "title": "Already Enabled",
                             "description": "Command **%command_name%** is already enabled."
                         }
-                    ],
-                    "console": "Could not enable %command_name%"
+                    ]
                 }
             },
             "success": {
@@ -2860,8 +2692,7 @@
                             "title": "Enabled Command",
                             "description": "Successfully enabled command **%command_name%**."
                         }
-                    ],
-                    "console": "Enabled command %command_name%"
+                    ]
                 },
                 "help": {
                     "embeds": [
@@ -2918,7 +2749,9 @@
             "type": "ChatInput",
             "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
             "description": "Look up your and other member's Minecraft advancements.",
-            "contexts": ["Guild"],
+            "contexts": [
+                "Guild"
+            ],
             "options": [
                 {
                     "type": "Subcommand",

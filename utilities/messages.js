@@ -13,12 +13,15 @@ import Discord, {
     SlashCommandBuilder,
     User,
 } from 'discord.js';
-import keys, { getLanguageKey, getObjectPath } from './keys.js';
+import keys, { getObjectPath } from './keys.js';
 import util from 'util';
-import logger from './logger.js';
+import rootLogger from './logger.js';
+import features from './logFeatures.js';
 import { ComponentSizeInActionRow, MaxActionRows, MaxActionRowSize } from './utils.js';
 
-const completions = getLanguageKey(keys.completions);
+const logger = rootLogger.child({ feature: features.utilities.messages });
+
+const completions = keys.completions.valueOf();
 
 /**
  * Adds methods that allow to respond with a translation key.
@@ -288,7 +291,7 @@ export const ph = {
  * @returns {K}
  */
 export function addPh(key, ...placeholders) {
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
+    if(util.types.isProxy(key)) key = key.valueOf();
     placeholders = Object.assign({}, ph.emojisAndColors(), ...placeholders);
 
     if(typeof key === 'string') {
@@ -319,9 +322,14 @@ export function addPh(key, ...placeholders) {
 function resolveKey(interaction, key, placeholders) {
     placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
 
-    const options = getReplyOptions(key, placeholders);
+    if(!interaction || !key || !placeholders) {
+        logger.error('Could not reply: No message, key or placeholders specified');
+        return null;
+    }
 
-    if(options?.console) logger.info(addPh(options.console, placeholders));
+    const options = getReplyOptions(key, placeholders);
+    if(!interaction) return null;
+
     if(!options.content && !options.embeds && !options.components && !options.files) return null;
 
     // noinspection JSDeprecatedSymbols
@@ -420,7 +428,7 @@ export async function showModalTl(interaction, key, ...placeholders) {
  */
 export function addCompletion(key) {
     const path = getObjectPath(key);
-    const message = getLanguageKey(key);
+    const message = key.valueOf();
 
     let completion;
     if(Object.keys(completions).includes(path[path.length - 1])) completion = completions[path[path.length - 1]];
@@ -438,7 +446,7 @@ export function addCompletion(key) {
  */
 export function getEmbed(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_embed_key.console));
+        logger.error('Could not get embed: No key specified');
         return null;
     }
     if(util.types.isProxy(key)) key = addCompletion(key);
@@ -476,10 +484,10 @@ export function getEmbed(key, ...placeholders) {
  */
 export function getActionRows(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
+        logger.error('Could not get component: No key specified');
         return [];
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
+    if(util.types.isProxy(key)) key = key.valueOf();
 
     const allComponents = key.components
         ?.map(component => getComponent(component, ...placeholders))
@@ -496,10 +504,10 @@ export function getActionRows(key, ...placeholders) {
  */
 export function getComponent(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
+        logger.error('Could not get component: No key specified');
         return null;
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
+    if(util.types.isProxy(key)) key = key.valueOf();
 
     /** @type {Discord.AnyComponent} */
     let component = key;
@@ -732,7 +740,7 @@ export function getComponent(key, ...placeholders) {
  */
 export function getReplyOptions(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_reply_key.console));
+        logger.error('Could not get reply options: No key specified');
         return null;
     }
     if(util.types.isProxy(key)) key = addCompletion(key);
@@ -752,13 +760,13 @@ export function getReplyOptions(key, ...placeholders) {
  */
 export function getCommand(key) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_command_key.console));
+        logger.error('Could not get command: No key specified');
         return null;
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
+    if(util.types.isProxy(key)) key = key.valueOf();
 
     if(!key.name || !key.type) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_command_arguments.console));
+        logger.error('Could not get command: No name or type specified');
         return null;
     }
 
@@ -816,10 +824,10 @@ export function getCommand(key) {
  */
 export function getModal(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
+        logger.error('Could not get component: No key specified');
         return null;
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
+    if(util.types.isProxy(key)) key = key.valueOf();
 
     key = addPh(key, ...placeholders);
 
@@ -1030,7 +1038,7 @@ export async function fetchCommand(commandManager, name) {
  * @returns {EmbedBuilder|EmbedBuilder[]} - The same embed(s) with the footer set.
  */
 export function setCachedFooter(embeds) {
-    const cachedText = getLanguageKey(keys.api.plugin.warnings.cached_result);
+    const cachedText = keys.api.plugin.warnings.cached_result.valueOf();
     const applyFooter = embed => {
         const existing = embed.data.footer?.text;
         const text = existing ? `${cachedText} | ${existing}` : cachedText;
