@@ -65,7 +65,7 @@ export default class Account extends Command {
                 timeout,
             });
 
-            await client.shard.broadcastEval((c, { uuid, username, code, userId, serverId, shard }) => {
+            await client.broadcastEval((c, { uuid, username, code, userId, serverId, shard }) => {
                 const verifyResponseListener = async data => {
                     if(data.uuid !== uuid || data.code !== code) return;
 
@@ -81,7 +81,7 @@ export default class Account extends Command {
                     });
 
                     // Reply to the interaction on the shard that initiated the verification
-                    await c.shard.broadcastEval(async (c, { id, serverId }) => {
+                    await c.broadcastEval(async (c, { id, serverId }) => {
                         /** @type {Account} */
                         const accountCommand = c.commands.get('account');
                         if(!accountCommand.pendingInteractions.has(id)) return;

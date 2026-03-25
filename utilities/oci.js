@@ -1,7 +1,10 @@
 import ociCore from 'oci-core';
 import ociCommon from 'oci-common';
 import ociConstants from '../oci/constants.json' with { type: 'json' };
-import logger from './logger.js';
+import rootLogger from './logger.js';
+import features from './logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.utilities.oci });
 
 const provider = new ociCommon.ConfigFileAuthenticationDetailsProvider('./oci/config');
 
@@ -27,7 +30,7 @@ export async function exposeCustomBotPorts(minPort, maxPort) {
     const customBotRuleIndex = previousSecurityList.securityList.ingressSecurityRules.findIndex(rule => rule.description === 'Custom Bots');
     const previousPortRange = previousSecurityList.securityList.ingressSecurityRules[customBotRuleIndex].tcpOptions.destinationPortRange;
     if(previousPortRange && previousPortRange.min === minPort && previousPortRange.max === maxPort)
-        return logger.debug('[OCI] Custom Bot ports already exposed.');
+        return logger.debug('Custom Bot ports already exposed.');
     previousSecurityList.securityList.ingressSecurityRules[customBotRuleIndex].tcpOptions.destinationPortRange = {
         min: minPort,
         max: maxPort,
@@ -40,7 +43,7 @@ export async function exposeCustomBotPorts(minPort, maxPort) {
         },
     });
 
-    logger.debug(`[OCI] Custom Bot ports updated to ${JSON.stringify(newPortRange)}`);
+    logger.debug(`Custom Bot ports updated to ${JSON.stringify(newPortRange)}`);
 
     await vcnClient.close();
 }

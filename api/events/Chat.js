@@ -2,7 +2,8 @@ import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
 import { getCachedAvatarURL, parseMentions, searchAdvancements } from '../../utilities/utils.js';
 import { addPh, getEmbed } from '../../utilities/messages.js';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
 import ChatDispatchHandler from './chat-handlers/ChatDispatchHandler.js';
 import WebhookPoolManager from './chat-handlers/WebhookPoolManager.js';
 import WebhookResolver from './chat-handlers/WebhookResolver.js';
@@ -13,6 +14,8 @@ import {
     DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
     DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS,
 } from './chat-handlers/ChatConstants.js';
+
+const logger = rootLogger.child({ feature: features.api.socketio.chat });
 
 /**
  * @typedef {Object} ChatRequest
@@ -139,7 +142,7 @@ export default class Chat extends WSEvent {
                     continue;
                 }
 
-                logger.debug(`[Socket.io][Chat] Enqueue ${mode} payload for channel ${channel.id}`);
+                logger.debug({ guildId: server.id }, `Enqueue ${mode} payload for channel ${channel.id}`);
                 this.monitor.recordEnqueue();
 
                 const base = { serverId: server.id, guildId, channelId: channel.id };

@@ -1,6 +1,9 @@
 import Discord from 'discord.js';
 import crypto from 'crypto';
-import logger from './logger.js';
+import rootLogger from './logger.js';
+import features from './logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.utilities.oauth });
 
 /**
  * @typedef {object} OAuthTokens

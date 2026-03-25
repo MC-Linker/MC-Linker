@@ -3,8 +3,11 @@ import { addTranslatedResponses } from '../utilities/messages.js';
 import { getArgs } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
-import logger from '../utilities/logger.js';
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
 import { ComponentType, Events, InteractionType } from 'discord.js';
+
+const logger = rootLogger.child({ feature: features.events.interactionCreate });
 
 /**
  * Handles the Discord interactionCreate event for the MC-Linker bot.

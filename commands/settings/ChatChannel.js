@@ -1,6 +1,6 @@
 import Discord, { ButtonStyle, PermissionFlagsBits } from 'discord.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
-import keys, { getLanguageKey } from '../../utilities/keys.js';
+import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
 import { canSendMessages, MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../../utilities/utils.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
@@ -167,7 +167,7 @@ export default class ChatChannel extends AutocompleteCommand {
 
             for(let i = 0; i < server.chatChannels.length; i++) {
                 const channel = server.chatChannels[i];
-                const options = getLanguageKey(keys.commands.chatchannel.step.choose.components[0].options);
+                const options = keys.commands.chatchannel.step.choose.components[0].options.valueOf();
                 const formattedTypes = channel.types.map(type => options.find(o => o.value === type).label).join(',\n');
 
                 const channelEmbed = getEmbed(

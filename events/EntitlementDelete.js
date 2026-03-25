@@ -1,6 +1,9 @@
 import Event from '../structures/Event.js';
 import { Events } from 'discord.js';
-import logger from '../utilities/logger.js';
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.events.entitlementDelete });
 
 /**
  * Handles the Discord entitlementDelete event for the MC-Linker bot.

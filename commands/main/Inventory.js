@@ -14,7 +14,10 @@ import {
     wrapText,
 } from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.commands.main.inventory });
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
@@ -516,7 +519,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
         }
         catch(err) {
             //Draw name
-            logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
+            logger.debug(`Could not find item image ${itemId}. Applying text...`);
             ctx.font = '8px Minecraft';
             ctx.fillStyle = '#000';
             const lines = wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);

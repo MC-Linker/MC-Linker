@@ -10,7 +10,10 @@ import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.commands.main.stats });
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
@@ -177,7 +180,7 @@ export default class Stats extends Command {
                     }
                     catch(err) {
                         //Draw name
-                        logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': id }));
+                        logger.debug(`Could not find item image ${id}. Applying text...`);
                         const fontSize = 12;
                         ctx.font = `${fontSize}px Minecraft`;
                         ctx.fillStyle = '#000';

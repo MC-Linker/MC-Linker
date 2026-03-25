@@ -3,7 +3,7 @@
 + **Create isometric block, item and entity renders in code**
 + Context Menus (inventory, ban, op, kick, add to whitelist)
 + Internal Statistics
-+ Proxy-Server Support (Link multiple servers)
++ **Proxy-Server Support (Link multiple servers)**
 + Mod support (get textures and names of mod items, etc.)
 + Use Server hosts API (and standalone) to start a server
 + `/online` (list of online players, maybe only `/serverinfo`)
@@ -22,6 +22,11 @@
 + `/inventory edit` (edit inv interactively?, components v2?)
 + Web Dashboard
 + Bedrock support
+
+## Bugs
+
++ Role requirement is not checked on reconnect
++ Cached player files are not tied to server
 
 # TODO PLUGIN
 

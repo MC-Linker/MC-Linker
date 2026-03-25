@@ -5,6 +5,7 @@
     "eventsPath": "./events",
     "restRoutesPath": "./api/routes",
     "wsEventsPath": "./api/events",
+    "initialDebugFilters": [],
     "presence": {
         "status": "online",
         "activities": [

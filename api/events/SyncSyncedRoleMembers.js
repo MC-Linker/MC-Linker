@@ -1,7 +1,10 @@
 import WSEvent from '../WSEvent.js';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import { fetchMembersIfCacheDiffers } from '../../utilities/utils.js';
+
+const logger = rootLogger.child({ feature: features.api.socketio.syncRoleMembers });
 
 export default class SyncSyncedRoleMembers extends WSEvent {
 

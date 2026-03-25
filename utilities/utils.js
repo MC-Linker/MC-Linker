@@ -26,7 +26,10 @@ import { exec } from 'child_process';
 import { FilePath, ProtocolError } from '../structures/protocol/Protocol.js';
 import fs from 'fs-extra';
 import path from 'path';
-import logger from './logger.js';
+import rootLogger from './logger.js';
+import features from './logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.utilities.utils });
 
 /**
  * Promisified version of exec.
@@ -1181,7 +1184,7 @@ export async function uploadApplicationEmojis(client) {
             logger.debug(`Uploaded emoji ${emojiName} (${emoji.id})`);
         }
         catch(err) {
-            logger.error(`Failed to upload emoji ${emojiName}:`, err);
+            logger.error(err, `Failed to upload emoji ${emojiName}`);
         }
     }
     return emojiMap;

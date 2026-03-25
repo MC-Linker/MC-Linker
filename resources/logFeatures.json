@@ -1,0 +1,71 @@
+{
+    "core": {
+        "bot": null,
+        "startup": null
+    },
+    "commands": {
+        "main": {
+            "stats": null,
+            "inventory": null,
+            "advancements": null
+        },
+        "settings": {
+            "roleSync": null
+        },
+        "customize": null,
+        "systemStats": null
+    },
+    "events": {
+        "interactionCreate": null,
+        "messageCreate": null,
+        "guildCreate": null,
+        "guildDelete": null,
+        "entitlementCreate": null,
+        "entitlementDelete": null,
+        "clientReady": null
+    },
+    "components": {
+        "customizeTokenModal": null
+    },
+    "api": {
+        "fastify": null,
+        "socketio": {
+            "chat": null,
+            "chatHandlers": {
+                "dispatch": null,
+                "queueProcessor": null,
+                "monitor": null,
+                "webhookPool": null,
+                "webhookResolver": null
+            },
+            "statsChannel": null,
+            "syncRoleMembers": null,
+            "getInviteUrl": null
+        },
+        "routes": {
+            "presence": null,
+            "preDeleteCleanup": null
+        }
+    },
+    "structures": {
+        "mclinker": null,
+        "protocol": {
+            "websocket": null
+        },
+        "connections": {
+            "server": null,
+            "customBot": null,
+            "customBotManager": null,
+            "userSettings": null
+        }
+    },
+    "utilities": {
+        "utils": null,
+        "oauth": null,
+        "oci": null,
+        "messages": null
+    },
+    "scripts": {
+        "convert": null
+    }
+}

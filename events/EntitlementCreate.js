@@ -2,7 +2,10 @@ import Event from '../structures/Event.js';
 import { getReplyOptions, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { Events } from 'discord.js';
-import logger from '../utilities/logger.js';
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.events.entitlementCreate });
 
 /**
  * Handles the Discord entitlementCreate event for the MC-Linker bot.

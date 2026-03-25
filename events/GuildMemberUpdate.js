@@ -23,7 +23,7 @@ export default class GuildMemberUpdate extends Event {
         const uuid = user?.getUUID(server);
 
         // Required Role To Join
-        if(server.requiredRoleToJoin) {
+        if(server.requiredRoleToJoin && user) {
             //TODO make function in server
             if(
                 server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||

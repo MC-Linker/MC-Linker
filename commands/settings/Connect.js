@@ -47,14 +47,14 @@ export default class Connect extends Command {
         else await interaction.replyOptions({ embeds: [verificationEmbed], components: [] });
 
         const timeout = setTimeout(async () => {
-            await client.shard.broadcastEval((c, { id }) => {
+            await client.broadcastEval((c, { id }) => {
                 c.commands.get('connect').wsVerification.delete(id);
             }, { context: { id: interaction.guildId }, shard: 0 });
             await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
         }, 180_000);
 
         this.pendingInteractions.set(interaction.guildId, { interaction, timeout });
-        await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin, displayIp, online }) => {
+        await client.broadcastEval((c, { code, id, shard, requiredRoleToJoin, displayIp, online }) => {
             c.commands.get('connect').wsVerification.set(id, {
                 code,
                 shard,

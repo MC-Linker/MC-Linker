@@ -2,9 +2,12 @@ import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBits } from 'discord.js';
 import { addTranslatedResponses, getComponent, getModal, getReplyOptions } from '../utilities/messages.js';
-import logger from '../utilities/logger.js';
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
 import { disableComponents } from '../utilities/utils.js';
 import CustomBotConnectionManager from '../structures/connections/managers/CustomBotConnectionManager.js';
+
+const logger = rootLogger.child({ feature: features.commands.customize });
 
 export default class Customize extends Command {
 

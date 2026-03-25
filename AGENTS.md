@@ -309,6 +309,93 @@ Adhere to the code style of this project for all edits. The full ruleset is in `
 - **Max 1 empty line** between code blocks, max 1 at end of file
 - **No trailing whitespace**
 
+## Logging
+
+The logger is a Pino instance exported as `rootLogger` from `utilities/logger.js`. Each file creates a module-level
+child logger bound to a feature name from `utilities/logFeatures.js`.
+
+### Import pattern (every file that logs)
+
+```javascript
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.api.socketio.chat });
+```
+
+The `features` proxy auto-derives the dotted path from the access chain:
+`features.api.socketio.chat` → `'api.socketio.chat'`. Any path is valid — IDE autocomplete is backed by
+`resources/logFeatures.json`.
+
+### Adding context to log calls
+
+Pass `guildId`/`userId` as structured fields, not in the message string:
+
+```javascript
+logger.debug({ guildId: server.id }, 'Enqueue payload for channel ...');
+logger.error(err, 'Something failed'); // pino arg order: error object first, message second
+```
+
+For classes where all methods share the same guildId/userId (e.g. a per-server connection), create an
+instance child in the constructor:
+
+```javascript
+// module level
+const logger = rootLogger.child({ feature: features.structures.connections.server });
+// instance level
+constructor(...)
+{
+    this.logger = logger.child({ guildId: this.id });
+}
+```
+
+### Runtime debug filtering
+
+Debug output is suppressed by default (root level `'info'`). All public debug filter methods operate across
+all shards via `broadcastEval`. Single-shard methods are prefixed with `_` and should not be used directly.
+
+```javascript
+// Enable debug filters (always cross-shard)
+client.logger.enableDebug(client, { feature: 'api.socketio' });        // all socketio sub-features
+client.logger.enableDebug(client, { feature: 'api.socketio.chat' });   // only chat
+client.logger.enableDebug(client, { guildId: 'GUILD_ID' });            // all debug for one guild
+client.logger.enableDebug(client, { feature: 'api.socketio.chat', guildId: 'GUILD_ID' }); // combined
+
+// Disable
+client.logger.disableDebug(client, { feature: 'api.socketio' });
+client.logger.clearDebugFilters(client);
+
+// Read-only (local shard)
+client.logger.getDebugFilters();
+```
+
+Feature matching uses prefix logic: enabling `'api.socketio'` also enables `'api.socketio.chat'`,
+`'api.socketio.chatDispatch'`, etc. info/warn/error/fatal always pass through regardless of filters.
+
+Initial debug filters can be set in `config.json`:
+
+```json
+{
+    "initialDebugFilters": [
+        { "feature": "api.socketio" },
+        { "guildId": "123456789" }
+    ]
+}
+```
+
+### broadcastEval and features
+
+The `features` proxy is attached to the client as `c.features`, so it is available inside `broadcastEval`
+callbacks. Use `c.features` instead of string literals:
+
+```javascript
+this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+    const clog = c.logger.child({ feature: c.features.structures.protocol.websocket, guildId: id });
+    clog.debug(`Sending event ${name}`);
+    // ...
+}, { context: { id: this.id, name, data }, shard: 0 });
+```
+
 ## Environment & Deployment
 
 - **Environment variables:** See `dev-guidelines.md` for the full list. Key ones: `TOKEN`, `DATABASE_URL`, `BOT_PORT`,

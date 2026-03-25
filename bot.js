@@ -1,6 +1,9 @@
 import MCLinker from './structures/MCLinker.js';
-import logger from './utilities/logger.js';
+import rootLogger from './utilities/logger.js';
+import features from './utilities/logFeatures.js';
 import { uploadApplicationEmojis } from './utilities/utils.js';
+
+const logger = rootLogger.child({ feature: features.core.bot });
 
 logger.info(
     '\x1b[1m' +     // Bold (1)
@@ -19,7 +22,9 @@ process.on('uncaughtException', async err => {
 });
 
 const config = await MCLinker.loadConfig();
-logger.info(`Loaded configuration.`);
+logger.debug(`Loaded configuration.`);
+
+if(config.initialDebugFilters) rootLogger.applyInitialDebugFilters(config.initialDebugFilters);
 
 const client = new MCLinker(config);
 await client.loadEverything();

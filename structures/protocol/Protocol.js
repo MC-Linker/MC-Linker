@@ -1,6 +1,9 @@
 import { Base } from 'discord.js';
 import fs from 'fs-extra';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger.js';
+import features from '../../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.structures.protocol.websocket });
 
 /**
  * Paths to minecraft server files.
@@ -305,7 +308,7 @@ export default class Protocol extends Base {
         // Not connected — try cache
         try {
             const buffer = await fs.readFile(putPath);
-            logger.info(`Server offline, serving cached file from ${putPath}`);
+            logger.debug(`Server offline, serving cached file from ${putPath}`);
             return { status: 'success', data: buffer, cached: true };
         }
         catch {

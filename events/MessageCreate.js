@@ -4,7 +4,10 @@ import { cleanEmojis } from '../utilities/utils.js';
 import { evalOnGuildShard } from '../utilities/shardingUtils.js';
 import keys from '../utilities/keys.js';
 import { Events, MessageType } from 'discord.js';
-import logger from '../utilities/logger.js';
+import rootLogger from '../utilities/logger.js';
+import features from '../utilities/logFeatures.js';
+
+const logger = rootLogger.child({ feature: features.events.messageCreate });
 
 /**
  * Handles the Discord messageCreate event for the MC-Linker bot.
@@ -73,7 +76,7 @@ export default class MessageCreate extends Event {
                 channel: message.channel.name,
                 guild: message.guild.name,
             }, 'Relaying chat message to Minecraft server');
-            void server.protocol.chat(content, message.member?.displayName ?? message.author.displayName, repliedContent, repliedMessage?.member.displayName ?? repliedMessage?.author.displayName);
+            void server.protocol.chat(content, message.member?.displayName ?? message.author.displayName, repliedContent, repliedMessage?.member?.displayName ?? repliedMessage?.author.displayName);
         }
 
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
