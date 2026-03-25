@@ -1,7 +1,13 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
 import { getEmbed } from '../../../utilities/messages.js';
-import { containsAnsiCodes, toAnsiCodeBlock } from '../../../utilities/utils.js';
+import {
+    CODE_BLOCK_OVERHEAD_ANSI,
+    CODE_BLOCK_OVERHEAD_PLAIN,
+    containsAnsiCodes,
+    MaxEmbedDescriptionLength,
+    toAnsiCodeBlock,
+} from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger.js';
 import features from '../../../utilities/logFeatures.js';
 import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } from './ChatPayloadBuilder.js';
@@ -40,7 +46,6 @@ const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.qu
 /**
  * @typedef {ChatQueueItem|ConsoleQueueItem|EmbedQueueItem} QueueItem
  */
-
 
 export default class ChatQueueProcessor {
 
@@ -345,8 +350,7 @@ export default class ChatQueueProcessor {
             // newlines included
             const candidate = `${combinedRaw}${item.raw}`;
             const candidateHasAnsi = hasAnsi || containsAnsiCodes(item.raw);
-            // Ansi codes are not parsed by discord over 1000 chars
-            const charLimit = candidateHasAnsi ? 1000 : 2000;
+            const charLimit = this.consoleCharLimit(candidateHasAnsi);
             if(candidate.length > charLimit && consumed > 0) break;
 
             combinedRaw = candidate;
@@ -358,7 +362,7 @@ export default class ChatQueueProcessor {
 
         const lastMessage = this.lastConsoleMessages.get(discordChannel.id);
         const appendHasAnsi = hasAnsi || (lastMessage?.hasAnsi ?? false);
-        const appendCharLimit = appendHasAnsi ? 1000 : 2000;
+        const appendCharLimit = this.consoleCharLimit(appendHasAnsi);
         if(lastMessage && lastMessage.raw.length + combinedRaw.length <= appendCharLimit) {
             try {
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
@@ -406,5 +410,15 @@ export default class ChatQueueProcessor {
         });
 
         return { consumed };
+    }
+
+    /**
+     * Calculates the character limit for console output, adjusting for ANSI escape codes if present.
+     * @param hasAnsi hasAnsi ? 1000 - 12 : 2000 - 8; // 8 chars for ``` + surrounding newlines, 12 chars for ```ansi + surrounding newlines
+     * @return {number} - The maximum character limit for the console output based on the presence of ANSI codes.
+     */
+    consoleCharLimit(hasAnsi) {
+        // Ansi codes are not parsed over 1000 chars by Discord
+        return hasAnsi ? 1000 - CODE_BLOCK_OVERHEAD_ANSI : MaxEmbedDescriptionLength - CODE_BLOCK_OVERHEAD_PLAIN; // 8 for code block, 12 for code block + 'ansi'
     }
 }

@@ -37,6 +37,9 @@ const logger = rootLogger.child({ feature: features.utilities.utils });
  */
 export const execAsync = util.promisify(exec);
 
+export const CODE_BLOCK_OVERHEAD_ANSI = 12; // ```ansi\n\n```
+export const CODE_BLOCK_OVERHEAD_PLAIN = 8; // ```\n\n```
+
 export const MaxEmbedFieldValueLength = 1024;
 export const MaxActionRows = 5;
 export const MaxActionRowSize = 5;
@@ -872,18 +875,22 @@ export function containsAnsiCodes(text) {
  * If the string is too long, it will be truncated and an ellipsis will be added at the end.
  * If the string contains more than 1000 characters, all ansi codes will be stripped (discord won't parse them).
  * @param {string} text - The text to wrap in a code block.
- * @returns {`\`\`\`ansi\n${string}\n\`\`\``}
+ * @returns {`\`\`\`ansi\n${string}\n\`\`\``|`\`\`\`\n${string}\n\`\`\``}
  */
 export function toAnsiCodeBlock(text) {
     text = text.replace(/\u001b\[m/g, '\u001b[0m'); // Discord things
+    let hasAnsi = containsAnsiCodes(text);
     // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
-    if(text.length >= 1000) text = stripAnsiCodes(text);
+    if(hasAnsi && text.length >= 1000 - CODE_BLOCK_OVERHEAD_ANSI) {
+        text = stripAnsiCodes(text);
+        hasAnsi = false;
+    }
 
     // -12 for code block (```ansi\n\n```)
-    if(text.length > MaxEmbedDescriptionLength - 12) text = `${text.substring(0, MaxEmbedDescriptionLength - 13)}…`;
+    if(text.length > MaxEmbedDescriptionLength - CODE_BLOCK_OVERHEAD_ANSI) text = `${text.substring(0, MaxEmbedDescriptionLength - 13)}…`;
 
     //Wrap in discord code block for color
-    return Discord.codeBlock('ansi', text);
+    return Discord.codeBlock(hasAnsi ? 'ansi' : '', text);
 }
 
 /**
