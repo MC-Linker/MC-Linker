@@ -15,6 +15,6 @@ export default class Disconnect extends Command {
         if(!await super.execute(interaction, client, args, server)) return;
 
         await client.serverConnections.disconnect(server);
-        return interaction.replyTl(keys.commands.disconnect.success);
+        return interaction.editReplyTl(keys.commands.disconnect.success);
     }
 }

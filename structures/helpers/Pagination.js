@@ -259,7 +259,7 @@ export default class Pagination {
         this.lastPage = startPage;
         this.lastMessageOptions = { ...options, components };
 
-        return await this.interaction.replyOptions(this.lastMessageOptions);
+        return await this.interaction.editReply(this.lastMessageOptions);
     }
 
     /**
@@ -295,7 +295,7 @@ export default class Pagination {
         this.collector = null;
 
         // Return to parent pagination
-        const message = await this.parent.interaction.replyOptions(this.parent.lastMessageOptions);
+        const message = await this.parent.interaction.editReply(this.parent.lastMessageOptions);
         return this.parent._createCollector(message);
     }
 

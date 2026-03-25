@@ -131,10 +131,10 @@ export default class Wizard {
                 this.message = await this.interaction.send(options);
                 this.interaction = addTranslatedResponses(this.message);
             }
-            else this.message = await this.interaction.replyOptions(options);
+            else this.message = await this.interaction.editReply(options);
             this._createCollector();
         }
-        else await this.interaction.replyOptions(options);
+        else await this.interaction.editReply(options);
 
         return this.message;
     }

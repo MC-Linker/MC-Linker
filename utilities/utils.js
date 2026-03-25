@@ -446,12 +446,12 @@ export async function handleProtocolResponse(response, protocol, interaction, er
     placeholders.push({ data: JSON.stringify(response?.data ?? '') });
 
     if(!response) {
-        await interaction.replyTl(keys.api.plugin.errors.no_response, ...placeholders);
+        await interaction.editReplyTl(keys.api.plugin.errors.no_response, ...placeholders);
         return false;
     }
     else if(response.status !== 'success') {
         const responseKey = errorResponses[response.error] ?? defaultErrorResponses[response.error] ?? defaultErrorResponses[ProtocolError.SERVER_ERROR];
-        await interaction.replyTl(responseKey, ...placeholders);
+        await interaction.editReplyTl(responseKey, ...placeholders);
         return false;
     }
 
@@ -578,7 +578,7 @@ export async function nbtBufferToObject(buffer, interaction) {
         return nbt.simplify(object.parsed);
     }
     catch(err) {
-        await interaction?.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        await interaction?.editReplyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
         return undefined;
     }
 }
@@ -602,7 +602,7 @@ export function nbtStringToObject(string, interaction) {
         return simplified;
     }
     catch(err) {
-        interaction?.replyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        interaction?.editReplyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
         return undefined;
     }
 }

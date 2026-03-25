@@ -24,7 +24,7 @@ export default class SystemStats extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const stats = await interaction.replyTl(keys.commands.systemstats.step.measuring);
+        const stats = await interaction.editReplyTl(keys.commands.systemstats.step.measuring);
 
         for(const [key, value] of Object.entries(process.memoryUsage())) {
             logger.info(`Memory usage by ${key}, ${value / 1000000}MB`);

@@ -68,12 +68,12 @@ export default class RoleSync extends AutocompleteCommand {
 
             // Only check role.editable if we need to manage the Discord role (both or to_discord)
             if(direction !== 'to_minecraft' && !role.editable)
-                return interaction.replyTl(keys.commands.rolesync.errors.not_editable, { role });
+                return interaction.editReplyTl(keys.commands.rolesync.errors.not_editable, { role });
 
             if(server.syncedRoles?.some(r => r.id === role.id))
-                return interaction.replyTl(keys.commands.rolesync.errors.role_already_synced);
+                return interaction.editReplyTl(keys.commands.rolesync.errors.role_already_synced);
             else if(server.syncedRoles?.some(r => r.name === name && r.isGroup === isGroup))
-                return interaction.replyTl(keys.commands.rolesync.errors.team_group_already_synced);
+                return interaction.editReplyTl(keys.commands.rolesync.errors.team_group_already_synced);
 
             await fetchMembersIfCacheDiffers(client, interaction.guild);
 
@@ -130,23 +130,23 @@ export default class RoleSync extends AutocompleteCommand {
             resp.data[respRoleIndex] = respRole;
 
             await server.edit({ syncedRoles: resp.data });
-            return interaction.replyTl(keys.commands.rolesync.success.add);
+            return interaction.editReplyTl(keys.commands.rolesync.success.add);
         }
 
         else if(subcommand === 'remove') {
             const role = args[1];
 
             const syncedRole = server.syncedRoles?.find(c => c.id === role.id);
-            if(!syncedRole) return interaction.replyTl(keys.commands.rolesync.warnings.role_not_added);
+            if(!syncedRole) return interaction.editReplyTl(keys.commands.rolesync.warnings.role_not_added);
 
             const resp = await server.protocol.removeSyncedRole(syncedRole);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
             await server.edit({ syncedRoles: resp.data });
-            return interaction.replyTl(keys.commands.rolesync.success.remove);
+            return interaction.editReplyTl(keys.commands.rolesync.success.remove);
         }
         else if(subcommand === 'list') {
-            if(!server.syncedRoles?.length) return interaction.replyTl(keys.commands.rolesync.warnings.no_roles);
+            if(!server.syncedRoles?.length) return interaction.editReplyTl(keys.commands.rolesync.warnings.no_roles);
 
             /** @type {PaginationPages} */
             const pages = {};

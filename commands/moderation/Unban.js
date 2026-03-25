@@ -23,6 +23,6 @@ export default class Unban extends Command {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         const warning = resp.data.message === '' ? keys.api.plugin.warnings.no_response_message_short : '';
-        return interaction.replyTl(keys.commands.unban.success, { username: user.username, warning });
+        return interaction.editReplyTl(keys.commands.unban.success, { username: user.username, warning });
     }
 }
