@@ -43,7 +43,7 @@ export default class UserConnectionManager extends ConnectionManager {
      */
     async userFromArgument(arg, server, interaction) {
         if(!arg) {
-            await interaction.replyTl(keys.api.command.warnings.no_user);
+            await interaction.editReplyTl(keys.api.command.warnings.no_user);
             return { error: 'nullish', uuid: null, username: null };
         }
 
@@ -59,7 +59,7 @@ export default class UserConnectionManager extends ConnectionManager {
                 };
             }
 
-            await interaction.replyTl(keys.api.command.errors.user_not_connected);
+            await interaction.editReplyTl(keys.api.command.errors.user_not_connected);
             return { error: 'cache', uuid: null, username: null };
         }
 
@@ -71,7 +71,7 @@ export default class UserConnectionManager extends ConnectionManager {
             if(username && server.online) return { uuid: arg, username, error: null };
             else if(username) arg = username; // If the server is offline, we'll calculate the uuid from the username.
             else {
-                await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
+                await interaction.editReplyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
                 return { error: 'fetch', uuid: null, username: null };
             }
         }
@@ -85,7 +85,7 @@ export default class UserConnectionManager extends ConnectionManager {
         else uuid = await utils.fetchUUID(arg);
 
         if(uuid) return { uuid, username: arg, error: null };
-        await interaction.replyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
+        await interaction.editReplyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
         return { error: 'fetch', uuid: null, username: null };
     }
 

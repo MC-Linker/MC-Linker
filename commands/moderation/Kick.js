@@ -25,6 +25,6 @@ export default class Kick extends Command {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
-        return interaction.replyTl(keys.commands.kick.success, { username: user.username, reason, warning });
+        return interaction.editReplyTl(keys.commands.kick.success, { username: user.username, reason, warning });
     }
 }

@@ -149,7 +149,7 @@ export default class Advancements extends Command {
         const advancementsEmbed = getEmbed(keys.commands.advancements.success.final, { username: user.username });
         if(amFile.cached) setCachedFooter(advancementsEmbed);
 
-        if(!showDetails) return await interaction.replyOptions({
+        if(!showDetails) return await interaction.editReply({
             embeds: [advancementsEmbed],
             files: [advancementsAttach],
         });

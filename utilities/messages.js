@@ -8,7 +8,6 @@ import Discord, {
     Guild,
     GuildApplicationCommandManager,
     Message,
-    MessagePayload,
     ModalBuilder,
     ModalSubmitInteraction,
     SlashCommandBuilder,
@@ -32,7 +31,11 @@ const completions = keys.completions.valueOf();
  */
 export function addTranslatedResponses(interaction) {
     interaction.replyTl = (key, ...placeholders) => replyTl(interaction, key, ...placeholders);
-    interaction.replyOptions = options => replyOptions(interaction, options);
+    interaction.editReplyTl = (key, ...placeholders) => editReplyTl(interaction, key, ...placeholders);
+    interaction.followUpTl = (key, ...placeholders) => followUpTl(interaction, key, ...placeholders);
+    interaction.updateTl = (key, ...placeholders) => updateTl(interaction, key, ...placeholders);
+    interaction.sendTl = (key, ...placeholders) => sendTl(interaction, key, ...placeholders);
+    interaction.showModalTl = (key, ...placeholders) => showModalTl(interaction, key, ...placeholders);
     return interaction;
 }
 
@@ -309,13 +312,14 @@ export function addPh(key, ...placeholders) {
 }
 
 /**
- * Reply to an interaction with a translation key.
- * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {string} key - The translation key to reply with.
- * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Promise<?Message>}
+ * Resolves a translation key into discord.js message options.
+ * Handles placeholder merging, console logging, and ephemeral flag conversion.
+ * @param {BaseInteraction|Message} interaction - The interaction for standard placeholders.
+ * @param {object} key - The translation key to resolve.
+ * @param {object[]} placeholders - The placeholders to replace in the translation key.
+ * @returns {?Discord.InteractionReplyOptions}
  */
-export async function replyTl(interaction, key, ...placeholders) {
+function resolveKey(interaction, key, placeholders) {
     placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
 
     if(!interaction || !key || !placeholders) {
@@ -327,16 +331,7 @@ export async function replyTl(interaction, key, ...placeholders) {
     if(!interaction) return null;
 
     if(!options.content && !options.embeds && !options.components && !options.files) return null;
-    return replyOptions(interaction, options);
-}
 
-/**
- * Reply to an interaction with options.
- * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.MessageReplyOptions} options - The options to reply with.
- * @returns {Promise<Message>}
- */
-export async function replyOptions(interaction, options) {
     // noinspection JSDeprecatedSymbols
     if(options.ephemeral) {
         options.flags = Discord.MessageFlags.Ephemeral;
@@ -344,30 +339,86 @@ export async function replyOptions(interaction, options) {
         delete options.ephemeral;
     }
 
-    function handleError(err) {
-        logger.error(err, `Could not reply to interaction ${interaction}`);
-        try {
-            return interaction.channel?.send(options);
-        }
-        catch(err) {
-            logger.error(err, `Could not send message to channel of interaction ${interaction}`);
-        }
-    }
+    return options;
+}
 
-    try {
-        if(interaction instanceof Discord.Message) return await interaction.reply(options).catch(handleError);
-        else if(interaction instanceof Discord.BaseInteraction && interaction.isRepliable()) {
-            if(interaction.deferred || interaction.replied)
-                return await interaction.editReply(options).catch(handleError);
-            else if(interaction.isMessageComponent() || interaction.isModalSubmit())
-                return (await interaction.update({ withResponse: true, ...options }).catch(handleError)).resource.message;
-            else
-                return (await interaction.reply({ withResponse: true, ...options }).catch(handleError)).resource.message;
-        }
-    }
-    catch(err) {
-        handleError(err);
-    }
+/**
+ * Reply to an interaction with a translation key. Only calls `interaction.reply()` / `message.reply()`.
+ * @param {BaseInteraction|Message} interaction - The interaction to reply to.
+ * @param {Discord.InteractionReplyOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export async function replyTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    if(interaction instanceof Discord.Message) return interaction.reply(options);
+    return (await interaction.reply({ withResponse: true, ...options })).resource.message;
+}
+
+/**
+ * Edit the deferred reply of an interaction with a translation key.
+ * @param {BaseInteraction} interaction - The interaction to edit the reply of.
+ * @param {Discord.InteractionEditReplyOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export async function editReplyTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return interaction.editReply(options);
+}
+
+/**
+ * Follow up an interaction with a translation key.
+ * @param {BaseInteraction} interaction - The interaction to follow up.
+ * @param {Discord.InteractionReplyOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export async function followUpTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return (await interaction.followUp({ withResponse: true, ...options })).resource.message;
+}
+
+/**
+ * Update the message of a component interaction with a translation key.
+ * @param {Discord.MessageComponentInteraction|Discord.ModalSubmitInteraction} interaction - The interaction to update.
+ * @param {Discord.InteractionUpdateOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export async function updateTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return (await interaction.update({ withResponse: true, ...options })).resource.message;
+}
+
+/**
+ * Send a message to the channel of an interaction with a translation key.
+ * @param {BaseInteraction|Message} interaction - The interaction whose channel to send to.
+ * @param {Discord.MessageCreateOptions} key - The translation key to send.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export async function sendTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return interaction.channel.send(options);
+}
+
+/**
+ * Show a modal on an interaction from a translation key.
+ * @param {BaseInteraction} interaction - The interaction to show the modal on.
+ * @param {Discord.APIModalInteractionResponseCallbackData} key - The translation key for the modal.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<void>}
+ */
+export async function showModalTl(interaction, key, ...placeholders) {
+    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
+    const modal = getModal(key, placeholders);
+    return interaction.showModal(modal);
 }
 
 /**

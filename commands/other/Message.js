@@ -26,6 +26,6 @@ export default class Message extends Command {
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
         const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
-        return interaction.replyTl(keys.commands.message.success, argPlaceholder, { warning });
+        return interaction.editReplyTl(keys.commands.message.success, argPlaceholder, { warning });
     }
 }

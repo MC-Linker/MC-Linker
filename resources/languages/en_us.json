@@ -2726,10 +2726,7 @@
             "name": "help",
             "description": "Detailed Description of every command.",
             "type": "ChatInput",
-            "contexts": [
-                "Guild",
-                "BotDM"
-            ],
+            "contexts": ["Guild", "BotDM"],
             "options": [
                 {
                     "type": "String",
@@ -2745,10 +2742,7 @@
             "description": "Customize the bot's appearance to your likings.",
             "long_description": "Customize the bot's appearance to your likings. Requires a premium subscription to use, check out the bot's shop in its profile!",
             "type": "ChatInput",
-            "contexts": [
-                "Guild",
-                "BotDM"
-            ]
+            "contexts": ["Guild", "BotDM"]
         },
         "advancements": {
             "name": "advancements",
@@ -2861,9 +2855,7 @@
             "type": "ChatInput",
             "long_description": "Get an image of the current player's inventory.",
             "description": "Get an image of the current player's inventory.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -2884,9 +2876,7 @@
             "type": "ChatInput",
             "long_description": "Look at your and other member's Minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
             "description": "Look at your and other member's Minecraft server stats.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "Subcommand",
@@ -3226,14 +3216,10 @@
         "ban": {
             "name": "ban",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "BanMembers"
-            ],
+            "default_member_permissions": ["BanMembers"],
             "long_description": "Ban a player from the **Minecraft server**. Can only be used with `Ban member` permission!",
             "description": "Ban a player from the Minecraft server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3252,14 +3238,10 @@
         "command": {
             "name": "command",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "Execute any command on the **Minecraft-server**. Can only be executed by admins.",
             "description": "Execute any command on the Minecraft-server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3273,14 +3255,10 @@
         "deop": {
             "name": "deop",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "Deop players on the **Minecraft-server**. Can only be used by admins.",
             "description": "Deop players on the Minecraft-server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3293,14 +3271,10 @@
         "gamemode": {
             "name": "gamemode",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "Change the gamemode of a player on the **Minecraft server**. Can only be used by admins.",
             "description": "Change the gamemode of a player on the Minecraft-server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3337,14 +3311,10 @@
         "kick": {
             "name": "kick",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "KickMembers"
-            ],
+            "default_member_permissions": ["KickMembers"],
             "long_description": "Kick a player from the **Minecraft server**. Can only be used with `Kick member` permission!",
             "description": "Kick a player from the Minecraft server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3363,14 +3333,10 @@
         "op": {
             "name": "op",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "OP players on the **Minecraft server**. Can only be used by admins.",
             "description": "OP players on the Minecraft server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3383,14 +3349,10 @@
         "unban": {
             "name": "unban",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "BanMembers"
-            ],
+            "default_member_permissions": ["BanMembers"],
             "long_description": "Unban a banned player from the **Minecraft server**. Can only be used with `Ban member` permissions.",
             "description": "Unban a banned player from the Minecraft server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3405,9 +3367,7 @@
             "type": "ChatInput",
             "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.wiki/w/Formatting_codes#Color_codes).",
             "description": "Send private chat messages to members on the server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3428,18 +3388,14 @@
             "type": "ChatInput",
             "long_description": "View information about the connected **Minecraft server**.",
             "description": "View information about the connected Minecraft server.",
-            "contexts": [
-                "Guild"
-            ]
+            "contexts": ["Guild"]
         },
         "userinfo": {
             "name": "userinfo",
             "type": "ChatInput",
             "long_description": "View information about the specified **Minecraft user**.",
             "description": "View information about the specified Minecraft user.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3454,9 +3410,7 @@
             "type": "ChatInput",
             "long_description": "Connect or disconnect your Minecraft Java-Edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
             "description": "Connect your Minecraft account with the bot.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "Subcommand",
@@ -3481,14 +3435,10 @@
         "statchannel": {
             "name": "statchannel",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "Manage statchannels in the server that will show the current player count of the Minecraft server or it's online status.",
             "description": "Manage statchannels in the server.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "SubcommandGroup",
@@ -3582,14 +3532,10 @@
         "chatchannel": {
             "name": "chatchannel",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
             "description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "Subcommand",
@@ -3686,14 +3632,10 @@
         "connect": {
             "name": "connect",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "Connect your Minecraft Java-Edition server with the bot.\n**You'll first have to download and install the plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/).**",
             "description": "Connect your Minecraft server with the bot.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "String",
@@ -3732,26 +3674,18 @@
         "disconnect": {
             "name": "disconnect",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
             "description": "Disconnect your Minecraft server from the bot.",
-            "contexts": [
-                "Guild"
-            ]
+            "contexts": ["Guild"]
         },
         "rolesync": {
             "name": "rolesync",
             "type": "ChatInput",
-            "default_member_permissions": [
-                "Administrator"
-            ],
+            "default_member_permissions": ["Administrator"],
             "long_description": "Manage roles that will sync their members to a Minecraft team, LuckPerms group, or vault-supported group.",
             "description": "Manage roles that will sync their members to a Minecraft team or group (LuckPerms/Vault).",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "Subcommand",

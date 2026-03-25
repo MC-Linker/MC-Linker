@@ -60,7 +60,7 @@ export default class CustomizeTokenModal extends Component {
         catch(err) {
             if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG') {
                 const invalidTokenOptions = getReplyOptions(keys.custom_bot.create.warnings.invalid_token);
-                return await interaction.replyOptions({
+                return await interaction.editReply({
                     ...invalidTokenOptions,
                     files: [
                         new AttachmentBuilder('./resources/images/custom_bot/reset_token.png', { name: 'invalid_token.gif' }),
@@ -85,19 +85,19 @@ export default class CustomizeTokenModal extends Component {
         });
 
         try {
-            await interaction.replyTl(keys.custom_bot.create.step.building);
+            await interaction.editReplyTl(keys.custom_bot.create.step.building);
             await customBotConnection.init(token);
 
-            await interaction.replyTl(keys.custom_bot.create.step.starting_up);
+            await interaction.editReplyTl(keys.custom_bot.create.step.starting_up);
             await customBotConnection.start();
         }
         catch(err) {
             logger.error(err, `Failed to start custom bot ${customBotConnection.containerName}`);
             await client.customBots.disconnect(customBotConnection);
-            return await interaction.replyTl(keys.custom_bot.errors.start_failed);
+            return await interaction.editReplyTl(keys.custom_bot.errors.start_failed);
         }
 
-        await interaction.replyTl(keys.custom_bot.create.step.deploying);
+        await interaction.editReplyTl(keys.custom_bot.create.step.deploying);
         // TODO add deploy -r for linked roles
         logger.info((await execAsync(`docker exec ${customBotConnection.containerName} node scripts/deploy.js deploy -g`, {
             env: customBotConnection.dockerEnv,

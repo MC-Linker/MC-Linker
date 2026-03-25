@@ -50,7 +50,7 @@ export default class Help extends AutocompleteCommand {
                 { 'invite_link': client.config.supportServerInvite },
                 await ph.allCommands(),
             ));
-            return interaction.replyOptions({ embeds: [helpEmbed] });
+            return interaction.editReply({ embeds: [helpEmbed] });
         }
 
         const command = keys.data[commandName];
@@ -59,7 +59,7 @@ export default class Help extends AutocompleteCommand {
 
             //Show command list of category
             if(!commands.size) {
-                return interaction.replyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName.toTitleCase() });
+                return interaction.editReplyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName.toTitleCase() });
             }
 
             for(let command of commands.values()) {
@@ -78,7 +78,7 @@ export default class Help extends AutocompleteCommand {
                 ph.commandName('help'),
             ));
 
-            return interaction.replyOptions({ embeds: [helpEmbed] });
+            return interaction.editReply({ embeds: [helpEmbed] });
         }
         else {
             const slashCommand = await fetchCommand(client.application.commands, command.name);
@@ -95,7 +95,7 @@ export default class Help extends AutocompleteCommand {
                 },
                 await ph.commandName(commandName, false),
             ));
-            return interaction.replyOptions({ embeds: [helpEmbed] });
+            return interaction.editReply({ embeds: [helpEmbed] });
 
             /**
              * @param {ApplicationCommand|import('discord.js').ApplicationCommandSubCommand} command

@@ -150,7 +150,7 @@ export default class Inventory extends Command {
         const invEmbed = getEmbed(keys.commands.inventory.success.final, { username: user.username });
         if(isCached) setCachedFooter(invEmbed);
         // Send without buttons if showDetails is false
-        if(!showDetails) return await interaction.replyOptions({ files: [invAttach], embeds: [invEmbed] });
+        if(!showDetails) return await interaction.editReply({ files: [invAttach], embeds: [invEmbed] });
 
         const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach);
         const pagination = new Pagination(client, interaction, paginationPages, {

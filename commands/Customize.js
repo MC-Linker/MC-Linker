@@ -26,10 +26,10 @@ export default class Customize extends Command {
 
         // If user is not subscribed, let them customize server appearance
         if(!interaction.entitlements.find(e => e.skuId === CustomBotConnectionManager.CUSTOM_BOT_SKU_ID)) {
-            if(!interaction.inGuild()) return await interaction.replyTl(keys.commands.customize.warnings.no_entitlement_guild);
+            if(!interaction.inGuild()) return await interaction.editReplyTl(keys.commands.customize.warnings.no_entitlement_guild);
 
             if(!interaction.memberPermissions.any([PermissionFlagsBits.Administrator, PermissionFlagsBits.ManageGuild])) {
-                return await interaction.replyTl(keys.main.no_access.no_permission_command, {
+                return await interaction.editReplyTl(keys.main.no_access.no_permission_command, {
                     permission: 'Administrator / Manage Server',
                 });
             }
@@ -47,10 +47,11 @@ export default class Customize extends Command {
                 componentType: ComponentType.Button,
             });
             buttonCollector.on('collect', async btnInteraction => {
+                addTranslatedResponses(btnInteraction);
                 if(btnInteraction.customId === additionalButton.data.custom_id)
                     // Must be change presence button, because sku button does not emit event
-                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.change_presence_modal));
-                else await btnInteraction.showModal(getModal(keys.commands.customize.customize_guild_appearance_modal));
+                    await btnInteraction.showModalTl(keys.custom_bot.custom_bot_manager.change_presence_modal);
+                else await btnInteraction.showModalTl(keys.commands.customize.customize_guild_appearance_modal);
             });
             buttonCollector.on('end', () => message.edit({ components: disableComponents(message.components) }));
 

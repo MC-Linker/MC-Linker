@@ -2,7 +2,7 @@ import CustomBotConnection from '../CustomBotConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 import Wizard from '../../helpers/Wizard.js';
 import keys from '../../../utilities/keys.js';
-import { addTranslatedResponses, getComponent, getModal, getReplyOptions, ph } from '../../../utilities/messages.js';
+import { addTranslatedResponses, getComponent, getReplyOptions, ph } from '../../../utilities/messages.js';
 import Discord, {
     ActionRowBuilder,
     AttachmentBuilder,
@@ -116,8 +116,10 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
         });
-        collector.on('collect', btnInteraction =>
-            btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal)));
+        collector.on('collect', btnInteraction => {
+            addTranslatedResponses(btnInteraction);
+            btnInteraction.showModalTl(keys.custom_bot.create.token_modal);
+        });
 
         return message;
     }
@@ -148,7 +150,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         else buttonsRow1.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
         mainMessage.components = [buttonsRow1, buttonsRow2].map(b => new ActionRowBuilder().addComponents(b));
 
-        const message = await interaction.replyOptions(mainMessage);
+        const message = await interaction.editReply(mainMessage);
 
         const buttonCollector = message.createMessageComponentCollector({
             time: 60_000 * 14,
@@ -167,13 +169,13 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                         buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
                         mainMessage.components[0].setComponents(buttonsRow1);
                         mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.started;
-                        await interaction.replyOptions(mainMessage);
+                        await interaction.editReply(mainMessage);
 
-                        await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.start);
+                        await btnInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.start);
                     }
                     catch(err) {
                         logger.error(err, 'Failed to start custom bot connection');
-                        await btnInteraction.replyTl(keys.custom_bot.errors.start_failed);
+                        await btnInteraction.editReplyTl(keys.custom_bot.errors.start_failed);
                     }
                     break;
                 case 'custom_bot_stop':
@@ -184,20 +186,20 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
                     mainMessage.components[0].setComponents(buttonsRow1);
                     mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
-                    await interaction.replyOptions(mainMessage);
+                    await interaction.editReply(mainMessage);
 
-                    await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.stop);
+                    await btnInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.stop);
                     break;
                 case 'custom_bot_delete':
                     // modals cant be deferred
-                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete_modal));
+                    await btnInteraction.showModalTl(keys.custom_bot.custom_bot_manager.confirm_delete_modal);
                     break;
                 case 'custom_bot_change_presence':
-                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.change_presence_modal));
+                    await btnInteraction.showModalTl(keys.custom_bot.custom_bot_manager.change_presence_modal);
                     break;
             }
         });
-        buttonCollector.on('end', () => interaction.replyOptions({ components: disableComponents(mainMessage.components) }));
+        buttonCollector.on('end', () => interaction.editReply({ components: disableComponents(mainMessage.components) }));
         const modalCollector = new InteractionCollector(this.client, {
             time: 60_000 * 14,
             interactionType: InteractionType.ModalSubmit,
@@ -210,7 +212,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
 
                 if(modalInteraction.fields.getTextInputValue('confirm_delete') !== 'delete')
-                    return await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation);
+                    return await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation);
 
                 const reason = modalInteraction.fields.getTextInputValue('confirm_delete_reason') || 'No reason provided';
                 logger.info(`Custom bot connection for ${modalInteraction.user.id} deleted with reason: "${reason}"`);
@@ -224,8 +226,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     status: keys.custom_bot.custom_bot_manager.status.deleted,
                 });
                 newMainMessageOptions.components = [];
-                await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.delete, await ph.commandName('customize'));
-                await interaction.replyOptions(newMainMessageOptions);
+                await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.delete, await ph.commandName('customize'));
+                await interaction.editReply(newMainMessageOptions);
             }
             else if(modalInteraction.customId === 'customize_set_presence') {
                 await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -234,8 +236,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
                 const success = await customBotConnection.setPresence(newPresence);
                 if(!success)
-                    return await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed, { error: success.message });
-                await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
+                    return await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed, { error: success.message });
+                await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
             }
         });
     }

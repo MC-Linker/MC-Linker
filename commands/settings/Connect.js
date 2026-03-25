@@ -42,15 +42,15 @@ export default class Connect extends Command {
         const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, { code: `${interaction.guildId}:${code}` });
         if(server) {
             const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, { ip: server.displayIp });
-            await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed], components: [] });
+            await interaction.editReply({ embeds: [verificationEmbed, alreadyConnectedEmbed], components: [] });
         }
-        else await interaction.replyOptions({ embeds: [verificationEmbed], components: [] });
+        else await interaction.editReply({ embeds: [verificationEmbed], components: [] });
 
         const timeout = setTimeout(async () => {
             await client.broadcastEval((c, { id }) => {
                 c.commands.get('connect').wsVerification.delete(id);
             }, { context: { id: interaction.guildId }, shard: 0 });
-            await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
+            await interaction.editReplyTl(keys.commands.connect.warnings.no_reply_in_time);
         }, 180_000);
 
         this.pendingInteractions.set(interaction.guildId, { interaction, timeout });
@@ -95,7 +95,7 @@ export default class Connect extends Command {
      */
     askForRequiredRolesToJoin(interaction) {
         return new Promise(async resolve => {
-            const logChooserMsg = await interaction.replyTl(keys.commands.connect.step.choose_roles);
+            const logChooserMsg = await interaction.editReplyTl(keys.commands.connect.step.choose_roles);
 
             const roleCollector = logChooserMsg.createMessageComponentCollector({
                 componentType: Discord.ComponentType.RoleSelect,
@@ -130,7 +130,7 @@ export default class Connect extends Command {
             //Only one of the collectors should listen to the end event
             roleCollector.on('end', async collected => {
                 if(collected.size === 0 || methodCollector.total === 0) {
-                    await interaction.replyTl(keys.commands.connect.warnings.not_collected);
+                    await interaction.editReplyTl(keys.commands.connect.warnings.not_collected);
                     return resolve(null);
                 }
 
