@@ -25,8 +25,8 @@ Discord.
 - **Server & User Info** — View detailed information about your connected server (properties, gamerules, operators,
   server icon) or any connected user.
 - **Private Messaging** — Send private messages to online players from Discord.
-- **Custom Bot** — Subscribers can run MC Linker as their own custom Discord bot with a custom presence.
 - **Per-Server Customization** — Adjust the appearance of the bot (avatar, username, banner, etc.) to your likings.
+- **Custom Bot** — Subscribers can run MC Linker as their own custom Discord bot with a custom presence.
 - **Localization** — Translated via [Crowdin](https://crowdin.com/project/minecraft-smp-bot); contributions welcome.
 
 ## Setup
