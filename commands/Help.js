@@ -2,7 +2,6 @@ import { addPh, fetchCommand, getEmbed, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
-import fs from 'fs-extra';
 
 export default class Help extends AutocompleteCommand {
 
@@ -18,22 +17,16 @@ export default class Help extends AutocompleteCommand {
 
     async autocomplete(interaction, client) {
         //Push categories
-        const commandDirs = await fs.readdir('./commands/');
         const categories = [];
-        for(const dir of commandDirs) {
-            if((await fs.stat(`./commands/${dir}`)).isDirectory()) categories.push({
-                name: dir.toTitleCase(),
-                value: dir,
-            });
-        }
-        const choices = client.commands.values().toArray()
-            .map(c => {
-                if(this.excludedCommands.includes(c.name)) return null;
-                return { name: c.name.toTitleCase(), value: c.name };
-            }).filter(c => c);
+        for(const [_, command] of client.commands)
+            if(!categories.includes(command.category)) categories.push(command.category);
 
-        const respondArrray = categories
-            .concat(choices)
+        const choices = client.commands.values().toArray()
+            .filter(c => this.excludedCommands.includes(c.name))
+            .map(c => ({ name: c.name.toTitleCase(), value: c.name }))
+            .filter(c => c);
+
+        const respondArrray = categories.concat(choices)
             .filter(o => o.value.includes(interaction.options.getFocused().toLowerCase()))
             .slice(0, 24);
         return await interaction.respond(respondArrray);
