@@ -150,7 +150,6 @@ rootLogger._enableDebug = function(filter = {}) {
     };
     rootLogger._debugFilters.set(_filterKey(normalized), normalized);
     _refreshAllChildLevels();
-    return rootLogger.getDebugFilters();
 };
 
 rootLogger._disableDebug = function(filter) {
@@ -160,13 +159,11 @@ rootLogger._disableDebug = function(filter) {
     };
     rootLogger._debugFilters.delete(_filterKey(normalized));
     _refreshAllChildLevels();
-    return rootLogger.getDebugFilters();
 };
 
 rootLogger._clearDebugFilters = function() {
     rootLogger._debugFilters.clear();
     _refreshAllChildLevels();
-    return rootLogger.getDebugFilters();
 };
 
 /**
@@ -183,8 +180,9 @@ rootLogger.getDebugFilters = function() {
  * @param {MCLinker} client
  * @param {DebugFilter} [filter={}]
  */
-rootLogger.enableDebug = function(client, filter = {}) {
-    void client.broadcastEval((c, { filter }) => c.logger._enableDebug(filter), { context: { filter } });
+rootLogger.enableDebug = async function(client, filter = {}) {
+    await client.broadcastEval((c, { filter }) => c.logger._enableDebug(filter), { context: { filter } });
+    return rootLogger.getDebugFilters();
 };
 
 /**
@@ -192,16 +190,18 @@ rootLogger.enableDebug = function(client, filter = {}) {
  * @param {MCLinker} client
  * @param {DebugFilter} filter
  */
-rootLogger.disableDebug = function(client, filter) {
-    void client.broadcastEval((c, { filter }) => c.logger._disableDebug(filter), { context: { filter } });
+rootLogger.disableDebug = async function(client, filter) {
+    await client.broadcastEval((c, { filter }) => c.logger._disableDebug(filter), { context: { filter } });
+    return rootLogger.getDebugFilters();
 };
 
 /**
  * Clears all debug filters on all shards via broadcastEval.
  * @param {MCLinker} client
  */
-rootLogger.clearDebugFilters = function(client) {
-    void client.broadcastEval(c => c.logger._clearDebugFilters());
+rootLogger.clearDebugFilters = async function(client) {
+    await client.broadcastEval(c => c.logger._clearDebugFilters());
+    return rootLogger.getDebugFilters();
 };
 
 /**
