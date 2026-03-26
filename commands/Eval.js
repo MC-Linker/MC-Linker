@@ -39,6 +39,7 @@ export default class Eval extends Command {
             ownerOnly: true,
             allowPrefix: true,
             allowUser: true,
+            defer: false,
         });
     }
 
@@ -47,7 +48,7 @@ export default class Eval extends Command {
 
         let command = interaction.content.substring(client.config.prefix.length + this.name.length).trim();
         command = command.replace(/^```(?:js|javascript)?\s*([\s\S]*?)\s*```$/g, '$1').trim();
-        if(!command) return interaction.editReplyTl(keys.api.command.warnings.no_argument, { argument: 'command' });
+        if(!command) return interaction.sendTl(keys.api.command.warnings.no_argument, { argument: 'command' });
 
         const evalOut = new ConsoleOutput();
         evalOut.setEncoding('utf8');
@@ -101,14 +102,14 @@ export default class Eval extends Command {
             //If it's too long, send an attachment
             if(out.length > MaxEmbedFieldValueLength) {
                 const attachment = new Discord.AttachmentBuilder(Buffer.from(out, 'utf8'), { name: 'Eval.js' });
-                return interaction.editReply({ files: [attachment] });
+                return interaction.send({ files: [attachment] });
             }
             else {
-                return interaction.editReplyTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, MaxEmbedFieldValueLength)) });
+                return interaction.sendTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, MaxEmbedFieldValueLength)) });
             }
         }
         catch(err) {
-            return interaction.editReplyTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, MaxEmbedFieldValueLength)) }, ph.error(err));
+            return interaction.sendTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, MaxEmbedFieldValueLength)) }, ph.error(err));
         }
     }
 }

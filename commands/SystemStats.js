@@ -1,7 +1,7 @@
 import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import os from 'node:os';
-import { getReplyOptions, ph } from '../utilities/messages.js';
+import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import Discord from 'discord.js';
 import { durationString } from '../utilities/utils.js';
 import fs from 'fs-extra';
@@ -27,7 +27,7 @@ export default class SystemStats extends Command {
     async execute(interaction, client, args, server) {
         if(!await super.execute(interaction, client, args, server)) return;
 
-        const stats = await interaction.editReplyTl(keys.commands.systemstats.step.measuring);
+        const stats = addTranslatedResponses(await interaction.sendTl(keys.commands.systemstats.step.measuring));
 
         for(const [key, value] of Object.entries(process.memoryUsage())) {
             logger.debug(`Memory usage by ${key}, ${value / 1000000}MB`);
@@ -43,7 +43,7 @@ export default class SystemStats extends Command {
             });
         }));
 
-        return await stats.edit(getReplyOptions(keys.commands.systemstats.success, {
+        return await stats.editTl(keys.commands.systemstats.success, {
             platform: `${os.platform()} ${os.release()}`,
             os_uptime: `${durationString(os.uptime() * 1000)}`,
             bot_uptime: `${durationString(client.uptime)}`,
@@ -57,7 +57,7 @@ export default class SystemStats extends Command {
             storage_usage: `${storage?.used ? (storage.used / this.gigabyte).toFixed(2) : 'N/A'}`,
             max_storage: `${storage?.max ? (storage.max / this.gigabyte).toFixed(2) : 'N/A'}`,
             storage_usage_percent: `${storage?.used ? (storage.used / storage.max * 100).toFixed(2) : 'N/A'}`,
-        }, ph.colors()));
+        }, ph.colors());
     }
 
     async getCPUUsage() {

@@ -5,6 +5,7 @@ import {
     InteractionUpdateOptions,
     Message,
     MessageCreateOptions,
+    MessageEditOptions,
 } from 'discord.js';
 
 export interface TranslatedResponses {
@@ -17,6 +18,8 @@ export interface TranslatedResponses {
     updateTl(key: InteractionUpdateOptions, ...placeholders: Object[]): Promise<Message | null>,
 
     sendTl(key: MessageCreateOptions, ...placeholders: Object[]): Promise<Message | null>,
+
+    editTl(key: MessageEditOptions, ...placeholders: Object[]): Promise<Message | null>,
 
     showModalTl(key: APIModalInteractionResponseCallbackData, ...placeholders: Object[]): Promise<void>,
 }

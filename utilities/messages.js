@@ -34,8 +34,9 @@ export function addTranslatedResponses(interaction) {
     interaction.editReplyTl = (key, ...placeholders) => editReplyTl(interaction, key, ...placeholders);
     interaction.followUpTl = (key, ...placeholders) => followUpTl(interaction, key, ...placeholders);
     interaction.updateTl = (key, ...placeholders) => updateTl(interaction, key, ...placeholders);
-    interaction.sendTl = (key, ...placeholders) => sendTl(interaction, key, ...placeholders);
     interaction.showModalTl = (key, ...placeholders) => showModalTl(interaction, key, ...placeholders);
+    interaction.sendTl = (key, ...placeholders) => sendTl(interaction, key, ...placeholders);
+    interaction.editTl = (key, ...placeholders) => editTl(interaction, key, ...placeholders);
     return interaction;
 }
 
@@ -401,9 +402,29 @@ export async function updateTl(interaction, key, ...placeholders) {
  * @returns {Promise<?Message>}
  */
 export async function sendTl(interaction, key, ...placeholders) {
+    if(!interaction.channel.isSendable()) {
+        logger.error(new Error(), `Could not reply: Channel is not sendable: ${interaction.channel}`);
+    }
     const options = resolveKey(interaction, key, placeholders);
     if(!options) return null;
     return interaction.channel.send(options);
+}
+
+/**
+ * Edits a message with a translation key.
+ * @param {Message} interaction - The interaction object containing information about the user and context.
+ * @param {Discord.MessageEditOptions} key - The key used to resolve the localization or text entry.
+ * @param {...any} placeholders - Optional placeholders to replace dynamic parts of the key.
+ * @return {Promise<?Message>} A promise that resolves to the sent message object, or null if no options were resolved or message is not editable.
+ */
+export async function editTl(interaction, key, ...placeholders) {
+    if(!interaction.editable) {
+        logger.error(new Error(), `Could not edit message: ${interaction}`);
+        return null;
+    }
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return interaction.edit(options);
 }
 
 /**
