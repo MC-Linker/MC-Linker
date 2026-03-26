@@ -150,6 +150,7 @@ rootLogger._enableDebug = function(filter = {}) {
     };
     rootLogger._debugFilters.set(_filterKey(normalized), normalized);
     _refreshAllChildLevels();
+    return rootLogger.getDebugFilters();
 };
 
 rootLogger._disableDebug = function(filter) {
@@ -159,11 +160,13 @@ rootLogger._disableDebug = function(filter) {
     };
     rootLogger._debugFilters.delete(_filterKey(normalized));
     _refreshAllChildLevels();
+    return rootLogger.getDebugFilters();
 };
 
 rootLogger._clearDebugFilters = function() {
     rootLogger._debugFilters.clear();
     _refreshAllChildLevels();
+    return rootLogger.getDebugFilters();
 };
 
 /**
