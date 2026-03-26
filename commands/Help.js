@@ -23,15 +23,16 @@ export default class Help extends AutocompleteCommand {
         const categories = [];
         for(const command of filteredCommands)
             if(command.category && !categories.includes(command.category))
-                categories.push({ name: command.category.toTitleCase(), value: command.category });
+                categories.push(command.category);
 
-        const choices = filteredCommands
-            .map(c => ({ name: c.name.toTitleCase(), value: c.name }))
+        const commandNames = filteredCommands
+            .map(c => c.name)
             .filter(c => c);
 
-        const respondArray = categories.concat(choices)
-            .filter(o => o.value.includes(interaction.options.getFocused().toLowerCase()))
-            .slice(0, 25);
+        const respondArray = categories.concat(commandNames)
+            .filter(o => o.includes(interaction.options.getFocused().toLowerCase()))
+            .slice(0, 25)
+            .map(o => ({ name: o.toTitleCase(), value: o }));
         return await interaction.respond(respondArray);
     }
 
