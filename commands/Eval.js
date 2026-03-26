@@ -102,7 +102,7 @@ export default class Eval extends Command {
             //If it's too long, send an attachment
             if(out.length > MaxEmbedFieldValueLength) {
                 const attachment = new Discord.AttachmentBuilder(Buffer.from(out, 'utf8'), { name: 'Eval.js' });
-                return interaction.send({ files: [attachment] });
+                return interaction.channel.send({ files: [attachment] });
             }
             else {
                 return interaction.sendTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, MaxEmbedFieldValueLength)) });
