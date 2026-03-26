@@ -219,5 +219,4 @@ rootLogger.setLogLevelForShard = _setLogLevelForShard;
 rootLogger.setShardId = setShardId;
 rootLogger.debug('[Pino] Logger initialized');
 
-await new Promise(r => setTimeout(r, 1000));
 export default rootLogger;
