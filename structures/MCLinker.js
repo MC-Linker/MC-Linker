@@ -18,7 +18,6 @@ import Schemas from '../resources/schemas.js';
 import rootLogger from '../utilities/logger.js';
 import features from '../utilities/logFeatures.js';
 import { convert } from '../scripts/convert.js';
-import { BroadcastEvalMC } from '../types/BroadcastEvalType.d.ts';
 
 const logger = rootLogger.child({ feature: features.core.startup });
 
