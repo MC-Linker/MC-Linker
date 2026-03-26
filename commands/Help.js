@@ -22,7 +22,7 @@ export default class Help extends AutocompleteCommand {
         //Push categories
         const categories = [];
         for(const command of filteredCommands)
-            if(!categories.includes(command.category))
+            if(command.category && !categories.includes(command.category))
                 categories.push({ name: command.category.toTitleCase(), value: command.category });
 
         const choices = filteredCommands
@@ -31,7 +31,7 @@ export default class Help extends AutocompleteCommand {
 
         const respondArray = categories.concat(choices)
             .filter(o => o.value.includes(interaction.options.getFocused().toLowerCase()))
-            .slice(0, 24);
+            .slice(0, 25);
         return await interaction.respond(respondArray);
     }
 
