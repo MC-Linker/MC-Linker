@@ -1,4 +1,4 @@
-import featuresJson from '../resources/logFeatures.json' with { type: 'json' };
+import featuresJson from '../../resources/logFeatures.json' with { type: 'json' };
 
 const pathSymbol = Symbol('feature path');
 

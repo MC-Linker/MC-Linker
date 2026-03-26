@@ -1,8 +1,8 @@
 import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
 import Discord, { AttachmentBuilder, OAuth2Scopes, PermissionsBitField, Routes } from 'discord.js';
-import rootLogger from '../utilities/logger.js';
-import features from '../utilities/logFeatures.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import Wizard from '../structures/helpers/Wizard.js';
 import { addTranslatedResponses, getReplyOptions } from '../utilities/messages.js';

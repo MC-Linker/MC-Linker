@@ -75,7 +75,7 @@ export default class Help extends AutocompleteCommand {
             helpEmbed.addFields(addPh(
                 keys.commands.help.success.category.embeds[0].fields[1],
                 { 'invite_link': client.config.supportServerInvite },
-                ph.commandName('help'),
+                await ph.commandName('help'),
             ));
 
             return interaction.editReply({ embeds: [helpEmbed] });

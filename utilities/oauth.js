@@ -1,7 +1,7 @@
 import Discord from 'discord.js';
 import crypto from 'crypto';
-import rootLogger from './logger.js';
-import features from './logFeatures.js';
+import rootLogger from './logger/logger.js';
+import features from './logger/features.js';
 
 const logger = rootLogger.child({ feature: features.utilities.oauth });
 

@@ -1,9 +1,9 @@
 import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBits } from 'discord.js';
-import { addTranslatedResponses, getComponent, getModal, getReplyOptions } from '../utilities/messages.js';
-import rootLogger from '../utilities/logger.js';
-import features from '../utilities/logFeatures.js';
+import { addTranslatedResponses, getComponent, getReplyOptions } from '../utilities/messages.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
 import { disableComponents } from '../utilities/utils.js';
 import CustomBotConnectionManager from '../structures/connections/managers/CustomBotConnectionManager.js';
 

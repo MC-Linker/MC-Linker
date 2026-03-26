@@ -311,14 +311,15 @@ Adhere to the code style of this project for all edits. The full ruleset is in `
 
 ## Logging
 
-The logger is a Pino instance exported as `rootLogger` from `utilities/logger.js`. Each file creates a module-level
-child logger bound to a feature name from `utilities/logFeatures.js`.
+The logger is a Pino instance exported as `rootLogger` from `utilities/logger/logger.js`. Each file creates a
+module-level
+child logger bound to a feature name from `utilities/logger/features.js`.
 
 ### Import pattern (every file that logs)
 
 ```javascript
-import rootLogger from '../utilities/logger.js';
-import features from '../utilities/logFeatures.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chat });
 ```

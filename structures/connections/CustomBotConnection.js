@@ -1,6 +1,6 @@
 import Connection from './Connection.js';
-import rootLogger from '../../utilities/logger.js';
-import features from '../../utilities/logFeatures.js';
+import rootLogger from '../../utilities/logger/logger.js';
+import features from '../../utilities/logger/features.js';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import { execAsync } from '../../utilities/utils.js';

@@ -15,8 +15,8 @@ import Discord, {
 } from 'discord.js';
 import keys, { getObjectPath } from './keys.js';
 import util from 'util';
-import rootLogger from './logger.js';
-import features from './logFeatures.js';
+import rootLogger from './logger/logger.js';
+import features from './logger/features.js';
 import { ComponentSizeInActionRow, MaxActionRows, MaxActionRowSize } from './utils.js';
 
 const logger = rootLogger.child({ feature: features.utilities.messages });
@@ -320,12 +320,12 @@ export function addPh(key, ...placeholders) {
  * @returns {?Discord.InteractionReplyOptions}
  */
 function resolveKey(interaction, key, placeholders) {
-    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
-
-    if(!interaction || !key || !placeholders) {
+    if(!interaction || !key) {
         logger.error('Could not reply: No message, key or placeholders specified');
         return null;
     }
+
+    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
 
     const options = getReplyOptions(key, placeholders);
     if(!interaction) return null;

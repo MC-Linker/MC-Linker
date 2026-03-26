@@ -1,6 +1,6 @@
 import { AutocompleteInteraction, CommandInteraction } from 'discord.js';
 import { MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../utilities/utils.js';
-import logger from '../utilities/logger.js';
+import logger from '../utilities/logger/logger.js';
 import Command from './Command.js';
 
 export default class AutocompleteCommand extends Command {

@@ -1,6 +1,6 @@
 import WSEvent from '../WSEvent.js';
-import rootLogger from '../../utilities/logger.js';
-import features from '../../utilities/logFeatures.js';
+import rootLogger from '../../utilities/logger/logger.js';
+import features from '../../utilities/logger/features.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import { fetchMembersIfCacheDiffers } from '../../utilities/utils.js';
 

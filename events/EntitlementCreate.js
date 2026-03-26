@@ -2,8 +2,8 @@ import Event from '../structures/Event.js';
 import { getReplyOptions, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { Events } from 'discord.js';
-import rootLogger from '../utilities/logger.js';
-import features from '../utilities/logFeatures.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.events.entitlementCreate });
 

@@ -10,8 +10,8 @@ import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import rootLogger from '../../utilities/logger.js';
-import features from '../../utilities/logFeatures.js';
+import rootLogger from '../../utilities/logger/logger.js';
+import features from '../../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.commands.main.advancements });
 

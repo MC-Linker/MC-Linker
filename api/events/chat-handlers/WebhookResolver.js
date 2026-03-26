@@ -1,6 +1,6 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
-import rootLogger from '../../../utilities/logger.js';
-import features from '../../../utilities/logFeatures.js';
+import rootLogger from '../../../utilities/logger/logger.js';
+import features from '../../../utilities/logger/features.js';
 import { WEBHOOK_TOKEN_REFRESH_TTL_MS } from './ChatConstants.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.webhookResolver });

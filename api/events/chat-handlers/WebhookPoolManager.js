@@ -1,8 +1,8 @@
 import Discord, { PermissionFlagsBits, RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
 import { getEmbed } from '../../../utilities/messages.js';
-import rootLogger from '../../../utilities/logger.js';
-import features from '../../../utilities/logFeatures.js';
+import rootLogger from '../../../utilities/logger/logger.js';
+import features from '../../../utilities/logger/features.js';
 import {
     CHAT_WEBHOOK_LEGACY_NAMES,
     CHAT_WEBHOOK_NAME,

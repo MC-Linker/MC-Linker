@@ -1,5 +1,6 @@
 import pino from 'pino';
 import path from 'path';
+import fs from 'fs';
 
 /**
  * @typedef {{ feature?: string, guildId?: string, userId?: string }} DebugFilter
@@ -45,23 +46,28 @@ function setShardId(newShardId) {
     shardId = newShardId;
 }
 
+function getLogFilePath() {
+    const date = new Date().toISOString().split('T')[0];
+    const base = path.resolve(`./logs/${date}.log`);
+    if(!fs.existsSync(base)) return base;
+    for(let i = 1; ; i++) {
+        const indexed = path.resolve(`./logs/${date}-${i}.log`);
+        if(!fs.existsSync(indexed)) return indexed;
+    }
+}
+
 export const pinoTransport = {
     targets: [
         {
-            target: 'pino-pretty',
+            target: new URL('./transport.js', import.meta.url).href,
             level: 'debug',
-            options: {
-                colorize: true,
-                translateTime: 'SYS:standard',
-                ignore: 'pid,hostname,shardId,feature,guildId,userId',
-                messageFormat: '{if feature}[{feature}] {end}{if shardId}[{shardId}] {end}{msg}',
-            },
+            options: {},
         },
         {
             target: 'pino/file',
             level: 'debug',
             options: {
-                destination: path.resolve(`./logs/${new Date().toISOString().split('T')[0]}.log`),
+                destination: getLogFilePath(),
                 mkdir: true,
             },
         },

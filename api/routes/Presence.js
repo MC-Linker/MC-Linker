@@ -1,7 +1,7 @@
 import Route from '../Route.js';
 import MCLinker from '../../structures/MCLinker.js';
-import rootLogger from '../../utilities/logger.js';
-import features from '../../utilities/logFeatures.js';
+import rootLogger from '../../utilities/logger/logger.js';
+import features from '../../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.api.routes.presence });
 

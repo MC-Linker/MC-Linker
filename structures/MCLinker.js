@@ -15,8 +15,8 @@ import MCLinkerAPI from '../api/MCLinkerAPI.js';
 import * as utils from '../utilities/utils.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
-import rootLogger from '../utilities/logger.js';
-import features from '../utilities/logFeatures.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
 import { convert } from '../scripts/convert.js';
 
 const logger = rootLogger.child({ feature: features.core.startup });

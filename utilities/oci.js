@@ -1,8 +1,8 @@
 import ociCore from 'oci-core';
 import ociCommon from 'oci-common';
 import ociConstants from '../oci/constants.json' with { type: 'json' };
-import rootLogger from './logger.js';
-import features from './logFeatures.js';
+import rootLogger from './logger/logger.js';
+import features from './logger/features.js';
 
 const logger = rootLogger.child({ feature: features.utilities.oci });
 

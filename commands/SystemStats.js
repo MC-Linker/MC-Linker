@@ -5,8 +5,8 @@ import { getReplyOptions, ph } from '../utilities/messages.js';
 import Discord from 'discord.js';
 import { durationString } from '../utilities/utils.js';
 import fs from 'fs-extra';
-import rootLogger from '../utilities/logger.js';
-import features from '../utilities/logFeatures.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.commands.systemStats });
 

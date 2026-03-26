@@ -26,8 +26,8 @@ import { exec } from 'child_process';
 import { FilePath, ProtocolError } from '../structures/protocol/Protocol.js';
 import fs from 'fs-extra';
 import path from 'path';
-import rootLogger from './logger.js';
-import features from './logFeatures.js';
+import rootLogger from './logger/logger.js';
+import features from './logger/features.js';
 
 const logger = rootLogger.child({ feature: features.utilities.utils });
 
