@@ -16,14 +16,16 @@ export default class Help extends AutocompleteCommand {
     }
 
     async autocomplete(interaction, client) {
+        /** @type {Command[]} */
+        const filteredCommands = client.commands.values().toArray().filter(c => !this.excludedCommands.includes(c.name));
+
         //Push categories
         const categories = [];
-        for(const [_, command] of client.commands)
+        for(const command of filteredCommands)
             if(!categories.includes(command.category))
                 categories.push({ name: command.category.toTitleCase(), value: command.category });
 
-        const choices = client.commands.values().toArray()
-            .filter(c => this.excludedCommands.includes(c.name))
+        const choices = filteredCommands
             .map(c => ({ name: c.name.toTitleCase(), value: c.name }))
             .filter(c => c);
 
