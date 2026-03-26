@@ -1,5 +1,9 @@
 import { CommandInteraction, Message, MessageFlags } from 'discord.js';
 import keys from '../utilities/keys.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
+
+const logger = rootLogger.child({ feature: features.structures.command });
 
 export default class Command {
 
@@ -94,7 +98,10 @@ export default class Command {
      * @abstract
      */
     async execute(interaction, client, args, server) {
-        await interaction.replyTl(keys.api.command.executed, { args: args.join(' ') });
+        logger.debug({
+            userId: interaction.user.id,
+            guildId: interaction.guildId,
+        }, `Command ${interaction.commandName ?? interaction.content} executed with args: ${args.join(' ')}`);
         if(this.defer) await interaction.deferReply?.({ flags: this.ephemeral ? MessageFlags.Ephemeral : undefined });
 
         if(!this.allowUser && !interaction.inGuild()) return interaction.editReplyTl(keys.main.no_access.not_in_guild);

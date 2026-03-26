@@ -321,15 +321,13 @@ export function addPh(key, ...placeholders) {
  */
 function resolveKey(interaction, key, placeholders) {
     if(!interaction || !key) {
-        logger.error('Could not reply: No message, key or placeholders specified');
+        logger.error(new Error(), 'Could not reply: No message or key specified');
         return null;
     }
 
     placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
 
     const options = getReplyOptions(key, placeholders);
-    if(!interaction) return null;
-
     if(!options.content && !options.embeds && !options.components && !options.files) return null;
 
     // noinspection JSDeprecatedSymbols

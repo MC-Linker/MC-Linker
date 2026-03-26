@@ -48,6 +48,8 @@
         }
     },
     "structures": {
+        "command": null,
+        "component": null,
         "mclinker": null,
         "protocol": {
             "websocket": null

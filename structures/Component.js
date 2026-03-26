@@ -1,6 +1,9 @@
 import { ComponentType, PermissionsBitField, User } from 'discord.js';
-import { ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
+
+const logger = rootLogger.child({ feature: features.structures.component });
 
 export default class Component {
 
@@ -72,7 +75,7 @@ export default class Component {
      * @abstract
      */
     async execute(interaction, client) {
-        await interaction.replyTl(keys.api.component.clicked, ph.std(interaction));
+        logger.debug({ userId: interaction.user.id, guildId: interaction.guildId }, `Component ${this.id} clicked`);
         if(this.defer) await interaction.deferUpdate();
 
         if(this.permissions) {
