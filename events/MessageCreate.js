@@ -93,6 +93,7 @@ export default class MessageCreate extends Event {
             await command.execute(message, client, args, server);
         }
         catch(err) {
+            logger.error(err, `Could not execute command ${message.commandName}`);
             await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
         }
     }
