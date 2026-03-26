@@ -55,7 +55,7 @@ export default class GuildMemberUpdate extends Event {
 
         if(!user) return;
         // Skip if the change is already reflected in players — this was a bot-initiated update
-        if(noPlayerChange) return;
+        if(noChangeToPlayers) return;
 
         let resp;
         if(addedRole) resp = await server.protocol.addSyncedRoleMember(syncedRole, uuid);

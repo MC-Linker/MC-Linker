@@ -16,6 +16,6 @@ export default class DisconnectForce extends WSEvent {
      * @returns {void}
      */
     execute(data, server, client) {
-        client.serverConnections.disconnect(server);
+        void client.serverConnections.disconnect(server);
     }
 }

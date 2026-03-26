@@ -45,5 +45,5 @@ export async function exposeCustomBotPorts(minPort, maxPort) {
 
     logger.debug(`Custom Bot ports updated to ${JSON.stringify(newPortRange)}`);
 
-    await vcnClient.close();
+    vcnClient.close();
 }

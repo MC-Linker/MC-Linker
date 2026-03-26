@@ -47,7 +47,7 @@ export default class Customize extends Command {
                 componentType: ComponentType.Button,
             });
             buttonCollector.on('collect', async btnInteraction => {
-                addTranslatedResponses(btnInteraction);
+                btnInteraction = addTranslatedResponses(btnInteraction);
                 if(btnInteraction.customId === additionalButton.data.custom_id)
                     // Must be change presence button, because sku button does not emit event
                     await btnInteraction.showModalTl(keys.custom_bot.custom_bot_manager.change_presence_modal);

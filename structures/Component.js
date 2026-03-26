@@ -95,8 +95,8 @@ export default class Component {
         }
 
         if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
-            if(process.env.NODE_ENV === 'production' && (await client.application.fetchSKUs()).size) {
-                await interaction.editReplyTl(keys.custom_bot.warnings.no_entitlement);
+            if(process.env.NODE_ENV === 'production') {
+                await interaction.editReplyTl(keys.commands.customize.warnings.no_entitlement);
                 return false;
             }
         }

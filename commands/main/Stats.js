@@ -194,7 +194,7 @@ export default class Stats extends Command {
                     }
 
                     // Draw number
-                    await utils.drawMinecraftNumber(
+                    utils.drawMinecraftNumber(
                         ctx, value,
                         x + headerSize + numberPadding[0],
                         y + numberPadding[1],

@@ -330,7 +330,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 }
                 catch(err) {
                     socketLogger.error(err, 'Error while processing websocket connection');
-                    this.client.broadcastEval(
+                    void this.client.broadcastEval(
                         (c, {
                             id,
                             error,

@@ -202,7 +202,7 @@ export default class CustomBotConnection extends Connection {
                 this.client.api.off('/custom-bot-api-ready', readyListener);
 
                 try {
-                    this.down();
+                    void this.down();
                 }
                 catch(_) {}
             }, 60_000);
@@ -214,7 +214,7 @@ export default class CustomBotConnection extends Connection {
                     this.client.api.off('/custom-bot-api-ready', readyListener);
 
                     try {
-                        this.down();
+                        void this.down();
                     }
                     catch(_) {}
                 }
@@ -224,7 +224,7 @@ export default class CustomBotConnection extends Connection {
                 reject(err);
                 clearTimeout(waitForStartTimeout);
                 this.client.api.off('/custom-bot-api-ready', readyListener);
-                this.down();
+                void this.down();
             });
         });
     }

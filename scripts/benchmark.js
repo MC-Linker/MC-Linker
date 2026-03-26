@@ -136,4 +136,4 @@ client.once('ready', async () => {
     process.exit(0);
 });
 
-client.login(TOKEN);
+void client.login(TOKEN);
