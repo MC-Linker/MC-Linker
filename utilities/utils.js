@@ -1022,14 +1022,16 @@ export function memoize(fn, parameters = undefined) {
  * Checks if a member has permission to send messages in a channel.
  * @param {GuildMember} member - The member to check.
  * @param {GuildChannel} channel - The channel to check.
+ * @param {Boolean} [sendEmbed=true] - Whether the member needs to be able to send embeds.
  * @returns {Boolean} - Whether the member can send messages in the channel.
  */
-export function canSendMessages(member, channel) {
+export function canSendMessages(member, channel, sendEmbed = true) {
     const permissions = channel.permissionsFor(member);
     if(!permissions.has(PermissionFlagsBits.ViewChannel)) return false;
 
     if(channel.isThread() && !permissions.has(PermissionFlagsBits.SendMessagesInThreads)) return false;
     else if(!permissions.has(PermissionFlagsBits.SendMessages)) return false;
+    else if(sendEmbed && !permissions.has(PermissionFlagsBits.EmbedLinks)) return false;
     return true;
 }
 
