@@ -2512,7 +2512,7 @@
                     "embeds": [
                         {
                             "title": "Cannot Send Messages",
-                            "description": "The bot does not have permission to send messages in this channel."
+                            "description": "The bot does not have permission to send messages or embeds in this channel."
                         }
                     ]
                 }
