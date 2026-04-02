@@ -2,11 +2,7 @@ import Event from '../structures/Event.js';
 import { ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { sendToServer } from '../utilities/utils.js';
-import rootLogger from '../utilities/logger/logger.js';
-import features from '../utilities/logger/features.js';
 import { Events } from 'discord.js';
-
-const logger = rootLogger.child({ feature: features.events.guildCreate });
 
 /**
  * Handles the Discord guildCreate event for the MC-Linker bot.
@@ -19,7 +15,13 @@ export default class GuildCreate extends Event {
         });
     }
 
-    async execute(client, guild) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Guild]} args - [0] The guild.
+     * @param logger
+     */
+    async run(client, [guild], logger) {
         logger.info(`Joined a guild: ${guild.name}: ${guild.memberCount} members. Shard is now on ${client.guilds.cache.size} servers!`);
         await sendToServer(
             guild,

@@ -3,7 +3,7 @@ import { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import rootLogger from '../../utilities/logger/logger.js';
 import features from '../../utilities/logger/features.js';
 
-const logger = rootLogger.child({ feature: features.api.socketio.statsChannel });
+const logger = rootLogger.child({ feature: features.api.events['update-stats-channels'] });
 
 
 /**
@@ -40,7 +40,7 @@ export default class UpdateStatsChannel extends WSEvent {
             let onlinePlayers = await server.protocol.getOnlinePlayers();
             if(onlinePlayers == null) onlinePlayers = 0; // Assume 0 online if we can't reach server
             else if(onlinePlayers.status === 'error') {
-                logger.debug(`Failed to fetch online players for channel ${channel.id}: ${onlinePlayers.error}`);
+                logger.debug({ guildId: server.id }, `Failed to fetch online players for channel ${channel.id}: ${onlinePlayers.error}`);
                 return null;
             }
             else onlinePlayers = onlinePlayers.data.length;
@@ -75,7 +75,7 @@ export default class UpdateStatsChannel extends WSEvent {
             }
             catch(err) {
                 if(err instanceof RateLimitError) {
-                    logger.debug(`Rate limited syncing channel ${channel.id}, scheduling retry in ${err.retryAfter}ms`);
+                    logger.debug({ guildId: server.id }, `Rate limited syncing channel ${channel.id}, scheduling retry in ${err.retryAfter}ms`);
                     UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, channel, server.id, client);
                 }
                 else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
@@ -83,7 +83,7 @@ export default class UpdateStatsChannel extends WSEvent {
                     if(!regChannel) continue;
                     await server.edit({ statChannels: regChannel.data });
                 }
-                else logger.debug(`Failed to sync channel ${channel.id}: ${err.message}`);
+                else logger.debug({ guildId: server.id }, `Failed to sync channel ${channel.id}: ${err.message}`);
             }
         }
     }
@@ -121,7 +121,7 @@ export default class UpdateStatsChannel extends WSEvent {
 
                 if(err instanceof RateLimitError) {
                     // Still rate limited — re-schedule
-                    logger.debug(`Still rate limited for channel ${channelId}, retrying in ${err.retryAfter}ms`);
+                    logger.debug({ guildId: serverId }, `Still rate limited for channel ${channelId}, retrying in ${err.retryAfter}ms`);
                     UpdateStatsChannel.scheduleRetry(channelId, err.retryAfter, channel, serverId, client);
                 }
                 else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
@@ -129,7 +129,7 @@ export default class UpdateStatsChannel extends WSEvent {
                     if(!regChannel) return;
                     await server.edit({ statChannels: regChannel.data });
                 }
-                else logger.debug(`Failed to update channel ${channelId} on retry: ${err.message}`);
+                else logger.debug({ guildId: serverId }, `Failed to update channel ${channelId} on retry: ${err.message}`);
             }
         }, retryAfter);
 
@@ -137,13 +137,13 @@ export default class UpdateStatsChannel extends WSEvent {
     }
 
     /**
-     * Handles stats-channel updates.
-     * @param {UpdateStatsChannelRequest} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {Promise<void>}
+     * @inheritdoc
+     * @param {UpdateStatsChannelRequest} data - The request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         // event can be one of: 'online', 'offline', 'members'
         const { event } = data;
 
@@ -173,7 +173,7 @@ export default class UpdateStatsChannel extends WSEvent {
             }
             catch(err) {
                 if(err instanceof RateLimitError) {
-                    logger.debug(`Rate limited for channel ${channel.id}, scheduling retry in ${err.retryAfter}ms`);
+                    logger.debug({ guildId: server.id }, `Rate limited for channel ${channel.id}, scheduling retry in ${err.retryAfter}ms`);
                     UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, channel, server.id, client);
                 }
                 else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
@@ -181,7 +181,7 @@ export default class UpdateStatsChannel extends WSEvent {
                     if(!regChannel) continue;
                     await server.edit({ statChannels: regChannel.data });
                 }
-                else logger.debug(`Failed to update channel ${channel.id}: ${err.message}`);
+                else logger.debug({ guildId: server.id }, `Failed to update channel ${channel.id}: ${err.message}`);
             }
         }
     }

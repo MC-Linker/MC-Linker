@@ -4,10 +4,6 @@ import { cleanEmojis } from '../utilities/utils.js';
 import { evalOnGuildShard } from '../utilities/shardingUtils.js';
 import keys from '../utilities/keys.js';
 import { Events, MessageType } from 'discord.js';
-import rootLogger from '../utilities/logger/logger.js';
-import features from '../utilities/logger/features.js';
-
-const logger = rootLogger.child({ feature: features.events.messageCreate });
 
 /**
  * Handles the Discord messageCreate event for the MC-Linker bot.
@@ -20,7 +16,13 @@ export default class MessageCreate extends Event {
         });
     }
 
-    async execute(client, message) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Message]} args - [0] The message.
+     * @param logger
+     */
+    async run(client, [message], logger) {
         if(message.author.bot) return;
 
         message = addTranslatedResponses(message);
@@ -44,7 +46,7 @@ export default class MessageCreate extends Event {
                         }, { serverId: conn.id, userId: message.author.id, userConnId: userConnection.id });
                     }
                     catch(err) {
-                        logger.debug(`Skipping role sync for server ${conn.id} of ${username}: ${err.message}`);
+                        logger.debug({ guildId: conn.id }, `Skipping role sync for server ${conn.id} of ${username}: ${err.message}`);
                     }
                 }));
 
@@ -71,6 +73,8 @@ export default class MessageCreate extends Event {
             }
 
             logger.debug({
+                guildId: message.guildId,
+                userId: message.author.id,
                 content,
                 author: message.member?.displayName ?? message.author.displayName,
                 channel: message.channel.name,
@@ -93,7 +97,11 @@ export default class MessageCreate extends Event {
             await command.execute(message, client, args, server);
         }
         catch(err) {
-            logger.error(err, `Could not execute command ${commandName}`);
+            logger.error({
+                err,
+                guildId: message.guildId,
+                userId: message.author.id,
+            }, `Could not execute command ${commandName}`);
             await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
         }
     }

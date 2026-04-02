@@ -17,8 +17,15 @@ export default class StatChannel extends Command {
     }
 
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, string|import('discord.js').GuildChannel, import('discord.js').GuildChannel|string, string, string]} args - [0] The subcommand (add/remove/list), [1] The stat type or channel, [2] The channel or name template, [3] The name template or offline name, [4] The offline name.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const subcommand = args[0];
         if(subcommand === 'add') {

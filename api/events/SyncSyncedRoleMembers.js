@@ -1,10 +1,7 @@
 import WSEvent from '../WSEvent.js';
-import rootLogger from '../../utilities/logger/logger.js';
-import features from '../../utilities/logger/features.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import { fetchMembersIfCacheDiffers } from '../../utilities/utils.js';
 
-const logger = rootLogger.child({ feature: features.api.socketio.syncRoleMembers });
 
 export default class SyncSyncedRoleMembers extends WSEvent {
 
@@ -28,15 +25,13 @@ export default class SyncSyncedRoleMembers extends WSEvent {
      */
 
     /**
-     * Syncs the members of a synced role between the MC plugin and Discord.
-     * Diffs the plugin's player list against Discord role membership
-     * and returns which players the plugin needs to add or remove.
-     * @param {SyncSyncedRoleMembersRequest} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {Promise<SyncSyncedRoleMembersResponse>}
+     * @inheritdoc
+     * @param {SyncSyncedRoleMembersRequest} data - The request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         const roleIndex = server.syncedRoles.findIndex(r => r.id === data.id);
         if(roleIndex === -1) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
@@ -54,7 +49,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             await fetchMembersIfCacheDiffers(client, guild);
         }
         catch(err) {
-            logger.error(err, `Failed to fetch guild ${server.id} for synced role sync`);
+            logger.error({ err, guildId: server.id }, `Failed to fetch guild ${server.id} for synced role sync`);
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
 
@@ -70,7 +65,10 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
-                        logger.error(err, `Failed to revoke Discord role ${data.id} from unknown user ${memberId} during sync`);
+                        logger.error({
+                            err,
+                            guildId: server.id,
+                        }, `Failed to revoke Discord role ${data.id} from unknown user ${memberId} during sync`);
                     }
                 }
             }
@@ -101,7 +99,10 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                             await member.roles.add(discordRole);
                         }
                         catch(err) {
-                            logger.error(err, `Failed to grant Discord role ${data.id} to ${uuid} during sync`);
+                            logger.error({
+                                err,
+                                guildId: server.id,
+                            }, `Failed to grant Discord role ${data.id} to ${uuid} during sync`);
 
                             // Revert players list change if role grant fails
                             if(syncedRole.players.includes(uuid)) {
@@ -136,7 +137,10 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
-                        logger.error(err, `Failed to revoke Discord role ${data.id} from ${uuid} during sync`);
+                        logger.error({
+                            err,
+                            guildId: server.id,
+                        }, `Failed to revoke Discord role ${data.id} from ${uuid} during sync`);
 
                         // Revert players list change if role revoke fails
                         if(!syncedRole.players.includes(uuid)) {

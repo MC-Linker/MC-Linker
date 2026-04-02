@@ -4,6 +4,7 @@ const pathSymbol = Symbol('feature path');
 
 function createFeatureProxy(paths) {
     let features = getFeatureFromPath(paths);
+    if(features === undefined) features = null; // treat missing keys as leaf nodes
     if(typeof features !== 'object') return features;
 
     return new Proxy(features !== null ? features : {}, {

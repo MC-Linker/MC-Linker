@@ -1,9 +1,5 @@
 import Event from '../structures/Event.js';
-import rootLogger from '../utilities/logger/logger.js';
-import features from '../utilities/logger/features.js';
 import { Events } from 'discord.js';
-
-const logger = rootLogger.child({ feature: features.events.guildDelete });
 
 /**
  * Handles the Discord guildDelete event for the MC-Linker bot.
@@ -16,7 +12,13 @@ export default class GuildDelete extends Event {
         });
     }
 
-    async execute(client, guild) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Guild]} args - [0] The guild.
+     * @param logger
+     */
+    async run(client, [guild], logger) {
         if(!client.isReady() || !guild.available) return;
         logger.info(`Left a guild: ${guild.name}: ${guild.memberCount} members. Shard is now on ${client.guilds.cache.size} servers!`);
         await client.serverConnections.disconnect(guild.id);

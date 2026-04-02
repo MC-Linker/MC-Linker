@@ -97,8 +97,15 @@ export default class Inventory extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[UserResponse, boolean]} args - [0] The resolved user, [1] Whether to show item details.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         /** @type {UserResponse} */
         const user = args[0];

@@ -1,10 +1,6 @@
 import { PermissionFlagsBits } from 'discord.js';
 import WSEvent from '../WSEvent.js';
-import rootLogger from '../../utilities/logger/logger.js';
-import features from '../../utilities/logger/features.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
-
-const logger = rootLogger.child({ feature: features.api.socketio.getInviteUrl });
 
 export default class GetInviteURL extends WSEvent {
 
@@ -22,13 +18,13 @@ export default class GetInviteURL extends WSEvent {
      */
 
     /**
-     * Returns an existing invite url or creates a new one if none exists.
-     * @param {{}} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {GetInviteURLResponse}
+     * @inheritdoc
+     * @param {{}} data - No request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         let guild;
         try {
             guild = await client.guilds.fetch(server.id);
@@ -39,7 +35,7 @@ export default class GetInviteURL extends WSEvent {
             await guild.invites.fetch();
         }
         catch(err) {
-            logger.debug(err, `Failed to fetch invites for guild ${server.id}`);
+            logger.debug({ err, guildId: server.id }, `Failed to fetch invites for guild ${server.id}`);
         }
 
         if(!guild) return { status: 'error', error: ProtocolError.NOT_FOUND };
@@ -56,7 +52,7 @@ export default class GetInviteURL extends WSEvent {
             await guild.channels.fetch(); // cache channels
         }
         catch(err) {
-            logger.debug(err, `Failed to fetch channels for guild ${server.id}`);
+            logger.debug({ err, guildId: server.id }, `Failed to fetch channels for guild ${server.id}`);
         }
 
         /** @type {?import('discord.js').BaseGuildTextChannel} */

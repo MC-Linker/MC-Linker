@@ -155,7 +155,10 @@ export default class ChatQueueProcessor {
             return { consumed: items.length };
         }
 
-        logger.error(err, `Failed sending queued ${logContext} webhook payload for channel ${chatChannel.id}`);
+        logger.error({
+            err,
+            guildId: guild.id,
+        }, `Failed sending queued ${logContext} webhook payload for channel ${chatChannel.id}`);
         return { consumed: 1 };
     }
 
@@ -190,7 +193,7 @@ export default class ChatQueueProcessor {
             if(!webhook) continue;
 
             try {
-                logger.debug(`Processing dispatch queue (kind=${kind}, items=${items.length}, batchMode=${batchMode}, webhook=${webhookId})`);
+                logger.debug({ guildId: guild.id }, `Processing dispatch queue (kind=${kind}, items=${items.length}, batchMode=${batchMode}, webhook=${webhookId})`);
                 const result = await this._dispatchToProcessor(kind, discordChannel, webhook, items, batchMode);
                 this.monitor.recordProcessed(result.consumed);
                 return result;
@@ -200,7 +203,7 @@ export default class ChatQueueProcessor {
                     this.monitor.recordRateLimit('webhook.send');
                     const retryMs = err.retryAfter ?? 1000;
                     bestRetryMs = bestRetryMs === null ? retryMs : Math.min(bestRetryMs, retryMs);
-                    logger.debug(`Webhook ${webhookId} rate-limited for channel ${chatChannel.id}; retry in ${retryMs}ms`);
+                    logger.debug({ guildId: guild.id }, `Webhook ${webhookId} rate-limited for channel ${chatChannel.id}; retry in ${retryMs}ms`);
                     continue;
                 }
                 return this.handleWebhookSendError(err, items, webhookId, chatChannel, server, guild, kind);
@@ -213,7 +216,7 @@ export default class ChatQueueProcessor {
             const webhook = await this.monitor.track('resolve', () => this.resolver.resolve(this.client, guild, server, chatChannel, newId));
             if(webhook) {
                 try {
-                    logger.debug(`Processing dispatch queue with scaled-up webhook (kind=${kind}, items=${items.length}, webhook=${newId})`);
+                    logger.debug({ guildId: guild.id }, `Processing dispatch queue with scaled-up webhook (kind=${kind}, items=${items.length}, webhook=${newId})`);
                     const result = await this._dispatchToProcessor(kind, discordChannel, webhook, items, batchMode);
                     this.monitor.recordProcessed(result.consumed);
                     return result;
@@ -230,7 +233,7 @@ export default class ChatQueueProcessor {
             }
         }
 
-        logger.debug(`All webhooks rate-limited for channel ${chatChannel.id}; retry in ${bestRetryMs}ms (items=${items.length}, batchMode=${batchMode})`);
+        logger.debug({ guildId: guild.id }, `All webhooks rate-limited for channel ${chatChannel.id}; retry in ${bestRetryMs}ms (items=${items.length}, batchMode=${batchMode})`);
         return { consumed: 0, retryMs: bestRetryMs ?? 1000 };
     }
 
@@ -252,7 +255,10 @@ export default class ChatQueueProcessor {
             });
         }
         catch(err) {
-            logger.error(err, `Failed sending high-load skipped summary for channel ${item.channelId}`);
+            logger.error({
+                err,
+                guildId: item.guildId,
+            }, `Failed sending high-load skipped summary for channel ${item.channelId}`);
         }
     }
 
@@ -273,7 +279,7 @@ export default class ChatQueueProcessor {
             const payload = buildChatBatchPayload(items);
             if(payload.consumed <= 0) return { consumed: 1 };
 
-            logger.debug(`Sending batched chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
+            logger.debug({ guildId: discordChannel.guildId }, `Sending batched chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
             await this.monitor.track('webhook.send', () => webhook.send({
                 content: payload.content,
                 ...getSystemWebhookSendOptions(discordChannel),
@@ -286,7 +292,7 @@ export default class ChatQueueProcessor {
             const payload = buildChatPayload(items);
             if(payload.consumed <= 0) return { consumed: 1 };
 
-            logger.debug(`Sending chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
+            logger.debug({ guildId: discordChannel.guildId }, `Sending chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
             await this.monitor.track('webhook.send', () => webhook.send({
                 content: payload.content,
                 username: payload.username,
@@ -321,7 +327,7 @@ export default class ChatQueueProcessor {
 
         if(consumed <= 0) return { consumed: 1 };
 
-        logger.debug(`Sending embed payload to channel ${channelId} (consumed=${consumed}, embeds=${embeds.length})`);
+        logger.debug({ guildId: discordChannel.guildId }, `Sending embed payload to channel ${channelId} (consumed=${consumed}, embeds=${embeds.length})`);
         await this.monitor.track('webhook.send', () => webhook.send({
             embeds,
             ...getSystemWebhookSendOptions(discordChannel),
@@ -366,7 +372,7 @@ export default class ChatQueueProcessor {
         if(lastMessage && lastMessage.raw.length + combinedRaw.length <= appendCharLimit) {
             try {
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
-                logger.debug(`Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
+                logger.debug({ guildId: discordChannel.guildId }, `Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
                 await this.monitor.track('webhook.editMessage', () => webhook.editMessage(lastMessage.id, {
                     content: toAnsiCodeBlock(nextRaw),
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
@@ -392,11 +398,11 @@ export default class ChatQueueProcessor {
                 if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) throw err;
                 // Previous console message no longer editable/deleted; reset and send a fresh message below.
                 this.lastConsoleMessages.delete(discordChannel.id);
-                logger.debug(`Falling back to fresh console webhook send for channel ${discordChannel.id}: ${err?.message ?? 'unknown error'}`);
+                logger.debug({ guildId: discordChannel.guildId }, `Falling back to fresh console webhook send for channel ${discordChannel.id}: ${err?.message ?? 'unknown error'}`);
             }
         }
 
-        logger.debug(`Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
+        logger.debug({ guildId: discordChannel.guildId }, `Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
         let sentMessage = await this.monitor.track('webhook.send', () => webhook.send({
             content: toAnsiCodeBlock(combinedRaw),
             ...getSystemWebhookSendOptions(discordChannel),

@@ -135,13 +135,13 @@ export default class WebhookPoolManager {
             if(availableSlots <= 0) return null;
 
             const webhookId = await this.createWebhook(channelConfig, server, guild, webhookChannel, webhookChannel);
-            logger.debug(`Scaled up webhook pool for channel ${channelConfig.id} (total=${channelConfig.webhooks.length})`);
+            logger.debug({ guildId: guild.id }, `Scaled up webhook pool for channel ${channelConfig.id} (total=${channelConfig.webhooks.length})`);
             return webhookId;
         }
         catch(err) {
             if(err instanceof RateLimitError) {
                 this.monitor?.recordRateLimit('scaleUp');
-                logger.debug(`Rate-limited scaling up webhook pool for channel ${channelConfig.id}`);
+                logger.debug({ guildId: guild.id }, `Rate-limited scaling up webhook pool for channel ${channelConfig.id}`);
                 return null;
             }
             throw err;
@@ -192,14 +192,17 @@ export default class WebhookPoolManager {
             catch(err) {
                 if(err instanceof RateLimitError) {
                     this.monitor?.recordRateLimit('deleteWebhook');
-                    logger.debug(`Rate-limited deleting idle webhook ${webhookId}, deferring prune`);
+                    logger.debug({ guildId: guild.id }, `Rate-limited deleting idle webhook ${webhookId}, deferring prune`);
                     break;
                 }
                 if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.UnknownChannel) {
                     removed.push(webhookId);
                 }
                 else {
-                    logger.error(err, `Failed deleting idle webhook ${webhookId} for channel ${channelConfig.id}`);
+                    logger.error({
+                        err,
+                        guildId: guild.id,
+                    }, `Failed deleting idle webhook ${webhookId} for channel ${channelConfig.id}`);
                     break;
                 }
             }
@@ -224,7 +227,7 @@ export default class WebhookPoolManager {
 
         if(regChannel) await server.edit({ chatChannels: regChannel.data });
 
-        logger.debug(`Pruned ${toRemove.length} idle webhook(s) for channel ${channelConfig.id} (remaining=${channelConfig.webhooks.length})`);
+        logger.debug({ guildId: guild.id }, `Pruned ${toRemove.length} idle webhook(s) for channel ${channelConfig.id} (remaining=${channelConfig.webhooks.length})`);
     }
 
     /**
@@ -256,7 +259,7 @@ export default class WebhookPoolManager {
         if(!discordChannel) return null;
 
         if(!discordChannel.permissionsFor) {
-            logger.warn(`permissionsFor not available on channel ${discordChannel.id} (type=${discordChannel.type})`);
+            logger.warn({ guildId: guild.id }, `permissionsFor not available on channel ${discordChannel.id} (type=${discordChannel.type})`);
             return null;
         }
         const canManageWebhooks = discordChannel.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.ManageWebhooks);
@@ -294,7 +297,7 @@ export default class WebhookPoolManager {
     scheduleWebhookCreation(channel, server, guild, retryAfter) {
         if(this.pendingCreations.has(channel.id)) return;
 
-        logger.debug(`Scheduling deferred webhook creation for channel ${channel.id} in ${retryAfter}ms`);
+        logger.debug({ guildId: guild.id }, `Scheduling deferred webhook creation for channel ${channel.id} in ${retryAfter}ms`);
 
         const timer = setTimeout(async () => {
             this.pendingCreations.delete(channel.id);
@@ -302,7 +305,7 @@ export default class WebhookPoolManager {
                 await this.ensureWebhookForChatChannel(channel, server, guild);
             }
             catch(err) {
-                logger.debug(`Deferred webhook creation failed for channel ${channel.id}: ${err.message}`);
+                logger.debug({ guildId: guild.id }, `Deferred webhook creation failed for channel ${channel.id}: ${err.message}`);
             }
         }, retryAfter + 1000);
 
@@ -354,7 +357,7 @@ export default class WebhookPoolManager {
         let webhook;
         try {
             webhook = await webhookChannel.createWebhook(getChatWebhookCreationOptions());
-            logger.debug(`Created new webhook ${webhook.id} for channel ${channelConfig.id}`);
+            logger.debug({ guildId: guild.id }, `Created new webhook ${webhook.id} for channel ${channelConfig.id}`);
         }
         catch(err) {
             if(err instanceof RateLimitError) throw err;
@@ -362,7 +365,7 @@ export default class WebhookPoolManager {
             if(!webhook) {
                 this.monitor?.recordCreationFailure();
                 this.failedCreations.set(channelConfig.id, Date.now() + CREATION_FAILURE_COOLDOWN_MS);
-                logger.error(err, `Failed creating webhook for channel ${channelConfig.id}`);
+                logger.error({ err, guildId: guild.id }, `Failed creating webhook for channel ${channelConfig.id}`);
                 await errorChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_create_webhook)] }).catch(() => {});
                 return null;
             }

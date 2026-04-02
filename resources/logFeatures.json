@@ -4,43 +4,66 @@
         "startup": null
     },
     "commands": {
-        "main": {
-            "stats": null,
-            "inventory": null,
-            "advancements": null
-        },
-        "settings": {
-            "roleSync": null
-        },
+        "account": null,
+        "advancements": null,
+        "ban": null,
+        "chatchannel": null,
+        "command": null,
+        "connect": null,
         "customize": null,
-        "systemStats": null
+        "deop": null,
+        "disconnect": null,
+        "eval": null,
+        "gamemode": null,
+        "help": null,
+        "inventory": null,
+        "kick": null,
+        "message": null,
+        "op": null,
+        "rolesync": null,
+        "serverinfo": null,
+        "statchannel": null,
+        "stats": null,
+        "systemstats": null,
+        "unban": null,
+        "userinfo": null
     },
     "events": {
-        "interactionCreate": null,
-        "messageCreate": null,
-        "guildCreate": null,
-        "guildDelete": null,
+        "clientReady": null,
         "entitlementCreate": null,
         "entitlementDelete": null,
-        "clientReady": null
+        "guildCreate": null,
+        "guildDelete": null,
+        "interactionCreate": null,
+        "messageCreate": null
     },
     "components": {
-        "customizeTokenModal": null
+        "customize_token_modal": null
     },
     "api": {
         "fastify": null,
         "socketio": {
-            "chat": null,
+            "connection": null,
+            "middleware": null,
             "chatHandlers": {
                 "dispatch": null,
                 "queueProcessor": null,
                 "monitor": null,
                 "webhookPool": null,
                 "webhookResolver": null
-            },
-            "statsChannel": null,
-            "syncRoleMembers": null,
-            "getInviteUrl": null
+            }
+        },
+        "events": {
+            "add-synced-role-member": null,
+            "chat": null,
+            "disconnect-force": null,
+            "has-required-role": null,
+            "invite-url": null,
+            "remove-synced-role": null,
+            "remove-synced-role-member": null,
+            "sync-synced-role-members": null,
+            "update-stats-channels": null,
+            "verify-user": null
         },
         "routes": {
             "presence": null,
@@ -48,8 +71,6 @@
         }
     },
     "structures": {
-        "command": null,
-        "component": null,
         "mclinker": null,
         "protocol": {
             "websocket": null

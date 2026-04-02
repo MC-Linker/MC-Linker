@@ -11,8 +11,15 @@ export default class Disconnect extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[]} args - No arguments.
+     * @param {ServerConnection} server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         await client.serverConnections.disconnect(server);
         return interaction.editReplyTl(keys.commands.disconnect.success);

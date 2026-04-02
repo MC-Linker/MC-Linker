@@ -10,10 +10,6 @@ import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
-import rootLogger from '../../utilities/logger/logger.js';
-import features from '../../utilities/logger/features.js';
-
-const logger = rootLogger.child({ feature: features.commands.main.stats });
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
@@ -37,8 +33,15 @@ export default class Stats extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, UserResponse, string]} args - [0] The stat category, [1] The resolved user, [2] The sorting order.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const category = args[0];
         const user = args[1];

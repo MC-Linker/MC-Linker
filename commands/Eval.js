@@ -43,8 +43,15 @@ export default class Eval extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[]} args - No arguments.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         let command = interaction.content.substring(client.config.prefix.length + this.name.length).trim();
         command = command.replace(/^```(?:js|javascript)?\s*([\s\S]*?)\s*```$/g, '$1').trim();

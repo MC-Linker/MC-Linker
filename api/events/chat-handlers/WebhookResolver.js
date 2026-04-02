@@ -118,7 +118,10 @@ export default class WebhookResolver {
 
         return await client.fetchWebhook(newId)
             .catch(err => {
-                logger.error(err, `Failed fetching replacement webhook ${newId} for channel ${channelConfig.id}`);
+                logger.error({
+                    err,
+                    guildId: guild.id,
+                }, `Failed fetching replacement webhook ${newId} for channel ${channelConfig.id}`);
                 return null;
             });
     }

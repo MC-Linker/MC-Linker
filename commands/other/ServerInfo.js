@@ -19,8 +19,15 @@ export default class ServerInfo extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[]} args - No arguments.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const serverProperties = await server.protocol.getWithCache(...FilePath.ServerProperties(server.path, server.id));
         const levelDat = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));

@@ -1,3 +1,6 @@
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
+
 /**
  * Base class for Discord event handlers in the MC-Linker bot.
  * Extend this class to implement custom event logic for Discord.js events.
@@ -9,7 +12,7 @@
  *   constructor() {
  *     super({ name: 'ready', once: true });
  *   }
- *   async execute(client) {
+ *   async run(client, logger) {
  *     // Custom logic here
  *   }
  * }
@@ -47,13 +50,28 @@ export default class Event {
     }
 
     /**
-     * Handles the execution of an event.
+     * Creates a child logger and delegates to {@link run}.
      * @param {MCLinker} client - The MCLinker client instance.
-     * @param {...any} args - The event arguments as provided.
+     * @param {...any} args - The event arguments as provided by Discord.js.
+     * @returns {Promise<void>}
+     */
+    async execute(client, ...args) {
+        const logger = rootLogger.child({
+            feature: features.events[this.name],
+        }, { track: false });
+
+        return this.run(client, args, logger);
+    }
+
+    /**
+     * Implements the event's specific logic.
+     * @param {MCLinker} client - The MCLinker client instance.
+     * @param {any[]} args - The event arguments as provided by Discord.js.
+     * @param {import('pino').Logger} logger - A child logger bound to this execution.
      * @returns {Promise<void>}
      * @abstract
      */
-    async execute(client, ...args) {
-        throw new Error(`The execute method has not been implemented in ${this.constructor.name}`);
+    async run(client, args, logger) {
+        throw new Error(`The run method has not been implemented in ${this.constructor.name}`);
     }
 }

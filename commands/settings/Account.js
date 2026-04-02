@@ -22,8 +22,15 @@ export default class Account extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, string]} args - [0] The subcommand (connect/disconnect), [1] The username or UUID to connect.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const subcommand = args[0];
         if(subcommand === 'connect') {

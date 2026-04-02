@@ -3,11 +3,7 @@ import { addTranslatedResponses } from '../utilities/messages.js';
 import { getArgs } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
-import rootLogger from '../utilities/logger/logger.js';
-import features from '../utilities/logger/features.js';
 import { ComponentType, Events, InteractionType } from 'discord.js';
-
-const logger = rootLogger.child({ feature: features.events.interactionCreate });
 
 /**
  * Handles the Discord interactionCreate event for the MC-Linker bot.
@@ -21,11 +17,12 @@ export default class InteractionCreate extends Event {
     }
 
     /**
-     * @inheritDoc
-     * @param {MCLinker} client
-     * @param {import('discord.js').BaseInteraction} interaction
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').BaseInteraction]} args - [0] The interaction.
+     * @param logger
      */
-    async execute(client, interaction) {
+    async run(client, [interaction], logger) {
         interaction = addTranslatedResponses(interaction);
         if(interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
@@ -35,7 +32,11 @@ export default class InteractionCreate extends Event {
                 await command.execute(interaction, client, args, server);
             }
             catch(err) {
-                logger.error(err, `Could not execute command ${interaction.commandName}`);
+                logger.error({
+                    err,
+                    guildId: interaction.guildId,
+                    userId: interaction.user.id,
+                }, `Could not execute command ${interaction.commandName}`);
                 await interaction.editReplyTl(keys.main.errors.could_not_execute_command);
             }
         }
@@ -47,7 +48,11 @@ export default class InteractionCreate extends Event {
                 await command.autocomplete(interaction, client);
             }
             catch(err) {
-                logger.error(err, `Could not autocomplete command ${interaction.commandName}`);
+                logger.error({
+                    err,
+                    guildId: interaction.guildId,
+                    userId: interaction.user.id,
+                }, `Could not autocomplete command ${interaction.commandName}`);
             }
         }
         else if(interaction.isMessageComponent() || interaction.isModalSubmit()) {
@@ -58,7 +63,11 @@ export default class InteractionCreate extends Event {
                 await component.execute(interaction, client);
             }
             catch(err) {
-                logger.error(err, `Could not execute component ${interaction.customId}`);
+                logger.error({
+                    err,
+                    guildId: interaction.guildId,
+                    userId: interaction.user.id,
+                }, `Could not execute component ${interaction.customId}`);
                 await interaction.editReplyTl(keys.main.errors.could_not_execute_button);
             }
         }

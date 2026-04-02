@@ -10,10 +10,6 @@ import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import rootLogger from '../../utilities/logger/logger.js';
-import features from '../../utilities/logger/features.js';
-
-const logger = rootLogger.child({ feature: features.commands.main.advancements });
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
@@ -32,8 +28,15 @@ export default class Advancements extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, UserResponse, boolean]} args - [0] The advancement category, [1] The resolved user, [2] Whether to show details.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         let category = args[0];
         if(category === 'minecraft') category = 'story';

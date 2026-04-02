@@ -58,8 +58,15 @@ export default class ChatChannel extends AutocompleteCommand {
         }
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, string|import('discord.js').BaseGuildTextChannel, boolean, ...string]} args - [0] The subcommand group or subcommand, [1] The subcommand or channel, [2] allowDiscordToMinecraft or filter command parts, [3+] Additional args.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const subcommandGroup = args[0];
         const subcommand = subcommandGroup === 'filter-commands' ? args[1] : args[0];

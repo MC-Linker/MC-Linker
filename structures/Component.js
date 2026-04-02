@@ -3,8 +3,6 @@ import keys from '../utilities/keys.js';
 import rootLogger from '../utilities/logger/logger.js';
 import features from '../utilities/logger/features.js';
 
-const logger = rootLogger.child({ feature: features.structures.component });
-
 export default class Component {
 
     /**
@@ -69,13 +67,19 @@ export default class Component {
 
     /**
      * Handles the execution of this component.
+     * Validates the interaction, creates a child logger, <>and delegates to {@link run}.
      * @param {(import('discord.js').MessageComponentInteraction | import('discord.js').ModalSubmitInteraction) & TranslatedResponses} interaction - The component or modal interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @returns {Promise<?boolean>|?boolean}
-     * @abstract
      */
     async execute(interaction, client) {
-        logger.debug({ userId: interaction.user.id, guildId: interaction.guildId }, `Component ${this.id} clicked`);
+        const logger = rootLogger.child({
+            feature: features.components[this.id],
+            guildId: interaction.guildId,
+            userId: interaction.user.id,
+        }, { track: false });
+
+        logger.debug(`Component ${this.id} clicked`);
         if(this.defer) await interaction.deferUpdate();
 
         if(this.permissions) {
@@ -101,6 +105,18 @@ export default class Component {
             }
         }
 
-        return true;
+        return this.run(interaction, client, logger);
+    }
+
+    /**
+     * Implements the component's specific logic.
+     * @param {(import('discord.js').MessageComponentInteraction | import('discord.js').ModalSubmitInteraction) & TranslatedResponses} interaction - The component or modal interaction.
+     * @param {MCLinker} client - The MCLinker client.
+     * @param {import('pino').Logger} logger - A child logger bound to this execution.
+     * @returns {Promise<?boolean>|?boolean}
+     * @abstract
+     */
+    async run(interaction, client, logger) {
+        throw new Error(`The run method has not been implemented for the ${this.id} component.`);
     }
 }

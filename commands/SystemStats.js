@@ -5,10 +5,6 @@ import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import Discord from 'discord.js';
 import { durationString } from '../utilities/utils.js';
 import fs from 'fs-extra';
-import rootLogger from '../utilities/logger/logger.js';
-import features from '../utilities/logger/features.js';
-
-const logger = rootLogger.child({ feature: features.commands.systemStats });
 
 export default class SystemStats extends Command {
 
@@ -24,8 +20,15 @@ export default class SystemStats extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[]} args - No arguments.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const stats = addTranslatedResponses(await interaction.sendTl(keys.commands.systemstats.step.measuring));
 

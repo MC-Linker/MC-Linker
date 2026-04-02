@@ -17,8 +17,15 @@ export default class Command extends AutocompleteCommand {
         return this.autocompleteFromCommandCompletions(interaction, client);
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[...string]} args - [0+] The command string parts to execute.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const selectedValue = args.join(' ').trim();
         const commandInput = this.resolveAutocompleteValue(selectedValue, interaction);

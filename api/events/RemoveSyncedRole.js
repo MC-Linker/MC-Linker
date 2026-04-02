@@ -15,13 +15,13 @@ export default class AddSyncedRoleMember extends WSEvent {
      */
 
     /**
-     * Removes a synced role from the discord server.
-     * @param {RemoveSyncedRoleRequest} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {Promise<void>}
+     * @inheritdoc
+     * @param {RemoveSyncedRoleRequest} data - The request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         const roleIndex = server.syncedRoles?.findIndex(role => role.id === data.id);
         if(roleIndex === undefined || roleIndex === -1) return;
         server.syncedRoles.splice(roleIndex, 1);

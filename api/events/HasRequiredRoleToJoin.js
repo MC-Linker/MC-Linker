@@ -24,13 +24,13 @@ export default class HasRequiredRoleToJoin extends WSEvent {
      */
 
     /**
-     * Checks whether the minecraft-user has the required role to join the server.
-     * @param {HasRequiredRoleToJoinRequest} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {HasRequiredRoleToJoinResponse}
+     * @inheritdoc
+     * @param {HasRequiredRoleToJoinRequest} data - The request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         if(!server.requiredRoleToJoin) return { status: 'success', data: { hasRole: true } };
         // TODO optimize
         const user = client.userConnections.cache.find(u => u.getUUID(server) === data.uuid);

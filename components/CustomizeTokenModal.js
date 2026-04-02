@@ -1,14 +1,10 @@
 import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
 import Discord, { AttachmentBuilder, OAuth2Scopes, PermissionsBitField, Routes } from 'discord.js';
-import rootLogger from '../utilities/logger/logger.js';
-import features from '../utilities/logger/features.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import Wizard from '../structures/helpers/Wizard.js';
 import { addTranslatedResponses, getReplyOptions } from '../utilities/messages.js';
 import { execAsync } from '../utilities/utils.js';
-
-const logger = rootLogger.child({ feature: features.components.customizeTokenModal });
 
 export default class CustomizeTokenModal extends Component {
 
@@ -21,9 +17,13 @@ export default class CustomizeTokenModal extends Component {
         });
     }
 
-    async execute(interaction, client) {
-        if(!await super.execute(interaction, client)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param logger
+     */
+    async run(interaction, client, logger) {
         const token = interaction.fields.getTextInputValue('token');
         await interaction.replyTl(keys.custom_bot.create.step.logging_in);
 

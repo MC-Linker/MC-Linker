@@ -1,9 +1,5 @@
 import Event from '../structures/Event.js';
 import { Events } from 'discord.js';
-import rootLogger from '../utilities/logger/logger.js';
-import features from '../utilities/logger/features.js';
-
-const logger = rootLogger.child({ feature: features.events.entitlementDelete });
 
 /**
  * Handles the Discord entitlementDelete event for the MC-Linker bot.
@@ -15,7 +11,13 @@ export default class EntitlementDelete extends Event {
         });
     }
 
-    async execute(client, entitlement) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Entitlement]} args - [0] The entitlement.
+     * @param logger
+     */
+    async run(client, [entitlement], logger) {
         const user = await entitlement.fetchUser();
         logger.info(`Entitlement deleted for user ${user.displayName}`);
 

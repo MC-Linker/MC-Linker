@@ -14,8 +14,15 @@ export default class Message extends Command {
     }
 
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[UserResponse, ...string]} args - [0] The resolved user, [1+] The message words.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const user = args[0];
         args.shift(); //Remove username from args

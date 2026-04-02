@@ -2,8 +2,6 @@ import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
 import { getCachedAvatarURL, parseMentions, searchAdvancements } from '../../utilities/utils.js';
 import { addPh, getEmbed } from '../../utilities/messages.js';
-import rootLogger from '../../utilities/logger/logger.js';
-import features from '../../utilities/logger/features.js';
 import ChatDispatchHandler from './chat-handlers/ChatDispatchHandler.js';
 import WebhookPoolManager from './chat-handlers/WebhookPoolManager.js';
 import WebhookResolver from './chat-handlers/WebhookResolver.js';
@@ -14,8 +12,6 @@ import {
     DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
     DISPATCH_HIGH_LOAD_SUMMARY_INTERVAL_MS,
 } from './chat-handlers/ChatConstants.js';
-
-const logger = rootLogger.child({ feature: features.api.socketio.chat });
 
 /**
  * @typedef {Object} ChatRequest
@@ -77,13 +73,13 @@ export default class Chat extends WSEvent {
     }
 
     /**
-     * Handles chat channel messages.
-     * @param {ChatRequest} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {Promise<void>}
+     * @inheritdoc
+     * @param {ChatRequest} data - The request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         this.queueProcessor.client ??= client;
         this.monitor.recordIncoming();
         this.monitor.enterExecute();

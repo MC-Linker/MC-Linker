@@ -36,8 +36,15 @@ export default class Help extends AutocompleteCommand {
         return await interaction.respond(respondArray);
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string]} args - [0] The command or category name.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const commandName = args[0]?.toLowerCase();
 

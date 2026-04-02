@@ -5,11 +5,7 @@ import { fetchMembersIfCacheDiffers, MaxAutoCompleteChoices } from '../../utilit
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import { ButtonStyle } from 'discord.js';
-import rootLogger from '../../utilities/logger/logger.js';
-import features from '../../utilities/logger/features.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
-
-const logger = rootLogger.child({ feature: features.commands.settings.roleSync });
 
 export default class RoleSync extends AutocompleteCommand {
 
@@ -58,8 +54,15 @@ export default class RoleSync extends AutocompleteCommand {
         await interaction.respond(commandResponse);
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, import('discord.js').Role, string, string]} args - [0] The subcommand (add/remove/list), [1] The Discord role, [2] The team/group name and type, [3] The sync direction.
+     * @param {ServerConnection} server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const subcommand = args[0];
         if(subcommand === 'add') {

@@ -1,3 +1,6 @@
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
+
 /**
  * @template T Request Data Type
  */
@@ -34,14 +37,31 @@ export default class WSEvent {
     }
 
     /**
-     * Handles a WS event for this route.
+     * Handles a WS event. Creates a child logger and delegates to {@link run}.
      * @param {Object} data - The data sent with the request.
-     * @param {?ServerConnection} server - The server the event is sent to (if requiresServer is true).
+     * @param {ServerConnection} server - The server the event is sent to.
      * @param {MCLinker} client - The MCLinker client.
-     * @returns {?object|void|Promise<object|void>} - The response data.
-     * @abstract
+     * @returns {?object|void|Promise<object|void>}
      */
     execute(data, server, client) {
-        throw new Error(`The execute method has not been implemented for the ${this.event} event.`);
+        const logger = rootLogger.child({
+            feature: features.api.events[this.event],
+            guildId: server?.id,
+        }, { track: false });
+
+        return this.run(data, server, client, logger);
+    }
+
+    /**
+     * Implements the WS event's specific logic.
+     * @param {Object} data - The data sent with the request.
+     * @param {?ServerConnection} server - The server the event is sent to.
+     * @param {MCLinker} client - The MCLinker client.
+     * @param {import('pino').Logger} logger - A child logger bound to this execution.
+     * @returns {?object|void|Promise<object|void>}
+     * @abstract
+     */
+    run(data, server, client, logger) {
+        throw new Error(`The run method has not been implemented for the ${this.event} event.`);
     }
 }

@@ -13,8 +13,15 @@ export default class Kick extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[UserResponse, ...string]} args - [0] The resolved user, [1+] The kick reason words.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         const user = args[0];
         const userConnection = await client.userConnections.cache.get(interaction.user.id);

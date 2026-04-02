@@ -35,8 +35,15 @@ export default class UserInfo extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[UserResponse]} args - [0] The resolved user.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         /** @type {UserResponse} */
         const user = args[0];

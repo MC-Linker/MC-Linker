@@ -9,13 +9,13 @@ export default class DisconnectForce extends WSEvent {
     }
 
     /**
-     * Forcefully disconnects the server connection.
-     * @param {{}} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {void}
+     * @inheritdoc
+     * @param {{}} data - No request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    execute(data, server, client) {
+    run(data, server, client, logger) {
         void client.serverConnections.disconnect(server);
     }
 }

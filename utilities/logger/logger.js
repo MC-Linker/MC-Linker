@@ -118,26 +118,35 @@ function _shouldEnableDebug(bindings) {
 
 function _refreshAllChildLevels() {
     rootLogger.level = rootLogger._debugFilters.size > 0 ? 'debug' : 'info';
-    for(const [feature, children] of rootLogger._trackedChildren) {
+    for(const [feature, refs] of rootLogger._trackedChildren) {
         const level = _shouldEnableDebug({ feature }) ? 'debug' : 'info';
-        for(const child of children) child.level = level;
+        const dead = [];
+        for(const ref of refs) {
+            const child = ref.deref();
+            if(child) child.level = level;
+            else dead.push(ref);
+        }
+        for(const ref of dead) refs.delete(ref);
+        if(refs.size === 0) rootLogger._trackedChildren.delete(feature);
     }
 }
 
 // Wrap child() to normalize the feature binding (handles logFeatures Proxy) and track children.
+// Pass { track: false } in options to skip tracking (use for per-execution child loggers).
 const _originalChild = rootLogger.child.bind(rootLogger);
 rootLogger.child = function(bindings, options = {}) {
+    const { track = true, ...pinoOptions } = options;
     const normalized = {
         ...bindings,
         feature: bindings.feature != null ? String(bindings.feature) : undefined,
     };
 
-    const child = _originalChild(normalized, options);
+    const child = _originalChild(normalized, pinoOptions);
     child.level = _shouldEnableDebug(normalized) ? 'debug' : 'info';
 
-    if(normalized.feature) {
+    if(track && normalized.feature) {
         if(!rootLogger._trackedChildren.has(normalized.feature)) rootLogger._trackedChildren.set(normalized.feature, new Set());
-        rootLogger._trackedChildren.get(normalized.feature).add(child);
+        rootLogger._trackedChildren.get(normalized.feature).add(new WeakRef(child));
     }
     return child;
 };

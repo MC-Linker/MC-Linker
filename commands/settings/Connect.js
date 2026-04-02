@@ -27,9 +27,15 @@ export default class Connect extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, string, boolean]} args - [0] The join requirement (roles/link/none), [1] The display IP, [2] Whether the server is online-mode.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
         const joinRequirement = args[0];
         const displayIp = args[1];
         const online = args[2];

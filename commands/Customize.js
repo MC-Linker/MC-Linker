@@ -2,12 +2,8 @@ import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBits } from 'discord.js';
 import { addTranslatedResponses, getComponent, getReplyOptions } from '../utilities/messages.js';
-import rootLogger from '../utilities/logger/logger.js';
-import features from '../utilities/logger/features.js';
 import { disableComponents } from '../utilities/utils.js';
 import CustomBotConnectionManager from '../structures/connections/managers/CustomBotConnectionManager.js';
-
-const logger = rootLogger.child({ feature: features.commands.customize });
 
 export default class Customize extends Command {
 
@@ -21,8 +17,15 @@ export default class Customize extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[]} args - No arguments.
+     * @param {?ServerConnection} server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
 
         // If user is not subscribed, let them customize server appearance
         if(!interaction.entitlements.find(e => e.skuId === CustomBotConnectionManager.CUSTOM_BOT_SKU_ID)) {
