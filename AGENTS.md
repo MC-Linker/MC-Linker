@@ -78,7 +78,10 @@ MC-Linker/
 │   ├── utils.js             # General utilities (hashing, avatar cache, NBT parsing, canvas)
 │   ├── keys.js              # Translation key definitions (hierarchical)
 │   ├── messages.js          # Embed/message formatting, placeholder system
-│   ├── logger.js            # Pino logger instance
+│   ├── logger/              # Pino logger setup
+│   │   ├── logger.js        # Root logger instance, child/tracking/debug-filter logic
+│   │   ├── features.js      # Feature name proxy backed by logFeatures.json
+│   │   └── transport.js     # Custom pino-pretty transport (messageFormat)
 │   └── shardingUtils.js     # Cross-shard helper functions
 │
 ├── resources/
@@ -126,13 +129,13 @@ Discord.Base
   └── Protocol                  # Base for server communication strategies
         └── WebSocketProtocol   # Socket.io bidirectional
 
-Command                         # Base for slash/prefix commands
+Command                         # Base for slash/prefix commands (execute→run pattern)
   └── AutocompleteCommand       # Adds autocomplete via plugin completions
 
-Component                       # Base for button/select/modal handlers
-Event                           # Base for Discord.js events
+Component                       # Base for button/select/modal handlers (execute→run pattern)
+Event                           # Base for Discord.js events (execute→run pattern)
 Route                           # Base for REST API endpoints
-WSEvent                         # Base for WebSocket event handlers
+WSEvent                         # Base for WebSocket event handlers (execute→run pattern)
 ```
 
 ### Initialization Flow
@@ -177,15 +180,16 @@ export default class MyCommand extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-        // Implementation here
+    /** @inheritdoc */
+    async run(interaction, client, args, server, logger) {
+        // Implementation here — logger is a per-execution child logger
     }
 }
 ```
 
-The `super.execute()` call handles deferring, permission checks, server connection validation, and user resolution.
-Always call it first and return early if it returns falsy.
+The base `execute()` method handles deferring, permission checks, server connection validation, user resolution,
+and creates a child logger. It then delegates to `run()` with the logger as the last argument. Subclasses implement
+`run()` — never override `execute()` and never call `super.run()`.
 
 #### New Discord Event
 
@@ -199,11 +203,15 @@ export default class MyEvent extends Event {
         super({ name: 'guildMemberAdd', once: false });
     }
 
-    async execute(client, member) {
-        // Handle the event
+    /** @inheritdoc */
+    async run(client, [member], logger) {
+        // Handle the event — args is passed as an array, destructure in the signature
     }
 }
 ```
+
+The base `execute()` creates a child logger bound to `features.events[this.name]` and calls
+`this.run(client, args, logger)` where `args` is the array of Discord.js event arguments.
 
 #### New REST Route
 
@@ -245,12 +253,16 @@ export default class MyEvent extends WSEvent {
         });
     }
 
-    async execute(data, server, client) {
+    /** @inheritdoc */
+    async run(data, server, client, logger) {
         // Handle the event, return response object or void
         return { status: 'success', data: { result: 'ok' } };
     }
 }
 ```
+
+The base `execute()` creates a child logger bound to `features.api.events[this.event]` and `server.id`,
+then delegates to `run()` with the logger as the 4th argument.
 
 #### New Component
 
@@ -268,12 +280,15 @@ export default class MyButton extends Component {
         });
     }
 
-    async execute(interaction, client) {
-        if(!await super.execute(interaction, client)) return;
-        // Handle the interaction
+    /** @inheritdoc */
+    async run(interaction, client, logger) {
+        // Handle the interaction — logger is a per-execution child logger
     }
 }
 ```
+
+The base `execute()` handles deferring, permission checks, author validation, and SKU checks, creates a child
+logger bound to `features.components[this.id]`, then delegates to `run()`.
 
 ### Key Patterns
 
@@ -311,22 +326,25 @@ Adhere to the code style of this project for all edits. The full ruleset is in `
 
 ## Logging
 
-The logger is a Pino instance exported as `rootLogger` from `utilities/logger/logger.js`. Each file creates a
-module-level
-child logger bound to a feature name from `utilities/logger/features.js`.
+The logger is a Pino instance exported as `rootLogger` from `utilities/logger/logger.js`.
 
-### Import pattern (every file that logs)
+**For commands, events, WS events, and components:** the base handler (`Command`, `Event`, `WSEvent`, `Component`)
+creates a per-execution child logger and passes it to `run()` — subclasses should use that `logger` parameter
+directly. Do **not** create module-level loggers in these files.
+
+**For other files** (utilities, structures, chat-handlers, etc.): create a module-level child logger:
 
 ```javascript
 import rootLogger from '../utilities/logger/logger.js';
 import features from '../utilities/logger/features.js';
 
-const logger = rootLogger.child({ feature: features.api.socketio.chat });
+const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.dispatch });
 ```
 
 The `features` proxy auto-derives the dotted path from the access chain:
-`features.api.socketio.chat` → `'api.socketio.chat'`. Any path is valid — IDE autocomplete is backed by
-`resources/logFeatures.json`.
+`features.api.socketio.chatHandlers.dispatch` → `'api.socketio.chatHandlers.dispatch'`. Any path is valid — IDE
+autocomplete is backed by `resources/logFeatures.json`. Feature paths for WS events live under `features.api.events`,
+while `features.api.socketio` is reserved for socket.io infrastructure (connection, middleware, chatHandlers).
 
 ### Adding context to log calls
 
@@ -357,28 +375,29 @@ all shards via `broadcastEval`. Single-shard methods are prefixed with `_` and s
 
 ```javascript
 // Enable debug filters (always cross-shard)
-client.logger.enableDebug(client, { feature: 'api.socketio' });        // all socketio sub-features
-client.logger.enableDebug(client, { feature: 'api.socketio.chat' });   // only chat
+client.logger.enableDebug(client, { feature: 'api.events' });         // all WS event features
+client.logger.enableDebug(client, { feature: 'api.events.chat' });    // only chat event
+client.logger.enableDebug(client, { feature: 'commands' });            // all commands
 client.logger.enableDebug(client, { guildId: 'GUILD_ID' });            // all debug for one guild
-client.logger.enableDebug(client, { feature: 'api.socketio.chat', guildId: 'GUILD_ID' }); // combined
+client.logger.enableDebug(client, { feature: 'api.events.chat', guildId: 'GUILD_ID' }); // combined
 
 // Disable
-client.logger.disableDebug(client, { feature: 'api.socketio' });
+client.logger.disableDebug(client, { feature: 'api.events' });
 client.logger.clearDebugFilters(client);
 
 // Read-only (local shard)
 client.logger.getDebugFilters();
 ```
 
-Feature matching uses prefix logic: enabling `'api.socketio'` also enables `'api.socketio.chat'`,
-`'api.socketio.chatDispatch'`, etc. info/warn/error/fatal always pass through regardless of filters.
+Feature matching uses prefix logic: enabling `'api.events'` also enables `'api.events.chat'`,
+`'api.events.verify-user'`, etc. info/warn/error/fatal always pass through regardless of filters.
 
 Initial debug filters can be set in `config.json`:
 
 ```json
 {
     "initialDebugFilters": [
-        { "feature": "api.socketio" },
+        { "feature": "api.events" },
         { "guildId": "123456789" }
     ]
 }
