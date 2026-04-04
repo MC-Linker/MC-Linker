@@ -21,6 +21,7 @@ export default class GuildDelete extends Event {
     async run(client, [guild], logger) {
         if(!client.isReady() || !guild.available) return;
         logger.info(`Left a guild: ${guild.name}: ${guild.memberCount} members. Shard is now on ${client.guilds.cache.size} servers!`);
+        client.analytics.trackGuildLeave(guild.id, guild.memberCount);
         await client.serverConnections.disconnect(guild.id);
         await client.serverSettingsConnections.disconnect(guild.id);
     }

@@ -1,4 +1,5 @@
 import Event from '../structures/Event.js';
+import AnalyticsAggregator from '../structures/analytics/AnalyticsAggregator.js';
 
 export default class AllShardsReady extends Event {
 
@@ -14,5 +15,8 @@ export default class AllShardsReady extends Event {
         await client.api.startServer();
         await client.customBots.disconnectUsersWithoutEntitlement();
         await client.customBots.updateAllBots();
+
+        client.analyticsAggregator = new AnalyticsAggregator(client);
+        await client.analyticsAggregator.start();
     }
 }

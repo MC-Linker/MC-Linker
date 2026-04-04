@@ -67,4 +67,76 @@ export default {
         ownerId: String,
         communicationToken: String,
     },
+    AnalyticsSnapshot: {
+        _id: String,
+        timestamp: { type: Date, index: true },
+        period: { type: String, enum: ['hourly'], default: 'hourly' },
+        guilds: {
+            total: Number,
+            joined: Number,
+            left: Number,
+        },
+        users: {
+            approximate: Number,
+        },
+        shards: [{
+            _id: false,
+            id: Number,
+            guilds: Number,
+            ping: Number,
+            uptime: Number,
+            memoryMB: Number,
+        }],
+        commands: [{
+            _id: false,
+            name: String,
+            count: Number,
+            errors: Number,
+            avgDurationMs: Number,
+        }],
+        components: [{
+            _id: false,
+            name: String,
+            count: Number,
+            errors: Number,
+            avgDurationMs: Number,
+        }],
+        apiCalls: {
+            rest: [{
+                _id: false,
+                name: String,
+                count: Number,
+                avgDurationMs: Number,
+            }],
+            ws: [{
+                _id: false,
+                name: String,
+                count: Number,
+                errors: Number,
+                avgDurationMs: Number,
+            }],
+        },
+        connections: {
+            servers: Number,
+            users: Number,
+            online: Number,
+        },
+    },
+    AnalyticsError: {
+        timestamp: { type: Date, default: Date.now, index: true },
+        type: { type: String, enum: ['command', 'component', 'api_rest', 'api_ws', 'unhandled'] },
+        name: String,
+        guildId: String,
+        userId: String,
+        shardId: Number,
+        error: {
+            message: String,
+            stack: String,
+            code: String,
+        },
+        context: {
+            type: Map,
+            of: String,
+        },
+    },
 };

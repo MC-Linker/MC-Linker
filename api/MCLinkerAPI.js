@@ -88,6 +88,13 @@ export default class MCLinkerAPI extends EventEmitter {
         this.fastify.addHook('preHandler', (req, res, done) => {
             fastifyLogger.debug(`${req.method} request to ${req.url} from ${req.ip}: ${req.body}`);
             this.emitToAllShards(req.url, req);
+            req._analyticsStartTime = Date.now();
+            done();
+        });
+
+        this.fastify.addHook('onResponse', (req, res, done) => {
+            const durationMs = Date.now() - (req._analyticsStartTime ?? Date.now());
+            this.client.analytics.trackApiCall('rest', req.url, null, durationMs);
             done();
         });
     }
@@ -409,6 +416,7 @@ export default class MCLinkerAPI extends EventEmitter {
         //If no connection on that guild, disconnect socket
         if(!server) return socket.disconnect();
 
+        const startTime = Date.now();
         try {
             let response;
             if(route.dispatchToGuildShard) {
@@ -421,9 +429,12 @@ export default class MCLinkerAPI extends EventEmitter {
             else response = await route.execute(data, server, this.client);
             socketLogger.debug({ response }, `Response for event ${route.event}`);
             callback?.(response);
+            this.client.analytics.trackApiCall('ws', eventName, server.id, Date.now() - startTime);
         }
         catch(err) {
             socketLogger.error(err, `Error executing event ${route.event}`);
+            this.client.analytics.trackApiCall('ws', eventName, server.id, Date.now() - startTime, false);
+            this.client.analytics.trackError('api_ws', eventName, server.id, null, err);
             callback?.({ status: 'error', error: ProtocolError.UNKNOWN });
         }
     }

@@ -90,5 +90,9 @@
     },
     "scripts": {
         "convert": null
+    },
+    "analytics": {
+        "collector": null,
+        "aggregator": null
     }
 }

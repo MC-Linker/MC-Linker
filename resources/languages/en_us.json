@@ -2353,7 +2353,7 @@
                     "embeds": [
                         {
                             "title": "Unknown Plugin Error",
-                            "description": "An unknown plugin error occurred."
+                            "description": "An unknown plugin error occurred. Make sure you are have the latest version installed and try again."
                         }
                     ]
                 }

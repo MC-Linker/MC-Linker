@@ -12,6 +12,7 @@ import Command from './Command.js';
 import Component from './Component.js';
 import Event from './Event.js';
 import MCLinkerAPI from '../api/MCLinkerAPI.js';
+import AnalyticsCollector from './analytics/AnalyticsCollector.js';
 import * as utils from '../utilities/utils.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
@@ -36,6 +37,7 @@ export default class MCLinker extends Discord.Client {
      * @property {string} supportServerInvite - The invite link to the support server.
      * @property {{string, string}} emojis - A map of the bot's emoji names to their codes.
      * @property {DebugFilter[]} [initialDebugFilters] - Debug filters to apply at startup.
+     * @property {{flushIntervalMs: number, maxErrorBufferSize: number, snapshotIntervalMs: number}} analytics - Analytics configuration.
      */
 
     /**
@@ -220,6 +222,12 @@ export default class MCLinker extends Discord.Client {
         this.api = new MCLinkerAPI(this);
 
         /**
+         * The per-shard analytics collector.
+         * @type {AnalyticsCollector}
+         */
+        this.analytics = new AnalyticsCollector(this);
+
+        /**
          * BroadcastEval with MCLinker typing.
          * @type {BroadcastEvalMC}
          */
@@ -371,5 +379,9 @@ export default class MCLinker extends Discord.Client {
 
         for(const [name, schema] of Object.entries(Schemas))
             this.mongo.model(name, new Schema(schema));
+
+        // Ensure analytics indexes exist (no-ops if already created)
+        this.mongo.models.AnalyticsSnapshot?.collection.createIndex({ timestamp: -1 }).catch(() => {});
+        this.mongo.models.AnalyticsError?.collection.createIndex({ timestamp: -1 }).catch(() => {});
     }
 }

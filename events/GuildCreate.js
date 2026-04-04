@@ -23,6 +23,7 @@ export default class GuildCreate extends Event {
      */
     async run(client, [guild], logger) {
         logger.info(`Joined a guild: ${guild.name}: ${guild.memberCount} members. Shard is now on ${client.guilds.cache.size} servers!`);
+        client.analytics.trackGuildJoin(guild.id, guild.memberCount);
         await sendToServer(
             guild,
             keys.main.success.invite,

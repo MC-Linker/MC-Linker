@@ -15,6 +15,11 @@
             }
         ]
     },
+    "analytics": {
+        "flushIntervalMs": 30000,
+        "maxErrorBufferSize": 100,
+        "snapshotIntervalMs": 3600000
+    },
     "pluginVersion": "4.0.0",
     "supportServerInvite": "https://discord.gg/rX36kZUGNK",
     "colors": {

@@ -28,10 +28,14 @@ export default class InteractionCreate extends Event {
             const command = client.commands.get(interaction.commandName);
             const args = await getArgs(interaction);
             const server = client.serverConnections.cache.get(interaction.guildId);
+            const startTime = Date.now();
             try {
                 await command.execute(interaction, client, args, server);
+                client.analytics.trackCommand(interaction.commandName, interaction.guildId, interaction.user.id, Date.now() - startTime, true);
             }
             catch(err) {
+                client.analytics.trackCommand(interaction.commandName, interaction.guildId, interaction.user.id, Date.now() - startTime, false);
+                client.analytics.trackError('command', interaction.commandName, interaction.guildId, interaction.user.id, err);
                 logger.error({
                     err,
                     guildId: interaction.guildId,
@@ -59,10 +63,14 @@ export default class InteractionCreate extends Event {
             const component = this.getComponentForInteraction(client, interaction);
             if(!component) return;
 
+            const startTime = Date.now();
             try {
                 await component.execute(interaction, client);
+                client.analytics.trackComponent(interaction.customId, interaction.guildId, interaction.user.id, Date.now() - startTime, true);
             }
             catch(err) {
+                client.analytics.trackComponent(interaction.customId, interaction.guildId, interaction.user.id, Date.now() - startTime, false);
+                client.analytics.trackError('component', interaction.customId, interaction.guildId, interaction.user.id, err);
                 logger.error({
                     err,
                     guildId: interaction.guildId,

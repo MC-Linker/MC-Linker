@@ -16,9 +16,13 @@ logger.info(
 // Handle errors
 process.on('unhandledRejection', async err => {
     logger.fatal(err, 'Unhandled rejection');
+    try { client?.analytics?.trackError('unhandled', 'unhandledRejection', null, null, err); }
+    catch { /* client not yet initialized */ }
 });
 process.on('uncaughtException', async err => {
     logger.fatal(err, 'Uncaught exception');
+    try { client?.analytics?.trackError('unhandled', 'uncaughtException', null, null, err); }
+    catch { /* client not yet initialized */ }
 });
 
 const config = await MCLinker.loadConfig();
