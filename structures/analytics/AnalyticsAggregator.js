@@ -1,3 +1,4 @@
+import os from 'node:os';
 import rootLogger from '../../utilities/logger/logger.js';
 import features from '../../utilities/logger/features.js';
 
@@ -20,6 +21,9 @@ export default class AnalyticsAggregator {
 
         /** @type {?NodeJS.Timeout} */
         this._snapshotTimer = null;
+
+        /** @type {?os.CpuInfo[]} Previous CPU sample for delta calculation */
+        this._prevCpus = os.cpus();
     }
 
     /**
@@ -46,6 +50,7 @@ export default class AnalyticsAggregator {
                     ping: c.ws.ping,
                     uptime: c.uptime,
                     memoryMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+                    cpuPercent: c.analytics.getCpuPercent(),
                     approximateUsers: c.guilds.cache.reduce((sum, g) => sum + g.memberCount, 0),
                     serverConnections: c.serverConnections.cache.size,
                     userConnections: c.userConnections.cache.size,
@@ -63,6 +68,22 @@ export default class AnalyticsAggregator {
             const approximateUsers = shardData.reduce((sum, s) => sum + s.approximateUsers, 0);
             const totalServerConnections = shardData.reduce((sum, s) => sum + s.serverConnections, 0);
             const totalUserConnections = shardData.reduce((sum, s) => sum + s.userConnections, 0);
+
+            // Machine-level metrics (OS-wide, not just Node processes)
+            const curCpus = os.cpus();
+            let totalIdle = 0, totalTick = 0;
+            for(let i = 0; i < curCpus.length; i++) {
+                const prev = this._prevCpus[i]?.times ?? { user: 0, nice: 0, sys: 0, idle: 0, irq: 0 };
+                const cur = curCpus[i].times;
+                const idle = cur.idle - prev.idle;
+                const tick = (cur.user - prev.user) + (cur.nice - prev.nice) + (cur.sys - prev.sys) + (cur.idle - prev.idle) + (cur.irq - prev.irq);
+                totalIdle += idle;
+                totalTick += tick;
+            }
+            this._prevCpus = curCpus;
+            const machineCpuPercent = totalTick > 0 ? Math.round((1 - totalIdle / totalTick) * 100 * 10) / 10 : 0;
+            const memoryTotalMB = Math.round(os.totalmem() / 1024 / 1024);
+            const memoryUsedMB = Math.round((os.totalmem() - os.freemem()) / 1024 / 1024);
 
             // Merge command counters from all shards
             const mergedCommands = {};
@@ -129,6 +150,7 @@ export default class AnalyticsAggregator {
                     ping: s.ping,
                     uptime: s.uptime,
                     memoryMB: s.memoryMB,
+                    cpuPercent: s.cpuPercent,
                 })),
                 commands: Object.entries(mergedCommands).map(([name, data]) => ({
                     name,
@@ -154,6 +176,11 @@ export default class AnalyticsAggregator {
                         errors: data.errors,
                         avgDurationMs: data.count > 0 ? Math.round(data.totalDurationMs / data.count) : 0,
                     })),
+                },
+                machine: {
+                    cpuPercent: machineCpuPercent,
+                    memoryUsedMB,
+                    memoryTotalMB,
                 },
                 connections: {
                     servers: totalServerConnections,

@@ -86,6 +86,7 @@ export default {
             ping: Number,
             uptime: Number,
             memoryMB: Number,
+            cpuPercent: Number,
         }],
         commands: [{
             _id: false,
@@ -115,6 +116,11 @@ export default {
                 errors: Number,
                 avgDurationMs: Number,
             }],
+        },
+        machine: {
+            cpuPercent: Number,
+            memoryUsedMB: Number,
+            memoryTotalMB: Number,
         },
         connections: {
             servers: Number,

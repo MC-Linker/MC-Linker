@@ -205,6 +205,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 username: process.env.IO_USERNAME,
                 password: process.env.IO_PASSWORD,
             },
+            readonly: true,
         });
 
         this.websocket.engine.on('connection_error', err => socketLogger.error(err, 'Websocket connection error'));

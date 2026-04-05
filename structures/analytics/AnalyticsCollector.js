@@ -24,8 +24,15 @@ export default class AnalyticsCollector {
 
         this._counters = AnalyticsCollector._emptyCounters();
 
-        const { flushIntervalMs, maxErrorBufferSize } = client.config.analytics;
+        const { flushIntervalMs, maxErrorBufferSize, cpuSampleIntervalMs } = client.config.analytics;
         this._maxBufferSize = maxErrorBufferSize;
+
+        // CPU usage tracking — sample periodically, store rolling percentage
+        this._lastCpuUsage = process.cpuUsage();
+        this._lastCpuTime = Date.now();
+        this._cpuPercent = 0;
+        this._cpuTimer = setInterval(() => this._sampleCpu(), cpuSampleIntervalMs);
+        this._cpuTimer.unref();
 
         this._flushTimer = setInterval(() => this._flush(), flushIntervalMs);
         this._flushTimer.unref();
@@ -138,6 +145,27 @@ export default class AnalyticsCollector {
     }
 
     /**
+     * Samples CPU usage since last sample and updates the rolling percentage.
+     * process.cpuUsage() is per-process, so this is per-shard.
+     */
+    _sampleCpu() {
+        const now = Date.now();
+        const elapsed = (now - this._lastCpuTime) * 1000; // convert to microseconds
+        const cpu = process.cpuUsage(this._lastCpuUsage);
+        this._cpuPercent = Math.round(((cpu.user + cpu.system) / elapsed) * 100 * 10) / 10;
+        this._lastCpuUsage = process.cpuUsage();
+        this._lastCpuTime = now;
+    }
+
+    /**
+     * Returns the latest CPU usage percentage for this shard.
+     * @returns {number}
+     */
+    getCpuPercent() {
+        return this._cpuPercent;
+    }
+
+    /**
      * Returns a plain-object snapshot of counters (safe for broadcastEval serialization).
      * @returns {Object}
      */
@@ -175,6 +203,7 @@ export default class AnalyticsCollector {
      */
     async destroy() {
         clearInterval(this._flushTimer);
+        clearInterval(this._cpuTimer);
         await this._flush();
     }
 }
