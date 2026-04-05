@@ -1,6 +1,7 @@
 import Connection from './Connection.js';
 import rootLogger from '../../utilities/logger/logger.js';
 import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import { execAsync } from '../../utilities/utils.js';
@@ -282,13 +283,13 @@ export default class CustomBotConnection extends Connection {
             });
 
             if(!response.ok) {
-                logger.error(response.error, `Failed to communicate with custom bot ${this.containerName} at path /${path}`);
+                trackError('unhandled', 'CustomBotConnection', null, null, new Error(`Failed to communicate with custom bot ${this.containerName} at path /${path}: ${response.status}`), null, logger);
                 return false;
             }
             else return true;
         }
         catch(err) {
-            logger.error(err, `Failed to communicate with custom bot ${this.containerName} at path /${path}`);
+            trackError('unhandled', 'CustomBotConnection', null, null, err, null, logger);
             return false;
         }
     }

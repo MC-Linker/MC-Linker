@@ -17,6 +17,7 @@ import keys, { getObjectPath } from './keys.js';
 import util from 'util';
 import rootLogger from './logger/logger.js';
 import features from './logger/features.js';
+import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 import { ComponentSizeInActionRow, MaxActionRows, MaxActionRowSize } from './utils.js';
 
 const logger = rootLogger.child({ feature: features.utilities.messages });
@@ -322,7 +323,7 @@ export function addPh(key, ...placeholders) {
  */
 function resolveKey(interaction, key, placeholders) {
     if(!interaction || !key) {
-        logger.error(new Error(), 'Could not reply: No message or key specified');
+        trackError('unhandled', 'messages', null, null, new Error('Could not reply: No message or key specified'), null, logger);
         return null;
     }
 
@@ -403,7 +404,7 @@ export async function updateTl(interaction, key, ...placeholders) {
  */
 export async function sendTl(interaction, key, ...placeholders) {
     if(!interaction.channel.isSendable()) {
-        logger.error(new Error(), `Could not reply: Channel is not sendable: ${interaction.channel}`);
+        trackError('unhandled', 'messages', interaction.guildId ?? null, null, new Error(`Could not reply: Channel is not sendable: ${interaction.channel}`), null, logger);
     }
     const options = resolveKey(interaction, key, placeholders);
     if(!options) return null;
@@ -419,7 +420,7 @@ export async function sendTl(interaction, key, ...placeholders) {
  */
 export async function editTl(interaction, key, ...placeholders) {
     if(!interaction.editable) {
-        logger.error(new Error(), `Could not edit message: ${interaction}`);
+        trackError('unhandled', 'messages', null, null, new Error(`Could not edit message: ${interaction}`), null, logger);
         return null;
     }
     const options = resolveKey(interaction, key, placeholders);
@@ -465,7 +466,7 @@ export function addCompletion(key) {
  */
 export function getEmbed(key, ...placeholders) {
     if(!key) {
-        logger.error('Could not get embed: No key specified');
+        trackError('unhandled', 'messages', null, null, new Error('Could not get embed: No key specified'), null, logger);
         return null;
     }
     if(util.types.isProxy(key)) key = addCompletion(key);
@@ -503,7 +504,7 @@ export function getEmbed(key, ...placeholders) {
  */
 export function getActionRows(key, ...placeholders) {
     if(!key) {
-        logger.error('Could not get component: No key specified');
+        trackError('unhandled', 'messages', null, null, new Error('Could not get action rows: No key specified'), null, logger);
         return [];
     }
     if(util.types.isProxy(key)) key = key.valueOf();
@@ -523,7 +524,7 @@ export function getActionRows(key, ...placeholders) {
  */
 export function getComponent(key, ...placeholders) {
     if(!key) {
-        logger.error('Could not get component: No key specified');
+        trackError('unhandled', 'messages', null, null, new Error('Could not get component: No key specified'), null, logger);
         return null;
     }
     if(util.types.isProxy(key)) key = key.valueOf();
@@ -759,7 +760,7 @@ export function getComponent(key, ...placeholders) {
  */
 export function getReplyOptions(key, ...placeholders) {
     if(!key) {
-        logger.error('Could not get reply options: No key specified');
+        trackError('unhandled', 'messages', null, null, new Error('Could not get reply options: No key specified'), null, logger);
         return null;
     }
     if(util.types.isProxy(key)) key = addCompletion(key);
@@ -779,13 +780,13 @@ export function getReplyOptions(key, ...placeholders) {
  */
 export function getCommand(key) {
     if(!key) {
-        logger.error('Could not get command: No key specified');
+        trackError('unhandled', 'messages', null, null, new Error('Could not get command: No key specified'), null, logger);
         return null;
     }
     if(util.types.isProxy(key)) key = key.valueOf();
 
     if(!key.name || !key.type) {
-        logger.error('Could not get command: No name or type specified');
+        trackError('unhandled', 'messages', null, null, new Error('Could not get command: No name or type specified'), null, logger);
         return null;
     }
 
@@ -843,7 +844,7 @@ export function getCommand(key) {
  */
 export function getModal(key, ...placeholders) {
     if(!key) {
-        logger.error('Could not get component: No key specified');
+        trackError('unhandled', 'messages', null, null, new Error('Could not get modal: No key specified'), null, logger);
         return null;
     }
     if(util.types.isProxy(key)) key = key.valueOf();

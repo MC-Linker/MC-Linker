@@ -1,5 +1,6 @@
 import rootLogger from '../../../utilities/logger/logger.js';
 import features from '../../../utilities/logger/features.js';
+import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.dispatch });
 
@@ -165,7 +166,7 @@ export default class ChatDispatchHandler {
             state.skippedCount = 0;
         }
         catch(err) {
-            logger.error(err, `Failed sending high-load summary for queue ${key}`);
+            trackError('api_ws', 'ChatDispatch', null, null, err, null, logger);
         }
     }
 
@@ -234,7 +235,7 @@ export default class ChatDispatchHandler {
             else this.states.delete(key);
         }
         catch(err) {
-            logger.error(err, `Failed processing queue ${key}`);
+            trackError('api_ws', 'ChatDispatch', null, null, err, null, logger);
             this.scheduleProcess(key, 500);
         }
         finally {

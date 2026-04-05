@@ -1,6 +1,7 @@
 import { AutocompleteInteraction, CommandInteraction } from 'discord.js';
 import { MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../utilities/utils.js';
 import logger from '../utilities/logger/logger.js';
+import { trackError } from './analytics/AnalyticsCollector.js';
 import Command from './Command.js';
 
 export default class AutocompleteCommand extends Command {
@@ -42,14 +43,14 @@ export default class AutocompleteCommand extends Command {
         const server = client.serverConnections.cache.get(interaction.guildId);
         if(!server) {
             return interaction.respond([])
-                .catch(err => logger.error(err, 'Could not respond to autocomplete'));
+                .catch(err => trackError('command', 'autocomplete', null, null, err, null, logger));
         }
 
         let focused = interaction.options.getFocused();
         focused = this.resolveAutocompleteValue(focused, interaction);
         if(focused == null) {
             return interaction.respond([])
-                .catch(err => logger.error(err, 'Could not respond to autocomplete'));
+                .catch(err => trackError('command', 'autocomplete', null, null, err, null, logger));
         }
 
         const userConnection = client.userConnections.cache.get(interaction.user.id);
@@ -57,14 +58,14 @@ export default class AutocompleteCommand extends Command {
 
         if(response?.status !== 'success') {
             return interaction.respond([])
-                .catch(err => logger.error(err, 'Could not respond to autocomplete'));
+                .catch(err => trackError('command', 'autocomplete', null, null, err, null, logger));
         }
 
         const respondArray = this.normalizeCompletions(response.data, focused, interaction);
         if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = MaxAutoCompleteChoices;
 
         return interaction.respond(respondArray)
-            .catch(err => logger.error(err, 'Could not respond to autocomplete'));
+            .catch(err => trackError('command', 'autocomplete', null, null, err, null, logger));
     }
 
     resolveAutocompleteValue(value, interaction) {

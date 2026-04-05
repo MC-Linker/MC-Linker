@@ -3,6 +3,7 @@ import keys from '../../../utilities/keys.js';
 import { getEmbed } from '../../../utilities/messages.js';
 import rootLogger from '../../../utilities/logger/logger.js';
 import features from '../../../utilities/logger/features.js';
+import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
 import {
     CHAT_WEBHOOK_LEGACY_NAMES,
     CHAT_WEBHOOK_NAME,
@@ -199,10 +200,7 @@ export default class WebhookPoolManager {
                     removed.push(webhookId);
                 }
                 else {
-                    logger.error({
-                        err,
-                        guildId: guild.id,
-                    }, `Failed deleting idle webhook ${webhookId} for channel ${channelConfig.id}`);
+                    trackError('api_ws', 'WebhookPool', guild.id, null, err, null, logger);
                     break;
                 }
             }
@@ -365,7 +363,7 @@ export default class WebhookPoolManager {
             if(!webhook) {
                 this.monitor?.recordCreationFailure();
                 this.failedCreations.set(channelConfig.id, Date.now() + CREATION_FAILURE_COOLDOWN_MS);
-                logger.error({ err, guildId: guild.id }, `Failed creating webhook for channel ${channelConfig.id}`);
+                trackError('api_ws', 'WebhookPool', guild.id, null, err, null, logger);
                 await errorChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_create_webhook)] }).catch(() => {});
                 return null;
             }

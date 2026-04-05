@@ -2,6 +2,7 @@ import Protocol, { ProtocolError } from './Protocol.js';
 import fs from 'fs-extra';
 import rootLogger from '../../utilities/logger/logger.js';
 import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.structures.protocol.websocket });
 
@@ -66,7 +67,7 @@ export default class WebSocketProtocol extends Protocol {
         const buffer = Buffer.from(response.data, 'base64');
 
         fs.outputFile(putPath, buffer)
-            .catch(err => logger.error(err, 'Error while writing file from get-file response'));
+            .catch(err => trackError('unhandled', 'WebSocketProtocol', null, null, err, null, logger));
         return { status: 'success', data: buffer };
     }
 

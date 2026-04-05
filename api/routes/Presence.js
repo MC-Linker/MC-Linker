@@ -30,7 +30,7 @@ export default class Version extends Route {
             await MCLinker.writeConfig(client.config);
         }
         catch(err) {
-            logger.error(err, 'Error while setting custom bot presence');
+            client.analytics.trackError('api_rest', 'Presence', null, null, err, null, logger);
             return { status: 500, body: err };
         }
     }

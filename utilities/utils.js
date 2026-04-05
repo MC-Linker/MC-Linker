@@ -28,6 +28,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import rootLogger from './logger/logger.js';
 import features from './logger/features.js';
+import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.utilities.utils });
 
@@ -358,7 +359,7 @@ export async function fetchFloodgateUUID(username) {
         return addHyphen(uuid);
     }
     catch(err) {
-        logger.error(err, `Error fetching floodgate UUID for ${username}`);
+        trackError('unhandled', 'utils', null, null, err, null, logger);
         return undefined;
     }
 }
@@ -1191,7 +1192,7 @@ export async function uploadApplicationEmojis(client) {
             logger.debug(`Uploaded emoji ${emojiName} (${emoji.id})`);
         }
         catch(err) {
-            logger.error(err, `Failed to upload emoji ${emojiName}`);
+            trackError('unhandled', 'utils', null, null, err, null, logger);
         }
     }
     return emojiMap;

@@ -111,7 +111,7 @@ export default class RoleSync extends AutocompleteCommand {
                         await discordMember.roles.add(role);
                     }
                     catch(err) {
-                        logger.error(err, `Failed to add Discord role during rolesync setup`);
+                        client.analytics.trackError('component', 'RoleSync', interaction.guildId, interaction.user.id, err, null, logger);
                     }
                 }
 
@@ -124,7 +124,7 @@ export default class RoleSync extends AutocompleteCommand {
                             await discordMember.roles.remove(role);
                         }
                         catch(err) {
-                            logger.error(err, `Failed to remove Discord role during rolesync setup`);
+                            client.analytics.trackError('component', 'RoleSync', interaction.guildId, interaction.user.id, err, null, logger);
                         }
                     }
                 }

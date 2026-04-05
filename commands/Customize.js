@@ -88,7 +88,7 @@ export default class Customize extends Command {
                         });
                     }
                     catch(err) {
-                        logger.error(err, `Failed to customize guild bot appearance for guild ${interaction.guild.id}`);
+                        client.analytics.trackError('component', 'Customize', interaction.guildId, interaction.user.id, err, null, logger);
                         return await modalInteraction.replyTl(keys.commands.customize.errors.guild_appearance_update_failed);
                     }
                     await modalInteraction.replyTl(keys.commands.customize.success.guild_appearance_updated);

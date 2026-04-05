@@ -49,7 +49,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             await fetchMembersIfCacheDiffers(client, guild);
         }
         catch(err) {
-            logger.error({ err, guildId: server.id }, `Failed to fetch guild ${server.id} for synced role sync`);
+            client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
 
@@ -65,10 +65,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
-                        logger.error({
-                            err,
-                            guildId: server.id,
-                        }, `Failed to revoke Discord role ${data.id} from unknown user ${memberId} during sync`);
+                        client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, memberId, err, null, logger);
                     }
                 }
             }
@@ -99,10 +96,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                             await member.roles.add(discordRole);
                         }
                         catch(err) {
-                            logger.error({
-                                err,
-                                guildId: server.id,
-                            }, `Failed to grant Discord role ${data.id} to ${uuid} during sync`);
+                            client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
 
                             // Revert players list change if role grant fails
                             if(syncedRole.players.includes(uuid)) {
@@ -137,10 +131,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
-                        logger.error({
-                            err,
-                            guildId: server.id,
-                        }, `Failed to revoke Discord role ${data.id} from ${uuid} during sync`);
+                        client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
 
                         // Revert players list change if role revoke fails
                         if(!syncedRole.players.includes(uuid)) {

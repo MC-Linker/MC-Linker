@@ -10,6 +10,7 @@ import {
 } from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/logger.js';
 import features from '../../../utilities/logger/features.js';
+import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
 import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } from './ChatPayloadBuilder.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.queueProcessor });
@@ -155,10 +156,7 @@ export default class ChatQueueProcessor {
             return { consumed: items.length };
         }
 
-        logger.error({
-            err,
-            guildId: guild.id,
-        }, `Failed sending queued ${logContext} webhook payload for channel ${chatChannel.id}`);
+        trackError('api_ws', 'ChatQueue', guild.id, null, err, null, logger);
         return { consumed: 1 };
     }
 
@@ -255,10 +253,7 @@ export default class ChatQueueProcessor {
             });
         }
         catch(err) {
-            logger.error({
-                err,
-                guildId: item.guildId,
-            }, `Failed sending high-load skipped summary for channel ${item.channelId}`);
+            trackError('api_ws', 'ChatQueue', item.guildId, null, err, null, logger);
         }
     }
 

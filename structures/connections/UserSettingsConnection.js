@@ -2,6 +2,7 @@ import Connection from './Connection.js';
 import { Routes } from 'discord.js';
 import rootLogger from '../../utilities/logger/logger.js';
 import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.structures.connections.userSettings });
 
@@ -77,7 +78,7 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            logger.error(err, 'Error updating role connections:');
+            trackError('unhandled', 'UserSettingsConnection', null, this.id, err, null, logger);
             return false;
         }
     }
@@ -119,7 +120,7 @@ export default class UserSettingsConnection extends Connection {
             return true;
         }
         catch(err) {
-            logger.error(err, 'Error refreshing access tokens:');
+            trackError('unhandled', 'UserSettingsConnection', null, this.id, err, null, logger);
             return null;
         }
     }

@@ -1,6 +1,7 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import rootLogger from '../../../utilities/logger/logger.js';
 import features from '../../../utilities/logger/features.js';
+import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
 import { WEBHOOK_TOKEN_REFRESH_TTL_MS } from './ChatConstants.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.webhookResolver });
@@ -75,7 +76,7 @@ export default class WebhookResolver {
                 return null;
             }
             if(err?.code !== RESTJSONErrorCodes.UnknownWebhook) {
-                logger.error(err, `Failed fetching webhook ${webhookId} for channel ${channelConfig.id}`);
+                trackError('api_ws', 'WebhookResolver', null, null, err, null, logger);
                 return null;
             }
         }
@@ -118,10 +119,7 @@ export default class WebhookResolver {
 
         return await client.fetchWebhook(newId)
             .catch(err => {
-                logger.error({
-                    err,
-                    guildId: guild.id,
-                }, `Failed fetching replacement webhook ${newId} for channel ${channelConfig.id}`);
+                trackError('api_ws', 'WebhookResolver', guild.id, null, err, null, logger);
                 return null;
             });
     }

@@ -97,11 +97,7 @@ export default class MessageCreate extends Event {
             await command.execute(message, client, args, server);
         }
         catch(err) {
-            logger.error({
-                err,
-                guildId: message.guildId,
-                userId: message.author.id,
-            }, `Could not execute command ${commandName}`);
+            client.analytics.trackError('command', commandName, message.guildId, message.author.id, err, null, logger);
             await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
         }
     }

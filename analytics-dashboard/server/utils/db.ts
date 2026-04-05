@@ -27,6 +27,38 @@ const analyticsSnapshotSchema = new mongoose.Schema({
     connections: { servers: Number, users: Number, online: Number },
 });
 
+const serverConnectionSchema = new mongoose.Schema({
+    _id: String,
+    ip: String,
+    version: Number,
+    path: String,
+    worldPath: String,
+    online: Boolean,
+    forceOnlineMode: Boolean,
+    floodgatePrefix: String,
+    requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
+    displayIp: String,
+    port: Number,
+    chatChannels: [{
+        _id: String,
+        types: [String],
+        allowDiscordToMinecraft: Boolean,
+        webhooks: [String],
+    }],
+    statChannels: [{
+        _id: String,
+        type: { type: String, enum: ['member-counter', 'status'] },
+        names: { online: String, offline: String, members: String },
+    }],
+    syncedRoles: [{
+        _id: String,
+        name: String,
+        isGroup: Boolean,
+        players: [String],
+        direction: { type: String, enum: ['both', 'to_minecraft', 'to_discord'], default: 'both' },
+    }],
+}, { strict: false });
+
 const analyticsErrorSchema = new mongoose.Schema({
     timestamp: { type: Date, default: Date.now },
     type: String,
@@ -51,6 +83,7 @@ export function getConnection(dbName: string): mongoose.Connection {
 
     conn.model('AnalyticsSnapshot', analyticsSnapshotSchema);
     conn.model('AnalyticsError', analyticsErrorSchema);
+    conn.model('ServerConnection', serverConnectionSchema, 'serverconnections');
 
     connections.set(dbName, conn);
     return conn;

@@ -26,6 +26,9 @@
         <NuxtLink active-class="active" class="sidebar-link" to="/guilds">Guilds</NuxtLink>
       </li>
       <li>
+        <NuxtLink active-class="active" class="sidebar-link" to="/servers">Servers</NuxtLink>
+      </li>
+      <li>
         <NuxtLink active-class="active" class="sidebar-link" to="/errors">Errors</NuxtLink>
       </li>
     </ul>

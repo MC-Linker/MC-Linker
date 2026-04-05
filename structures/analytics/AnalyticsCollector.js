@@ -3,6 +3,24 @@ import features from '../../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.analytics.collector });
 
+/** @type {?AnalyticsCollector} */
+let _instance = null;
+
+/**
+ * Module-level trackError — safe to call before analytics is initialized (no-op if not yet ready).
+ * Use this in files that don't have direct access to the client instance.
+ * @param {'command'|'component'|'api_rest'|'api_ws'|'unhandled'} type
+ * @param {?string} name
+ * @param {?string} guildId
+ * @param {?string} userId
+ * @param {Error|{message:string,stack?:string,code?:string}|null} error
+ * @param {Object.<string,string>} [context]
+ * @param {import('pino').Logger} [log] - Contextual logger (preserves feature/guildId bindings). Falls back to analytics logger.
+ */
+export function trackError(type, name, guildId, userId, error, context, log) {
+    _instance?.trackError(type, name, guildId, userId, error, context, log);
+}
+
 /**
  * Per-shard analytics collector that maintains in-memory counters and buffers errors.
  * All track*() methods are synchronous and return immediately — zero impact on command latency.
@@ -18,6 +36,7 @@ export default class AnalyticsCollector {
     constructor(client) {
         /** @type {MCLinker} */
         this.client = client;
+        _instance = this;
 
         /** @type {Object[]} */
         this._errorBuffer = [];
@@ -124,8 +143,11 @@ export default class AnalyticsCollector {
      * @param {?string} userId
      * @param {Error} error
      * @param {Object.<string, string>} [context] - Optional additional context (e.g. parameters, event data) as key-value pairs.
+     * @param {import('pino').Logger} [log] - Contextual logger (preserves feature/guildId bindings). Falls back to analytics logger.
      */
-    trackError(type, name, guildId, userId, error, context) {
+    trackError(type, name, guildId, userId, error, context, log) {
+        (log ?? logger).error({ err: error, guildId, userId, type, name, ...context }, `[${type}] ${name ?? 'error'}`);
+
         this._errorBuffer.push({
             timestamp: new Date(),
             type,

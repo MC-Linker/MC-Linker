@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import crypto from 'crypto';
 import rootLogger from './logger/logger.js';
 import features from './logger/features.js';
+import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.utilities.oauth });
 
@@ -51,7 +52,7 @@ export async function getTokens(code) {
         });
 
         if(!response.ok) {
-            logger.error(`Error fetching access tokens: [${response.status}] ${response.statusText}`);
+            trackError('unhandled', 'OAuth', null, null, new Error(`Error fetching access tokens: [${response.status}] ${response.statusText}`), null, logger);
             return null;
         }
 
@@ -63,7 +64,7 @@ export async function getTokens(code) {
         };
     }
     catch(err) {
-        logger.error(err, `Error fetching access tokens`);
+        trackError('unhandled', 'OAuth', null, null, err, null, logger);
         return null;
     }
 }
@@ -83,7 +84,7 @@ export async function getUser(client, accessToken) {
         });
 
         if(!response.ok) {
-            logger.error(`Error fetching user profile: [${response.status}] ${response.statusText}`);
+            trackError('unhandled', 'OAuth', null, null, new Error(`Error fetching user profile: [${response.status}] ${response.statusText}`), null, logger);
             return null;
         }
 
@@ -91,7 +92,7 @@ export async function getUser(client, accessToken) {
         return new Discord.User(client, json.user);
     }
     catch(err) {
-        logger.error(err, 'Error fetching user profile');
+        trackError('unhandled', 'OAuth', null, null, err, null, logger);
         return null;
     }
 }

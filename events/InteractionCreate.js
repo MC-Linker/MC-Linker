@@ -35,12 +35,7 @@ export default class InteractionCreate extends Event {
             }
             catch(err) {
                 client.analytics.trackCommand(interaction.commandName, interaction.guildId, interaction.user.id, Date.now() - startTime, false);
-                client.analytics.trackError('command', interaction.commandName, interaction.guildId, interaction.user.id, err);
-                logger.error({
-                    err,
-                    guildId: interaction.guildId,
-                    userId: interaction.user.id,
-                }, `Could not execute command ${interaction.commandName}`);
+                client.analytics.trackError('command', interaction.commandName, interaction.guildId, interaction.user.id, err, null, logger);
                 await interaction.editReplyTl(keys.main.errors.could_not_execute_command);
             }
         }
@@ -52,11 +47,7 @@ export default class InteractionCreate extends Event {
                 await command.autocomplete(interaction, client);
             }
             catch(err) {
-                logger.error({
-                    err,
-                    guildId: interaction.guildId,
-                    userId: interaction.user.id,
-                }, `Could not autocomplete command ${interaction.commandName}`);
+                client.analytics.trackError('command', interaction.commandName, interaction.guildId, interaction.user.id, err, null, logger);
             }
         }
         else if(interaction.isMessageComponent() || interaction.isModalSubmit()) {
@@ -70,12 +61,7 @@ export default class InteractionCreate extends Event {
             }
             catch(err) {
                 client.analytics.trackComponent(interaction.customId, interaction.guildId, interaction.user.id, Date.now() - startTime, false);
-                client.analytics.trackError('component', interaction.customId, interaction.guildId, interaction.user.id, err);
-                logger.error({
-                    err,
-                    guildId: interaction.guildId,
-                    userId: interaction.user.id,
-                }, `Could not execute component ${interaction.customId}`);
+                client.analytics.trackError('component', interaction.customId, interaction.guildId, interaction.user.id, err, null, logger);
                 await interaction.editReplyTl(keys.main.errors.could_not_execute_button);
             }
         }

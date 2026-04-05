@@ -15,6 +15,7 @@ import Discord, {
 import { disableComponents, generateDefaultInvite } from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/logger.js';
 import features from '../../../utilities/logger/features.js';
+import { trackError } from '../../analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.structures.connections.customBotManager });
 
@@ -174,7 +175,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                         await btnInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.start);
                     }
                     catch(err) {
-                        logger.error(err, 'Failed to start custom bot connection');
+                        trackError('unhandled', 'CustomBotConnectionManager', null, modalInteraction?.user?.id ?? null, err, null, logger);
                         await btnInteraction.editReplyTl(keys.custom_bot.errors.start_failed);
                     }
                     break;
@@ -291,7 +292,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             skus: [CustomBotConnectionManager.CUSTOM_BOT_SKU_ID],
             excludeEnded: true,
         }).catch(err => {
-            logger.error(err, `Failed to fetch entitlements for user ${userId}`);
+            trackError('unhandled', 'CustomBotConnectionManager', null, userId, err, null, logger);
             return null;
         });
         if(!entitlements) return true;
@@ -308,7 +309,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
         const skus = await this.client.application.fetchSKUs()
             .catch(err => {
-                logger.error(err, 'Failed to fetch application SKUs for startup entitlement reconciliation');
+                trackError('unhandled', 'CustomBotConnectionManager', null, null, err, null, logger);
                 return null;
             });
         if(!skus || skus.size === 0) return;
@@ -322,7 +323,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 logger.info(`Disconnected custom bot for user ${customBotConnection.ownerId} due to missing entitlement`);
             }
             catch(err) {
-                logger.error(err, `Failed to disconnect custom bot for user ${customBotConnection.ownerId} after entitlement check`);
+                trackError('unhandled', 'CustomBotConnectionManager', null, customBotConnection.ownerId, err, null, logger);
             }
         }
     }
