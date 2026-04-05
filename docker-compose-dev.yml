@@ -31,6 +31,22 @@ services:
     networks:
       - mc-linker_mongo-network
 
+  analytics-dashboard:
+    build: ./analytics-dashboard
+    image: lianecx/mc-linker-analytics
+    container_name: analytics-dashboard
+    restart: on-failure
+    profiles:
+      - analytics
+    ports:
+      - "${DASHBOARD_PORT:-3001}:3000"
+    environment:
+      - NUXT_DATABASE_URL=${DATABASE_URL}
+      - NUXT_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
+      - NUXT_SESSION_SECRET=${DASHBOARD_SESSION_SECRET}
+    networks:
+      - mc-linker_mongo-network
+
 networks:
   mc-linker_mongo-network:
     external: true
