@@ -19,7 +19,10 @@ const mergedOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: { position: 'right' as const, labels: { color: '#b0b8c8', padding: 12 } },
+    legend: {
+      position: 'right' as const,
+      labels: { color: '#b0b8c8', padding: 12, usePointStyle: true, pointStyle: 'line' }
+    },
     tooltip: { intersect: true },
   },
   ...props.options,
