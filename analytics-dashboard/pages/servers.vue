@@ -17,6 +17,13 @@
       <StatsCard :value="data.total" label="Total Servers"/>
     </div>
 
+    <div v-if="data?.server" class="card server-detail">
+      <h2>Server: <code>{{ data.server._id }}</code></h2>
+      <pre class="json-block">{{ JSON.stringify(data.server, null, 2) }}</pre>
+    </div>
+
+    <div v-if="search && !data?.server" class="empty">No server found for ID "{{ search }}".</div>
+
     <div v-if="data?.stats" class="charts-grid">
       <div class="chart-card">
         <h2>Feature Adoption</h2>
@@ -35,99 +42,6 @@
         <ChartsBarChart :data="roleDirectionChartData" :horizontal="true"/>
       </div>
     </div>
-
-    <div v-if="data?.server" class="card server-detail">
-      <h2>Server: <code>{{ data.server._id }}</code></h2>
-
-      <div v-if="data.server.chatChannels?.length" class="detail-section">
-        <h3>Chat Channels ({{ data.server.chatChannels.length }})</h3>
-        <table class="data-table">
-          <thead>
-          <tr>
-            <th>Channel ID</th>
-            <th>Types</th>
-            <th>Discord to MC</th>
-            <th>Webhooks</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="ch in data.server.chatChannels" :key="ch._id">
-            <td><code>{{ ch._id }}</code></td>
-            <td>{{ (ch.types ?? []).join(', ') || '—' }}</td>
-            <td>{{ ch.allowDiscordToMinecraft !== false ? 'Yes' : 'No' }}</td>
-            <td>{{ ch.webhooks?.length ?? 0 }}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div v-if="data.server.statChannels?.length" class="detail-section">
-        <h3>Stat Channels ({{ data.server.statChannels.length }})</h3>
-        <table class="data-table">
-          <thead>
-          <tr>
-            <th>Channel ID</th>
-            <th>Type</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="ch in data.server.statChannels" :key="ch._id">
-            <td><code>{{ ch._id }}</code></td>
-            <td>{{ ch.type }}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div v-if="data.server.syncedRoles?.length" class="detail-section">
-        <h3>Synced Roles ({{ data.server.syncedRoles.length }})</h3>
-        <table class="data-table">
-          <thead>
-          <tr>
-            <th>Role ID</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Direction</th>
-            <th>Players</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="r in data.server.syncedRoles" :key="r._id">
-            <td><code>{{ r._id }}</code></td>
-            <td>{{ r.name }}</td>
-            <td>{{ r.isGroup ? 'Group' : 'Team' }}</td>
-            <td>{{ r.direction ?? 'both' }}</td>
-            <td>{{ r.players?.length ?? 0 }}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="detail-section">
-        <h3>Settings</h3>
-        <table class="data-table">
-          <tbody>
-          <tr>
-            <td>Floodgate Prefix</td>
-            <td><code>{{ data.server.floodgatePrefix ?? '—' }}</code></td>
-          </tr>
-          <tr>
-            <td>Required Role to Join</td>
-            <td>{{
-                data.server.requiredRoleToJoin?.roles?.length ? `${data.server.requiredRoleToJoin.method} of ${data.server.requiredRoleToJoin.roles.length} role(s)` : '—'
-              }}
-            </td>
-          </tr>
-          <tr>
-            <td>Version</td>
-            <td>{{ data.server.version ?? '—' }}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div v-if="search && !data?.server" class="empty">No server found for ID "{{ search }}".</div>
 
     <div v-if="pending" class="loading">Loading…</div>
     <div v-if="error" class="error-msg">{{ error }}</div>
@@ -233,13 +147,17 @@ const roleDirectionChartData = computed(() => {
   margin-top: 20px;
 }
 
-.detail-section {
-  margin-top: 16px;
-}
-
-.detail-section h3 {
-  margin-bottom: 8px;
-  font-size: 1rem;
-  color: #b0b8c8;
+.json-block {
+  background: #1a1d23;
+  border: 1px solid #3a3f4b;
+  border-radius: 6px;
+  padding: 16px;
+  color: #e0e6ed;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  max-height: 600px;
+  overflow-y: auto;
+  white-space: pre;
+  line-height: 1.5;
 }
 </style>
