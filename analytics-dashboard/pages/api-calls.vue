@@ -72,6 +72,9 @@
 
     <div v-if="pending" class="loading">Loading…</div>
     <div v-if="error" class="error-msg">{{ error }}</div>
+    <div v-if="!pending && !error && !data?.rest?.length && !data?.ws?.length" class="empty">No API call data for this
+      period.
+    </div>
   </div>
 </template>
 

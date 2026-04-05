@@ -46,6 +46,7 @@
 
     <div v-if="pending" class="loading">Loading…</div>
     <div v-if="error" class="error-msg">{{ error }}</div>
+    <div v-if="!pending && !error && !data?.commands?.length" class="empty">No command data for this period.</div>
   </div>
 </template>
 

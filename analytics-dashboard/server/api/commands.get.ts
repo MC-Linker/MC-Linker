@@ -7,7 +7,7 @@ export default defineEventHandler(async event => {
     const conn = getConnection(db);
 
     const from = query.from ? new Date(query.from as string) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const to = query.to ? new Date(query.to as string) : new Date();
+    const to = query.to ? new Date(query.to as string + 'T23:59:59.999Z') : new Date();
     const limit = Math.min(Number(query.limit ?? 25), 100);
 
     const snapshots = await conn.models.AnalyticsSnapshot
