@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="page-header">
-      <h1>Servers</h1>
+      <h1>Server Connections</h1>
       <div class="search-bar">
         <input
             v-model="searchInput"
