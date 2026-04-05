@@ -1,0 +1,73 @@
+import { verifySession } from '../utils/auth';
+import { getConnection } from '../utils/db';
+
+export default defineEventHandler(async event => {
+    const { db } = await verifySession(event);
+    const query = getQuery(event);
+    const conn = getConnection(db);
+
+    const search = query.search as string | undefined;
+
+    const servers = await conn.models.ServerConnection.find().lean();
+
+    // Compute aggregate stats
+    let chatChannels = 0;
+    let statChannels = 0;
+    let syncedRoles = 0;
+    let requiredRole = 0;
+    let floodgate = 0;
+    let discordToMinecraft = 0;
+    const chatTypeBreakdown: Record<string, number> = {};
+    const statTypeBreakdown: Record<string, number> = { 'member-counter': 0, status: 0 };
+    const roleDirections: Record<string, number> = { both: 0, to_minecraft: 0, to_discord: 0 };
+
+    for (const s of servers) {
+        if ((s.chatChannels as any[])?.length > 0) {
+            chatChannels++;
+            for (const ch of s.chatChannels as any[]) {
+                if (ch.allowDiscordToMinecraft !== false) discordToMinecraft++;
+                for (const t of (ch.types ?? []) as string[]) {
+                    chatTypeBreakdown[t] = (chatTypeBreakdown[t] ?? 0) + 1;
+                }
+            }
+        }
+        if ((s.statChannels as any[])?.length > 0) {
+            statChannels++;
+            for (const ch of s.statChannels as any[]) {
+                const t = ch.type as string;
+                if (t && t in statTypeBreakdown) statTypeBreakdown[t]++;
+            }
+        }
+        if ((s.syncedRoles as any[])?.length > 0) {
+            syncedRoles++;
+            for (const r of s.syncedRoles as any[]) {
+                const dir = (r.direction ?? 'both') as string;
+                if (dir in roleDirections) roleDirections[dir]++;
+            }
+        }
+        if ((s.requiredRoleToJoin as any)?.roles?.length > 0) requiredRole++;
+        if (s.floodgatePrefix) floodgate++;
+    }
+
+    // Search for specific server
+    let server = null;
+    if (search) {
+        server = servers.find((s: any) => s._id === search) ?? null;
+    }
+
+    return {
+        total: servers.length,
+        stats: {
+            chatChannels,
+            statChannels,
+            syncedRoles,
+            requiredRole,
+            floodgate,
+            discordToMinecraft,
+            chatTypeBreakdown,
+            statTypeBreakdown,
+            roleDirections,
+        },
+        server,
+    };
+});
