@@ -15,15 +15,13 @@
 
     <div v-if="data" class="stats-grid">
       <StatsCard :value="data.total" label="Total Servers"/>
-      <StatsCard :value="data.stats?.chatChannels" label="With Chat Channels"/>
-      <StatsCard :value="data.stats?.statChannels" label="With Stat Channels"/>
-      <StatsCard :value="data.stats?.syncedRoles" label="With Synced Roles"/>
-      <StatsCard :value="data.stats?.requiredRole" label="With Required Role"/>
-      <StatsCard :value="data.stats?.floodgate" label="With Floodgate"/>
-      <StatsCard :value="data.stats?.discordToMinecraft" label="Discord to MC Channels"/>
     </div>
 
     <div v-if="data?.stats" class="charts-grid">
+      <div class="chart-card">
+        <h2>Feature Adoption</h2>
+        <ChartsPieChart :data="featureAdoptionChartData"/>
+      </div>
       <div v-if="Object.keys(data.stats.chatTypeBreakdown ?? {}).length" class="chart-card">
         <h2>Chat Event Types</h2>
         <ChartsBarChart :data="chatTypeChartData" :horizontal="true"/>
@@ -148,6 +146,18 @@ const { data, pending, error } = await useFetch('/api/servers', {
     return q;
   }),
   watch: [search],
+});
+
+const featureAdoptionChartData = computed(() => {
+  const s = data.value?.stats;
+  if (!s) return { labels: [], datasets: [] };
+  return {
+    labels: ['Chat Channels', 'Stat Channels', 'Synced Roles', 'Required Role', 'Floodgate', 'Discord to MC'],
+    datasets: [{
+      data: [s.chatChannels, s.statChannels, s.syncedRoles, s.requiredRole, s.floodgate, s.discordToMinecraft],
+      backgroundColor: ['#5b8dee', '#43c59e', '#e8b84b', '#e06c75', '#c678dd', '#56b6c2'],
+    }],
+  };
 });
 
 const chatTypeChartData = computed(() => {
