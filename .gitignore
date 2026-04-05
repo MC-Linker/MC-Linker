@@ -1,9 +1,14 @@
-/serverdata
-/userdata
-/node_modules
-/.idea/
+# Environment
 .env
-/mongodb
-/microsoft-cache
-/private
+
+# IDE
+.idea/
+
+# Bot dependencies & runtime data
+/node_modules/
+/serverdata/
+/userdata/
+/mongodb/
+/microsoft-cache/
+/private/
 /oci/
