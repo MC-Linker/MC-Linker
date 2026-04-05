@@ -14,10 +14,6 @@ import {
     wrapText,
 } from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
-import rootLogger from '../../utilities/logger/logger.js';
-import features from '../../utilities/logger/features.js';
-
-const logger = rootLogger.child({ feature: features.commands.main.inventory });
 
 const mcData = MinecraftData(MinecraftDataVersion);
 
