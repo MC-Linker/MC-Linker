@@ -13,7 +13,7 @@ const COLLECTIONS = {
 };
 
 async function connectDB() {
-    const mongo = await mongoose.connect(process.env.DATABASE_URL);
+    const mongo = await mongoose.connect(`${process.env.DATABASE_URL}/${process.env.DATABASE_NAME}`);
     for(const [name, schema] of Object.entries(Schemas))
         mongo.model(name, new Schema(schema));
     return mongo;
