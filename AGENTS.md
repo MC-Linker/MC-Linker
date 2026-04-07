@@ -416,11 +416,136 @@ this.client.shard.broadcastEval(async (c, { id, name, data }) => {
 }, { context: { id: this.id, name, data }, shard: 0 });
 ```
 
+## Analytics Dashboard (`analytics-dashboard/`)
+
+Nuxt 3 sub-project that visualises data from the `analyticsnapshots`, `analyticserrors`, and `serverconnections` MongoDB
+collections. Runs as a separate Docker service.
+
+### Pages
+
+| Page               | Route        | API                | Description                                                                       |
+|--------------------|--------------|--------------------|-----------------------------------------------------------------------------------|
+| Overview           | `/`          | `overview.get.ts`  | Guild count, users, commands, error rate, connections, shards; time-series charts |
+| Commands           | `/commands`  | `commands.get.ts`  | Top commands bar chart, avg duration chart, full table with error rates           |
+| API Calls          | `/api-calls` | `api-calls.get.ts` | REST and WebSocket API call charts and tables                                     |
+| Shards             | `/shards`    | `shards.get.ts`    | Machine-level CPU/memory stats, per-shard metrics and time-series charts          |
+| Guilds             | `/guilds`    | `guilds.get.ts`    | Guild join/leave trends                                                           |
+| Server Connections | `/servers`   | `servers.get.ts`   | Feature adoption pie chart, chat/stat/role breakdowns, guild search with raw JSON |
+| Errors             | `/errors`    | `errors.get.ts`    | Error log table with type, name, guild, timestamp                                 |
+
+### Server Connections — Feature Adoption Pie Chart
+
+The pie chart on the Server Connections page shows how many servers use each feature. When a **new server connection
+feature** is added to the bot (i.e. a new field or sub-collection in `ServerConnection`), update these three places:
+
+1. **API route** (`server/api/servers.get.ts`): add a counter variable, increment it in the server loop, include it in
+   the returned `stats` object.
+2. **Pie chart data** (`pages/servers.vue`): add the new label and data reference to the `featureAdoptionChartData`
+   computed property (labels array + data array), and pick a colour.
+3. **Schema** (`server/utils/db.ts`): add the new field to `serverConnectionSchema` if it needs to be queried/typed.
+
+Current pie chart features:
+
+- Chat Channels — servers with at least one chat channel
+- Stat Channels — servers with at least one stat channel
+- Synced Roles — servers with at least one synced role
+- Required Role — servers with a required-role-to-join configured
+- Floodgate — servers with a floodgate prefix set
+- Discord to MC — chat channels with Discord-to-Minecraft relay enabled
+
+## Error Tracking (`trackError`)
+
+All `logger.error` calls in the bot are routed through `trackError`, which both logs the error (via the caller's
+contextual logger) and buffers it for the analytics error collection.
+
+- **Instance method**: `client.analytics.trackError(type, name, guildId, userId, error, context, logger)` — use in files
+  with `client` access.
+- **Named export**: `import { trackError } from '../structures/analytics/AnalyticsCollector.js'` — use in files without
+  `client` access. Safe no-op before analytics is initialised.
+- **Logger param**: always pass the contextual `logger` (module-level or method parameter) as the last argument to
+  preserve the correct `feature` tag and any bound fields.
+- **Exceptions**: `AnalyticsCollector.js` flush errors and `AnalyticsAggregator.js` snapshot errors use `logger.error`
+  directly to avoid infinite loops.
+
+When adding a new `catch` block or error path anywhere in the bot, use `trackError` instead of `logger.error`.
+
 ## Environment & Deployment
 
-- **Environment variables:** See `dev-guidelines.md` for the full list. Key ones: `TOKEN`, `DATABASE_URL`, `BOT_PORT`,
-  `PLUGIN_VERSION`
-- **Entry point:** `node main.js` (starts sharding manager)
-- **Production:** `docker-compose up -d` (bot + MongoDB + Mongo Express)
+### Prerequisites
+
+- Node.js (LTS version recommended)
+- MongoDB
+- Docker and Docker Compose (for containerised deployment)
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```
+# Core Discord Bot
+TOKEN=                          # Discord bot token
+CLIENT_ID=                      # Discord application client ID
+CLIENT_SECRET=                  # Discord application client secret
+PREFIX=^                        # Command prefix for text commands
+GUILD_ID=                       # Space-separated guild IDs (dev/testing)
+OWNER_ID=                       # Your Discord user ID
+DISCORD_LINK=                   # Bot invite link
+
+# Database
+DATABASE_URL=mongodb://localhost:27017/mc-linker
+
+# API / Web Server
+BOT_PORT=3000                   # Port for the bot's API server
+COOKIE_SECRET=                  # For secure cookies
+LINKED_ROLES_REDIRECT_URI=      # http://your_ip/linked-role/callback
+
+# Microsoft / Minecraft Integration
+MICROSOFT_EMAIL=
+MICROSOFT_PASSWORD=
+AZURE_CLIENT_ID=
+PLUGIN_VERSION=3.6              # Version of the Minecraft plugin
+PLUGIN_PORT=11111               # Port for the Minecraft plugin
+
+# Optional
+TOPGG_TOKEN=                    # Top.gg integration
+LOG_LEVEL=info                  # Logging level (debug, info, warn, error)
+NODE_ENV=development            # development or production
+```
+
+### Installation
+
+```bash
+git clone https://github.com/MC-Linker/MC-Linker.git
+cd MC-Linker
+npm ci
+```
+
+### Running
+
+**Development** (direct Node.js):
+
+```bash
+node main.js
+```
+
+For automatic restarts on crash: `run.bat` (Windows) or `run.sh` (Unix/Linux).
+
+**Production** (Docker):
+
+```bash
+docker-compose up -d        # bot + MongoDB + Mongo Express
+```
+
+**Analytics dashboard only** (dev, requires analytics profile):
+
+```bash
+docker compose --profile analytics up -d analytics-dashboard
+```
+
+### Key Deployment Notes
+
+- **Entry point:** `node main.js` (ShardingManager — spawns `bot.js` per shard)
+- **API server** runs only on shard 0, listening on `BOT_PORT`
 - **No formal test framework**
-- **API server** runs only on shard 0, listening on `BOT_PORT` (default 3000)
+- The analytics dashboard connects to `mc-linker_mongo-network` (the external Docker network created by the main compose
+  stack). It must be started after the main stack.

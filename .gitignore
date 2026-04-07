@@ -4,6 +4,9 @@
 # IDE
 .idea/
 
+# AI agent config
+.claude/
+
 # Bot dependencies & runtime data
 /node_modules/
 /serverdata/
