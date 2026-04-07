@@ -145,6 +145,7 @@ const roleDirectionChartData = computed(() => {
 
 .server-detail {
   margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .json-block {
