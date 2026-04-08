@@ -423,15 +423,16 @@ collections. Runs as a separate Docker service.
 
 ### Pages
 
-| Page               | Route        | API                | Description                                                                                       |
-|--------------------|--------------|--------------------|---------------------------------------------------------------------------------------------------|
-| Overview           | `/`          | `overview.get.ts`  | Guild count, users, commands, error rate, connections, shards; time-series charts                 |
-| Commands           | `/commands`  | `commands.get.ts`  | Top commands bar chart, avg duration chart, full table with error rates                           |
-| API Calls          | `/api-calls` | `api-calls.get.ts` | REST and WebSocket API call charts and tables                                                     |
-| Shards             | `/shards`    | `shards.get.ts`    | Machine-level CPU/memory stats, per-shard metrics and time-series charts                          |
-| Guilds             | `/guilds`    | `guilds.get.ts`    | Guild join/leave trends                                                                           |
-| Server Connections | `/servers`   | `servers.get.ts`   | Interactive pie chart with drill-down (feature adoption → breakdowns), guild search with raw JSON |
-| Errors             | `/errors`    | `errors.get.ts`    | Error log table with type, name, guild, timestamp                                                 |
+| Page               | Route           | API                   | Description                                                                                       |
+|--------------------|-----------------|-----------------------|---------------------------------------------------------------------------------------------------|
+| Overview           | `/`             | `overview.get.ts`     | Guild count, users, commands, error rate, connections, shards; time-series charts                 |
+| Commands           | `/commands`     | `commands.get.ts`     | Top commands bar chart, avg duration chart, full table with error rates                           |
+| API Calls          | `/api-calls`    | `api-calls.get.ts`    | REST and WebSocket API call charts and tables                                                     |
+| Shards             | `/shards`       | `shards.get.ts`       | Machine-level CPU/memory stats, per-shard metrics and time-series charts                          |
+| Guilds             | `/guilds`       | `guilds.get.ts`       | Guild join/leave trends                                                                           |
+| Server Connections | `/servers`      | `servers.get.ts`      | Interactive pie chart with drill-down (feature adoption → breakdowns), guild search with raw JSON |
+| Chat Monitor       | `/chat-monitor` | `chat-monitor.get.ts` | Chat pipeline throughput, queue depth, rate limits by category, operations table                  |
+| Errors             | `/errors`       | `errors.get.ts`       | Error log table with type, name, guild, timestamp                                                 |
 
 ### Server Connections — Interactive Pie Chart
 
