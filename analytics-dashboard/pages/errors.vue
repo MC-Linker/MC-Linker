@@ -20,16 +20,16 @@
         <thead>
         <tr>
           <th></th>
-          <th>Timestamp</th>
-          <th>Type</th>
-          <th>Name</th>
-          <th>Guild</th>
-          <th>Shard</th>
+          <th @click="toggleSort('timestamp')">Timestamp{{ sortIcon('timestamp') }}</th>
+          <th @click="toggleSort('type')">Type{{ sortIcon('type') }}</th>
+          <th @click="toggleSort('name')">Name{{ sortIcon('name') }}</th>
+          <th @click="toggleSort('guildId')">Guild{{ sortIcon('guildId') }}</th>
+          <th @click="toggleSort('shardId')">Shard{{ sortIcon('shardId') }}</th>
           <th>Message</th>
         </tr>
         </thead>
         <tbody>
-        <template v-for="err in data.errors" :key="err._id">
+        <template v-for="err in sortedErrors" :key="err._id">
           <tr :class="{ expanded: expanded.has(err._id) }" class="error-row" @click="toggle(err._id)">
             <td class="expand-cell">{{ expanded.has(err._id) ? '▾' : '▸' }}</td>
             <td class="nowrap">{{ new Date(err.timestamp).toLocaleString() }}</td>
@@ -88,4 +88,7 @@ const { data, pending, error } = await useFetch('/api/errors', {
   })),
   watch: [from, to, typeFilter, page],
 });
+
+const errorItems = computed(() => data.value?.errors ?? []);
+const { toggleSort, sortIcon, sorted: sortedErrors } = useSortable(errorItems);
 </script>

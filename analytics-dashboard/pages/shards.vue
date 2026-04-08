@@ -18,16 +18,16 @@
       <table class="data-table">
         <thead>
         <tr>
-          <th>Shard</th>
-          <th>Guilds</th>
-          <th>Ping</th>
-          <th>Memory</th>
-          <th>CPU</th>
-          <th>Uptime</th>
+          <th @click="toggleSort('id')">Shard{{ sortIcon('id') }}</th>
+          <th @click="toggleSort('guilds')">Guilds{{ sortIcon('guilds') }}</th>
+          <th @click="toggleSort('ping')">Ping{{ sortIcon('ping') }}</th>
+          <th @click="toggleSort('memoryMB')">Memory{{ sortIcon('memoryMB') }}</th>
+          <th @click="toggleSort('cpuPercent')">CPU{{ sortIcon('cpuPercent') }}</th>
+          <th @click="toggleSort('uptime')">Uptime{{ sortIcon('uptime') }}</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="shard in data.shards" :key="shard.id">
+        <tr v-for="shard in sortedShards" :key="shard.id">
           <td>#{{ shard.id }}</td>
           <td>{{ shard.guilds.toLocaleString() }}</td>
           <td>
@@ -100,6 +100,9 @@ function formatUptime(ms: number) {
   if (h > 0) return `${h}h ${m % 60}m`;
   return `${m}m`;
 }
+
+const shardItems = computed(() => data.value?.shards ?? []);
+const { toggleSort, sortIcon, sorted: sortedShards } = useSortable(shardItems, 'id', 'asc');
 
 // Collect all unique shard IDs
 const shardIds = computed(() => {

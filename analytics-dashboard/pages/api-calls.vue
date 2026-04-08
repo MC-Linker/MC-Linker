@@ -26,13 +26,13 @@
       <table class="data-table">
         <thead>
         <tr>
-          <th>Endpoint</th>
-          <th>Calls</th>
-          <th>Avg Duration</th>
+          <th @click="restSort.toggleSort('name')">Endpoint{{ restSort.sortIcon('name') }}</th>
+          <th @click="restSort.toggleSort('count')">Calls{{ restSort.sortIcon('count') }}</th>
+          <th @click="restSort.toggleSort('avgDurationMs')">Avg Duration{{ restSort.sortIcon('avgDurationMs') }}</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="r in data.rest" :key="r.name">
+        <tr v-for="r in sortedRest" :key="r.name">
           <td><code>{{ r.name }}</code></td>
           <td>{{ r.count.toLocaleString() }}</td>
           <td>{{ r.avgDurationMs }}ms</td>
@@ -46,15 +46,15 @@
       <table class="data-table">
         <thead>
         <tr>
-          <th>Event</th>
-          <th>Calls</th>
-          <th>Errors</th>
-          <th>Error Rate</th>
-          <th>Avg Duration</th>
+          <th @click="wsSort.toggleSort('name')">Event{{ wsSort.sortIcon('name') }}</th>
+          <th @click="wsSort.toggleSort('count')">Calls{{ wsSort.sortIcon('count') }}</th>
+          <th @click="wsSort.toggleSort('errors')">Errors{{ wsSort.sortIcon('errors') }}</th>
+          <th @click="wsSort.toggleSort('errorRate')">Error Rate{{ wsSort.sortIcon('errorRate') }}</th>
+          <th @click="wsSort.toggleSort('avgDurationMs')">Avg Duration{{ wsSort.sortIcon('avgDurationMs') }}</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="w in data.ws" :key="w.name">
+        <tr v-for="w in sortedWs" :key="w.name">
           <td><code>{{ w.name }}</code></td>
           <td>{{ w.count.toLocaleString() }}</td>
           <td>{{ w.errors.toLocaleString() }}</td>
@@ -88,6 +88,13 @@ const { data, pending, error } = await useFetch('/api/api-calls', {
   query: computed(() => ({ from: from.value, to: to.value })),
   watch: [from, to],
 });
+
+const restItems = computed(() => data.value?.rest ?? []);
+const wsItems = computed(() => data.value?.ws ?? []);
+const restSort = useSortable(restItems, 'count');
+const wsSort = useSortable(wsItems, 'count');
+const sortedRest = restSort.sorted;
+const sortedWs = wsSort.sorted;
 
 const volumeChartData = computed(() => {
   const ts = data.value?.timeSeries ?? [];

@@ -20,15 +20,15 @@
       <table class="data-table">
         <thead>
         <tr>
-          <th>Command</th>
-          <th>Uses</th>
-          <th>Errors</th>
-          <th>Error Rate</th>
-          <th>Avg Duration</th>
+          <th @click="toggleSort('name')">Command{{ sortIcon('name') }}</th>
+          <th @click="toggleSort('count')">Uses{{ sortIcon('count') }}</th>
+          <th @click="toggleSort('errors')">Errors{{ sortIcon('errors') }}</th>
+          <th @click="toggleSort('errorRate')">Error Rate{{ sortIcon('errorRate') }}</th>
+          <th @click="toggleSort('avgDurationMs')">Avg Duration{{ sortIcon('avgDurationMs') }}</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="cmd in data.commands" :key="cmd.name">
+        <tr v-for="cmd in sortedCommands" :key="cmd.name">
           <td><code>{{ cmd.name }}</code></td>
           <td>{{ cmd.count.toLocaleString() }}</td>
           <td>{{ cmd.errors.toLocaleString() }}</td>
@@ -59,7 +59,10 @@ const { data, pending, error } = await useFetch('/api/commands', {
   watch: [from, to],
 });
 
-const top15 = computed(() => (data.value?.commands ?? []).slice(0, 15));
+const commands = computed(() => data.value?.commands ?? []);
+const { toggleSort, sortIcon, sorted: sortedCommands } = useSortable(commands, 'count');
+
+const top15 = computed(() => commands.value.slice(0, 15));
 
 const usageChartData = computed(() => ({
   labels: top15.value.map(c => c.name),

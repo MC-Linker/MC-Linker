@@ -22,7 +22,7 @@ const mergedOptions = computed(() => ({
   indexAxis: props.horizontal ? 'y' as const : 'x' as const,
   plugins: {
     legend: { labels: { color: '#b0b8c8', usePointStyle: true, pointStyle: 'line' } },
-    tooltip: { mode: 'index' as const, intersect: false },
+    tooltip: { mode: 'nearest' as const, intersect: true },
   },
   scales: {
     x: { ticks: { color: '#b0b8c8' }, grid: { color: '#2a2f3a' } },
