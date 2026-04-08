@@ -14,6 +14,16 @@ logger.info(
 );
 
 // Handle errors
+// Flush analytics on graceful shutdown (covers Docker stop / CTRL+C)
+async function shutdown() {
+    try { await client?.analytics?.destroy(); }
+    catch {}
+    process.exit(0);
+}
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
 process.on('unhandledRejection', async err => {
     logger.fatal(err, 'Unhandled rejection');
     try { client?.analytics?.trackError('unhandled', 'unhandledRejection', null, null, err, null, logger); }

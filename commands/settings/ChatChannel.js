@@ -123,7 +123,7 @@ export default class ChatChannel extends AutocompleteCommand {
                     filter: m => m.user.id === interaction.user.id && m.customId === 'log',
                 });
             }
-            catch(_) {
+            catch {
                 return interaction.editReplyTl(keys.commands.chatchannel.warnings.not_collected);
             }
 

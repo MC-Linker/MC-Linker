@@ -35,7 +35,7 @@ export default class ServerConnectionManager extends ConnectionManager {
                     const webhook = await this.client.fetchWebhook(webhookId);
                     await webhook.delete();
                 }
-                catch(_) {}
+                catch {}
             }
         }
         await connection.protocol.disconnect();

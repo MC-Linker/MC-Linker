@@ -205,7 +205,7 @@ export default class CustomBotConnection extends Connection {
                 try {
                     void this.down();
                 }
-                catch(_) {}
+                catch {}
             }, 60_000);
 
             composeProcess.on('close', code => {
@@ -217,7 +217,7 @@ export default class CustomBotConnection extends Connection {
                     try {
                         void this.down();
                     }
-                    catch(_) {}
+                    catch {}
                 }
             });
 

@@ -287,7 +287,7 @@ export default class ServerConnection extends Connection {
             await fs.rm(`./download-cache/serverConnection/${this.id}/`, { recursive: true });
             return true;
         }
-        catch(_) {
+        catch {
             return false;
         }
     }
