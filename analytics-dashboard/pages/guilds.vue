@@ -23,6 +23,8 @@
 </template>
 
 <script lang="ts" setup>
+import { formatTimeLabel } from '~/composables/useTimeLabel';
+
 const from = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 const to = ref(new Date().toISOString().slice(0, 10));
 
@@ -37,7 +39,7 @@ const totalLeft = computed(() => (data.value?.timeSeries ?? []).reduce((sum, p) 
 const chartData = computed(() => {
   const ts = data.value?.timeSeries ?? [];
   return {
-    labels: ts.map(p => new Date(p.timestamp).toLocaleDateString()),
+    labels: ts.map(p => formatTimeLabel(p.timestamp, ts.length)),
     datasets: [
       {
         label: 'Total',

@@ -78,6 +78,8 @@
 </template>
 
 <script lang="ts" setup>
+import { formatTimeLabel } from '~/composables/useTimeLabel';
+
 const SHARD_COLORS = ['#5b8dee', '#43c59e', '#e05252', '#f59e0b', '#a78bfa', '#2dd4bf', '#f472b6', '#84cc16'];
 
 const from = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
@@ -111,7 +113,7 @@ const shardIds = computed(() => {
 const machineCpuChartData = computed(() => {
   const ts = data.value?.timeSeries ?? [];
   return {
-    labels: ts.map(p => new Date(p.timestamp).toLocaleDateString()),
+    labels: ts.map(p => formatTimeLabel(p.timestamp, ts.length)),
     datasets: [{
       label: 'CPU %',
       data: ts.map(p => p.machine?.cpuPercent ?? 0),
@@ -127,7 +129,7 @@ const machineCpuChartData = computed(() => {
 const machineMemoryChartData = computed(() => {
   const ts = data.value?.timeSeries ?? [];
   return {
-    labels: ts.map(p => new Date(p.timestamp).toLocaleDateString()),
+    labels: ts.map(p => formatTimeLabel(p.timestamp, ts.length)),
     datasets: [
       {
         label: 'Used MB',
@@ -155,7 +157,7 @@ const machineMemoryChartData = computed(() => {
 const memoryChartData = computed(() => {
   const ts = data.value?.timeSeries ?? [];
   return {
-    labels: ts.map(p => new Date(p.timestamp).toLocaleDateString()),
+    labels: ts.map(p => formatTimeLabel(p.timestamp, ts.length)),
     datasets: shardIds.value.map(id => ({
       label: `Shard #${id}`,
       data: ts.map(p => p.shards.find(s => s.id === id)?.memoryMB ?? null),
@@ -169,7 +171,7 @@ const memoryChartData = computed(() => {
 const cpuChartData = computed(() => {
   const ts = data.value?.timeSeries ?? [];
   return {
-    labels: ts.map(p => new Date(p.timestamp).toLocaleDateString()),
+    labels: ts.map(p => formatTimeLabel(p.timestamp, ts.length)),
     datasets: shardIds.value.map(id => ({
       label: `Shard #${id}`,
       data: ts.map(p => p.shards.find(s => s.id === id)?.cpuPercent ?? null),
