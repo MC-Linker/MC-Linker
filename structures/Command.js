@@ -102,7 +102,7 @@ export default class Command {
             userId: interaction.user.id,
         }, { track: false });
 
-        logger.debug(`Command ${interaction.commandName ?? interaction.content} executed with args: ${args.join(' ')}`);
+        logger.debug(`Command ${this.name} executed with args: ${args.join(' ')}`);
         if(this.defer) await interaction.deferReply?.({ flags: this.ephemeral ? MessageFlags.Ephemeral : undefined });
 
         if(!this.allowUser && !interaction.inGuild()) return interaction.editReplyTl(keys.main.no_access.not_in_guild);

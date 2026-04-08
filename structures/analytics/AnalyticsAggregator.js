@@ -30,7 +30,7 @@ export default class AnalyticsAggregator {
      * Takes an initial snapshot and starts the snapshot timer.
      */
     async start() {
-        logger.info('Analytics aggregator starting');
+        logger.debug('Analytics aggregator starting');
         await this._takeSnapshot();
         const { snapshotIntervalMs } = this.client.config.analytics;
         this._snapshotTimer = setInterval(() => this._takeSnapshot(), snapshotIntervalMs);
@@ -198,7 +198,7 @@ export default class AnalyticsAggregator {
             // Reset counters on all shards
             await this.client.broadcastEval(c => c.analytics.resetCounters());
 
-            logger.info(`Analytics snapshot saved: ${bucketKey} (${totalGuilds} guilds, ${Object.keys(mergedCommands).length} commands tracked)`);
+            logger.debug(`Analytics snapshot saved: ${bucketKey} (${totalGuilds} guilds, ${Object.keys(mergedCommands).length} commands tracked)`);
         }
         catch(err) {
             logger.error(err, 'Failed to take analytics snapshot');
