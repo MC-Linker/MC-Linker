@@ -58,6 +58,7 @@ const DRILLABLE: Record<string, string> = {
   'Chat Channels': 'chatChannels',
   'Stat Channels': 'statChannels',
   'Synced Roles': 'syncedRoles',
+  'Required Role': 'requiredRole',
 };
 
 const COLORS = ['#5b8dee', '#43c59e', '#e8b84b', '#e06c75', '#c678dd'];
@@ -66,6 +67,7 @@ const chartTitle = computed(() => {
   if (drillDown.value === 'chatChannels') return 'Chat Event Types';
   if (drillDown.value === 'statChannels') return 'Stat Channel Types';
   if (drillDown.value === 'syncedRoles') return 'Role Sync Directions';
+  if (drillDown.value === 'requiredRole') return 'Required Role Types';
   return 'Feature Adoption';
 });
 
@@ -100,6 +102,15 @@ const pieChartData = computed(() => {
     return {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: ['#e8b84b', '#e06c75', '#c678dd'] }],
+    };
+  }
+
+  if (drillDown.value === 'requiredRole') {
+    const breakdown = s.requiredRoleBreakdown ?? {};
+    const entries = Object.entries(breakdown);
+    return {
+      labels: entries.map(([k]) => k),
+      datasets: [{ data: entries.map(([, v]) => v), backgroundColor: ['#e06c75', '#56b6c2'] }],
     };
   }
 

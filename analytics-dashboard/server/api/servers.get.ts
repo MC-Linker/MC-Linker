@@ -19,6 +19,7 @@ export default defineEventHandler(async event => {
     const chatTypeBreakdown: Record<string, number> = {};
     const statTypeBreakdown: Record<string, number> = { 'member-counter': 0, status: 0 };
     const roleDirections: Record<string, number> = { both: 0, to_minecraft: 0, to_discord: 0 };
+    const requiredRoleBreakdown: Record<string, number> = { 'Require Roles': 0, 'Linked Account Only': 0 };
 
     for (const s of servers) {
         if ((s.chatChannels as any[])?.length > 0) {
@@ -43,7 +44,15 @@ export default defineEventHandler(async event => {
                 if (dir in roleDirections) roleDirections[dir]++;
             }
         }
-        if ((s.requiredRoleToJoin as any)?.roles?.length > 0) requiredRole++;
+        const rr = s.requiredRoleToJoin as any;
+        if (rr?.roles?.length > 0) {
+            requiredRole++;
+            requiredRoleBreakdown['Require Roles']++;
+        }
+        else if (rr?.requireLinked) {
+            requiredRole++;
+            requiredRoleBreakdown['Linked Account Only']++;
+        }
         if (s.floodgatePrefix) floodgate++;
     }
 
@@ -64,6 +73,7 @@ export default defineEventHandler(async event => {
             chatTypeBreakdown,
             statTypeBreakdown,
             roleDirections,
+            requiredRoleBreakdown,
         },
         server,
     };

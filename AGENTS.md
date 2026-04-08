@@ -456,7 +456,7 @@ Current main pie chart features:
 - Chat Channels — servers with ≥1 chat channel (drills into chat event types)
 - Stat Channels — servers with ≥1 stat channel (drills into stat channel types)
 - Synced Roles — servers with ≥1 synced role (drills into role sync directions)
-- Required Role — servers with a required-role-to-join configured
+- Required Role — servers with required-role-to-join active (drills into: Require Roles vs Linked Account Only)
 - Floodgate — servers with a floodgate prefix set
 
 ## Error Tracking (`trackError`)
