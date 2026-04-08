@@ -1,11 +1,11 @@
 {
     "env": {
         "node": true,
-        "es2021": true
+        "es2022": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "ecmaVersion": 12,
+        "ecmaVersion": 2022,
         "sourceType": "module"
     },
     "rules": {
@@ -24,7 +24,6 @@
         "comma-dangle": ["error", "always-multiline"],
         "no-empty": ["error", { "allowEmptyCatch": true }],
         "no-magic-numbers": ["warn", { "ignore": [0, 1, -1], "ignoreArrayIndexes": true, "enforceConst": true }],
-        "no-unused-imports": ["warn"],
         "no-unused-private-class-members": ["warn"],
         "sort-imports": ["warn", { "ignoreCase": true, "ignoreDeclarationSort": true }],
         "keyword-spacing": [
