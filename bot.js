@@ -16,6 +16,8 @@ logger.info(
 // Handle errors
 // Flush analytics on graceful shutdown (covers Docker stop / CTRL+C)
 async function shutdown() {
+    try { await client?.analyticsAggregator?.destroy(); }
+    catch {}
     try { await client?.analytics?.destroy(); }
     catch {}
     process.exit(0);

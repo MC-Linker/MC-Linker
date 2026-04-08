@@ -214,10 +214,11 @@ export default class AnalyticsAggregator {
     /**
      * Stops the aggregator and clears the timer.
      */
-    destroy() {
+    async destroy() {
         if(this._snapshotTimer) {
             clearInterval(this._snapshotTimer);
             this._snapshotTimer = null;
         }
+        await this._takeSnapshot();
     }
 }
