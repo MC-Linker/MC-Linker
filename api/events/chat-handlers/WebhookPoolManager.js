@@ -262,7 +262,7 @@ export default class WebhookPoolManager {
         }
         const canManageWebhooks = discordChannel.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.ManageWebhooks);
         if(!canManageWebhooks) {
-            this.monitor?.recordPermissionFailure(channel.id);
+            this.monitor?.recordPermissionFailure();
             this.failedCreations.set(channel.id, Date.now() + CREATION_FAILURE_COOLDOWN_MS);
             await discordChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.no_webhook_permission)] }).catch(() => {});
             return null;

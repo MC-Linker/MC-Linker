@@ -127,6 +127,31 @@ export default {
             users: Number,
             online: Number,
         },
+        chatMonitor: {
+            throughput: {
+                incoming: Number,
+                enqueued: Number,
+                processed: Number,
+            },
+            queue: {
+                destinations: Number,
+                items: Number,
+            },
+            rateLimits: {
+                type: Map,
+                of: Number,
+            },
+            failures: {
+                permission: Number,
+                creation: Number,
+            },
+            operations: [{
+                _id: false,
+                name: String,
+                count: Number,
+                rateLimits: Number,
+            }],
+        },
     },
     AnalyticsError: {
         timestamp: { type: Date, default: Date.now, index: true },

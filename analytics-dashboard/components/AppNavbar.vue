@@ -29,6 +29,9 @@
         <NuxtLink active-class="active" class="sidebar-link" to="/servers">Server Connections</NuxtLink>
       </li>
       <li>
+        <NuxtLink active-class="active" class="sidebar-link" to="/chat-monitor">Chat Monitor</NuxtLink>
+      </li>
+      <li>
         <NuxtLink active-class="active" class="sidebar-link" to="/errors">Errors</NuxtLink>
       </li>
     </ul>

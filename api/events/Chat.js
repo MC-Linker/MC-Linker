@@ -131,8 +131,6 @@ export default class Chat extends WSEvent {
             const chatEmbed = !isChat && !isConsole ? getEmbed(keys.api.plugin.success.messages[type], placeholders, { 'timestamp_now': Date.now() }) : null;
 
             for(const channel of channels) {
-                this.monitor.recordChannelState(channel);
-
                 if(!channel.webhooks) {
                     // Channel has no webhooks array at all (outdated plugin data) — skip entirely
                     continue;

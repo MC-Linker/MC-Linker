@@ -25,6 +25,13 @@ const analyticsSnapshotSchema = new mongoose.Schema({
     },
     machine: { cpuPercent: Number, memoryUsedMB: Number, memoryTotalMB: Number },
     connections: { servers: Number, users: Number, online: Number },
+    chatMonitor: {
+        throughput: { incoming: Number, enqueued: Number, processed: Number },
+        queue: { destinations: Number, items: Number },
+        rateLimits: { type: Map, of: Number },
+        failures: { permission: Number, creation: Number },
+        operations: [{ _id: false, name: String, count: Number, rateLimits: Number }],
+    },
 });
 
 const serverConnectionSchema = new mongoose.Schema({

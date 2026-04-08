@@ -132,6 +132,11 @@ export default class AnalyticsAggregator {
             const now = new Date();
             const bucketKey = now.toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
 
+            // Chat monitor counters (shard 0 only — Chat WS event handler runs here)
+            const chatEvent = this.client.api?.wsEvents?.get('chat');
+            const chatMonitor = chatEvent?.monitor?.getCounters() ?? null;
+            if(chatEvent?.monitor) chatEvent.monitor.resetCounters();
+
             const snapshot = {
                 _id: bucketKey,
                 timestamp: now,
@@ -187,6 +192,7 @@ export default class AnalyticsAggregator {
                     users: totalUserConnections,
                     online: onlineServers,
                 },
+                chatMonitor,
             };
 
             await this.client.mongo.models.AnalyticsSnapshot.updateOne(
