@@ -1,6 +1,6 @@
 <template>
   <div class="chart-container">
-    <Doughnut :data="data" :options="mergedOptions"/>
+    <Doughnut ref="chartRef" :data="data" :options="mergedOptions" @click="handleClick"/>
   </div>
 </template>
 
@@ -14,6 +14,23 @@ const props = defineProps<{
   data: object;
   options?: object;
 }>();
+
+const emit = defineEmits<{
+  segmentClick: [index: number, label: string];
+}>();
+
+const chartRef = ref<InstanceType<typeof Doughnut> | null>(null);
+
+function handleClick(event: MouseEvent) {
+  const chart = chartRef.value?.chart;
+  if (!chart) return;
+  const elements = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, false);
+  if (elements.length > 0) {
+    const idx = elements[0].index;
+    const label = (props.data as any).labels?.[idx] ?? '';
+    emit('segmentClick', idx, label);
+  }
+}
 
 const mergedOptions = computed(() => ({
   responsive: true,

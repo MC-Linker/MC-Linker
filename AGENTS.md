@@ -362,7 +362,7 @@ instance child in the constructor:
 // module level
 const logger = rootLogger.child({ feature: features.structures.connections.server });
 // instance level
-constructor(...)
+constructor()
 {
     this.logger = logger.child({ guildId: this.id });
 }
@@ -423,35 +423,41 @@ collections. Runs as a separate Docker service.
 
 ### Pages
 
-| Page               | Route        | API                | Description                                                                       |
-|--------------------|--------------|--------------------|-----------------------------------------------------------------------------------|
-| Overview           | `/`          | `overview.get.ts`  | Guild count, users, commands, error rate, connections, shards; time-series charts |
-| Commands           | `/commands`  | `commands.get.ts`  | Top commands bar chart, avg duration chart, full table with error rates           |
-| API Calls          | `/api-calls` | `api-calls.get.ts` | REST and WebSocket API call charts and tables                                     |
-| Shards             | `/shards`    | `shards.get.ts`    | Machine-level CPU/memory stats, per-shard metrics and time-series charts          |
-| Guilds             | `/guilds`    | `guilds.get.ts`    | Guild join/leave trends                                                           |
-| Server Connections | `/servers`   | `servers.get.ts`   | Feature adoption pie chart, chat/stat/role breakdowns, guild search with raw JSON |
-| Errors             | `/errors`    | `errors.get.ts`    | Error log table with type, name, guild, timestamp                                 |
+| Page               | Route        | API                | Description                                                                                       |
+|--------------------|--------------|--------------------|---------------------------------------------------------------------------------------------------|
+| Overview           | `/`          | `overview.get.ts`  | Guild count, users, commands, error rate, connections, shards; time-series charts                 |
+| Commands           | `/commands`  | `commands.get.ts`  | Top commands bar chart, avg duration chart, full table with error rates                           |
+| API Calls          | `/api-calls` | `api-calls.get.ts` | REST and WebSocket API call charts and tables                                                     |
+| Shards             | `/shards`    | `shards.get.ts`    | Machine-level CPU/memory stats, per-shard metrics and time-series charts                          |
+| Guilds             | `/guilds`    | `guilds.get.ts`    | Guild join/leave trends                                                                           |
+| Server Connections | `/servers`   | `servers.get.ts`   | Interactive pie chart with drill-down (feature adoption → breakdowns), guild search with raw JSON |
+| Errors             | `/errors`    | `errors.get.ts`    | Error log table with type, name, guild, timestamp                                                 |
 
-### Server Connections — Feature Adoption Pie Chart
+### Server Connections — Interactive Pie Chart
 
-The pie chart on the Server Connections page shows how many servers use each feature. When a **new server connection
-feature** is added to the bot (i.e. a new field or sub-collection in `ServerConnection`), update these three places:
+The Server Connections page has a single pie chart with drill-down behaviour:
+
+- **Main view** ("Feature Adoption"): shows how many servers use each feature.
+- **Drill-down**: clicking a drillable segment (Chat Channels, Stat Channels, Synced Roles) replaces the chart with a
+  breakdown view. A back button returns to the main view. Non-drillable segments (Required Role, Floodgate) do nothing
+  on click.
+
+When a **new server connection feature** is added to the bot, update these places:
 
 1. **API route** (`server/api/servers.get.ts`): add a counter variable, increment it in the server loop, include it in
-   the returned `stats` object.
-2. **Pie chart data** (`pages/servers.vue`): add the new label and data reference to the `featureAdoptionChartData`
-   computed property (labels array + data array), and pick a colour.
+   the returned `stats` object. If the feature has sub-categories, add a breakdown object too.
+2. **Pie chart data** (`pages/servers.vue`): add the new label to the main `pieChartData` computed (labels + data
+   arrays). If it should be drillable, add an entry to the `DRILLABLE` map and a new `if` branch in `pieChartData` for
+   the breakdown view.
 3. **Schema** (`server/utils/db.ts`): add the new field to `serverConnectionSchema` if it needs to be queried/typed.
 
-Current pie chart features:
+Current main pie chart features:
 
-- Chat Channels — servers with at least one chat channel
-- Stat Channels — servers with at least one stat channel
-- Synced Roles — servers with at least one synced role
+- Chat Channels — servers with ≥1 chat channel (drills into chat event types)
+- Stat Channels — servers with ≥1 stat channel (drills into stat channel types)
+- Synced Roles — servers with ≥1 synced role (drills into role sync directions)
 - Required Role — servers with a required-role-to-join configured
 - Floodgate — servers with a floodgate prefix set
-- Discord to MC — chat channels with Discord-to-Minecraft relay enabled
 
 ## Error Tracking (`trackError`)
 

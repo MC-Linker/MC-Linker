@@ -26,20 +26,11 @@
 
     <div v-if="data?.stats" class="charts-grid">
       <div class="chart-card">
-        <h2>Feature Adoption</h2>
-        <ChartsPieChart :data="featureAdoptionChartData"/>
-      </div>
-      <div v-if="Object.keys(data.stats.chatTypeBreakdown ?? {}).length" class="chart-card">
-        <h2>Chat Event Types</h2>
-        <ChartsBarChart :data="chatTypeChartData" :horizontal="true"/>
-      </div>
-      <div class="chart-card">
-        <h2>Stat Channel Types</h2>
-        <ChartsBarChart :data="statTypeChartData" :horizontal="true"/>
-      </div>
-      <div class="chart-card">
-        <h2>Role Sync Directions</h2>
-        <ChartsBarChart :data="roleDirectionChartData" :horizontal="true"/>
+        <div class="chart-header">
+          <button v-if="drillDown" class="back-btn" @click="drillDown = null">&larr; Back</button>
+          <h2>{{ chartTitle }}</h2>
+        </div>
+        <ChartsPieChart :data="pieChartData" @segment-click="onSegmentClick"/>
       </div>
     </div>
 
@@ -52,6 +43,7 @@
 <script lang="ts" setup>
 const searchInput = ref('');
 const search = ref('');
+const drillDown = ref<string | null>(null);
 
 const { data, pending, error } = await useFetch('/api/servers', {
   query: computed(() => {
@@ -62,54 +54,70 @@ const { data, pending, error } = await useFetch('/api/servers', {
   watch: [search],
 });
 
-const featureAdoptionChartData = computed(() => {
+const DRILLABLE: Record<string, string> = {
+  'Chat Channels': 'chatChannels',
+  'Stat Channels': 'statChannels',
+  'Synced Roles': 'syncedRoles',
+};
+
+const COLORS = ['#5b8dee', '#43c59e', '#e8b84b', '#e06c75', '#c678dd'];
+
+const chartTitle = computed(() => {
+  if (drillDown.value === 'chatChannels') return 'Chat Event Types';
+  if (drillDown.value === 'statChannels') return 'Stat Channel Types';
+  if (drillDown.value === 'syncedRoles') return 'Role Sync Directions';
+  return 'Feature Adoption';
+});
+
+const pieChartData = computed(() => {
   const s = data.value?.stats;
   if (!s) return { labels: [], datasets: [] };
+
+  if (drillDown.value === 'chatChannels') {
+    const breakdown = s.chatTypeBreakdown ?? {};
+    const entries = Object.entries(breakdown).sort(([, a], [, b]) => (b as number) - (a as number));
+    return {
+      labels: entries.map(([k]) => k),
+      datasets: [{
+        data: entries.map(([, v]) => v),
+        backgroundColor: COLORS.slice(0, entries.length).concat(Array(Math.max(0, entries.length - COLORS.length)).fill('#888'))
+      }],
+    };
+  }
+
+  if (drillDown.value === 'statChannels') {
+    const breakdown = s.statTypeBreakdown ?? {};
+    const entries = Object.entries(breakdown);
+    return {
+      labels: entries.map(([k]) => k),
+      datasets: [{ data: entries.map(([, v]) => v), backgroundColor: ['#43c59e', '#5b8dee'] }],
+    };
+  }
+
+  if (drillDown.value === 'syncedRoles') {
+    const dirs = s.roleDirections ?? {};
+    const entries = Object.entries(dirs);
+    return {
+      labels: entries.map(([k]) => k),
+      datasets: [{ data: entries.map(([, v]) => v), backgroundColor: ['#e8b84b', '#e06c75', '#c678dd'] }],
+    };
+  }
+
+  // Main feature adoption view
   return {
-    labels: ['Chat Channels', 'Stat Channels', 'Synced Roles', 'Required Role', 'Floodgate', 'Discord to MC'],
+    labels: ['Chat Channels', 'Stat Channels', 'Synced Roles', 'Required Role', 'Floodgate'],
     datasets: [{
-      data: [s.chatChannels, s.statChannels, s.syncedRoles, s.requiredRole, s.floodgate, s.discordToMinecraft],
-      backgroundColor: ['#5b8dee', '#43c59e', '#e8b84b', '#e06c75', '#c678dd', '#56b6c2'],
+      data: [s.chatChannels, s.statChannels, s.syncedRoles, s.requiredRole, s.floodgate],
+      backgroundColor: COLORS,
     }],
   };
 });
 
-const chatTypeChartData = computed(() => {
-  const breakdown = data.value?.stats?.chatTypeBreakdown ?? {};
-  const entries = Object.entries(breakdown).sort(([, a], [, b]) => (b as number) - (a as number));
-  return {
-    labels: entries.map(([k]) => k),
-    datasets: [{
-      label: 'Channels',
-      data: entries.map(([, v]) => v),
-      backgroundColor: '#5b8dee',
-    }],
-  };
-});
-
-const statTypeChartData = computed(() => {
-  const breakdown = data.value?.stats?.statTypeBreakdown ?? {};
-  return {
-    labels: Object.keys(breakdown),
-    datasets: [{
-      label: 'Channels',
-      data: Object.values(breakdown),
-      backgroundColor: '#43c59e',
-    }],
-  };
-});
-
-const roleDirectionChartData = computed(() => {
-  const dirs = data.value?.stats?.roleDirections ?? {};
-  return {
-    labels: Object.keys(dirs),
-    datasets: [{
-      label: 'Roles',
-      data: Object.values(dirs),
-      backgroundColor: '#e8b84b',
-    }],
-  };
-});
+function onSegmentClick(index: number, label: string) {
+  if (drillDown.value) return; // no nested drill-down
+  const key = DRILLABLE[label];
+  if (key) drillDown.value = key;
+}
 </script>
 
 <style scoped>
@@ -160,5 +168,26 @@ const roleDirectionChartData = computed(() => {
   overflow-y: auto;
   white-space: pre;
   line-height: 1.5;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-btn {
+  padding: 4px 12px;
+  border: 1px solid #3a3f4b;
+  border-radius: 6px;
+  background: #23272e;
+  color: #b0b8c8;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.back-btn:hover {
+  background: #2c313a;
+  color: #e0e6ed;
 }
 </style>
