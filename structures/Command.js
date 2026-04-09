@@ -106,7 +106,7 @@ export default class Command {
 
         if(!this.allowUser && !interaction.inGuild()) return interaction.editReplyTl(keys.main.no_access.not_in_guild);
 
-        if(this.ownerOnly) return interaction.user.id === process.env.OWNER_ID;
+        if(this.ownerOnly && interaction.user.id !== process.env.OWNER_ID) return false;
 
         if(this.requiresConnectedServer && !server) {
             await interaction.editReplyTl(keys.api.command.errors.server_not_connected);
