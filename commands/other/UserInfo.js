@@ -44,7 +44,6 @@ export default class UserInfo extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         /** @type {UserResponse} */
         const user = args[0];
 

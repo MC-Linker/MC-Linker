@@ -24,7 +24,6 @@ export default class Message extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const user = args[0];
         args.shift(); //Remove username from args
         const chatMsg = utils.cleanEmojis(args?.join(' ').replaceAll(`"`, `\\"`));

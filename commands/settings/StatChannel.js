@@ -26,7 +26,6 @@ export default class StatChannel extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const subcommand = args[0];
         if(subcommand === 'add') {
             const type = args[1];

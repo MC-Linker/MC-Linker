@@ -26,7 +26,6 @@ export default class Command extends AutocompleteCommand {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const selectedValue = args.join(' ').trim();
         const commandInput = this.resolveAutocompleteValue(selectedValue, interaction);
         if(commandInput === null) return interaction.editReplyTl(keys.commands.command.warnings.autocomplete_selection_expired);

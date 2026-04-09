@@ -63,7 +63,6 @@ export default class RoleSync extends AutocompleteCommand {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const subcommand = args[0];
         if(subcommand === 'add') {
             /** @type {import('discord.js').Role} */

@@ -52,7 +52,6 @@ export default class Eval extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         let command = interaction.content.substring(client.config.prefix.length + this.name.length).trim();
         command = command.replace(/^```(?:js|javascript)?\s*([\s\S]*?)\s*```$/g, '$1').trim();
         if(!command) return interaction.sendTl(keys.api.command.warnings.no_argument, { argument: 'command' });

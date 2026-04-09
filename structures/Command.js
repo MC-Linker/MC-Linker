@@ -93,7 +93,6 @@ export default class Command {
      * @param {MCLinker} client - The MCLinker client.
      * @param {any[]} args - The command arguments set by the user.
      * @param {ServerConnection} server - The connection of the server the command was executed in.
-     * @returns {Promise<?boolean>|?boolean}
      */
     async execute(interaction, client, args, server) {
         const logger = rootLogger.child({
@@ -128,7 +127,7 @@ export default class Command {
             }
         }
 
-        return this.run(interaction, client, args, server, logger);
+        await this.run(interaction, client, args, server, logger);
     }
 
     /**
@@ -138,7 +137,7 @@ export default class Command {
      * @param {any[]} args - The command arguments set by the user.
      * @param {?ServerConnection} server - The connection of the server the command was executed in.
      * @param {import('pino').Logger} logger - A child logger bound to this execution.
-     * @returns {Promise<?boolean>|?boolean}
+     * @returns {Promise<void|any>|void|any}
      * @abstract
      */
     async run(interaction, client, args, server, logger) {

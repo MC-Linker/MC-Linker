@@ -29,7 +29,6 @@ export default class SystemStats extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const stats = addTranslatedResponses(await interaction.sendTl(keys.commands.systemstats.step.measuring));
 
         for(const [key, value] of Object.entries(process.memoryUsage())) {

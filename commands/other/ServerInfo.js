@@ -28,7 +28,6 @@ export default class ServerInfo extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const serverProperties = await server.protocol.getWithCache(...FilePath.ServerProperties(server.path, server.id));
         const levelDat = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {

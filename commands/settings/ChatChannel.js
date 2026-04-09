@@ -67,7 +67,6 @@ export default class ChatChannel extends AutocompleteCommand {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const subcommandGroup = args[0];
         const subcommand = subcommandGroup === 'filter-commands' ? args[1] : args[0];
 

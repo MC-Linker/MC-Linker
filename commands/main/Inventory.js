@@ -102,7 +102,6 @@ export default class Inventory extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         /** @type {UserResponse} */
         const user = args[0];
         const showDetails = args[1];

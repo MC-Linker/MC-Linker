@@ -26,7 +26,6 @@ export default class Customize extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         // If user is not subscribed, let them customize server appearance
         if(!interaction.entitlements.find(e => e.skuId === CustomBotConnectionManager.CUSTOM_BOT_SKU_ID)) {
             if(!interaction.inGuild()) return await interaction.editReplyTl(keys.commands.customize.warnings.no_entitlement_guild);

@@ -20,7 +20,6 @@ export default class Disconnect extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         await client.serverConnections.disconnect(server);
         return interaction.editReplyTl(keys.commands.disconnect.success);
     }

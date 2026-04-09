@@ -22,7 +22,6 @@ export default class Ban extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const user = args[0];
         const userConnection = await client.userConnections.cache.get(interaction.user.id);
 

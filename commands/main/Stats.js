@@ -42,7 +42,6 @@ export default class Stats extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const category = args[0];
         const user = args[1];
         const sorting = args[2] ?? 'descending';

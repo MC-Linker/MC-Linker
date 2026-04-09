@@ -31,7 +31,6 @@ export default class Account extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const subcommand = args[0];
         if(subcommand === 'connect') {
             if(!server) return interaction.editReplyTl(keys.api.command.errors.server_not_connected);

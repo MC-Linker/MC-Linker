@@ -37,7 +37,6 @@ export default class Advancements extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         let category = args[0];
         if(category === 'minecraft') category = 'story';
         const user = args[1];

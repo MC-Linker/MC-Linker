@@ -45,7 +45,6 @@ export default class Help extends AutocompleteCommand {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-
         const commandName = args[0]?.toLowerCase();
 
         const helpEmbed = getEmbed(keys.commands.help.success.base, ph.std(interaction));
