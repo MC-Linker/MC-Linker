@@ -84,7 +84,7 @@ export default class WebSocketProtocol extends Protocol {
             /** @type {WebSocketProtocol} */
             const protocol = c.serverConnections.cache.get(id).protocol;
             if(!protocol.socket) return { status: 'success', data: null };
-            await protocol.socket.disconnect(true);
+            protocol.socket.disconnect(true);
             return { status: 'success', data: null };
         }, { context: { id: this.id }, shard: 0 });
     }
@@ -274,7 +274,10 @@ export default class WebSocketProtocol extends Protocol {
     _sendRaw(name, ...data) {
         // Broadcast the event to shard 0 where the websocket server is running
         return this.client.broadcastEval(async (c, { id, name, data }) => {
-            const clog = c.logger.child({ feature: c.features.structures.protocol.websocket, guildId: id });
+            const clog = c.logger.child({
+                feature: c.features.structures.protocol.websocket,
+                guildId: id,
+            }, { track: false });
             return await new Promise(resolve => {
                 /** @type {WebSocketProtocol} */
                 const protocol = c.serverConnections.cache.get(id).protocol;

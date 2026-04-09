@@ -301,7 +301,7 @@ shards.
 **Protocol Responses:** All protocol communication uses `{ status: 'success'|'error', data?, error? }` envelope format.
 Error codes are defined in `Protocol.ProtocolError`.
 
-**Cross-Shard Sync:** Connections are cached per-shard. Edits broadcast via `client.shard.broadcastEval()`. Socket
+**Cross-Shard Sync:** Connections are cached per-shard. Edits broadcast via `client.broadcastEval()`. Socket
 objects are not serializable and must be excluded from broadcasts.
 
 ## Code Style & Linting
@@ -409,7 +409,7 @@ The `features` proxy is attached to the client as `c.features`, so it is availab
 callbacks. Use `c.features` instead of string literals:
 
 ```javascript
-this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+this.client.broadcastEval(async (c, { id, name, data }) => {
     const clog = c.logger.child({ feature: c.features.structures.protocol.websocket, guildId: id });
     clog.debug(`Sending event ${name}`);
     // ...
