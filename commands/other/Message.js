@@ -1,6 +1,7 @@
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../utilities/utils.js';
+import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 export default class Message extends Command {
 
@@ -29,8 +30,10 @@ export default class Message extends Command {
         const chatMsg = utils.cleanEmojis(args?.join(' ').replaceAll(`"`, `\\"`));
         const argPlaceholder = { username: user.username, 'message': chatMsg };
 
-        const resp = await server.protocol.chatPrivate(chatMsg, interaction.member.nickname ?? interaction.member.user.username, user.username);
-        if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
+        const resp = await server.protocol.chatPrivate(chatMsg, interaction.member?.displayName ?? interaction.user.displayName, user.username);
+        if(!await utils.handleProtocolResponse(resp, server.protocol, interaction, {
+            [ProtocolError.PLAYER_NOT_ONLINE]: keys.commands.message.warnings.player_not_online,
+        }, { username: user.username })) return;
 
         const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
         return interaction.editReplyTl(keys.commands.message.success, argPlaceholder, { warning });

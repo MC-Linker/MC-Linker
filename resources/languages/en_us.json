@@ -1205,6 +1205,16 @@
             }
         },
         "message": {
+            "warnings": {
+                "player_not_online": {
+                    "embeds": [
+                        {
+                            "title": "Player Not Online",
+                            "description": "Player **%username%** is not online and cannot receive messages."
+                        }
+                    ]
+                }
+            },
             "success": {
                 "embeds": [
                     {
