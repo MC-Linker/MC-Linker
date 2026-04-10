@@ -13,18 +13,17 @@ export default class ServerConnection extends Connection {
      * @typedef {object} ChatChannelData - The data for a chatchannel.
      * @property {string} id - The id of the channel.
      * @property {string[]} types - The enabled types of the chatchannel.
-     * @property {string} [allowDiscordToMinecraft] - Whether the chatchannel should send messages from discord to minecraft.
+     * @property {boolean} [allowDiscordToMinecraft] - Whether the chatchannel should send messages from discord to minecraft.
      * @property {string[]} [webhooks] - The webhook ids of the chatchannel.
      */
 
     /**
      * @typedef {object} StatsChannelData - The data for a stats channel.
-     * @property {'member-counter'|'status'} type - The type of the stats channel.
      * @property {string} id - The id of the channel.
-     * @property {object} names - The names for the stats channel.
-     * @property {string} [names.online] - The name when the server is online.
-     * @property {string} [names.offline] - The name when the server is offline.
-     * @property {string} [names.members] - The name for the member count.
+     * @property {'name'|'topic'} [updateTarget='name'] - Whether to update the channel name or topic. Defaults to 'name'.
+     * @property {object} names - The templates for the stats channel.
+     * @property {string} names.online - The template when the server is online.
+     * @property {string} names.offline - The template when the server is offline.
      */
 
     /**
@@ -208,6 +207,14 @@ export default class ServerConnection extends Connection {
          * @type {StatsChannelData[]}
          */
         this.statChannels = data.statChannels ?? this.statChannels ?? [];
+        // Migrate legacy names.members -> names.online & names.offline on load
+        for(const channel of this.statChannels) {
+            if(channel.names.members) {
+                channel.names.online ??= channel.names.members;
+                channel.names.offline ??= channel.names.members;
+                delete channel.names.members;
+            }
+        }
 
         /**
          * The data for syncedRoles.

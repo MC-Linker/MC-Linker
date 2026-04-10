@@ -1700,8 +1700,16 @@
                 "not_manageable": {
                     "embeds": [
                         {
-                            "title": "Cannot Change Name",
-                            "description": "The bot does not have the `Manage Channels` permission to edit the channel's name."
+                            "title": "Cannot Edit Channel",
+                            "description": "The bot does not have the `Manage Channels` permission to edit this channel."
+                        }
+                    ]
+                },
+                "no_topic": {
+                    "embeds": [
+                        {
+                            "title": "No Topic Supported",
+                            "description": "This channel does not support topics. Please change `update_target` to `Name` or choose a different channel."
                         }
                     ]
                 }
@@ -1723,7 +1731,7 @@
                         }
                     ]
                 },
-                "status_list": {
+                "list": {
                     "embeds": [
                         {
                             "title": "List Stat Channels",
@@ -1734,41 +1742,17 @@
                                     "inline": true
                                 },
                                 {
-                                    "name": "Type",
-                                    "value": "Status",
+                                    "name": "Update Target",
+                                    "value": "%update_target%",
                                     "inline": true
-                                },
-                                {
-                                    "name": "Offline Text",
-                                    "value": "%offline_name%"
                                 },
                                 {
                                     "name": "Online Text",
                                     "value": "%online_name%"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                "member-counter_list": {
-                    "embeds": [
-                        {
-                            "title": "List Stat Channels",
-                            "fields": [
-                                {
-                                    "name": "Channel",
-                                    "value": "%channel%",
-                                    "inline": true
                                 },
                                 {
-                                    "name": "Type",
-                                    "value": "Member Counter",
-                                    "inline": true
-                                },
-                                {
-                                    "name": "Channel Text",
-                                    "value": "%name%",
-                                    "inline": true
+                                    "name": "Offline Text",
+                                    "value": "%offline_name%"
                                 }
                             ]
                         }
@@ -3446,56 +3430,46 @@
             "name": "statchannel",
             "type": "ChatInput",
             "default_member_permissions": ["Administrator"],
-            "long_description": "Manage statchannels in the server that will show the current player count of the Minecraft server or it's online status.",
+            "long_description": "Manage statchannels in the server. Use online and offline templates with placeholders like %count%, %ip%, %time%, %version% to display live server info in a channel name or topic.",
             "description": "Manage statchannels in the server.",
             "contexts": ["Guild"],
             "options": [
                 {
-                    "type": "SubcommandGroup",
+                    "type": "Subcommand",
                     "name": "add",
                     "description": "Add a statchannel to the server.",
                     "options": [
                         {
-                            "type": "Subcommand",
-                            "name": "status",
-                            "description": "Add a statchannel that will show the online status of the Minecraft server.",
-                            "options": [
-                                {
-                                    "type": "Channel",
-                                    "name": "channel",
-                                    "description": "Set the channel you want to add as a statchannel.",
-                                    "required": true
-                                },
-                                {
-                                    "type": "String",
-                                    "name": "online",
-                                    "description": "Set the message that will be shown when the server is online.",
-                                    "required": true
-                                },
-                                {
-                                    "type": "String",
-                                    "name": "offline",
-                                    "description": "Set the message that will be shown when the server is offline.",
-                                    "required": true
-                                }
-                            ]
+                            "type": "Channel",
+                            "name": "channel",
+                            "description": "Set the channel you want to add as a statchannel.",
+                            "required": true
                         },
                         {
-                            "type": "Subcommand",
-                            "name": "member-counter",
-                            "description": "Add a statchannel that will show the current player count of the Minecraft server.",
-                            "options": [
+                            "type": "String",
+                            "name": "online",
+                            "description": "Template when server is online. Supports %count%, %ip%, %time%, %version%.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "offline",
+                            "description": "Template when server is offline. Supports %count%, %ip%, %time%, %version% and defaults to the online template if omitted.",
+                            "required": false
+                        },
+                        {
+                            "type": "String",
+                            "name": "update_target",
+                            "description": "Choose whether to update the channel name or topic/description.",
+                            "required": false,
+                            "choices": [
                                 {
-                                    "type": "Channel",
-                                    "name": "channel",
-                                    "description": "Set the channel you want to add as a statchannel.",
-                                    "required": true
+                                    "name": "Name (default)",
+                                    "value": "name"
                                 },
                                 {
-                                    "type": "String",
-                                    "name": "message",
-                                    "description": "Set the message that will be shown for the player count. Use %count% for the player count.",
-                                    "required": true
+                                    "name": "Topic",
+                                    "value": "topic"
                                 }
                             ]
                         }
@@ -3517,25 +3491,7 @@
                 {
                     "type": "Subcommand",
                     "name": "list",
-                    "description": "List all statchannels in the server.",
-                    "options": [
-                        {
-                            "type": "String",
-                            "name": "type",
-                            "description": "Set which type of statchannels to list.",
-                            "required": false,
-                            "choices": [
-                                {
-                                    "name": "Status",
-                                    "value": "status"
-                                },
-                                {
-                                    "name": "Member Counter",
-                                    "value": "member-counter"
-                                }
-                            ]
-                        }
-                    ]
+                    "description": "List all statchannels in the server."
                 }
             ]
         },

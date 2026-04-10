@@ -22,7 +22,7 @@ export default class LinkedRole extends Route {
 
         //Check state
         const clientState = res.unsignCookie(req.cookies.state);
-        if(clientState.valid && clientState.value !== discordState) return { status: 403 };
+        if(!clientState.valid || clientState.value !== discordState) return { status: 403 };
 
         //Get access and refresh token
         const tokens = await getTokens(code);

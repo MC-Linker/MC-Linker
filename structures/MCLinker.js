@@ -36,6 +36,7 @@ export default class MCLinker extends Discord.Client {
      * @property {string} pluginVersion - The latest version of the Minecraft plugin.
      * @property {string} supportServerInvite - The invite link to the support server.
      * @property {{string, string}} emojis - A map of the bot's emoji names to their codes.
+     * @property {{string, string}} colors - A map of the bot's color names to their hex codes.
      * @property {DebugFilter[]} [initialDebugFilters] - Debug filters to apply at startup.
      * @property {{flushIntervalMs: number, maxErrorBufferSize: number, snapshotIntervalMs: number}} analytics - Analytics configuration.
      */

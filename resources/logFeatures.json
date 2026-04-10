@@ -73,13 +73,18 @@
     "structures": {
         "mclinker": null,
         "protocol": {
+            "base": null,
             "websocket": null
         },
         "connections": {
+            "base": null,
+            "baseManager": null,
             "server": null,
+            "serverManager": null,
             "customBot": null,
             "customBotManager": null,
-            "userSettings": null
+            "userSettings": null,
+            "userSettingsManager": null
         }
     },
     "utilities": {

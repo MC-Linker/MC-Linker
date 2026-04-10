@@ -2,7 +2,7 @@ export default {
     ServerConnection: {
         _id: { type: String },
         ip: String,
-        version: Number,
+        version: String,
         path: String,
         worldPath: String,
         online: Boolean,
@@ -23,7 +23,7 @@ export default {
         }],
         statChannels: [{
             _id: { type: String },
-            type: { type: String, enum: ['member-counter', 'status'] },
+            updateTarget: { type: String, enum: ['name', 'topic'] },
             names: {
                 online: String,
                 offline: String,
@@ -37,7 +37,7 @@ export default {
             players: [String],
             direction: { type: String, enum: ['both', 'to_minecraft', 'to_discord'], default: 'both' },
         }],
-        serverSettings: { type: String, ref: 'ServerSettingsConnections' },
+        serverSettings: { type: String, ref: 'ServerSettingsConnection' },
     },
     ServerSettingsConnection: {
         _id: { type: String },

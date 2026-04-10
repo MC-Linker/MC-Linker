@@ -21,53 +21,47 @@ export default class StatChannel extends Command {
      * @inheritdoc
      * @param interaction
      * @param client
-     * @param {[string, string|import('discord.js').GuildChannel, import('discord.js').GuildChannel|string, string, string]} args - [0] The subcommand (add/remove/list), [1] The stat type or channel, [2] The channel or name template, [3] The name template or offline name, [4] The offline name.
+     * @param {[string, import('discord.js').GuildChannel, string, string, string]} args - [0] The subcommand (add/remove/list), [1] The channel, [2] The online template, [3] The offline template or undefined, [4] The update target or undefined.
      * @param server
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
         const subcommand = args[0];
         if(subcommand === 'add') {
-            const type = args[1];
             /** @type {GuildChannel} */
-            const channel = args[2];
-            if(!channel.manageable) {
-                return interaction.editReplyTl(keys.commands.statchannel.errors.not_manageable);
-            }
+            const channel = args[1];
+            const online = args[2];
+            const offline = args[3] ?? online;
+            const updateTarget = args[4] ?? 'name';
+
+            if(!channel.manageable) return interaction.editReplyTl(keys.commands.statchannel.errors.not_manageable);
+            if(updateTarget === 'topic' && !channel.topic) return interaction.editReplyTl(keys.commands.statchannel.errors.no_topic);
 
             /** @type {StatsChannelData} */
-            const statChannel = {
-                type,
+            const statChannelData = {
                 id: channel.id,
-                names: {},
+                updateTarget,
+                names: { online, offline },
             };
-            if(type === 'member-counter') statChannel.names.members = args[3];
-            else if(type === 'status') {
-                statChannel.names.online = args[3];
-                statChannel.names.offline = args[4];
-            }
-
-            const resp = await server.protocol.addStatsChannel(statChannel);
-            if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
-
-            await server.edit({ statChannels: resp.data });
-
-            let message;
-            if(statChannel.type === 'member-counter') {
-                const onlinePlayers = await server.protocol.getOnlinePlayers();
-                message = statChannel.names.members.replace('%count%', onlinePlayers.data.length);
-            }
-            else message = statChannel.names.online;
 
             try {
-                await channel.setName(message);
+                // Try initial channel update
+                const message = await UpdateStatsChannel.fetchCurrentName(statChannelData, server);
+                if(message) await UpdateStatsChannel.applyUpdate(channel, statChannelData, message);
             }
             catch(err) {
                 if(err instanceof RateLimitError) {
                     // Channel rename is rate limited — schedule a deferred re-sync
-                    UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, statChannel, server.id, client);
+                    UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, statChannelData, server.id, client);
                 }
+                else return interaction.editReplyTl(keys.commands.statchannel.errors.update_failed);
             }
+
+            const resp = await server.protocol.addStatsChannel(statChannelData);
+            if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
+
+            // Bot is source of truth
+            await server.edit({ statChannels: [...server.statChannels, statChannelData] });
 
             await interaction.editReplyTl(keys.commands.statchannel.success.add);
         }
@@ -89,10 +83,7 @@ export default class StatChannel extends Command {
             await interaction.editReplyTl(keys.commands.statchannel.success.remove);
         }
         else if(subcommand === 'list') {
-            const type = args[1];
-
-            let statChannels = server.statChannels;
-            if(type && statChannels) statChannels = statChannels.filter(c => c.type === type);
+            const statChannels = server.statChannels;
 
             if(!statChannels?.length) {
                 await interaction.editReplyTl(keys.commands.chatchannel.warnings.no_channels);
@@ -104,13 +95,13 @@ export default class StatChannel extends Command {
 
             for(const channel of statChannels) {
                 const channelEmbed = getEmbed(
-                    keys.commands.statchannel.success[`${channel.type}_list`],
+                    keys.commands.statchannel.success.list,
                     ph.std(interaction),
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
-                        name: channel.names.members,
-                        offline_name: channel.names.offline,
                         online_name: channel.names.online,
+                        offline_name: channel.names.offline ?? channel.names.online,
+                        update_target: channel.updateTarget === 'topic' ? 'Topic' : 'Name',
                     },
                 );
 

@@ -98,7 +98,7 @@ export default class Eval extends Command {
             out += evalOut._read();
 
             //Redact tokens
-            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET, process.env.MICROSOFT_EMAIL, process.env.MICROSOFT_PASSWORD, process.env.IO_USERNAME, process.env.IO_PASSWORD, process.env.AZURE_CLIENT_I, process.env.TOPGG_TOKEN, process.env.COMMUNICATION_TOKEN]
+            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET, process.env.MICROSOFT_EMAIL, process.env.MICROSOFT_PASSWORD, process.env.IO_USERNAME, process.env.IO_PASSWORD, process.env.AZURE_CLIENT_ID, process.env.TOPGG_TOKEN, process.env.COMMUNICATION_TOKEN]
                 .filter(t => t && t !== '');
             // noinspection JSVoidFunctionReturnValueUsed
             for(const token of tokens) {

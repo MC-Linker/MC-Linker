@@ -82,25 +82,29 @@ export default class RoleSync extends AutocompleteCommand {
 
             await fetchMembersIfCacheDiffers(client, interaction.guild);
 
-            const resp = await server.protocol.addSyncedRole({
+            // Build role data from what we know
+            const syncedRoleData = {
                 id: role.id,
                 name,
                 isGroup,
                 direction,
                 players: role.members.map(m => client.userConnections.cache.get(m.id)?.getUUID(server)).filter(u => u),
-            });
+            };
+
+            const resp = await server.protocol.addSyncedRole(syncedRoleData);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction, {
                 [ProtocolError.NOT_FOUND]: keys.commands.rolesync.errors.group_or_team_not_found,
                 [ProtocolError.LUCKPERMS_NOT_LOADED]: keys.commands.rolesync.errors.luckperms_not_loaded,
             }, { name })) return;
 
-            const respRoleIndex = resp.data.findIndex(r => r.id === role.id);
-            const respRole = resp.data[respRoleIndex];
-
             // Only grant Discord roles if direction allows MC→Discord sync
             if(direction !== 'to_minecraft') {
+                // Read only the players list
+                const respPlayers = resp.data?.find(r => r.id === role.id)?.players ?? [];
+                syncedRoleData.players = respPlayers;
+
                 //Map uuids to discord ids
-                const userIds = respRole.players.map(p => client.userConnections.cache.find(u => u.getUUID(server) === p)?.id).filter(u => u);
+                const userIds = respPlayers.map(p => client.userConnections.cache.find(u => u.getUUID(server) === p)?.id).filter(u => u);
 
                 //Add the role to the members that are in the group
                 const membersToAdd = userIds.filter(id => !role.members.has(id));
@@ -129,12 +133,8 @@ export default class RoleSync extends AutocompleteCommand {
                 }
             }
 
-            if(direction === 'to_minecraft')
-                respRole.players = role.members.map(m => client.userConnections.cache.get(m.id)?.getUUID(server)).filter(u => u);
-            respRole.direction = direction;
-            resp.data[respRoleIndex] = respRole;
-
-            await server.edit({ syncedRoles: resp.data });
+            // Bot is source of truth
+            await server.edit({ syncedRoles: [...server.syncedRoles, syncedRoleData] });
             return interaction.editReplyTl(keys.commands.rolesync.success.add);
         }
 
@@ -147,7 +147,8 @@ export default class RoleSync extends AutocompleteCommand {
             const resp = await server.protocol.removeSyncedRole(syncedRole);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            await server.edit({ syncedRoles: resp.data });
+            // Bot is source of truth
+            await server.edit({ syncedRoles: server.syncedRoles.filter(r => r.id !== syncedRole.id) });
             return interaction.editReplyTl(keys.commands.rolesync.success.remove);
         }
         else if(subcommand === 'list') {

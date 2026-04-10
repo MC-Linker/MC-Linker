@@ -291,8 +291,14 @@ export default class WebSocketProtocol extends Protocol {
 
                     if(typeof response === 'string') {
                         clog.debug(`Received response for event ${name}: ${response}`);
-                        const responseObj = JSON.parse(response);
-                        resolve(responseObj);
+                        try {
+                            const responseObj = JSON.parse(response);
+                            resolve(responseObj);
+                        }
+                        catch(err) {
+                            clog.error(err, `Failed to parse response for event ${name}`);
+                            resolve(null);
+                        }
                     }
                     else {
                         clog.debug(`Received response for event ${name}`);

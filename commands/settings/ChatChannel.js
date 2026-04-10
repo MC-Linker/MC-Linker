@@ -140,16 +140,18 @@ export default class ChatChannel extends AutocompleteCommand {
                 return interaction.editReplyTl(keys.commands.chatchannel.errors.could_not_create_webhook, ph.error(err));
             }
 
-            const resp = await server.protocol.addChatChannel({
+            const chatChannelData = {
                 id: channel.id,
                 webhook: webhook.id,
                 webhooks: [webhook.id],
                 types: menu.values,
                 allowDiscordToMinecraft,
-            });
+            };
+            const resp = await server.protocol.addChatChannel(chatChannelData);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook.delete();
 
-            await server.edit({ chatChannels: resp.data });
+            // Bot is source of truth
+            await server.edit({ chatChannels: [...server.chatChannels, chatChannelData] });
 
             return interaction.editReplyTl(keys.commands.chatchannel.success.add);
         }
@@ -162,7 +164,8 @@ export default class ChatChannel extends AutocompleteCommand {
             const resp = await server.protocol.removeChatChannel(chatChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            await server.edit({ chatChannels: resp.data });
+            // Bot is source of truth
+            await server.edit({ chatChannels: server.chatChannels.filter(c => c.id !== chatChannel.id) });
             return interaction.editReplyTl(keys.commands.chatchannel.success.remove);
         }
         else if(subcommand === 'list') {

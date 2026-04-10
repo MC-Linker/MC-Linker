@@ -1,6 +1,10 @@
 import { Base } from 'discord.js';
 import { getManagerStringFromConnection } from '../../utilities/shardingUtils.js';
 import ServerConnection from './ServerConnection.js';
+import rootLogger from '../../utilities/logger/logger.js';
+import features from '../../utilities/logger/features.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.base });
 
 export default class Connection extends Base {
 
@@ -37,19 +41,10 @@ export default class Connection extends Base {
         const data = JSON.parse(JSON.stringify(this.getData()));
 
         if(this instanceof ServerConnection) {
-            // map id to _id
-            data.chatChannels.forEach((channel, index) => {
-                data.chatChannels[index]._id = channel.id;
-                delete data.chatChannels[index].id;
-            });
-            data.statChannels.forEach((channel, index) => {
-                data.statChannels[index]._id = channel.id;
-                delete data.statChannels[index].id;
-            });
-            data.syncedRoles.forEach((role, index) => {
-                data.syncedRoles[index]._id = role.id;
-                delete data.syncedRoles[index].id;
-            });
+            // map id to _id for Mongoose subdocuments
+            this._remapSubdocumentIds(data.chatChannels);
+            this._remapSubdocumentIds(data.statChannels);
+            this._remapSubdocumentIds(data.syncedRoles);
         }
 
         //Remove id, otherwise duplicate key error, if object does not exist, it will use id from query (this.id)
@@ -57,7 +52,10 @@ export default class Connection extends Base {
 
         return await this.client.mongo.models[this.collectionName].updateOne({ _id: this.id }, data, { upsert: true })
             .then(() => true)
-            .catch(() => false);
+            .catch(err => {
+                logger.error(err, `Failed to write connection ${this.id} to database`);
+                return false;
+            });
     }
 
     /**
@@ -67,7 +65,10 @@ export default class Connection extends Base {
     async _delete() {
         return await this.client.mongo.models[this.collectionName].deleteOne({ _id: this.id })
             .then(() => true)
-            .catch(() => false);
+            .catch(err => {
+                logger.error(err, `Failed to delete connection ${this.id} from database`);
+                return false;
+            });
     }
 
     /**
@@ -95,6 +96,17 @@ export default class Connection extends Base {
             return this;
         }
         else return null;
+    }
+
+    /**
+     * Remaps `id` to `_id` on each element in an array of subdocuments for Mongoose storage.
+     * @param {Object[]} array - The array of subdocuments to remap.
+     */
+    _remapSubdocumentIds(array) {
+        array.forEach(item => {
+            item._id = item.id;
+            delete item.id;
+        });
     }
 
     /**
