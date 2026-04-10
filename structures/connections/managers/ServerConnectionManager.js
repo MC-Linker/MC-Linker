@@ -1,5 +1,6 @@
 import ServerConnection from '../ServerConnection.js';
 import ConnectionManager from './ConnectionManager.js';
+import { ShardClientUtil } from 'discord.js';
 
 export default class ServerConnectionManager extends ConnectionManager {
 
@@ -43,6 +44,41 @@ export default class ServerConnectionManager extends ConnectionManager {
         if(!await super.disconnect(connection)) return false;
         await connection.removeCache();
         return true;
+    }
+
+    /**
+     * Syncs synced roles for a user across all server connections that have synced roles configured.
+     * Groups connections by shard to minimize IPC overhead.
+     * Silently skips servers where the member cannot be fetched or the shard eval fails.
+     * @param {string} userId - The Discord user ID (also the UserConnection cache key).
+     * @returns {Promise<void>}
+     */
+    async syncRolesAcrossAllServers(userId) {
+        // Group server IDs by their owning shard
+        const shardMap = new Map();
+        for(const conn of this.cache.values()) {
+            if(!conn.syncedRoles?.length) continue;
+            const shardId = ShardClientUtil.shardIdForGuildId(conn.id, this.client.shard.count);
+            if(!shardMap.has(shardId)) shardMap.set(shardId, []);
+            shardMap.get(shardId).push(conn.id);
+        }
+
+        await Promise.all(
+            [...shardMap.entries()].map(([shardId, serverIds]) =>
+                this.client.broadcastEval(async (c, { serverIds, userId }) => {
+                    const userConn = c.userConnections.cache.get(userId);
+                    if(!userConn) return;
+
+                    await Promise.allSettled(serverIds.map(async serverId => {
+                        const server = c.serverConnections.cache.get(serverId);
+                        if(!server) return;
+                        const guild = await c.guilds.fetch(serverId);
+                        const member = await guild.members.fetch(userId);
+                        await server.syncRolesOfMember(member, userConn);
+                    }));
+                }, { context: { serverIds, userId }, shard: shardId }),
+            ),
+        );
     }
 
     async _load() {

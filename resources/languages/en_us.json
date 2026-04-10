@@ -1219,7 +1219,7 @@
                 "embeds": [
                     {
                         "title": "Send Message",
-                        "description": "Successfully sent message to player **%username%**\n%warning%",
+                        "description": "Successfully sent message to player **%username%**",
                         "color": "Blue"
                     }
                 ]
@@ -2503,6 +2503,19 @@
                             "style": "Primary",
                             "label": "Reply",
                             "custom_id": "dm_reply"
+                        }
+                    ]
+                },
+                "dm_reply_modal": {
+                    "title": "Reply to %username%",
+                    "components": [
+                        {
+                            "type": "TextInput",
+                            "custom_id": "dm_reply_modal",
+                            "label": "Your Message",
+                            "style": "Paragraph",
+                            "required": true,
+                            "placeholder": "Type your message here..."
                         }
                     ]
                 }

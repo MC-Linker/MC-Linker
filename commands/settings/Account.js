@@ -4,14 +4,9 @@ import * as utils from '../../utilities/utils.js';
 import { UUIDRegex } from '../../utilities/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
+import MCLinkerAPI from '../../api/MCLinkerAPI.js';
 
 export default class Account extends Command {
-
-    /**
-     * Map to store pending `/account connect` interactions that need to be replied to.
-     * @type {Map<string, { interaction: Discord.CommandInteraction, timeout: number }>}
-     */
-    pendingInteractions = new Map();
 
     constructor() {
         super({
@@ -36,9 +31,7 @@ export default class Account extends Command {
             if(!server) return interaction.editReplyTl(keys.api.command.errors.server_not_connected);
 
             const usernameOrUUID = args[1];
-            if(usernameOrUUID.match(Discord.MessageMentions.UsersPattern)) {
-                return interaction.editReplyTl(keys.commands.account.warnings.mention);
-            }
+            if(usernameOrUUID.match(Discord.MessageMentions.UsersPattern)) return interaction.editReplyTl(keys.commands.account.warnings.mention);
 
             let uuid;
             let username;
@@ -62,61 +55,51 @@ export default class Account extends Command {
                 ip: server.displayIp,
             });
 
-            const timeout = setTimeout(async () => {
-                await interaction.editReplyTl(keys.commands.account.warnings.verification_timeout);
-            }, 180_000);
+            const verificationResponse = await client.broadcastEval(async (c, { uuid, code, serverId }) => {
+                const server = c.serverConnections.cache.get(serverId);
+                const socket = server?.protocol.socket;
+                if(!socket) return { status: 'timeout' };
 
-            this.pendingInteractions.set(interaction.user.id, {
-                interaction,
-                timeout,
-            });
-
-            await client.broadcastEval((c, { uuid, username, code, userId, serverId, shard }) => {
-                const verifyResponseListener = async data => {
-                    if(data.uuid !== uuid || data.code !== code) return;
-
-                    await c.userConnections.connect({
-                        id: userId,
-                        uuid,
-                        username,
+                try {
+                    const data = await c.api.waitForWSEvent(socket, 'verify-response', 180_000, rawData => {
+                        const parsed = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+                        if(parsed.uuid !== uuid || parsed.code !== code) return;
+                        return parsed;
                     });
-
-                    const settings = c.userSettingsConnections.cache.get(userId);
-                    if(settings) await settings.updateRoleConnection(username, {
-                        'connectedaccount': 1,
-                    });
-
-                    // Reply to the interaction on the shard that initiated the verification
-                    await c.broadcastEval(async (c, { id, serverId }) => {
-                        /** @type {Account} */
-                        const accountCommand = c.commands.get('account');
-                        if(!accountCommand.pendingInteractions.has(id)) return;
-
-                        const { interaction, timeout } = accountCommand.pendingInteractions.get(id);
-
-                        const connection = c.userConnections.cache.get(id);
-                        await c.serverConnections.cache.get(serverId).syncRolesOfMember(interaction.member, connection);
-                        clearTimeout(timeout); // Works because event is called on same shard
-                        await interaction.editReplyTl(c.keys.commands.account.success.verified);
-                    }, {
-                        context: { id: userId, serverId },
-                        shard,
-                    });
-                };
-
-                const socket = c.serverConnections.cache.get(serverId).protocol.socket;
-                socket.on('verify-response', data => verifyResponseListener(JSON.parse(data)));
+                    return { status: 'success', data };
+                }
+                catch(err) {
+                    if(err instanceof MCLinkerAPI.EventTimeoutError) return { status: 'timeout' };
+                    return {
+                        status: 'error',
+                        error: err.message,
+                    };
+                }
             }, {
                 context: {
                     uuid,
-                    username: usernameOrUUID,
                     code,
-                    userId: interaction.user.id,
                     serverId: server.id,
-                    shard: client.shard.ids[0],
                 },
                 shard: 0,
             });
+
+            if(verificationResponse?.status === 'timeout') return interaction.editReplyTl(keys.commands.account.warnings.verification_timeout);
+            else if(verificationResponse?.status !== 'success') return interaction.editReplyTl(keys.main.errors.could_not_execute_command);
+
+            await client.userConnections.connect({
+                id: interaction.user.id,
+                uuid,
+                username,
+            });
+
+            const settings = client.userSettingsConnections.cache.get(interaction.user.id);
+            if(settings) await settings.updateRoleConnection(username, {
+                'connectedaccount': 1,
+            });
+
+            await client.serverConnections.syncRolesAcrossAllServers(interaction.user.id);
+            await interaction.editReplyTl(keys.commands.account.success.verified);
         }
         else if(subcommand === 'disconnect') {
             const connection = client.userConnections.cache.get(interaction.user.id);

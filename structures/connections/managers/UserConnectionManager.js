@@ -89,6 +89,17 @@ export default class UserConnectionManager extends ConnectionManager {
         return { error: 'fetch', uuid: null, username: null };
     }
 
+    /**
+     * Finds a UserConnection by Minecraft UUID, respecting the server's online mode.
+     * Accepts UUIDs with or without hyphens.
+     * @param {string} uuid - The Minecraft UUID to search for.
+     * @param {ServerConnectionResolvable} server - The server to check online mode against.
+     * @returns {UserConnection|undefined}
+     */
+    findByUUID(uuid, server) {
+        return this.cache.find(c => c.getUUID(server) === utils.addHyphen(uuid));
+    }
+
     async disconnect(connectionResolvable) {
         const connection = this.resolve(connectionResolvable);
 

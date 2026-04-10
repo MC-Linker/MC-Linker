@@ -1,6 +1,3 @@
-/// <reference path="./types/BroadastEvalType.d.ts" />
-// noinspection HttpUrlsUsage
-
 import Fastify from 'fastify';
 import { createHash } from '../utilities/utils.js';
 import { getEmbed } from '../utilities/messages.js';
@@ -25,6 +22,23 @@ const socketLogger = rootLogger.child({ feature: features.api.socketio });
 export default class MCLinkerAPI extends EventEmitter {
 
     /**
+     * Error used when an awaited event does not arrive within the configured timeout.
+     */
+    static EventTimeoutError = class EventTimeoutError extends Error {
+
+        /**
+         * @param {string} event - The awaited event name.
+         * @param {number} timeoutMs - The timeout in milliseconds.
+         */
+        constructor(event, timeoutMs) {
+            super(`Timed out waiting for event "${event}" after ${timeoutMs}ms`);
+            this.name = 'EventTimeoutError';
+            this.event = event;
+            this.timeoutMs = timeoutMs;
+        }
+    };
+
+    /**
      * The websocket instance for the api.
      * @type {import('socket.io').Server}
      */
@@ -35,6 +49,13 @@ export default class MCLinkerAPI extends EventEmitter {
      * @type {Map<String, { username: String, uuid: String }>}
      */
     usersAwaitingVerification = new Map();
+
+    /**
+     * Pending websocket connection verifications keyed by guild ID.
+     * Written by the Connect command (via broadcastEval to shard 0) and read/cleared here.
+     * @type {Map<string, { code: string, shard: number, requiredRoleToJoin: ?object, displayIp: ?string, online: ?boolean }>}
+     */
+    wsVerification = new Map();
 
     constructor(client) {
         super();
@@ -163,6 +184,73 @@ export default class MCLinkerAPI extends EventEmitter {
     }
 
     /**
+     * Core implementation: attaches a one-shot filtered listener on any EventEmitter-compatible object,
+     * resolving when the resolver returns a non-undefined value, or rejecting on timeout.
+     * The resolver should return `undefined` to keep waiting or any other value to resolve the promise.
+     * @template T
+     * @param {import('node:events').EventEmitter} emitter
+     * @param {string} event
+     * @param {number} timeoutMs
+     * @param {(...args: any[]) => T|undefined} [resolver]
+     * @returns {Promise<T>}
+     */
+    _waitForEmitterEvent(emitter, event, timeoutMs, resolver) {
+        return new Promise((resolve, reject) => {
+            let timeout;
+            const cleanup = () => {
+                clearTimeout(timeout);
+                emitter.off(event, listener);
+            };
+            const listener = (...args) => {
+                try {
+                    const result = resolver ? resolver(...args) : args[0];
+                    if(result === undefined) return;
+
+                    cleanup();
+                    resolve(result);
+                }
+                catch(err) {
+                    cleanup();
+                    reject(err);
+                }
+            };
+
+            emitter.on(event, listener);
+            timeout = setTimeout(() => {
+                cleanup();
+                reject(new MCLinkerAPI.EventTimeoutError(event, timeoutMs));
+            }, timeoutMs);
+        });
+    }
+
+    /**
+     * Waits for a matching Socket.IO event on the given socket.
+     * The resolver should return `undefined` to keep waiting or any other value to resolve the promise.
+     * @template T
+     * @param {import('socket.io').Socket} socket
+     * @param {string} event
+     * @param {number} timeoutMs
+     * @param {(...args: any[]) => T|undefined} [resolver]
+     * @returns {Promise<T>}
+     */
+    waitForWSEvent(socket, event, timeoutMs, resolver) {
+        return this._waitForEmitterEvent(socket, event, timeoutMs, resolver);
+    }
+
+    /**
+     * Waits for a matching event on the API's own EventEmitter.
+     * The resolver should return `undefined` to keep waiting or any other value to resolve the promise.
+     * @template T
+     * @param {string} event
+     * @param {number} timeoutMs
+     * @param {(...args: any[]) => T|undefined} [resolver]
+     * @returns {Promise<T>}
+     */
+    waitForAPIEvent(event, timeoutMs, resolver) {
+        return this._waitForEmitterEvent(this, event, timeoutMs, resolver);
+    }
+
+    /**
      * Loads REST routes and WS event handlers. Called on all shards so that
      * handlers are available for cross-shard dispatch via broadcastEval.
      * @returns {Promise<void>}
@@ -258,7 +346,7 @@ export default class MCLinkerAPI extends EventEmitter {
                 path: socket.handshake.query.path,
                 online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
                 floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                version: Number(socket.handshake.query.version.split('.')[1]),
+                version: socket.handshake.query.version ?? null,
                 worldPath: socket.handshake.query.worldPath,
             });
             server.protocol.updateSocket(socket);
@@ -285,18 +373,14 @@ export default class MCLinkerAPI extends EventEmitter {
             // New Connection
             const [id, userCode] = socket.handshake.auth.code?.split(':') ?? [];
 
-            /** @type {Connect} */
-            const connectCommand = this.client.commands.get('connect');
-            const wsVerification = connectCommand.wsVerification;
-
-            if(wsVerification.has(id)) {
+            if(this.wsVerification.has(id)) {
                 const {
                     code: serverCode,
                     shard,
                     requiredRoleToJoin,
                     displayIp,
                     online,
-                } = wsVerification.get(id);
+                } = this.wsVerification.get(id);
                 try {
                     if(!serverCode || serverCode !== userCode) {
                         socketLogger.debug({ guildId: id }, `New Connection from ${socket.handshake.address} failed verification. Disconnecting socket.`);
@@ -315,7 +399,7 @@ export default class MCLinkerAPI extends EventEmitter {
                         online: online ?? socket.handshake.query.online === 'true',
                         forceOnlineMode: online !== undefined,
                         floodgatePrefix: socket.handshake.query.floodgatePrefix,
-                        version: Number(socket.handshake.query.version.split('.')[1]),
+                        version: socket.handshake.query.version ?? null,
                         worldPath: socket.handshake.query.worldPath,
                         protocol: 'websocket',
                         socket,
@@ -324,25 +408,27 @@ export default class MCLinkerAPI extends EventEmitter {
                         displayIp,
                     };
 
-                    await connectCommand.disconnectOldServer(this.client, id);
-                    this.addWebsocketListeners(socket, id, hash);
-                    this.client.serverConnections.connect(serverConnectionData).then(server => {
-                        socketLogger.debug({ guildId: server.id }, `Successfully connected ${server.displayIp} to websocket`);
-                        this.client.broadcastEval(
-                            (c, { id }) => c.emit('editConnectResponse', id, 'success'),
-                            { context: { id }, shard },
-                        );
-                    });
+                    const oldServer = this.client.serverConnections.resolve(id);
+                    if(oldServer) await this.client.serverConnections.disconnect(oldServer);
 
+                    const server = await this.client.serverConnections.connect(serverConnectionData);
+                    this.addWebsocketListeners(socket, id, hash);
+                    socketLogger.debug({ guildId: server.id }, `Successfully connected ${server.displayIp} to websocket`);
+
+                    void this.client.broadcastEval(
+                        (c, { id }) => c.api.emit('connect-response', { id, responseType: 'success' }),
+                        { context: { id }, shard },
+                    );
                     next();
                 }
                 catch(err) {
-                    socketLogger.error(err, 'Error while processing websocket connection');
+                    socketLogger.error(err, 'Error while connecting server to websocket');
                     void this.client.broadcastEval(
-                        (c, {
+                        (c, { id, error }) => c.api.emit('connect-response', {
                             id,
-                            error,
-                        }) => c.emit('editConnectResponse', id, 'error', { error_stack: error }),
+                            responseType: 'error',
+                            placeholders: { error_stack: error },
+                        }),
                         { context: { id, error: err.stack }, shard },
                     );
                     next(new Error('Server Error'));
@@ -366,14 +452,10 @@ export default class MCLinkerAPI extends EventEmitter {
     async wsHandleConnection(socket) {
         const [id] = socket.handshake.auth.code?.split(':') ?? [];
 
-        /** @type {Connect} */
-        const connectCommand = this.client.commands.get('connect');
-        const wsVerification = connectCommand.wsVerification;
+        if(!this.wsVerification.has(id)) return; //Not a new connection
 
-        if(!wsVerification.has(id)) return; //Not a new connection
-
-        const { requiredRoleToJoin } = wsVerification.get(id);
-        wsVerification.delete(id);
+        const { requiredRoleToJoin } = this.wsVerification.get(id);
+        this.wsVerification.delete(id);
 
         socket.emit('auth-success', { status: 'success', data: { requiredRoleToJoin } }); //Tell the plugin that the auth was successful
     }
@@ -503,7 +585,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * @returns {Promise<void>}
      */
     async updateSyncedRoleMember(roleId, uuid, server, addOrRemove) {
-        const connection = this.client.userConnections.cache.find(conn => conn.getUUID(server) === uuid);
+        const connection = this.client.userConnections.findByUUID(uuid, server);
         if(!connection) return;
         uuid = connection.getUUID(server);
 

@@ -186,47 +186,27 @@ export default class CustomBotConnection extends Connection {
             stdio: 'inherit',
         });
 
-        // Check logs until the bot is ready
-        return new Promise((resolve, reject) => {
-            let waitForStartTimeout;
-            let readyListener = req => {
-                if(req.headers['x-communication-token'] !== this.communicationToken) return;
-                logger.info('Custom bot is ready!');
-                resolve();
-                this.client.api.off('/custom-bot-api-ready', readyListener);
-                clearTimeout(waitForStartTimeout);
-            };
-            this.client.api.on('/custom-bot-api-ready', readyListener);
+        const readyPromise = this.client.api.waitForAPIEvent('/custom-bot-api-ready', 120_000, req => {
+            if(req.headers['x-communication-token'] !== this.communicationToken) return;
+            logger.info('Custom bot is ready!');
+            return req;
+        });
 
-            waitForStartTimeout = setTimeout(() => {
-                reject(new Error('Timeout waiting for bot to start'));
-                this.client.api.off('/custom-bot-api-ready', readyListener);
-
-                try {
-                    void this.down();
-                }
-                catch {}
-            }, 60_000);
-
-            composeProcess.on('close', code => {
-                if(code !== 0) {
-                    reject(new Error(`Docker compose failed with code ${code}`));
-                    clearTimeout(waitForStartTimeout);
-                    this.client.api.off('/custom-bot-api-ready', readyListener);
-
-                    try {
-                        void this.down();
-                    }
-                    catch {}
-                }
+        const composeFailurePromise = new Promise((_, reject) => {
+            composeProcess.once('close', code => {
+                if(code !== 0) reject(new Error(`Docker compose failed with code ${code}`));
             });
 
-            composeProcess.on('error', err => {
-                reject(err);
-                clearTimeout(waitForStartTimeout);
-                this.client.api.off('/custom-bot-api-ready', readyListener);
+            composeProcess.once('error', reject);
+        });
+
+        return Promise.race([readyPromise, composeFailurePromise]).catch(err => {
+            try {
                 void this.down();
-            });
+            }
+            catch {}
+
+            throw err;
         });
     }
 

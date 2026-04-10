@@ -13,7 +13,7 @@ export default class EntitlementUpdate extends Event {
         });
     }
 
-    async execute(client, entitlement) {
+    async run() {
         // TODO No logic implemented yet
     }
-} 
+}

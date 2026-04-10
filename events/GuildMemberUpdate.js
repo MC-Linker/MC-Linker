@@ -12,7 +12,13 @@ export default class GuildMemberUpdate extends Event {
         });
     }
 
-    async execute(client, oldMember, newMember) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').GuildMember, import('discord.js').GuildMember]} args - [0] The old member data, [1] The new member data.
+     * @param logger
+     */
+    async run(client, [oldMember, newMember], logger) {
         if(!oldMember.roles) return;
         if(oldMember.roles.cache.size === newMember.roles.cache.size) return;
 
@@ -66,4 +72,4 @@ export default class GuildMemberUpdate extends Event {
         server.syncedRoles[roleIndex] = syncedRole;
         await server.edit({});
     }
-} 
+}

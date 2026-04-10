@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, CommandInteraction } from 'discord.js';
+import { AutocompleteInteraction } from 'discord.js';
 import { MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../utilities/utils.js';
 import logger from '../utilities/logger/logger.js';
 import { trackError } from './analytics/AnalyticsCollector.js';
@@ -14,19 +14,6 @@ export default class AutocompleteCommand extends Command {
      * @type {Map<string, Map<string, { fullValue: string, expiresAt: number }>>}
      */
     static autocompleteSelectionCache = new Map();
-
-    /**
-     * @inheritDoc
-     * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
-     * @param {MCLinker} client - The MCLinker client.
-     * @param {any[]} args - The command arguments set by the user.
-     * @param {?ServerConnection} server - The connection of the server the command was executed in.
-     * @returns {Promise<?boolean>|?boolean}
-     * @abstract
-     */
-    execute(interaction, client, args, server) {
-        return super.execute(interaction, client, args, server);
-    }
 
     /**
      * Handles the autocompletion of a command.

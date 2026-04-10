@@ -124,6 +124,26 @@ export async function getCachedAvatarURL(player) {
 }
 
 /**
+ * Searches for a guild member by username/display name and only returns exact matches.
+ * @param {import('discord.js').Guild} guild - The guild to search in.
+ * @param {string} user - The username/display name to look up.
+ * @returns {Promise<?import('discord.js').GuildMember>} - The matching guild member or null.
+ */
+export async function findMemberByUsername(guild, user) {
+    const search = user.toLowerCase();
+    const foundMember = (await guild.members.search({ query: search, limit: 1 }))?.first();
+    if(!foundMember) return null;
+
+    if(
+        foundMember.user.displayName.toLowerCase() !== search &&
+        foundMember.displayName.toLowerCase() !== search &&
+        foundMember.user.username.toLowerCase() !== search
+    ) return null;
+
+    return foundMember;
+}
+
+/**
  * Parses `@username` mentions in a message string and replaces them with Discord member mentions.
  * Only exact matches against display name, nickname, or username are replaced.
  * @param {string} message - The raw message text potentially containing `@username` mentions.
@@ -137,15 +157,8 @@ export async function parseMentions(message, guild) {
         if(mention.length > 101) continue;
 
         const search = mention.replace('@', '').toLowerCase();
-        const foundMember = (await guild.members.search({ query: search, limit: 1 }).catch(() => null))?.first();
+        const foundMember = await findMemberByUsername(guild, search).catch(() => null);
         if(!foundMember) continue;
-
-        // Only exact matches
-        if(
-            foundMember?.user.displayName.toLowerCase() !== search &&
-            foundMember?.displayName.toLowerCase() !== search &&
-            foundMember?.user.username.toLowerCase() !== search
-        ) continue;
 
         parsedMessage = parsedMessage.replace(mention, foundMember.toString());
     }

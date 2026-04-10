@@ -201,6 +201,8 @@ export const ProtocolError = Object.freeze({
     NBT_ERROR: 'nbt_error',
     /** The connection configuration file is missing. */
     CONN_JSON_MISSING: 'conn_json_missing',
+    /** Target Discord user has DMs disabled. */
+    DM_CLOSED: 'dm_closed',
 });
 
 export default class Protocol extends Base {

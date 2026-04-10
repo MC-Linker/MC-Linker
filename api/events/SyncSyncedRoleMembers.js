@@ -81,7 +81,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             if(!discordPlayerUUIDs.has(uuid)) {
                 if(direction === 'both' || direction === 'to_discord') {
                     // MC is authoritative for this direction → grant Discord role
-                    const conn = client.userConnections.cache.find(u => u.getUUID(server) === uuid);
+                    const conn = client.userConnections.findByUUID(uuid, server);
                     if(conn) {
                         try {
                             if(!syncedRole.players.includes(uuid)) {

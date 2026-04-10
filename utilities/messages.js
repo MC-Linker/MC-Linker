@@ -754,7 +754,7 @@ export function getComponent(key, ...placeholders) {
 
 /**
  * Get discord reply options from a language key.
- * @param {Discord.MessageReplyOptions|Discord.InteractionReplyOptions} key - The language key to get the reply options from.
+ * @param {Discord.MessageReplyOptions|Discord.InteractionReplyOptions|Discord.MessageCreateOptions} key - The language key to get the reply options from.
  * @param {object} placeholders - The placeholders to replace in the language key.
  * @returns {?Discord.MessageReplyOptions|?Discord.InteractionReplyOptions}
  */
