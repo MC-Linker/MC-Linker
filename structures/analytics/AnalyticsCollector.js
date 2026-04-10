@@ -163,7 +163,7 @@ export default class AnalyticsCollector {
             context: context ?? null,
         });
 
-        if(this._errorBuffer.length >= this._maxBufferSize) this._flush();
+        if(this._errorBuffer.length >= this._maxBufferSize) void this._flush();
     }
 
     /**

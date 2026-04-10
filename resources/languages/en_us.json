@@ -74,7 +74,7 @@
                 "embeds": [
                     {
                         "title": "Unknown Error",
-                        "description": "An unknown error occurred while executing this command. Please try again."
+                        "description": "An unknown error occurred while executing this command. Please try again later."
                     }
                 ],
                 "components": []
@@ -83,7 +83,7 @@
                 "embeds": [
                     {
                         "title": "Unknown Error",
-                        "description": "An unknown error occurred while executing this button. Please try again."
+                        "description": "An unknown error occurred while executing this button. Please try again later."
                     }
                 ],
                 "components": []
@@ -378,7 +378,7 @@
                     "embeds": [
                         {
                             "title": "Changing Presence Failed",
-                            "description": "Failed to change the presence of your Custom MC Linker! Please try again."
+                            "description": "Failed to change the presence of your Custom MC Linker! Please try again later."
                         }
                     ]
                 }
@@ -1712,6 +1712,14 @@
                             "description": "This channel does not support topics. Please change `update_target` to `Name` or choose a different channel."
                         }
                     ]
+                },
+                "update_failed": {
+                    "embeds": [
+                        {
+                            "title": "Failed To Update Channel",
+                            "description": "An unknown error occurred while updating the channel. Please try again later."
+                        }
+                    ]
                 }
             },
             "success": {
@@ -2350,6 +2358,14 @@
                             "description": "An unknown plugin error occurred. Make sure you are have the latest version installed and try again."
                         }
                     ]
+                },
+                "dm_server_not_connected": {
+                    "embeds": [
+                        {
+                            "title": "Server Not Connected",
+                            "description": "The Minecraft server this DM was from is no longer connected."
+                        }
+                    ]
                 }
             },
             "success": {
@@ -2469,6 +2485,26 @@
                             }
                         ]
                     }
+                },
+                "dm": {
+                    "embeds": [
+                        {
+                            "title": "New DM from %username%",
+                            "description": "%message%",
+                            "color": "%color_success%",
+                            "footer": {
+                                "text": "Sent from Minecraft"
+                            }
+                        }
+                    ],
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Primary",
+                            "label": "Reply",
+                            "custom_id": "dm_reply"
+                        }
+                    ]
                 }
             }
         },

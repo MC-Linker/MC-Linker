@@ -12,7 +12,13 @@ export default class EditConnectResponse extends Event {
         });
     }
 
-    async execute(client, id, responseType, placeholders = {}) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[string, 'success'|'error', Object]} args - [0] The connection ID, [1] The response type, [2] Optional placeholders for the response message.
+     * @param logger
+     */
+    async run(client, [id, responseType, placeholders = {}], logger) {
         /** @type {Connect} */
         const connectCommand = client.commands.get('connect');
 
@@ -20,10 +26,9 @@ export default class EditConnectResponse extends Event {
         const { timeout, interaction } = connectCommand.pendingInteractions.get(id);
 
         clearTimeout(timeout); // Works because event is called on same shard
+        connectCommand.pendingInteractions.delete(id);
 
-        if(responseType === 'success')
-            await interaction.editReplyTl(keys.commands.connect.success.websocket, placeholders);
-        else if(responseType === 'error')
-            await interaction.editReplyTl(keys.commands.connect.errors.websocket_error, placeholders);
+        if(responseType === 'success') await interaction.editReplyTl(keys.commands.connect.success.websocket, placeholders);
+        else if(responseType === 'error') await interaction.editReplyTl(keys.commands.connect.errors.websocket_error, placeholders);
     }
 }

@@ -53,6 +53,7 @@ export default class Connect extends Command {
         else await interaction.editReply({ embeds: [verificationEmbed], components: [] });
 
         const timeout = setTimeout(async () => {
+            this.pendingInteractions.delete(interaction.guildId);
             await client.broadcastEval((c, { id }) => {
                 c.commands.get('connect').wsVerification.delete(id);
             }, { context: { id: interaction.guildId }, shard: 0 });

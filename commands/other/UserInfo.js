@@ -224,7 +224,7 @@ export default class UserInfo extends Command {
                 new DefaultButton({
                     id: command,
                     author: interaction.user,
-                    permissions: [Discord.PermissionFlagsBits.Administrator],
+                    permissions: Discord.PermissionFlagsBits.Administrator,
                     ephemeral: true,
                     collector,
                 }, this.handleAdminButton.bind(null, user));
