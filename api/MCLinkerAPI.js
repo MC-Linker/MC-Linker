@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import { createHash } from '../utilities/utils.js';
+import { createHash, evalOnGuildShard } from '../utilities/utils.js';
 import { getEmbed } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { EventEmitter } from 'node:events';
@@ -13,7 +13,6 @@ import features from '../utilities/logger/features.js';
 import path from 'path';
 import fs from 'fs-extra';
 import { ProtocolError } from '../structures/protocol/Protocol.js';
-import { evalOnGuildShard } from '../utilities/shardingUtils.js';
 
 const fastifyLogger = rootLogger.child({ feature: features.api.fastify });
 const socketLogger = rootLogger.child({ feature: features.api.socketio });
@@ -56,6 +55,13 @@ export default class MCLinkerAPI extends EventEmitter {
      * @type {Map<string, { code: string, shard: number, requiredRoleToJoin: ?object, displayIp: ?string, online: ?boolean }>}
      */
     wsVerification = new Map();
+
+    /**
+     * Secondary index mapping connection hashes to server IDs for O(1) lookup.
+     * Maintained on connect/disconnect on shard 0.
+     * @type {Map<string, string>}
+     */
+    hashIndex = new Map();
 
     constructor(client) {
         super();
@@ -296,7 +302,7 @@ export default class MCLinkerAPI extends EventEmitter {
             readonly: true,
         });
 
-        this.websocket.engine.on('connection_error', err => socketLogger.error(err, 'Websocket connection error'));
+        this.websocket.engine.on('connection_error', err => this.client.analytics.trackError('api_ws', 'engine.connection_error', null, null, err, null, socketLogger));
 
         this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
             if(err) {
@@ -333,9 +339,12 @@ export default class MCLinkerAPI extends EventEmitter {
         const token = socket.handshake.auth.token;
         const hash = createHash(token);
 
-        // Find existing server connection
+        // Find existing server connection via hash index (O(1)), falling back to cache scan for first reconnect after startup
+        //TODO benchmark improvement, also maybe cache all server connections by hash up front
+        const indexedId = this.hashIndex.get(hash);
         /** @type {?ServerConnection} */
-        const server = this.client.serverConnections.cache.find(server => server.hash === hash);
+        const server = indexedId ? this.client.serverConnections.cache.get(indexedId)
+            : this.client.serverConnections.cache.find(s => s.hash === hash);
 
         if(server) {
             // Reconnection
@@ -422,7 +431,7 @@ export default class MCLinkerAPI extends EventEmitter {
                     next();
                 }
                 catch(err) {
-                    socketLogger.error(err, 'Error while connecting server to websocket');
+                    this.client.analytics.trackError('api_ws', 'wsMiddleware', id, null, err, null, socketLogger.child({ guildId: id }, { track: false }));
                     void this.client.broadcastEval(
                         (c, { id, error }) => c.api.emit('connect-response', {
                             id,
@@ -475,7 +484,7 @@ export default class MCLinkerAPI extends EventEmitter {
             data = typeof data === 'string' ? JSON.parse(data) : {};
         }
         catch(err) {
-            socketLogger.error(err, `Error parsing data for event ${eventName}`);
+            this.client.analytics.trackError('api_ws', eventName, null, null, err, { reason: 'invalid_json' }, socketLogger);
             return callback?.({ status: 'error', error: ProtocolError.INVALID_JSON });
         }
 
@@ -490,11 +499,11 @@ export default class MCLinkerAPI extends EventEmitter {
         }
 
         //Update server variable to ensure it wasn't disconnected in the meantime
-        //TODO optimize lookup with hash map
         /** @type {?ServerConnection} */
-        const server = this.client.serverConnections.cache.find(server => server.hash === hash);
+        const serverId = this.hashIndex.get(hash);
+        const server = serverId ? this.client.serverConnections.cache.get(serverId) : null;
 
-        socketLogger.debug(`Found server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
+        socketLogger.debug({ guildId: server?.id }, `Found server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
 
         //If no connection on that guild, disconnect socket
         if(!server) return socket.disconnect();
@@ -510,14 +519,13 @@ export default class MCLinkerAPI extends EventEmitter {
                 }, { eventName, data, serverId: server.id });
             }
             else response = await route.execute(data, server, this.client);
-            socketLogger.debug({ response }, `Response for event ${route.event}`);
+            socketLogger.debug({ response, guildId: server.id }, `Response for event ${route.event}`);
             callback?.(response);
             this.client.analytics.trackApiCall('ws', eventName, server.id, Date.now() - startTime);
         }
         catch(err) {
-            socketLogger.error(err, `Error executing event ${route.event}`);
             this.client.analytics.trackApiCall('ws', eventName, server.id, Date.now() - startTime, false);
-            this.client.analytics.trackError('api_ws', eventName, server.id, null, err);
+            this.client.analytics.trackError('api_ws', eventName, server.id, null, err, null, socketLogger.child({ guildId: server.id }, { track: false }));
             callback?.({ status: 'error', error: ProtocolError.UNKNOWN });
         }
     }
@@ -529,17 +537,21 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {string} hash - The hash to use for verifying server-connections.
      */
     addWebsocketListeners(socket, serverResolvable, hash) {
+        this.hashIndex.set(hash, typeof serverResolvable === 'string' ? serverResolvable : serverResolvable.id);
+
         for(const route of this.wsEvents.values())
             socket.on(route.event, this.wsEventHandler.bind(this, socket, route.event, hash));
 
         socket.on('disconnect', reason => {
-            socketLogger.debug(`Disconnected from ${socket.handshake.address} with reason: ${reason}`);
+            socketLogger.debug({ guildId: typeof serverResolvable === 'string' ? serverResolvable : serverResolvable.id }, `Disconnected from ${socket.handshake.address} with reason: ${reason}`);
 
             /** @type {ServerConnection<WebSocketProtocol>} */
             const server = this.client.serverConnections.resolve(serverResolvable);
 
             // Skip if this socket has already been replaced by a reconnection
             if(!server || server.protocol.socket !== socket) return;
+
+            this.hashIndex.delete(hash);
 
             if(!['server namespace disconnect', 'client namespace disconnect'].includes(reason)) {
                 // Dispatch disconnect notification and stat channel sync to the guild's shard
@@ -613,7 +625,7 @@ export default class MCLinkerAPI extends EventEmitter {
             else if(addOrRemove === 'remove') await member.roles.remove(role);
         }
         catch(err) {
-            socketLogger.error(err, `Failed to update Discord role ${roleId} for member ${connection.id}`);
+            this.client.analytics.trackError('api_ws', 'updateSyncedRoleMember', server.id, connection.id, err, { roleId }, socketLogger.child({ guildId: server.id }, { track: false }));
         }
     }
 }
