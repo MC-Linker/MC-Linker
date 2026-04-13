@@ -54,7 +54,7 @@ export default class WSEvent {
 
     /**
      * Implements the WS event's specific logic.
-     * @param {Object} data - The data sent with the request.
+     * @param {T} data - The data sent with the request.
      * @param {?ServerConnection} server - The server the event is sent to.
      * @param {MCLinker} client - The MCLinker client.
      * @param {import('pino').Logger} logger - A child logger bound to this execution.

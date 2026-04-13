@@ -28,7 +28,8 @@ export default class Unban extends Command {
         const resp = await server.protocol.execute(`pardon ${user.username}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        const warning = resp.data.message === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        //TODO show response message in embed
+        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
         return interaction.editReplyTl(keys.commands.unban.success, { username: user.username, warning });
     }
 }

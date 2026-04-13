@@ -2,6 +2,7 @@ import { addPh, fetchCommand, getEmbed, ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { ApplicationCommand, ApplicationCommandOptionType } from 'discord.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
+import { toTitleCase } from '../utilities/utils.js';
 
 export default class Help extends AutocompleteCommand {
 
@@ -32,7 +33,7 @@ export default class Help extends AutocompleteCommand {
         const respondArray = categories.concat(commandNames)
             .filter(o => o.includes(interaction.options.getFocused().toLowerCase()))
             .slice(0, 25)
-            .map(o => ({ name: o.toTitleCase(), value: o }));
+            .map(o => ({ name: toTitleCase(o), value: o }));
         return await interaction.respond(respondArray);
     }
 
@@ -62,7 +63,7 @@ export default class Help extends AutocompleteCommand {
 
             //Show command list of category
             if(!commands.size) {
-                return interaction.editReplyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': commandName.toTitleCase() });
+                return interaction.editReplyTl(keys.commands.help.warnings.command_does_not_exist, { 'command_name': toTitleCase(commandName) });
             }
 
             for(let command of commands.values()) {

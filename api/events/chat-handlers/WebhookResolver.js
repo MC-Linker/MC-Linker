@@ -72,11 +72,11 @@ export default class WebhookResolver {
         catch(err) {
             if(err instanceof RateLimitError) {
                 this.monitor?.recordRateLimit('fetchWebhook');
-                logger.debug(`Rate-limited refreshing webhook ${webhookId} for channel ${channelConfig.id}`);
+                logger.debug({ guildId: guild.id }, `Rate-limited refreshing webhook ${webhookId} for channel ${channelConfig.id}`);
                 return null;
             }
             if(err?.code !== RESTJSONErrorCodes.UnknownWebhook) {
-                trackError('api_ws', 'WebhookResolver', null, null, err, null, logger);
+                trackError('api_ws', 'WebhookResolver', guild.id, null, err, { webhookId }, logger);
                 return null;
             }
         }

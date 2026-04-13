@@ -1,6 +1,5 @@
 import Canvas from 'skia-canvas';
 import Discord, { ButtonStyle } from 'discord.js';
-import MinecraftData from 'minecraft-data';
 import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
@@ -9,13 +8,11 @@ import {
     drawMinecraftNumber,
     getLivePlayerNbt,
     getMinecraftAvatarURL,
-    MinecraftDataVersion,
+    getMinecraftData,
     stringifyMinecraftJson,
     wrapText,
 } from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
-
-const mcData = MinecraftData(MinecraftDataVersion);
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -102,6 +99,7 @@ export default class Inventory extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
+        const mcData = getMinecraftData(server.version); //TODO pass to functions
         /** @type {UserResponse} */
         const user = args[0];
         const showDetails = args[1];
@@ -277,11 +275,10 @@ export default class Inventory extends Command {
                 'turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:20)`,
                 'strong_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} VI (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} IV (0:20)`,
                 'long_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:40)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:40)`,
-                //TODO replace with mcData
-                'infestation': `- Infestation (3:00)`,
-                'oozing': `- Oozing (3:00)`,
-                'weaving': `- Weaving (3:00)`,
-                'wind_charging': `- Wind Charging (3:00)`,
+                'infestation': `- ${mcData.effectsByName['Infested']?.displayName ?? 'Infested'} (3:00)`,
+                'oozing': `- ${mcData.effectsByName['Oozing']?.displayName ?? 'Oozing'} (3:00)`,
+                'weaving': `- ${mcData.effectsByName['Weaving']?.displayName ?? 'Weaving'} (3:00)`,
+                'wind_charging': `- ${mcData.effectsByName['WindCharged']?.displayName ?? 'Wind Charged'} (3:00)`,
                 'mundane': `- No Effects (Mundane)`,
                 'thick': `- No Effects (Thick)`,
                 'awkward': `- No Effects (Awkward)`,

@@ -29,10 +29,11 @@ export default class Gamemode extends Command {
         const resp = await server.protocol.execute(`gamemode ${gamemode} ${user.username}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
+        //TODO show response message in embed
         const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
         return interaction.editReplyTl(keys.commands.gamemode.success, {
             username: user.username,
-            gamemode: gamemode.toTitleCase(),
+            gamemode: utils.toTitleCase(gamemode),
             warning,
         });
     }

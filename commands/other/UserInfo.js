@@ -6,7 +6,7 @@ import {
     codeBlockFromCommandResponse,
     formatDuration,
     getMinecraftAvatarURL,
-    MinecraftDataVersion,
+    getMinecraftData,
     stringifyMinecraftJson,
 } from '../../utilities/utils.js';
 import {
@@ -20,10 +20,7 @@ import {
 } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
-import MinecraftData from 'minecraft-data';
 import Discord, { ComponentType, time, userMention } from 'discord.js';
-
-const mcData = MinecraftData(MinecraftDataVersion);
 
 export default class UserInfo extends Command {
 
@@ -44,6 +41,7 @@ export default class UserInfo extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
+        const mcData = getMinecraftData(server.version);
         /** @type {UserResponse} */
         const user = args[0];
 

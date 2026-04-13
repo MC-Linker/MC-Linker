@@ -257,7 +257,7 @@ export default class WebhookPoolManager {
         if(!discordChannel) return null;
 
         if(!discordChannel.permissionsFor) {
-            logger.warn({ guildId: guild.id }, `permissionsFor not available on channel ${discordChannel.id} (type=${discordChannel.type})`);
+            trackError('api_ws', 'WebhookPool.ensureWebhook', guild.id, null, new Error(`permissionsFor not available on channel ${discordChannel.id} (type=${discordChannel.type})`), { channelId: discordChannel.id }, logger);
             return null;
         }
         const canManageWebhooks = discordChannel.permissionsFor(guild.members.me)?.has(PermissionFlagsBits.ManageWebhooks);
@@ -389,8 +389,14 @@ export default class WebhookPoolManager {
         if(!regChannel) {
             channelConfig.webhooks.pop();
             this.evictWebhookClient(webhook.id);
-            await webhook.delete().catch(() => {});
-            await errorChannel.send({ embeds: [getEmbed(keys.api.plugin.warnings.could_not_sync_webhooks)] }).catch(() => {});
+            await webhook.delete().catch(err => trackError('api_ws', 'WebhookPool.createWebhook', guild.id, null, err, {
+                webhookId: webhook.id,
+                reason: 'sync_cleanup',
+            }, logger));
+            await errorChannel.send({ embeds: [getEmbed(keys.api.plugin.warnings.could_not_sync_webhooks)] }).catch(err => trackError('api_ws', 'WebhookPool.createWebhook', guild.id, null, err, {
+                channelId: errorChannel.id,
+                reason: 'send_warning',
+            }, logger));
             return null;
         }
 
