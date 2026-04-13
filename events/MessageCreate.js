@@ -28,6 +28,9 @@ export default class MessageCreate extends Event {
         if(!message.inGuild()) {
             // Handle DM messages (verification codes)
             if(client.api.usersAwaitingVerification.has(message.content)) {
+                const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
+                await client.userConnections.connect({ id: message.author.id, username, uuid });
+
                 await client.serverConnections.syncRolesAcrossAllServers(message.author.id);
 
                 client.api.usersAwaitingVerification.delete(message.content);
