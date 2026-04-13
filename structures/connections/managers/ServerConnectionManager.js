@@ -57,7 +57,7 @@ export default class ServerConnectionManager extends ConnectionManager {
      * Syncs synced roles for a user across all server connections that have synced roles configured.
      * Groups connections by shard to minimize IPC overhead.
      * Silently skips servers where the member cannot be fetched or the shard eval fails.
-     * @param {string} userId - The Discord user ID (also the UserConnection cache key).
+     * @param {string} userId - The Discord user ID.
      * @returns {Promise<void>}
      */
     async syncRolesAcrossAllServers(userId) {

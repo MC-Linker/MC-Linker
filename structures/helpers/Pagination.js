@@ -44,7 +44,7 @@ export default class Pagination {
     /**
      * @typedef  {Object} PaginationPage
      * @property {ButtonBuilder} [button] - The button that points to this page
-     * @property {import('discord.js').BaseMessageOptions} [options] - The message options to send
+     * @property {import('discord.js').BaseMessageOptions | (() => import('discord.js').BaseMessageOptions | Promise<import('discord.js').BaseMessageOptions>)} [options] - The message options to send, or a function that returns them (for dynamic/lazy loading). The function is called once and the result is cached.
      * @property {PaginationPages} [pages] - The pages to send (for nested pagination)
      * @property {boolean} [startPage=false] - Whether this is the starting page
      * @property {PaginationOptions} [pageOptions] - The options for this page (for nested pagination)
@@ -237,12 +237,30 @@ export default class Pagination {
             try {
                 message = await message.fetch(); // Get the latest components
             }
-            catch {}
+            catch {
+                // Ephemeral messages cannot be fetched — fall back to editing without fetch
+            }
             if(!message?.components) return;
 
-            //TODO fix breaks with ephemerals
-            await message.edit({ components: disableComponents(message.components) });
+            try {
+                await message.edit({ components: disableComponents(message.components) });
+            }
+            catch {
+                // Ephemeral messages or expired tokens may fail to edit
+                //TODO support ephemeral (store interaction token) and track error
+            }
         });
+    }
+
+    /**
+     * Resolves the options for a page. If options is a function, calls it and caches the result.
+     * @param {PaginationPage} page - The page to resolve options for.
+     * @returns {Promise<import('discord.js').BaseMessageOptions>} - The resolved message options.
+     * @private
+     */
+    async _resolvePageOptions(page) {
+        if(typeof page.options === 'function') page.options = await page.options();
+        return page.options;
     }
 
     /**
@@ -252,9 +270,9 @@ export default class Pagination {
      */
     async _sendInitialMessage() {
         const startPage = this._getStartPage();
-        const options = startPage.options;
+        const options = await this._resolvePageOptions(startPage);
 
-        const components = this._getReplyRows(startPage.options, startPage.button?.data?.custom_id, 'stay');
+        const components = this._getReplyRows(options, startPage.button?.data?.custom_id, 'stay');
 
         this.lastPage = startPage;
         this.lastMessageOptions = { ...options, components };
@@ -343,7 +361,7 @@ export default class Pagination {
      * @private
      */
     async _navigateToPage(interaction, page) {
-        const options = page.options;
+        const options = await this._resolvePageOptions(page);
 
         const components = this._getReplyRows(options, page.button.data.custom_id, 'stay');
         this.lastPage = { button: page.button, options };
