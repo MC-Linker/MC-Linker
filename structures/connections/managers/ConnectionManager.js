@@ -1,5 +1,5 @@
 import { CachedManager } from 'discord.js';
-import { getManagerString } from '../../../utilities/shardingUtils.js';
+import { getManagerString } from '../../../utilities/utils.js';
 
 export default class ConnectionManager extends CachedManager {
 

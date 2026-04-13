@@ -67,7 +67,7 @@ export default class WebSocketProtocol extends Protocol {
         const buffer = Buffer.from(response.data, 'base64');
 
         fs.outputFile(putPath, buffer)
-            .catch(err => trackError('unhandled', 'WebSocketProtocol', null, null, err, null, logger));
+            .catch(err => trackError('unhandled', 'WebSocketProtocol.get', this.id, null, err, null, logger));
         return { status: 'success', data: buffer };
     }
 
@@ -147,7 +147,9 @@ export default class WebSocketProtocol extends Protocol {
                 const webhook = await this.client.fetchWebhook(webhookId);
                 await webhook.delete();
             }
-            catch {}
+            catch(err) {
+                trackError('unhandled', 'WebSocketProtocol.removeChatChannel', this.id, null, err, { webhookId }, logger);
+            }
         }
 
         return await this._sendRaw('remove-channel', channel);
@@ -285,7 +287,7 @@ export default class WebSocketProtocol extends Protocol {
                 clog.debug(`Sending event ${name} with data: ${JSON.stringify(data)}`);
                 protocol.socket.timeout(10_000).emit(name, ...data, (err, response) => {
                     if(err) {
-                        clog.error(err, `Error while sending event ${name}`);
+                        c.analytics.trackError('unhandled', 'WebSocketProtocol._sendRaw', id, null, err, { event: name }, clog);
                         return resolve(null);
                     }
 
@@ -296,7 +298,10 @@ export default class WebSocketProtocol extends Protocol {
                             resolve(responseObj);
                         }
                         catch(err) {
-                            clog.error(err, `Failed to parse response for event ${name}`);
+                            c.analytics.trackError('unhandled', 'WebSocketProtocol._sendRaw', id, null, err, {
+                                event: name,
+                                reason: 'parse_response',
+                            }, clog);
                             resolve(null);
                         }
                     }

@@ -175,7 +175,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                         await btnInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.start);
                     }
                     catch(err) {
-                        trackError('unhandled', 'CustomBotConnectionManager', null, modalInteraction?.user?.id ?? null, err, null, logger);
+                        trackError('unhandled', 'CustomBotConnectionManager', null, btnInteraction.user.id, err, null, logger);
                         await btnInteraction.editReplyTl(keys.custom_bot.errors.start_failed);
                     }
                     break;
@@ -216,7 +216,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     return await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation);
 
                 const reason = modalInteraction.fields.getTextInputValue('confirm_delete_reason') || 'No reason provided';
-                logger.info(`Custom bot connection for ${modalInteraction.user.id} deleted with reason: "${reason}"`);
+                logger.info({ userId: modalInteraction.user.id }, `Custom bot connection deleted with reason: "${reason}"`);
 
                 const customBotConnection = this.client.customBots.getCustomBot(modalInteraction.user.id);
                 await this.client.customBots.disconnect(customBotConnection);
@@ -320,7 +320,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
             try {
                 await this.disconnect(customBotConnection);
-                logger.info(`Disconnected custom bot for user ${customBotConnection.ownerId} due to missing entitlement`);
+                logger.info({ userId: customBotConnection.ownerId }, 'Disconnected custom bot due to missing entitlement');
             }
             catch(err) {
                 trackError('unhandled', 'CustomBotConnectionManager', null, customBotConnection.ownerId, err, null, logger);

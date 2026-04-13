@@ -30,11 +30,8 @@ export default class GuildMemberUpdate extends Event {
 
         // Required Role To Join
         if(server.requiredRoleToJoin && user) {
-            //TODO make function in server
-            if(
-                server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
-                server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
-            ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
+            if(!server.hasRequiredRole(newMember))
+                await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
         }
 
         const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
@@ -53,9 +50,15 @@ export default class GuildMemberUpdate extends Event {
         // Cancel events if mc is authoritative
         if(syncedRole.direction === 'to_discord') {
             // Re-remove the added role if user isnt linked or if the change is not reflected in the players array already (change was bot-initiated)
-            if((!user || !noChangeToPlayers) && addedRole) newMember.roles.remove(addedRole.id).catch(() => {});
+            if((!user || !noChangeToPlayers) && addedRole) newMember.roles.remove(addedRole.id).catch(err => client.analytics.trackError('api_ws', 'GuildMemberUpdate', newMember.guild.id, newMember.id, err, {
+                roleId: addedRole.id,
+                action: 're-remove',
+            }, logger));
             // Re-add the removed role if the change is not reflected in the players array already (change was bot-initiated)
-            else if(removedRole && !noChangeToPlayers) newMember.roles.add(removedRole.id).catch(() => {});
+            else if(removedRole && !noChangeToPlayers) newMember.roles.add(removedRole.id).catch(err => client.analytics.trackError('api_ws', 'GuildMemberUpdate', newMember.guild.id, newMember.id, err, {
+                roleId: removedRole.id,
+                action: 're-add',
+            }, logger));
             return;
         }
 

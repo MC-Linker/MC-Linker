@@ -1,8 +1,9 @@
 import { Base } from 'discord.js';
-import { getManagerStringFromConnection } from '../../utilities/shardingUtils.js';
+import { getManagerStringFromConnection } from '../../utilities/utils.js';
 import ServerConnection from './ServerConnection.js';
 import rootLogger from '../../utilities/logger/logger.js';
 import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.structures.connections.base });
 
@@ -53,7 +54,7 @@ export default class Connection extends Base {
         return await this.client.mongo.models[this.collectionName].updateOne({ _id: this.id }, data, { upsert: true })
             .then(() => true)
             .catch(err => {
-                logger.error(err, `Failed to write connection ${this.id} to database`);
+                trackError('unhandled', 'Connection._output', this.id, null, err, null, logger);
                 return false;
             });
     }
@@ -66,7 +67,7 @@ export default class Connection extends Base {
         return await this.client.mongo.models[this.collectionName].deleteOne({ _id: this.id })
             .then(() => true)
             .catch(err => {
-                logger.error(err, `Failed to delete connection ${this.id} from database`);
+                trackError('unhandled', 'Connection._delete', this.id, null, err, null, logger);
                 return false;
             });
     }

@@ -122,7 +122,7 @@ export default class CustomBotConnection extends Connection {
         await fs.ensureDir(`${this.dataFolder}/download-cache`);
         await fs.ensureDir(`${this.dataFolder}/logs`);
 
-        logger.debug(`Custom bot data folder created at ${this.dataFolder}`);
+        logger.debug({ userId: this.ownerId }, `Custom bot data folder created at ${this.dataFolder}`);
 
         await this.build();
     }
@@ -154,7 +154,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async build() {
-        logger.debug(`Building custom bot ${this.containerName}`);
+        logger.debug({ userId: this.ownerId }, `Building custom bot ${this.containerName}`);
         logger.debug((await execAsync(`docker build . -t lianecx/${this.containerName}`)).stdout);
     }
 
@@ -165,7 +165,7 @@ export default class CustomBotConnection extends Connection {
      */
     async update() {
         //TODO update config.json and .env
-        logger.debug(`Updating custom bot ${this.containerName}`);
+        logger.debug({ userId: this.ownerId }, `Updating custom bot ${this.containerName}`);
         await this.build();
         return await this.start();
     }
@@ -188,7 +188,7 @@ export default class CustomBotConnection extends Connection {
 
         const readyPromise = this.client.api.waitForAPIEvent('/custom-bot-api-ready', 120_000, req => {
             if(req.headers['x-communication-token'] !== this.communicationToken) return;
-            logger.info('Custom bot is ready!');
+            logger.info({ userId: this.ownerId }, 'Custom bot is ready!');
             return req;
         });
 
@@ -215,7 +215,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<string>} - The output of the docker command.
      */
     async stop() {
-        logger.debug(`Stopping custom bot container ${this.containerName}`);
+        logger.debug({ userId: this.ownerId }, `Stopping custom bot container ${this.containerName}`);
 
         return (await execAsync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
             env: this.dockerEnv,
@@ -227,7 +227,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<string>} - The output of the docker command.
      */
     async down() {
-        logger.debug(`Shutting down and removing custom bot container ${this.containerName}`);
+        logger.debug({ userId: this.ownerId }, `Shutting down and removing custom bot container ${this.containerName}`);
 
         return (await execAsync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi all --volumes`, {
             env: this.dockerEnv,
@@ -263,13 +263,13 @@ export default class CustomBotConnection extends Connection {
             });
 
             if(!response.ok) {
-                trackError('unhandled', 'CustomBotConnection', null, null, new Error(`Failed to communicate with custom bot ${this.containerName} at path /${path}: ${response.status}`), null, logger);
+                trackError('unhandled', 'CustomBotConnection', null, this.ownerId, new Error(`Failed to communicate with custom bot ${this.containerName} at path /${path}: ${response.status}`), null, logger);
                 return false;
             }
             else return true;
         }
         catch(err) {
-            trackError('unhandled', 'CustomBotConnection', null, null, err, null, logger);
+            trackError('unhandled', 'CustomBotConnection', null, this.ownerId, err, null, logger);
             return false;
         }
     }
@@ -279,7 +279,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async removeData() {
-        logger.debug(`Removing custom bot data ${this.dataFolder}`);
+        logger.debug({ userId: this.ownerId }, `Removing custom bot data ${this.dataFolder}`);
         await fs.remove(`${this.dataFolder}/config.json`);
         await fs.remove(`${this.dataFolder}/.env`);
         await fs.remove(`${this.dataFolder}/download-cache`);

@@ -1,7 +1,6 @@
 import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
-import { evalOnGuildShard } from '../utilities/shardingUtils.js';
 import keys from '../utilities/keys.js';
 import { Events, MessageType } from 'discord.js';
 
@@ -29,26 +28,7 @@ export default class MessageCreate extends Event {
         if(!message.inGuild()) {
             // Handle DM messages (verification codes)
             if(client.api.usersAwaitingVerification.has(message.content)) {
-                const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
-                const userConnection = await client.userConnections.connect({ id: message.author.id, username, uuid });
-
-                await Promise.allSettled(client.serverConnections.cache.map(async conn => {
-                    if(!conn.syncedRoles?.length) return;
-                    try {
-                        await evalOnGuildShard(client, conn.id, async (c, { serverId, userId, userConnId }) => {
-                            const server = c.serverConnections.cache.get(serverId);
-                            if(!server) return;
-                            const guild = await c.guilds.fetch(serverId);
-                            const member = await guild.members.fetch(userId);
-                            const userConn = c.userConnections.cache.get(userConnId);
-                            if(!userConn) return;
-                            await server.syncRolesOfMember(member, userConn);
-                        }, { serverId: conn.id, userId: message.author.id, userConnId: userConnection.id });
-                    }
-                    catch(err) {
-                        logger.debug({ guildId: conn.id }, `Skipping role sync for server ${conn.id} of ${username}: ${err.message}`);
-                    }
-                }));
+                await client.serverConnections.syncRolesAcrossAllServers(message.author.id);
 
                 client.api.usersAwaitingVerification.delete(message.content);
                 return await message.replyTl(keys.commands.account.success.verified);

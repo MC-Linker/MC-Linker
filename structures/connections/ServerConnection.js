@@ -4,6 +4,7 @@ import ServerSettingsConnection from './ServerSettingsConnection.js';
 import fs from 'fs-extra';
 import rootLogger from '../../utilities/logger/logger.js';
 import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.structures.connections.server });
 
@@ -46,7 +47,7 @@ export default class ServerConnection extends Connection {
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
      * @property {number} port - The port used to connect to the server plugin.
-     * @property {number} version - The minor minecraft version of the server.
+     * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {string} token - The connection token used to connect to the server plugin.
@@ -65,7 +66,7 @@ export default class ServerConnection extends Connection {
      * @property {string} username - The ftp username used to connect to the server.
      * @property {string} password - The ftp password used to connect to the server.
      * @property {number} port - The ftp port used to connect to the server.
-     * @property {number} version - The minor minecraft version of the server.
+     * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {boolean} online - Whether the server-connection has online mode enabled or not.
@@ -77,7 +78,7 @@ export default class ServerConnection extends Connection {
      * @typedef {object} WebSocketServerConnectionData - The data for a server-connection established by a websocket.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
-     * @property {number} version - The minor minecraft version of the server.
+     * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
@@ -148,8 +149,10 @@ export default class ServerConnection extends Connection {
 
         /**
          * The minecraft version of this server.
-         * @type {number}
+         * @type {string}
          * */
+        // Migrate legacy numeric version (e.g. 21) to string format (e.g. "1.21")
+        if(typeof data.version === 'number') data.version = `1.${data.version}`;
         this.version = data.version ?? this.version;
 
         /**
@@ -249,6 +252,18 @@ export default class ServerConnection extends Connection {
     }
 
     /**
+     * Checks whether a guild member satisfies the required-role-to-join constraint for this server.
+     * @param {import('discord.js').GuildMember} member - The member to check.
+     * @returns {boolean} True if no constraint exists or the member satisfies it.
+     */
+    hasRequiredRole(member) {
+        if(!this.requiredRoleToJoin) return true;
+        if(this.requiredRoleToJoin.method === 'any') return this.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id));
+        if(this.requiredRoleToJoin.method === 'all') return this.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id));
+        return true;
+    }
+
+    /**
      * Syncs the roles of a user with the server.
      * @param {import('discord.js').GuildMember} member - The member to sync the roles of.
      * @param {UserConnection} userConnection - The user connection to sync the roles of.
@@ -274,7 +289,7 @@ export default class ServerConnection extends Connection {
                     await discordMember.roles.add(role);
                 }
                 catch(err) {
-                    logger.warn(err, `Failed to add Discord role ${syncedRole.id} during sync reconciliation`);
+                    trackError('unhandled', 'ServerConnection.syncRolesOfMember', this.id, userConnection.id, err, { roleId: syncedRole.id }, logger);
                 }
             }
         }

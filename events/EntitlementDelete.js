@@ -19,7 +19,7 @@ export default class EntitlementDelete extends Event {
      */
     async run(client, [entitlement], logger) {
         const user = await entitlement.fetchUser();
-        logger.info(`Entitlement deleted for user ${user.displayName}`);
+        logger.info({ userId: user.id }, `Entitlement deleted for user ${user.displayName}`);
 
         await client.customBots.disconnect(client.customBots.getCustomBot(user.id));
     }

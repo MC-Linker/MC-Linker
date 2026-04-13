@@ -1,6 +1,11 @@
 import ServerConnection from '../ServerConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 import { ShardClientUtil } from 'discord.js';
+import rootLogger from '../../../utilities/logger/logger.js';
+import features from '../../../utilities/logger/features.js';
+import { trackError } from '../../analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.server });
 
 export default class ServerConnectionManager extends ConnectionManager {
 
@@ -36,7 +41,9 @@ export default class ServerConnectionManager extends ConnectionManager {
                     const webhook = await this.client.fetchWebhook(webhookId);
                     await webhook.delete();
                 }
-                catch {}
+                catch(err) {
+                    trackError('unhandled', 'ServerConnectionManager.disconnect', connection.id, null, err, { webhookId }, logger);
+                }
             }
         }
         await connection.protocol.disconnect();
