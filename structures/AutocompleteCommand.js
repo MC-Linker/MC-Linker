@@ -1,9 +1,11 @@
 import { AutocompleteInteraction } from 'discord.js';
 import { MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../utilities/utils.js';
-import logger from '../utilities/logger/logger.js';
+import rootLogger from '../utilities/logger/logger.js';
+import features from '../utilities/logger/features.js';
 import { trackError } from './analytics/AnalyticsCollector.js';
 import Command from './Command.js';
 
+/** @abstract */
 export default class AutocompleteCommand extends Command {
 
     static autocompletePreviewPrefix = '…';
@@ -26,18 +28,30 @@ export default class AutocompleteCommand extends Command {
         throw new Error('Not implemented');
     }
 
+    /**
+     * Provides autocomplete suggestions by querying the Minecraft server for command completions.
+     * @param {AutocompleteInteraction} interaction - The autocomplete interaction.
+     * @param {MCLinker} client - The MCLinker client.
+     * @returns {Promise<void>}
+     */
     async autocompleteFromCommandCompletions(interaction, client) {
         const server = client.serverConnections.cache.get(interaction.guildId);
         if(!server) {
             return interaction.respond([])
-                .catch(err => trackError('command', 'autocomplete', null, null, err, null, logger));
+                .catch(err => trackError('command', 'autocomplete', interaction.guildId, interaction.user.id, err, null, rootLogger.child({
+                    feature: features.commands[this.name],
+                    guildId: interaction.guildId,
+                }, { track: false })));
         }
 
         let focused = interaction.options.getFocused();
         focused = this.resolveAutocompleteValue(focused, interaction);
         if(focused == null) {
             return interaction.respond([])
-                .catch(err => trackError('command', 'autocomplete', null, null, err, null, logger));
+                .catch(err => trackError('command', 'autocomplete', interaction.guildId, interaction.user.id, err, null, rootLogger.child({
+                    feature: features.commands[this.name],
+                    guildId: interaction.guildId,
+                }, { track: false })));
         }
 
         const userConnection = client.userConnections.cache.get(interaction.user.id);
@@ -45,16 +59,28 @@ export default class AutocompleteCommand extends Command {
 
         if(response?.status !== 'success') {
             return interaction.respond([])
-                .catch(err => trackError('command', 'autocomplete', null, null, err, null, logger));
+                .catch(err => trackError('command', 'autocomplete', interaction.guildId, interaction.user.id, err, null, rootLogger.child({
+                    feature: features.commands[this.name],
+                    guildId: interaction.guildId,
+                }, { track: false })));
         }
 
         const respondArray = this.normalizeCompletions(response.data, focused, interaction);
         if(respondArray.length > MaxAutoCompleteChoices) respondArray.length = MaxAutoCompleteChoices;
 
         return interaction.respond(respondArray)
-            .catch(err => trackError('command', 'autocomplete', null, null, err, null, logger));
+            .catch(err => trackError('command', 'autocomplete', interaction.guildId, interaction.user.id, err, null, rootLogger.child({
+                feature: features.commands[this.name],
+                guildId: interaction.guildId,
+            }, { track: false })));
     }
 
+    /**
+     * Resolves a potentially truncated autocomplete value back to its full form using the cache.
+     * @param {string} value - The autocomplete input value.
+     * @param {AutocompleteInteraction} interaction - The autocomplete interaction for context.
+     * @returns {?string} The resolved full value, or the original value if no cache hit.
+     */
     resolveAutocompleteValue(value, interaction) {
         if(typeof value !== 'string') return value;
 
@@ -68,6 +94,13 @@ export default class AutocompleteCommand extends Command {
         return `${match.fullValue}${match.suffix}`;
     }
 
+    /**
+     * Normalizes raw server completions into Discord autocomplete choices, caching overlong values.
+     * @param {Array<{text: string, start: number, end: number}>} data - Raw completion data from the server.
+     * @param {string} focused - The current focused input value.
+     * @param {AutocompleteInteraction} interaction - The autocomplete interaction for caching context.
+     * @returns {{name: string, value: string}[]} Normalized autocomplete choices.
+     */
     normalizeCompletions(data, focused, interaction) {
         this.cleanupAutocompleteTokens();
 
@@ -93,6 +126,13 @@ export default class AutocompleteCommand extends Command {
         return normalizedChoices;
     }
 
+    /**
+     * Constructs the full completion string by splicing the completion text into the focused input.
+     * @param {{text: string, start: number, end: number}} completion - A single completion entry.
+     * @param {string} focused - The current focused input value.
+     * @param {string} focusedWithoutLastWord - The focused value with the trailing word removed.
+     * @returns {string} The full completion value.
+     */
     createFullCompletionValue(completion, focused, focusedWithoutLastWord) {
         const clampedStart = Math.max(0, Math.min(completion.start, focused.length));
         const clampedEnd = Math.max(clampedStart, Math.min(completion.end, focused.length));
@@ -100,6 +140,12 @@ export default class AutocompleteCommand extends Command {
         return `${focused.slice(0, clampedStart)}${completion.text}${focused.slice(clampedEnd)}`;
     }
 
+    /**
+     * Stores an overlong autocomplete value in the per-user cache, keyed by its truncated preview.
+     * @param {string} key - The truncated preview key.
+     * @param {AutocompleteInteraction} interaction - The interaction for user/command context.
+     * @param {string} fullValue - The full, untruncated value to cache.
+     */
     cacheAutocompleteSelection(key, interaction, fullValue) {
         let contextMap = this.getAutocompleteContextMap(interaction);
         if(!contextMap) {
@@ -113,6 +159,11 @@ export default class AutocompleteCommand extends Command {
         });
     }
 
+    /**
+     * Creates a truncated preview string for an overlong autocomplete value.
+     * @param {string} fullValue - The full value to preview.
+     * @returns {string} A truncated string prefixed with the preview prefix, or the full value if short enough.
+     */
     getAutocompletePreview(fullValue) {
         const maxLength = MaxCommandChoiceLength;
         if(fullValue.length <= maxLength) return fullValue;
@@ -121,6 +172,12 @@ export default class AutocompleteCommand extends Command {
         return `${AutocompleteCommand.autocompletePreviewPrefix}${fullValue.slice(-tailLength)}`;
     }
 
+    /**
+     * Looks up a cached full value from the autocomplete selection cache by matching the input.
+     * @param {string} inputValue - The user's current input value (may be a truncated preview).
+     * @param {AutocompleteInteraction} interaction - The interaction for user/command context.
+     * @returns {?{key: string, fullValue: string, suffix: string}} The matched entry, or null.
+     */
     findAutocompleteSelectionValue(inputValue, interaction) {
         const contextMap = this.getAutocompleteContextMap(interaction);
         if(!contextMap) return null;
@@ -163,15 +220,28 @@ export default class AutocompleteCommand extends Command {
         return null;
     }
 
+    /**
+     * Returns the cache key for the current user + command context.
+     * @param {AutocompleteInteraction} interaction - The autocomplete interaction.
+     * @returns {string} A context key in the format `userId:commandName`.
+     */
     getAutocompleteContextKey(interaction) {
         return `${interaction.user.id}:${interaction.commandName}`;
     }
 
+    /**
+     * Gets the cached selections map for the current user + command context.
+     * @param {AutocompleteInteraction} interaction - The autocomplete interaction.
+     * @returns {?Map<string, {fullValue: string, expiresAt: number}>} The context map, or undefined if none.
+     */
     getAutocompleteContextMap(interaction) {
         const contextKey = this.getAutocompleteContextKey(interaction);
         return AutocompleteCommand.autocompleteSelectionCache.get(contextKey);
     }
 
+    /**
+     * Removes expired entries from the autocomplete selection cache.
+     */
     cleanupAutocompleteTokens() {
         const now = Date.now();
 

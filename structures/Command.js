@@ -3,6 +3,7 @@ import keys from '../utilities/keys.js';
 import rootLogger from '../utilities/logger/logger.js';
 import features from '../utilities/logger/features.js';
 
+/** @abstract **/
 export default class Command {
 
     /**
