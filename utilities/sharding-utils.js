@@ -15,6 +15,7 @@ export function evalOnGuildShard(client, guildId, fn, context = {}) {
 
 //The following checks use `Object.constructor.name` to determine the type of the object.
 //A better way to do this would be to use `instanceof`. However, this is not possible because importing the classes would create circular dependencies.
+//TODO improve
 export function getManagerString(manager) {
     if(manager.constructor.name === 'ServerConnectionManager') return 'serverConnections';
     else if(manager.constructor.name === 'UserConnectionManager') return 'userConnections';
