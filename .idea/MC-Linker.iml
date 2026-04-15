@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.idea/copilot/chatSessions" />
+      <excludeFolder url="file://$MODULE_DIR$/microsoft-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/mongodb" />
+      <excludeFolder url="file://$MODULE_DIR$/oci" />
+      <excludeFolder url="file://$MODULE_DIR$/private" />
+      <excludeFolder url="file://$MODULE_DIR$/serverdata" />
+      <excludeFolder url="file://$MODULE_DIR$/userdata" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/.claude" />
+      <excludeFolder url="file://$MODULE_DIR$/.github" />
+      <excludeFolder url="file://$MODULE_DIR$/.vscode" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="emojione" level="project" />
+    <orderEntry type="library" name="socket.io" level="project" />
+    <orderEntry type="library" name="Discord.js" level="project" />
+    <orderEntry type="library" name="OCI" level="project" />
+    <orderEntry type="library" name="fs-extra" level="project" />
+    <orderEntry type="library" name="Fastify" level="project" />
+    <orderEntry type="library" name="d3" level="project" />
+    <orderEntry type="library" name="mongoose" level="project" />
+    <orderEntry type="library" name="canvas" level="project" />
+    <orderEntry type="library" name="Nuxt" level="project" />
+  </component>
+</module>

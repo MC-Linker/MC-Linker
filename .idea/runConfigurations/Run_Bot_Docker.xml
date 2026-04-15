@@ -1,0 +1,26 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Bot Docker" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
+    <deployment type="docker-compose.yml">
+      <settings>
+        <option name="envFilePath" value="" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="MIGRATE" />
+              <option name="value" value="true" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="services">
+          <list>
+            <option value="mc-linker" />
+          </list>
+        </option>
+        <option name="sourceFilePath" value="docker-compose.yml" />
+      </settings>
+    </deployment>
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Build Bot" run_configuration_type="docker-deploy" />
+    </method>
+  </configuration>
+</component>

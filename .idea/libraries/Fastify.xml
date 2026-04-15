@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="Fastify" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/node_modules/fastify" />
+        <item url="file://$PROJECT_DIR$/node_modules/fastify-plugin" />
+        <item url="file://$PROJECT_DIR$/node_modules/fastify-socket.io" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/node_modules/fastify" />
+      <root url="file://$PROJECT_DIR$/node_modules/fastify-plugin" />
+      <root url="file://$PROJECT_DIR$/node_modules/fastify-socket.io" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

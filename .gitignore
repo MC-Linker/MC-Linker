@@ -2,10 +2,11 @@
 .env
 
 # IDE
-.idea/
+.vscode/
 
 # AI agent config
 .claude/
+.github/copilot-instructions.md
 
 # Bot dependencies & runtime data
 /node_modules/
@@ -15,3 +16,17 @@
 /microsoft-cache/
 /private/
 /oci/
+
+# ------------------------------
+# IDE
+# -------------------------------
+
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# File-based project format
+*.iws
