@@ -14,17 +14,17 @@ Authentication is performed during the handshake using the `auth` object.
 
 ```javascript
 const socket = io("ws://your-bot-ip:port", {
-  auth: {
-    token: "YOUR_SERVER_TOKEN",
-    code: "GUILD_ID:VERIFICATION_CODE" // Required for new connections
-  },
-  query: {
-    path: "/path/to/server",
-    online: "true",
-    version: "1.20.1",
-    worldPath: "world",
-    floodgatePrefix: "."
-  }
+    auth: {
+        token: "YOUR_SERVER_TOKEN",
+        code: "GUILD_ID:VERIFICATION_CODE" // Required for new connections
+    },
+    query: {
+        path: "/path/to/server",
+        online: "true",
+        version: "1.20.1",
+        worldPath: "world",
+        floodgatePrefix: "."
+    }
 });
 ```
 
@@ -38,8 +38,8 @@ All WebSocket responses (both directions) use a standardized envelope format:
 
 ```json
 {
-  "status": "success",
-  "data": { ... }
+    "status": "success",
+    "data": { ... }
 }
 ```
 
@@ -47,9 +47,9 @@ All WebSocket responses (both directions) use a standardized envelope format:
 
 ```json
 {
-  "status": "error",
-  "error": "error_code",
-  "data": { ... }
+    "status": "error",
+    "error": "error_code",
+    "data": { ... }
 }
 ```
 
@@ -95,6 +95,46 @@ Sends a game event (chat message, death, advancement, etc.) to Discord.
 }
 ```
 
+### `dm`
+
+Sent by the plugin when a player uses `/dm` to message a linked Discord user.
+
+**Data Schema:**
+
+| Field     | Type     | Description                                                                     |
+|-----------|----------|---------------------------------------------------------------------------------|
+| `player`  | `string` | MC username of the sender.                                                      |
+| `user`    | `string` | Target identifier — MC username, MC UUID, Discord user ID, or Discord username. |
+| `message` | `string` | The message content.                                                            |
+
+**Response (Callback):**
+
+```json
+{
+    "status": "success"
+}
+```
+
+```json
+{
+    "status": "error",
+    "error": "not_found"
+}
+```
+
+```json
+{
+    "status": "error",
+    "error": "dm_closed"
+}
+```
+
+| Error Code  | Description                                                                                       |
+|-------------|---------------------------------------------------------------------------------------------------|
+| `not_found` | Target could not be resolved to a Discord user (not linked, not in guild, or unknown Discord ID). |
+| `dm_closed` | Target Discord user was found but has DMs disabled.                                               |
+| `unknown`   | Discord lookup/fetch failed for an unexpected reason.                                             |
+
 ### `verify-user`
 
 Registers a verification code for a user attempting to link their account.
@@ -103,9 +143,9 @@ Registers a verification code for a user attempting to link their account.
 
 ```json
 {
-  "code": "123456",
-  "uuid": "player-uuid",
-  "username": "PlayerName"
+    "code": "123456",
+    "uuid": "player-uuid",
+    "username": "PlayerName"
 }
 ```
 
@@ -117,8 +157,8 @@ Adds a player to a synced Discord role.
 
 ```json
 {
-  "id": "ROLE_ID",
-  "uuid": "PLAYER_UUID"
+    "id": "ROLE_ID",
+    "uuid": "PLAYER_UUID"
 }
 ```
 
@@ -130,8 +170,8 @@ Removes a player from a synced Discord role.
 
 ```json
 {
-  "id": "ROLE_ID",
-  "uuid": "PLAYER_UUID"
+    "id": "ROLE_ID",
+    "uuid": "PLAYER_UUID"
 }
 ```
 
@@ -143,7 +183,7 @@ Removes a synced role configuration from the server.
 
 ```json
 {
-  "id": "ROLE_ID"
+    "id": "ROLE_ID"
 }
 ```
 
@@ -155,7 +195,7 @@ Checks if a player has the required Discord role to join the Minecraft server.
 
 ```json
 {
-  "uuid": "PLAYER_UUID"
+    "uuid": "PLAYER_UUID"
 }
 ```
 
@@ -163,15 +203,15 @@ Checks if a player has the required Discord role to join the Minecraft server.
 
 ```json
 {
-  "status": "success",
-  "data": { "hasRole": true }
+    "status": "success",
+    "data": { "hasRole": true }
 }
 ```
 
 ```json
 {
-  "status": "error",
-  "error": "not_connected"
+    "status": "error",
+    "error": "not_connected"
 }
 ```
 
@@ -183,8 +223,8 @@ Requests a Discord invite URL for the server.
 
 ```json
 {
-  "status": "success",
-  "data": { "url": "https://discord.gg/..." }
+    "status": "success",
+    "data": { "url": "https://discord.gg/..." }
 }
 ```
 
@@ -192,12 +232,16 @@ Requests a Discord invite URL for the server.
 
 Updates Discord voice/text channels used for displaying server statistics.
 
+Stat channel templates support `%count%`, `%ip%`, `%time%`, and `%version%` in both online and offline templates.
+When the server is connected, `%count%` is resolved from the live online-player list. When it is offline, `%count%`
+resolves to `0`.
+
 **Data Schema:**
 
 ```json
 {
-  "event": "online | offline | members",
-  "members": 10 // Required if event is 'members'
+    "event": "online | offline | members",
+    "members": 10 // Required if event is 'members'
 }
 ```
 
@@ -211,8 +255,8 @@ role's direction, and responds with what the plugin still needs to change.
 
 ```json
 {
-  "id": "ROLE_ID",
-  "players": ["uuid1", "uuid2"]
+    "id": "ROLE_ID",
+    "players": ["uuid1", "uuid2"]
 }
 ```
 
@@ -225,11 +269,11 @@ role's direction, and responds with what the plugin still needs to change.
 
 ```json
 {
-  "status": "success",
-  "data": {
-    "added": ["uuid3"],
-    "removed": ["uuid4"]
-  }
+    "status": "success",
+    "data": {
+        "added": ["uuid3"],
+        "removed": ["uuid4"]
+    }
 }
 ```
 
@@ -263,7 +307,7 @@ Emitted by the bot after a successful initial connection.
 
 ```json
 {
-  "requiredRoleToJoin": { ... } | null
+    "requiredRoleToJoin": { ... } | null
 }
 ```
 
@@ -280,11 +324,11 @@ Sends a new synced role configuration to the plugin.
 
 ```json
 {
-  "id": "ROLE_ID",
-  "name": "group-or-team-name",
-  "isGroup": true,
-  "direction": "both",
-  "players": ["uuid1", "uuid2"]
+    "id": "ROLE_ID",
+    "name": "group-or-team-name",
+    "isGroup": true,
+    "direction": "both",
+    "players": ["uuid1", "uuid2"]
 }
 ```
 
@@ -306,9 +350,9 @@ Tells the plugin to remove a synced role.
 
 ```json
 {
-  "id": "ROLE_ID",
-  "name": "group-or-team-name",
-  "isGroup": true
+    "id": "ROLE_ID",
+    "name": "group-or-team-name",
+    "isGroup": true
 }
 ```
 
@@ -322,10 +366,10 @@ Tells the plugin to add a player to a synced group/team.
 
 ```json
 {
-  "id": "ROLE_ID",
-  "name": "group-or-team-name",
-  "isGroup": true,
-  "uuid": "PLAYER_UUID"
+    "id": "ROLE_ID",
+    "name": "group-or-team-name",
+    "isGroup": true,
+    "uuid": "PLAYER_UUID"
 }
 ```
 
@@ -339,10 +383,10 @@ Tells the plugin to remove a player from a synced group/team.
 
 ```json
 {
-  "id": "ROLE_ID",
-  "name": "group-or-team-name",
-  "isGroup": true,
-  "uuid": "PLAYER_UUID"
+    "id": "ROLE_ID",
+    "name": "group-or-team-name",
+    "isGroup": true,
+    "uuid": "PLAYER_UUID"
 }
 ```
 
@@ -356,11 +400,11 @@ Requests a list of all Minecraft teams and LuckPerms groups from the plugin.
 
 ```json
 {
-  "status": "success",
-  "data": {
-    "teams": ["team1", "team2"],
-    "groups": ["group1", "group2"]
-  }
+    "status": "success",
+    "data": {
+        "teams": ["team1", "team2"],
+        "groups": ["group1", "group2"]
+    }
 }
 ```
 
@@ -372,8 +416,8 @@ Requests command completions for a partial command input.
 
 ```json
 {
-  "cmd": "%2Fgive%20Player%20",
-  "uuid": "PLAYER_UUID"
+    "cmd": "%2Fgive%20Player%20",
+    "uuid": "PLAYER_UUID"
 }
 ```
 
@@ -386,7 +430,7 @@ Requests command completions for a partial command input.
 
 ```json
 {
-  "status": "success",
-  "data": ["/give Player minecraft:stone", "/give Player minecraft:stick"]
+    "status": "success",
+    "data": ["/give Player minecraft:stone", "/give Player minecraft:stick"]
 }
 ```
