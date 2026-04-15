@@ -26,7 +26,7 @@ export async function verifySession(event: H3Event): Promise<{ db: string }> {
         return { db: payload.db as string };
     }
     catch {
-        throw createError({ statusCode: 401, message: 'Unauthorized' });
+        throw createError({ status: 401, message: 'Unauthorized' });
     }
 }
 

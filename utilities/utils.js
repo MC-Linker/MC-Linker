@@ -9,6 +9,7 @@ import util from 'util';
 import { exec } from 'child_process';
 
 // Re-export all domain utilities
+export * from './discord-constants.js';
 export * from './uuid-utils.js';
 export * from './minecraft-utils.js';
 export * from './nbt-utils.js';

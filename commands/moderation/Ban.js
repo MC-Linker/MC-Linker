@@ -1,6 +1,7 @@
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse } from '../../utilities/utils.js';
 
 export default class Ban extends Command {
 
@@ -31,7 +32,9 @@ export default class Ban extends Command {
         const resp = await server.protocol.execute(`ban ${user.username} ${reason}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
-        return interaction.editReplyTl(keys.commands.ban.success, { username: user.username, reason, warning });
+        const response = resp.data?.message
+            ? codeBlockFromCommandResponse(resp.data.message)
+            : keys.api.plugin.warnings.no_response_message_short;
+        return interaction.editReplyTl(keys.commands.ban.success, { username: user.username, reason, response });
     }
 }

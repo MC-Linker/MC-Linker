@@ -1,10 +1,6 @@
 import Discord from 'discord.js';
 import emoji from 'emojione';
-
-export const CODE_BLOCK_OVERHEAD_ANSI = 12; // ```ansi\n\n```
-export const CODE_BLOCK_OVERHEAD_PLAIN = 8; // ```\n\n```
-//TODO put in discord-constants.js
-export const MaxEmbedDescriptionLength = 4096;
+import { CODE_BLOCK_OVERHEAD_ANSI, MaxEmbedDescriptionLength } from './discord-constants.js';
 
 /**
  * Removes all minecraft color codes from a string.

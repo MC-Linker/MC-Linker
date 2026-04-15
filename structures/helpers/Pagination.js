@@ -17,6 +17,11 @@ import {
     MaxActionRows,
     MaxActionRowSize,
 } from '../../utilities/utils.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.structures.helpers.pagination });
 
 export default class Pagination {
 
@@ -243,11 +248,11 @@ export default class Pagination {
             if(!message?.components) return;
 
             try {
+                //TODO doesnt work with ephemeral messages i believe, needs to be tested, would have to store interaction (tokens) in that case
                 await message.edit({ components: disableComponents(message.components) });
             }
-            catch {
-                // Ephemeral messages or expired tokens may fail to edit
-                //TODO support ephemeral (store interaction token) and track error
+            catch(err) {
+                trackError('unhandled', 'Pagination', this.interaction?.guildId, null, err, null, logger);
             }
         });
     }

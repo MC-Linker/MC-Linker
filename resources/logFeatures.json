@@ -29,11 +29,14 @@
         "userinfo": null
     },
     "events": {
+        "allShardsReady": null,
         "clientReady": null,
         "entitlementCreate": null,
         "entitlementDelete": null,
         "guildCreate": null,
         "guildDelete": null,
+        "guildMemberUpdate": null,
+        "guildRoleDelete": null,
         "interactionCreate": null,
         "messageCreate": null
     },
@@ -57,6 +60,7 @@
             "add-synced-role-member": null,
             "chat": null,
             "disconnect-force": null,
+            "dm": null,
             "has-required-role": null,
             "invite-url": null,
             "remove-synced-role": null,
@@ -66,8 +70,13 @@
             "verify-user": null
         },
         "routes": {
+            "customBotApiReady": null,
+            "linkedRole": null,
+            "linkedRoleCallback": null,
+            "preDeleteCleanup": null,
             "presence": null,
-            "preDeleteCleanup": null
+            "root": null,
+            "version": null
         }
     },
     "structures": {
@@ -85,6 +94,9 @@
             "customBotManager": null,
             "userSettings": null,
             "userSettingsManager": null
+        },
+        "helpers": {
+            "pagination": null
         }
     },
     "utilities": {

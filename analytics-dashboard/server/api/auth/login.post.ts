@@ -5,10 +5,10 @@ export default defineEventHandler(async event => {
     const config = useRuntimeConfig();
 
     if (!password || password !== config.dashboardPassword)
-        throw createError({ statusCode: 401, message: 'Invalid password' });
+        throw createError({ status: 401, message: 'Invalid password' });
 
     if (!db || typeof db !== 'string')
-        throw createError({ statusCode: 400, message: 'Database name required' });
+        throw createError({ status: 400, message: 'Database name required' });
 
     const token = await createSessionToken(db);
     setSessionCookie(event, token);

@@ -1,8 +1,8 @@
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse } from '../../utilities/utils.js';
 
-// noinspection JSClassNamingConvention
 export default class Op extends Command {
 
     constructor() {
@@ -29,7 +29,9 @@ export default class Op extends Command {
         const resp = await server.protocol.execute(`op ${user.username}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
-        return interaction.editReplyTl(keys.commands.op.success, { username: user.username, warning });
+        const response = resp.data?.message
+            ? codeBlockFromCommandResponse(resp.data.message)
+            : keys.api.plugin.warnings.no_response_message_short;
+        return interaction.editReplyTl(keys.commands.op.success, { username: user.username, response });
     }
 }

@@ -26,7 +26,6 @@ export default class GuildRoleDelete extends Event {
         if(roleIndex === -1) return;
 
         await server.protocol.removeSyncedRole(server.syncedRoles[roleIndex]);
-        server.syncedRoles.splice(roleIndex, 1);
-        await server.edit({});
+        await server.edit({ syncedRoles: server.syncedRoles.filter(r => r.id !== role.id) });
     }
 } 

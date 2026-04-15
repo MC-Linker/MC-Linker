@@ -1,6 +1,7 @@
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse } from '../../utilities/utils.js';
 
 export default class Gamemode extends Command {
 
@@ -29,12 +30,13 @@ export default class Gamemode extends Command {
         const resp = await server.protocol.execute(`gamemode ${gamemode} ${user.username}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        //TODO show response message in embed
-        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
+        const response = resp.data?.message
+            ? codeBlockFromCommandResponse(resp.data.message)
+            : keys.api.plugin.warnings.no_response_message_short;
         return interaction.editReplyTl(keys.commands.gamemode.success, {
             username: user.username,
             gamemode: utils.toTitleCase(gamemode),
-            warning,
+            response,
         });
     }
 }

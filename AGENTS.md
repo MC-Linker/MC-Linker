@@ -347,6 +347,11 @@ The `features` proxy auto-derives the dotted path from the access chain:
 autocomplete is backed by `resources/logFeatures.json`. Feature paths for WS events live under `features.api.events`,
 while `features.api.socketio` is reserved for socket.io infrastructure (connection, middleware, chatHandlers).
 
+**`logFeatures.json` maintenance:** Every feature path used via `features.x.y.z` **must** have a corresponding entry
+in `resources/logFeatures.json`. The file should be comprehensive — all commands, Discord events, WS events, REST
+routes, components, and structural modules must be listed, even if they don't currently create a module-level logger.
+When adding a new command, event, route, component, or structural module, add its entry to `logFeatures.json` as well.
+
 ### Adding context to log calls
 
 Pass `guildId`/`userId` as structured fields, not in the message string:

@@ -1122,7 +1122,7 @@
                 "embeds": [
                     {
                         "title": "Ban Player",
-                        "description": "Successfully banned player **%username%**: `%reason%`\n%warning%",
+                        "description": "Successfully banned player **%username%**: `%reason%`\n%response%",
                         "color": "Orange"
                     }
                 ]
@@ -1154,7 +1154,7 @@
                 "embeds": [
                     {
                         "title": "Deop Player",
-                        "description": "Successfully Deoped player **%username%**\n%warning%",
+                        "description": "Successfully Deoped player **%username%**\n%response%",
                         "color": "Blue"
                     }
                 ]
@@ -1165,7 +1165,7 @@
                 "embeds": [
                     {
                         "title": "Change Gamemode",
-                        "description": "Successfully changed gamemode of **%username%** to **%gamemode%**\n%warning%",
+                        "description": "Successfully changed gamemode of **%username%** to **%gamemode%**\n%response%",
                         "color": "Orange"
                     }
                 ]
@@ -1176,7 +1176,7 @@
                 "embeds": [
                     {
                         "title": "Kick Player",
-                        "description": "Successfully kicked player **%username%**: `%reason%`\n%warning%",
+                        "description": "Successfully kicked player **%username%**: `%reason%`\n%response%",
                         "color": "Orange"
                     }
                 ]
@@ -1187,7 +1187,7 @@
                 "embeds": [
                     {
                         "title": "OP Player",
-                        "description": "Successfully oped player **%username%**\n%warning%",
+                        "description": "Successfully oped player **%username%**\n%response%",
                         "color": "Blue"
                     }
                 ]
@@ -1198,7 +1198,7 @@
                 "embeds": [
                     {
                         "title": "Unban Player",
-                        "description": "Successfully unbanned player **%username%**\n%warning%",
+                        "description": "Successfully unbanned player **%username%**\n%response%",
                         "color": "Blue"
                     }
                 ]

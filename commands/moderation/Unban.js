@@ -1,6 +1,7 @@
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import * as utils from '../../utilities/utils.js';
+import { codeBlockFromCommandResponse } from '../../utilities/utils.js';
 
 export default class Unban extends Command {
 
@@ -28,8 +29,9 @@ export default class Unban extends Command {
         const resp = await server.protocol.execute(`pardon ${user.username}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-        //TODO show response message in embed
-        const warning = resp.data === '' ? keys.api.plugin.warnings.no_response_message_short : '';
-        return interaction.editReplyTl(keys.commands.unban.success, { username: user.username, warning });
+        const response = resp.data?.message
+            ? codeBlockFromCommandResponse(resp.data.message)
+            : keys.api.plugin.warnings.no_response_message_short;
+        return interaction.editReplyTl(keys.commands.unban.success, { username: user.username, response });
     }
 }
