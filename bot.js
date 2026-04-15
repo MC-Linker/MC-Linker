@@ -1,5 +1,5 @@
 import MCLinker from './structures/MCLinker.js';
-import rootLogger from './utilities/logger/logger.js';
+import rootLogger from './utilities/logger/Logger.js';
 import features from './utilities/logger/features.js';
 import { uploadApplicationEmojis } from './utilities/utils.js';
 

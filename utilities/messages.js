@@ -15,7 +15,7 @@ import Discord, {
 } from 'discord.js';
 import keys, { getObjectPath } from './keys.js';
 import util from 'util';
-import rootLogger from './logger/logger.js';
+import rootLogger from './logger/Logger.js';
 import features from './logger/features.js';
 import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 import { ComponentSizeInActionRow, MaxActionRows, MaxActionRowSize } from './utils.js';

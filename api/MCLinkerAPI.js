@@ -8,7 +8,7 @@ import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
 import { Collection } from 'discord.js';
-import rootLogger from '../utilities/logger/logger.js';
+import rootLogger from '../utilities/logger/Logger.js';
 import features from '../utilities/logger/features.js';
 import path from 'path';
 import fs from 'fs-extra';

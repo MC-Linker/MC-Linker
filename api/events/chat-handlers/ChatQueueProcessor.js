@@ -8,7 +8,7 @@ import {
     MaxEmbedDescriptionLength,
     toAnsiCodeBlock,
 } from '../../../utilities/utils.js';
-import rootLogger from '../../../utilities/logger/logger.js';
+import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
 import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } from './ChatPayloadBuilder.js';
@@ -156,7 +156,7 @@ export default class ChatQueueProcessor {
             return { consumed: items.length };
         }
 
-        trackError('api_ws', 'ChatQueue', guild.id, null, err, null, logger);
+        trackError('api_ws', 'ChatQueue', guild.id, null, err, { kind: logContext }, logger);
         return { consumed: 1 };
     }
 

@@ -12,7 +12,7 @@ import Discord, {
 import { getReplyOptions } from './messages.js';
 import fs from 'fs-extra';
 import path from 'path';
-import rootLogger from './logger/logger.js';
+import rootLogger from './logger/Logger.js';
 import features from './logger/features.js';
 import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 

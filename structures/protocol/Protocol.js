@@ -1,6 +1,6 @@
 import { Base } from 'discord.js';
 import fs from 'fs-extra';
-import rootLogger from '../../utilities/logger/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
 import features from '../../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.structures.protocol.websocket });

@@ -1,6 +1,6 @@
 import { CommandInteraction, Message, MessageFlags } from 'discord.js';
 import keys from '../utilities/keys.js';
-import rootLogger from '../utilities/logger/logger.js';
+import rootLogger from '../utilities/logger/Logger.js';
 import features from '../utilities/logger/features.js';
 
 /** @abstract **/

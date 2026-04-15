@@ -1,7 +1,7 @@
 import { ShardEvents, ShardingManager } from 'discord.js';
 import { AutoPoster } from 'topgg-autoposter';
 import dotenv from 'dotenv';
-import rootLogger from './utilities/logger/logger.js';
+import rootLogger from './utilities/logger/Logger.js';
 import features from './utilities/logger/features.js';
 
 dotenv.config();

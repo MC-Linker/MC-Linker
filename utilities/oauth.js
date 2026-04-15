@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import crypto from 'crypto';
-import rootLogger from './logger/logger.js';
+import rootLogger from './logger/Logger.js';
 import features from './logger/features.js';
 import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 

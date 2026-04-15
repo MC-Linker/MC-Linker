@@ -1,5 +1,5 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
-import rootLogger from '../../../utilities/logger/logger.js';
+import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
 import { WEBHOOK_TOKEN_REFRESH_TTL_MS } from './ChatConstants.js';

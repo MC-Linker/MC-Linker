@@ -1,7 +1,7 @@
 import { Base } from 'discord.js';
 import { getManagerStringFromConnection } from '../../utilities/utils.js';
 import ServerConnection from './ServerConnection.js';
-import rootLogger from '../../utilities/logger/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
 import features from '../../utilities/logger/features.js';
 import { trackError } from '../analytics/AnalyticsCollector.js';
 

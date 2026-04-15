@@ -1,6 +1,6 @@
 import Connection from './Connection.js';
 import { Routes } from 'discord.js';
-import rootLogger from '../../utilities/logger/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
 import features from '../../utilities/logger/features.js';
 import { trackError } from '../analytics/AnalyticsCollector.js';
 

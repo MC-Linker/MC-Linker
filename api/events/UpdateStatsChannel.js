@@ -1,6 +1,6 @@
 import WSEvent from '../WSEvent.js';
 import { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
-import rootLogger from '../../utilities/logger/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
 import features from '../../utilities/logger/features.js';
 import { addPh } from '../../utilities/messages.js';
 
