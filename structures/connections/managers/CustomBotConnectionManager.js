@@ -237,7 +237,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
                 const success = await customBotConnection.setPresence(newPresence);
                 if(!success)
-                    return await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed, { error: success.message });
+                    return await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed);
                 await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
             }
         });

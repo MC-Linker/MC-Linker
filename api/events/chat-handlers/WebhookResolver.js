@@ -28,7 +28,7 @@ export default class WebhookResolver {
      */
     async refreshWebhookClient(client, webhookId) {
         const webhook = await client.fetchWebhook(webhookId);
-        if(!webhook.token) return null;
+        if(!webhook?.token) return null;
 
         this.poolManager.evictWebhookClient(webhookId);
         const webhookClient = new Discord.WebhookClient(

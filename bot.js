@@ -17,9 +17,9 @@ logger.info(
 // Flush analytics on graceful shutdown (covers Docker stop / CTRL+C)
 async function shutdown() {
     try { await client?.analyticsAggregator?.destroy(); }
-    catch {}
+    catch(err) { logger.error(err, 'Failed to destroy analytics aggregator during shutdown'); }
     try { await client?.analytics?.destroy(); }
-    catch {}
+    catch(err) { logger.error(err, 'Failed to destroy analytics during shutdown'); }
     process.exit(0);
 }
 

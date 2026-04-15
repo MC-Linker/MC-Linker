@@ -49,7 +49,7 @@ export default class SystemStats extends Command {
             platform: `${os.platform()} ${os.release()}`,
             os_uptime: `${durationString(os.uptime() * 1000)}`,
             bot_uptime: `${durationString(client.uptime)}`,
-            cpu: `${os.cpus()[0].model}`,
+            cpu: `${os.cpus()[0]?.model ?? 'Unknown'}`,
             cpu_usage_percent: (await this.getCPUUsage() * 100).toFixed(2),
             memory_usage: memoryUsage,
             max_memory: maxMemory,

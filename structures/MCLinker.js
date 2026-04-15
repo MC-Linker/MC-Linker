@@ -12,7 +12,7 @@ import Command from './Command.js';
 import Component from './Component.js';
 import Event from './Event.js';
 import MCLinkerAPI from '../api/MCLinkerAPI.js';
-import AnalyticsCollector from './analytics/AnalyticsCollector.js';
+import AnalyticsCollector, { trackError } from './analytics/AnalyticsCollector.js';
 import * as utils from '../utilities/utils.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
@@ -382,7 +382,7 @@ export default class MCLinker extends Discord.Client {
             this.mongo.model(name, new Schema(schema));
 
         // Ensure analytics indexes exist (no-ops if already created)
-        this.mongo.models.AnalyticsSnapshot?.collection.createIndex({ timestamp: -1 }).catch(() => {});
-        this.mongo.models.AnalyticsError?.collection.createIndex({ timestamp: -1 }).catch(() => {});
+        this.mongo.models.AnalyticsSnapshot?.collection.createIndex({ timestamp: -1 }).catch(err => trackError('unhandled', 'createIndex', null, null, err, { index: 'AnalyticsSnapshot.timestamp' }, logger));
+        this.mongo.models.AnalyticsError?.collection.createIndex({ timestamp: -1 }).catch(err => trackError('unhandled', 'createIndex', null, null, err, { index: 'AnalyticsError.timestamp' }, logger));
     }
 }

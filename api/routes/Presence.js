@@ -33,5 +33,7 @@ export default class Presence extends Route {
             client.analytics.trackError('api_rest', 'Presence', null, null, err, null, logger);
             return { status: 500, body: err };
         }
+
+        return { status: 200 };
     }
 }

@@ -82,7 +82,7 @@ export default class Component {
         logger.debug(`Component ${this.id} clicked`);
         if(this.defer) await interaction.deferUpdate();
 
-        if(this.permissions) {
+        if(this.permissions && interaction.member) {
             const memberPerms = interaction.member.permissionsIn(interaction.channel);
             if(!memberPerms.has(this.permissions)) {
                 const missingPermission = this.permissions.toArray().find(perm => !memberPerms.has(perm));

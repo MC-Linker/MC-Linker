@@ -200,6 +200,8 @@ export async function sendToServer(guild, key, ...placeholders) {
         if(await trySendMessage(channel)) return;
     }
 
+    trackError('unhandled', 'sendToServer', guild.id, null, new Error('Could not send message to any channel in guild'), null, logger);
+
     async function trySendMessage(channel) {
         if(!channel || !channel.isTextBased()) return false;
         try {

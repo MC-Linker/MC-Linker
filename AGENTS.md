@@ -482,7 +482,10 @@ contextual logger) and buffers it for the analytics error collection.
 - **Exceptions**: `AnalyticsCollector.js` flush errors and `AnalyticsAggregator.js` snapshot errors use `logger.error`
   directly to avoid infinite loops.
 
-When adding a new `catch` block or error path anywhere in the bot, use `trackError` instead of `logger.error`.
+When adding a new `catch` block or error path anywhere in the bot, use `trackError` instead of `logger.error` or
+`logger.warn`. Never use `logger.warn` or `logger.error` directly for error handling — always route through `trackError`
+so errors are both logged and buffered for the analytics error collection. The only exceptions are the self-referential
+cases listed above.
 
 ## Environment & Deployment
 
