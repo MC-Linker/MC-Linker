@@ -34,7 +34,6 @@ MC-Linker/
 ├── main.js                  # Entry point — ShardingManager, spawns bot.js per shard
 ├── bot.js                   # Single shard entry — creates MCLinker client, loads everything
 ├── config.json              # Bot configuration (paths, colors, emojis, presence)
-├── .eslintrc.json           # ESLint rules — run before committing
 │
 ├── api/
 │   ├── MCLinkerAPI.js       # API server (Fastify + Socket.io), WS middleware & auth
@@ -78,11 +77,11 @@ MC-Linker/
 │   ├── utils.js             # General utilities (hashing, avatar cache, NBT parsing, canvas)
 │   ├── keys.js              # Translation key definitions (hierarchical)
 │   ├── messages.js          # Embed/message formatting, placeholder system
-│   ├── logger/              # Pino logger setup
-│   │   ├── logger.js        # Root logger instance, child/tracking/debug-filter logic
+│   ├── logger/              # Logger setup
+│   │   ├── Logger.js        # Logger class — pino wrapper with per-call debug filter system
 │   │   ├── features.js      # Feature name proxy backed by logFeatures.json
 │   │   └── transport.js     # Custom pino-pretty transport (messageFormat)
-│   └── shardingUtils.js     # Cross-shard helper functions
+│   └── sharding-utils.js     # Cross-shard helper functions
 │
 ├── resources/
 │   ├── data/                # Static game data JSON (advancements, stats definitions)
@@ -309,7 +308,9 @@ objects are not serializable and must be excluded from broadcasts.
 Use JSDoc to describe all classes, methods, and to declare types. This is crucial for maintainability and helps with
 editor autocompletion.
 
-Adhere to the code style of this project for all edits. The full ruleset is in `.eslintrc.json`. Key conventions:
+Adhere to the code style of this project for all edits.
+However, do not run linting yourself, write the code adhering to the code style rules already.
+The full ruleset is in `.eslintrc.json`. Key conventions:
 
 ### Formatting
 
@@ -326,7 +327,7 @@ Adhere to the code style of this project for all edits. The full ruleset is in `
 
 ## Logging
 
-The logger is a Pino instance exported as `rootLogger` from `utilities/logger/logger.js`.
+The logger is a `Logger` class instance (wrapping pino) exported as the default from `utilities/logger/Logger.js`.
 
 **For commands, events, WS events, and components:** the base handler (`Command`, `Event`, `WSEvent`, `Component`)
 creates a per-execution child logger and passes it to `run()` — subclasses should use that `logger` parameter
@@ -335,7 +336,7 @@ directly. Do **not** create module-level loggers in these files.
 **For other files** (utilities, structures, chat-handlers, etc.): create a module-level child logger:
 
 ```javascript
-import rootLogger from '../utilities/logger/logger.js';
+import rootLogger from '../utilities/logger/Logger.js';
 import features from '../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.dispatch });
@@ -370,15 +371,22 @@ constructor()
 
 ### Runtime debug filtering
 
-Debug output is suppressed by default (root level `'info'`). All public debug filter methods operate across
-all shards via `broadcastEval`. Single-shard methods are prefixed with `_` and should not be used directly.
+`debug` and `trace` are suppressed by default. Filters are checked **per log call**: the logger's static
+filters (set via `child()`) are merged with any structured object passed as the first argument, then tested
+against the active filter map. This means `{ guildId }` passed at the call site is filter-aware even on a
+module-level logger that has no `guildId` in its static filters.
+
+`info`/`warn`/`error`/`fatal` always pass through unconditionally — there is no log-level control.
+
+All public debug filter methods operate across all shards via `broadcastEval`. Single-shard methods are
+prefixed with `_` and should not be used directly.
 
 ```javascript
-// Enable debug filters (always cross-shard)
+// Enable debug filter (always cross-shard)
 client.logger.enableDebug(client, { feature: 'api.events' });         // all WS event features
 client.logger.enableDebug(client, { feature: 'api.events.chat' });    // only chat event
 client.logger.enableDebug(client, { feature: 'commands' });            // all commands
-client.logger.enableDebug(client, { guildId: 'GUILD_ID' });            // all debug for one guild
+client.logger.enableDebug(client, { guildId: 'GUILD_ID' });            // ALL debug calls that pass { guildId: 'GUILD_ID' }
 client.logger.enableDebug(client, { feature: 'api.events.chat', guildId: 'GUILD_ID' }); // combined
 
 // Disable
@@ -390,7 +398,7 @@ client.logger.getDebugFilters();
 ```
 
 Feature matching uses prefix logic: enabling `'api.events'` also enables `'api.events.chat'`,
-`'api.events.verify-user'`, etc. info/warn/error/fatal always pass through regardless of filters.
+`'api.events.verify-user'`, etc.
 
 Initial debug filters can be set in `config.json`:
 
