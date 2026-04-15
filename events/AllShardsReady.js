@@ -11,7 +11,7 @@ export default class AllShardsReady extends Event {
         });
     }
 
-    async run(client) {
+    async run(client, args, logger) {
         await client.api.startServer();
         await client.customBots.disconnectUsersWithoutEntitlement();
         await client.customBots.updateAllBots();

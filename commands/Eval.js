@@ -102,7 +102,7 @@ export default class Eval extends Command {
                 .filter(t => t && t !== '');
             // noinspection JSVoidFunctionReturnValueUsed
             for(const token of tokens) {
-                out = out.replace(new RegExp(token, 'g'), 'REDACTED');
+                out = out.replaceAll(token, 'REDACTED');
             }
 
             //If it's too long, send an attachment

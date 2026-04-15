@@ -1,6 +1,6 @@
 import WSEvent from '../WSEvent.js';
 
-export default class AddSyncedRoleMember extends WSEvent {
+export default class RemoveSyncedRole extends WSEvent {
 
     constructor() {
         super({

@@ -85,7 +85,7 @@ export default class Connect extends Command {
             else if(response.responseType === 'error') await interaction.editReplyTl(keys.commands.connect.errors.websocket_error, response.placeholders);
         }
         catch(err) {
-            if(!err instanceof MCLinkerAPI.EventTimeoutError) return await interaction.editReplyTl(keys.commands.connect.warnings.no_reply_in_time);
+            if(!(err instanceof MCLinkerAPI.EventTimeoutError)) return await interaction.editReplyTl(keys.commands.connect.warnings.no_reply_in_time);
             client.analytics.trackError('command', 'connect', interaction.guildId, interaction.user.id, err, null, logger);
             return interaction.editReplyTl(keys.api.plugin.errors.status_400);
         }

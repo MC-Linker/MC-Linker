@@ -5,7 +5,7 @@ import features from '../../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.api.routes.presence });
 
-export default class Version extends Route {
+export default class Presence extends Route {
 
     constructor() {
         super({

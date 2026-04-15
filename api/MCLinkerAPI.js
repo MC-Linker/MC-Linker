@@ -489,6 +489,8 @@ export default class MCLinkerAPI extends EventEmitter {
         }
 
         const route = this.wsEvents.get(eventName);
+        if(!route) return callback?.({ status: 'error', error: ProtocolError.UNKNOWN_EVENT });
+
         const rateLimiter = typeof route.rateLimiter === 'function' ? route.rateLimiter(data) : route.rateLimiter;
         try {
             await rateLimiter?.consume(socket.handshake.address);

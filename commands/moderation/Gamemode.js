@@ -23,7 +23,7 @@ export default class Gamemode extends Command {
      */
     async run(interaction, client, args, server, logger) {
         const user = args[0];
-        const userConnection = await client.userConnections.cache.get(interaction.user.id);
+        const userConnection = client.userConnections.cache.get(interaction.user.id);
         const gamemode = args[1];
 
         const resp = await server.protocol.execute(`gamemode ${gamemode} ${user.username}`, userConnection?.getUUID(server));

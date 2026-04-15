@@ -263,7 +263,7 @@ export default class MCLinker extends Discord.Client {
     }
 
     isCustomBot() {
-        return process.env.CUSTOM_BOT !== 'true';
+        return process.env.CUSTOM_BOT === 'true';
     }
 
     async _loadCommands() {

@@ -15,7 +15,7 @@ export default class DisconnectForce extends WSEvent {
      * @param client
      * @param logger
      */
-    run(data, server, client, logger) {
-        void client.serverConnections.disconnect(server);
+    async run(data, server, client, logger) {
+        await client.serverConnections.disconnect(server);
     }
 }

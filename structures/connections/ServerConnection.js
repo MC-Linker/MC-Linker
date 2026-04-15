@@ -254,13 +254,13 @@ export default class ServerConnection extends Connection {
     /**
      * Checks whether a guild member satisfies the required-role-to-join constraint for this server.
      * @param {import('discord.js').GuildMember} member - The member to check.
-     * @returns {boolean} True if no constraint exists or the member satisfies it.
+     * @returns {boolean} - True if no constraint exists or the member satisfies it.
      */
     hasRequiredRole(member) {
         if(!this.requiredRoleToJoin) return true;
         if(this.requiredRoleToJoin.method === 'any') return this.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id));
         if(this.requiredRoleToJoin.method === 'all') return this.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id));
-        return true;
+        return false;
     }
 
     /**

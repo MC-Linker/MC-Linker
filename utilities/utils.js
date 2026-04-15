@@ -42,10 +42,7 @@ export function memoize(fn, parameters = undefined) {
         if(cache.has(key)) return cache.get(key);
 
         const result = fn(...args);
-        if(result instanceof Promise)
-            result.then(value => cache.set(key, value));
-        else cache.set(key, result);
-
+        cache.set(key, result);
         return result;
     };
 }

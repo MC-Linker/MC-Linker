@@ -23,7 +23,7 @@ export default class Unban extends Command {
      */
     async run(interaction, client, args, server, logger) {
         const user = args[0];
-        const userConnection = await client.userConnections.cache.get(interaction.user.id);
+        const userConnection = client.userConnections.cache.get(interaction.user.id);
 
         const resp = await server.protocol.execute(`pardon ${user.username}`, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
