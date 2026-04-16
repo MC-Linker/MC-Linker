@@ -19,7 +19,8 @@
 
     <div v-if="data?.server" class="card server-detail">
       <h2>Server: <code>{{ data.server._id }}</code></h2>
-      <pre class="json-block">{{ JSON.stringify(data.server, null, 2) }}</pre>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <pre class="json-block" v-html="highlightJson(data.server)"></pre>
     </div>
 
     <div v-if="search && !data?.server" class="empty">No server found for ID "{{ search }}".</div>
@@ -129,6 +130,27 @@ function onSegmentClick(index: number, label: string) {
   const key = DRILLABLE[label];
   if (key) drillDown.value = key;
 }
+
+function highlightJson(obj: unknown): string {
+  const json = JSON.stringify(obj, null, 2);
+  // Escape HTML entities first to prevent XSS (preserving " for the regex)
+  const escaped = json
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  return escaped.replace(
+      /("(?:\\u[0-9a-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+      match => {
+        if (/^"/.test(match)) {
+          const cls = /:$/.test(match) ? 'json-key' : 'json-string';
+          return `<span class="${cls}">${match}</span>`;
+        }
+        if (/true|false/.test(match)) return `<span class="json-boolean">${match}</span>`;
+        if (match === 'null') return `<span class="json-null">${match}</span>`;
+        return `<span class="json-number">${match}</span>`;
+      },
+  );
+}
 </script>
 
 <style scoped>
@@ -179,6 +201,27 @@ function onSegmentClick(index: number, label: string) {
   overflow-y: auto;
   white-space: pre;
   line-height: 1.5;
+}
+
+.json-key {
+  color: #56b6c2;
+  font-weight: 600;
+}
+
+.json-string {
+  color: #98c379;
+}
+
+.json-number {
+  color: #d19a66;
+}
+
+.json-boolean {
+  color: #c678dd;
+}
+
+.json-null {
+  color: #888;
 }
 
 .chart-header {
