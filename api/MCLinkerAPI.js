@@ -615,7 +615,10 @@ export default class MCLinkerAPI extends EventEmitter {
 
         // Always update the players list to reflect MC-side reality
         if(addOrRemove === 'add') syncedRole.players.push(uuid);
-        else if(addOrRemove === 'remove') syncedRole.players.splice(syncedRole.players.indexOf(uuid), 1);
+        else if(addOrRemove === 'remove') {
+            const playerIndex = syncedRole.players.indexOf(uuid);
+            if(playerIndex !== -1) syncedRole.players.splice(playerIndex, 1);
+        }
         await server.edit({});
 
         // Skip Discord role change if direction is to_minecraft (Discord→MC only)

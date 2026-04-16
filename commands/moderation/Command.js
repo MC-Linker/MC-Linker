@@ -31,7 +31,7 @@ export default class Command extends AutocompleteCommand {
         if(commandInput === null) return interaction.editReplyTl(keys.commands.command.warnings.autocomplete_selection_expired);
 
         let command = this.replaceMentionsWithUsernames(commandInput, interaction, client);
-        if(command === null) return;
+        if(command === null) return interaction.editReplyTl(keys.api.command.errors.user_not_connected);
         if(command.startsWith('/')) command = command.slice(1);
 
         const userConnection = client.userConnections.cache.get(interaction.user.id);

@@ -58,7 +58,7 @@ export default class WSEvent {
      * @param {?ServerConnection} server - The server the event is sent to.
      * @param {MCLinker} client - The MCLinker client.
      * @param {import('pino').Logger} logger - A child logger bound to this execution.
-     * @returns {?object|void|Promise<object|void>}
+     * @returns {?ProtocolResponse|void|Promise<ProtocolResponse|void>}
      * @abstract
      */
     run(data, server, client, logger) {

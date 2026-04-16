@@ -73,7 +73,7 @@ export default class UserInfo extends Command {
         if(scoreboardDatResponse?.status === 'success') scoreboardDat = await utils.nbtBufferToObject(scoreboardDatResponse.data, interaction);
         if(scoreboardDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
         if(levelDatResponse?.status === 'success') levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
-        if(levelDatResponse === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
+        if(levelDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
 
         const matchingOp = operators.find(o => o.uuid === user.uuid);
         const matchingWhitelist = whitelistedUsers.find(w => w.uuid === user.uuid);
@@ -147,7 +147,7 @@ export default class UserInfo extends Command {
         }
         if(scoreboardDat) {
             const teams = scoreboardDat.data.Teams?.filter(team => team.Players?.includes(user.username));
-            if(teams.length > 0) placeholders.teams = teams.map(team => stringifyMinecraftJson(team.DisplayName)).join('\n');
+            if(teams?.length > 0) placeholders.teams = teams.map(team => stringifyMinecraftJson(team.DisplayName)).join('\n');
             if(placeholders.teams) newSurvivalFields.push(addPh(
                 keys.commands.userinfo.success.survival.embeds[0].fields[9], placeholders,
             ));

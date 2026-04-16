@@ -58,7 +58,7 @@ export default class Stats extends Command {
             if(!stats) return interaction.editReplyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
         catch(err) {
-            await interaction.editReplyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
+            return interaction.editReplyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
 
         if(sorting === 'descending')

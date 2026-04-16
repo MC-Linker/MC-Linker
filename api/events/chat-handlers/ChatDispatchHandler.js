@@ -166,7 +166,7 @@ export default class ChatDispatchHandler {
             state.skippedCount = 0;
         }
         catch(err) {
-            trackError('api_ws', 'ChatDispatch', null, null, err, null, logger);
+            trackError('api_ws', 'ChatDispatch', null, null, err, { key }, logger);
         }
     }
 
@@ -235,7 +235,7 @@ export default class ChatDispatchHandler {
             else this.states.delete(key);
         }
         catch(err) {
-            trackError('api_ws', 'ChatDispatch', null, null, err, null, logger);
+            trackError('api_ws', 'ChatDispatch', null, null, err, { key }, logger);
             this.scheduleProcess(key, 500);
         }
         finally {

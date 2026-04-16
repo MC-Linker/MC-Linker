@@ -114,7 +114,8 @@ export default class Account extends Command {
 
             await client.userConnections.disconnect(interaction.user.id);
 
-            if(server.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
+            //TODO kick from all servers the user is in
+            if(server?.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
             await interaction.editReplyTl(keys.commands.account.success.disconnect);
         }
     }

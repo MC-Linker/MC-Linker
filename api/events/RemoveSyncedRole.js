@@ -22,9 +22,9 @@ export default class RemoveSyncedRole extends WSEvent {
      * @param logger
      */
     async run(data, server, client, logger) {
-        const roleIndex = server.syncedRoles?.findIndex(role => role.id === data.id);
-        if(roleIndex === undefined || roleIndex === -1) return;
-        server.syncedRoles.splice(roleIndex, 1);
-        await server.edit({});
+        if(!server.syncedRoles) return;
+        const filtered = server.syncedRoles.filter(role => role.id !== data.id);
+        if(filtered.length === server.syncedRoles.length) return;
+        await server.edit({ syncedRoles: filtered });
     }
 }
