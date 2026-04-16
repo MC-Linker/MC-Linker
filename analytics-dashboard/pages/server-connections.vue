@@ -203,24 +203,24 @@ function highlightJson(obj: unknown): string {
   line-height: 1.5;
 }
 
-.json-key {
+:deep(.json-key) {
   color: #56b6c2;
   font-weight: 600;
 }
 
-.json-string {
+:deep(.json-string) {
   color: #98c379;
 }
 
-.json-number {
+:deep(.json-number) {
   color: #d19a66;
 }
 
-.json-boolean {
+:deep(.json-boolean) {
   color: #c678dd;
 }
 
-.json-null {
+:deep(.json-null) {
   color: #888;
 }
 
