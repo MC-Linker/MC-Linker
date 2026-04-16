@@ -28,7 +28,7 @@ export default class Customize extends Command {
     async run(interaction, client, args, server, logger) {
         // If user is not subscribed, let them customize server appearance
         if(!interaction.entitlements.find(e => e.skuId === CustomBotConnectionManager.CUSTOM_BOT_SKU_ID)) {
-            if(!interaction.inGuild()) return await interaction.editReplyTl(keys.commands.customize.warnings.no_entitlement_guild);
+            if(!interaction.inGuild()) return await interaction.editReplyTl(keys.main.no_access.no_entitlement_guild);
 
             if(!interaction.memberPermissions.any([PermissionFlagsBits.Administrator, PermissionFlagsBits.ManageGuild])) {
                 return await interaction.editReplyTl(keys.main.no_access.no_permission_command, {
@@ -36,7 +36,7 @@ export default class Customize extends Command {
                 });
             }
 
-            const messageOptions = getReplyOptions(keys.commands.customize.warnings.no_entitlement);
+            const messageOptions = getReplyOptions(keys.main.no_access.no_entitlement);
             const additionalButton = client.isCustomBot() ?
                 getComponent(keys.commands.customize.buttons.custom_bot_change_presence) :
                 getComponent(keys.commands.customize.buttons.customize_sku);

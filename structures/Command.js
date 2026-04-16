@@ -123,7 +123,7 @@ export default class Command {
 
         if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
             if(process.env.NODE_ENV === 'production' && !client.isCustomBot()) {
-                await interaction.editReplyTl(keys.commands.customize.warnings.no_entitlement);
+                await interaction.editReplyTl(keys.main.no_access.no_entitlement);
                 return false;
             }
         }

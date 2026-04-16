@@ -112,19 +112,19 @@ export default class UserInfo extends Command {
             placeholders.saturation = playerDat.foodSaturationLevel;
             placeholders.health = (playerDat.Health / 2).toFixed(1);
             placeholders.score = playerDat.Score;
-            placeholders.gamemode = keys.commands.userinfo.gamemode[playerDat.playerGameType] ?? keys.commands.serverinfo.unknown;
-            placeholders.dimension = keys.commands.userinfo.dimensions[playerDat.Dimension.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
+            placeholders.gamemode = keys.commands.userinfo.gamemode[playerDat.playerGameType] ?? keys.common.unknown;
+            placeholders.dimension = keys.commands.userinfo.dimensions[playerDat.Dimension.replace('minecraft:', '')] ?? keys.common.unknown;
             playerDat.Pos = playerDat.Pos.map(pos => Math.round(pos)); // Round the position to the nearest integer
             placeholders.position = `${playerDat.Pos[0]}, ${playerDat.Pos[1]}, ${playerDat.Pos[2]}`;
             placeholders.death_location = `${playerDat.LastDeathLocation?.pos?.[0] ?? '?'}, ${playerDat.LastDeathLocation?.pos?.[1] ?? '?'}, ${playerDat.LastDeathLocation?.pos?.[2] ?? '?'}`;
-            placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDat.LastDeathLocation?.dimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
+            placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDat.LastDeathLocation?.dimension?.replace('minecraft:', '')] ?? keys.common.unknown;
             placeholders.spawn_location = playerDat.SpawnX && playerDat.SpawnY && playerDat.SpawnZ ? `${playerDat.SpawnX}, ${playerDat.SpawnY}, ${playerDat.SpawnZ}` : null; // set it from level.dat
             placeholders.spawn_dimension = playerDat.SpawnDimension ? keys.commands.userinfo.dimensions[playerDat.SpawnDimension.replace('minecraft:', '')] : null; // set it from level.dat
             // these values will be an integer if it's coming from the data command and a bigint if it's coming from the playerdata file
             if(playerDat.bukkit?.firstPlayed && typeof playerDat.bukkit.firstPlayed !== 'bigint') playerDat.bukkit.firstPlayed = BigInt(playerDat.bukkit.firstPlayed);
             if(playerDat.bukkit?.firstPlayed && typeof playerDat.bukkit.lastPlayed !== 'bigint') playerDat.bukkit.lastPlayed = BigInt(playerDat.bukkit.lastPlayed);
-            placeholders.first_join = playerDat.bukkit?.firstPlayed ? time(Number(playerDat.bukkit.firstPlayed / 1000n)) : keys.commands.serverinfo.unknown;
-            placeholders.last_join = playerDat.bukkit?.lastPlayed ? time(Number(playerDat.bukkit.lastPlayed / 1000n)) : keys.commands.serverinfo.unknown;
+            placeholders.first_join = playerDat.bukkit?.firstPlayed ? time(Number(playerDat.bukkit.firstPlayed / 1000n)) : keys.common.unknown;
+            placeholders.last_join = playerDat.bukkit?.lastPlayed ? time(Number(playerDat.bukkit.lastPlayed / 1000n)) : keys.common.unknown;
             if(playerDat.ActiveEffects?.length > 0) {
                 placeholders.effects = playerDat.ActiveEffects.map(effect => mcData.effectsArray.find(e => e.id === effect.Id)?.displayName).filter(e => e).join('\n');
             }
@@ -170,9 +170,9 @@ export default class UserInfo extends Command {
         //Push the fields even if they're unknown so that admin buttons can be shown
         if(newAdminFields.length === 0) newAdminFields.push(...(addPh(keys.commands.userinfo.success.admin.embeds[0].fields, placeholders, {
             position: '?, ?, ?',
-            dimension: keys.commands.serverinfo.unknown,
+            dimension: keys.common.unknown,
             death_location: '?, ?, ?',
-            death_dimension: keys.commands.serverinfo.unknown,
+            death_dimension: keys.common.unknown,
         })));
 
         survivalMessage.embeds[0].setFields(newSurvivalFields);

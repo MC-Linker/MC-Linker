@@ -364,7 +364,7 @@ export default class WebhookPoolManager {
                 this.monitor?.recordCreationFailure();
                 this.failedCreations.set(channelConfig.id, Date.now() + CREATION_FAILURE_COOLDOWN_MS);
                 trackError('api_ws', 'WebhookPool', guild.id, null, err, null, logger);
-                await errorChannel.send({ embeds: [getEmbed(keys.commands.chatchannel.errors.could_not_create_webhook)] }).catch(() => {});
+                await errorChannel.send({ embeds: [getEmbed(keys.api.plugin.errors.could_not_create_webhook)] }).catch(() => {});
                 return null;
             }
         }

@@ -107,7 +107,7 @@ export default class Chat extends WSEvent {
             if(!advancement) return; // Advancement not found
 
             const advancementTitle = advancement?.name ?? message;
-            const advancementDesc = advancement?.description ?? keys.commands.advancements.no_description_available;
+            const advancementDesc = advancement?.description ?? keys.common.no_description_available;
 
             // Add placeholder to argPlaceholder so it can be used later
             placeholders.advancement_title = advancementTitle;

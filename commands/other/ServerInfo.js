@@ -154,8 +154,8 @@ export default class ServerInfo extends Command {
             spawn_y: datObject.Data.SpawnY ?? datObject.Data.spawn.pos[1],
             spawn_z: datObject.Data.SpawnZ ?? datObject.Data.spawn.pos[2],
             spawn_world: datObject.Data.LevelName,
-            allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
-            allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
+            allow_end: propertiesObject['allow-end'] ? keys.common.enabled : keys.common.disabled,
+            allow_nether: propertiesObject['allow-nether'] ? keys.common.enabled : keys.common.disabled,
             difficulty,
             gamerules: filteredGamerules.join('\n'),
         });
@@ -164,7 +164,7 @@ export default class ServerInfo extends Command {
         }
 
         const generalEmbed = getEmbed(keys.commands.serverinfo.success.general, {
-            server_name: serverName ?? keys.commands.serverinfo.unknown,
+            server_name: serverName ?? keys.common.unknown,
             motd: motd.join('\n'),
             max_players: propertiesObject['max-players'],
             online_players: onlinePlayers,
@@ -195,8 +195,8 @@ export default class ServerInfo extends Command {
 
         if(isAdmin) {
             const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
-                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
-                seed: datObject.Data.WorldGenSettings?.seed ?? keys.commands.serverinfo.unknown,
+                enable_whitelist: propertiesObject['white-list'] ? keys.common.enabled : keys.common.disabled,
+                seed: datObject.Data.WorldGenSettings?.seed ?? keys.common.unknown,
             });
             const newFields = [];
             if(plugins.length > 0) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[0], { plugins: plugins.join('\n') }));

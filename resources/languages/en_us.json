@@ -32,6 +32,40 @@
             "color": "%color_step%"
         }
     },
+    "common": {
+        "unknown": "*Unknown*",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "no_description_available": "No description available...",
+        "channels": {
+            "channel_not_added": {
+                "embeds": [
+                    {
+                        "title": "Channel Not Added",
+                        "description": "The specified channel is not added."
+                    }
+                ]
+            },
+            "no_channels": {
+                "embeds": [
+                    {
+                        "title": "No Channels Added",
+                        "description": "There are no added channels."
+                    }
+                ]
+            },
+            "channel_button": {
+                "components": [
+                    {
+                        "type": "Button",
+                        "label": "Channel #%index1%",
+                        "custom_id": "channel_%index%",
+                        "style": "Secondary"
+                    }
+                ]
+            }
+        }
+    },
     "main": {
         "no_access": {
             "not_in_guild": {
@@ -42,23 +76,6 @@
                     }
                 ]
             },
-            "no_prefix_commands": {
-                "embeds": [
-                    {
-                        "title": "Use Slash Commands",
-                        "description": "Prefixed commands are disabled. Please use [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) instead by typing `/` in a server channel followed by the command name."
-                    }
-                ]
-            },
-            "no_permission_component": {
-                "embeds": [
-                    {
-                        "title": "No Permission",
-                        "description": "Only the command sender can use this!"
-                    }
-                ],
-                "ephemeral": true
-            },
             "no_permission_command": {
                 "embeds": [
                     {
@@ -67,6 +84,47 @@
                     }
                 ],
                 "ephemeral": true
+            },
+            "no_entitlement": {
+                "embeds": [
+                    {
+                        "title": "Customize Your Own MC Linker",
+                        "description": "You can change the bot's appearance in your server by clicking the button below!\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\nTo effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription. 👇",
+                        "color": "Blurple",
+                        "author": {
+                            "name": "Premium",
+                            "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
+                        }
+                    }
+                ],
+                "components": [
+                    {
+                        "type": "Button",
+                        "style": "Secondary",
+                        "label": "Change Server Appearance",
+                        "custom_id": "customize_guild_appearance"
+                    }
+                ]
+            },
+            "no_entitlement_guild": {
+                "embeds": [
+                    {
+                        "title": "Customize Your Own MC Linker",
+                        "description": "Run this command in your server to customize its appearance.\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\n👇 To effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription.",
+                        "color": "Blurple",
+                        "author": {
+                            "name": "Premium",
+                            "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
+                        }
+                    }
+                ],
+                "components": [
+                    {
+                        "type": "Button",
+                        "style": "Premium",
+                        "sku_id": "1166098447665995807"
+                    }
+                ]
             }
         },
         "errors": {
@@ -87,16 +145,6 @@
                     }
                 ],
                 "components": []
-            }
-        },
-        "warnings": {
-            "http_deprecated": {
-                "embeds": [
-                    {
-                        "title": "Deprecated Connection Method",
-                        "description": "**Your server is using the deprecated backup connection method and has been disconnected. Please reconnect in Discord using `/connect`.**"
-                    }
-                ]
             }
         },
         "success": {
@@ -675,49 +723,6 @@
                     ]
                 }
             },
-            "warnings": {
-                "no_entitlement": {
-                    "embeds": [
-                        {
-                            "title": "Customize Your Own MC Linker",
-                            "description": "You can change the bot's appearance in your server by clicking the button below!\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\nTo effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription. 👇",
-                            "color": "Blurple",
-                            "author": {
-                                "name": "Premium",
-                                "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
-                            }
-                        }
-                    ],
-                    "components": [
-                        {
-                            "type": "Button",
-                            "style": "Secondary",
-                            "label": "Change Server Appearance",
-                            "custom_id": "customize_guild_appearance"
-                        }
-                    ]
-                },
-                "no_entitlement_guild": {
-                    "embeds": [
-                        {
-                            "title": "Customize Your Own MC Linker",
-                            "description": "Run this command in your server to customize its appearance.\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\n👇 To effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription.",
-                            "color": "Blurple",
-                            "author": {
-                                "name": "Premium",
-                                "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
-                            }
-                        }
-                    ],
-                    "components": [
-                        {
-                            "type": "Button",
-                            "style": "Premium",
-                            "sku_id": "1166098447665995807"
-                        }
-                    ]
-                }
-            },
             "errors": {
                 "guild_appearance_update_failed": {
                     "embeds": [
@@ -895,7 +900,6 @@
         },
         "advancements": {
             "advancements_description": "Image of player's advancements",
-            "no_description_available": "No description available...",
             "acquired": "Acquired",
             "not_acquired": "Not Acquired",
             "success": {
@@ -1226,9 +1230,6 @@
             }
         },
         "serverinfo": {
-            "unknown": "*Unknown*",
-            "enabled": "Enabled",
-            "disabled": "Disabled",
             "difficulty": [
                 "Peaceful",
                 "Easy",
@@ -1770,22 +1771,6 @@
         },
         "chatchannel": {
             "warnings": {
-                "no_channels": {
-                    "embeds": [
-                        {
-                            "title": "No Channels Added",
-                            "description": "There are no added channels."
-                        }
-                    ]
-                },
-                "channel_not_added": {
-                    "embeds": [
-                        {
-                            "title": "Channel Not Added",
-                            "description": "The specified channel is not added."
-                        }
-                    ]
-                },
                 "not_collected": {
                     "embeds": [
                         {
@@ -1840,17 +1825,6 @@
                             }
                         ]
                     }
-                }
-            },
-            "errors": {
-                "could_not_create_webhook": {
-                    "embeds": [
-                        {
-                            "title": "Could not Create Webhook",
-                            "description": "Could not create a webhook in this channel. This is most likely due to the bot not having `Manage Webhooks` permission or there being 15 webhooks already in this channel."
-                        }
-                    ],
-                    "components": []
                 }
             },
             "step": {
@@ -1967,38 +1941,12 @@
                             ]
                         }
                     ]
-                },
-                "channel_button": {
-                    "components": [
-                        {
-                            "type": "Button",
-                            "label": "Channel #%index1%",
-                            "custom_id": "channel_%index%",
-                            "style": "Secondary"
-                        }
-                    ]
                 }
             }
         },
         "connect": {
             "unknown": "Unknown",
             "warnings": {
-                "version_below_11": {
-                    "embeds": [
-                        {
-                            "title": "Version Below 1.11",
-                            "description": "The advancement command might not work because advancements don't exist in your Minecraft version yet."
-                        }
-                    ]
-                },
-                "version_below_7": {
-                    "embeds": [
-                        {
-                            "title": "Version Below 1.7",
-                            "description": "The stat and advancement commands might not work because stats and advancements don't exist in your Minecraft version yet."
-                        }
-                    ]
-                },
                 "already_connected": {
                     "embeds": [
                         {
@@ -2006,23 +1954,6 @@
                             "description": "Already connected with another server (**%ip%**). If you proceed to connect, that server will be automatically disconnected!"
                         }
                     ]
-                },
-                "plugin_already_connected": {
-                    "embeds": [
-                        {
-                            "title": "Already Connected",
-                            "description": "The plugin is already connected to another server (**%name%**). Please disconnect that server from the plugin first."
-                        }
-                    ]
-                },
-                "canceled_connection": {
-                    "embeds": [
-                        {
-                            "title": "Connection Canceled",
-                            "description": "This connection request was canceled by the user."
-                        }
-                    ],
-                    "components": []
                 },
                 "no_reply_in_time": {
                     "embeds": [
@@ -2043,14 +1974,6 @@
                 }
             },
             "step": {
-                "searching_properties": {
-                    "embeds": [
-                        {
-                            "title": "Searching For Server...",
-                            "description": "%emoji_step% Successfully connected with the ftp server. Searching server folder... (Specify server path manually if this takes too long)"
-                        }
-                    ]
-                },
                 "command_verification": {
                     "embeds": [
                         {
@@ -2095,30 +2018,6 @@
                 }
             },
             "errors": {
-                "could_not_connect_plugin": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Connect",
-                            "description": "Could not connect to server with plugin."
-                        }
-                    ]
-                },
-                "could_not_find_properties": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Find Server",
-                            "description": "Could not find server folder. Please specify the server path manually."
-                        }
-                    ]
-                },
-                "could_not_get_properties": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Download",
-                            "description": "Could not download server configuration. Please specify the server-path manually."
-                        }
-                    ]
-                },
                 "websocket_error": {
                     "embeds": [
                         {
@@ -2311,14 +2210,6 @@
                     ],
                     "components": []
                 },
-                "unknown_chat_error": {
-                    "embeds": [
-                        {
-                            "title": "Unknown Error",
-                            "description": "Could not send the message to the chatchannel using webhooks. Please re-add the channel using `/chatchannel add`!"
-                        }
-                    ]
-                },
                 "no_webhook_permission": {
                     "embeds": [
                         {
@@ -2366,6 +2257,15 @@
                             "description": "The Minecraft server this DM was from is no longer connected."
                         }
                     ]
+                },
+                "could_not_create_webhook": {
+                    "embeds": [
+                        {
+                            "title": "Could not Create Webhook",
+                            "description": "Could not create a webhook in this channel. This is most likely due to the bot not having `Manage Webhooks` permission or there being 15 webhooks already in this channel."
+                        }
+                    ],
+                    "components": []
                 }
             },
             "success": {
@@ -2523,14 +2423,6 @@
         },
         "ftp": {
             "errors": {
-                "could_not_connect": {
-                    "embeds": [
-                        {
-                            "title": "Could Not Connect",
-                            "description": "Could not connect to server with ftp. Please check if the ftp server is online."
-                        }
-                    ]
-                },
                 "could_not_parse": {
                     "embeds": [
                         {
@@ -2694,74 +2586,6 @@
                     ]
                 }
             }
-        }
-    },
-    "buttons": {
-        "disable": {
-            "success": {
-                "response": {
-                    "embeds": [
-                        {
-                            "title": "Disabled Command",
-                            "description": "Successfully disabled command **%command_name%**."
-                        }
-                    ]
-                },
-                "help": {
-                    "embeds": [
-                        {
-                            "description": "```diff\n- [COMMAND DISABLED]```",
-                            "color": "DarkRed"
-                        }
-                    ]
-                }
-            }
-        },
-        "enable": {
-            "warnings": {
-                "already_enabled": {
-                    "embeds": [
-                        {
-                            "title": "Already Enabled",
-                            "description": "Command **%command_name%** is already enabled."
-                        }
-                    ]
-                }
-            },
-            "success": {
-                "response": {
-                    "embeds": [
-                        {
-                            "title": "Enabled Command",
-                            "description": "Successfully enabled command **%command_name%**."
-                        }
-                    ]
-                },
-                "help": {
-                    "embeds": [
-                        {
-                            "description": "```diff\n+ [COMMAND ENABLED]```",
-                            "color": "Green"
-                        }
-                    ]
-                }
-            }
-        },
-        "yes_no": {
-            "components": [
-                {
-                    "type": "Button",
-                    "style": "Success",
-                    "custom_id": "yes",
-                    "label": "Yes"
-                },
-                {
-                    "type": "Button",
-                    "style": "Danger",
-                    "custom_id": "no",
-                    "label": "No"
-                }
-            ]
         }
     },
     "data": {

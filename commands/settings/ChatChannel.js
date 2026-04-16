@@ -137,7 +137,7 @@ export default class ChatChannel extends AutocompleteCommand {
                 else webhook = await channel.createWebhook(options);
             }
             catch(err) {
-                return interaction.editReplyTl(keys.commands.chatchannel.errors.could_not_create_webhook, ph.error(err));
+                return interaction.editReplyTl(keys.api.plugin.errors.could_not_create_webhook, ph.error(err));
             }
 
             const chatChannelData = {
@@ -159,7 +159,7 @@ export default class ChatChannel extends AutocompleteCommand {
             const channel = args[1];
 
             const chatChannel = server.chatChannels.find(c => c.id === channel.id);
-            if(!chatChannel) return interaction.editReplyTl(keys.commands.chatchannel.warnings.channel_not_added);
+            if(!chatChannel) return interaction.editReplyTl(keys.common.channels.channel_not_added);
 
             const resp = await server.protocol.removeChatChannel(chatChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
@@ -169,7 +169,7 @@ export default class ChatChannel extends AutocompleteCommand {
             return interaction.editReplyTl(keys.commands.chatchannel.success.remove);
         }
         else if(subcommand === 'list') {
-            if(!server.chatChannels?.length) return interaction.editReplyTl(keys.commands.chatchannel.warnings.no_channels);
+            if(!server.chatChannels?.length) return interaction.editReplyTl(keys.common.channels.no_channels);
 
             /** @type {PaginationPages} */
             const pages = {};
@@ -184,12 +184,12 @@ export default class ChatChannel extends AutocompleteCommand {
                     ph.std(interaction),
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
-                        discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
+                        discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.common.enabled : keys.common.disabled,
                         channel_types: formattedTypes,
                     },
                 );
 
-                const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
+                const channelButton = getComponent(keys.common.channels.channel_button, {
                     index1: i + 1,
                     index: i,
                 });

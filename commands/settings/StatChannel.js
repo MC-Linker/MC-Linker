@@ -71,7 +71,7 @@ export default class StatChannel extends Command {
             const statChannels = server.statChannels;
             const index = statChannels.findIndex(c => c.id === channel.id);
             if(index === -1) {
-                return interaction.editReplyTl(keys.commands.chatchannel.warnings.channel_not_added);
+                return interaction.editReplyTl(keys.common.channels.channel_not_added);
             }
 
             const response = await server.protocol.removeStatsChannel(statChannels[index]);
@@ -86,7 +86,7 @@ export default class StatChannel extends Command {
             const statChannels = server.statChannels;
 
             if(!statChannels?.length) {
-                await interaction.editReplyTl(keys.commands.chatchannel.warnings.no_channels);
+                await interaction.editReplyTl(keys.common.channels.no_channels);
                 return;
             }
 
@@ -106,7 +106,7 @@ export default class StatChannel extends Command {
                 );
 
                 const index = statChannels.indexOf(channel);
-                const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
+                const channelButton = getComponent(keys.common.channels.channel_button, {
                     index1: index + 1,
                     index: index,
                 });
