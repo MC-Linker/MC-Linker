@@ -899,7 +899,7 @@ export function getModal(key, ...placeholders) {
         .setTitle(key.title)
         .setCustomId(key.custom_id);
 
-    for(const childComponent of key.components ?? []) {
+    for(const childComponent of key.components) {
         const component = getComponent(childComponent, ...placeholders);
         if(component.data.type === ComponentType.Label) modalBuilder.addLabelComponents(component);
         else if(component.data.type === ComponentType.TextDisplay) modalBuilder.addTextDisplayComponents(component);

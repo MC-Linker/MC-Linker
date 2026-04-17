@@ -2417,12 +2417,15 @@
                         "custom_id": "dm_reply_modal",
                         "components": [
                             {
-                                "type": "TextInput",
-                                "custom_id": "dm_reply_message",
+                                "type": "Label",
                                 "label": "Your Message",
-                                "style": "Paragraph",
-                                "required": true,
-                                "placeholder": "Type your message here..."
+                                "component": {
+                                    "type": "TextInput",
+                                    "custom_id": "dm_reply_message",
+                                    "style": "Paragraph",
+                                    "reqFuired": true,
+                                    "placeholder": "Type your message here..."
+                                }
                             }
                         ]
                     }
