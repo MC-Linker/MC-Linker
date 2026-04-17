@@ -518,6 +518,8 @@ export function getActionRows(key, ...placeholders) {
 
 /**
  * Get a component builder from a language key.
+ * If the key has a `components` array, only the first sub-component is extracted and built.
+ * Use {@link getComponentsV2} or {@link getActionRows} to build top-level components in full.
  * @param {Discord.AnyComponent|{components: Discord.AnyComponent[]}} key - The language key to get the component builder from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
  * @returns {?ComponentBuilder}
@@ -680,52 +682,6 @@ export function getComponent(key, ...placeholders) {
                     break;
             }
             break;
-        case ComponentType.ActionRow:
-            if(!component.components) return null;
-            componentBuilder = new Discord.ActionRowBuilder();
-            for(const childComponent of component.components)
-                componentBuilder.addComponents(getComponent(childComponent));
-            break;
-        case ComponentType.Container:
-            if(!component.components) return null;
-            componentBuilder = new Discord.ContainerBuilder()
-                .setSpoiler(component.spoiler ?? false)
-                .setAccentColor(component.accentColor ?? false);
-
-            for(const childComponent of component.components) {
-                const childComponentBuilder = getComponent(childComponent);
-                switch(childComponentBuilder.data.type) {
-                    case ComponentType.ActionRow:
-                        componentBuilder.addActionRowComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.TextDisplay:
-                        componentBuilder.addTextDisplayComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.Section:
-                        componentBuilder.addSectionComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.MediaGallery:
-                        componentBuilder.addMediaGalleryComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.Separator:
-                        componentBuilder.addSeparatorComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.File:
-                        componentBuilder.addFileComponents(childComponentBuilder);
-                        break;
-                }
-            }
-            break;
-        case ComponentType.Section:
-            if(!component.components) return null;
-            componentBuilder = new Discord.SectionBuilder();
-            const accessory = getComponent(component.accessory);
-            if(accessory.data.type === ComponentType.Button) componentBuilder.setButtonAccessory(accessory);
-            else if(accessory.data.type === Discord.ComponentType.Thumbnail) componentBuilder.setThumbnailAccessory(accessory);
-
-            for(const childComponent of component.components)
-                componentBuilder.addTextDisplayComponents(getComponent(childComponent));
-            break;
         case ComponentType.Separator:
             componentBuilder = new Discord.SeparatorBuilder()
                 .setDivider(component.divider ?? true)
@@ -759,6 +715,74 @@ export function getComponent(key, ...placeholders) {
 }
 
 /**
+ * Get a top-level Components V2 builder from a language key.
+ * Unlike {@link getComponent}, this function does not extract from `components` arrays and supports
+ * the Container and ActionRow component types for use as top-level V2 message components.
+ * @param {Discord.AnyComponent} key - The language key representing a top-level V2 component.
+ * @param {...object} placeholders - The placeholders to replace in the language key.
+ * @returns {?ComponentBuilder}
+ */
+export function getComponentsV2(key, ...placeholders) {
+    if(!key) {
+        trackError('unhandled', 'messages', null, null, new Error('Could not get V2 component: No key specified'), null, logger);
+        return null;
+    }
+    if(util.types.isProxy(key)) key = key.valueOf();
+
+    if(!key.type) return null;
+    const component = addPh(key, ...placeholders);
+
+    switch(ComponentType[component.type]) {
+        case ComponentType.Container:
+            const containerBuilder = new Discord.ContainerBuilder();
+
+            if(component.spoiler) containerBuilder.setSpoiler(component.spoiler);
+            if(component.accent_color) containerBuilder.setAccentColor(Discord.resolveColor(component.accent_color));
+
+            for(const child of component.components) {
+                const childBuilder = getComponentsV2(child);
+                if(!childBuilder) continue;
+
+                switch(childBuilder.data.type) {
+                    case ComponentType.ActionRow:
+                        containerBuilder.addActionRowComponents(childBuilder);
+                        break;
+                    case ComponentType.TextDisplay:
+                        containerBuilder.addTextDisplayComponents(childBuilder);
+                        break;
+                    case ComponentType.Section:
+                        containerBuilder.addSectionComponents(childBuilder);
+                        break;
+                    case ComponentType.Separator:
+                        containerBuilder.addSeparatorComponents(childBuilder);
+                        break;
+                    case ComponentType.File:
+                        containerBuilder.addFileComponents(childBuilder);
+                        break;
+                    case ComponentType.MediaGallery:
+                        containerBuilder.addMediaGalleryComponents(childBuilder);
+                        break;
+                }
+            }
+            return containerBuilder;
+        case ComponentType.ActionRow:
+            return getActionRows(component)[0];
+        case ComponentType.Section:
+            const sectionBuilder = new Discord.SectionBuilder();
+
+            const accessory = getComponent(component.accessory);
+            if(accessory?.data.type === ComponentType.Button) sectionBuilder.setButtonAccessory(accessory);
+            else if(accessory?.data.type === Discord.ComponentType.Thumbnail) sectionBuilder.setThumbnailAccessory(accessory);
+
+            for(const childComponent of component.components)
+                sectionBuilder.addTextDisplayComponents(getComponent(childComponent));
+            return sectionBuilder;
+        default:
+            return getComponent(component);
+    }
+}
+
+/**
  * Get discord reply options from a language key.
  * @param {Discord.MessageReplyOptions|Discord.InteractionReplyOptions|Discord.MessageCreateOptions} key - The language key to get the reply options from.
  * @param {object} placeholders - The placeholders to replace in the language key.
@@ -786,7 +810,7 @@ export function getReplyOptions(key, ...placeholders) {
 
     if(key.components) {
         // For Components V2, return top-level components directly
-        if(isV2) options.components = key.components.map(component => getComponent(component, ...placeholders));
+        if(isV2) options.components = key.components.map(component => getComponentsV2(component, ...placeholders));
         else options.components = getActionRows(key, ...placeholders);
     }
 
