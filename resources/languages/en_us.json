@@ -2386,7 +2386,7 @@
                             "components": [
                                 {
                                     "type": "TextDisplay",
-                                    "content": "### 📬 New DM from %username% (Minecraft)"
+                                    "content": "### 📬 New DM from %username%"
                                 },
                                 {
                                     "type": "TextDisplay",
@@ -2394,7 +2394,7 @@
                                 },
                                 {
                                     "type": "TextDisplay",
-                                    "content": "-# Sent from Minecraft"
+                                    "content": "-# Sent from Minecraft (%ip%)"
                                 },
                                 {
                                     "type": "ActionRow",

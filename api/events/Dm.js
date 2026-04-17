@@ -116,6 +116,7 @@ export default class Dm extends WSEvent {
             msg = await discordUser.send(getReplyOptions(keys.api.plugin.success.dm, {
                 username: data.player,
                 message,
+                ip: server.displayIp,
             }));
         }
         catch(err) {

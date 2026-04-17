@@ -775,23 +775,18 @@ export function getReplyOptions(key, ...placeholders) {
     if(key.embeds) options.embeds = key.embeds.map(embed => getEmbed(embed, ...placeholders));
     if(key.color) options.color = Discord.resolveColor(options.color);
 
-    // Parse flags array from language key (e.g. ["IsComponentsV2", "Ephemeral"])
     let isV2 = false;
     if(Array.isArray(key.flags)) {
         const flagField = new Discord.MessageFlagsBitField();
-        for(const flag of key.flags) {
-            if(Discord.MessageFlags[flag] !== undefined) flagField.add(Discord.MessageFlags[flag]);
-        }
+        for(const flag of key.flags) flagField.add(Discord.MessageFlags[flag]);
         options.flags = flagField.bitfield;
 
         isV2 = flagField.has(Discord.MessageFlags.IsComponentsV2);
     }
 
-    // For Components V2, return top-level components directly
     if(key.components) {
-        if(isV2) options.components = key.components
-            .map(component => getComponent(component, ...placeholders))
-            .filter(component => component);
+        // For Components V2, return top-level components directly
+        if(isV2) options.components = key.components.map(component => getComponent(component, ...placeholders));
         else options.components = getActionRows(key, ...placeholders);
     }
 
