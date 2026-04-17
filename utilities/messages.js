@@ -651,7 +651,7 @@ export function getComponent(key, ...placeholders) {
                 .setMaxValues(component.max_values ?? 1);
             break;
         case Discord.ComponentType.Label:
-            if(!component.label || !component.description) return null;
+            if(!component.label) return null;
 
             componentBuilder = new Discord.LabelBuilder()
                 .setLabel(component.label)
