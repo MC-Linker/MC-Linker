@@ -680,6 +680,12 @@ export function getComponent(key, ...placeholders) {
                     break;
             }
             break;
+        case ComponentType.ActionRow:
+            if(!component.components) return null;
+            componentBuilder = new Discord.ActionRowBuilder();
+            for(const childComponent of component.components)
+                componentBuilder.addComponents(getComponent(childComponent));
+            break;
         case ComponentType.Container:
             if(!component.components) return null;
             componentBuilder = new Discord.ContainerBuilder()

@@ -5,11 +5,10 @@ import {
     cleanEmojis,
     findMemberByUsername,
     handleProtocolResponse,
-    MaxComponentsV2Chars,
     MaxMessageContentLength,
     UUIDRegex,
 } from '../../utilities/utils.js';
-import { addTranslatedResponses, getActionRows, getComponent, getReplyOptions } from '../../utilities/messages.js';
+import { addTranslatedResponses, getReplyOptions } from '../../utilities/messages.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 /**
@@ -107,30 +106,17 @@ export default class Dm extends WSEvent {
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
 
-        const options = getReplyOptions(keys.api.plugin.success.dm.header, { username: data.player });
-
-        // Char budget: total limit minus header title length (after placeholder substitution)
-        const titleLength = options.components[0].data.content.length;
-        let budget = MaxComponentsV2Chars - titleLength;
-
-        // Split message into TextDisplay containers, truncating with … if the budget is exhausted
-        for(let i = 0; i < data.message.length && budget > 0; i += MaxMessageContentLength) {
-            const chunk = data.message.slice(i, i + MaxMessageContentLength);
-
-            const overBudget = chunk.length > budget;
-            const content = overBudget ? chunk.slice(0, budget - 1) + '…' : chunk;
-
-            options.components.push(getComponent(keys.api.plugin.success.dm.message, { content }));
-            budget -= content.length;
-            if(overBudget) break;
-        }
-
-        // Append reply button as an action row
-        options.components.push(...getActionRows(keys.api.plugin.success.dm.reply_button));
+        // Truncate message to TextDisplay limit, appending … if needed
+        const message = data.message.length < MaxMessageContentLength
+            ? data.message
+            : data.message.slice(0, MaxMessageContentLength - 1) + '…';
 
         let msg;
         try {
-            msg = await discordUser.send(options);
+            msg = await discordUser.send(getReplyOptions(keys.api.plugin.success.dm, {
+                username: data.player,
+                message,
+            }));
         }
         catch(err) {
             logger.warn({ userId: discordUser.id }, 'Could not send DM (user may have DMs disabled)');

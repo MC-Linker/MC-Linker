@@ -2387,33 +2387,37 @@
                     }
                 },
                 "dm": {
-                    "header": {
-                        "flags": ["IsComponentsV2"],
-                        "components": [
-                            {
-                                "type": "TextDisplay",
-                                "content": "## 📬 New DM from %username% (Minecraft)"
-                            }
-                        ]
-                    },
-                    "message": {
-                        "components": [
-                            {
-                                "type": "TextDisplay",
-                                "content": "%content%"
-                            }
-                        ]
-                    },
-                    "reply_button": {
-                        "components": [
-                            {
-                                "type": "Button",
-                                "style": "Primary",
-                                "label": "Reply",
-                                "custom_id": "dm_reply"
-                            }
-                        ]
-                    },
+                    "flags": ["IsComponentsV2"],
+                    "components": [
+                        {
+                            "type": "Container",
+                            "components": [
+                                {
+                                    "type": "TextDisplay",
+                                    "content": "### 📬 New DM from %username% (Minecraft)"
+                                },
+                                {
+                                    "type": "TextDisplay",
+                                    "content": "%message%"
+                                },
+                                {
+                                    "type": "TextDisplay",
+                                    "content": "-# Sent from Minecraft"
+                                },
+                                {
+                                    "type": "ActionRow",
+                                    "components": [
+                                        {
+                                            "type": "Button",
+                                            "style": "Primary",
+                                            "label": "Reply",
+                                            "custom_id": "dm_reply"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
                     "reply_modal": {
                         "title": "Reply to %username%",
                         "custom_id": "dm_reply_modal",
