@@ -1,8 +1,15 @@
 import { ComponentType, RESTJSONErrorCodes } from 'discord.js';
 import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
-import { cleanEmojis, findMemberByUsername, handleProtocolResponse, UUIDRegex } from '../../utilities/utils.js';
-import { addTranslatedResponses, getReplyOptions } from '../../utilities/messages.js';
+import {
+    cleanEmojis,
+    findMemberByUsername,
+    handleProtocolResponse,
+    MaxComponentsV2Chars,
+    MaxMessageContentLength,
+    UUIDRegex,
+} from '../../utilities/utils.js';
+import { addTranslatedResponses, getActionRows, getComponent, getReplyOptions } from '../../utilities/messages.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 /**
@@ -100,11 +107,30 @@ export default class Dm extends WSEvent {
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
 
-        const placeholders = { username: data.player, message: data.message };
+        const options = getReplyOptions(keys.api.plugin.success.dm.header, { username: data.player });
+
+        // Char budget: total limit minus header title length (after placeholder substitution)
+        const titleLength = options.components[0].data.components[0].content.length;
+        let budget = MaxComponentsV2Chars - titleLength;
+
+        // Split message into TextDisplay containers, truncating with … if the budget is exhausted
+        for(let i = 0; i < data.message.length && budget > 0; i += MaxMessageContentLength) {
+            const chunk = data.message.slice(i, i + MaxMessageContentLength);
+
+            const overBudget = chunk.length > budget;
+            const content = overBudget ? chunk.slice(0, budget - 1) + '…' : chunk;
+
+            options.components.push(getComponent(keys.api.plugin.success.dm.message, { content }));
+            budget -= content.length;
+            if(overBudget) break;
+        }
+
+        // Append reply button as an action row
+        options.components.push(...getActionRows(keys.api.plugin.success.dm.reply_button));
 
         let msg;
         try {
-            msg = await discordUser.send(getReplyOptions(keys.api.plugin.success.dm, placeholders));
+            msg = await discordUser.send(options);
         }
         catch(err) {
             logger.warn({ userId: discordUser.id }, 'Could not send DM (user may have DMs disabled)');
@@ -119,7 +145,7 @@ export default class Dm extends WSEvent {
 
         collector.on('collect', async btnInteraction => {
             btnInteraction = addTranslatedResponses(btnInteraction);
-            await btnInteraction.showModalTl(keys.api.plugin.success.dm_reply_modal, { username: data.player });
+            await btnInteraction.showModalTl(keys.api.plugin.success.dm.reply_modal, { username: data.player });
 
             let modalInteraction;
             try {

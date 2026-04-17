@@ -12,6 +12,10 @@ export const MaxCommandChoiceLength = 100;
 export const CODE_BLOCK_OVERHEAD_ANSI = 12; // ```ansi\n\n```
 export const CODE_BLOCK_OVERHEAD_PLAIN = 8; // ```\n\n```
 
+export const MaxComponentsV2TopLevel = 10;
+export const MaxComponentsV2Nested = 30;
+export const MaxComponentsV2Chars = 4000;
+
 /** The size of each component in an action row (5 takes up the whole row) */
 export const ComponentSizeInActionRow = {
     [ComponentType.Button]: 1,

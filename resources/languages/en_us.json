@@ -2387,37 +2387,47 @@
                     }
                 },
                 "dm": {
-                    "embeds": [
-                        {
-                            "title": "New DM from %username%",
-                            "description": "%message%",
-                            "color": "%color_success%",
-                            "footer": {
-                                "text": "Sent from Minecraft"
+                    "header": {
+                        "flags": ["IsComponentsV2"],
+                        "components": [
+                            {
+                                "type": "TextDisplay",
+                                "content": "## 📬 New DM from %username% (Minecraft)"
                             }
-                        }
-                    ],
-                    "components": [
-                        {
-                            "type": "Button",
-                            "style": "Primary",
-                            "label": "Reply",
-                            "custom_id": "dm_reply"
-                        }
-                    ]
-                },
-                "dm_reply_modal": {
-                    "title": "Reply to %username%",
-                    "components": [
-                        {
-                            "type": "TextInput",
-                            "custom_id": "dm_reply_modal",
-                            "label": "Your Message",
-                            "style": "Paragraph",
-                            "required": true,
-                            "placeholder": "Type your message here..."
-                        }
-                    ]
+                        ]
+                    },
+                    "message": {
+                        "components": [
+                            {
+                                "type": "TextDisplay",
+                                "content": "%content%"
+                            }
+                        ]
+                    },
+                    "reply_button": {
+                        "components": [
+                            {
+                                "type": "Button",
+                                "style": "Primary",
+                                "label": "Reply",
+                                "custom_id": "dm_reply"
+                            }
+                        ]
+                    },
+                    "reply_modal": {
+                        "title": "Reply to %username%",
+                        "custom_id": "dm_reply_modal",
+                        "components": [
+                            {
+                                "type": "TextInput",
+                                "custom_id": "dm_reply_message",
+                                "label": "Your Message",
+                                "style": "Paragraph",
+                                "required": true,
+                                "placeholder": "Type your message here..."
+                            }
+                        ]
+                    }
                 }
             }
         },

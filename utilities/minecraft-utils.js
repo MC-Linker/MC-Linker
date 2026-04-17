@@ -4,6 +4,7 @@ import advancementData from '../resources/data/advancements.json' with { type: '
 import customStats from '../resources/data/stats_custom.json' with { type: 'json' };
 import { FilePath, ProtocolError } from '../structures/protocol/Protocol.js';
 import { handleProtocolResponse } from './protocol-utils.js';
+import { nbtBufferToObject, nbtStringToObject } from './nbt-utils.js';
 
 export const MinecraftDataVersion = '1.21.8';
 

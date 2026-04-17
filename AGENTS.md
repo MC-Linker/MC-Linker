@@ -294,6 +294,18 @@ logger bound to `features.components[this.id]`, then delegates to `run()`.
 **Translation System:** Use `interaction.replyTl(keys.path.to.key, placeholders)` for all user-facing messages.
 Translation keys are in `utilities/keys.js`, language files in `resources/languages/`.
 
+**Component Building:** Never instantiate discord.js builders (`ContainerBuilder`, `TextDisplayBuilder`,
+`ActionRowBuilder`, `ButtonBuilder`, etc.) directly. Instead, define component structures in the language files
+(`resources/languages/`) and use `getComponent()` / `getActionRows()` / `getReplyOptions()` from `utilities/messages.js`
+to build them.
+When dynamic content needs to be injected, use `%placeholder%` in the language key or call `getComponent()` on a
+sub-key to obtain a builder, then compose them programmatically.
+
+**Language File Conventions:**
+
+- Never specify `ActionRow` objects directly in language keys — `getActionRows()` wraps buttons/selects automatically.
+- Never write inline (single-line) JSON objects in language files; always expand every object onto its own lines.
+
 **Connection Editing:** Always use `connection.edit(data)` — it persists to MongoDB and broadcasts changes to all
 shards.
 
