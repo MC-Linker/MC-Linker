@@ -1706,7 +1706,7 @@
                         }
                     ]
                 },
-                "no_topic": {
+                "no_topic_supported": {
                     "embeds": [
                         {
                             "title": "No Topic Supported",
@@ -1714,7 +1714,7 @@
                         }
                     ]
                 },
-                "update_failed": {
+                "initial_update_failed": {
                     "embeds": [
                         {
                             "title": "Failed To Update Channel",

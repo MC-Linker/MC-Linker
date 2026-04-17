@@ -3,7 +3,7 @@ import keys from '../../utilities/keys.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import * as utils from '../../utilities/utils.js';
-import { ButtonStyle, GuildChannel, RateLimitError } from 'discord.js';
+import { ButtonStyle, ChannelType, GuildChannel, RateLimitError } from 'discord.js';
 import UpdateStatsChannel from '../../api/events/UpdateStatsChannel.js';
 
 export default class StatChannel extends Command {
@@ -35,7 +35,8 @@ export default class StatChannel extends Command {
             const updateTarget = args[4] ?? 'name';
 
             if(!channel.manageable) return interaction.editReplyTl(keys.commands.statchannel.errors.not_manageable);
-            if(updateTarget === 'topic' && !channel.topic) return interaction.editReplyTl(keys.commands.statchannel.errors.no_topic);
+            if(updateTarget === 'topic' && [ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildForum].includes(channel.type))
+                return interaction.editReplyTl(keys.commands.statchannel.errors.no_topic_supported);
 
             /** @type {StatsChannelData} */
             const statChannelData = {
@@ -54,7 +55,7 @@ export default class StatChannel extends Command {
                     // Channel rename is rate limited — schedule a deferred re-sync
                     UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, statChannelData, server.id, client);
                 }
-                else return interaction.editReplyTl(keys.commands.statchannel.errors.update_failed);
+                else return interaction.editReplyTl(keys.commands.statchannel.errors.initial_update_failed);
             }
 
             const resp = await server.protocol.addStatsChannel(statChannelData);
