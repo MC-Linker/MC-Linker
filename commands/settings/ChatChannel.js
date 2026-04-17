@@ -150,8 +150,8 @@ export default class ChatChannel extends AutocompleteCommand {
             const resp = await server.protocol.addChatChannel(chatChannelData);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook.delete();
 
-            // Bot is source of truth
-            await server.edit({ chatChannels: [...server.chatChannels, chatChannelData] });
+            // Bot is source of truth — replace existing entry with same id
+            await server.edit({ chatChannels: [...server.chatChannels.filter(c => c.id !== channel.id), chatChannelData] });
 
             return interaction.editReplyTl(keys.commands.chatchannel.success.add);
         }

@@ -75,9 +75,7 @@ export default class RoleSync extends AutocompleteCommand {
             if(direction !== 'to_minecraft' && !role.editable)
                 return interaction.editReplyTl(keys.commands.rolesync.errors.not_editable, { role });
 
-            if(server.syncedRoles?.some(r => r.id === role.id))
-                return interaction.editReplyTl(keys.commands.rolesync.errors.role_already_synced);
-            else if(server.syncedRoles?.some(r => r.name === name && r.isGroup === isGroup))
+            if(server.syncedRoles?.some(r => r.name === name && r.isGroup === isGroup && r.id !== role.id))
                 return interaction.editReplyTl(keys.commands.rolesync.errors.team_group_already_synced);
 
             await fetchMembersIfCacheDiffers(client, interaction.guild);
@@ -133,8 +131,8 @@ export default class RoleSync extends AutocompleteCommand {
                 }
             }
 
-            // Bot is source of truth
-            await server.edit({ syncedRoles: [...server.syncedRoles, syncedRoleData] });
+            // Bot is source of truth — replace existing entry with same id
+            await server.edit({ syncedRoles: [...server.syncedRoles.filter(r => r.id !== role.id), syncedRoleData] });
             return interaction.editReplyTl(keys.commands.rolesync.success.add);
         }
 

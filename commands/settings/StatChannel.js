@@ -60,35 +60,27 @@ export default class StatChannel extends Command {
             const resp = await server.protocol.addStatsChannel(statChannelData);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            // Bot is source of truth
-            await server.edit({ statChannels: [...server.statChannels, statChannelData] });
+            // Bot is source of truth — replace existing entry with same id
+            await server.edit({ statChannels: [...server.statChannels.filter(c => c.id !== channel.id), statChannelData] });
 
             await interaction.editReplyTl(keys.commands.statchannel.success.add);
         }
         else if(subcommand === 'remove') {
             const channel = args[1];
 
-            const statChannels = server.statChannels;
-            const index = statChannels.findIndex(c => c.id === channel.id);
-            if(index === -1) {
-                return interaction.editReplyTl(keys.common.channels.channel_not_added);
-            }
+            const statChannel = server.statChannels.find(c => c.id === channel.id);
+            if(!statChannel) return interaction.editReplyTl(keys.common.channels.channel_not_added);
 
-            const response = await server.protocol.removeStatsChannel(statChannels[index]);
+            const response = await server.protocol.removeStatsChannel(statChannel);
             if(!await utils.handleProtocolResponse(response, server.protocol, interaction)) return;
 
-            statChannels.splice(index, 1);
-            await server.edit({ statChannels: statChannels });
+            await server.edit({ statChannels: server.statChannels.filter(c => c.id !== channel.id) });
 
             await interaction.editReplyTl(keys.commands.statchannel.success.remove);
         }
         else if(subcommand === 'list') {
             const statChannels = server.statChannels;
-
-            if(!statChannels?.length) {
-                await interaction.editReplyTl(keys.common.channels.no_channels);
-                return;
-            }
+            if(!statChannels.length) return await interaction.editReplyTl(keys.common.channels.no_channels);
 
             /** @type {PaginationPages} */
             const pages = {};

@@ -2092,14 +2092,6 @@
                         }
                     ]
                 },
-                "role_already_synced": {
-                    "embeds": [
-                        {
-                            "title": "Role Already Synced",
-                            "description": "The specified role is already synced."
-                        }
-                    ]
-                },
                 "team_group_already_synced": {
                     "embeds": [
                         {
