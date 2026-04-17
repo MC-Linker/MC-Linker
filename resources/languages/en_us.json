@@ -3327,7 +3327,7 @@
                         {
                             "type": "String",
                             "name": "offline",
-                            "description": "Template when server is offline. Supports %count%, %ip%, %time%, %version% and defaults to the online template if omitted.",
+                            "description": "Template when server is offline. Supports %count%, %ip%, %time%, %version%, default online template.",
                             "required": false
                         },
                         {

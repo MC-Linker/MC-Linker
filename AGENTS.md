@@ -303,6 +303,11 @@ Error codes are defined in `Protocol.ProtocolError`.
 **Cross-Shard Sync:** Connections are cached per-shard. Edits broadcast via `client.broadcastEval()`. Socket
 objects are not serializable and must be excluded from broadcasts.
 
+## File Operations
+
+**Renaming files:** Always use `git mv <old> <new>` to rename or move files. Never use OS-level commands (`Rename-Item`,
+`mv`, etc.) directly, as they cause git to see a delete + untracked add instead of a rename.
+
 ## Code Style & Linting
 
 Use JSDoc to describe all classes, methods, and to declare types. This is crucial for maintainability and helps with
