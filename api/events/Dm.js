@@ -110,7 +110,7 @@ export default class Dm extends WSEvent {
         const options = getReplyOptions(keys.api.plugin.success.dm.header, { username: data.player });
 
         // Char budget: total limit minus header title length (after placeholder substitution)
-        const titleLength = options.components[0].content.length;
+        const titleLength = options.components[0].data.content.length;
         let budget = MaxComponentsV2Chars - titleLength;
 
         // Split message into TextDisplay containers, truncating with … if the budget is exhausted
