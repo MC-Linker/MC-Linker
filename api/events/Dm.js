@@ -113,7 +113,7 @@ export default class Dm extends WSEvent {
 
         let msg;
         try {
-            msg = await discordUser.send(getReplyOptions(keys.api.plugin.success.dm, {
+            msg = await discordUser.send(getReplyOptions(keys.api.plugin.success.dm.message, {
                 username: data.player,
                 message,
                 ip: server.displayIp,
