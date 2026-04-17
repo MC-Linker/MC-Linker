@@ -35,7 +35,7 @@ export default class StatChannel extends Command {
             const updateTarget = args[4] ?? 'name';
 
             if(!channel.manageable) return interaction.editReplyTl(keys.commands.statchannel.errors.not_manageable);
-            if(updateTarget === 'topic' && [ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildForum].includes(channel.type))
+            if(updateTarget === 'topic' && ![ChannelType.GuildText, ChannelType.GuildAnnouncement, ChannelType.GuildForum].includes(channel.type))
                 return interaction.editReplyTl(keys.commands.statchannel.errors.no_topic_supported);
 
             /** @type {StatsChannelData} */
