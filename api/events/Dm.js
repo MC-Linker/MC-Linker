@@ -32,7 +32,9 @@ export default class Dm extends WSEvent {
      * @returns {boolean}
      */
     static isLookupMiss(err) {
-        return err?.code === RESTJSONErrorCodes.UnknownUser || err?.code === RESTJSONErrorCodes.InvalidFormBodyOrContentType;
+        return err?.code === RESTJSONErrorCodes.UnknownUser
+            || err?.code === RESTJSONErrorCodes.UnknownMember
+            || err?.code === RESTJSONErrorCodes.InvalidFormBodyOrContentType;
     }
 
     /**
@@ -93,9 +95,10 @@ export default class Dm extends WSEvent {
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
 
-        let discordUser;
+        let member;
         try {
-            discordUser = await client.users.fetch(discordId);
+            const guild = await client.guilds.fetch(server.id);
+            member = await guild.members.fetch(discordId);
         }
         catch(err) {
             if(Dm.isLookupMiss(err)) return { status: 'error', error: ProtocolError.NOT_FOUND };
@@ -113,7 +116,7 @@ export default class Dm extends WSEvent {
 
         let msg;
         try {
-            msg = await discordUser.send(getReplyOptions(keys.api.plugin.success.dm.message, {
+            msg = await member.send(getReplyOptions(keys.api.plugin.success.dm.message, {
                 username: data.player,
                 message,
                 ip: server.displayIp,
@@ -121,13 +124,13 @@ export default class Dm extends WSEvent {
             }));
         }
         catch(err) {
-            logger.warn({ userId: discordUser.id }, 'Could not send DM (user may have DMs disabled)');
+            logger.warn({ userId: member.id }, 'Could not send DM (user may have DMs disabled)');
             return { status: 'error', error: ProtocolError.DM_CLOSED };
         }
 
         // Collector for replies to the DM message
         const collector = msg.channel.createMessageCollector({
-            filter: m => m.reference?.messageId === msg.id && m.author.id === discordUser.id,
+            filter: m => m.reference?.messageId === msg.id && m.author.id === member.id,
             time: DefaultCollectorTimeout,
         });
 
