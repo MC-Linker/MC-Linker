@@ -3,6 +3,7 @@ import { getEmbed } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Discord from 'discord.js';
+import { DefaultCollectorTimeout } from '../../utilities/utils.js';
 import MCLinkerAPI from '../../api/MCLinkerAPI.js';
 
 export default class Connect extends Command {
@@ -116,12 +117,12 @@ export default class Connect extends Command {
 
             const roleCollector = logChooserMsg.createMessageComponentCollector({
                 componentType: Discord.ComponentType.RoleSelect,
-                time: 180_000,
+                time: DefaultCollectorTimeout,
             });
 
             const methodCollector = logChooserMsg.createMessageComponentCollector({
                 componentType: Discord.ComponentType.StringSelect,
-                time: 180_000,
+                time: DefaultCollectorTimeout,
             });
 
             roleCollector.on('collect', async menu => {

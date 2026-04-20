@@ -12,7 +12,7 @@ import Discord, {
     InteractionType,
     MessageFlags,
 } from 'discord.js';
-import { disableComponents, generateDefaultInvite } from '../../../utilities/utils.js';
+import { DefaultCollectorTimeout, disableComponents, generateDefaultInvite } from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../analytics/AnalyticsCollector.js';
@@ -107,13 +107,13 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         ];
 
         const wizard = new Wizard(this.client, interaction, wizardPages, {
-            timeout: 60_000 * 14, // 15 minutes is max interaction timeout
+            timeout: DefaultCollectorTimeout,
         });
 
         const message = await wizard.start();
 
         const collector = message.createMessageComponentCollector({
-            time: 60_000 * 14,
+            time: DefaultCollectorTimeout,
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
         });
@@ -154,7 +154,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         const message = await interaction.editReply(mainMessage);
 
         const buttonCollector = message.createMessageComponentCollector({
-            time: 60_000 * 14,
+            time: DefaultCollectorTimeout,
             componentType: ComponentType.Button,
         });
         buttonCollector.on('collect', async btnInteraction => {
@@ -202,7 +202,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         });
         buttonCollector.on('end', () => interaction.editReply({ components: disableComponents(mainMessage.components) }));
         const modalCollector = new InteractionCollector(this.client, {
-            time: 60_000 * 14,
+            time: DefaultCollectorTimeout,
             interactionType: InteractionType.ModalSubmit,
             message,
         });

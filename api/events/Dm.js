@@ -1,10 +1,10 @@
-import { ComponentType, RESTJSONErrorCodes } from 'discord.js';
+import { RESTJSONErrorCodes } from 'discord.js';
 import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
 import {
     cleanEmojis,
+    DefaultCollectorTimeout,
     findMemberByUsername,
-    handleProtocolResponse,
     MaxMessageContentLength,
     UUIDRegex,
 } from '../../utilities/utils.js';
@@ -117,6 +117,7 @@ export default class Dm extends WSEvent {
                 username: data.player,
                 message,
                 ip: server.displayIp,
+                footer: keys.api.plugin.success.dm.footer,
             }));
         }
         catch(err) {
@@ -124,45 +125,30 @@ export default class Dm extends WSEvent {
             return { status: 'error', error: ProtocolError.DM_CLOSED };
         }
 
-        // Collector for the Reply button
-        const collector = msg.createMessageComponentCollector({
-            componentType: ComponentType.Button,
-            filter: i => i.customId === 'dm_reply' && i.user.id === discordUser.id,
+        // Collector for replies to the DM message
+        const collector = msg.channel.createMessageCollector({
+            filter: m => m.reference?.messageId === msg.id && m.author.id === discordUser.id,
+            time: DefaultCollectorTimeout,
         });
 
-        collector.on('collect', async btnInteraction => {
-            btnInteraction = addTranslatedResponses(btnInteraction);
-            await btnInteraction.showModalTl(keys.api.plugin.success.dm.reply_modal, { username: data.player });
-
-            let modalInteraction;
-            try {
-                modalInteraction = await btnInteraction.awaitModalSubmit({
-                    filter: i => i.customId === 'dm_reply_modal' && i.user.id === btnInteraction.user.id,
-                    time: 5 * 60 * 1000,
-                });
-            }
-            catch {
-                return; // User dismissed the modal
-            }
-
-            modalInteraction = addTranslatedResponses(modalInteraction);
-            await modalInteraction.deferReply({ ephemeral: true });
+        msg = addTranslatedResponses(msg);
+        collector.on('collect', async m => {
+            const replyMessage = cleanEmojis(m.content);
+            if(!replyMessage) return;
 
             const currentServer = client.serverConnections.cache.get(data.serverId ?? server.id);
-            if(!currentServer) {
-                await modalInteraction.editReplyTl(keys.api.plugin.errors.dm_server_not_connected);
-                return;
-            }
+            if(!currentServer) return await msg.sendTl(keys.api.plugin.errors.dm_server_not_connected);
 
-            const replyMessage = cleanEmojis(modalInteraction.fields.getTextInputValue('dm_reply_message'));
-            const resp = await currentServer.protocol.chatPrivate(replyMessage, modalInteraction.user.displayName, data.player);
-            if(!await handleProtocolResponse(resp, currentServer.protocol, modalInteraction, {
-                [ProtocolError.PLAYER_NOT_ONLINE]: keys.commands.message.warnings.player_not_online,
-            }, { username: data.player })) return;
+            const resp = await currentServer.protocol.chatPrivate(replyMessage, m.author.displayName, data.player);
+            if(resp?.error === ProtocolError.PLAYER_NOT_ONLINE) return await msg.sendTl(keys.commands.message.warnings.player_not_online, { username: data.player });
+        });
 
-            await modalInteraction.editReplyTl(keys.commands.message.success, {
+        collector.on('end', async () => {
+            await msg.editTl(keys.api.plugin.success.dm.message, {
                 username: data.player,
-                message: replyMessage,
+                message,
+                ip: server.displayIp,
+                footer: keys.api.plugin.success.dm.footer_expired,
             });
         });
 

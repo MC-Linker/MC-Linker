@@ -26,3 +26,6 @@ export const ComponentSizeInActionRow = {
     [ComponentType.MentionableSelect]: 5,
     [ComponentType.TextInput]: 5,
 };
+
+/** Default timeout for message component / message collectors: 10 minutes */
+export const DefaultCollectorTimeout = 10 * 60 * 1000;

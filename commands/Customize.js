@@ -2,7 +2,7 @@ import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBits } from 'discord.js';
 import { addTranslatedResponses, getComponent, getReplyOptions } from '../utilities/messages.js';
-import { disableComponents } from '../utilities/utils.js';
+import { DefaultCollectorTimeout, disableComponents } from '../utilities/utils.js';
 import CustomBotConnectionManager from '../structures/connections/managers/CustomBotConnectionManager.js';
 
 export default class Customize extends Command {
@@ -45,7 +45,7 @@ export default class Customize extends Command {
             const message = await interaction.followUp(messageOptions);
 
             const buttonCollector = message.createMessageComponentCollector({
-                time: 60_000 * 14,
+                time: DefaultCollectorTimeout,
                 componentType: ComponentType.Button,
             });
             buttonCollector.on('collect', async btnInteraction => {
@@ -58,7 +58,7 @@ export default class Customize extends Command {
             buttonCollector.on('end', () => message.edit({ components: disableComponents(message.components) }));
 
             const modalCollector = new InteractionCollector(client, {
-                time: 60_000 * 14,
+                time: DefaultCollectorTimeout,
                 interactionType: InteractionType.ModalSubmit,
                 message,
             });

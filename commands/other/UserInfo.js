@@ -4,6 +4,7 @@ import { FilePath } from '../../structures/protocol/Protocol.js';
 import * as utils from '../../utilities/utils.js';
 import {
     codeBlockFromCommandResponse,
+    DefaultCollectorTimeout,
     formatDuration,
     getMinecraftAvatarURL,
     getMinecraftData,
@@ -212,7 +213,7 @@ export default class UserInfo extends Command {
         const message = await pagination.start();
         const collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: pagination.options.timeout ?? 120_000,
+            time: pagination.options.timeout ?? DefaultCollectorTimeout,
         });
 
         ['ban', 'unban', 'kick', 'op', 'deop', 'whitelist', 'unwhitelist']

@@ -2,7 +2,12 @@ import Discord, { ButtonStyle, PermissionFlagsBits } from 'discord.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
-import { canSendMessages, MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../../utilities/utils.js';
+import {
+    canSendMessages,
+    DefaultCollectorTimeout,
+    MaxAutoCompleteChoices,
+    MaxCommandChoiceLength,
+} from '../../utilities/utils.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import { getChatWebhookCreationOptions } from '../../api/events/chat-handlers/ChatConstants.js';
@@ -118,7 +123,7 @@ export default class ChatChannel extends AutocompleteCommand {
             try {
                 menu = await logChooserMsg.awaitMessageComponent({
                     componentType: Discord.ComponentType.StringSelect,
-                    time: 180_000,
+                    time: DefaultCollectorTimeout,
                     filter: m => m.user.id === interaction.user.id && m.customId === 'log',
                 });
             }

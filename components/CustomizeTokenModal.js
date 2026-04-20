@@ -4,7 +4,7 @@ import Discord, { AttachmentBuilder, OAuth2Scopes, PermissionsBitField, Routes }
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import Wizard from '../structures/helpers/Wizard.js';
 import { addTranslatedResponses, getReplyOptions } from '../utilities/messages.js';
-import { execAsync } from '../utilities/utils.js';
+import { DefaultCollectorTimeout, execAsync } from '../utilities/utils.js';
 
 export default class CustomizeTokenModal extends Component {
 
@@ -109,12 +109,12 @@ export default class CustomizeTokenModal extends Component {
             keys.custom_bot.create.success.port,
             keys.custom_bot.create.success.finish,
         ].map(key => getReplyOptions(key, { port: botPort, invite })), {
-            timeout: 60_000 * 14, // 15 minutes is max interaction timeout
+            timeout: DefaultCollectorTimeout,
         });
         const message = await wizard.start();
 
         const collector = message.createMessageComponentCollector({
-            time: 60_000 * 14,
+            time: DefaultCollectorTimeout,
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_manage_bot',
             max: 1,

@@ -12,6 +12,7 @@ import { createActionRows, getComponent } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import {
     ComponentSizeInActionRow,
+    DefaultCollectorTimeout,
     disableComponents,
     flattenActionRows,
     MaxActionRows,
@@ -24,9 +25,6 @@ import { trackError } from '../analytics/AnalyticsCollector.js';
 const logger = rootLogger.child({ feature: features.structures.helpers.pagination });
 
 export default class Pagination {
-
-    // 3 minutes (token valid for 15 minutes)
-    static DEFAULT_TIMEOUT = 180_000;
 
     static NAVIGATION_BUTTON_IDS = {
         NEXT: 'pagination_next',
@@ -41,7 +39,7 @@ export default class Pagination {
      * @property {ButtonBuilder} [exitButton] - The button to use for exiting the nested pagination
      * @property {boolean} [showSelectedButton=true] - Whether the currently selected button should be shown
      * @property {boolean} [showStartPageOnce=false] - Whether the starting page should only be shown once
-     * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
+     * @property {number} [timeout] - The timeout for the buttons of the pagination in ms
      * @property {Pagination} [parent] - The parent of this pagination (only used for nested paginations)
      * @property {ButtonStyle} [highlightSelectedButton] - The style to use for the selected button
      */
@@ -146,7 +144,7 @@ export default class Pagination {
             nextButton: getComponent(keys.api.component.success.next_button, { id: Pagination.NAVIGATION_BUTTON_IDS.NEXT }),
             backButton: getComponent(keys.api.component.success.back_button, { id: Pagination.NAVIGATION_BUTTON_IDS.BACK }),
             exitButton: getComponent(keys.api.component.success.exit_button, { id: Pagination.NAVIGATION_BUTTON_IDS.EXIT }),
-            timeout: Pagination.DEFAULT_TIMEOUT,
+            timeout: DefaultCollectorTimeout,
             showSelectedButton: true,
             highlightSelectedButton: ButtonStyle.Primary,
             showStartPageOnce: false,
@@ -233,7 +231,7 @@ export default class Pagination {
     _createCollector(message) {
         this.collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: this.options.timeout ?? Pagination.DEFAULT_TIMEOUT,
+            time: this.options.timeout ?? DefaultCollectorTimeout,
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', async (_, reason) => {

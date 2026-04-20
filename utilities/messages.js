@@ -293,7 +293,6 @@ export const ph = {
  * @returns {K}
  */
 export function addPh(key, ...placeholders) {
-    if(util.types.isProxy(key)) key = key.valueOf();
     placeholders = Object.assign({}, ph.emojisAndColors(), ...placeholders);
 
     if(typeof key === 'string') {
@@ -507,8 +506,6 @@ export function getActionRows(key, ...placeholders) {
         trackError('unhandled', 'messages', null, null, new Error('Could not get action rows: No key specified'), null, logger);
         return [];
     }
-    if(util.types.isProxy(key)) key = key.valueOf();
-
     const allComponents = key.components
         ?.map(component => getComponent(component, ...placeholders))
         ?.filter(component => component);
@@ -529,8 +526,6 @@ export function getComponent(key, ...placeholders) {
         trackError('unhandled', 'messages', null, null, new Error('Could not get component: No key specified'), null, logger);
         return null;
     }
-    if(util.types.isProxy(key)) key = key.valueOf();
-
     /** @type {Discord.AnyComponent} */
     let component = key;
 
@@ -727,8 +722,6 @@ export function getComponentsV2(key, ...placeholders) {
         trackError('unhandled', 'messages', null, null, new Error('Could not get V2 component: No key specified'), null, logger);
         return null;
     }
-    if(util.types.isProxy(key)) key = key.valueOf();
-
     if(!key.type) return null;
     const component = addPh(key, ...placeholders);
 
@@ -827,8 +820,6 @@ export function getCommand(key) {
         trackError('unhandled', 'messages', null, null, new Error('Could not get command: No key specified'), null, logger);
         return null;
     }
-    if(util.types.isProxy(key)) key = key.valueOf();
-
     if(!key.name || !key.type) {
         trackError('unhandled', 'messages', null, null, new Error('Could not get command: No name or type specified'), null, logger);
         return null;
@@ -891,8 +882,6 @@ export function getModal(key, ...placeholders) {
         trackError('unhandled', 'messages', null, null, new Error('Could not get modal: No key specified'), null, logger);
         return null;
     }
-    if(util.types.isProxy(key)) key = key.valueOf();
-
     key = addPh(key, ...placeholders);
 
     const modalBuilder = new Discord.ModalBuilder()
@@ -1102,7 +1091,7 @@ export async function fetchCommand(commandManager, name) {
  * @returns {EmbedBuilder|EmbedBuilder[]} - The same embed(s) with the footer set.
  */
 export function setCachedFooter(embeds) {
-    const cachedText = keys.api.plugin.warnings.cached_result.valueOf();
+    const cachedText = keys.api.plugin.warnings.cached_result;
     const applyFooter = embed => {
         const existing = embed.data.footer?.text;
         const text = existing ? `${cachedText} | ${existing}` : cachedText;

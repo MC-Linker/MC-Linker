@@ -2395,40 +2395,14 @@
                                     },
                                     {
                                         "type": "TextDisplay",
-                                        "content": "-# Sent from Minecraft (%ip%)"
-                                    },
-                                    {
-                                        "type": "ActionRow",
-                                        "components": [
-                                            {
-                                                "type": "Button",
-                                                "style": "Primary",
-                                                "label": "Reply",
-                                                "custom_id": "dm_reply"
-                                            }
-                                        ]
+                                        "content": "-# %footer%"
                                     }
                                 ]
                             }
                         ]
                     },
-                    "reply_modal": {
-                        "title": "Reply to %username%",
-                        "custom_id": "dm_reply_modal",
-                        "components": [
-                            {
-                                "type": "Label",
-                                "label": "Your Message",
-                                "component": {
-                                    "type": "TextInput",
-                                    "custom_id": "dm_reply_message",
-                                    "style": "Paragraph",
-                                    "reqFuired": true,
-                                    "placeholder": "Type your message here..."
-                                }
-                            }
-                        ]
-                    }
+                    "footer": "Sent from Minecraft (%ip%) · Reply to this message to send a reply",
+                    "footer_expired": "Sent from Minecraft (%ip%) · Reply window closed"
                 }
             }
         },
