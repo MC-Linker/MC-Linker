@@ -118,28 +118,58 @@ class Logger {
         return objOrMsg !== null && typeof objOrMsg === 'object' && !(objOrMsg instanceof Error) ? objOrMsg : {};
     }
 
+    /**
+     * Logs a trace-level message. Only emitted when an active debug filter matches.
+     * @param {DebugFilter|string|Error} objOrMsg - Structured fields or the message string/error.
+     * @param {string} [msg] - Message string when `objOrMsg` is a structured object.
+     */
     trace(objOrMsg, msg) {
         if(Logger._debugFilters.size === 0) return;
         if(Logger._shouldPassDebug(Object.assign({}, this._filters, this._callFilters(objOrMsg))))
             this._pino.trace(objOrMsg, msg);
     }
 
+    /**
+     * Logs a debug-level message. Only emitted when an active debug filter matches.
+     * @param {DebugFilter|string|Error} objOrMsg - Structured fields or the message string/error.
+     * @param {string} [msg] - Message string when `objOrMsg` is a structured object.
+     */
     debug(objOrMsg, msg) {
         if(Logger._debugFilters.size === 0) return;
         if(Logger._shouldPassDebug(Object.assign({}, this._filters, this._callFilters(objOrMsg))))
             this._pino.debug(objOrMsg, msg);
     }
 
+    /**
+     * Logs an info-level message. Always emitted.
+     * @param {DebugFilter|string|Error} objOrMsg - Structured fields or the message string/error.
+     * @param {string} [msg] - Message string when `objOrMsg` is a structured object.
+     */
     info(objOrMsg, msg) { this._pino.info(objOrMsg, msg); }
 
+    /**
+     * Logs a warn-level message. Always emitted.
+     * @param {DebugFilter|string|Error} objOrMsg - Structured fields or the message string/error.
+     * @param {string} [msg] - Message string when `objOrMsg` is a structured object.
+     */
     warn(objOrMsg, msg) { this._pino.warn(objOrMsg, msg); }
 
     // -------------------------------------------------------------------------
     // Debug filter helpers (static — operate on the shared filter map)
     // -------------------------------------------------------------------------
 
+    /**
+     * Logs an error-level message. Always emitted.
+     * @param {DebugFilter|string|Error} objOrMsg - Structured fields or the message string/error.
+     * @param {string} [msg] - Message string when `objOrMsg` is a structured object.
+     */
     error(objOrMsg, msg) { this._pino.error(objOrMsg, msg); }
 
+    /**
+     * Logs a fatal-level message. Always emitted.
+     * @param {DebugFilter|string|Error} objOrMsg - Structured fields or the message string/error.
+     * @param {string} [msg] - Message string when `objOrMsg` is a structured object.
+     */
     fatal(objOrMsg, msg) { this._pino.fatal(objOrMsg, msg); }
 
     /**
