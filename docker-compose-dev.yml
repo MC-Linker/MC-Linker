@@ -44,6 +44,7 @@ services:
       - NUXT_DATABASE_URL=${DATABASE_URL}
       - NUXT_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
       - NUXT_SESSION_SECRET=${DASHBOARD_SESSION_SECRET}
+      - NUXT_LOGS_DIR=/usr/src/app/logs
     volumes:
       - type: bind
         source: ./logs
