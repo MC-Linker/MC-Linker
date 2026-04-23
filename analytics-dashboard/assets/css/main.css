@@ -354,12 +354,21 @@ tr:hover td {
 
 /* Sidebar (supplement existing .sidebar) */
 .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 0 20px 20px;
     font-size: 16px;
     font-weight: 700;
     color: var(--text);
     border-bottom: 1px solid var(--border);
     margin-bottom: 12px;
+}
+
+.sidebar-logo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
 }
 
 .sidebar-section {

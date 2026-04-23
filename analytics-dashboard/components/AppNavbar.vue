@@ -1,6 +1,9 @@
 <template>
   <nav class="sidebar">
-    <div class="sidebar-brand">MC-Linker Analytics</div>
+    <div class="sidebar-brand">
+      <img alt="MC-Linker" class="sidebar-logo" src="~/assets/logo.svg">
+      MC-Linker Analytics
+    </div>
 
     <div class="sidebar-section">
       <label class="sidebar-label">Database</label>
