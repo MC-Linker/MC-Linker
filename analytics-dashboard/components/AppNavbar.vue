@@ -1,7 +1,7 @@
 <template>
   <nav class="sidebar">
     <div class="sidebar-brand">
-      <img alt="MC-Linker" class="sidebar-logo" src="~/assets/logo.svg">
+      <img :src="logoSrc" alt="MC-Linker" class="sidebar-logo">
       MC-Linker Analytics
     </div>
 
@@ -49,6 +49,8 @@
 </template>
 
 <script lang="ts" setup>
+import logoSrc from '~/assets/logo.svg';
+
 const { data: dbData } = await useFetch('/api/databases');
 const databases = computed(() => dbData.value?.databases ?? []);
 
