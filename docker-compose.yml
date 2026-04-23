@@ -61,10 +61,15 @@ services:
       - NUXT_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
       - NUXT_SESSION_SECRET=${DASHBOARD_SESSION_SECRET}
       - NUXT_LOGS_DIR=/usr/src/app/logs
+      - NUXT_LOG_FEATURES_PATH=/usr/src/app/logFeatures.json
     volumes:
       - type: bind
         source: ./logs
         target: /usr/src/app/logs
+        read_only: true
+      - type: bind
+        source: ./resources/logFeatures.json
+        target: /usr/src/app/logFeatures.json
         read_only: true
     networks:
       - mongo-network

@@ -942,6 +942,38 @@ code {
     color: #f9a8d4;
 }
 
+.level-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-top: 2px;
+}
+
+.level-checkbox {
+    cursor: pointer;
+}
+
+.level-checkbox .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.level-checkbox .badge {
+    opacity: 0.3;
+    transition: opacity 0.15s;
+}
+
+.level-checkbox.level-active .badge {
+    opacity: 1;
+}
+
 .log-footer-actions {
     margin-top: 10px;
     display: flex;

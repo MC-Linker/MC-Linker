@@ -24,13 +24,26 @@
         </label>
 
         <label class="form-group">
-          <span>Levels (CSV)</span>
-          <input v-model="levelsText" class="form-control" placeholder="error,warn,info">
+          <span>Levels</span>
+          <div class="level-checkboxes">
+            <label
+                v-for="lvl in LOG_LEVELS"
+                :key="lvl"
+                :class="['level-checkbox', { 'level-active': selectedLevels.includes(lvl) }]"
+            >
+              <input v-model="selectedLevels" :value="lvl" class="sr-only" type="checkbox">
+              <span :class="['badge', `badge-${lvl}`]">{{ lvl }}</span>
+            </label>
+          </div>
         </label>
 
         <label class="form-group">
           <span>Feature Prefix</span>
-          <input v-model="feature" class="form-control" placeholder="api.events">
+          <input v-model="feature" autocomplete="off" class="form-control" list="log-feature-list"
+                 placeholder="api.events">
+          <datalist id="log-feature-list">
+            <option v-for="f in featureOptions" :key="f" :value="f"/>
+          </datalist>
         </label>
 
         <label class="form-group">
@@ -134,10 +147,13 @@ interface LogEntryView {
   data: LogData;
 }
 
+const LOG_LEVELS = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'] as const;
+
 const files = ref<LogFileItem[]>([]);
 const selectedFile = ref('');
-const levelsText = ref('');
+const selectedLevels = ref<string[]>([]);
 const feature = ref('');
+const featureOptions = ref<string[]>([]);
 const guildId = ref('');
 const userId = ref('');
 const shardId = ref('');
@@ -186,7 +202,7 @@ async function loadFiles() {
 
 function filterParams() {
   return {
-    ...(levelsText.value.trim() ? { level: levelsText.value.trim() } : {}),
+    ...(selectedLevels.value.length > 0 ? { level: selectedLevels.value.join(',') } : {}),
     ...(feature.value.trim() ? { feature: feature.value.trim() } : {}),
     ...(guildId.value.trim() ? { guildId: guildId.value.trim() } : {}),
     ...(userId.value.trim() ? { userId: userId.value.trim() } : {}),
@@ -217,8 +233,10 @@ async function reload() {
 
     entries.value = result.lines.map(toEntry);
     expanded.value = new Set<string>();
-    await nextTick();
-    scrollToBottom();
+    if (live.value) {
+      await nextTick();
+      scrollToBottom();
+    }
   }
   catch (err: any) {
     errorMessage.value = err?.data?.message ?? err?.message ?? 'Failed to load logs';
@@ -374,15 +392,25 @@ watch(selectedFile, async () => {
   await reload();
 });
 
-watch([levelsText, feature, guildId, userId, shardId, search], () => {
+watch([selectedLevels, feature, guildId, userId, shardId, search], () => {
   if (live.value) {
     startLive();
   }
 });
 
+async function loadFeatures() {
+  try {
+    const result = await $fetch<{ features: string[] }>('/api/logs/features');
+    featureOptions.value = result.features;
+  }
+  catch {
+    // non-critical
+  }
+}
+
 onMounted(async () => {
   await loadFiles();
-  await reload();
+  await Promise.all([reload(), loadFeatures()]);
 
   window.addEventListener('keydown', onKeyDown);
 });

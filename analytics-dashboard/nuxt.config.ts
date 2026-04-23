@@ -7,6 +7,7 @@ export default defineNuxtConfig({
         dashboardPassword: '',
         sessionSecret: '',
         logsDir: './logs',
+        logFeaturesPath: './logFeatures.json',
     },
     app: {
         head: {

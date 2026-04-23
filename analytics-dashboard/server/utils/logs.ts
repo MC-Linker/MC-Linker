@@ -117,7 +117,18 @@ export async function listLogFiles(logsDir: string): Promise<Array<{ file: strin
         });
     }
 
-    result.sort((a, b) => b.file.localeCompare(a.file));
+    function parseSortKey(file: string): [string, number] {
+        const match = file.match(/^(\d{4}-\d{2}-\d{2})(?:-(\d+))?\.log$/);
+        if (!match) return ['', 0];
+        return [match[1], match[2] !== undefined ? parseInt(match[2], 10) : 0];
+    }
+
+    result.sort((a, b) => {
+        const [dateA, numA] = parseSortKey(a.file);
+        const [dateB, numB] = parseSortKey(b.file);
+        if (dateA !== dateB) return dateB.localeCompare(dateA);
+        return numB - numA;
+    });
 
     return result;
 }
