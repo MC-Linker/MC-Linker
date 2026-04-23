@@ -362,7 +362,7 @@ export async function replyTl(interaction, key, ...placeholders) {
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Promise<?Message>}
  */
-export async function editReplyTl(interaction, key, ...placeholders) {
+export function editReplyTl(interaction, key, ...placeholders) {
     const options = resolveKey(interaction, key, placeholders);
     if(!options) return null;
     return interaction.editReply(options);
@@ -375,10 +375,10 @@ export async function editReplyTl(interaction, key, ...placeholders) {
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Promise<?Message>}
  */
-export async function followUpTl(interaction, key, ...placeholders) {
+export function followUpTl(interaction, key, ...placeholders) {
     const options = resolveKey(interaction, key, placeholders);
     if(!options) return null;
-    return (await interaction.followUp({ withResponse: true, ...options })).resource.message;
+    return interaction.followUp(options);
 }
 
 /**
@@ -401,7 +401,7 @@ export async function updateTl(interaction, key, ...placeholders) {
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Promise<?Message>}
  */
-export async function sendTl(interaction, key, ...placeholders) {
+export function sendTl(interaction, key, ...placeholders) {
     if(!interaction.channel.isSendable()) {
         trackError('unhandled', 'messages', interaction.guildId ?? null, null, new Error(`Could not reply: Channel is not sendable: ${interaction.channel}`), null, logger);
     }
@@ -417,7 +417,7 @@ export async function sendTl(interaction, key, ...placeholders) {
  * @param {...any} placeholders - Optional placeholders to replace dynamic parts of the key.
  * @return {Promise<?Message>} A promise that resolves to the sent message object, or null if no options were resolved or message is not editable.
  */
-export async function editTl(interaction, key, ...placeholders) {
+export function editTl(interaction, key, ...placeholders) {
     if(!interaction.editable) {
         trackError('unhandled', 'messages', null, null, new Error(`Could not edit message: ${interaction}`), null, logger);
         return null;
@@ -434,7 +434,7 @@ export async function editTl(interaction, key, ...placeholders) {
  * @param {...object} placeholders - The placeholders to replace in the translation key.
  * @returns {Promise<void>}
  */
-export async function showModalTl(interaction, key, ...placeholders) {
+export function showModalTl(interaction, key, ...placeholders) {
     placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
     const modal = getModal(key, placeholders);
     return interaction.showModal(modal);

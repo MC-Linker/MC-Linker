@@ -104,15 +104,6 @@ input:focus, select:focus {
     padding: 20px 0;
 }
 
-.sidebar-logo {
-    padding: 0 20px 20px;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 12px;
-}
-
 .sidebar-nav a {
     display: flex;
     align-items: center;

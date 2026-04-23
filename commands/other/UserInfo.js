@@ -29,6 +29,7 @@ export default class UserInfo extends Command {
         super({
             name: 'userinfo',
             category: 'other',
+            ephemeral: true,
             requiresUserIndex: 0,
         });
     }
@@ -277,6 +278,11 @@ export default class UserInfo extends Command {
         }
         await interaction.editReply({ components: interaction.message.components });
 
-        await interaction.followUpTl(keys.commands.userinfo.success.admin_button, { response, command });
+        await interaction.followUp({
+            flags: Discord.MessageFlags.Ephemeral, ...getReplyOptions(keys.commands.userinfo.success.admin_button, {
+                response,
+                command,
+            }),
+        });
     }
 }
