@@ -34,6 +34,9 @@
       <li>
         <NuxtLink active-class="active" class="sidebar-link" to="/errors">Errors</NuxtLink>
       </li>
+      <li>
+        <NuxtLink active-class="active" class="sidebar-link" to="/logs">Logs</NuxtLink>
+      </li>
     </ul>
 
     <div class="sidebar-footer">

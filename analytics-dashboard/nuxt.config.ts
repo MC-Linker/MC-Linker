@@ -6,6 +6,7 @@ export default defineNuxtConfig({
         databaseUrl: '',
         dashboardPassword: '',
         sessionSecret: '',
+        logsDir: './logs',
     },
     app: {
         head: {

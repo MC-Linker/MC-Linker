@@ -60,6 +60,11 @@ services:
       - NUXT_DATABASE_URL=${DATABASE_URL}
       - NUXT_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
       - NUXT_SESSION_SECRET=${DASHBOARD_SESSION_SECRET}
+    volumes:
+      - type: bind
+        source: ./logs
+        target: /usr/src/app/logs
+        read_only: true
     networks:
       - mongo-network
 
