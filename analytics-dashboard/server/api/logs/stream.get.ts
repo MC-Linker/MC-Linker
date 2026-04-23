@@ -48,12 +48,12 @@ export default defineEventHandler(async event => {
         res.write(`data: ${JSON.stringify(data)}\n\n`);
     }
 
-    async function getCurrentPath() {
+    function getCurrentPath() {
         if (!currentFile) return null;
         return path.join(logsDir, currentFile);
     }
 
-    let currentPath = await getCurrentPath();
+    let currentPath = getCurrentPath();
     let offset = 0;
 
     if (currentPath) {
@@ -79,7 +79,7 @@ export default defineEventHandler(async event => {
         if (requestedFile || latest === currentFile) return;
 
         currentFile = latest;
-        currentPath = await getCurrentPath();
+        currentPath = getCurrentPath();
         offset = 0;
         send('meta', { file: currentFile, rotated: true });
     }

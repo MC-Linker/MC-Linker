@@ -80,26 +80,16 @@ export function getLogMessage(entry: LogEntry): string {
 export function filterLogEntry(entry: LogEntry, filter: LogFilter): boolean {
     const levelName = normalizeLogLevel(entry.level);
 
-    if (filter.levels && filter.levels.length > 0) {
-        if (!levelName || !filter.levels.includes(levelName)) return false;
-    }
+    if (filter.levels && filter.levels.length > 0 && (!levelName || !filter.levels.includes(levelName))) return false;
 
     if (filter.feature) {
         const feature = typeof entry.feature === 'string' ? entry.feature : '';
         if (!feature || feature !== filter.feature && !feature.startsWith(`${filter.feature}.`)) return false;
     }
 
-    if (filter.guildId) {
-        if (String(entry.guildId ?? '') !== filter.guildId) return false;
-    }
-
-    if (filter.userId) {
-        if (String(entry.userId ?? '') !== filter.userId) return false;
-    }
-
-    if (filter.shardId) {
-        if (String(entry.shardId ?? '') !== filter.shardId) return false;
-    }
+    if (filter.guildId && String(entry.guildId ?? '') !== filter.guildId) return false;
+    if (filter.userId && String(entry.userId ?? '') !== filter.userId) return false;
+    if (filter.shardId && String(entry.shardId ?? '') !== filter.shardId) return false;
 
     if (filter.search) {
         const search = filter.search.toLowerCase();
@@ -127,11 +117,7 @@ export async function listLogFiles(logsDir: string): Promise<Array<{ file: strin
         });
     }
 
-    result.sort((a, b) => {
-        if (a.file < b.file) return 1;
-        if (a.file > b.file) return -1;
-        return 0;
-    });
+    result.sort((a, b) => b.file.localeCompare(a.file));
 
     return result;
 }
@@ -217,9 +203,7 @@ export async function streamNewLogLines(
 ): Promise<number> {
     const fileStat = await stat(fullPath).catch(() => null);
     if (!fileStat) return fromOffset;
-
-    if (fromOffset > fileStat.size) return fileStat.size;
-    if (fromOffset === fileStat.size) return fromOffset;
+    if (fromOffset >= fileStat.size) return fileStat.size;
 
     const stream = createReadStream(fullPath, {
         encoding: 'utf8',

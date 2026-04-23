@@ -76,7 +76,7 @@
           <article class="log-entry" @click="toggleExpand(entry.id)">
             <header class="log-entry-head">
               <span class="timestamp">{{ formatTimestamp(entry.data.time ?? entry.data.timestamp) }}</span>
-              <span :class="['badge', levelClass(entry.level)]">{{ entry.level }}</span>
+              <span :class="['badge', `badge-${entry.level}`]">{{ entry.level }}</span>
               <span class="log-pretty-prefix">{{ prettyPrefix(entry.data) }}</span>
             </header>
 
@@ -184,17 +184,23 @@ async function loadFiles() {
   }
 }
 
-function queryParams() {
+function filterParams() {
   return {
-    file: selectedFile.value,
-    direction: 'backward',
-    limit: 500,
     ...(levelsText.value.trim() ? { level: levelsText.value.trim() } : {}),
     ...(feature.value.trim() ? { feature: feature.value.trim() } : {}),
     ...(guildId.value.trim() ? { guildId: guildId.value.trim() } : {}),
     ...(userId.value.trim() ? { userId: userId.value.trim() } : {}),
     ...(shardId.value.trim() ? { shardId: shardId.value.trim() } : {}),
     ...(search.value.trim() ? { search: search.value.trim() } : {}),
+  };
+}
+
+function queryParams() {
+  return {
+    file: selectedFile.value,
+    direction: 'backward',
+    limit: 500,
+    ...filterParams(),
   };
 }
 
@@ -222,10 +228,6 @@ async function reload() {
   }
 }
 
-function levelClass(level: string): string {
-  return `badge-${level}`;
-}
-
 function prettyPrefix(log: LogData): string {
   const parts: string[] = [];
   const featureValue = typeof log.feature === 'string' ? log.feature : '';
@@ -238,7 +240,7 @@ function prettyPrefix(log: LogData): string {
     parts.push(featurePrefix);
   }
 
-  if (log.shardId !== undefined && log.shardId !== null) {
+  if (log.shardId != null) {
     parts.push(`[${log.shardId}]`);
   }
 
@@ -309,12 +311,7 @@ function startLive() {
   stopLive();
   const query = new URLSearchParams({
     file: selectedFile.value,
-    ...(levelsText.value.trim() ? { level: levelsText.value.trim() } : {}),
-    ...(feature.value.trim() ? { feature: feature.value.trim() } : {}),
-    ...(guildId.value.trim() ? { guildId: guildId.value.trim() } : {}),
-    ...(userId.value.trim() ? { userId: userId.value.trim() } : {}),
-    ...(shardId.value.trim() ? { shardId: shardId.value.trim() } : {}),
-    ...(search.value.trim() ? { search: search.value.trim() } : {}),
+    ...filterParams(),
   });
 
   eventSource = new EventSource(`/api/logs/stream?${query.toString()}`);
