@@ -233,10 +233,8 @@ async function reload() {
 
     entries.value = result.lines.map(toEntry);
     expanded.value = new Set<string>();
-    if (live.value) {
-      await nextTick();
-      scrollToBottom();
-    }
+    await nextTick();
+    scrollToTop();
   }
   catch (err: any) {
     errorMessage.value = err?.data?.message ?? err?.message ?? 'Failed to load logs';
@@ -340,13 +338,13 @@ function startLive() {
       entries.value = [];
     }
 
-    entries.value.push(toEntry(payload.entry));
+    entries.value.unshift(toEntry(payload.entry));
     if (entries.value.length > 1000) {
-      entries.value = entries.value.slice(entries.value.length - 1000);
+      entries.value = entries.value.slice(0, 1000);
     }
 
     if (autoScroll.value) {
-      nextTick().then(scrollToBottom);
+      nextTick().then(scrollToTop);
     }
   });
 
@@ -374,17 +372,16 @@ function toggleLive() {
   startLive();
 }
 
-function scrollToBottom() {
+function scrollToTop() {
   const node = logsContainer.value;
   if (!node) return;
-  node.scrollTop = node.scrollHeight;
+  node.scrollTop = 0;
 }
 
 function onScroll() {
   const node = logsContainer.value;
   if (!node) return;
-  const distanceToBottom = node.scrollHeight - node.scrollTop - node.clientHeight;
-  autoScroll.value = distanceToBottom < 16;
+  autoScroll.value = node.scrollTop < 16;
 }
 
 watch(selectedFile, async () => {
