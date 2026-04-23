@@ -24,23 +24,14 @@ const chartRef = ref<InstanceType<typeof Doughnut> | null>(null);
 const chartData = computed(() => {
   const source = props.data as any;
   const datasets = Array.isArray(source?.datasets)
-      ? source.datasets.map((dataset: any) => {
-        const backgroundColor = dataset.backgroundColor;
-        const borderColor = Array.isArray(backgroundColor)
-            ? [...backgroundColor]
-            : backgroundColor;
-
-        return {
-          ...dataset,
-          borderColor,
-        };
-      })
+      ? source.datasets.map((dataset: any) => ({
+        ...dataset,
+        borderColor: '#0f1117',
+        borderWidth: 2,
+      }))
       : [];
 
-  return {
-    ...source,
-    datasets,
-  };
+  return { ...source, datasets };
 });
 
 function handleClick(event: MouseEvent) {
@@ -60,7 +51,31 @@ const mergedOptions = computed(() => ({
   plugins: {
     legend: {
       position: 'right' as const,
-      labels: { color: '#b0b8c8', padding: 12, usePointStyle: true, pointStyle: 'line' }
+      labels: {
+        color: '#b0b8c8',
+        padding: 12,
+        usePointStyle: true,
+        pointStyle: 'line' as const,
+        generateLabels(chart: any) {
+          const { labels, datasets } = chart.data;
+          if (!labels?.length || !datasets?.length) return [];
+          const dataset = datasets[0];
+          return labels.map((label: unknown, i: number) => {
+            const bg = Array.isArray(dataset.backgroundColor)
+                ? dataset.backgroundColor[i]
+                : dataset.backgroundColor;
+            return {
+              text: String(label),
+              fillStyle: bg,
+              strokeStyle: bg,
+              lineWidth: 2,
+              hidden: !chart.getDataVisibility(i),
+              index: i,
+              datasetIndex: 0,
+            };
+          });
+        },
+      }
     },
     tooltip: { intersect: true },
   },

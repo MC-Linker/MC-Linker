@@ -62,6 +62,7 @@ const DRILLABLE: Record<string, string> = {
 };
 
 const COLORS = ['#5b8dee', '#43c59e', '#e8b84b', '#e06c75', '#c678dd'];
+const CHAT_COLORS = ['#5b8dee', '#43c59e', '#e8b84b', '#e06c75', '#c678dd', '#56b6c2', '#d19a66'];
 
 const chartTitle = computed(() => {
   if (drillDown.value === 'chatChannels') return 'Chat Event Types';
@@ -81,7 +82,7 @@ const pieChartData = computed(() => {
       labels: entries.map(([k]) => k),
       datasets: [{
         data: entries.map(([, v]) => v),
-        backgroundColor: COLORS.slice(0, entries.length).concat(Array(Math.max(0, entries.length - COLORS.length)).fill('#888'))
+        backgroundColor: entries.map((_, i) => CHAT_COLORS[i % CHAT_COLORS.length])
       }],
     };
   }
