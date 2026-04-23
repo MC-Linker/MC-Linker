@@ -1,6 +1,6 @@
 <template>
   <div class="chart-container">
-    <Doughnut ref="chartRef" :data="data" :options="mergedOptions" @click="handleClick"/>
+    <Doughnut ref="chartRef" :data="chartData" :options="mergedOptions" @click="handleClick"/>
   </div>
 </template>
 
@@ -20,6 +20,28 @@ const emit = defineEmits<{
 }>();
 
 const chartRef = ref<InstanceType<typeof Doughnut> | null>(null);
+
+const chartData = computed(() => {
+  const source = props.data as any;
+  const datasets = Array.isArray(source?.datasets)
+      ? source.datasets.map((dataset: any) => {
+        const backgroundColor = dataset.backgroundColor;
+        const borderColor = Array.isArray(backgroundColor)
+            ? [...backgroundColor]
+            : backgroundColor;
+
+        return {
+          ...dataset,
+          borderColor,
+        };
+      })
+      : [];
+
+  return {
+    ...source,
+    datasets,
+  };
+});
 
 function handleClick(event: MouseEvent) {
   const chart = chartRef.value?.chart;

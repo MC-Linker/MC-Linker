@@ -17,7 +17,6 @@ export default defineEventHandler(async event => {
     let requiredRole = 0;
     let floodgate = 0;
     const chatTypeBreakdown: Record<string, number> = {};
-    const statTypeBreakdown: Record<string, number> = { 'member-counter': 0, status: 0 };
     const roleDirections: Record<string, number> = { both: 0, to_minecraft: 0, to_discord: 0 };
     const requiredRoleBreakdown: Record<string, number> = { 'Require Roles': 0, 'Linked Account Only': 0 };
 
@@ -30,13 +29,7 @@ export default defineEventHandler(async event => {
                 }
             }
         }
-        if ((s.statChannels as any[])?.length > 0) {
-            statChannels++;
-            for (const ch of s.statChannels as any[]) {
-                const t = ch.type as string;
-                if (t && t in statTypeBreakdown) statTypeBreakdown[t]++;
-            }
-        }
+        if ((s.statChannels as any[])?.length > 0) statChannels++;
         if ((s.syncedRoles as any[])?.length > 0) {
             syncedRoles++;
             for (const r of s.syncedRoles as any[]) {
@@ -71,7 +64,6 @@ export default defineEventHandler(async event => {
             requiredRole,
             floodgate,
             chatTypeBreakdown,
-            statTypeBreakdown,
             roleDirections,
             requiredRoleBreakdown,
         },
