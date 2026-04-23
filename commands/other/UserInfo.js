@@ -236,8 +236,9 @@ export default class UserInfo extends Command {
      * @param {Discord.ButtonInteraction} interaction - The interaction
      * @param {MCLinker} client - The MCLinker client.
      * @param {?ServerConnection} server - The connection of the server the button was executed in.
+     * @param {import('../../utilities/logger/Logger.js').default} logger - A child logger bound to this execution.
      */
-    async handleAdminButton(user, interaction, client, server) {
+    async handleAdminButton(user, interaction, client, server, logger) {
         if(!server) return;
         interaction = addTranslatedResponses(interaction);
 

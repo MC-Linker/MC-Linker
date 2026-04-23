@@ -79,6 +79,8 @@ export default class Component {
             userId: interaction.user.id,
         }, { track: false });
 
+        const server = client.serverConnections?.cache?.get(interaction.guildId) ?? null;
+
         logger.debug(`Component ${this.id} clicked`);
         if(this.defer) await interaction.deferUpdate();
 
@@ -105,18 +107,19 @@ export default class Component {
             }
         }
 
-        return this.run(interaction, client, logger);
+        return this.run(interaction, client, server, logger);
     }
 
     /**
      * Implements the component's specific logic.
      * @param {(import('discord.js').MessageComponentInteraction | import('discord.js').ModalSubmitInteraction) & TranslatedResponses} interaction - The component or modal interaction.
      * @param {MCLinker} client - The MCLinker client.
-     * @param {import('pino').Logger} logger - A child logger bound to this execution.
+     * @param {?ServerConnection} server - The connection of the server the component was executed in, or null if none.
+     * @param {import('../utilities/logger/Logger.js').default} logger - A child logger bound to this execution.
      * @returns {Promise<?boolean>|?boolean}
      * @abstract
      */
-    async run(interaction, client, logger) {
+    async run(interaction, client, server, logger) {
         throw new Error(`The run method has not been implemented for the ${this.id} component.`);
     }
 }

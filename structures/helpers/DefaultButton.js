@@ -35,7 +35,7 @@ export default class DefaultButton extends Component {
     }
 
     /** @inheritdoc */
-    async run(interaction, client, logger) {
-        return await this.handler(interaction, client, logger);
+    async run(interaction, client, server, logger) {
+        return await this.handler(interaction, client, server, logger);
     }
 }

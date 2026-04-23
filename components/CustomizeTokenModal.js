@@ -21,9 +21,10 @@ export default class CustomizeTokenModal extends Component {
      * @inheritdoc
      * @param interaction
      * @param client
+     * @param server
      * @param logger
      */
-    async run(interaction, client, logger) {
+    async run(interaction, client, server, logger) {
         const token = interaction.fields.getTextInputValue('token');
         await interaction.replyTl(keys.custom_bot.create.step.logging_in);
 
