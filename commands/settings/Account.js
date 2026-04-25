@@ -1,4 +1,4 @@
-import Command from '../../structures/Command.js';
+import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
 import { UUIDRegex } from '../../utilities/utils.js';
@@ -6,7 +6,7 @@ import Discord from 'discord.js';
 import crypto from 'crypto';
 import MCLinkerAPI from '../../api/MCLinkerAPI.js';
 
-export default class Account extends Command {
+export default class Account extends AutocompleteCommand {
 
     constructor() {
         super({
@@ -19,14 +19,39 @@ export default class Account extends Command {
 
     /**
      * @inheritdoc
+     */
+    autocomplete(interaction, client) {
+        const subcommandGroup = interaction.options.getSubcommandGroup(false);
+        const subcommand = interaction.options.getSubcommand(false);
+        const focused = interaction.options.getFocused(true);
+
+        if(subcommandGroup === 'dms' && subcommand === 'unblock' && focused.name === 'player') {
+            const settings = client.userSettingsConnections.cache.get(interaction.user.id);
+            const blockedPlayers = settings?.dms.blockedPlayers ?? [];
+            const focusedValue = focused.value.toLowerCase();
+
+            const choices = blockedPlayers
+                .filter(p => p.startsWith(focusedValue))
+                .map(p => ({ name: p, value: p }));
+
+            return interaction.respond(choices).catch(() => {});
+        }
+
+        return interaction.respond([]).catch(() => {});
+    }
+
+    /**
+     * @inheritdoc
      * @param interaction
      * @param client
-     * @param {[string, string]} args - [0] The subcommand (connect/disconnect), [1] The username or UUID to connect.
+     * @param {[string, string]} args - [0] The subcommand (connect/disconnect/dms), [1] The username or UUID to connect.
      * @param server
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-        const subcommand = args[0];
+        const subcommandGroup = args[0];
+        const subcommand = subcommandGroup === 'dms' ? args[1] : args[0];
+
         if(subcommand === 'connect') {
             if(!server) return interaction.editReplyTl(keys.api.command.errors.server_not_connected);
 
@@ -70,10 +95,7 @@ export default class Account extends Command {
                 }
                 catch(err) {
                     if(err instanceof MCLinkerAPI.EventTimeoutError) return { status: 'timeout' };
-                    return {
-                        status: 'error',
-                        error: err.message,
-                    };
+                    return { status: 'error', error: err.message };
                 }
             }, {
                 context: {
@@ -84,8 +106,8 @@ export default class Account extends Command {
                 shard: 0,
             });
 
-            if(verificationResponse?.status === 'timeout') return interaction.editReplyTl(keys.commands.account.warnings.verification_timeout);
-            else if(verificationResponse?.status !== 'success') return interaction.editReplyTl(keys.main.errors.could_not_execute_command);
+            if(verificationResponse.status === 'timeout') return interaction.editReplyTl(keys.commands.account.warnings.verification_timeout);
+            else if(verificationResponse.status !== 'success') return interaction.editReplyTl(keys.main.errors.could_not_execute_command);
 
             await client.userConnections.connect({
                 id: interaction.user.id,
@@ -117,6 +139,60 @@ export default class Account extends Command {
             //TODO kick from all servers the user is in
             if(server?.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
             await interaction.editReplyTl(keys.commands.account.success.disconnect);
+        }
+        else if(subcommand === 'block' || subcommand === 'unblock') {
+            const isBlock = subcommand === 'block';
+            const playerArg = interaction.options.getString('player', false);
+            const serverArg = interaction.options.getBoolean('server', false);
+
+            const userSettings = await client.userSettingsConnections.getOrConnect(interaction.user.id);
+
+            if(playerArg) {
+                const player = playerArg.toLowerCase();
+                if(isBlock) {
+                    if(userSettings.dms.blockedPlayers.includes(player)) return interaction.editReplyTl(keys.commands.account.warnings.dms.already_blocked_specific, { target: playerArg });
+                    userSettings.blockPlayer(player);
+                    await userSettings.edit({});
+                    return interaction.editReplyTl(keys.commands.account.success.dms.block_specific, { target: playerArg });
+                }
+                else {
+                    if(!userSettings.dms.blockedPlayers.includes(player)) return interaction.editReplyTl(keys.commands.account.warnings.dms.not_blocked_specific, { target: playerArg });
+                    userSettings.unblockPlayer(player);
+                    await userSettings.edit({});
+                    return interaction.editReplyTl(keys.commands.account.success.dms.unblock_specific, { target: playerArg });
+                }
+            }
+            if(serverArg) {
+                if(!server) return interaction.editReplyTl(keys.commands.account.warnings.dms.no_server);
+                const guildId = server.id;
+                if(isBlock) {
+                    if(userSettings.dms.blockedServers.includes(guildId)) return interaction.editReplyTl(keys.commands.account.warnings.dms.already_blocked_specific);
+                    userSettings.blockServer(guildId);
+                    await userSettings.edit({});
+                    return interaction.editReplyTl(keys.commands.account.success.dms.block_specific, { target: server.displayIp });
+                }
+                else {
+                    if(!userSettings.dms.blockedServers.includes(guildId)) return interaction.editReplyTl(keys.commands.account.warnings.dms.not_blocked_specific);
+                    userSettings.unblockServer(guildId);
+                    await userSettings.edit({});
+                    return interaction.editReplyTl(keys.commands.account.success.dms.unblock_specific, { target: server.displayIp });
+                }
+            }
+            else {
+                // Global block/unblock
+                if(isBlock) {
+                    if(!userSettings.dms.enabled) return interaction.editReplyTl(keys.commands.account.warnings.dms.already_blocked_global);
+                    userSettings.setDmsEnabled(false);
+                    await userSettings.edit({});
+                    return interaction.editReplyTl(keys.commands.account.success.dms.block_global);
+                }
+                else {
+                    if(userSettings.dms.enabled) return interaction.editReplyTl(keys.commands.account.warnings.dms.not_blocked_global);
+                    userSettings.setDmsEnabled(true);
+                    await userSettings.edit({});
+                    return interaction.editReplyTl(keys.commands.account.success.dms.unblock_global);
+                }
+            }
         }
     }
 }

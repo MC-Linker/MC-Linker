@@ -59,6 +59,11 @@ export default {
             refreshToken: String,
             expires: Number,
         },
+        dms: {
+            enabled: Boolean,
+            blockedServers: [String],
+            blockedPlayers: [String],
+        },
         user: { type: String, ref: 'UserConnection' },
     },
     CustomBotConnection: {

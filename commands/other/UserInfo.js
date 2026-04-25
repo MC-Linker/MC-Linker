@@ -278,11 +278,6 @@ export default class UserInfo extends Command {
         }
         await interaction.editReply({ components: interaction.message.components });
 
-        await interaction.followUp({
-            flags: Discord.MessageFlags.Ephemeral, ...getReplyOptions(keys.commands.userinfo.success.admin_button, {
-                response,
-                command,
-            }),
-        });
+        await interaction.followUpTl(keys.commands.userinfo.success.admin_button, { response, command });
     }
 }

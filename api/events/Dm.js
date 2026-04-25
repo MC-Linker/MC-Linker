@@ -109,6 +109,20 @@ export default class Dm extends WSEvent {
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
 
+        // Check DM settings
+        const userSettings = client.userSettingsConnections.cache.get(discordId);
+        if(userSettings) {
+            if(!userSettings.dms.enabled) return { status: 'error', error: ProtocolError.DM_BLOCKED };
+            if(userSettings.dms.blockedServers.includes(server.id)) return {
+                status: 'error',
+                error: ProtocolError.DM_BLOCKED,
+            };
+            if(userSettings.dms.blockedPlayers.includes(data.player.toLowerCase())) return {
+                status: 'error',
+                error: ProtocolError.DM_BLOCKED,
+            };
+        }
+
         // Truncate message to TextDisplay limit, appending … if needed
         const message = data.message.length < MaxMessageContentLength
             ? data.message

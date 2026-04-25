@@ -23,4 +23,16 @@ export default class UserSettingsConnectionManager extends ConnectionManager {
          */
         this.cache = super.cache;
     }
+
+    /**
+     * Gets a settings connection for the specified user. If none exists, one will be created.
+     * @param {string} userId - The Discord user ID.
+     * @returns {Promise<UserSettingsConnection>}
+     */
+    async getOrConnect(userId) {
+        const connection = this.cache.get(userId);
+        if(connection) return connection;
+
+        return await this.connect({ id: userId });
+    }
 }

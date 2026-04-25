@@ -203,6 +203,8 @@ export const ProtocolError = Object.freeze({
     CONN_JSON_MISSING: 'conn_json_missing',
     /** Target Discord user has DMs disabled. */
     DM_CLOSED: 'dm_closed',
+    /** Target Discord user has blocked DMs from Minecraft (user preference). */
+    DM_BLOCKED: 'dm_blocked',
 });
 
 export default class Protocol extends Base {

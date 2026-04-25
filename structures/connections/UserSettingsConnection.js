@@ -11,6 +11,10 @@ export default class UserSettingsConnection extends Connection {
     /**
      * @typedef {object} UserSettingsConnectionData - The data for the user settings.
      * @property {OAuthTokens} tokens - The OAuth2 tokens for the user.
+     * @property {Object} dms - DM preferences for the user.
+     * @property {boolean} dms.enabled - Whether DMs from Minecraft are enabled.
+     * @property {string[]} dms.blockedServers - The IDs of the guilds whose MC servers are blocked from sending DMs.
+     * @property {string[]} dms.blockedPlayers - The Minecraft usernames (case-insensitive) that are blocked from sending DMs.
      * @property {string} id - The id of the user the settings are connected to.
      */
 
@@ -40,7 +44,7 @@ export default class UserSettingsConnection extends Connection {
 
         /**
          * The OAuth2 tokens for the user.
-         * @type {OAuthTokens}
+         * @type {UserSettingsConnectionData['tokens']}
          */
         this.tokens ??= {};
 
@@ -48,6 +52,18 @@ export default class UserSettingsConnection extends Connection {
             if('accessToken' in data.tokens) this.tokens.accessToken = data.tokens.accessToken;
             if('refreshToken' in data.tokens) this.tokens.refreshToken = data.tokens.refreshToken;
             if('expires' in data.tokens) this.tokens.expires = data.tokens.expires;
+        }
+
+        /**
+         * DM preferences for the user.
+         * @type {UserSettingsConnectionData['dms']}
+         */
+        this.dms ??= { enabled: true, blockedServers: [], blockedPlayers: [] };
+
+        if('dms' in data) {
+            if('enabled' in data.dms) this.dms.enabled = data.dms.enabled;
+            if('blockedServers' in data.dms) this.dms.blockedServers = data.dms.blockedServers;
+            if('blockedPlayers' in data.dms) this.dms.blockedPlayers = data.dms.blockedPlayers;
         }
     }
 
@@ -125,10 +141,51 @@ export default class UserSettingsConnection extends Connection {
         }
     }
 
+    /**
+     * Sets whether DMs from Minecraft are enabled for this user.
+     * @param {boolean} enabled
+     */
+    setDmsEnabled(enabled) {
+        this.dms.enabled = enabled;
+    }
+
+    /**
+     * Blocks DMs from the given guild's MC server.
+     * @param {string} guildId
+     */
+    blockServer(guildId) {
+        this.dms.blockedServers.push(guildId);
+    }
+
+    /**
+     * Unblocks DMs from the given guild's MC server.
+     * @param {string} guildId
+     */
+    unblockServer(guildId) {
+        this.dms.blockedServers = this.dms.blockedServers.filter(id => id !== guildId);
+    }
+
+    /**
+     * Blocks DMs from the given Minecraft player.
+     * @param {string} username - The Minecraft username (case-insensitive).
+     */
+    blockPlayer(username) {
+        this.dms.blockedPlayers.push(username.toLowerCase());
+    }
+
+    /**
+     * Unblocks DMs from the given Minecraft player.
+     * @param {string} username - The Minecraft username (case-insensitive).
+     */
+    unblockPlayer(username) {
+        this.dms.blockedPlayers = this.dms.blockedPlayers.filter(p => p !== username.toLowerCase());
+    }
+
     getData() {
         return {
             id: this.id,
             tokens: this.tokens,
+            dms: this.dms,
         };
     }
 }
