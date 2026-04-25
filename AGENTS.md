@@ -1,5 +1,10 @@
 # MC-Linker Bot — AI Instructions
 
+> **Maintenance rule:** This file must always reflect the current state of the project. Whenever code, architecture,
+> conventions, or workflows are changed, update the relevant sections of this file as part of the same change. Never
+> leave
+> this file out of date.
+
 ## Project Overview
 
 MC-Linker is a Discord bot that bridges Discord servers and Minecraft servers. It enables chat relay, player
@@ -12,9 +17,12 @@ repository (https://github.com/MC-Linker/Discord-Linker). The plugin runs on use
 this bot over **WebSocket (Socket.io)**.
 
 > **Whenever you make changes that affect the WebSocket protocol, event schemas, response formats, or any bot<->plugin
-communication, flag that the plugin side likely needs corresponding changes.** This includes adding/removing/renaming WS
+communication, directly formulate a ready-to-use prompt describing the required plugin-side changes.** This includes
+> adding/removing/renaming WS
 > events, changing data schemas, modifying authentication flow, or altering error codes. See `websocket_api.md` for the
-> full protocol specification.
+> full protocol specification. The prompt should be self-contained and specific enough that it can be pasted directly
+> into
+> the plugin repository's AI agent to implement the corresponding changes.
 
 ## Technology Stack
 
@@ -236,7 +244,10 @@ export default class MyRoute extends Route {
 #### New WebSocket Event
 
 > **PLUGIN-SIDE CHANGE REQUIRED:** Adding a new WS event means the plugin must also implement the corresponding event
-> emitter/handler. Update `websocket_api.md` with the new event schema.
+> emitter/handler. Update `websocket_api.md` with the new event schema. After implementing the bot-side changes,
+> directly
+> formulate a ready-to-use prompt for the plugin repository describing exactly what needs to be added or changed on the
+> plugin side (event name, payload schema, expected response, etc.).
 
 Create a PascalCase `.js` file in `api/events/`:
 
@@ -280,7 +291,7 @@ export default class MyButton extends Component {
     }
 
     /** @inheritdoc */
-    async run(interaction, client, logger) {
+    async run(interaction, client, server, logger) {
         // Handle the interaction — logger is a per-execution child logger
     }
 }
@@ -357,7 +368,7 @@ import rootLogger from '../utilities/logger/Logger.js';
 import features from '../utilities/logger/features.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.dispatch });
-```
+``` 
 
 The `features` proxy auto-derives the dotted path from the access chain:
 `features.api.socketio.chatHandlers.dispatch` → `'api.socketio.chatHandlers.dispatch'`. Any path is valid — IDE
@@ -373,7 +384,7 @@ When adding a new command, event, route, component, or structural module, add it
 
 Pass `guildId`/`userId` as structured fields, not in the message string:
 
-```javascript
+```javascript 
 logger.debug({ guildId: server.id }, 'Enqueue payload for channel ...');
 logger.error(err, 'Something failed'); // pino arg order: error object first, message second
 ```
@@ -449,7 +460,7 @@ this.client.broadcastEval(async (c, { id, name, data }) => {
 ## Analytics Dashboard (`analytics-dashboard/`)
 
 Nuxt 3 sub-project that visualises data from the `analyticsnapshots`, `analyticserrors`, and `serverconnections` MongoDB
-collections. Runs as a separate Docker service.
+collections, and provides a live log viewer backed by the bot's pino log files. Runs as a separate Docker service.
 
 ### Pages
 
@@ -463,15 +474,15 @@ collections. Runs as a separate Docker service.
 | Server Connections | `/servers`      | `servers.get.ts`      | Interactive pie chart with drill-down (feature adoption → breakdowns), guild search with raw JSON |
 | Chat Monitor       | `/chat-monitor` | `chat-monitor.get.ts` | Chat pipeline throughput, queue depth, rate limits by category, operations table                  |
 | Errors             | `/errors`       | `errors.get.ts`       | Error log table with type, name, guild, timestamp                                                 |
+| Logs               | `/logs`         | `logs/*.get.ts`       | Live tail + historical viewer for pino JSON log files with filtering and JSON drill-down          |
 
 ### Server Connections — Interactive Pie Chart
 
 The Server Connections page has a single pie chart with drill-down behaviour:
 
 - **Main view** ("Feature Adoption"): shows how many servers use each feature.
-- **Drill-down**: clicking a drillable segment (Chat Channels, Stat Channels, Synced Roles) replaces the chart with a
-  breakdown view. A back button returns to the main view. Non-drillable segments (Required Role, Floodgate) do nothing
-  on click.
+- **Drill-down**: clicking a drillable segment (Chat Channels, Synced Roles) replaces the chart with a breakdown view.
+  A back button returns to the main view. Non-drillable segments (Required Role, Floodgate) do nothing on click.
 
 When a **new server connection feature** is added to the bot, update these places:
 
@@ -484,11 +495,10 @@ When a **new server connection feature** is added to the bot, update these place
 
 Current main pie chart features:
 
-- Chat Channels — servers with ≥1 chat channel (drills into chat event types)
-- Stat Channels — servers with ≥1 stat channel (drills into stat channel types)
+- Chat Channels — servers with ≥1 chat channel (drills into chat event types
 - Synced Roles — servers with ≥1 synced role (drills into role sync directions)
-- Required Role — servers with required-role-to-join active (drills into: Require Roles vs Linked Account Only)
-- Floodgate — servers with a floodgate prefix set
+- Required Role — servers with required-role-to-join active (not drillable)
+- Floodgate — servers with a floodgate prefix set (not drillable)
 
 ## Error Tracking (`trackError`)
 
