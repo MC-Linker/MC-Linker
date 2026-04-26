@@ -141,46 +141,6 @@ export default class UserSettingsConnection extends Connection {
         }
     }
 
-    /**
-     * Sets whether DMs from Minecraft are enabled for this user.
-     * @param {boolean} enabled
-     */
-    setDmsEnabled(enabled) {
-        this.dms.enabled = enabled;
-    }
-
-    /**
-     * Blocks DMs from the given guild's MC server.
-     * @param {string} guildId
-     */
-    blockServer(guildId) {
-        this.dms.blockedServers.push(guildId);
-    }
-
-    /**
-     * Unblocks DMs from the given guild's MC server.
-     * @param {string} guildId
-     */
-    unblockServer(guildId) {
-        this.dms.blockedServers = this.dms.blockedServers.filter(id => id !== guildId);
-    }
-
-    /**
-     * Blocks DMs from the given Minecraft player.
-     * @param {string} username - The Minecraft username (case-insensitive).
-     */
-    blockPlayer(username) {
-        this.dms.blockedPlayers.push(username.toLowerCase());
-    }
-
-    /**
-     * Unblocks DMs from the given Minecraft player.
-     * @param {string} username - The Minecraft username (case-insensitive).
-     */
-    unblockPlayer(username) {
-        this.dms.blockedPlayers = this.dms.blockedPlayers.filter(p => p !== username.toLowerCase());
-    }
-
     getData() {
         return {
             id: this.id,
