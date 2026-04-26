@@ -1,5 +1,9 @@
 import Route from '../Route.js';
 import { getTokens, getUser } from '../../utilities/oauth.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+
+const logger = rootLogger.child({ feature: features.api.routes.linkedRoleCallback });
 
 export default class LinkedRole extends Route {
 
@@ -18,42 +22,48 @@ export default class LinkedRole extends Route {
      * @returns {RouteResponse}
      */
     async get(client, req, res) {
-        const { code, state: discordState } = req.query;
+        try {
+            const { code, state: discordState } = req.query;
 
-        //Check state
-        const clientState = res.unsignCookie(req.cookies.state);
-        if(clientState.valid && clientState.value !== discordState) return { status: 403 };
+            //Check state
+            const clientState = res.unsignCookie(req.cookies.state);
+            if(!clientState.valid || clientState.value !== discordState) return { status: 403 };
 
-        //Get access and refresh token
-        const tokens = await getTokens(code);
-        if(!tokens) return { status: 403 };
+            //Get access and refresh token
+            const tokens = await getTokens(code);
+            if(!tokens) return { status: 403 };
 
-        //Get user
-        const user = await getUser(client, tokens.accessToken);
-        if(!user) return { status: 403 };
+            //Get user
+            const user = await getUser(client, tokens.accessToken);
+            if(!user) return { status: 403 };
 
-        let settings = client.userSettingsConnections.cache.get(user.id);
-        if(settings) await settings.edit({
-            tokens: {
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-                expires: tokens.expires,
-            },
-        });
-        else settings = await client.userSettingsConnections.connect({
-            id: user.id,
-            tokens: {
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-                expires: tokens.expires,
-            },
-        });
+            let settings = client.userSettingsConnections.cache.get(user.id);
+            if(settings) await settings.edit({
+                tokens: {
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken,
+                    expires: tokens.expires,
+                },
+            });
+            else settings = await client.userSettingsConnections.connect({
+                id: user.id,
+                tokens: {
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken,
+                    expires: tokens.expires,
+                },
+            });
 
-        const userConnection = client.userConnections.cache.get(user.id);
-        await settings.updateRoleConnection(userConnection?.username, {
-            'connectedaccount': userConnection ? 1 : 0,
-        });
+            const userConnection = client.userConnections.cache.get(user.id);
+            await settings.updateRoleConnection(userConnection?.username, {
+                'connectedaccount': userConnection ? 1 : 0,
+            });
 
-        return { body: `You have been authorized as ${user.username}! You can now close this window and go back to Discord.` };
+            return { body: `You have been authorized as ${user.username}! You can now close this window and go back to Discord.` };
+        }
+        catch(err) {
+            client.analytics.trackError('api_rest', 'LinkedRoleCallback', null, null, err, null, logger);
+            return { status: 500 };
+        }
     }
 }

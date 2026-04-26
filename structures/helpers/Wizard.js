@@ -1,16 +1,14 @@
 import { BaseGuildTextChannel, BaseInteraction, ComponentType, Message, MessageFlags } from 'discord.js';
 import { addTranslatedResponses, createActionRows, getComponent } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
-import { disableComponents, flattenActionRows } from '../../utilities/utils.js';
+import { DefaultCollectorTimeout, disableComponents, flattenActionRows } from '../../utilities/utils.js';
 import DefaultButton from './DefaultButton.js';
 
 export default class Wizard {
 
-    static DEFAULT_TIMEOUT = 120_000;
-
     /**
      * @typedef {Object} WizardOptions
-     * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
+     * @property {number} [timeout] - The timeout for the buttons of the wizard in ms
      * @property {import('discord.js').ButtonBuilder} [nextButton] - The button to use for going to the next page
      * @property {import('discord.js').ButtonBuilder} [backButton] - The button to use for going to the previous page
      */
@@ -61,7 +59,7 @@ export default class Wizard {
          * @type {WizardOptions}
          */
         this.options = {
-            timeout: Wizard.DEFAULT_TIMEOUT,
+            timeout: DefaultCollectorTimeout,
             nextButton: getComponent(keys.api.component.success.next_button, { id: this.navButtonIds.next }),
             backButton: getComponent(keys.api.component.success.back_button, { id: this.navButtonIds.back }),
             ...options,
@@ -131,10 +129,10 @@ export default class Wizard {
                 this.message = await this.interaction.send(options);
                 this.interaction = addTranslatedResponses(this.message);
             }
-            else this.message = await this.interaction.replyOptions(options);
+            else this.message = await this.interaction.editReply(options);
             this._createCollector();
         }
-        else await this.interaction.replyOptions(options);
+        else await this.interaction.editReply(options);
 
         return this.message;
     }

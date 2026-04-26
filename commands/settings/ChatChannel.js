@@ -1,8 +1,13 @@
 import Discord, { ButtonStyle, PermissionFlagsBits } from 'discord.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
-import keys, { getLanguageKey } from '../../utilities/keys.js';
+import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
-import { canSendMessages, MaxAutoCompleteChoices, MaxCommandChoiceLength } from '../../utilities/utils.js';
+import {
+    canSendMessages,
+    DefaultCollectorTimeout,
+    MaxAutoCompleteChoices,
+    MaxCommandChoiceLength,
+} from '../../utilities/utils.js';
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import { getChatWebhookCreationOptions } from '../../api/events/chat-handlers/ChatConstants.js';
@@ -58,9 +63,15 @@ export default class ChatChannel extends AutocompleteCommand {
         }
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, string|import('discord.js').BaseGuildTextChannel, boolean, ...string]} args - [0] The subcommand group or subcommand, [1] The subcommand or channel, [2] allowDiscordToMinecraft or filter command parts, [3+] Additional args.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
         const subcommandGroup = args[0];
         const subcommand = subcommandGroup === 'filter-commands' ? args[1] : args[0];
 
@@ -68,7 +79,7 @@ export default class ChatChannel extends AutocompleteCommand {
             const selectedValue = args.slice(2).join(' ').trim();
             const resolvedValue = this.resolveAutocompleteValue(selectedValue, interaction);
             if(resolvedValue === null) {
-                return interaction.replyTl(keys.commands.chatchannel.filter_commands.warnings.autocomplete_selection_expired);
+                return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.warnings.autocomplete_selection_expired);
             }
 
             const commandName = resolvedValue.toLowerCase();
@@ -76,7 +87,7 @@ export default class ChatChannel extends AutocompleteCommand {
 
             if(subcommand === 'add') {
                 await settings.addFilteredCommand(commandName);
-                return interaction.replyTl(keys.commands.chatchannel.filter_commands.success.disabled, {
+                return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.success.disabled, {
                     type: CHAT_COMMANDS_LABEL,
                     disable: commandName,
                 });
@@ -85,14 +96,14 @@ export default class ChatChannel extends AutocompleteCommand {
                 const hasExactFilter = settings.filteredCommands
                     .some(command => command.replace(/^\//, '').trim().toLowerCase() === commandName);
                 if(!hasExactFilter) {
-                    return interaction.replyTl(keys.commands.chatchannel.filter_commands.warnings.already_enabled, {
+                    return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.warnings.already_enabled, {
                         type: CHAT_COMMANDS_LABEL,
                         enable: commandName,
                     });
                 }
 
                 await settings.removeFilteredCommand(commandName);
-                return interaction.replyTl(keys.commands.chatchannel.filter_commands.success.enabled, {
+                return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.success.enabled, {
                     type: CHAT_COMMANDS_LABEL,
                     enable: commandName,
                 });
@@ -105,24 +116,24 @@ export default class ChatChannel extends AutocompleteCommand {
             const channel = args[1];
             const allowDiscordToMinecraft = args[2] ?? true;
 
-            if(!canSendMessages(interaction.guild.members.me, channel)) return interaction.replyTl(keys.api.utils.errors.not_sendable);
+            if(!canSendMessages(interaction.guild.members.me, channel)) return interaction.editReplyTl(keys.api.utils.errors.not_sendable);
 
-            const logChooserMsg = await interaction.replyTl(keys.commands.chatchannel.step.choose);
+            const logChooserMsg = await interaction.editReplyTl(keys.commands.chatchannel.step.choose);
             let menu;
             try {
                 menu = await logChooserMsg.awaitMessageComponent({
                     componentType: Discord.ComponentType.StringSelect,
-                    time: 180_000,
+                    time: DefaultCollectorTimeout,
                     filter: m => m.user.id === interaction.user.id && m.customId === 'log',
                 });
             }
-            catch(_) {
-                return interaction.replyTl(keys.commands.chatchannel.warnings.not_collected);
+            catch {
+                return interaction.editReplyTl(keys.commands.chatchannel.warnings.not_collected);
             }
 
             //Create webhook for channel (all chat channels use webhooks for separate rate limit bucket)
             if(!channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageWebhooks))
-                return interaction.replyTl(keys.api.plugin.errors.no_webhook_permission);
+                return interaction.editReplyTl(keys.api.plugin.errors.no_webhook_permission);
 
             let webhook;
             try {
@@ -131,43 +142,46 @@ export default class ChatChannel extends AutocompleteCommand {
                 else webhook = await channel.createWebhook(options);
             }
             catch(err) {
-                return interaction.replyTl(keys.commands.chatchannel.errors.could_not_create_webhook, ph.error(err));
+                return interaction.editReplyTl(keys.api.plugin.errors.could_not_create_webhook, ph.error(err));
             }
 
-            const resp = await server.protocol.addChatChannel({
+            const chatChannelData = {
                 id: channel.id,
                 webhook: webhook.id,
                 webhooks: [webhook.id],
                 types: menu.values,
                 allowDiscordToMinecraft,
-            });
+            };
+            const resp = await server.protocol.addChatChannel(chatChannelData);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return webhook.delete();
 
-            await server.edit({ chatChannels: resp.data });
+            // Bot is source of truth — replace existing entry with same id
+            await server.edit({ chatChannels: [...server.chatChannels.filter(c => c.id !== channel.id), chatChannelData] });
 
-            return interaction.replyTl(keys.commands.chatchannel.success.add);
+            return interaction.editReplyTl(keys.commands.chatchannel.success.add);
         }
         else if(subcommand === 'remove') {
             const channel = args[1];
 
             const chatChannel = server.chatChannels.find(c => c.id === channel.id);
-            if(!chatChannel) return interaction.replyTl(keys.commands.chatchannel.warnings.channel_not_added);
+            if(!chatChannel) return interaction.editReplyTl(keys.common.channels.channel_not_added);
 
             const resp = await server.protocol.removeChatChannel(chatChannel);
             if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
-            await server.edit({ chatChannels: resp.data });
-            return interaction.replyTl(keys.commands.chatchannel.success.remove);
+            // Bot is source of truth
+            await server.edit({ chatChannels: server.chatChannels.filter(c => c.id !== chatChannel.id) });
+            return interaction.editReplyTl(keys.commands.chatchannel.success.remove);
         }
         else if(subcommand === 'list') {
-            if(!server.chatChannels?.length) return interaction.replyTl(keys.commands.chatchannel.warnings.no_channels);
+            if(!server.chatChannels?.length) return interaction.editReplyTl(keys.common.channels.no_channels);
 
             /** @type {PaginationPages} */
             const pages = {};
 
             for(let i = 0; i < server.chatChannels.length; i++) {
                 const channel = server.chatChannels[i];
-                const options = getLanguageKey(keys.commands.chatchannel.step.choose.components[0].options);
+                const options = keys.commands.chatchannel.step.choose.components[0].options.valueOf();
                 const formattedTypes = channel.types.map(type => options.find(o => o.value === type).label).join(',\n');
 
                 const channelEmbed = getEmbed(
@@ -175,12 +189,12 @@ export default class ChatChannel extends AutocompleteCommand {
                     ph.std(interaction),
                     {
                         channel: await interaction.guild.channels.fetch(channel.id),
-                        discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
+                        discord_to_minecraft: channel.allowDiscordToMinecraft ? keys.common.enabled : keys.common.disabled,
                         channel_types: formattedTypes,
                     },
                 );
 
-                const channelButton = getComponent(keys.commands.chatchannel.success.channel_button, {
+                const channelButton = getComponent(keys.common.channels.channel_button, {
                     index1: i + 1,
                     index: i,
                 });

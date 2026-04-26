@@ -19,9 +19,15 @@ export default class ServerInfo extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[]} args - No arguments.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
         const serverProperties = await server.protocol.getWithCache(...FilePath.ServerProperties(server.path, server.id));
         const levelDat = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
@@ -62,7 +68,7 @@ export default class ServerInfo extends Command {
             plugins = plugins?.status === 'success' ? plugins.data.filter(file => !file.isDirectory && file.name.endsWith('.jar')).map(plugin => plugin.name.replace('.jar', '')) : [];
             mods = mods?.status === 'success' ? mods.data.filter(file => !file.isDirectory).map(mod => mod.name.replace('.jar', '')) : [];
 
-            datapacks = datObject.Data.DataPacks?.Enabled?.map(pack => pack.replace('file/', '').replace('.zip', '').toTitleCase(true)) ?? [];
+            datapacks = datObject.Data.DataPacks?.Enabled?.map(pack => utils.toTitleCase(pack.replace('file/', '').replace('.zip', ''), true)) ?? [];
 
             //Reduce plugins, mods and datapacks array so that it doesn't exceed max embed field value length
             for(const array of [plugins, mods, datapacks]) {
@@ -130,7 +136,7 @@ export default class ServerInfo extends Command {
 
         const difficulty = typeof propertiesObject['difficulty'] === 'number' ?
             keys.commands.serverinfo.difficulty[propertiesObject['difficulty']] :
-            propertiesObject['difficulty'].toTitleCase();
+            utils.toTitleCase(propertiesObject['difficulty']);
 
         const gamerulesObject = datObject.Data.GameRules ?? {};
         const filteredGamerules = Object.entries(gamerulesObject)
@@ -148,8 +154,8 @@ export default class ServerInfo extends Command {
             spawn_y: datObject.Data.SpawnY ?? datObject.Data.spawn.pos[1],
             spawn_z: datObject.Data.SpawnZ ?? datObject.Data.spawn.pos[2],
             spawn_world: datObject.Data.LevelName,
-            allow_end: propertiesObject['allow-end'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
-            allow_nether: propertiesObject['allow-nether'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
+            allow_end: propertiesObject['allow-end'] ? keys.common.enabled : keys.common.disabled,
+            allow_nether: propertiesObject['allow-nether'] ? keys.common.enabled : keys.common.disabled,
             difficulty,
             gamerules: filteredGamerules.join('\n'),
         });
@@ -158,12 +164,12 @@ export default class ServerInfo extends Command {
         }
 
         const generalEmbed = getEmbed(keys.commands.serverinfo.success.general, {
-            server_name: serverName ?? keys.commands.serverinfo.unknown,
+            server_name: serverName ?? keys.common.unknown,
             motd: motd.join('\n'),
             max_players: propertiesObject['max-players'],
             online_players: onlinePlayers,
             ip: serverIp,
-            version: datObject.Data.Version?.Name ?? `1.${server.version}`,
+            version: datObject.Data.Version?.Name ?? server.version,
         });
         if(isCached) setCachedFooter(generalEmbed);
 
@@ -189,8 +195,8 @@ export default class ServerInfo extends Command {
 
         if(isAdmin) {
             const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
-                enable_whitelist: propertiesObject['white-list'] ? keys.commands.serverinfo.enabled : keys.commands.serverinfo.disabled,
-                seed: datObject.Data.WorldGenSettings?.seed ?? keys.commands.serverinfo.unknown,
+                enable_whitelist: propertiesObject['white-list'] ? keys.common.enabled : keys.common.disabled,
+                seed: datObject.Data.WorldGenSettings?.seed ?? keys.common.unknown,
             });
             const newFields = [];
             if(plugins.length > 0) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[0], { plugins: plugins.join('\n') }));

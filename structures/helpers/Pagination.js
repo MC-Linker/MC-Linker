@@ -12,16 +12,19 @@ import { createActionRows, getComponent } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import {
     ComponentSizeInActionRow,
+    DefaultCollectorTimeout,
     disableComponents,
     flattenActionRows,
     MaxActionRows,
     MaxActionRowSize,
 } from '../../utilities/utils.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.structures.helpers.pagination });
 
 export default class Pagination {
-
-    // 3 minutes (token valid for 15 minutes)
-    static DEFAULT_TIMEOUT = 180_000;
 
     static NAVIGATION_BUTTON_IDS = {
         NEXT: 'pagination_next',
@@ -36,7 +39,7 @@ export default class Pagination {
      * @property {ButtonBuilder} [exitButton] - The button to use for exiting the nested pagination
      * @property {boolean} [showSelectedButton=true] - Whether the currently selected button should be shown
      * @property {boolean} [showStartPageOnce=false] - Whether the starting page should only be shown once
-     * @property {number} [timeout=120000] - The timeout for the buttons of the pagination in ms
+     * @property {number} [timeout] - The timeout for the buttons of the pagination in ms
      * @property {Pagination} [parent] - The parent of this pagination (only used for nested paginations)
      * @property {ButtonStyle} [highlightSelectedButton] - The style to use for the selected button
      */
@@ -44,7 +47,7 @@ export default class Pagination {
     /**
      * @typedef  {Object} PaginationPage
      * @property {ButtonBuilder} [button] - The button that points to this page
-     * @property {import('discord.js').BaseMessageOptions} [options] - The message options to send
+     * @property {import('discord.js').BaseMessageOptions | (() => import('discord.js').BaseMessageOptions | Promise<import('discord.js').BaseMessageOptions>)} [options] - The message options to send, or a function that returns them (for dynamic/lazy loading). The function is called once and the result is cached.
      * @property {PaginationPages} [pages] - The pages to send (for nested pagination)
      * @property {boolean} [startPage=false] - Whether this is the starting page
      * @property {PaginationOptions} [pageOptions] - The options for this page (for nested pagination)
@@ -141,7 +144,7 @@ export default class Pagination {
             nextButton: getComponent(keys.api.component.success.next_button, { id: Pagination.NAVIGATION_BUTTON_IDS.NEXT }),
             backButton: getComponent(keys.api.component.success.back_button, { id: Pagination.NAVIGATION_BUTTON_IDS.BACK }),
             exitButton: getComponent(keys.api.component.success.exit_button, { id: Pagination.NAVIGATION_BUTTON_IDS.EXIT }),
-            timeout: Pagination.DEFAULT_TIMEOUT,
+            timeout: DefaultCollectorTimeout,
             showSelectedButton: true,
             highlightSelectedButton: ButtonStyle.Primary,
             showStartPageOnce: false,
@@ -228,7 +231,7 @@ export default class Pagination {
     _createCollector(message) {
         this.collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: this.options.timeout ?? Pagination.DEFAULT_TIMEOUT,
+            time: this.options.timeout ?? DefaultCollectorTimeout,
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', async (_, reason) => {
@@ -237,12 +240,30 @@ export default class Pagination {
             try {
                 message = await message.fetch(); // Get the latest components
             }
-            catch {}
+            catch {
+                // Ephemeral messages cannot be fetched — fall back to editing without fetch
+            }
             if(!message?.components) return;
 
-            //TODO fix breaks with ephemerals
-            await message.edit({ components: disableComponents(message.components) });
+            try {
+                //TODO doesnt work with ephemeral messages i believe, needs to be tested, would have to store interaction (tokens) in that case
+                await message.edit({ components: disableComponents(message.components) });
+            }
+            catch(err) {
+                trackError('unhandled', 'Pagination', this.interaction?.guildId, null, err, null, logger);
+            }
         });
+    }
+
+    /**
+     * Resolves the options for a page. If options is a function, calls it and caches the result.
+     * @param {PaginationPage} page - The page to resolve options for.
+     * @returns {Promise<import('discord.js').BaseMessageOptions>} - The resolved message options.
+     * @private
+     */
+    async _resolvePageOptions(page) {
+        if(typeof page.options === 'function') page.options = await page.options();
+        return page.options;
     }
 
     /**
@@ -252,14 +273,14 @@ export default class Pagination {
      */
     async _sendInitialMessage() {
         const startPage = this._getStartPage();
-        const options = startPage.options;
+        const options = await this._resolvePageOptions(startPage);
 
-        const components = this._getReplyRows(startPage.options, startPage.button?.data?.custom_id, 'stay');
+        const components = this._getReplyRows(options, startPage.button?.data?.custom_id, 'stay');
 
         this.lastPage = startPage;
         this.lastMessageOptions = { ...options, components };
 
-        return await this.interaction.replyOptions(this.lastMessageOptions);
+        return await this.interaction.editReply(this.lastMessageOptions);
     }
 
     /**
@@ -295,7 +316,7 @@ export default class Pagination {
         this.collector = null;
 
         // Return to parent pagination
-        const message = await this.parent.interaction.replyOptions(this.parent.lastMessageOptions);
+        const message = await this.parent.interaction.editReply(this.parent.lastMessageOptions);
         return this.parent._createCollector(message);
     }
 
@@ -343,7 +364,7 @@ export default class Pagination {
      * @private
      */
     async _navigateToPage(interaction, page) {
-        const options = page.options;
+        const options = await this._resolvePageOptions(page);
 
         const components = this._getReplyRows(options, page.button.data.custom_id, 'stay');
         this.lastPage = { button: page.button, options };

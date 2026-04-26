@@ -1,7 +1,4 @@
 import Event from '../structures/Event.js';
-import { addPh, ph } from '../utilities/messages.js';
-import keys from '../utilities/keys.js';
-import logger from '../utilities/logger.js';
 import { Events } from 'discord.js';
 
 /**
@@ -15,9 +12,16 @@ export default class GuildDelete extends Event {
         });
     }
 
-    async execute(client, guild) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Guild]} args - [0] The guild.
+     * @param logger
+     */
+    async run(client, [guild], logger) {
         if(!client.isReady() || !guild.available) return;
-        logger.info(addPh(keys.main.success.guild_delete.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
+        logger.debug({ guildId: guild.id }, `Left a guild: ${guild.name}: ${guild.memberCount} members. Shard is now on ${client.guilds.cache.size} servers!`);
+        client.analytics.trackGuildLeave(guild.id, guild.memberCount);
         await client.serverConnections.disconnect(guild.id);
         await client.serverSettingsConnections.disconnect(guild.id);
     }

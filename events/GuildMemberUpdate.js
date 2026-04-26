@@ -12,7 +12,13 @@ export default class GuildMemberUpdate extends Event {
         });
     }
 
-    async execute(client, oldMember, newMember) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').GuildMember, import('discord.js').GuildMember]} args - [0] The old member data, [1] The new member data.
+     * @param logger
+     */
+    async run(client, [oldMember, newMember], logger) {
         if(!oldMember.roles) return;
         if(oldMember.roles.cache.size === newMember.roles.cache.size) return;
 
@@ -23,12 +29,9 @@ export default class GuildMemberUpdate extends Event {
         const uuid = user?.getUUID(server);
 
         // Required Role To Join
-        if(server.requiredRoleToJoin) {
-            //TODO make function in server
-            if(
-                server.requiredRoleToJoin.method === 'any' && !server.requiredRoleToJoin.roles.some(id => newMember.roles.cache.has(id)) ||
-                server.requiredRoleToJoin.method === 'all' && !server.requiredRoleToJoin.roles.every(id => newMember.roles.cache.has(id))
-            ) await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
+        if(server.requiredRoleToJoin && user) {
+            if(!server.hasRequiredRole(newMember))
+                await server.protocol.execute(`kick ${user.username} §cYou do not have the required role to join this server`);
         }
 
         const addedRole = newMember.roles.cache.find(role => !oldMember.roles.cache.has(role.id));
@@ -47,15 +50,21 @@ export default class GuildMemberUpdate extends Event {
         // Cancel events if mc is authoritative
         if(syncedRole.direction === 'to_discord') {
             // Re-remove the added role if user isnt linked or if the change is not reflected in the players array already (change was bot-initiated)
-            if((!user || !noChangeToPlayers) && addedRole) newMember.roles.remove(addedRole.id).catch(() => {});
+            if((!user || !noChangeToPlayers) && addedRole) newMember.roles.remove(addedRole.id).catch(err => client.analytics.trackError('api_ws', 'GuildMemberUpdate', newMember.guild.id, newMember.id, err, {
+                roleId: addedRole.id,
+                action: 're-remove',
+            }, logger));
             // Re-add the removed role if the change is not reflected in the players array already (change was bot-initiated)
-            else if(removedRole && !noChangeToPlayers) newMember.roles.add(removedRole.id).catch(() => {});
+            else if(removedRole && !noChangeToPlayers) newMember.roles.add(removedRole.id).catch(err => client.analytics.trackError('api_ws', 'GuildMemberUpdate', newMember.guild.id, newMember.id, err, {
+                roleId: removedRole.id,
+                action: 're-add',
+            }, logger));
             return;
         }
 
         if(!user) return;
         // Skip if the change is already reflected in players — this was a bot-initiated update
-        if(noPlayerChange) return;
+        if(noChangeToPlayers) return;
 
         let resp;
         if(addedRole) resp = await server.protocol.addSyncedRoleMember(syncedRole, uuid);
@@ -64,6 +73,6 @@ export default class GuildMemberUpdate extends Event {
 
         syncedRole.players = resp.data;
         server.syncedRoles[roleIndex] = syncedRole;
-        await server.edit({});
+        await server.edit({ syncedRoles: server.syncedRoles });
     }
-} 
+}

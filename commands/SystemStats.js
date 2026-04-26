@@ -1,11 +1,10 @@
 import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
 import os from 'node:os';
-import { getReplyOptions, ph } from '../utilities/messages.js';
+import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import Discord from 'discord.js';
 import { durationString } from '../utilities/utils.js';
 import fs from 'fs-extra';
-import logger from '../utilities/logger.js';
 
 export default class SystemStats extends Command {
 
@@ -21,13 +20,19 @@ export default class SystemStats extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
-        const stats = await interaction.replyTl(keys.commands.systemstats.step.measuring);
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[]} args - No arguments.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
+        const stats = addTranslatedResponses(await interaction.sendTl(keys.commands.systemstats.step.measuring));
 
         for(const [key, value] of Object.entries(process.memoryUsage())) {
-            logger.info(`Memory usage by ${key}, ${value / 1000000}MB`);
+            logger.debug(`Memory usage by ${key}, ${value / 1000000}MB`);
         }
 
         const memoryUsage = ((os.totalmem() - os.freemem()) / this.gigabyte).toFixed(2);
@@ -40,11 +45,11 @@ export default class SystemStats extends Command {
             });
         }));
 
-        return await stats.edit(getReplyOptions(keys.commands.systemstats.success, {
+        return await stats.editTl(keys.commands.systemstats.success, {
             platform: `${os.platform()} ${os.release()}`,
             os_uptime: `${durationString(os.uptime() * 1000)}`,
             bot_uptime: `${durationString(client.uptime)}`,
-            cpu: `${os.cpus()[0].model}`,
+            cpu: `${os.cpus()[0]?.model ?? 'Unknown'}`,
             cpu_usage_percent: (await this.getCPUUsage() * 100).toFixed(2),
             memory_usage: memoryUsage,
             max_memory: maxMemory,
@@ -54,7 +59,7 @@ export default class SystemStats extends Command {
             storage_usage: `${storage?.used ? (storage.used / this.gigabyte).toFixed(2) : 'N/A'}`,
             max_storage: `${storage?.max ? (storage.max / this.gigabyte).toFixed(2) : 'N/A'}`,
             storage_usage_percent: `${storage?.used ? (storage.used / storage.max * 100).toFixed(2) : 'N/A'}`,
-        }, ph.colors()));
+        }, ph.colors());
     }
 
     async getCPUUsage() {

@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Deploy Guild Commands" type="NodeJSConfigurationType" application-parameters="deploy --guild" path-to-js-file="$PROJECT_DIR$/scripts/deploy.js" working-dir="$PROJECT_DIR$">
+    <method v="2" />
+  </configuration>
+</component>

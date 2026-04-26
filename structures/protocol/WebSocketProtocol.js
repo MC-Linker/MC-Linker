@@ -1,6 +1,10 @@
 import Protocol, { ProtocolError } from './Protocol.js';
 import fs from 'fs-extra';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.structures.protocol.websocket });
 
 export default class WebSocketProtocol extends Protocol {
 
@@ -63,7 +67,7 @@ export default class WebSocketProtocol extends Protocol {
         const buffer = Buffer.from(response.data, 'base64');
 
         fs.outputFile(putPath, buffer)
-            .catch(err => logger.error(err, 'Error while writing file from get-file response'));
+            .catch(err => trackError('unhandled', 'WebSocketProtocol.get', this.id, null, err, null, logger));
         return { status: 'success', data: buffer };
     }
 
@@ -76,11 +80,11 @@ export default class WebSocketProtocol extends Protocol {
      * @returns {Promise<?ProtocolResponse>} - The response from the plugin.
      */
     disconnect() {
-        return this.client.shard.broadcastEval(async (c, { id }) => {
+        return this.client.broadcastEval(async (c, { id }) => {
             /** @type {WebSocketProtocol} */
             const protocol = c.serverConnections.cache.get(id).protocol;
             if(!protocol.socket) return { status: 'success', data: null };
-            await protocol.socket.disconnect(true);
+            protocol.socket.disconnect(true);
             return { status: 'success', data: null };
         }, { context: { id: this.id }, shard: 0 });
     }
@@ -143,7 +147,9 @@ export default class WebSocketProtocol extends Protocol {
                 const webhook = await this.client.fetchWebhook(webhookId);
                 await webhook.delete();
             }
-            catch(_) {}
+            catch(err) {
+                trackError('unhandled', 'WebSocketProtocol.removeChatChannel', this.id, null, err, { webhookId }, logger);
+            }
         }
 
         return await this._sendRaw('remove-channel', channel);
@@ -269,25 +275,38 @@ export default class WebSocketProtocol extends Protocol {
      */
     _sendRaw(name, ...data) {
         // Broadcast the event to shard 0 where the websocket server is running
-        return this.client.shard.broadcastEval(async (c, { id, name, data }) => {
+        return this.client.broadcastEval(async (c, { id, name, data }) => {
+            const clog = c.logger.child({
+                feature: c.features.structures.protocol.websocket,
+                guildId: id,
+            }, { track: false });
             return await new Promise(resolve => {
                 /** @type {WebSocketProtocol} */
                 const protocol = c.serverConnections.cache.get(id).protocol;
                 if(!protocol.socket) return resolve(null);
-                c.logger.debug(`[Socket.IO] Sending event ${name} with data: ${JSON.stringify(data)}`);
+                clog.debug(`Sending event ${name} with data: ${JSON.stringify(data)}`);
                 protocol.socket.timeout(10_000).emit(name, ...data, (err, response) => {
                     if(err) {
-                        c.logger.error(err, `[Socket.IO] Error while sending event ${name}`);
+                        c.analytics.trackError('unhandled', 'WebSocketProtocol._sendRaw', id, null, err, { event: name }, clog);
                         return resolve(null);
                     }
 
                     if(typeof response === 'string') {
-                        c.logger.debug(`[Socket.IO] Received response for event ${name}: ${response}`);
-                        const responseObj = JSON.parse(response);
-                        resolve(responseObj);
+                        clog.debug(`Received response for event ${name}: ${response}`);
+                        try {
+                            const responseObj = JSON.parse(response);
+                            resolve(responseObj);
+                        }
+                        catch(err) {
+                            c.analytics.trackError('unhandled', 'WebSocketProtocol._sendRaw', id, null, err, {
+                                event: name,
+                                reason: 'parse_response',
+                            }, clog);
+                            resolve(null);
+                        }
                     }
                     else {
-                        c.logger.debug(`[Socket.IO] Received response for event ${name}`);
+                        clog.debug(`Received response for event ${name}`);
                         resolve(response);
                     }
                 });

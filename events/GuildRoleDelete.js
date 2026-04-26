@@ -2,17 +2,23 @@ import Event from '../structures/Event.js';
 import { Events } from 'discord.js';
 
 /**
- * Handles the Discord guildMemberUpdate event for the MC-Linker bot.
- * Syncs roles and enforces required roles for Minecraft server access.
+ * Handles the Discord guildRoleDelete event for the MC-Linker bot.
+ * Removes synced roles from the server connection when the Discord role is deleted.
  */
-export default class GuildMemberUpdate extends Event {
+export default class GuildRoleDelete extends Event {
     constructor() {
         super({
             name: Events.GuildRoleDelete,
         });
     }
 
-    async execute(client, role) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Role]} args - [0] The role.
+     * @param logger
+     */
+    async run(client, [role], logger) {
         const server = client.serverConnections.cache.get(role.guild.id);
         if(!server) return;
 
@@ -20,7 +26,6 @@ export default class GuildMemberUpdate extends Event {
         if(roleIndex === -1) return;
 
         await server.protocol.removeSyncedRole(server.syncedRoles[roleIndex]);
-        server.syncedRoles.splice(roleIndex, 1);
-        await server.edit({});
+        await server.edit({ syncedRoles: server.syncedRoles.filter(r => r.id !== role.id) });
     }
 } 

@@ -1,6 +1,9 @@
 import { CommandInteraction, Message, MessageFlags } from 'discord.js';
 import keys from '../utilities/keys.js';
+import rootLogger from '../utilities/logger/Logger.js';
+import features from '../utilities/logger/features.js';
 
+/** @abstract **/
 export default class Command {
 
     /**
@@ -86,23 +89,28 @@ export default class Command {
 
     /**
      * Handles the execution of a command.
+     * Validates the interaction, creates a child logger, and delegates to {@link run}.
      * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @param {any[]} args - The command arguments set by the user.
      * @param {ServerConnection} server - The connection of the server the command was executed in.
-     * @returns {Promise<?boolean>|?boolean}
-     * @abstract
      */
     async execute(interaction, client, args, server) {
-        await interaction.replyTl(keys.api.command.executed, { args: args.join(' ') });
+        const logger = rootLogger.child({
+            feature: features.commands[this.name],
+            guildId: interaction.guildId,
+            userId: interaction.user.id,
+        }, { track: false });
+
+        logger.debug(`Command ${this.name} executed with args: ${args.join(' ')}`);
         if(this.defer) await interaction.deferReply?.({ flags: this.ephemeral ? MessageFlags.Ephemeral : undefined });
 
-        if(!this.allowUser && !interaction.inGuild()) return interaction.replyTl(keys.main.no_access.not_in_guild);
+        if(!this.allowUser && !interaction.inGuild()) return interaction.editReplyTl(keys.main.no_access.not_in_guild);
 
-        if(this.ownerOnly) return interaction.user.id === process.env.OWNER_ID;
+        if(this.ownerOnly && interaction.user.id !== process.env.OWNER_ID) return false;
 
         if(this.requiresConnectedServer && !server) {
-            await interaction.replyTl(keys.api.command.errors.server_not_connected);
+            await interaction.editReplyTl(keys.api.command.errors.server_not_connected);
             return false;
         }
 
@@ -115,11 +123,25 @@ export default class Command {
 
         if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
             if(process.env.NODE_ENV === 'production' && !client.isCustomBot()) {
-                await interaction.replyTl(keys.commands.customize.warnings.no_entitlement);
+                await interaction.editReplyTl(keys.main.no_access.no_entitlement);
                 return false;
             }
         }
 
-        return true;
+        await this.run(interaction, client, args, server, logger);
+    }
+
+    /**
+     * Implements the command's specific logic.
+     * @param {(Message|CommandInteraction) & TranslatedResponses} interaction - The message/slash command interaction.
+     * @param {MCLinker} client - The MCLinker client.
+     * @param {any[]} args - The command arguments set by the user.
+     * @param {?ServerConnection} server - The connection of the server the command was executed in.
+     * @param {import('pino').Logger} logger - A child logger bound to this execution.
+     * @returns {Promise<void|any>|void|any}
+     * @abstract
+     */
+    async run(interaction, client, args, server, logger) {
+        throw new Error(`The run method has not been implemented for the ${this.name} command.`);
     }
 }

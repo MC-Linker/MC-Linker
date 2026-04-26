@@ -1,18 +1,14 @@
 import * as utils from '../../utilities/utils.js';
-import { MinecraftDataVersion } from '../../utilities/utils.js';
+import { getMinecraftData } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
 import Canvas from 'skia-canvas';
 import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
-import MinecraftData from 'minecraft-data';
 import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
-import logger from '../../utilities/logger.js';
-
-const mcData = MinecraftData(MinecraftDataVersion);
 
 const startCoords = [41, 152];
 const yPadding = 7;
@@ -34,9 +30,16 @@ export default class Stats extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, UserResponse, string]} args - [0] The stat category, [1] The resolved user, [2] The sorting order.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
+        const mcData = getMinecraftData(server.version);
         const category = args[0];
         const user = args[1];
         const sorting = args[2] ?? 'descending';
@@ -52,10 +55,10 @@ export default class Stats extends Command {
         try {
             const statData = JSON.parse(statFile.data.toString());
             stats = statData.stats[`minecraft:${category}`];
-            if(!stats) return interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
+            if(!stats) return interaction.editReplyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
         catch(err) {
-            await interaction.replyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
+            return interaction.editReplyTl(keys.commands.stats.errors.could_not_parse, argPlaceholder);
         }
 
         if(sorting === 'descending')
@@ -177,7 +180,7 @@ export default class Stats extends Command {
                     }
                     catch(err) {
                         //Draw name
-                        logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': id }));
+                        logger.debug(`Could not find item image ${id}. Applying text...`);
                         const fontSize = 12;
                         ctx.font = `${fontSize}px Minecraft`;
                         ctx.fillStyle = '#000';
@@ -191,7 +194,7 @@ export default class Stats extends Command {
                     }
 
                     // Draw number
-                    await utils.drawMinecraftNumber(
+                    utils.drawMinecraftNumber(
                         ctx, value,
                         x + headerSize + numberPadding[0],
                         y + numberPadding[1],
@@ -213,7 +216,7 @@ export default class Stats extends Command {
             // Draw statistics text
             ctx.font = '64px Minecraft';
             ctx.fillStyle = '#fcfcfc';
-            const text = addPh(keys.commands.stats.success.title, { category: category.toTitleCase(true) });
+            const text = addPh(keys.commands.stats.success.title, { category: utils.toTitleCase(category, true) });
             const textWidth = ctx.measureText(text).width;
             utils.drawMinecraftText(ctx, text, statsCanvas.width / 2 - textWidth / 2, 80, true);
 

@@ -17,15 +17,21 @@ export default class Command extends AutocompleteCommand {
         return this.autocompleteFromCommandCompletions(interaction, client);
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[...string]} args - [0+] The command string parts to execute.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
         const selectedValue = args.join(' ').trim();
         const commandInput = this.resolveAutocompleteValue(selectedValue, interaction);
-        if(commandInput === null) return interaction.replyTl(keys.commands.command.warnings.autocomplete_selection_expired);
+        if(commandInput === null) return interaction.editReplyTl(keys.commands.command.warnings.autocomplete_selection_expired);
 
         let command = this.replaceMentionsWithUsernames(commandInput, interaction, client);
-        if(command === null) return;
+        if(command === null) return interaction.editReplyTl(keys.api.command.errors.user_not_connected);
         if(command.startsWith('/')) command = command.slice(1);
 
         const userConnection = client.userConnections.cache.get(interaction.user.id);
@@ -35,7 +41,7 @@ export default class Command extends AutocompleteCommand {
         let respMessage = resp.status === 'success' ? resp.data.message : keys.api.plugin.warnings.no_response_message;
         respMessage = codeBlockFromCommandResponse(respMessage);
 
-        return interaction.replyTl(keys.commands.command.success, { 'response': respMessage });
+        return interaction.editReplyTl(keys.commands.command.success, { 'response': respMessage });
     }
 
     replaceMentionsWithUsernames(commandInput, interaction, client) {

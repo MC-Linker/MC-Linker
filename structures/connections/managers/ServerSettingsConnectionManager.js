@@ -42,9 +42,9 @@ export default class ServerSettingsConnectionManager extends ConnectionManager {
      * @returns {Promise<?ServerSettingsConnection>}
      */
     async getOrConnect(guildId) {
-        const connection = await this.cache.get(guildId);
+        const connection = this.cache.get(guildId);
         if(connection) return connection;
 
-        return await this.connect(ServerSettingsConnection.defaultSettingsData);
+        return await this.connect({ ...ServerSettingsConnection.defaultSettingsData, id: guildId });
     }
 }

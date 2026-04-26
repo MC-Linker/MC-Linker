@@ -1,10 +1,14 @@
 import Connection from './Connection.js';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import { execAsync } from '../../utilities/utils.js';
 import crypto from 'crypto';
 import MCLinker from '../MCLinker.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.customBot });
 
 export default class CustomBotConnection extends Connection {
     /**
@@ -118,7 +122,7 @@ export default class CustomBotConnection extends Connection {
         await fs.ensureDir(`${this.dataFolder}/download-cache`);
         await fs.ensureDir(`${this.dataFolder}/logs`);
 
-        await logger.info(`Custom bot data folder created at ${this.dataFolder}`);
+        logger.debug({ userId: this.ownerId }, `Custom bot data folder created at ${this.dataFolder}`);
 
         await this.build();
     }
@@ -150,8 +154,8 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async build() {
-        logger.info(`Building custom bot ${this.containerName}`);
-        logger.info((await execAsync(`docker build . -t lianecx/${this.containerName}`)).stdout);
+        logger.debug({ userId: this.ownerId }, `Building custom bot ${this.containerName}`);
+        logger.debug((await execAsync(`docker build . -t lianecx/${this.containerName}`)).stdout);
     }
 
     /**
@@ -160,8 +164,51 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async update() {
-        //TODO update config.json and .env
-        logger.info(`Updating custom bot ${this.containerName}`);
+        logger.debug({ userId: this.ownerId }, `Updating custom bot ${this.containerName}`);
+
+        // Read existing .env to preserve secrets (TOKEN, COOKIE_SECRET)
+        const existingEnvRaw = await fs.readFile(`${this.dataFolder}/.env`, 'utf-8').catch(() => '');
+        const existingEnv = Object.fromEntries(
+            existingEnvRaw.split('\n').filter(l => l.includes('=')).map(l => {
+                const idx = l.indexOf('=');
+                return [l.slice(0, idx), l.slice(idx + 1)];
+            }),
+        );
+
+        const env = {
+            BOT_PORT: this.port,
+            PLUGIN_PORT: process.env.PLUGIN_PORT,
+            CLIENT_ID: this.id,
+            CLIENT_SECRET: existingEnv.CLIENT_SECRET ?? '',
+            TOKEN: existingEnv.TOKEN ?? '',
+            COOKIE_SECRET: existingEnv.COOKIE_SECRET ?? crypto.randomUUID(),
+            GUILD_ID: `\'${process.env.GUILD_ID}\'`,
+            OWNER_ID: process.env.OWNER_ID,
+            LINKED_ROLES_REDIRECT_URI: `http://api.mclinker.com:${this.port}/linked-role/callback`,
+            MICROSOFT_EMAIL: process.env.MICROSOFT_EMAIL,
+            MICROSOFT_PASSWORD: `\"${process.env.MICROSOFT_PASSWORD}\"`,
+            AZURE_CLIENT_ID: process.env.AZURE_CLIENT_ID,
+            IO_USERNAME: process.env.IO_USERNAME,
+            IO_PASSWORD: process.env.IO_PASSWORD,
+            SERVICE_NAME: `custom-mc-linker_${this.ownerId}`,
+            DATABASE_URL: `mongodb://mongodb:27017/custom-mc-linker_${this.ownerId}`,
+            DATA_FOLDER: this.dataFolder,
+            NODE_ENV: 'production',
+            CUSTOM_BOT: 'true',
+            COMMUNICATION_TOKEN: this.communicationToken,
+        };
+
+        const stringifiedEnv = Object.entries(env).map(([key, value]) => `${key}=${value}`).join('\n');
+        await fs.outputFile(`${this.dataFolder}/.env`, stringifiedEnv);
+
+        /** @type {MCLinkerConfig} */
+        const configJson = {
+            ...this.client.config,
+            emojis: null,
+            prefix: this.port + this.client.config.prefix,
+        };
+        await MCLinker.writeConfig(configJson, `${this.dataFolder}/config.json`);
+
         await this.build();
         return await this.start();
     }
@@ -182,47 +229,27 @@ export default class CustomBotConnection extends Connection {
             stdio: 'inherit',
         });
 
-        // Check logs until the bot is ready
-        return new Promise((resolve, reject) => {
-            let waitForStartTimeout;
-            let readyListener = req => {
-                if(req.headers['x-communication-token'] !== this.communicationToken) return;
-                logger.info('Custom bot is ready!');
-                resolve();
-                this.client.api.off('/custom-bot-api-ready', readyListener);
-                clearTimeout(waitForStartTimeout);
-            };
-            this.client.api.on('/custom-bot-api-ready', readyListener);
+        const readyPromise = this.client.api.waitForAPIEvent('/custom-bot-api-ready', 120_000, req => {
+            if(req.headers['x-communication-token'] !== this.communicationToken) return;
+            logger.info({ userId: this.ownerId }, 'Custom bot is ready!');
+            return req;
+        });
 
-            waitForStartTimeout = setTimeout(() => {
-                reject(new Error('Timeout waiting for bot to start'));
-                this.client.api.off('/custom-bot-api-ready', readyListener);
-
-                try {
-                    this.down();
-                }
-                catch(_) {}
-            }, 60_000);
-
-            composeProcess.on('close', code => {
-                if(code !== 0) {
-                    reject(new Error(`Docker compose failed with code ${code}`));
-                    clearTimeout(waitForStartTimeout);
-                    this.client.api.off('/custom-bot-api-ready', readyListener);
-
-                    try {
-                        this.down();
-                    }
-                    catch(_) {}
-                }
+        const composeFailurePromise = new Promise((_, reject) => {
+            composeProcess.once('close', code => {
+                if(code !== 0) reject(new Error(`Docker compose failed with code ${code}`));
             });
 
-            composeProcess.on('error', err => {
-                reject(err);
-                clearTimeout(waitForStartTimeout);
-                this.client.api.off('/custom-bot-api-ready', readyListener);
-                this.down();
-            });
+            composeProcess.once('error', reject);
+        });
+
+        return Promise.race([readyPromise, composeFailurePromise]).catch(err => {
+            try {
+                void this.down();
+            }
+            catch {}
+
+            throw err;
         });
     }
 
@@ -231,7 +258,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<string>} - The output of the docker command.
      */
     async stop() {
-        logger.info(`Stopping custom bot container ${this.containerName}`);
+        logger.debug({ userId: this.ownerId }, `Stopping custom bot container ${this.containerName}`);
 
         return (await execAsync(`docker compose -f docker-compose-custom.yml stop custom-mc-linker`, {
             env: this.dockerEnv,
@@ -243,7 +270,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<string>} - The output of the docker command.
      */
     async down() {
-        logger.info(`Shutting down and removing custom bot container ${this.containerName}`);
+        logger.debug({ userId: this.ownerId }, `Shutting down and removing custom bot container ${this.containerName}`);
 
         return (await execAsync(`docker compose -f docker-compose-custom.yml down custom-mc-linker --rmi all --volumes`, {
             env: this.dockerEnv,
@@ -279,13 +306,13 @@ export default class CustomBotConnection extends Connection {
             });
 
             if(!response.ok) {
-                logger.error(response.error, `Failed to communicate with custom bot ${this.containerName} at path /${path}`);
+                trackError('unhandled', 'CustomBotConnection', null, this.ownerId, new Error(`Failed to communicate with custom bot ${this.containerName} at path /${path}: ${response.status}`), null, logger);
                 return false;
             }
             else return true;
         }
         catch(err) {
-            logger.error(err, `Failed to communicate with custom bot ${this.containerName} at path /${path}`);
+            trackError('unhandled', 'CustomBotConnection', null, this.ownerId, err, null, logger);
             return false;
         }
     }
@@ -295,7 +322,7 @@ export default class CustomBotConnection extends Connection {
      * @return {Promise<void>}
      */
     async removeData() {
-        logger.info(`Removing custom bot data ${this.dataFolder}`);
+        logger.debug({ userId: this.ownerId }, `Removing custom bot data ${this.dataFolder}`);
         await fs.remove(`${this.dataFolder}/config.json`);
         await fs.remove(`${this.dataFolder}/.env`);
         await fs.remove(`${this.dataFolder}/download-cache`);

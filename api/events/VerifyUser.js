@@ -18,13 +18,13 @@ export default class VerifyUser extends WSEvent {
      */
 
     /**
-     * Listens to a dm message of the user containing the code to verify the user.
-     * @param {VerifyUserRequest} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {void}
+     * @inheritdoc
+     * @param {VerifyUserRequest} data - The request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         const onlineUUID = server.online ? data.uuid : await fetchUUID(data.username);
         client.api.usersAwaitingVerification.set(data.code, { uuid: onlineUUID, username: data.username });
         setTimeout(() => client.api.usersAwaitingVerification.delete(data.code), 180_000);

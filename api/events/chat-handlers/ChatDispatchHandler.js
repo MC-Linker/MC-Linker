@@ -1,4 +1,8 @@
-import logger from '../../../utilities/logger.js';
+import rootLogger from '../../../utilities/logger/Logger.js';
+import features from '../../../utilities/logger/features.js';
+import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.dispatch });
 
 
 export default class ChatDispatchHandler {
@@ -151,7 +155,7 @@ export default class ChatDispatchHandler {
         if(!force && now - state.lastSummaryAt < this.highLoadSummaryIntervalMs) return;
 
         try {
-            logger.debug(`[ChatDispatch] Emitting high-load summary for queue ${key} (skippedCount=${state.skippedCount}, force=${force})`);
+            logger.debug(`Emitting high-load summary for queue ${key} (skippedCount=${state.skippedCount}, force=${force})`);
             await this.onHighLoadSkipped({
                 key,
                 item: state.lastItem,
@@ -162,7 +166,7 @@ export default class ChatDispatchHandler {
             state.skippedCount = 0;
         }
         catch(err) {
-            logger.error(err, `[ChatDispatch] Failed sending high-load summary for queue ${key}`);
+            trackError('api_ws', 'ChatDispatch', null, null, err, { key }, logger);
         }
     }
 
@@ -231,7 +235,7 @@ export default class ChatDispatchHandler {
             else this.states.delete(key);
         }
         catch(err) {
-            logger.error(err, `[ChatDispatch] Failed processing queue ${key}`);
+            trackError('api_ws', 'ChatDispatch', null, null, err, { key }, logger);
             this.scheduleProcess(key, 500);
         }
         finally {

@@ -1,8 +1,5 @@
 import Event from '../structures/Event.js';
 import Canvas from 'skia-canvas';
-import { addPh, ph } from '../utilities/messages.js';
-import keys from '../utilities/keys.js';
-import logger from '../utilities/logger.js';
 import { Events } from 'discord.js';
 
 /**
@@ -17,12 +14,14 @@ export default class ClientReady extends Event {
         });
     }
 
-    async execute(client, _) {
-        logger.info(addPh(
-            keys.main.success.login.console,
-            ph.client(),
-            { prefix: client.config.prefix, 'guild_count': client.guilds.cache.size },
-        ));
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[]} args - No event arguments.
+     * @param logger
+     */
+    async run(client, args, logger) {
+        logger.info(`Bot logged in as ${client.user.tag} and with prefix: ${client.config.prefix}\nShard is on ${client.guilds.cache.size} servers.`);
 
         Canvas.FontLibrary.use('Minecraft', './resources/fonts/Minecraft.ttf');
     }

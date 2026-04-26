@@ -2,7 +2,7 @@ export default {
     ServerConnection: {
         _id: { type: String },
         ip: String,
-        version: Number,
+        version: String,
         path: String,
         worldPath: String,
         online: Boolean,
@@ -23,7 +23,7 @@ export default {
         }],
         statChannels: [{
             _id: { type: String },
-            type: { type: String, enum: ['member-counter', 'status'] },
+            updateTarget: { type: String, enum: ['name', 'topic'] },
             names: {
                 online: String,
                 offline: String,
@@ -37,7 +37,7 @@ export default {
             players: [String],
             direction: { type: String, enum: ['both', 'to_minecraft', 'to_discord'], default: 'both' },
         }],
-        serverSettings: { type: String, ref: 'ServerSettingsConnections' },
+        serverSettings: { type: String, ref: 'ServerSettingsConnection' },
     },
     ServerSettingsConnection: {
         _id: { type: String },
@@ -59,6 +59,11 @@ export default {
             refreshToken: String,
             expires: Number,
         },
+        dms: {
+            enabled: Boolean,
+            blockedServers: [String],
+            blockedPlayers: [String],
+        },
         user: { type: String, ref: 'UserConnection' },
     },
     CustomBotConnection: {
@@ -66,5 +71,108 @@ export default {
         port: Number,
         ownerId: String,
         communicationToken: String,
+    },
+    AnalyticsSnapshot: {
+        _id: String,
+        timestamp: { type: Date, index: true },
+        period: { type: String, enum: ['hourly'], default: 'hourly' },
+        guilds: {
+            total: Number,
+            joined: Number,
+            left: Number,
+        },
+        users: {
+            approximate: Number,
+        },
+        shards: [{
+            _id: false,
+            id: Number,
+            guilds: Number,
+            ping: Number,
+            uptime: Number,
+            memoryMB: Number,
+            cpuPercent: Number,
+        }],
+        commands: [{
+            _id: false,
+            name: String,
+            count: Number,
+            errors: Number,
+            avgDurationMs: Number,
+        }],
+        components: [{
+            _id: false,
+            name: String,
+            count: Number,
+            errors: Number,
+            avgDurationMs: Number,
+        }],
+        apiCalls: {
+            rest: [{
+                _id: false,
+                name: String,
+                count: Number,
+                avgDurationMs: Number,
+            }],
+            ws: [{
+                _id: false,
+                name: String,
+                count: Number,
+                errors: Number,
+                avgDurationMs: Number,
+            }],
+        },
+        machine: {
+            cpuPercent: Number,
+            memoryUsedMB: Number,
+            memoryTotalMB: Number,
+        },
+        connections: {
+            servers: Number,
+            users: Number,
+            online: Number,
+        },
+        chatMonitor: {
+            throughput: {
+                incoming: Number,
+                enqueued: Number,
+                processed: Number,
+            },
+            queue: {
+                destinations: Number,
+                items: Number,
+            },
+            rateLimits: {
+                type: Map,
+                of: Number,
+            },
+            failures: {
+                permission: Number,
+                creation: Number,
+            },
+            operations: [{
+                _id: false,
+                name: String,
+                count: Number,
+                rateLimits: Number,
+            }],
+        },
+    },
+    AnalyticsError: {
+        timestamp: { type: Date, default: Date.now, index: true },
+        type: { type: String, enum: ['command', 'component', 'api_rest', 'api_ws', 'unhandled'] },
+        name: String,
+        guildId: String,
+        userId: String,
+        shardId: Number,
+        error: {
+            message: String,
+            stack: String,
+            code: String,
+        },
+        context: {
+            type: Map,
+            of: String,
+        },
     },
 };

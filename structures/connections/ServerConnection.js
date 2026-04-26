@@ -2,7 +2,11 @@ import Connection from './Connection.js';
 import WebSocketProtocol from '../protocol/WebSocketProtocol.js';
 import ServerSettingsConnection from './ServerSettingsConnection.js';
 import fs from 'fs-extra';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.server });
 
 export default class ServerConnection extends Connection {
 
@@ -10,18 +14,17 @@ export default class ServerConnection extends Connection {
      * @typedef {object} ChatChannelData - The data for a chatchannel.
      * @property {string} id - The id of the channel.
      * @property {string[]} types - The enabled types of the chatchannel.
-     * @property {string} [allowDiscordToMinecraft] - Whether the chatchannel should send messages from discord to minecraft.
+     * @property {boolean} [allowDiscordToMinecraft] - Whether the chatchannel should send messages from discord to minecraft.
      * @property {string[]} [webhooks] - The webhook ids of the chatchannel.
      */
 
     /**
      * @typedef {object} StatsChannelData - The data for a stats channel.
-     * @property {'member-counter'|'status'} type - The type of the stats channel.
      * @property {string} id - The id of the channel.
-     * @property {object} names - The names for the stats channel.
-     * @property {string} [names.online] - The name when the server is online.
-     * @property {string} [names.offline] - The name when the server is offline.
-     * @property {string} [names.members] - The name for the member count.
+     * @property {'name'|'topic'} [updateTarget='name'] - Whether to update the channel name or topic. Defaults to 'name'.
+     * @property {object} names - The templates for the stats channel.
+     * @property {string} names.online - The template when the server is online.
+     * @property {string} names.offline - The template when the server is offline.
      */
 
     /**
@@ -44,7 +47,7 @@ export default class ServerConnection extends Connection {
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
      * @property {number} port - The port used to connect to the server plugin.
-     * @property {number} version - The minor minecraft version of the server.
+     * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {string} token - The connection token used to connect to the server plugin.
@@ -63,7 +66,7 @@ export default class ServerConnection extends Connection {
      * @property {string} username - The ftp username used to connect to the server.
      * @property {string} password - The ftp password used to connect to the server.
      * @property {number} port - The ftp port used to connect to the server.
-     * @property {number} version - The minor minecraft version of the server.
+     * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {boolean} online - Whether the server-connection has online mode enabled or not.
@@ -75,7 +78,7 @@ export default class ServerConnection extends Connection {
      * @typedef {object} WebSocketServerConnectionData - The data for a server-connection established by a websocket.
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
-     * @property {number} version - The minor minecraft version of the server.
+     * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
      * @property {string} worldPath - The path to the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
@@ -146,8 +149,10 @@ export default class ServerConnection extends Connection {
 
         /**
          * The minecraft version of this server.
-         * @type {number}
+         * @type {string}
          * */
+        // Migrate legacy numeric version (e.g. 21) to string format (e.g. "1.21")
+        if(typeof data.version === 'number') data.version = `1.${data.version}`;
         this.version = data.version ?? this.version;
 
         /**
@@ -205,6 +210,14 @@ export default class ServerConnection extends Connection {
          * @type {StatsChannelData[]}
          */
         this.statChannels = data.statChannels ?? this.statChannels ?? [];
+        // Migrate legacy names.members -> names.online & names.offline on load
+        for(const channel of this.statChannels) {
+            if(channel.names.members) {
+                channel.names.online ??= channel.names.members;
+                channel.names.offline ??= channel.names.members;
+                delete channel.names.members;
+            }
+        }
 
         /**
          * The data for syncedRoles.
@@ -239,6 +252,18 @@ export default class ServerConnection extends Connection {
     }
 
     /**
+     * Checks whether a guild member satisfies the required-role-to-join constraint for this server.
+     * @param {import('discord.js').GuildMember} member - The member to check.
+     * @returns {boolean} - True if no constraint exists or the member satisfies it.
+     */
+    hasRequiredRole(member) {
+        if(!this.requiredRoleToJoin) return true;
+        if(this.requiredRoleToJoin.method === 'any') return this.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id));
+        if(this.requiredRoleToJoin.method === 'all') return this.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id));
+        return false;
+    }
+
+    /**
      * Syncs the roles of a user with the server.
      * @param {import('discord.js').GuildMember} member - The member to sync the roles of.
      * @param {UserConnection} userConnection - The user connection to sync the roles of.
@@ -264,7 +289,7 @@ export default class ServerConnection extends Connection {
                     await discordMember.roles.add(role);
                 }
                 catch(err) {
-                    logger.warn(err, `Failed to add Discord role ${syncedRole.id} during sync reconciliation`);
+                    trackError('unhandled', 'ServerConnection.syncRolesOfMember', this.id, userConnection.id, err, { roleId: syncedRole.id }, logger);
                 }
             }
         }
@@ -284,7 +309,7 @@ export default class ServerConnection extends Connection {
             await fs.rm(`./download-cache/serverConnection/${this.id}/`, { recursive: true });
             return true;
         }
-        catch(_) {
+        catch {
             return false;
         }
     }

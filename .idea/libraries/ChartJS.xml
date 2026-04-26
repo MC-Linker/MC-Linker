@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="ChartJS" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/analytics-dashboard/node_modules/chart.js" />
+        <item url="file://$PROJECT_DIR$/analytics-dashboard/node_modules/vue-chartjs" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/analytics-dashboard/node_modules/chart.js" />
+      <root url="file://$PROJECT_DIR$/analytics-dashboard/node_modules/vue-chartjs" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

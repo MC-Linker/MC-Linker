@@ -1,0 +1,115 @@
+{
+    "core": {
+        "bot": null,
+        "startup": null
+    },
+    "commands": {
+        "account": null,
+        "advancements": null,
+        "ban": null,
+        "chatchannel": null,
+        "command": null,
+        "connect": null,
+        "customize": null,
+        "deop": null,
+        "disconnect": null,
+        "eval": null,
+        "gamemode": null,
+        "help": null,
+        "inventory": null,
+        "kick": null,
+        "message": null,
+        "op": null,
+        "rolesync": null,
+        "serverinfo": null,
+        "statchannel": null,
+        "stats": null,
+        "systemstats": null,
+        "unban": null,
+        "userinfo": null
+    },
+    "events": {
+        "allShardsReady": null,
+        "clientReady": null,
+        "entitlementCreate": null,
+        "entitlementDelete": null,
+        "guildCreate": null,
+        "guildDelete": null,
+        "guildMemberUpdate": null,
+        "guildRoleDelete": null,
+        "interactionCreate": null,
+        "messageCreate": null
+    },
+    "components": {
+        "customize_token_modal": null
+    },
+    "api": {
+        "fastify": null,
+        "socketio": {
+            "connection": null,
+            "middleware": null,
+            "chatHandlers": {
+                "dispatch": null,
+                "queueProcessor": null,
+                "monitor": null,
+                "webhookPool": null,
+                "webhookResolver": null
+            }
+        },
+        "events": {
+            "add-synced-role-member": null,
+            "chat": null,
+            "disconnect-force": null,
+            "dm": null,
+            "has-required-role": null,
+            "invite-url": null,
+            "remove-synced-role": null,
+            "remove-synced-role-member": null,
+            "sync-synced-role-members": null,
+            "update-stats-channels": null,
+            "verify-user": null
+        },
+        "routes": {
+            "customBotApiReady": null,
+            "linkedRole": null,
+            "linkedRoleCallback": null,
+            "preDeleteCleanup": null,
+            "presence": null,
+            "root": null,
+            "version": null
+        }
+    },
+    "structures": {
+        "mclinker": null,
+        "protocol": {
+            "base": null,
+            "websocket": null
+        },
+        "connections": {
+            "base": null,
+            "baseManager": null,
+            "server": null,
+            "serverManager": null,
+            "customBot": null,
+            "customBotManager": null,
+            "userSettings": null,
+            "userSettingsManager": null
+        },
+        "helpers": {
+            "pagination": null
+        }
+    },
+    "utilities": {
+        "utils": null,
+        "oauth": null,
+        "oci": null,
+        "messages": null
+    },
+    "scripts": {
+        "convert": null
+    },
+    "analytics": {
+        "collector": null,
+        "aggregator": null
+    }
+}

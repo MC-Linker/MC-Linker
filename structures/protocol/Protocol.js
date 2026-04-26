@@ -1,6 +1,9 @@
 import { Base } from 'discord.js';
 import fs from 'fs-extra';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+
+const logger = rootLogger.child({ feature: features.structures.protocol.websocket });
 
 /**
  * Paths to minecraft server files.
@@ -198,6 +201,10 @@ export const ProtocolError = Object.freeze({
     NBT_ERROR: 'nbt_error',
     /** The connection configuration file is missing. */
     CONN_JSON_MISSING: 'conn_json_missing',
+    /** Target Discord user has DMs disabled. */
+    DM_CLOSED: 'dm_closed',
+    /** Target Discord user has blocked DMs from Minecraft (user preference). */
+    DM_BLOCKED: 'dm_blocked',
 });
 
 export default class Protocol extends Base {
@@ -305,7 +312,7 @@ export default class Protocol extends Base {
         // Not connected — try cache
         try {
             const buffer = await fs.readFile(putPath);
-            logger.info(`Server offline, serving cached file from ${putPath}`);
+            logger.debug(`Server offline, serving cached file from ${putPath}`);
             return { status: 'success', data: buffer, cached: true };
         }
         catch {

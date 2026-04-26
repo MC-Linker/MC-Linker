@@ -24,16 +24,15 @@ export default class HasRequiredRoleToJoin extends WSEvent {
      */
 
     /**
-     * Checks whether the minecraft-user has the required role to join the server.
-     * @param {HasRequiredRoleToJoinRequest} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {HasRequiredRoleToJoinResponse}
+     * @inheritdoc
+     * @param {HasRequiredRoleToJoinRequest} data - The request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         if(!server.requiredRoleToJoin) return { status: 'success', data: { hasRole: true } };
-        // TODO optimize
-        const user = client.userConnections.cache.find(u => u.getUUID(server) === data.uuid);
+        const user = client.userConnections.findByUUID(data.uuid, server);
         if(!user) return { status: 'error', error: ProtocolError.NOT_CONNECTED };
 
         try {
@@ -42,10 +41,7 @@ export default class HasRequiredRoleToJoin extends WSEvent {
 
             await fetchMembersIfCacheDiffers(client, guild);
 
-            const hasRole = server.requiredRoleToJoin.method === 'any' && server.requiredRoleToJoin.roles.some(id => member.roles.cache.has(id)) ||
-                server.requiredRoleToJoin.method === 'all' && server.requiredRoleToJoin.roles.every(id => member.roles.cache.has(id));
-
-            return { status: 'success', data: { hasRole } };
+            return { status: 'success', data: { hasRole: server.hasRequiredRole(member) } };
         }
         catch(err) {
             if(err.code === RESTJSONErrorCodes.UnknownMember) return { status: 'success', data: { hasRole: false } }; // Member not in server

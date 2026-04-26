@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Bot" type="NodeJSConfigurationType" path-to-js-file="main.js" working-dir="$PROJECT_DIR$">
+    <envs>
+      <env name="MIGRATE" value="true" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>

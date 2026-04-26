@@ -1,6 +1,7 @@
 import { ComponentType, PermissionsBitField, User } from 'discord.js';
-import { ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
+import rootLogger from '../utilities/logger/Logger.js';
+import features from '../utilities/logger/features.js';
 
 export default class Component {
 
@@ -8,7 +9,7 @@ export default class Component {
      * @typedef {Object} ComponentOptions
      * @property {string} id - The first part of the components' custom ID.
      * @property {keyof typeof InteractionType & ComponentType} type - The type of interaction this component is for.
-     * @property {PermissionsBitField} [permissions] - The permissions required to use this component.
+     * @property {PermissionsBitField|bigint|bigint[]} [permissions] - The permissions required to use this component.
      * @property {User} [author] - The author of this component that is allowed to use it.
      * @property {boolean} [ephemeral=false] - Whether this component should be ephemeral.
      * @property {boolean} [defer=true] - Whether this component should be deferUpdated.
@@ -35,9 +36,9 @@ export default class Component {
 
         /**
          * The permissions required to use this component.
-         * @type {PermissionsBitField}
+         * @type {?PermissionsBitField}
          */
-        this.permissions = options.permissions;
+        this.permissions = options.permissions != null ? new PermissionsBitField(options.permissions) : null;
 
         /**
          * The author of this component that is allowed to use it.
@@ -66,38 +67,59 @@ export default class Component {
 
     /**
      * Handles the execution of this component.
+     * Validates the interaction, creates a child logger, <>and delegates to {@link run}.
      * @param {(import('discord.js').MessageComponentInteraction | import('discord.js').ModalSubmitInteraction) & TranslatedResponses} interaction - The component or modal interaction.
      * @param {MCLinker} client - The MCLinker client.
      * @returns {Promise<?boolean>|?boolean}
-     * @abstract
      */
     async execute(interaction, client) {
-        await interaction.replyTl(keys.api.component.clicked, ph.std(interaction));
+        const logger = rootLogger.child({
+            feature: features.components[this.id],
+            guildId: interaction.guildId,
+            userId: interaction.user.id,
+        }, { track: false });
+
+        const server = client.serverConnections?.cache?.get(interaction.guildId) ?? null;
+
+        logger.debug(`Component ${this.id} clicked`);
         if(this.defer) await interaction.deferUpdate();
 
-        if(this.permissions) {
+        if(this.permissions && interaction.member) {
             const memberPerms = interaction.member.permissionsIn(interaction.channel);
             if(!memberPerms.has(this.permissions)) {
                 const missingPermission = this.permissions.toArray().find(perm => !memberPerms.has(perm));
-                await interaction.replyTl(keys.api.component.no_access.no_permission, { permission: missingPermission });
+                await interaction.editReplyTl(keys.api.component.no_access.no_permission, { permission: missingPermission });
                 return false;
             }
         }
 
         if(this.author) {
             if(this.author.id !== interaction.user.id) {
-                await interaction.replyTl(keys.api.component.no_access.no_author);
+                await interaction.editReplyTl(keys.api.component.no_access.no_author);
                 return false;
             }
         }
 
         if(this.sku && !interaction.entitlements.find(e => e.skuId === this.sku)) {
-            if(process.env.NODE_ENV === 'production' && (await client.application.fetchSKUs()).size) {
-                await interaction.replyTl(keys.custom_bot.warnings.no_entitlement);
+            if(process.env.NODE_ENV === 'production') {
+                await interaction.editReplyTl(keys.main.no_access.no_entitlement);
                 return false;
             }
         }
 
-        return true;
+        return this.run(interaction, client, server, logger);
+    }
+
+    /**
+     * Implements the component's specific logic.
+     * @param {(import('discord.js').MessageComponentInteraction | import('discord.js').ModalSubmitInteraction) & TranslatedResponses} interaction - The component or modal interaction.
+     * @param {MCLinker} client - The MCLinker client.
+     * @param {?ServerConnection} server - The connection of the server the component was executed in, or null if none.
+     * @param {import('../utilities/logger/Logger.js').default} logger - A child logger bound to this execution.
+     * @returns {Promise<?boolean>|?boolean}
+     * @abstract
+     */
+    async run(interaction, client, server, logger) {
+        throw new Error(`The run method has not been implemented for the ${this.id} component.`);
     }
 }

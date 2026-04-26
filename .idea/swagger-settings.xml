@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SwaggerSettings">
+    <option name="localHubAddress" value="https://github.com/discord/discord-api-spec/blob/main/specs/openapi.json" />
+    <remoteSpecificationUrls>
+      <UrlInfo>
+        <option name="urlString" value="https://github.com/discord/discord-api-spec/blob/main/specs/openapi.json" />
+      </UrlInfo>
+    </remoteSpecificationUrls>
+  </component>
+</project>

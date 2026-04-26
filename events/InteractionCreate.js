@@ -3,7 +3,6 @@ import { addTranslatedResponses } from '../utilities/messages.js';
 import { getArgs } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import AutocompleteCommand from '../structures/AutocompleteCommand.js';
-import logger from '../utilities/logger.js';
 import { ComponentType, Events, InteractionType } from 'discord.js';
 
 /**
@@ -18,22 +17,29 @@ export default class InteractionCreate extends Event {
     }
 
     /**
-     * @inheritDoc
-     * @param {MCLinker} client
-     * @param {import('discord.js').BaseInteraction} interaction
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').BaseInteraction]} args - [0] The interaction.
+     * @param logger
      */
-    async execute(client, interaction) {
+    async run(client, [interaction], logger) {
         interaction = addTranslatedResponses(interaction);
         if(interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
             const args = await getArgs(interaction);
             const server = client.serverConnections.cache.get(interaction.guildId);
+            const startTime = Date.now();
             try {
                 await command.execute(interaction, client, args, server);
+                client.analytics.trackCommand(interaction.commandName, interaction.guildId, interaction.user.id, Date.now() - startTime, true);
             }
             catch(err) {
-                logger.error(err, `Could not execute command ${interaction.commandName}`);
-                await interaction.replyTl(keys.main.errors.could_not_execute_command);
+                client.analytics.trackCommand(interaction.commandName, interaction.guildId, interaction.user.id, Date.now() - startTime, false);
+                client.analytics.trackError('command', interaction.commandName, interaction.guildId, interaction.user.id, err, null, logger);
+                if(interaction.deferred || interaction.replied)
+                    await interaction.editReplyTl(keys.main.errors.could_not_execute_command);
+                else
+                    await interaction.replyTl(keys.main.errors.could_not_execute_command);
             }
         }
         else if(interaction.isAutocomplete()) {
@@ -44,19 +50,25 @@ export default class InteractionCreate extends Event {
                 await command.autocomplete(interaction, client);
             }
             catch(err) {
-                logger.error(err, `Could not autocomplete command ${interaction.commandName}`);
+                client.analytics.trackError('command', interaction.commandName, interaction.guildId, interaction.user.id, err, null, logger);
             }
         }
         else if(interaction.isMessageComponent() || interaction.isModalSubmit()) {
             const component = this.getComponentForInteraction(client, interaction);
             if(!component) return;
 
+            const startTime = Date.now();
             try {
                 await component.execute(interaction, client);
+                client.analytics.trackComponent(interaction.customId, interaction.guildId, interaction.user.id, Date.now() - startTime, true);
             }
             catch(err) {
-                logger.error(err, `Could not execute component ${interaction.customId}`);
-                await interaction.replyTl(keys.main.errors.could_not_execute_button);
+                client.analytics.trackComponent(interaction.customId, interaction.guildId, interaction.user.id, Date.now() - startTime, false);
+                client.analytics.trackError('component', interaction.customId, interaction.guildId, interaction.user.id, err, null, logger);
+                if(interaction.deferred || interaction.replied)
+                    await interaction.editReplyTl(keys.main.errors.could_not_execute_button);
+                else
+                    await interaction.replyTl(keys.main.errors.could_not_execute_button);
             }
         }
     }

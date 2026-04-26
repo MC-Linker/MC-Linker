@@ -29,14 +29,13 @@ export default class DefaultButton extends Component {
 
         this.collector?.on('collect', interaction => {
             if(interaction.customId === this.id && interaction instanceof ButtonInteraction) {
-                const server = interaction.client.serverConnections.cache.get(interaction.guild.id);
-                this.execute(interaction, interaction.client, server);
+                this.execute(interaction, interaction.client);
             }
         });
     }
 
-    async execute(interaction, client, server) {
-        if(!await super.execute(interaction, client, server)) return;
-        return await this.handler(interaction, client, server);
+    /** @inheritdoc */
+    async run(interaction, client, server, logger) {
+        return await this.handler(interaction, client, server, logger);
     }
 }

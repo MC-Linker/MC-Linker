@@ -1,4 +1,8 @@
 import Route from '../Route.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+
+const logger = rootLogger.child({ feature: features.api.routes.preDeleteCleanup });
 
 export default class PreDeleteCleanup extends Route {
 
@@ -20,9 +24,9 @@ export default class PreDeleteCleanup extends Route {
     async post(client, req, res) {
         for(const server of client.serverConnections.cache.values())
             await client.serverConnections.disconnect(server);
-        console.log('All server connections disconnected.');
+        logger.info('All server connections disconnected.');
 
         client.mongo.connection.db.dropDatabase();
-        console.log(`${client.mongo.connection.db.databaseName} database dropped.`);
+        logger.info(`${client.mongo.connection.db.databaseName} database dropped.`);
     }
 }

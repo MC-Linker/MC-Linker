@@ -2,7 +2,7 @@ import CustomBotConnection from '../CustomBotConnection.js';
 import ConnectionManager from './ConnectionManager.js';
 import Wizard from '../../helpers/Wizard.js';
 import keys from '../../../utilities/keys.js';
-import { addTranslatedResponses, getComponent, getModal, getReplyOptions, ph } from '../../../utilities/messages.js';
+import { addTranslatedResponses, getComponent, getReplyOptions, ph } from '../../../utilities/messages.js';
 import Discord, {
     ActionRowBuilder,
     AttachmentBuilder,
@@ -12,8 +12,12 @@ import Discord, {
     InteractionType,
     MessageFlags,
 } from 'discord.js';
-import { disableComponents, generateDefaultInvite } from '../../../utilities/utils.js';
-import logger from '../../../utilities/logger.js';
+import { DefaultCollectorTimeout, disableComponents, generateDefaultInvite } from '../../../utilities/utils.js';
+import rootLogger from '../../../utilities/logger/Logger.js';
+import features from '../../../utilities/logger/features.js';
+import { trackError } from '../../analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.customBotManager });
 
 export default class CustomBotConnectionManager extends ConnectionManager {
 
@@ -103,18 +107,20 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         ];
 
         const wizard = new Wizard(this.client, interaction, wizardPages, {
-            timeout: 60_000 * 14, // 15 minutes is max interaction timeout
+            timeout: DefaultCollectorTimeout,
         });
 
         const message = await wizard.start();
 
         const collector = message.createMessageComponentCollector({
-            time: 60_000 * 14,
+            time: DefaultCollectorTimeout,
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_enter_details',
         });
-        collector.on('collect', btnInteraction =>
-            btnInteraction.showModal(getModal(keys.custom_bot.create.token_modal)));
+        collector.on('collect', btnInteraction => {
+            addTranslatedResponses(btnInteraction);
+            btnInteraction.showModalTl(keys.custom_bot.create.token_modal);
+        });
 
         return message;
     }
@@ -145,10 +151,10 @@ export default class CustomBotConnectionManager extends ConnectionManager {
         else buttonsRow1.unshift(getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
         mainMessage.components = [buttonsRow1, buttonsRow2].map(b => new ActionRowBuilder().addComponents(b));
 
-        const message = await interaction.replyOptions(mainMessage);
+        const message = await interaction.editReply(mainMessage);
 
         const buttonCollector = message.createMessageComponentCollector({
-            time: 60_000 * 14,
+            time: DefaultCollectorTimeout,
             componentType: ComponentType.Button,
         });
         buttonCollector.on('collect', async btnInteraction => {
@@ -164,13 +170,13 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                         buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.stop));
                         mainMessage.components[0].setComponents(buttonsRow1);
                         mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.started;
-                        await interaction.replyOptions(mainMessage);
+                        await interaction.editReply(mainMessage);
 
-                        await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.start);
+                        await btnInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.start);
                     }
                     catch(err) {
-                        logger.error(err, 'Failed to start custom bot connection');
-                        await btnInteraction.replyTl(keys.custom_bot.errors.start_failed);
+                        trackError('unhandled', 'CustomBotConnectionManager', null, btnInteraction.user.id, err, null, logger);
+                        await btnInteraction.editReplyTl(keys.custom_bot.errors.start_failed);
                     }
                     break;
                 case 'custom_bot_stop':
@@ -181,22 +187,22 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     buttonsRow1.splice(0, 1, getComponent(keys.custom_bot.custom_bot_manager.buttons.start));
                     mainMessage.components[0].setComponents(buttonsRow1);
                     mainMessage.embeds[0].data.fields[0].value = keys.custom_bot.custom_bot_manager.status.stopped;
-                    await interaction.replyOptions(mainMessage);
+                    await interaction.editReply(mainMessage);
 
-                    await btnInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.stop);
+                    await btnInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.stop);
                     break;
                 case 'custom_bot_delete':
                     // modals cant be deferred
-                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.confirm_delete_modal));
+                    await btnInteraction.showModalTl(keys.custom_bot.custom_bot_manager.confirm_delete_modal);
                     break;
                 case 'custom_bot_change_presence':
-                    await btnInteraction.showModal(getModal(keys.custom_bot.custom_bot_manager.change_presence_modal));
+                    await btnInteraction.showModalTl(keys.custom_bot.custom_bot_manager.change_presence_modal);
                     break;
             }
         });
-        buttonCollector.on('end', () => interaction.replyOptions({ components: disableComponents(mainMessage.components) }));
+        buttonCollector.on('end', () => interaction.editReply({ components: disableComponents(mainMessage.components) }));
         const modalCollector = new InteractionCollector(this.client, {
-            time: 60_000 * 14,
+            time: DefaultCollectorTimeout,
             interactionType: InteractionType.ModalSubmit,
             message,
         });
@@ -207,10 +213,10 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                 await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
 
                 if(modalInteraction.fields.getTextInputValue('confirm_delete') !== 'delete')
-                    return await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation);
+                    return await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.warnings.invalid_confirmation);
 
                 const reason = modalInteraction.fields.getTextInputValue('confirm_delete_reason') || 'No reason provided';
-                logger.info(`Custom bot connection for ${modalInteraction.user.id} deleted with reason: "${reason}"`);
+                logger.info({ userId: modalInteraction.user.id }, `Custom bot connection deleted with reason: "${reason}"`);
 
                 const customBotConnection = this.client.customBots.getCustomBot(modalInteraction.user.id);
                 await this.client.customBots.disconnect(customBotConnection);
@@ -221,8 +227,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     status: keys.custom_bot.custom_bot_manager.status.deleted,
                 });
                 newMainMessageOptions.components = [];
-                await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.delete, await ph.commandName('customize'));
-                await interaction.replyOptions(newMainMessageOptions);
+                await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.delete, await ph.commandName('customize'));
+                await interaction.editReply(newMainMessageOptions);
             }
             else if(modalInteraction.customId === 'customize_set_presence') {
                 await modalInteraction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -231,8 +237,8 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
                 const success = await customBotConnection.setPresence(newPresence);
                 if(!success)
-                    return await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed, { error: success.message });
-                await modalInteraction.replyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
+                    return await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.errors.change_presence_failed);
+                await modalInteraction.editReplyTl(keys.custom_bot.custom_bot_manager.success.change_presence);
             }
         });
     }
@@ -286,7 +292,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
             skus: [CustomBotConnectionManager.CUSTOM_BOT_SKU_ID],
             excludeEnded: true,
         }).catch(err => {
-            logger.error(err, `Failed to fetch entitlements for user ${userId}`);
+            trackError('unhandled', 'CustomBotConnectionManager', null, userId, err, null, logger);
             return null;
         });
         if(!entitlements) return true;
@@ -303,7 +309,7 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
         const skus = await this.client.application.fetchSKUs()
             .catch(err => {
-                logger.error(err, 'Failed to fetch application SKUs for startup entitlement reconciliation');
+                trackError('unhandled', 'CustomBotConnectionManager', null, null, err, null, logger);
                 return null;
             });
         if(!skus || skus.size === 0) return;
@@ -314,10 +320,10 @@ export default class CustomBotConnectionManager extends ConnectionManager {
 
             try {
                 await this.disconnect(customBotConnection);
-                logger.info(`Disconnected custom bot for user ${customBotConnection.ownerId} due to missing entitlement`);
+                logger.info({ userId: customBotConnection.ownerId }, 'Disconnected custom bot due to missing entitlement');
             }
             catch(err) {
-                logger.error(err, `Failed to disconnect custom bot for user ${customBotConnection.ownerId} after entitlement check`);
+                trackError('unhandled', 'CustomBotConnectionManager', null, customBotConnection.ownerId, err, null, logger);
             }
         }
     }

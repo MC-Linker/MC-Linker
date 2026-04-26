@@ -1,10 +1,8 @@
 import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
-import { evalOnGuildShard } from '../utilities/shardingUtils.js';
 import keys from '../utilities/keys.js';
 import { Events, MessageType } from 'discord.js';
-import logger from '../utilities/logger.js';
 
 /**
  * Handles the Discord messageCreate event for the MC-Linker bot.
@@ -17,7 +15,13 @@ export default class MessageCreate extends Event {
         });
     }
 
-    async execute(client, message) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Message]} args - [0] The message.
+     * @param logger
+     */
+    async run(client, [message], logger) {
         if(message.author.bot) return;
 
         message = addTranslatedResponses(message);
@@ -25,25 +29,9 @@ export default class MessageCreate extends Event {
             // Handle DM messages (verification codes)
             if(client.api.usersAwaitingVerification.has(message.content)) {
                 const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
-                const userConnection = await client.userConnections.connect({ id: message.author.id, username, uuid });
+                await client.userConnections.connect({ id: message.author.id, username, uuid });
 
-                await Promise.allSettled(client.serverConnections.cache.map(async conn => {
-                    if(!conn.syncedRoles?.length) return;
-                    try {
-                        await evalOnGuildShard(client, conn.id, async (c, { serverId, userId, userConnId }) => {
-                            const server = c.serverConnections.cache.get(serverId);
-                            if(!server) return;
-                            const guild = await c.guilds.fetch(serverId);
-                            const member = await guild.members.fetch(userId);
-                            const userConn = c.userConnections.cache.get(userConnId);
-                            if(!userConn) return;
-                            await server.syncRolesOfMember(member, userConn);
-                        }, { serverId: conn.id, userId: message.author.id, userConnId: userConnection.id });
-                    }
-                    catch(err) {
-                        logger.debug(`Skipping role sync for server ${conn.id} of ${username}: ${err.message}`);
-                    }
-                }));
+                await client.serverConnections.syncRolesAcrossAllServers(message.author.id);
 
                 client.api.usersAwaitingVerification.delete(message.content);
                 return await message.replyTl(keys.commands.account.success.verified);
@@ -68,12 +56,14 @@ export default class MessageCreate extends Event {
             }
 
             logger.debug({
+                guildId: message.guildId,
+                userId: message.author.id,
                 content,
                 author: message.member?.displayName ?? message.author.displayName,
                 channel: message.channel.name,
                 guild: message.guild.name,
             }, 'Relaying chat message to Minecraft server');
-            void server.protocol.chat(content, message.member?.displayName ?? message.author.displayName, repliedContent, repliedMessage?.member.displayName ?? repliedMessage?.author.displayName);
+            void server.protocol.chat(content, message.member?.displayName ?? message.author.displayName, repliedContent, repliedMessage?.member?.displayName ?? repliedMessage?.author.displayName);
         }
 
         if(message.content === `<@${client.user.id}>` || message.content === `<@!${client.user.id}>`) return message.replyTl(keys.main.success.ping);
@@ -90,6 +80,7 @@ export default class MessageCreate extends Event {
             await command.execute(message, client, args, server);
         }
         catch(err) {
+            client.analytics.trackError('command', commandName, message.guildId, message.author.id, err, null, logger);
             await message.replyTl(keys.main.errors.could_not_execute_command, ph.error(err));
         }
     }

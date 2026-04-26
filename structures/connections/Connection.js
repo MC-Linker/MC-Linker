@@ -1,6 +1,11 @@
 import { Base } from 'discord.js';
-import { getManagerStringFromConnection } from '../../utilities/shardingUtils.js';
+import { getManagerStringFromConnection } from '../../utilities/utils.js';
 import ServerConnection from './ServerConnection.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.structures.connections.base });
 
 export default class Connection extends Base {
 
@@ -37,19 +42,10 @@ export default class Connection extends Base {
         const data = JSON.parse(JSON.stringify(this.getData()));
 
         if(this instanceof ServerConnection) {
-            // map id to _id
-            data.chatChannels.forEach((channel, index) => {
-                data.chatChannels[index]._id = channel.id;
-                delete data.chatChannels[index].id;
-            });
-            data.statChannels.forEach((channel, index) => {
-                data.statChannels[index]._id = channel.id;
-                delete data.statChannels[index].id;
-            });
-            data.syncedRoles.forEach((role, index) => {
-                data.syncedRoles[index]._id = role.id;
-                delete data.syncedRoles[index].id;
-            });
+            // map id to _id for Mongoose subdocuments
+            this._remapSubdocumentIds(data.chatChannels);
+            this._remapSubdocumentIds(data.statChannels);
+            this._remapSubdocumentIds(data.syncedRoles);
         }
 
         //Remove id, otherwise duplicate key error, if object does not exist, it will use id from query (this.id)
@@ -57,7 +53,10 @@ export default class Connection extends Base {
 
         return await this.client.mongo.models[this.collectionName].updateOne({ _id: this.id }, data, { upsert: true })
             .then(() => true)
-            .catch(() => false);
+            .catch(err => {
+                trackError('unhandled', 'Connection._output', this.id, null, err, null, logger);
+                return false;
+            });
     }
 
     /**
@@ -67,7 +66,10 @@ export default class Connection extends Base {
     async _delete() {
         return await this.client.mongo.models[this.collectionName].deleteOne({ _id: this.id })
             .then(() => true)
-            .catch(() => false);
+            .catch(err => {
+                trackError('unhandled', 'Connection._delete', this.id, null, err, null, logger);
+                return false;
+            });
     }
 
     /**
@@ -81,7 +83,7 @@ export default class Connection extends Base {
             if('socket' in data) delete data.socket;// The socket is not serializable and should not be broadcasted
 
             // Broadcast the patch to all shards
-            await this.client.shard.broadcastEval((c, { id, data, manager, shard }) => {
+            await this.client.broadcastEval((c, { id, data, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
                 c[manager].cache.get(id) ? c[manager].cache.get(id)._patch(data) : c[manager].connect(data);
             }, {
@@ -95,6 +97,17 @@ export default class Connection extends Base {
             return this;
         }
         else return null;
+    }
+
+    /**
+     * Remaps `id` to `_id` on each element in an array of subdocuments for Mongoose storage.
+     * @param {Object[]} array - The array of subdocuments to remap.
+     */
+    _remapSubdocumentIds(array) {
+        array.forEach(item => {
+            item._id = item.id;
+            delete item.id;
+        });
     }
 
     /**

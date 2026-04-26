@@ -78,7 +78,7 @@ export default class ServerSettingsConnection extends Connection {
         const hasNormalizedMatch = this.filteredCommands.some(command => command === normalizedValue);
         if(!hasNormalizedMatch) {
             this.filteredCommands.push(normalizedValue);
-            return await this.edit({});
+            return await this.edit({ filteredCommands: this.filteredCommands });
         }
         return this;
     }

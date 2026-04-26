@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptLibraryMappings">
+    <file url="PROJECT" libraries="{ChartJS, Discord.js, Fastify, Nuxt, OCI, canvas, d3, emojione, fs-extra, mongoose, socket.io}" />
+    <includedPredefinedLibrary name="HTTP Pre-Request and Response Handler" />
+    <includedPredefinedLibrary name="Node.js Core" />
+  </component>
+</project>

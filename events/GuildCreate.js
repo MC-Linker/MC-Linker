@@ -1,8 +1,7 @@
 import Event from '../structures/Event.js';
-import { addPh, ph } from '../utilities/messages.js';
+import { ph } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { sendToServer } from '../utilities/utils.js';
-import logger from '../utilities/logger.js';
 import { Events } from 'discord.js';
 
 /**
@@ -16,8 +15,15 @@ export default class GuildCreate extends Event {
         });
     }
 
-    async execute(client, guild) {
-        logger.info(addPh(keys.main.success.guild_create.console, ph.guild(guild), { 'guild_count': client.guilds.cache.size }));
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Guild]} args - [0] The guild.
+     * @param logger
+     */
+    async run(client, [guild], logger) {
+        logger.debug({ guildId: guild.id }, `Joined a guild: ${guild.name}: ${guild.memberCount} members. Shard is now on ${client.guilds.cache.size} servers!`);
+        client.analytics.trackGuildJoin(guild.id, guild.memberCount);
         await sendToServer(
             guild,
             keys.main.success.invite,

@@ -1,8 +1,7 @@
-import MinecraftData from 'minecraft-data';
 import Discord, { time } from 'discord.js';
-import { addPh, getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/messages.js';
+import { getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
-import { MinecraftDataVersion } from '../../utilities/utils.js';
+import { getMinecraftData } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
 import * as d3 from 'd3-hierarchy';
@@ -10,9 +9,6 @@ import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import logger from '../../utilities/logger.js';
-
-const mcData = MinecraftData(MinecraftDataVersion);
 
 const iconSize = 40;
 const frameSize = iconSize + 18;
@@ -29,9 +25,16 @@ export default class Advancements extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, UserResponse, boolean]} args - [0] The advancement category, [1] The resolved user, [2] Whether to show details.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
+        const mcData = getMinecraftData(server.version);
         let category = args[0];
         if(category === 'minecraft') category = 'story';
         const user = args[1];
@@ -114,7 +117,7 @@ export default class Advancements extends Command {
             }
             catch(err) {
                 //Draw name
-                logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': node.data.icon }));
+                logger.debug(`Could not find item image ${node.data.icon}. Applying text...`);
                 ctx.font = '8px Minecraft';
                 ctx.fillStyle = '#000';
                 const lines = utils.wrapText(ctx, mcData.itemsByName[node.data.icon]?.displayName ?? node.data.icon, frameSize);
@@ -126,7 +129,7 @@ export default class Advancements extends Command {
             const advancementTimestamps = [];
             for(const [criteria, date] of Object.entries(node.data.criteria)) {
                 let formattedCriteria = criteria.split(':').pop();
-                formattedCriteria = mcData.itemsByName[formattedCriteria]?.displayName ?? formattedCriteria.toTitleCase(true);
+                formattedCriteria = mcData.itemsByName[formattedCriteria]?.displayName ?? utils.toTitleCase(formattedCriteria, true);
 
                 advancementCriteria.push(formattedCriteria);
                 advancementTimestamps.push(time(new Date(date)));
@@ -146,7 +149,7 @@ export default class Advancements extends Command {
         const advancementsEmbed = getEmbed(keys.commands.advancements.success.final, { username: user.username });
         if(amFile.cached) setCachedFooter(advancementsEmbed);
 
-        if(!showDetails) return await interaction.replyOptions({
+        if(!showDetails) return await interaction.editReply({
             embeds: [advancementsEmbed],
             files: [advancementsAttach],
         });
@@ -186,8 +189,8 @@ export default class Advancements extends Command {
                 advancement_criteria: advancement.criteria,
                 advancement_timestamps: advancement.timestamps,
                 advancement_value: advancement.value,
-                advancement_type: advancement.type.toTitleCase(),
-                advancement_icon: mcData.itemsByName[advancement.icon]?.displayName ?? advancement.icon.toTitleCase(true),
+                advancement_type: utils.toTitleCase(advancement.type),
+                advancement_icon: mcData.itemsByName[advancement.icon]?.displayName ?? utils.toTitleCase(advancement.icon, true),
                 advancement_obtained: advancement.obtained ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
                 username,
                 user_icon: await utils.getMinecraftAvatarURL(username),

@@ -1,6 +1,5 @@
 import Event from '../structures/Event.js';
 import { Events } from 'discord.js';
-import logger from '../utilities/logger.js';
 
 /**
  * Handles the Discord entitlementDelete event for the MC-Linker bot.
@@ -12,9 +11,15 @@ export default class EntitlementDelete extends Event {
         });
     }
 
-    async execute(client, entitlement) {
+    /**
+     * @inheritdoc
+     * @param client
+     * @param {[import('discord.js').Entitlement]} args - [0] The entitlement.
+     * @param logger
+     */
+    async run(client, [entitlement], logger) {
         const user = await entitlement.fetchUser();
-        logger.info(`Entitlement deleted for user ${user.displayName}`);
+        logger.info({ userId: user.id }, `Entitlement deleted for user ${user.displayName}`);
 
         await client.customBots.disconnect(client.customBots.getCustomBot(user.id));
     }

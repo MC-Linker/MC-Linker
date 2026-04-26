@@ -1,8 +1,11 @@
 import Route from '../Route.js';
 import MCLinker from '../../structures/MCLinker.js';
-import logger from '../../utilities/logger.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
 
-export default class Version extends Route {
+const logger = rootLogger.child({ feature: features.api.routes.presence });
+
+export default class Presence extends Route {
 
     constructor() {
         super({
@@ -27,8 +30,10 @@ export default class Version extends Route {
             await MCLinker.writeConfig(client.config);
         }
         catch(err) {
-            logger.error(err, 'Error while setting custom bot presence');
+            client.analytics.trackError('api_rest', 'Presence', null, null, err, null, logger);
             return { status: 500, body: err };
         }
+
+        return { status: 200 };
     }
 }

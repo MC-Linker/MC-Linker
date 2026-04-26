@@ -1,11 +1,10 @@
 import Component from '../structures/Component.js';
 import keys from '../utilities/keys.js';
 import Discord, { AttachmentBuilder, OAuth2Scopes, PermissionsBitField, Routes } from 'discord.js';
-import logger from '../utilities/logger.js';
 import { exposeCustomBotPorts } from '../utilities/oci.js';
 import Wizard from '../structures/helpers/Wizard.js';
 import { addTranslatedResponses, getReplyOptions } from '../utilities/messages.js';
-import { execAsync } from '../utilities/utils.js';
+import { DefaultCollectorTimeout, execAsync } from '../utilities/utils.js';
 
 export default class CustomizeTokenModal extends Component {
 
@@ -18,9 +17,14 @@ export default class CustomizeTokenModal extends Component {
         });
     }
 
-    async execute(interaction, client) {
-        if(!await super.execute(interaction, client)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, server, logger) {
         const token = interaction.fields.getTextInputValue('token');
         await interaction.replyTl(keys.custom_bot.create.step.logging_in);
 
@@ -57,7 +61,7 @@ export default class CustomizeTokenModal extends Component {
         catch(err) {
             if(err.code === 'TokenInvalid' || err.code === 'UND_ERR_INVALID_ARG') {
                 const invalidTokenOptions = getReplyOptions(keys.custom_bot.create.warnings.invalid_token);
-                return await interaction.replyOptions({
+                return await interaction.editReply({
                     ...invalidTokenOptions,
                     files: [
                         new AttachmentBuilder('./resources/images/custom_bot/reset_token.png', { name: 'invalid_token.gif' }),
@@ -82,19 +86,19 @@ export default class CustomizeTokenModal extends Component {
         });
 
         try {
-            await interaction.replyTl(keys.custom_bot.create.step.building);
+            await interaction.editReplyTl(keys.custom_bot.create.step.building);
             await customBotConnection.init(token);
 
-            await interaction.replyTl(keys.custom_bot.create.step.starting_up);
+            await interaction.editReplyTl(keys.custom_bot.create.step.starting_up);
             await customBotConnection.start();
         }
         catch(err) {
-            logger.error(err, `Failed to start custom bot ${customBotConnection.containerName}`);
+            client.analytics.trackError('unhandled', 'CustomizeTokenModal', null, interaction.user.id, err, null, logger);
             await client.customBots.disconnect(customBotConnection);
-            return await interaction.replyTl(keys.custom_bot.errors.start_failed);
+            return await interaction.editReplyTl(keys.custom_bot.errors.start_failed);
         }
 
-        await interaction.replyTl(keys.custom_bot.create.step.deploying);
+        await interaction.editReplyTl(keys.custom_bot.create.step.deploying);
         // TODO add deploy -r for linked roles
         logger.info((await execAsync(`docker exec ${customBotConnection.containerName} node scripts/deploy.js deploy -g`, {
             env: customBotConnection.dockerEnv,
@@ -106,12 +110,12 @@ export default class CustomizeTokenModal extends Component {
             keys.custom_bot.create.success.port,
             keys.custom_bot.create.success.finish,
         ].map(key => getReplyOptions(key, { port: botPort, invite })), {
-            timeout: 60_000 * 14, // 15 minutes is max interaction timeout
+            timeout: DefaultCollectorTimeout,
         });
         const message = await wizard.start();
 
         const collector = message.createMessageComponentCollector({
-            time: 60_000 * 14,
+            time: DefaultCollectorTimeout,
             componentType: Discord.ComponentType.Button,
             filter: btnInteraction => btnInteraction.customId === 'customize_manage_bot',
             max: 1,

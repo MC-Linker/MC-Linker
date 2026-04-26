@@ -1,7 +1,7 @@
 import WSEvent from '../WSEvent.js';
-import logger from '../../utilities/logger.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import { fetchMembersIfCacheDiffers } from '../../utilities/utils.js';
+
 
 export default class SyncSyncedRoleMembers extends WSEvent {
 
@@ -25,15 +25,13 @@ export default class SyncSyncedRoleMembers extends WSEvent {
      */
 
     /**
-     * Syncs the members of a synced role between the MC plugin and Discord.
-     * Diffs the plugin's player list against Discord role membership
-     * and returns which players the plugin needs to add or remove.
-     * @param {SyncSyncedRoleMembersRequest} data - The data sent with the request.
-     * @param {ServerConnection} server - The server the request is sent for.
-     * @param {MCLinker} client - The client the request is sent to.
-     * @returns {Promise<SyncSyncedRoleMembersResponse>}
+     * @inheritdoc
+     * @param {SyncSyncedRoleMembersRequest} data - The request data.
+     * @param server
+     * @param client
+     * @param logger
      */
-    async execute(data, server, client) {
+    async run(data, server, client, logger) {
         const roleIndex = server.syncedRoles.findIndex(r => r.id === data.id);
         if(roleIndex === -1) return { status: 'error', error: ProtocolError.NOT_FOUND };
 
@@ -51,7 +49,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             await fetchMembersIfCacheDiffers(client, guild);
         }
         catch(err) {
-            logger.error(err, `Failed to fetch guild ${server.id} for synced role sync`);
+            client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
 
@@ -67,7 +65,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
-                        logger.error(err, `Failed to revoke Discord role ${data.id} from unknown user ${memberId} during sync`);
+                        client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, memberId, err, null, logger);
                     }
                 }
             }
@@ -83,7 +81,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             if(!discordPlayerUUIDs.has(uuid)) {
                 if(direction === 'both' || direction === 'to_discord') {
                     // MC is authoritative for this direction → grant Discord role
-                    const conn = client.userConnections.cache.find(u => u.getUUID(server) === uuid);
+                    const conn = client.userConnections.findByUUID(uuid, server);
                     if(conn) {
                         try {
                             if(!syncedRole.players.includes(uuid)) {
@@ -91,20 +89,20 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                                 syncedRole.players.push(uuid);
                                 server.syncedRoles[roleIndex] = syncedRole;
                                 // Required to do before to prevent feedback loop in GuildMemberUpdateEvent
-                                await server.edit({});
+                                await server.edit({ syncedRoles: server.syncedRoles });
                             }
 
                             const member = await guild.members.fetch(conn.id);
                             await member.roles.add(discordRole);
                         }
                         catch(err) {
-                            logger.error(err, `Failed to grant Discord role ${data.id} to ${uuid} during sync`);
+                            client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
 
                             // Revert players list change if role grant fails
                             if(syncedRole.players.includes(uuid)) {
                                 syncedRole.players = syncedRole.players.filter(p => p !== uuid);
                                 server.syncedRoles[roleIndex] = syncedRole;
-                                await server.edit({});
+                                await server.edit({ syncedRoles: server.syncedRoles });
                             }
                         }
                     }
@@ -127,19 +125,19 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                             syncedRole.players = syncedRole.players.filter(p => p !== uuid);
                             server.syncedRoles[roleIndex] = syncedRole;
                             // Required to do before to prevent feedback loop in GuildMemberUpdateEvent
-                            await server.edit({});
+                            await server.edit({ syncedRoles: server.syncedRoles });
                         }
 
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
-                        logger.error(err, `Failed to revoke Discord role ${data.id} from ${uuid} during sync`);
+                        client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
 
                         // Revert players list change if role revoke fails
                         if(!syncedRole.players.includes(uuid)) {
                             syncedRole.players.push(uuid);
                             server.syncedRoles[roleIndex] = syncedRole;
-                            await server.edit({});
+                            await server.edit({ syncedRoles: server.syncedRoles });
                         }
                     }
                 }
@@ -163,7 +161,8 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             // both → union of MC + Discord
             syncedRole.players = [...new Set([...mcPlayers, ...discordPlayerUUIDs.keys()])];
         }
-        await server.edit({});
+        server.syncedRoles[roleIndex] = syncedRole;
+        await server.edit({ syncedRoles: server.syncedRoles });
 
         return { status: 'success', data: { added, removed } };
     }

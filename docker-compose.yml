@@ -47,6 +47,33 @@ services:
     networks:
       - mongo-network
 
+  analytics-dashboard:
+    build: ./analytics-dashboard
+    image: lianecx/mc-linker-analytics
+    container_name: analytics-dashboard
+    restart: on-failure
+    depends_on:
+      - mongodb
+    ports:
+      - "${DASHBOARD_PORT:-3001}:3000"
+    environment:
+      - NUXT_DATABASE_URL=${DATABASE_URL}
+      - NUXT_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
+      - NUXT_SESSION_SECRET=${DASHBOARD_SESSION_SECRET}
+      - NUXT_LOGS_DIR=/usr/src/app/logs
+      - NUXT_LOG_FEATURES_PATH=/usr/src/app/logFeatures.json
+    volumes:
+      - type: bind
+        source: ./logs
+        target: /usr/src/app/logs
+        read_only: true
+      - type: bind
+        source: ./resources/logFeatures.json
+        target: /usr/src/app/logFeatures.json
+        read_only: true
+    networks:
+      - mongo-network
+
   mongo-express:
     image: mongo-express
     container_name: mongo-express

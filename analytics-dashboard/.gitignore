@@ -1,0 +1,14 @@
+# Nuxt build output
+.nuxt/
+.output/
+
+# Dependencies
+node_modules/
+
+# Generated JS files (compiled duplicates of .ts sources)
+nuxt.config.js
+server/**/*.js
+middleware/**/*.js
+
+# Logs
+*.log

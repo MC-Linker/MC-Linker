@@ -3,20 +3,10 @@ import { getEmbed } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Discord from 'discord.js';
+import { DefaultCollectorTimeout } from '../../utilities/utils.js';
+import MCLinkerAPI from '../../api/MCLinkerAPI.js';
 
 export default class Connect extends Command {
-
-    /**
-     * Map to store the websocket verification data for each server.
-     * @type {Map<any, any>}
-     */
-    wsVerification = new Map();
-
-    /**
-     * Map to store the pending interactions for the connect command.
-     * @type {Map<any, any>}
-     */
-    pendingInteractions = new Map();
 
     constructor() {
         super({
@@ -27,9 +17,40 @@ export default class Connect extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
+    /**
+     * Stores websocket verification data on shard 0, where the API runs and reads it.
+     * @param {MCLinker} client
+     * @param {string} id
+     * @param {Object} verificationData
+     * @returns {Promise<void>}
+     */
+    async setWSVerification(client, id, verificationData) {
+        await client.broadcastEval((c, { id, verificationData }) => {
+            c.api.wsVerification.set(id, verificationData);
+        }, { context: { id, verificationData }, shard: 0 });
+    }
 
+    /**
+     * Removes websocket verification data from shard 0.
+     * @param {MCLinker} client
+     * @param {string} id
+     * @returns {Promise<void>}
+     */
+    async deleteWSVerification(client, id) {
+        await client.broadcastEval((c, { id }) => {
+            c.api.wsVerification.delete(id);
+        }, { context: { id }, shard: 0 });
+    }
+
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[string, string, boolean]} args - [0] The join requirement (roles/link/none), [1] The display IP, [2] Whether the server is online-mode.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
         const joinRequirement = args[0];
         const displayIp = args[1];
         const online = args[2];
@@ -42,39 +63,36 @@ export default class Connect extends Command {
         const verificationEmbed = getEmbed(keys.commands.connect.step.command_verification, { code: `${interaction.guildId}:${code}` });
         if(server) {
             const alreadyConnectedEmbed = getEmbed(keys.commands.connect.warnings.already_connected, { ip: server.displayIp });
-            await interaction.replyOptions({ embeds: [verificationEmbed, alreadyConnectedEmbed], components: [] });
+            await interaction.editReply({ embeds: [verificationEmbed, alreadyConnectedEmbed], components: [] });
         }
-        else await interaction.replyOptions({ embeds: [verificationEmbed], components: [] });
+        else await interaction.editReply({ embeds: [verificationEmbed], components: [] });
 
-        const timeout = setTimeout(async () => {
-            await client.shard.broadcastEval((c, { id }) => {
-                c.commands.get('connect').wsVerification.delete(id);
-            }, { context: { id: interaction.guildId }, shard: 0 });
-            await interaction.replyTl(keys.commands.connect.warnings.no_reply_in_time);
-        }, 180_000);
-
-        this.pendingInteractions.set(interaction.guildId, { interaction, timeout });
-        await client.shard.broadcastEval((c, { code, id, shard, requiredRoleToJoin, displayIp, online }) => {
-            c.commands.get('connect').wsVerification.set(id, {
-                code,
-                shard,
-                requiredRoleToJoin,
-                displayIp,
-                online,
-            });
-        }, {
-            context: {
-                code,
-                id: interaction.guildId,
-                shard: client.shard.ids[0],
-                requiredRoleToJoin: selectResponse,
-                displayIp,
-                online,
-            },
-            shard: 0,
+        // Set data for socket.io connect listener
+        await this.setWSVerification(client, interaction.guildId, {
+            code,
+            shard: client.shard.ids[0],
+            requiredRoleToJoin: selectResponse,
+            displayIp,
+            online,
         });
 
-        //Connection and interaction response will now be handled by editConnectResponse event or by the timeout
+        try {
+            const response = await client.api.waitForAPIEvent('connect-response', 180_000, data => {
+                if(data.id !== interaction.guildId) return;
+                return data;
+            });
+
+            if(response.responseType === 'success') await interaction.editReplyTl(keys.commands.connect.success.websocket);
+            else if(response.responseType === 'error') await interaction.editReplyTl(keys.commands.connect.errors.websocket_error, response.placeholders);
+        }
+        catch(err) {
+            if(err instanceof MCLinkerAPI.EventTimeoutError) return await interaction.editReplyTl(keys.commands.connect.warnings.no_reply_in_time);
+            client.analytics.trackError('command', 'connect', interaction.guildId, interaction.user.id, err, null, logger);
+            return interaction.editReplyTl(keys.api.plugin.errors.status_400);
+        }
+        finally {
+            await this.deleteWSVerification(client, interaction.guildId);
+        }
     }
 
     /**
@@ -95,16 +113,16 @@ export default class Connect extends Command {
      */
     askForRequiredRolesToJoin(interaction) {
         return new Promise(async resolve => {
-            const logChooserMsg = await interaction.replyTl(keys.commands.connect.step.choose_roles);
+            const logChooserMsg = await interaction.editReplyTl(keys.commands.connect.step.choose_roles);
 
             const roleCollector = logChooserMsg.createMessageComponentCollector({
                 componentType: Discord.ComponentType.RoleSelect,
-                time: 180_000,
+                time: DefaultCollectorTimeout,
             });
 
             const methodCollector = logChooserMsg.createMessageComponentCollector({
                 componentType: Discord.ComponentType.StringSelect,
-                time: 180_000,
+                time: DefaultCollectorTimeout,
             });
 
             roleCollector.on('collect', async menu => {
@@ -130,7 +148,7 @@ export default class Connect extends Command {
             //Only one of the collectors should listen to the end event
             roleCollector.on('end', async collected => {
                 if(collected.size === 0 || methodCollector.total === 0) {
-                    await interaction.replyTl(keys.commands.connect.warnings.not_collected);
+                    await interaction.editReplyTl(keys.commands.connect.warnings.not_collected);
                     return resolve(null);
                 }
 

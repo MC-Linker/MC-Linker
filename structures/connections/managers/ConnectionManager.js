@@ -1,5 +1,5 @@
 import { CachedManager } from 'discord.js';
-import { getManagerString } from '../../../utilities/shardingUtils.js';
+import { getManagerString } from '../../../utilities/utils.js';
 
 export default class ConnectionManager extends CachedManager {
 
@@ -51,7 +51,7 @@ export default class ConnectionManager extends CachedManager {
         if(connection && await connection._output()) {
             if('socket' in data) delete data.socket;// The socket is not serializable and should not be broadcasted
             //Broadcast to all shards
-            await this.client.shard.broadcastEval((c, { data, manager, shard }) => {
+            await this.client.broadcastEval((c, { data, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
                 c[manager]._add(data, true, { extras: [c[manager].collectionName] });
             }, { context: { data, manager: getManagerString(this), shard: this.client.shard.ids[0] } });
@@ -74,7 +74,7 @@ export default class ConnectionManager extends CachedManager {
 
         if(connection && await connection._delete()) {
             //Broadcast to all shards
-            await this.client.shard.broadcastEval((c, { connectionId, manager, shard }) => {
+            await this.client.broadcastEval((c, { connectionId, manager, shard }) => {
                 if(c.shard.ids.includes(shard)) return; // Don't patch the connection on the shard that edited it
                 c[manager].cache.delete(connectionId);
             }, {

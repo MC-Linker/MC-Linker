@@ -8,18 +8,21 @@ import Discord, {
     Guild,
     GuildApplicationCommandManager,
     Message,
-    MessagePayload,
     ModalBuilder,
     ModalSubmitInteraction,
     SlashCommandBuilder,
     User,
 } from 'discord.js';
-import keys, { getLanguageKey, getObjectPath } from './keys.js';
+import keys, { getObjectPath } from './keys.js';
 import util from 'util';
-import logger from './logger.js';
+import rootLogger from './logger/Logger.js';
+import features from './logger/features.js';
+import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 import { ComponentSizeInActionRow, MaxActionRows, MaxActionRowSize } from './utils.js';
 
-const completions = getLanguageKey(keys.completions);
+const logger = rootLogger.child({ feature: features.utilities.messages });
+
+const completions = keys.completions.valueOf();
 
 /**
  * Adds methods that allow to respond with a translation key.
@@ -29,7 +32,12 @@ const completions = getLanguageKey(keys.completions);
  */
 export function addTranslatedResponses(interaction) {
     interaction.replyTl = (key, ...placeholders) => replyTl(interaction, key, ...placeholders);
-    interaction.replyOptions = options => replyOptions(interaction, options);
+    interaction.editReplyTl = (key, ...placeholders) => editReplyTl(interaction, key, ...placeholders);
+    interaction.followUpTl = (key, ...placeholders) => followUpTl(interaction, key, ...placeholders);
+    interaction.updateTl = (key, ...placeholders) => updateTl(interaction, key, ...placeholders);
+    interaction.showModalTl = (key, ...placeholders) => showModalTl(interaction, key, ...placeholders);
+    interaction.sendTl = (key, ...placeholders) => sendTl(interaction, key, ...placeholders);
+    interaction.editTl = (key, ...placeholders) => editTl(interaction, key, ...placeholders);
     return interaction;
 }
 
@@ -285,7 +293,6 @@ export const ph = {
  * @returns {K}
  */
 export function addPh(key, ...placeholders) {
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
     placeholders = Object.assign({}, ph.emojisAndColors(), ...placeholders);
 
     if(typeof key === 'string') {
@@ -306,67 +313,131 @@ export function addPh(key, ...placeholders) {
 }
 
 /**
- * Reply to an interaction with a translation key.
- * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {string} key - The translation key to reply with.
- * @param {...object} placeholders - The placeholders to replace in the translation key.
- * @returns {Promise<?Message>}
+ * Resolves a translation key into discord.js message options.
+ * Handles placeholder merging, console logging, and ephemeral flag conversion.
+ * @param {BaseInteraction|Message} interaction - The interaction for standard placeholders.
+ * @param {object} key - The translation key to resolve.
+ * @param {object[]} placeholders - The placeholders to replace in the translation key.
+ * @returns {?Discord.InteractionReplyOptions}
  */
-export async function replyTl(interaction, key, ...placeholders) {
-    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
-
-    if(!interaction || !key || !placeholders) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_reply_arguments.console));
+function resolveKey(interaction, key, placeholders) {
+    if(!interaction || !key) {
+        trackError('unhandled', 'messages', null, null, new Error('Could not reply: No message or key specified'), null, logger);
         return null;
     }
 
+    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
+
     const options = getReplyOptions(key, placeholders);
-
-    if(options?.console) logger.info(addPh(options.console, placeholders));
-    if(options?.console && !interaction) return null; // Only log to console if interaction doesn't exist
-
     if(!options.content && !options.embeds && !options.components && !options.files) return null;
-    return replyOptions(interaction, options);
-}
 
-/**
- * Reply to an interaction with options.
- * @param {BaseInteraction|Message} interaction - The interaction to reply to.
- * @param {string|MessagePayload|Discord.InteractionReplyOptions|Discord.MessageReplyOptions} options - The options to reply with.
- * @returns {Promise<Message>}
- */
-export async function replyOptions(interaction, options) {
     // noinspection JSDeprecatedSymbols
     if(options.ephemeral) {
-        options.flags = Discord.MessageFlags.Ephemeral;
+        options.flags = (options.flags ?? 0) | Discord.MessageFlags.Ephemeral;
         // noinspection JSDeprecatedSymbols
         delete options.ephemeral;
     }
 
-    function handleError(err) {
-        logger.error(err, `Could not reply to interaction ${interaction}`);
-        try {
-            return interaction.channel?.send(options);
-        }
-        catch(err) {
-            logger.error(err, `Could not send message to channel of interaction ${interaction}`);
-        }
-    }
+    return options;
+}
 
-    try {
-        if(interaction instanceof Discord.Message) return await interaction.reply(options).catch(handleError);
-        else if(interaction instanceof Discord.BaseInteraction && interaction.isRepliable()) {
-            if(interaction.deferred || interaction.replied)
-                return await interaction.editReply(options).catch(handleError);
-            else if(interaction.isMessageComponent() || interaction.isModalSubmit())
-                return (await interaction.update({ withResponse: true, ...options }).catch(handleError)).resource.message;
-            else
-                return (await interaction.reply({ withResponse: true, ...options }).catch(handleError)).resource.message;
-        }
+/**
+ * Reply to an interaction with a translation key. Only calls `interaction.reply()` / `message.reply()`.
+ * @param {BaseInteraction|Message} interaction - The interaction to reply to.
+ * @param {Discord.InteractionReplyOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export async function replyTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    if(interaction instanceof Discord.Message) return interaction.reply(options);
+    return (await interaction.reply({ withResponse: true, ...options })).resource.message;
+}
+
+/**
+ * Edit the deferred reply of an interaction with a translation key.
+ * @param {BaseInteraction} interaction - The interaction to edit the reply of.
+ * @param {Discord.InteractionEditReplyOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export function editReplyTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return interaction.editReply(options);
+}
+
+/**
+ * Follow up an interaction with a translation key.
+ * @param {BaseInteraction} interaction - The interaction to follow up.
+ * @param {Discord.InteractionReplyOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export function followUpTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return interaction.followUp(options);
+}
+
+/**
+ * Update the message of a component interaction with a translation key.
+ * @param {Discord.MessageComponentInteraction|Discord.ModalSubmitInteraction} interaction - The interaction to update.
+ * @param {Discord.InteractionUpdateOptions} key - The translation key to reply with.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export async function updateTl(interaction, key, ...placeholders) {
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return (await interaction.update({ withResponse: true, ...options })).resource.message;
+}
+
+/**
+ * Send a message to the channel of an interaction with a translation key.
+ * @param {BaseInteraction|Message} interaction - The interaction whose channel to send to.
+ * @param {Discord.MessageCreateOptions} key - The translation key to send.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<?Message>}
+ */
+export function sendTl(interaction, key, ...placeholders) {
+    if(!interaction.channel.isSendable()) {
+        trackError('unhandled', 'messages', interaction.guildId ?? null, null, new Error(`Could not reply: Channel is not sendable: ${interaction.channel}`), null, logger);
     }
-    catch(err) {
-        handleError(err);
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return interaction.channel.send(options);
+}
+
+/**
+ * Edits a message with a translation key.
+ * @param {Message} interaction - The interaction object containing information about the user and context.
+ * @param {Discord.MessageEditOptions} key - The key used to resolve the localization or text entry.
+ * @param {...any} placeholders - Optional placeholders to replace dynamic parts of the key.
+ * @return {Promise<?Message>} A promise that resolves to the sent message object, or null if no options were resolved or message is not editable.
+ */
+export function editTl(interaction, key, ...placeholders) {
+    if(!interaction.editable) {
+        trackError('unhandled', 'messages', null, null, new Error(`Could not edit message: ${interaction}`), null, logger);
+        return null;
     }
+    const options = resolveKey(interaction, key, placeholders);
+    if(!options) return null;
+    return interaction.edit(options);
+}
+
+/**
+ * Show a modal on an interaction from a translation key.
+ * @param {BaseInteraction} interaction - The interaction to show the modal on.
+ * @param {Discord.APIModalInteractionResponseCallbackData} key - The translation key for the modal.
+ * @param {...object} placeholders - The placeholders to replace in the translation key.
+ * @returns {Promise<void>}
+ */
+export function showModalTl(interaction, key, ...placeholders) {
+    placeholders = Object.assign({}, ph.std(interaction), ...placeholders);
+    const modal = getModal(key, placeholders);
+    return interaction.showModal(modal);
 }
 
 /**
@@ -376,7 +447,7 @@ export async function replyOptions(interaction, options) {
  */
 export function addCompletion(key) {
     const path = getObjectPath(key);
-    const message = getLanguageKey(key);
+    const message = key.valueOf();
 
     let completion;
     if(Object.keys(completions).includes(path[path.length - 1])) completion = completions[path[path.length - 1]];
@@ -394,7 +465,7 @@ export function addCompletion(key) {
  */
 export function getEmbed(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_embed_key.console));
+        trackError('unhandled', 'messages', null, null, new Error('Could not get embed: No key specified'), null, logger);
         return null;
     }
     if(util.types.isProxy(key)) key = addCompletion(key);
@@ -432,11 +503,9 @@ export function getEmbed(key, ...placeholders) {
  */
 export function getActionRows(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
+        trackError('unhandled', 'messages', null, null, new Error('Could not get action rows: No key specified'), null, logger);
         return [];
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
-
     const allComponents = key.components
         ?.map(component => getComponent(component, ...placeholders))
         ?.filter(component => component);
@@ -446,17 +515,17 @@ export function getActionRows(key, ...placeholders) {
 
 /**
  * Get a component builder from a language key.
+ * If the key has a `components` array, only the first sub-component is extracted and built.
+ * Use {@link getComponentsV2} or {@link getActionRows} to build top-level components in full.
  * @param {Discord.AnyComponent|{components: Discord.AnyComponent[]}} key - The language key to get the component builder from.
  * @param {...object} placeholders - The placeholders to replace in the language key.
  * @returns {?ComponentBuilder}
  */
 export function getComponent(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
+        trackError('unhandled', 'messages', null, null, new Error('Could not get component: No key specified'), null, logger);
         return null;
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
-
     /** @type {Discord.AnyComponent} */
     let component = key;
 
@@ -577,7 +646,7 @@ export function getComponent(key, ...placeholders) {
                 .setMaxValues(component.max_values ?? 1);
             break;
         case Discord.ComponentType.Label:
-            if(!component.label || !component.description) return null;
+            if(!component.label) return null;
 
             componentBuilder = new Discord.LabelBuilder()
                 .setLabel(component.label)
@@ -607,46 +676,6 @@ export function getComponent(key, ...placeholders) {
                     componentBuilder.setFileUploadComponent(labelComponent);
                     break;
             }
-            break;
-        case ComponentType.Container:
-            if(!component.components) return null;
-            componentBuilder = new Discord.ContainerBuilder()
-                .setSpoiler(component.spoiler ?? false)
-                .setAccentColor(component.accentColor ?? false);
-
-            for(const childComponent of component.components) {
-                const childComponentBuilder = getComponent(childComponent);
-                switch(childComponentBuilder.data.type) {
-                    case ComponentType.ActionRow:
-                        componentBuilder.addActionRowComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.TextDisplay:
-                        componentBuilder.addTextDisplayComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.Section:
-                        componentBuilder.addSectionComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.MediaGallery:
-                        componentBuilder.addMediaGalleryComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.Separator:
-                        componentBuilder.addSeparatorComponents(childComponentBuilder);
-                        break;
-                    case ComponentType.File:
-                        componentBuilder.addFileComponents(childComponentBuilder);
-                        break;
-                }
-            }
-            break;
-        case ComponentType.Section:
-            if(!component.components) return null;
-            componentBuilder = new Discord.SectionBuilder();
-            const accessory = getComponent(component.accessory);
-            if(accessory.data.type === ComponentType.Button) componentBuilder.setButtonAccessory(accessory);
-            else if(accessory.data.type === Discord.ComponentType.Thumbnail) componentBuilder.setThumbnailAccessory(accessory);
-
-            for(const childComponent of component.components)
-                componentBuilder.addTextDisplayComponents(getComponent(childComponent));
             break;
         case ComponentType.Separator:
             componentBuilder = new Discord.SeparatorBuilder()
@@ -681,22 +710,102 @@ export function getComponent(key, ...placeholders) {
 }
 
 /**
+ * Get a top-level Components V2 builder from a language key.
+ * Unlike {@link getComponent}, this function does not extract from `components` arrays and supports
+ * the Container and ActionRow component types for use as top-level V2 message components.
+ * @param {Discord.AnyComponent} key - The language key representing a top-level V2 component.
+ * @param {...object} placeholders - The placeholders to replace in the language key.
+ * @returns {?ComponentBuilder}
+ */
+export function getComponentsV2(key, ...placeholders) {
+    if(!key) {
+        trackError('unhandled', 'messages', null, null, new Error('Could not get V2 component: No key specified'), null, logger);
+        return null;
+    }
+    if(!key.type) return null;
+    const component = addPh(key, ...placeholders);
+
+    switch(ComponentType[component.type]) {
+        case ComponentType.Container:
+            const containerBuilder = new Discord.ContainerBuilder();
+
+            if(component.spoiler) containerBuilder.setSpoiler(component.spoiler);
+            if(component.accent_color) containerBuilder.setAccentColor(Discord.resolveColor(component.accent_color));
+
+            for(const child of component.components) {
+                const childBuilder = getComponentsV2(child);
+                if(!childBuilder) continue;
+
+                switch(childBuilder.data.type) {
+                    case ComponentType.ActionRow:
+                        containerBuilder.addActionRowComponents(childBuilder);
+                        break;
+                    case ComponentType.TextDisplay:
+                        containerBuilder.addTextDisplayComponents(childBuilder);
+                        break;
+                    case ComponentType.Section:
+                        containerBuilder.addSectionComponents(childBuilder);
+                        break;
+                    case ComponentType.Separator:
+                        containerBuilder.addSeparatorComponents(childBuilder);
+                        break;
+                    case ComponentType.File:
+                        containerBuilder.addFileComponents(childBuilder);
+                        break;
+                    case ComponentType.MediaGallery:
+                        containerBuilder.addMediaGalleryComponents(childBuilder);
+                        break;
+                }
+            }
+            return containerBuilder;
+        case ComponentType.ActionRow:
+            return getActionRows(component)[0];
+        case ComponentType.Section:
+            const sectionBuilder = new Discord.SectionBuilder();
+
+            const accessory = getComponent(component.accessory);
+            if(accessory?.data.type === ComponentType.Button) sectionBuilder.setButtonAccessory(accessory);
+            else if(accessory?.data.type === Discord.ComponentType.Thumbnail) sectionBuilder.setThumbnailAccessory(accessory);
+
+            for(const childComponent of component.components)
+                sectionBuilder.addTextDisplayComponents(getComponent(childComponent));
+            return sectionBuilder;
+        default:
+            return getComponent(component);
+    }
+}
+
+/**
  * Get discord reply options from a language key.
- * @param {Discord.MessageReplyOptions|Discord.InteractionReplyOptions} key - The language key to get the reply options from.
+ * @param {Discord.MessageReplyOptions|Discord.InteractionReplyOptions|Discord.MessageCreateOptions} key - The language key to get the reply options from.
  * @param {object} placeholders - The placeholders to replace in the language key.
  * @returns {?Discord.MessageReplyOptions|?Discord.InteractionReplyOptions}
  */
 export function getReplyOptions(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_reply_key.console));
+        trackError('unhandled', 'messages', null, null, new Error('Could not get reply options: No key specified'), null, logger);
         return null;
     }
     if(util.types.isProxy(key)) key = addCompletion(key);
 
     const options = { ...addPh(key, ...placeholders) };
     if(key.embeds) options.embeds = key.embeds.map(embed => getEmbed(embed, ...placeholders));
-    if(key.components) options.components = getActionRows(key, ...placeholders);
     if(key.color) options.color = Discord.resolveColor(options.color);
+
+    let isV2 = false;
+    if(Array.isArray(key.flags)) {
+        const flagField = new Discord.MessageFlagsBitField();
+        for(const flag of key.flags) flagField.add(Discord.MessageFlags[flag]);
+        options.flags = flagField.bitfield;
+
+        isV2 = flagField.has(Discord.MessageFlags.IsComponentsV2);
+    }
+
+    if(key.components) {
+        // For Components V2, return top-level components directly
+        if(isV2) options.components = key.components.map(component => getComponentsV2(component, ...placeholders));
+        else options.components = getActionRows(key, ...placeholders);
+    }
 
     return options;
 }
@@ -708,13 +817,11 @@ export function getReplyOptions(key, ...placeholders) {
  */
 export function getCommand(key) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_command_key.console));
+        trackError('unhandled', 'messages', null, null, new Error('Could not get command: No key specified'), null, logger);
         return null;
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
-
     if(!key.name || !key.type) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_command_arguments.console));
+        trackError('unhandled', 'messages', null, null, new Error('Could not get command: No name or type specified'), null, logger);
         return null;
     }
 
@@ -772,18 +879,16 @@ export function getCommand(key) {
  */
 export function getModal(key, ...placeholders) {
     if(!key) {
-        console.error(getLanguageKey(keys.api.messages.errors.no_component_key.console));
+        trackError('unhandled', 'messages', null, null, new Error('Could not get modal: No key specified'), null, logger);
         return null;
     }
-    if(util.types.isProxy(key)) key = getLanguageKey(key);
-
     key = addPh(key, ...placeholders);
 
     const modalBuilder = new Discord.ModalBuilder()
         .setTitle(key.title)
         .setCustomId(key.custom_id);
 
-    for(const childComponent of key.components ?? []) {
+    for(const childComponent of key.components) {
         const component = getComponent(childComponent, ...placeholders);
         if(component.data.type === ComponentType.Label) modalBuilder.addLabelComponents(component);
         else if(component.data.type === ComponentType.TextDisplay) modalBuilder.addTextDisplayComponents(component);
@@ -986,7 +1091,7 @@ export async function fetchCommand(commandManager, name) {
  * @returns {EmbedBuilder|EmbedBuilder[]} - The same embed(s) with the footer set.
  */
 export function setCachedFooter(embeds) {
-    const cachedText = getLanguageKey(keys.api.plugin.warnings.cached_result);
+    const cachedText = keys.api.plugin.warnings.cached_result;
     const applyFooter = embed => {
         const existing = embed.data.footer?.text;
         const text = existing ? `${cachedText} | ${existing}` : cachedText;

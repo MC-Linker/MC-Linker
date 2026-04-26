@@ -39,15 +39,22 @@ export default class Eval extends Command {
             ownerOnly: true,
             allowPrefix: true,
             allowUser: true,
+            defer: false,
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[]} args - No arguments.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
         let command = interaction.content.substring(client.config.prefix.length + this.name.length).trim();
         command = command.replace(/^```(?:js|javascript)?\s*([\s\S]*?)\s*```$/g, '$1').trim();
-        if(!command) return interaction.replyTl(keys.api.command.warnings.no_argument, { argument: 'command' });
+        if(!command) return interaction.sendTl(keys.api.command.warnings.no_argument, { argument: 'command' });
 
         const evalOut = new ConsoleOutput();
         evalOut.setEncoding('utf8');
@@ -91,24 +98,24 @@ export default class Eval extends Command {
             out += evalOut._read();
 
             //Redact tokens
-            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET, process.env.MICROSOFT_EMAIL, process.env.MICROSOFT_PASSWORD, process.env.IO_USERNAME, process.env.IO_PASSWORD, process.env.AZURE_CLIENT_I, process.env.TOPGG_TOKEN, process.env.COMMUNICATION_TOKEN]
+            const tokens = [process.env.TOKEN, process.env.CLIENT_SECRET, process.env.COOKIE_SECRET, process.env.MICROSOFT_EMAIL, process.env.MICROSOFT_PASSWORD, process.env.IO_USERNAME, process.env.IO_PASSWORD, process.env.AZURE_CLIENT_ID, process.env.TOPGG_TOKEN, process.env.COMMUNICATION_TOKEN]
                 .filter(t => t && t !== '');
             // noinspection JSVoidFunctionReturnValueUsed
             for(const token of tokens) {
-                out = out.replace(new RegExp(token, 'g'), 'REDACTED');
+                out = out.replaceAll(token, 'REDACTED');
             }
 
             //If it's too long, send an attachment
             if(out.length > MaxEmbedFieldValueLength) {
                 const attachment = new Discord.AttachmentBuilder(Buffer.from(out, 'utf8'), { name: 'Eval.js' });
-                return interaction.replyOptions({ files: [attachment] });
+                return interaction.channel.send({ files: [attachment] });
             }
             else {
-                return interaction.replyTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, MaxEmbedFieldValueLength)) });
+                return interaction.sendTl(keys.commands.eval.success, { 'output': Discord.codeBlock('js', out.substring(0, MaxEmbedFieldValueLength)) });
             }
         }
         catch(err) {
-            return interaction.replyTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, MaxEmbedFieldValueLength)) }, ph.error(err));
+            return interaction.sendTl(keys.commands.eval.errors.unknown_error, { 'output_error': Discord.codeBlock('js', err.message.substring(0, MaxEmbedFieldValueLength)) }, ph.error(err));
         }
     }
 }

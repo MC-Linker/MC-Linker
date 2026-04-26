@@ -1,6 +1,5 @@
 import Canvas from 'skia-canvas';
 import Discord, { ButtonStyle } from 'discord.js';
-import MinecraftData from 'minecraft-data';
 import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
@@ -9,14 +8,11 @@ import {
     drawMinecraftNumber,
     getLivePlayerNbt,
     getMinecraftAvatarURL,
-    MinecraftDataVersion,
+    getMinecraftData,
     stringifyMinecraftJson,
     wrapText,
 } from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
-import logger from '../../utilities/logger.js';
-
-const mcData = MinecraftData(MinecraftDataVersion);
 
 const armorSlotCoords = {
     5: [16, 16],
@@ -94,9 +90,16 @@ export default class Inventory extends Command {
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[UserResponse, boolean]} args - [0] The resolved user, [1] Whether to show item details.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
+        const mcData = getMinecraftData(server.version); //TODO pass to functions
         /** @type {UserResponse} */
         const user = args[0];
         const showDetails = args[1];
@@ -147,7 +150,7 @@ export default class Inventory extends Command {
         const invEmbed = getEmbed(keys.commands.inventory.success.final, { username: user.username });
         if(isCached) setCachedFooter(invEmbed);
         // Send without buttons if showDetails is false
-        if(!showDetails) return await interaction.replyOptions({ files: [invAttach], embeds: [invEmbed] });
+        if(!showDetails) return await interaction.editReply({ files: [invAttach], embeds: [invEmbed] });
 
         const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach);
         const pagination = new Pagination(client, interaction, paginationPages, {
@@ -272,11 +275,10 @@ export default class Inventory extends Command {
                 'turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:20)`,
                 'strong_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} VI (0:20)\n- ${mcData.effectsByName['Resistance'].displayName} IV (0:20)`,
                 'long_turtle_master': `- ${mcData.effectsByName['Slowness'].displayName} IV (0:40)\n- ${mcData.effectsByName['Resistance'].displayName} III (0:40)`,
-                //TODO replace with mcData
-                'infestation': `- Infestation (3:00)`,
-                'oozing': `- Oozing (3:00)`,
-                'weaving': `- Weaving (3:00)`,
-                'wind_charging': `- Wind Charging (3:00)`,
+                'infestation': `- ${mcData.effectsByName['Infested']?.displayName ?? 'Infested'} (3:00)`,
+                'oozing': `- ${mcData.effectsByName['Oozing']?.displayName ?? 'Oozing'} (3:00)`,
+                'weaving': `- ${mcData.effectsByName['Weaving']?.displayName ?? 'Weaving'} (3:00)`,
+                'wind_charging': `- ${mcData.effectsByName['WindCharged']?.displayName ?? 'Wind Charged'} (3:00)`,
                 'mundane': `- No Effects (Mundane)`,
                 'thick': `- No Effects (Thick)`,
                 'awkward': `- No Effects (Awkward)`,
@@ -516,7 +518,7 @@ async function renderContainer(backgroundPath, items, slotCoords, loopCode = (it
         }
         catch(err) {
             //Draw name
-            logger.info(addPh(keys.commands.inventory.errors.no_image.console, { 'item_name': itemId }));
+            logger.debug(`Could not find item image ${itemId}. Applying text...`);
             ctx.font = '8px Minecraft';
             ctx.fillStyle = '#000';
             const lines = wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);

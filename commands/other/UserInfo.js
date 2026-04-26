@@ -4,9 +4,10 @@ import { FilePath } from '../../structures/protocol/Protocol.js';
 import * as utils from '../../utilities/utils.js';
 import {
     codeBlockFromCommandResponse,
+    DefaultCollectorTimeout,
     formatDuration,
     getMinecraftAvatarURL,
-    MinecraftDataVersion,
+    getMinecraftData,
     stringifyMinecraftJson,
 } from '../../utilities/utils.js';
 import {
@@ -20,10 +21,7 @@ import {
 } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
-import MinecraftData from 'minecraft-data';
 import Discord, { ComponentType, time, userMention } from 'discord.js';
-
-const mcData = MinecraftData(MinecraftDataVersion);
 
 export default class UserInfo extends Command {
 
@@ -31,13 +29,21 @@ export default class UserInfo extends Command {
         super({
             name: 'userinfo',
             category: 'other',
+            ephemeral: true,
             requiresUserIndex: 0,
         });
     }
 
-    async execute(interaction, client, args, server) {
-        if(!await super.execute(interaction, client, args, server)) return;
-
+    /**
+     * @inheritdoc
+     * @param interaction
+     * @param client
+     * @param {[UserResponse]} args - [0] The resolved user.
+     * @param server
+     * @param logger
+     */
+    async run(interaction, client, args, server, logger) {
+        const mcData = getMinecraftData(server.version);
         /** @type {UserResponse} */
         const user = args[0];
 
@@ -69,7 +75,7 @@ export default class UserInfo extends Command {
         if(scoreboardDatResponse?.status === 'success') scoreboardDat = await utils.nbtBufferToObject(scoreboardDatResponse.data, interaction);
         if(scoreboardDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
         if(levelDatResponse?.status === 'success') levelDat = await utils.nbtBufferToObject(levelDatResponse.data, interaction);
-        if(levelDatResponse === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
+        if(levelDat === undefined) return; // If nbtBufferToObject returns undefined, it means that the file is corrupted
 
         const matchingOp = operators.find(o => o.uuid === user.uuid);
         const matchingWhitelist = whitelistedUsers.find(w => w.uuid === user.uuid);
@@ -96,7 +102,7 @@ export default class UserInfo extends Command {
             setCachedFooter(survivalMessage.embeds);
         }
 
-        const id = client.userConnections.cache.find(u => u.getUUID(server) === user.uuid)?.id;
+        const id = client.userConnections.findByUUID(user.uuid, server)?.id;
         if(id) generalMessage.embeds[0].addFields(addPh(keys.commands.userinfo.success.connected_account.embeds[0].fields[0], { connection: userMention(id) }));
 
         const newAdminFields = [];
@@ -108,19 +114,19 @@ export default class UserInfo extends Command {
             placeholders.saturation = playerDat.foodSaturationLevel;
             placeholders.health = (playerDat.Health / 2).toFixed(1);
             placeholders.score = playerDat.Score;
-            placeholders.gamemode = keys.commands.userinfo.gamemode[playerDat.playerGameType] ?? keys.commands.serverinfo.unknown;
-            placeholders.dimension = keys.commands.userinfo.dimensions[playerDat.Dimension.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
+            placeholders.gamemode = keys.commands.userinfo.gamemode[playerDat.playerGameType] ?? keys.common.unknown;
+            placeholders.dimension = keys.commands.userinfo.dimensions[playerDat.Dimension.replace('minecraft:', '')] ?? keys.common.unknown;
             playerDat.Pos = playerDat.Pos.map(pos => Math.round(pos)); // Round the position to the nearest integer
             placeholders.position = `${playerDat.Pos[0]}, ${playerDat.Pos[1]}, ${playerDat.Pos[2]}`;
             placeholders.death_location = `${playerDat.LastDeathLocation?.pos?.[0] ?? '?'}, ${playerDat.LastDeathLocation?.pos?.[1] ?? '?'}, ${playerDat.LastDeathLocation?.pos?.[2] ?? '?'}`;
-            placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDat.LastDeathLocation?.dimension?.replace('minecraft:', '')] ?? keys.commands.serverinfo.unknown;
+            placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDat.LastDeathLocation?.dimension?.replace('minecraft:', '')] ?? keys.common.unknown;
             placeholders.spawn_location = playerDat.SpawnX && playerDat.SpawnY && playerDat.SpawnZ ? `${playerDat.SpawnX}, ${playerDat.SpawnY}, ${playerDat.SpawnZ}` : null; // set it from level.dat
             placeholders.spawn_dimension = playerDat.SpawnDimension ? keys.commands.userinfo.dimensions[playerDat.SpawnDimension.replace('minecraft:', '')] : null; // set it from level.dat
             // these values will be an integer if it's coming from the data command and a bigint if it's coming from the playerdata file
             if(playerDat.bukkit?.firstPlayed && typeof playerDat.bukkit.firstPlayed !== 'bigint') playerDat.bukkit.firstPlayed = BigInt(playerDat.bukkit.firstPlayed);
             if(playerDat.bukkit?.firstPlayed && typeof playerDat.bukkit.lastPlayed !== 'bigint') playerDat.bukkit.lastPlayed = BigInt(playerDat.bukkit.lastPlayed);
-            placeholders.first_join = playerDat.bukkit?.firstPlayed ? time(Number(playerDat.bukkit.firstPlayed / 1000n)) : keys.commands.serverinfo.unknown;
-            placeholders.last_join = playerDat.bukkit?.lastPlayed ? time(Number(playerDat.bukkit.lastPlayed / 1000n)) : keys.commands.serverinfo.unknown;
+            placeholders.first_join = playerDat.bukkit?.firstPlayed ? time(Number(playerDat.bukkit.firstPlayed / 1000n)) : keys.common.unknown;
+            placeholders.last_join = playerDat.bukkit?.lastPlayed ? time(Number(playerDat.bukkit.lastPlayed / 1000n)) : keys.common.unknown;
             if(playerDat.ActiveEffects?.length > 0) {
                 placeholders.effects = playerDat.ActiveEffects.map(effect => mcData.effectsArray.find(e => e.id === effect.Id)?.displayName).filter(e => e).join('\n');
             }
@@ -143,7 +149,7 @@ export default class UserInfo extends Command {
         }
         if(scoreboardDat) {
             const teams = scoreboardDat.data.Teams?.filter(team => team.Players?.includes(user.username));
-            if(teams.length > 0) placeholders.teams = teams.map(team => stringifyMinecraftJson(team.DisplayName)).join('\n');
+            if(teams?.length > 0) placeholders.teams = teams.map(team => stringifyMinecraftJson(team.DisplayName)).join('\n');
             if(placeholders.teams) newSurvivalFields.push(addPh(
                 keys.commands.userinfo.success.survival.embeds[0].fields[9], placeholders,
             ));
@@ -166,9 +172,9 @@ export default class UserInfo extends Command {
         //Push the fields even if they're unknown so that admin buttons can be shown
         if(newAdminFields.length === 0) newAdminFields.push(...(addPh(keys.commands.userinfo.success.admin.embeds[0].fields, placeholders, {
             position: '?, ?, ?',
-            dimension: keys.commands.serverinfo.unknown,
+            dimension: keys.common.unknown,
             death_location: '?, ?, ?',
-            death_dimension: keys.commands.serverinfo.unknown,
+            death_dimension: keys.common.unknown,
         })));
 
         survivalMessage.embeds[0].setFields(newSurvivalFields);
@@ -208,7 +214,7 @@ export default class UserInfo extends Command {
         const message = await pagination.start();
         const collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: pagination.options.timeout ?? 120_000,
+            time: pagination.options.timeout ?? DefaultCollectorTimeout,
         });
 
         ['ban', 'unban', 'kick', 'op', 'deop', 'whitelist', 'unwhitelist']
@@ -218,7 +224,7 @@ export default class UserInfo extends Command {
                 new DefaultButton({
                     id: command,
                     author: interaction.user,
-                    permissions: [Discord.PermissionFlagsBits.Administrator],
+                    permissions: Discord.PermissionFlagsBits.Administrator,
                     ephemeral: true,
                     collector,
                 }, this.handleAdminButton.bind(null, user));
@@ -231,8 +237,9 @@ export default class UserInfo extends Command {
      * @param {Discord.ButtonInteraction} interaction - The interaction
      * @param {MCLinker} client - The MCLinker client.
      * @param {?ServerConnection} server - The connection of the server the button was executed in.
+     * @param {import('../../utilities/logger/Logger.js').default} logger - A child logger bound to this execution.
      */
-    async handleAdminButton(user, interaction, client, server) {
+    async handleAdminButton(user, interaction, client, server, logger) {
         if(!server) return;
         interaction = addTranslatedResponses(interaction);
 
@@ -271,9 +278,6 @@ export default class UserInfo extends Command {
         }
         await interaction.editReply({ components: interaction.message.components });
 
-        await interaction.followUp(getReplyOptions(
-            keys.commands.userinfo.success.admin_button,
-            { response, command },
-        ));
+        await interaction.followUpTl(keys.commands.userinfo.success.admin_button, { response, command });
     }
 }

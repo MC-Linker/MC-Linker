@@ -5,6 +5,7 @@
     "eventsPath": "./events",
     "restRoutesPath": "./api/routes",
     "wsEventsPath": "./api/events",
+    "initialDebugFilters": [],
     "presence": {
         "status": "online",
         "activities": [
@@ -14,7 +15,13 @@
             }
         ]
     },
-    "pluginVersion": "4.0.0",
+    "analytics": {
+        "flushIntervalMs": 30000,
+        "maxErrorBufferSize": 100,
+        "snapshotIntervalMs": 3600000,
+        "cpuSampleIntervalMs": 10000
+    },
+    "pluginVersion": "4.3.0",
     "supportServerInvite": "https://discord.gg/rX36kZUGNK",
     "colors": {
         "success": "#43611a",
