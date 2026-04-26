@@ -1,0 +1,3773 @@
+{
+    "completions": {
+        "success": {
+            "author": {
+                "name": "Success",
+                "icon_url": "https://cdn.discordapp.com/emojis/1432518917548544144.webp"
+            },
+            "color": "%color_success%"
+        },
+        "warnings": {
+            "author": {
+                "name": "Warning",
+                "icon_url": "https://cdn.discordapp.com/emojis/1432518918596984917.webp"
+            },
+            "color": "%color_warning%"
+        },
+        "errors": {
+            "author": {
+                "name": "Error",
+                "icon_url": "https://cdn.discordapp.com/emojis/1433545543455604856.webp"
+            },
+            "color": "%color_error%"
+        },
+        "no_access": {
+            "author": {
+                "name": "No Access",
+                "icon_url": "https://cdn.discordapp.com/emojis/1432509026846900317.webp"
+            },
+            "color": "%color_error%"
+        },
+        "step": {
+            "color": "%color_step%"
+        }
+    },
+    "common": {
+        "unknown": "*Unknown*",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "no_description_available": "No description available...",
+        "channels": {
+            "channel_not_added": {
+                "embeds": [
+                    {
+                        "title": "Channel Not Added",
+                        "description": "The specified channel is not added."
+                    }
+                ]
+            },
+            "no_channels": {
+                "embeds": [
+                    {
+                        "title": "No Channels Added",
+                        "description": "There are no added channels."
+                    }
+                ]
+            },
+            "channel_button": {
+                "components": [
+                    {
+                        "type": "Button",
+                        "label": "Channel #%index1%",
+                        "custom_id": "channel_%index%",
+                        "style": "Secondary"
+                    }
+                ]
+            }
+        }
+    },
+    "main": {
+        "no_access": {
+            "not_in_guild": {
+                "embeds": [
+                    {
+                        "title": "Guild-Only",
+                        "description": "I can only be used in server channels!"
+                    }
+                ]
+            },
+            "no_permission_command": {
+                "embeds": [
+                    {
+                        "title": "No Permission",
+                        "description": "You do not have permission to use this command!\nRequired Permission: **%permission%**"
+                    }
+                ],
+                "ephemeral": true
+            },
+            "no_entitlement": {
+                "embeds": [
+                    {
+                        "title": "Customize Your Own MC Linker",
+                        "description": "You can change the bot's appearance in your server by clicking the button below!\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\nTo effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription. 👇",
+                        "color": "Blurple",
+                        "author": {
+                            "name": "Premium",
+                            "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
+                        }
+                    }
+                ],
+                "components": [
+                    {
+                        "type": "Button",
+                        "style": "Secondary",
+                        "label": "Change Server Appearance",
+                        "custom_id": "customize_guild_appearance"
+                    }
+                ]
+            },
+            "no_entitlement_guild": {
+                "embeds": [
+                    {
+                        "title": "Customize Your Own MC Linker",
+                        "description": "Run this command in your server to customize its appearance.\n\nOr make MC Linker truly your own by hosting it on your own bot!\n✨ You'll be able to customize:\n- Profile Picture\n- Username\n- Banner\n- Status and Presence\n- \"About Me\" Text\n- Emojis used by the bot\n\n👇 To effortlessly set up your personalized MC Linker, click the button below to subscribe to the **Customize MC Linker** subscription.",
+                        "color": "Blurple",
+                        "author": {
+                            "name": "Premium",
+                            "icon_url": "https://cdn.discordapp.com/app-assets/712759741528408064/store/1435596155651100783.webp?size=1024"
+                        }
+                    }
+                ],
+                "components": [
+                    {
+                        "type": "Button",
+                        "style": "Premium",
+                        "sku_id": "1166098447665995807"
+                    }
+                ]
+            }
+        },
+        "errors": {
+            "could_not_execute_command": {
+                "embeds": [
+                    {
+                        "title": "Unknown Error",
+                        "description": "An unknown error occurred while executing this command. Please try again later."
+                    }
+                ],
+                "components": []
+            },
+            "could_not_execute_button": {
+                "embeds": [
+                    {
+                        "title": "Unknown Error",
+                        "description": "An unknown error occurred while executing this button. Please try again later."
+                    }
+                ],
+                "components": []
+            }
+        },
+        "success": {
+            "ping": {
+                "embeds": [
+                    {
+                        "title": "Hey, I'm %client_username%! :wave:",
+                        "description": "I use slash commands. Type `/help` if you need more help for a specific command.",
+                        "color": "Blue"
+                    }
+                ]
+            },
+            "invite": {
+                "embeds": [
+                    {
+                        "title": "Thanks for inviting MC Linker!",
+                        "description": "To get started, please connect your Minecraft server to the bot:\n\n• Install the **Discord-Linker** plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/), [Modrinth](https://modrinth.com/plugin/discord-linker) or from the [Aternos Plugin List](https://aternos.org/addons/a/spigot/98749) to your Minecraft server.\n• Execute %connect_command_mention% in Discord.\n• Run the command from the embed in Minecraft.\n\n**That's it!**\nYou can now create a chat-bridge using %chatchannel_add_command_mention% or check out any of the other commands!\n\n*Tip: Manage permissions for commands by going to `Server Settings > Integrations > MC Linker`!*\n*Tip: Run %customize_command_mention% to set the bot's avatar, name and more.!*\n\nIf you need more help, join the [Support Server](https://discord.gg/rX36kZUGNK) or visit the [MC Linker Guide](https://guide.mclinker.com)."
+                    }
+                ]
+            }
+        }
+    },
+    "custom_bot": {
+        "create": {
+            "success": {
+                "main": {
+                    "ephemeral": true,
+                    "embeds": [
+                        {
+                            "title": "Subscription Successful",
+                            "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.",
+                            "fields": [
+                                {
+                                    "name": "Get Started",
+                                    "value": "You'll now first need to create your own bot on the [developer portal](https://discord.com/developers/applications?new_application=true).\nEnter your desired name and then click on \"Create App\".\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                }
+                            ]
+                        }
+                    ],
+                    "files": []
+                },
+                "disable_public_bot": {
+                    "embeds": [
+                        {
+                            "title": "Setting Up Your Custom MC-Linker",
+                            "fields": [
+                                {
+                                    "name": "Disabling Public Bot",
+                                    "value": "To prevent others from adding your bot to their servers follow these steps (in order):\n* In the **Installation** section, set \"Install Link\" to \"None\".\n* In the **Bot** section, disable the **Public Bot** option.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                }
+                            ],
+                            "image": "attachment://disable_public_bot.gif"
+                        }
+                    ]
+                },
+                "details": {
+                    "embeds": [
+                        {
+                            "title": "Setting Up Your Custom MC-Linker",
+                            "fields": [
+                                {
+                                    "name": "Enter Bot Details",
+                                    "value": "The **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                }
+                            ],
+                            "image": "attachment://reset_token.png"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Primary",
+                            "label": "Enter Token",
+                            "custom_id": "customize_enter_details"
+                        }
+                    ]
+                },
+                "port": {
+                    "embeds": [
+                        {
+                            "title": "Bot Started!",
+                            "fields": [
+                                {
+                                    "name": "Configure Bot Port",
+                                    "value": "Lastly, run `/linker bot_port %port%` on your Minecraft server with the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749) plugin installed.\nAlternatively insert `bot_port=%port%` in the config.yml of the Discord-Linker plugin (located in plugins/Discord-Linker/config.yml) and reload your server.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "finish": {
+                    "embeds": [
+                        {
+                            "title": "Set Up Complete",
+                            "description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!).",
+                            "fields": [
+                                {
+                                    "name": "Customize Your Bot",
+                                    "value": "You can customize your Bot's appearance in the **General Information** and **Bot** sections to your likings.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                                }
+                            ]
+                        }
+                    ],
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Link",
+                            "label": "Invite Your Bot!",
+                            "url": "%invite%"
+                        },
+                        {
+                            "type": "Button",
+                            "style": "Primary",
+                            "label": "Manage Bot",
+                            "custom_id": "customize_manage_bot"
+                        }
+                    ],
+                    "files": []
+                }
+            },
+            "token_modal": {
+                "type": "Modal",
+                "custom_id": "customize_token_modal",
+                "title": "Enter Token",
+                "components": [
+                    {
+                        "type": "Label",
+                        "label": "Bot Token",
+                        "description": "The Bot Token can be found in the Bot section of the Developer Portal.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "token",
+                            "placeholder": "NzkyNzE1NDU0MTk2MDg4ODQy.X-hvzA.Ovy4MCQywSkoMRRclStW4xAYK7I",
+                            "required": true,
+                            "min_length": 20,
+                            "max_length": 100,
+                            "style": "Short"
+                        }
+                    }
+                ]
+            },
+            "step": {
+                "logging_in": {
+                    "embeds": [
+                        {
+                            "title": "Setting Up Your Custom MC-Linker",
+                            "description": "%emoji_step% *Logging into your bot...*"
+                        }
+                    ],
+                    "components": [],
+                    "files": []
+                },
+                "building": {
+                    "embeds": [
+                        {
+                            "title": "Setting Up Your Custom MC-Linker",
+                            "description": "%emoji_step% *Assembling all the code...*"
+                        }
+                    ]
+                },
+                "deploying": {
+                    "embeds": [
+                        {
+                            "title": "Setting Up Your Custom MC-Linker",
+                            "description": "%emoji_step% *Deploying Slash Commands...*"
+                        }
+                    ]
+                },
+                "starting_up": {
+                    "embeds": [
+                        {
+                            "title": "Setting Up Your Custom MC-Linker",
+                            "description": "%emoji_step% *Starting up...*"
+                        }
+                    ]
+                }
+            },
+            "warnings": {
+                "invalid_token": {
+                    "embeds": [
+                        {
+                            "title": "Incorrect Bot Token",
+                            "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Primary",
+                            "label": "Enter Token",
+                            "custom_id": "customize_enter_details"
+                        }
+                    ]
+                }
+            }
+        },
+        "success": {
+            "subscribed": {
+                "embeds": [
+                    {
+                        "title": "Subscription Successful",
+                        "description": "**Thank you for supporting MC Linker!**\nYou are successfully subscribed to the **Customize MC Linker** subscription.\n\nUse %customize_command_mention% to get started!"
+                    }
+                ]
+            }
+        },
+        "errors": {
+            "start_failed": {
+                "embeds": [
+                    {
+                        "title": "Start Failed",
+                        "description": "Failed to start your bot! Please try again.\n\n*Need help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
+                    }
+                ]
+            }
+        },
+        "custom_bot_manager": {
+            "status": {
+                "started": "🟢 Started",
+                "stopped": "🔴 Stopped",
+                "deleted": "💀 Deleted"
+            },
+            "success": {
+                "main": {
+                    "ephemeral": true,
+                    "embeds": [
+                        {
+                            "title": "Manage Custom MC Linker",
+                            "fields": [
+                                {
+                                    "name": "Status",
+                                    "value": "%status%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Bot Port",
+                                    "value": "%port%",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "start": {
+                    "embeds": [
+                        {
+                            "title": "Started Your Custom MC Linker",
+                            "description": "Your Custom MC Linker is now started!"
+                        }
+                    ]
+                },
+                "stop": {
+                    "embeds": [
+                        {
+                            "title": "Stopped Your Custom MC Linker",
+                            "description": "Your Custom MC Linker is now stopped!"
+                        }
+                    ]
+                },
+                "delete": {
+                    "embeds": [
+                        {
+                            "title": "Deleted Your Custom MC Linker",
+                            "description": "Your Custom MC Linker is now deleted! You can create a new one by running %customize_command_mention% again.\n\nPlease let us know any feedback in the [Support Server](https://discord.gg/rX36kZUGNK)!"
+                        }
+                    ]
+                },
+                "change_presence": {
+                    "embeds": [
+                        {
+                            "title": "Changed Bot Presence",
+                            "description": "Successfully changed the presence of your Custom MC Linker!"
+                        }
+                    ]
+                }
+            },
+            "errors": {
+                "change_presence_failed": {
+                    "embeds": [
+                        {
+                            "title": "Changing Presence Failed",
+                            "description": "Failed to change the presence of your Custom MC Linker! Please try again later."
+                        }
+                    ]
+                }
+            },
+            "buttons": {
+                "start": {
+                    "type": "Button",
+                    "style": "Success",
+                    "label": "Start",
+                    "emoji": "🟢",
+                    "custom_id": "custom_bot_start"
+                },
+                "stop": {
+                    "type": "Button",
+                    "style": "Danger",
+                    "label": "Stop",
+                    "emoji": "🛑",
+                    "custom_id": "custom_bot_stop"
+                },
+                "delete": {
+                    "type": "Button",
+                    "style": "Danger",
+                    "label": "Delete",
+                    "emoji": "💀",
+                    "custom_id": "custom_bot_delete"
+                },
+                "invite": {
+                    "type": "Button",
+                    "style": "Link",
+                    "label": "Invite Bot",
+                    "url": "%invite%"
+                },
+                "change_presence": {
+                    "type": "Button",
+                    "style": "Secondary",
+                    "label": "Change Presence",
+                    "custom_id": "custom_bot_change_presence"
+                }
+            },
+            "confirm_delete_modal": {
+                "type": "Modal",
+                "custom_id": "customize_confirm_delete",
+                "title": "Confirm Deletion",
+                "components": [
+                    {
+                        "type": "Label",
+                        "label": "Warning",
+                        "description": "Deleting your Custom MC Linker will stop the bot and delete all its data. Type 'delete' to confirm.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "confirm_delete",
+                            "placeholder": "delete",
+                            "required": true,
+                            "min_length": 6,
+                            "max_length": 6,
+                            "style": "Short"
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Reason for Deletion",
+                        "description": "Optionally, you can provide a reason for deleting your Custom MC Linker to help us improve.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "confirm_delete_reason",
+                            "placeholder": "It was just too good...",
+                            "required": false,
+                            "style": "Paragraph"
+                        }
+                    }
+                ]
+            },
+            "change_presence_modal": {
+                "type": "Modal",
+                "custom_id": "customize_set_presence",
+                "title": "Set Custom Presence",
+                "components": [
+                    {
+                        "type": "Label",
+                        "label": "Status",
+                        "description": "The status of your bot.",
+                        "component": {
+                            "type": "StringSelect",
+                            "custom_id": "presence_status",
+                            "placeholder": "Select a status",
+                            "min_values": 1,
+                            "max_values": 1,
+                            "options": [
+                                {
+                                    "label": "Online",
+                                    "value": "online",
+                                    "description": "The bot is online and available.",
+                                    "emoji": "🟢",
+                                    "default": true
+                                },
+                                {
+                                    "label": "Idle",
+                                    "value": "idle",
+                                    "description": "The bot is idle.",
+                                    "emoji": "🌙"
+                                },
+                                {
+                                    "label": "Do Not Disturb",
+                                    "value": "dnd",
+                                    "description": "The bot is busy and should not be disturbed.",
+                                    "emoji": "⛔"
+                                },
+                                {
+                                    "label": "Invisible",
+                                    "value": "invisible",
+                                    "description": "The bot appears offline.",
+                                    "emoji": "⚫"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Activity Type",
+                        "description": "The type of activity your bot is doing.",
+                        "component": {
+                            "type": "StringSelect",
+                            "custom_id": "activity_type",
+                            "placeholder": "Select an activity type",
+                            "min_values": 1,
+                            "max_values": 1,
+                            "options": [
+                                {
+                                    "label": "Playing",
+                                    "value": "Playing",
+                                    "description": "e.g. Playing Minecraft",
+                                    "emoji": "🎮"
+                                },
+                                {
+                                    "label": "Streaming",
+                                    "value": "Streaming",
+                                    "description": "e.g. Streaming on Twitch",
+                                    "emoji": "📺"
+                                },
+                                {
+                                    "label": "Listening to",
+                                    "value": "Listening",
+                                    "description": "e.g. Listening to Spotify",
+                                    "emoji": "🎧"
+                                },
+                                {
+                                    "label": "Watching",
+                                    "value": "Watching",
+                                    "description": "e.g. Watching a movie",
+                                    "emoji": "👀"
+                                },
+                                {
+                                    "label": "Custom",
+                                    "value": "Custom",
+                                    "description": "e.g. Custom status",
+                                    "emoji": "🔵"
+                                },
+                                {
+                                    "label": "Competing in",
+                                    "value": "Competing",
+                                    "description": "e.g. Competing in a tournament",
+                                    "emoji": "🏆"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Activity Name",
+                        "description": "The name of the activity your bot is doing.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "activity_name",
+                            "placeholder": "e.g. Minecraft",
+                            "min_length": 1,
+                            "max_length": 100,
+                            "required": true,
+                            "style": "Short"
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Activity Text",
+                        "description": "Optional additional text for the activity (seen only in the profile popup).",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "activity_state",
+                            "placeholder": "e.g. on MC Linker Hub",
+                            "min_length": 0,
+                            "max_length": 100,
+                            "required": false,
+                            "style": "Short"
+                        }
+                    }
+                ]
+            },
+            "warnings": {
+                "invalid_confirmation": {
+                    "embeds": [
+                        {
+                            "title": "Invalid Confirmation",
+                            "description": "Please type `delete` to confirm the deletion of your Custom MC Linker."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "commands": {
+        "customize": {
+            "customize_guild_appearance_modal": {
+                "type": "Modal",
+                "custom_id": "customize_guild_appearance_modal",
+                "title": "Customize Server Appearance",
+                "components": [
+                    {
+                        "type": "TextDisplay",
+                        "content": "**Note**: Leaving a field empty will reset it to default."
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Nickname",
+                        "description": "The nickname to use for MC Linker in this server.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "nickname",
+                            "placeholder": "Monkey SMP Bot",
+                            "required": false,
+                            "min_length": 0,
+                            "max_length": 32,
+                            "style": "Short"
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Bio",
+                        "description": "The \"About Me\" text to use for MC Linker in this server.",
+                        "component": {
+                            "type": "TextInput",
+                            "custom_id": "bio",
+                            "placeholder": "Connecting Minecraft servers to Discord!",
+                            "required": false,
+                            "min_length": 0,
+                            "max_length": 190,
+                            "style": "Paragraph"
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Avatar",
+                        "description": "The avatar to use for MC Linker in this server.",
+                        "component": {
+                            "type": "FileUpload",
+                            "custom_id": "avatar",
+                            "required": false,
+                            "min_values": 1,
+                            "max_values": 1
+                        }
+                    },
+                    {
+                        "type": "Label",
+                        "label": "Banner",
+                        "description": "The banner to use for MC Linker in this server.",
+                        "component": {
+                            "type": "FileUpload",
+                            "custom_id": "banner",
+                            "required": false,
+                            "min_values": 1,
+                            "max_values": 1
+                        }
+                    }
+                ]
+            },
+            "buttons": {
+                "customize_sku": {
+                    "type": "Button",
+                    "style": "Premium",
+                    "sku_id": "1166098447665995807"
+                },
+                "custom_bot_change_presence": {
+                    "type": "Button",
+                    "style": "Primary",
+                    "label": "Change Bot Presence",
+                    "custom_id": "custom_bot_change_presence"
+                }
+            },
+            "success": {
+                "guild_appearance_updated": {
+                    "embeds": [
+                        {
+                            "title": "Customized Server Appearance",
+                            "description": "Successfully customized MC Linker's appearance in this server!"
+                        }
+                    ]
+                }
+            },
+            "errors": {
+                "guild_appearance_update_failed": {
+                    "embeds": [
+                        {
+                            "title": "Customization Failed",
+                            "description": "You might be uploading invalid images or customizing too fast. Ensure to upload valid images or try again later."
+                        }
+                    ]
+                }
+            }
+        },
+        "eval": {
+            "warnings": {
+                "no_command": {
+                    "embeds": [
+                        {
+                            "title": "No Command Specified",
+                            "description": "Please specify a command to evaluate."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Successfully Evaluated Command",
+                        "description": "%output%"
+                    }
+                ]
+            },
+            "errors": {
+                "unknown_error": {
+                    "embeds": [
+                        {
+                            "title": "Unknown Error",
+                            "description": "%output_error%"
+                        }
+                    ]
+                }
+            }
+        },
+        "help": {
+            "warnings": {
+                "command_does_not_exist": {
+                    "embeds": [
+                        {
+                            "title": "Command/Category Does Not Exist",
+                            "description": "Command/Category **%command_name%** does not exist."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "base": {
+                    "embeds": [
+                        {
+                            "title": "Help Menu",
+                            "author": {
+                                "name": "%client_username%",
+                                "icon_url": "%client_avatar%"
+                            }
+                        }
+                    ]
+                },
+                "no_args": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Main",
+                                    "value": "Main commands such as %inventory_command_mention%, or %advancements_command_mention%."
+                                },
+                                {
+                                    "name": "Moderation",
+                                    "value": "Moderation commands such as %ban_command_mention% or %command_command_mention%."
+                                },
+                                {
+                                    "name": "Other",
+                                    "value": "Other commands such as %message_command_mention% or %serverinfo_command_mention%."
+                                },
+                                {
+                                    "name": "Settings",
+                                    "value": "Setup and settings such as %connect_command_mention% or %chatchannel_command_mention%."
+                                },
+                                {
+                                    "name": "​",
+                                    "value": "**All commands in a category** can be viewed with: **%help_command_mention% <category>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "category": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "%command_mention%",
+                                    "value": "%command_description%"
+                                },
+                                {
+                                    "name": "​",
+                                    "value": "**More info about a command** can be viewed with: **%help_command_mention% <command>**.\n**Still need help?** [Join the Support Discord Server](%invite_link%)"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "command": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "%command_mention%",
+                                    "value": "%command_long_description%\n\n**Usage**:\n%command_usage%"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "systemstats": {
+            "step": {
+                "measuring": {
+                    "embeds": [
+                        {
+                            "title": "Measuring System Stats",
+                            "description": "Please wait while I measure the system stats..."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "embeds": [
+                    {
+                        "title": "System Stats",
+                        "fields": [
+                            {
+                                "name": "Platform",
+                                "value": "`%platform%`"
+                            },
+                            {
+                                "name": "OS Uptime",
+                                "value": "`%os_uptime%`"
+                            },
+                            {
+                                "name": "Bot Uptime",
+                                "value": "`%bot_uptime%`"
+                            },
+                            {
+                                "name": "CPU (Usage)",
+                                "value": "`%cpu%` (`%cpu_usage_percent%%`)"
+                            },
+                            {
+                                "name": "Memory Usage",
+                                "value": "`%memory_usage%GB/%max_memory%GB` (`%memory_usage_percent%%`)"
+                            },
+                            {
+                                "name": "Storage Usage",
+                                "value": "`%storage_usage%GB/%max_storage%GB` (`%storage_usage_percent%%`)"
+                            },
+                            {
+                                "name": "Library",
+                                "value": "`%library%`"
+                            },
+                            {
+                                "name": "Node.js",
+                                "value": "`%node_version%`"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "advancements": {
+            "advancements_description": "Image of player's advancements",
+            "acquired": "Acquired",
+            "not_acquired": "Not Acquired",
+            "success": {
+                "final": {
+                    "embeds": [
+                        {
+                            "title": "Player Advancements",
+                            "description": "Here are the advancements of **%username%**:\n",
+                            "image": "attachment://Advancements_Player.png"
+                        }
+                    ]
+                },
+                "details_button": {
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "%style%",
+                            "custom_id": "advancement_%advancement_value%",
+                            "label": "%advancement_name%"
+                        }
+                    ]
+                },
+                "details": {
+                    "embeds": [
+                        {
+                            "title": "%advancement_name%",
+                            "description": "*%advancement_description%*",
+                            "fields": [
+                                {
+                                    "name": "Requirements",
+                                    "value": "%advancement_criteria%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Acquired on",
+                                    "value": "%advancement_timestamps%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Icon Item",
+                                    "value": "%advancement_icon%",
+                                    "inline": false
+                                },
+                                {
+                                    "name": "Type",
+                                    "value": "%advancement_type%",
+                                    "inline": true
+                                }
+                            ],
+                            "footer": {
+                                "text": "Advancement %advancement_obtained%\nId: %advancement_value%"
+                            },
+                            "author": {
+                                "name": "%username%",
+                                "icon_url": "%user_icon%"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "inventory": {
+            "success": {
+                "item_button": {
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Secondary",
+                            "custom_id": "slot_%index%",
+                            "label": "%slot%: %name%"
+                        }
+                    ]
+                },
+                "final": {
+                    "embeds": [
+                        {
+                            "title": "Player Inventory",
+                            "description": "Here's the inventory of **%username%**:\n",
+                            "image": "attachment://Inventory_Player.png"
+                        }
+                    ]
+                },
+                "final_shulker": {
+                    "embeds": [
+                        {
+                            "title": "Player Inventory",
+                            "description": "Here are the shulker contents of **%username%**:\n",
+                            "image": "attachment://Shulker_Contents.png"
+                        }
+                    ]
+                },
+                "item": {
+                    "embeds": [
+                        {
+                            "title": "Item Information",
+                            "description": "Here's information about the **%name%**. [%count%/%max_count%]",
+                            "author": {
+                                "name": "%username%'s %slot_name% slot",
+                                "icon_url": "%avatar%"
+                            },
+                            "footer": {
+                                "text": "Item Id: %id%"
+                            }
+                        }
+                    ]
+                },
+                "item_durability": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Durability",
+                                    "value": "%durability%/%max_durability%",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "item_lore": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Lore",
+                                    "value": "**%lore%**\n%lore_json%",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "item_enchantments": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Enchantments",
+                                    "value": "%enchantments%",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "item_custom_name": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Custom Name",
+                                    "value": "**%custom_name%**\n%custom_name_json%",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "item_potion": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Potion Effects",
+                                    "value": "%effects%",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "slots": {
+                "feet": "Feet",
+                "legs": "Legs",
+                "chest": "Chest",
+                "head": "Head",
+                "offhand": "Offhand",
+                "first": "1st",
+                "second": "2nd",
+                "third": "3rd",
+                "default": "%slot%th"
+            },
+            "inventory_description": "Image of player's inventory",
+            "shulker_description": "Image of shulker contents"
+        },
+        "stats": {
+            "stats_description": "Image of player's statistics",
+            "errors": {
+                "could_not_parse": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Find Category",
+                            "description": "%username% has never done anything in this category."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "title": "%category% Statistics",
+                "stats_button": {
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Secondary",
+                            "custom_id": "stats_%index%",
+                            "label": "Stats %min%-%max%"
+                        }
+                    ]
+                },
+                "final": {
+                    "embeds": [
+                        {
+                            "title": "Player Statistics",
+                            "description": "Here are the statistics of **%username%**:\n",
+                            "image": "attachment://Statistics_Player.png"
+                        }
+                    ]
+                }
+            }
+        },
+        "ban": {
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Ban Player",
+                        "description": "Successfully banned player **%username%**: `%reason%`\n%response%",
+                        "color": "Orange"
+                    }
+                ]
+            }
+        },
+        "command": {
+            "warnings": {
+                "autocomplete_selection_expired": {
+                    "embeds": [
+                        {
+                            "title": "Selection Expired",
+                            "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Command Executed",
+                        "description": "%response%",
+                        "color": "Blue"
+                    }
+                ]
+            }
+        },
+        "deop": {
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Deop Player",
+                        "description": "Successfully Deoped player **%username%**\n%response%",
+                        "color": "Blue"
+                    }
+                ]
+            }
+        },
+        "gamemode": {
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Change Gamemode",
+                        "description": "Successfully changed gamemode of **%username%** to **%gamemode%**\n%response%",
+                        "color": "Orange"
+                    }
+                ]
+            }
+        },
+        "kick": {
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Kick Player",
+                        "description": "Successfully kicked player **%username%**: `%reason%`\n%response%",
+                        "color": "Orange"
+                    }
+                ]
+            }
+        },
+        "op": {
+            "success": {
+                "embeds": [
+                    {
+                        "title": "OP Player",
+                        "description": "Successfully oped player **%username%**\n%response%",
+                        "color": "Blue"
+                    }
+                ]
+            }
+        },
+        "unban": {
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Unban Player",
+                        "description": "Successfully unbanned player **%username%**\n%response%",
+                        "color": "Blue"
+                    }
+                ]
+            }
+        },
+        "message": {
+            "warnings": {
+                "player_not_online": {
+                    "embeds": [
+                        {
+                            "title": "Player Not Online",
+                            "description": "Player **%username%** is not online and cannot receive messages."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Send Message",
+                        "description": "Successfully sent message to player **%username%**",
+                        "color": "Blue"
+                    }
+                ]
+            }
+        },
+        "serverinfo": {
+            "difficulty": [
+                "Peaceful",
+                "Easy",
+                "Normal",
+                "Hard"
+            ],
+            "success": {
+                "general": {
+                    "embeds": [
+                        {
+                            "title": "Server Information",
+                            "thumbnail": "attachment://server-icon.png",
+                            "image": "attachment://server-list.png",
+                            "color": "#729e34",
+                            "fields": [
+                                {
+                                    "name": "Name",
+                                    "value": "%server_name%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "MOTD",
+                                    "value": "%motd%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Players",
+                                    "value": "%online_players%/%max_players%",
+                                    "inline": true
+                                }
+                            ],
+                            "footer": {
+                                "text": "Server IP: %ip% (%version%)"
+                            }
+                        }
+                    ]
+                },
+                "hardcore_enabled": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Difficulty",
+                                    "value": "%difficulty% (Hardcore Enabled)"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "hardcore_disabled": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Difficulty",
+                                    "value": "%difficulty%"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "world": {
+                    "embeds": [
+                        {
+                            "title": "World Information",
+                            "color": "#729e34",
+                            "fields": [
+                                {
+                                    "name": "Spawn Coordinates",
+                                    "value": "Players will spawn at `%spawn_x%, %spawn_y%, %spawn_z%` in world: `%spawn_world%`"
+                                },
+                                {
+                                    "name": "Allow End/Nether",
+                                    "value": "End: `%allow_end%`\nNether: `%allow_nether%`"
+                                },
+                                {
+                                    "name": "Difficulty",
+                                    "value": "%difficulty%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Gamerules (only non-default values)",
+                                    "value": "%gamerules%",
+                                    "inline": false
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "admin": {
+                    "embeds": [
+                        {
+                            "title": "Admin Information",
+                            "color": "#729e34",
+                            "fields": [
+                                {
+                                    "name": "Plugins",
+                                    "value": "%plugins%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Datapacks",
+                                    "value": "%datapacks%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Mods",
+                                    "value": "%mods%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Whitelisted Users",
+                                    "value": "%whitelisted_users%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Banned Users",
+                                    "value": "%banned_users%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Banned IPs",
+                                    "value": "%banned_ips%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Operators",
+                                    "value": "%operators%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Whitelist",
+                                    "value": "%enable_whitelist%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Seed",
+                                    "value": "`%seed%`",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "general_button": {
+                    "label": "General Information",
+                    "type": "Button",
+                    "style": "Secondary",
+                    "custom_id": "serverinfo_general"
+                },
+                "world_button": {
+                    "label": "World Information",
+                    "type": "Button",
+                    "style": "Secondary",
+                    "custom_id": "serverinfo_world"
+                },
+                "admin_button": {
+                    "label": "Admin Information",
+                    "type": "Button",
+                    "style": "Danger",
+                    "custom_id": "serverinfo_admin"
+                }
+            }
+        },
+        "userinfo": {
+            "online": "Online",
+            "offline": "Offline",
+            "yes": "Yes",
+            "no": "No",
+            "gamemode": [
+                "Survival",
+                "Creative",
+                "Adventure",
+                "Spectator"
+            ],
+            "dimensions": {
+                "overworld": "Overworld",
+                "the_nether": "Nether",
+                "the_end": "End"
+            },
+            "success": {
+                "general": {
+                    "embeds": [
+                        {
+                            "title": "User Information",
+                            "author": {
+                                "name": "%name%",
+                                "icon_url": "%icon_url%"
+                            },
+                            "footer": {
+                                "text": "UUID: %uuid%"
+                            },
+                            "fields": [
+                                {
+                                    "name": "Status",
+                                    "value": "%status_emoji% %status%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Banned",
+                                    "value": "%banned%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Whitelisted",
+                                    "value": "%whitelisted%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Operator",
+                                    "value": "%operator% (Level: %operator_level%)",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "connected_account": {
+                    "embeds": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "Linked Discord Account",
+                                    "value": "%connection%",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "survival": {
+                    "embeds": [
+                        {
+                            "title": "User Information",
+                            "author": {
+                                "name": "%name%",
+                                "icon_url": "%icon_url%"
+                            },
+                            "fields": [
+                                {
+                                    "name": "Gamemode",
+                                    "value": "%gamemode%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Score",
+                                    "value": "%score% :diamonds:",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Health",
+                                    "value": "%health% ❤️",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Food Level",
+                                    "value": "%food% 🍗 (Saturation: %saturation%)",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "XP",
+                                    "value": "%xp% ✨ (Level: %xp_level%)",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "First Joined",
+                                    "value": "%first_join%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Last Joined",
+                                    "value": "%last_join%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Play Time",
+                                    "value": "%play_time%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Effects",
+                                    "value": "%effects%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Teams",
+                                    "value": "%teams%",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "admin": {
+                    "embeds": [
+                        {
+                            "title": "User Information",
+                            "author": {
+                                "name": "%name%",
+                                "icon_url": "%icon_url%"
+                            },
+                            "fields": [
+                                {
+                                    "name": "Current Position",
+                                    "value": "`%position%` (Dimension: %dimension%)",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Spawn Location",
+                                    "value": "`%spawn_location%` (Dimension: %spawn_dimension%)",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Last Death Location",
+                                    "value": "`%death_location%` (Dimension: %death_dimension%)",
+                                    "inline": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "admin_button": {
+                    "flags": [
+                        "Ephemeral"
+                    ],
+                    "embeds": [
+                        {
+                            "title": "Command Executed",
+                            "description": "Command: `%command%`\n%response%"
+                        }
+                    ]
+                },
+                "buttons": {
+                    "kick": {
+                        "style": "Danger",
+                        "label": "Kick",
+                        "custom_id": "userinfo_kick",
+                        "disabled": false,
+                        "type": "Button"
+                    },
+                    "ban": {
+                        "style": "Danger",
+                        "label": "Ban",
+                        "custom_id": "userinfo_ban",
+                        "disabled": false,
+                        "type": "Button"
+                    },
+                    "unban": {
+                        "style": "Danger",
+                        "label": "Un-Ban",
+                        "custom_id": "userinfo_unban",
+                        "disabled": false,
+                        "type": "Button"
+                    },
+                    "whitelist": {
+                        "style": "Secondary",
+                        "label": "Whitelist",
+                        "custom_id": "userinfo_whitelist",
+                        "disabled": false,
+                        "type": "Button"
+                    },
+                    "unwhitelist": {
+                        "style": "Secondary",
+                        "label": "Un-Whitelist",
+                        "custom_id": "userinfo_unwhitelist",
+                        "disabled": false,
+                        "type": "Button"
+                    },
+                    "op": {
+                        "style": "Primary",
+                        "label": "OP",
+                        "custom_id": "userinfo_op",
+                        "disabled": false,
+                        "type": "Button"
+                    },
+                    "deop": {
+                        "style": "Primary",
+                        "label": "De-OP",
+                        "custom_id": "userinfo_deop",
+                        "disabled": false,
+                        "type": "Button"
+                    },
+                    "general": {
+                        "label": "General Information",
+                        "type": "Button",
+                        "style": "Secondary",
+                        "custom_id": "userinfo_general"
+                    },
+                    "survival": {
+                        "label": "Survival Information",
+                        "type": "Button",
+                        "style": "Secondary",
+                        "custom_id": "userinfo_survival"
+                    },
+                    "admin": {
+                        "label": "Admin Information",
+                        "type": "Button",
+                        "style": "Danger",
+                        "custom_id": "userinfo_admin"
+                    }
+                }
+            }
+        },
+        "account": {
+            "warnings": {
+                "mention": {
+                    "embeds": [
+                        {
+                            "title": "No Username Specified",
+                            "description": "Don't ping someone. Specify your **Minecraft Java-Edition account name** instead."
+                        }
+                    ]
+                },
+                "not_connected": {
+                    "embeds": [
+                        {
+                            "title": "Account Not Connected",
+                            "description": "Your Minecraft account is not connected."
+                        }
+                    ]
+                },
+                "verification_timeout": {
+                    "embeds": [
+                        {
+                            "title": "Verification Timeout",
+                            "description": "Account verification timed out. Please try again."
+                        }
+                    ]
+                },
+                "dms_no_server": {
+                    "embeds": [
+                        {
+                            "title": "Server Not Connected",
+                            "description": "This Discord server has no connected Minecraft server. Run this command in a server that has one, or omit the `server` option."
+                        }
+                    ]
+                },
+                "dms_already_blocked_global": {
+                    "embeds": [
+                        {
+                            "title": "Already Blocked",
+                            "description": "You have already blocked all DMs from Minecraft."
+                        }
+                    ]
+                },
+                "dms_already_blocked_specific": {
+                    "embeds": [
+                        {
+                            "title": "Already Blocked",
+                            "description": "You have already blocked DMs from **%target%**."
+                        }
+                    ]
+                },
+                "dms_not_blocked_global": {
+                    "embeds": [
+                        {
+                            "title": "Not Blocked",
+                            "description": "Your DMs from Minecraft are not globally blocked."
+                        }
+                    ]
+                },
+                "dms_not_blocked_specific": {
+                    "embeds": [
+                        {
+                            "title": "Not Blocked",
+                            "description": "**%target%** is not in your blocked list."
+                        }
+                    ]
+                }
+            },
+            "errors": {
+                "could_not_fetch_uuid": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Fetch User",
+                            "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate/Cracked accounts can't be verified by name and are therefore not possible to connect."
+                        }
+                    ]
+                }
+            },
+            "step": {
+                "verification_info": {
+                    "embeds": [
+                        {
+                            "title": "Account Verification",
+                            "description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**"
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "disconnect": {
+                    "embeds": [
+                        {
+                            "title": "Account Disconnected",
+                            "description": "Successfully disconnected your account."
+                        }
+                    ]
+                },
+                "verified": {
+                    "embeds": [
+                        {
+                            "title": "Account Verified",
+                            "description": "Successfully verified your account."
+                        }
+                    ]
+                },
+                "dms_block_global": {
+                    "embeds": [
+                        {
+                            "title": "DMs Blocked",
+                            "description": "You will no longer receive any DMs from Minecraft.\nYou can also block a specific server or player with the `server` or `player` options."
+                        }
+                    ]
+                },
+                "dms_unblock_global": {
+                    "embeds": [
+                        {
+                            "title": "DMs Unblocked",
+                            "description": "You will now receive DMs from Minecraft again."
+                        }
+                    ]
+                },
+                "dms_block_specific": {
+                    "embeds": [
+                        {
+                            "title": "DMs Blocked",
+                            "description": "You will no longer receive DMs from **%target%**."
+                        }
+                    ]
+                },
+                "dms_unblock_specific": {
+                    "embeds": [
+                        {
+                            "title": "DMs Unblocked",
+                            "description": "You will now receive DMs from **%target%** again."
+                        }
+                    ]
+                }
+            }
+        },
+        "statchannel": {
+            "errors": {
+                "not_manageable": {
+                    "embeds": [
+                        {
+                            "title": "Cannot Edit Channel",
+                            "description": "The bot does not have the `Manage Channels` permission to edit this channel."
+                        }
+                    ]
+                },
+                "no_topic_supported": {
+                    "embeds": [
+                        {
+                            "title": "No Topic Supported",
+                            "description": "This channel does not support topics. Please change `update_target` to `Name` or choose a different channel."
+                        }
+                    ]
+                },
+                "initial_update_failed": {
+                    "embeds": [
+                        {
+                            "title": "Failed To Update Channel",
+                            "description": "An unknown error occurred while updating the channel. Please try again later."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "add": {
+                    "embeds": [
+                        {
+                            "title": "Added Stat Channel",
+                            "description": "Successfully added the stat channel."
+                        }
+                    ]
+                },
+                "remove": {
+                    "embeds": [
+                        {
+                            "title": "Removed Stat Channel",
+                            "description": "Successfully removed the stat channel."
+                        }
+                    ]
+                },
+                "list": {
+                    "embeds": [
+                        {
+                            "title": "List Stat Channels",
+                            "fields": [
+                                {
+                                    "name": "Channel",
+                                    "value": "%channel%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Update Target",
+                                    "value": "%update_target%",
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Online Text",
+                                    "value": "%online_name%"
+                                },
+                                {
+                                    "name": "Offline Text",
+                                    "value": "%offline_name%"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "chatchannel": {
+            "warnings": {
+                "not_collected": {
+                    "embeds": [
+                        {
+                            "title": "Select Message Types",
+                            "description": "Select all message types you want the bot to send. (Time ran out)"
+                        }
+                    ],
+                    "components": []
+                },
+                "already_responded": {
+                    "embeds": [
+                        {
+                            "title": "Select Message Types",
+                            "description": "Select all message types you want the bot to send. (Already responded)"
+                        }
+                    ]
+                }
+            },
+            "filter_commands": {
+                "warnings": {
+                    "autocomplete_selection_expired": {
+                        "embeds": [
+                            {
+                                "title": "Selection Expired",
+                                "description": "Your autocomplete selection expired. Please run the command again and reselect a suggestion."
+                            }
+                        ]
+                    },
+                    "already_enabled": {
+                        "embeds": [
+                            {
+                                "title": "Already Unfiltered",
+                                "description": "%type% **%enable%** is already unfiltered for the Minecraft → Discord bridge."
+                            }
+                        ]
+                    }
+                },
+                "success": {
+                    "disabled": {
+                        "embeds": [
+                            {
+                                "title": "Successfully Filtered",
+                                "description": "Successfully filtered %type% **%disable%** for the Minecraft → Discord bridge. Messages are filtered when the command starts with this value."
+                            }
+                        ]
+                    },
+                    "enabled": {
+                        "embeds": [
+                            {
+                                "title": "Successfully Unfiltered",
+                                "description": "Successfully unfiltered %type% **%enable%** for the Minecraft → Discord bridge."
+                            }
+                        ]
+                    }
+                }
+            },
+            "step": {
+                "choose": {
+                    "embeds": [
+                        {
+                            "title": "Select Message Types",
+                            "description": "%emoji_step% Select all message types you want the bot to send. (You have 3 minutes to select)"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "type": "SelectMenu",
+                            "custom_id": "log",
+                            "min_values": 1,
+                            "max_values": 11,
+                            "placeholder": "Select up to 11 message types.",
+                            "options": [
+                                {
+                                    "label": "💬 Chat Messages",
+                                    "description": "Send a message whenever a player chats.",
+                                    "value": "chat"
+                                },
+                                {
+                                    "label": "⌨️ Console Messages",
+                                    "description": "Sends the console output to the channel.",
+                                    "value": "console"
+                                },
+                                {
+                                    "label": "👋 Join Messages",
+                                    "description": "Send a message whenever a player joins the server.",
+                                    "value": "join"
+                                },
+                                {
+                                    "label": "👋 Quit Messages",
+                                    "description": "Send a message whenever a player leaves the server.",
+                                    "value": "quit"
+                                },
+                                {
+                                    "label": "🏆 Advancement Messages",
+                                    "description": "Send a message whenever a player completes an advancement.",
+                                    "value": "advancement"
+                                },
+                                {
+                                    "label": "💀 Death Messages",
+                                    "description": "Send a message whenever a player dies.",
+                                    "value": "death"
+                                },
+                                {
+                                    "label": "⚡ Player Command Messages",
+                                    "description": "Send a message whenever a command is sent by a player.",
+                                    "value": "player_command"
+                                },
+                                {
+                                    "label": "🖥️ Console Command Messages",
+                                    "description": "Send a message whenever a command is sent by the console.",
+                                    "value": "console_command"
+                                },
+                                {
+                                    "label": "🧱 Block Command Messages",
+                                    "description": "Send a message whenever a command block is executed.",
+                                    "value": "block_command"
+                                },
+                                {
+                                    "label": "🟢 Startup Messages",
+                                    "description": "Send a message whenever the server starts up.",
+                                    "value": "start"
+                                },
+                                {
+                                    "label": "🔴 Shutdown Messages",
+                                    "description": "Send a message whenever the server shuts down.",
+                                    "value": "close"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "add": {
+                    "embeds": [
+                        {
+                            "title": "Added Chat Channel",
+                            "description": "Successfully added the chat channel."
+                        }
+                    ],
+                    "components": []
+                },
+                "remove": {
+                    "embeds": [
+                        {
+                            "title": "Removed Chat Channel",
+                            "description": "Successfully removed the chat channel."
+                        }
+                    ]
+                },
+                "list": {
+                    "embeds": [
+                        {
+                            "title": "List Chat Channels",
+                            "fields": [
+                                {
+                                    "name": "Channel",
+                                    "value": "%channel%"
+                                },
+                                {
+                                    "name": "Logging",
+                                    "value": "%channel_types%"
+                                },
+                                {
+                                    "name": "Discord To Minecraft",
+                                    "value": "%discord_to_minecraft%"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "connect": {
+            "unknown": "Unknown",
+            "warnings": {
+                "already_connected": {
+                    "embeds": [
+                        {
+                            "title": "Already Connected",
+                            "description": "Already connected with another server (**%ip%**). If you proceed to connect, that server will be automatically disconnected!"
+                        }
+                    ]
+                },
+                "no_reply_in_time": {
+                    "embeds": [
+                        {
+                            "title": "Verification Failed",
+                            "description": "You did not reply in time!"
+                        }
+                    ]
+                },
+                "not_collected": {
+                    "embeds": [
+                        {
+                            "title": "Choose Required Roles To Join",
+                            "description": "Select the method you want to use to determine whether a player can join and all the roles that apply. (Time ran out)"
+                        }
+                    ],
+                    "components": []
+                }
+            },
+            "step": {
+                "command_verification": {
+                    "embeds": [
+                        {
+                            "title": "Server Verification",
+                            "description": "%emoji_step% Install the [Discord-Linker](https://www.spigotmc.org/resources/discord-linker.98749/) plugin on your Minecraft server.\nThen join your server as an operator and execute the following command: ```/linker connect %code%```\n**You have 3 minutes to run the command.**"
+                        }
+                    ]
+                },
+                "choose_roles": {
+                    "embeds": [
+                        {
+                            "title": "Choose Required Roles To Join",
+                            "description": "%emoji_step% Select the method you want to use to determine whether a player can join and all the roles that apply. (You have 3 minutes to select)"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "type": "StringSelect",
+                            "custom_id": "required_roles_method",
+                            "placeholder": "Select the method to check the roles.",
+                            "options": [
+                                {
+                                    "label": "Any",
+                                    "description": "The player only needs to have one of the selected roles to join.",
+                                    "value": "any"
+                                },
+                                {
+                                    "label": "All",
+                                    "description": "The player needs to have all of the selected roles to join.",
+                                    "value": "all"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "RoleSelect",
+                            "custom_id": "required_roles",
+                            "placeholder": "Select up to 25 roles.",
+                            "min_values": 1,
+                            "max_values": 25
+                        }
+                    ]
+                }
+            },
+            "errors": {
+                "websocket_error": {
+                    "embeds": [
+                        {
+                            "title": "Verification Failed",
+                            "description": "An unknown error occurred while connecting to the plugin."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "websocket": {
+                    "embeds": [
+                        {
+                            "title": "Connected to Server",
+                            "description": "Successfully connected to the plugin."
+                        }
+                    ]
+                }
+            }
+        },
+        "disconnect": {
+            "success": {
+                "embeds": [
+                    {
+                        "title": "Disconnected From Plugin",
+                        "description": "The plugin connection was successfully disconnected."
+                    }
+                ]
+            }
+        },
+        "rolesync": {
+            "warnings": {
+                "no_roles": {
+                    "embeds": [
+                        {
+                            "title": "No Synced Roles Added",
+                            "description": "There are no added synced roles."
+                        }
+                    ]
+                },
+                "role_not_added": {
+                    "embeds": [
+                        {
+                            "title": "Role Not Added",
+                            "description": "The specified role is not added."
+                        }
+                    ]
+                }
+            },
+            "errors": {
+                "group_or_team_not_found": {
+                    "embeds": [
+                        {
+                            "title": "Group Or Team Not Found",
+                            "description": "Could not find a group or team with the name **%name%**."
+                        }
+                    ]
+                },
+                "not_editable": {
+                    "embeds": [
+                        {
+                            "title": "Role Not Editable",
+                            "description": "I do not have permission to edit members of the role **%role%**.\nYou can either move my role above that role to give me permission or change the `direction` option to `To Minecraft` to only sync the role from Discord to Minecraft."
+                        }
+                    ]
+                },
+                "luckperms_not_loaded": {
+                    "embeds": [
+                        {
+                            "title": "Luckperms Not Loaded",
+                            "description": "Please install LuckPerms or a vault-supported permissions plugin, or sync to a team instead."
+                        }
+                    ]
+                },
+                "team_group_already_synced": {
+                    "embeds": [
+                        {
+                            "title": "Team/Group Already Synced",
+                            "description": "The specified team/group is already synced."
+                        }
+                    ]
+                }
+            },
+            "success": {
+                "add": {
+                    "embeds": [
+                        {
+                            "title": "Added Synced Role",
+                            "description": "Successfully added the synced role."
+                        }
+                    ]
+                },
+                "remove": {
+                    "embeds": [
+                        {
+                            "title": "Removed Synced Role",
+                            "description": "Successfully removed the synced role."
+                        }
+                    ]
+                },
+                "list": {
+                    "embeds": [
+                        {
+                            "title": "List Synced Roles",
+                            "fields": [
+                                {
+                                    "name": "Role",
+                                    "value": "%role%"
+                                },
+                                {
+                                    "name": "%group_or_team%",
+                                    "value": "%group_or_team_value%"
+                                },
+                                {
+                                    "name": "Members",
+                                    "value": "%member_count%"
+                                },
+                                {
+                                    "name": "Direction",
+                                    "value": "%direction%"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "role_button": {
+                    "components": [
+                        {
+                            "type": "Button",
+                            "label": "Role #%index1%",
+                            "custom_id": "role_%index%",
+                            "style": "Secondary"
+                        }
+                    ]
+                }
+            },
+            "group": "Group",
+            "team": "Team",
+            "direction_both": "Both",
+            "direction_to_minecraft": "To Minecraft (MC→Discord ❌, Discord→MC ✅)",
+            "direction_to_discord": "To Discord (MC→Discord ✅, Discord→MC ❌)"
+        }
+    },
+    "api": {
+        "plugin": {
+            "warnings": {
+                "no_response_message": "No response message! Some commands do not have any response messages. This also commonly happens after using `/reload`.",
+                "no_response_message_short": "No response message! This commonly happens after using `/reload`.",
+                "server_disconnected": {
+                    "embeds": [
+                        {
+                            "title": "Server Disconnected",
+                            "description": "The server has suddenly lost connection to the plugin. No more messages will be sent through the chatchannel until the connection is restored."
+                        }
+                    ]
+                },
+                "high_load_skipped": {
+                    "embeds": [
+                        {
+                            "title": "High Server Load",
+                            "description": "%count% messages skipped due to high load."
+                        }
+                    ]
+                },
+                "could_not_sync_webhooks": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Sync Webhook",
+                            "description": "The chatchannel webhooks changed and could not be synced with the plugin."
+                        }
+                    ]
+                },
+                "cached_result": "⚠ Cached Result"
+            },
+            "errors": {
+                "no_response": {
+                    "embeds": [
+                        {
+                            "title": "Plugin Does Not Respond",
+                            "description": "[Plugin](https://www.spigotmc.org/resources/discord-linker.98749/) doesn't respond. Please check if the server is online and the [plugin](https://www.spigotmc.org/resources/discord-linker.98749/) enabled."
+                        }
+                    ],
+                    "components": []
+                },
+                "no_webhook_permission": {
+                    "embeds": [
+                        {
+                            "title": "No Webhook Permission",
+                            "description": "The Bot does not have the `Manage Webhooks` permission. Please add the permission."
+                        }
+                    ]
+                },
+                "status_400": {
+                    "embeds": [
+                        {
+                            "title": "Unknown Bot Error",
+                            "description": "An unknown bot error occurred."
+                        }
+                    ]
+                },
+                "status_401": {
+                    "embeds": [
+                        {
+                            "title": "Unknown Bot Error",
+                            "description": "An unknown bot error occurred."
+                        }
+                    ]
+                },
+                "status_404": {
+                    "embeds": [
+                        {
+                            "title": "Data Not Found",
+                            "description": "The requested data could not be found on the server."
+                        }
+                    ]
+                },
+                "status_500": {
+                    "embeds": [
+                        {
+                            "title": "Unknown Plugin Error",
+                            "description": "An unknown plugin error occurred. Make sure you are have the latest version installed and try again."
+                        }
+                    ]
+                },
+                "dm_server_not_connected": {
+                    "embeds": [
+                        {
+                            "title": "Server Not Connected",
+                            "description": "The Minecraft server this DM was from is no longer connected."
+                        }
+                    ]
+                },
+                "could_not_create_webhook": {
+                    "embeds": [
+                        {
+                            "title": "Could not Create Webhook",
+                            "description": "Could not create a webhook in this channel. This is most likely due to the bot not having `Manage Webhooks` permission or there being 15 webhooks already in this channel."
+                        }
+                    ],
+                    "components": []
+                }
+            },
+            "success": {
+                "default_death_message": "%username% died",
+                "messages": {
+                    "chat": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%author_url%"
+                                },
+                                "description": "%message%",
+                                "color": "Blurple"
+                            }
+                        ]
+                    },
+                    "join": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%author_url%"
+                                },
+                                "description": "%emoji_join% **%username%** joined the game",
+                                "color": "Yellow"
+                            }
+                        ]
+                    },
+                    "quit": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%author_url%"
+                                },
+                                "description": "%emoji_leave% **%username%** left the game",
+                                "color": "Yellow"
+                            }
+                        ]
+                    },
+                    "advancement": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%author_url%"
+                                },
+                                "description": "**%username%** has made the advancement: [**%advancement_title%**]\n*%advancement_description%*",
+                                "color": "LuminousVividPink"
+                            }
+                        ]
+                    },
+                    "death": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%author_url%"
+                                },
+                                "description": "%emoji_death% %message%",
+                                "color": "DarkPurple"
+                            }
+                        ]
+                    },
+                    "player_command": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%author_url%"
+                                },
+                                "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+                                "color": "DarkGold"
+                            }
+                        ]
+                    },
+                    "console_command": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%author_url%"
+                                },
+                                "description": "%emoji_command% **%username%** has executed the command: [**%message%**]",
+                                "color": "DarkGold"
+                            }
+                        ]
+                    },
+                    "block_command": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "Command Block",
+                                    "icon_url": "https://cdn.discordapp.com/emojis/976452589166166037.webp"
+                                },
+                                "description": "**%username%** has executed the command: [**%message%**]",
+                                "color": "DarkGold"
+                            }
+                        ]
+                    },
+                    "start": {
+                        "embeds": [
+                            {
+                                "description": ":green_circle: **The server has started!**",
+                                "color": "Green",
+                                "timestamp": "%timestamp_now%"
+                            }
+                        ]
+                    },
+                    "close": {
+                        "embeds": [
+                            {
+                                "description": ":red_circle: **The server has stopped!**",
+                                "color": "Red",
+                                "timestamp": "%timestamp_now%"
+                            }
+                        ]
+                    }
+                },
+                "dm": {
+                    "message": {
+                        "flags": [
+                            "IsComponentsV2"
+                        ],
+                        "components": [
+                            {
+                                "type": "Container",
+                                "components": [
+                                    {
+                                        "type": "TextDisplay",
+                                        "content": "### 📬 New DM from %username%"
+                                    },
+                                    {
+                                        "type": "TextDisplay",
+                                        "content": "%message%"
+                                    },
+                                    {
+                                        "type": "TextDisplay",
+                                        "content": "-# %footer%"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "footer": "Sent from Minecraft (%ip%) · Reply to this message to send a reply · `/account dms` to manage DM settings",
+                    "footer_expired": "Sent from Minecraft (%ip%) · Reply window closed · `/account dms` to manage DM settings"
+                }
+            }
+        },
+        "ftp": {
+            "errors": {
+                "could_not_parse": {
+                    "embeds": [
+                        {
+                            "title": "Could not Read File",
+                            "description": "Could not read the NBT file. File may be corrupted."
+                        }
+                    ]
+                }
+            }
+        },
+        "utils": {
+            "errors": {
+                "could_not_fetch_user": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Fetch User",
+                            "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate usernames need to start with the configured prefix."
+                        }
+                    ]
+                },
+                "not_sendable": {
+                    "embeds": [
+                        {
+                            "title": "Cannot Send Messages",
+                            "description": "The bot does not have permission to send messages or embeds in this channel."
+                        }
+                    ]
+                }
+            }
+        },
+        "component": {
+            "no_access": {
+                "no_author": {
+                    "embeds": [
+                        {
+                            "title": "No Permission",
+                            "description": "Only the command sender can use this component."
+                        }
+                    ],
+                    "ephemeral": true
+                },
+                "no_permission": {
+                    "embeds": [
+                        {
+                            "title": "No Permission",
+                            "description": "This component can only be used with the `%permission%` permission!"
+                        }
+                    ],
+                    "ephemeral": true
+                }
+            },
+            "success": {
+                "next_button": {
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Secondary",
+                            "custom_id": "%id%",
+                            "label": "Next >"
+                        }
+                    ]
+                },
+                "back_button": {
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Secondary",
+                            "custom_id": "%id%",
+                            "label": "< Back"
+                        }
+                    ]
+                },
+                "exit_button": {
+                    "components": [
+                        {
+                            "type": "Button",
+                            "style": "Secondary",
+                            "custom_id": "%id%",
+                            "label": "Exit"
+                        }
+                    ]
+                }
+            }
+        },
+        "command": {
+            "errors": {
+                "server_not_connected": {
+                    "embeds": [
+                        {
+                            "title": "Server Not Connected",
+                            "description": "Your server is not connected. Please use `/connect` first."
+                        }
+                    ]
+                },
+                "user_not_connected": {
+                    "embeds": [
+                        {
+                            "title": "User Not Connected",
+                            "description": "User did not use `/account connect`! Instead of pinging someone you can also specify their **Minecraft username**."
+                        }
+                    ]
+                },
+                "could_not_download": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Download",
+                            "description": "Could not download %category% files."
+                        }
+                    ]
+                }
+            },
+            "no_access": {
+                "disabled": {
+                    "embeds": [
+                        {
+                            "title": "Command Disabled",
+                            "description": "Command **%interaction_name%** disabled!"
+                        }
+                    ]
+                },
+                "no_permission": {
+                    "embeds": [
+                        {
+                            "title": "No Permission",
+                            "description": "This command can only be used with the `%permission%` permission!"
+                        }
+                    ]
+                },
+                "no_unknown_permission": {
+                    "embeds": [
+                        {
+                            "title": "No Permission",
+                            "description": "You do not have permission to execute this command!"
+                        }
+                    ]
+                }
+            },
+            "warnings": {
+                "could_not_download_user_files": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Download",
+                            "description": "Could not download %category% files. The user most likely never joined the server."
+                        }
+                    ]
+                },
+                "no_argument": {
+                    "embeds": [
+                        {
+                            "title": "Missing Required Argument",
+                            "description": "Please specify: `%argument%`"
+                        }
+                    ]
+                },
+                "no_user": {
+                    "embeds": [
+                        {
+                            "title": "No User Specified",
+                            "description": "Please ping a user or specify a Minecraft username."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "data": {
+        "help": {
+            "name": "help",
+            "description": "Detailed Description of every command.",
+            "type": "ChatInput",
+            "contexts": [
+                "Guild",
+                "BotDM"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "command",
+                    "description": "Set the command or category of which you want to get infos.",
+                    "autocomplete": true,
+                    "required": false
+                }
+            ]
+        },
+        "customize": {
+            "name": "customize",
+            "description": "Customize the bot's appearance to your likings.",
+            "long_description": "Customize the bot's appearance to your likings. Requires a premium subscription to use, check out the bot's shop in its profile!",
+            "type": "ChatInput",
+            "contexts": [
+                "Guild",
+                "BotDM"
+            ]
+        },
+        "advancements": {
+            "name": "advancements",
+            "type": "ChatInput",
+            "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
+            "description": "Look up your and other member's Minecraft advancements.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "Subcommand",
+                    "name": "minecraft",
+                    "description": "The heart and story of the game",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the advancement from.",
+                            "required": true
+                        },
+                        {
+                            "type": "Boolean",
+                            "name": "show_details",
+                            "description": "Set whether to display buttons that show details about advancements.",
+                            "required": false
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "nether",
+                    "description": "Bring summer clothes",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the advancement from.",
+                            "required": true
+                        },
+                        {
+                            "type": "Boolean",
+                            "name": "show_details",
+                            "description": "Set whether to display buttons that show details about advancements.",
+                            "required": false
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "end",
+                    "description": "Or the beginning?",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the advancement from.",
+                            "required": true
+                        },
+                        {
+                            "type": "Boolean",
+                            "name": "show_details",
+                            "description": "Set whether to display buttons that show details about advancements.",
+                            "required": false
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "adventure",
+                    "description": "Adventure, exploration, and combat",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the advancement from.",
+                            "required": true
+                        },
+                        {
+                            "type": "Boolean",
+                            "name": "show_details",
+                            "description": "Set whether to display buttons that show details about advancements.",
+                            "required": false
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "husbandry",
+                    "description": "The world is full of friends and food",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the advancement from.",
+                            "required": true
+                        },
+                        {
+                            "type": "Boolean",
+                            "name": "show_details",
+                            "description": "Set whether to display buttons that show details about advancements.",
+                            "required": false
+                        }
+                    ]
+                }
+            ]
+        },
+        "inventory": {
+            "name": "inventory",
+            "type": "ChatInput",
+            "long_description": "Get an image of the current player's inventory.",
+            "description": "Get an image of the current player's inventory.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to get the inventory from.",
+                    "required": true
+                },
+                {
+                    "type": "Boolean",
+                    "name": "show_details",
+                    "description": "Set whether to display buttons that show more details about items.",
+                    "required": false
+                }
+            ]
+        },
+        "stats": {
+            "name": "stats",
+            "type": "ChatInput",
+            "long_description": "Look at your and other member's Minecraft server stats.\nAll Categories (ids) can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names)!\nAll stats of the `custom` category can be found [here](https://minecraft.wiki/w/Statistics#Statistic_types_and_names).",
+            "description": "Look at your and other member's Minecraft server stats.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "Subcommand",
+                    "name": "custom",
+                    "description": "A multitude of generic statistics related to a player's actions.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "name": "None",
+                                    "value": "none"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "mined",
+                    "description": "Statistic related to the number of blocks a player mined.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "name": "None",
+                                    "value": "none"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "broken",
+                    "description": "Statistics related to the number of items a player ran their durability negative.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "name": "None",
+                                    "value": "none"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "crafted",
+                    "description": "Statistics related to the number of items crafted, smelted, etc.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "name": "None",
+                                    "value": "none"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "used",
+                    "description": "Statistics related to the number of block or item used.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats (Default: Descending).",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "name": "None",
+                                    "value": "none"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "picked_up",
+                    "description": "Statistics related to the number of dropped items a player picked up.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "name": "None",
+                                    "value": "none"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "dropped",
+                    "description": "Statistics related to the number of items that dropped.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "value": "none",
+                                    "name": "None"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "killed",
+                    "description": "Statistics related to the number of entities a player killed.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "name": "None",
+                                    "value": "none"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "killed_by",
+                    "description": "Statistics related to the times off a player being killed by entities.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set the user you want to get the stats from.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "sort",
+                            "description": "Set how you want to sort the stats.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Ascending",
+                                    "value": "ascending"
+                                },
+                                {
+                                    "name": "Descending",
+                                    "value": "descending"
+                                },
+                                {
+                                    "name": "Alphabetically",
+                                    "value": "alphabetically"
+                                },
+                                {
+                                    "name": "None",
+                                    "value": "none"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "ban": {
+            "name": "ban",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "BanMembers"
+            ],
+            "long_description": "Ban a player from the **Minecraft server**. Can only be used with `Ban member` permission!",
+            "description": "Ban a player from the Minecraft server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to ban.",
+                    "required": true
+                },
+                {
+                    "type": "String",
+                    "name": "reason",
+                    "description": "Set a reason for the ban.",
+                    "required": false
+                }
+            ]
+        },
+        "command": {
+            "name": "command",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "Execute any command on the **Minecraft-server**. Can only be executed by admins.",
+            "description": "Execute any command on the Minecraft-server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "command",
+                    "description": "Set the full command input.",
+                    "required": true,
+                    "autocomplete": true
+                }
+            ]
+        },
+        "deop": {
+            "name": "deop",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "Deop players on the **Minecraft-server**. Can only be used by admins.",
+            "description": "Deop players on the Minecraft-server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to deop.",
+                    "required": true
+                }
+            ]
+        },
+        "gamemode": {
+            "name": "gamemode",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "Change the gamemode of a player on the **Minecraft server**. Can only be used by admins.",
+            "description": "Change the gamemode of a player on the Minecraft-server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to change the gamemode of.",
+                    "required": true
+                },
+                {
+                    "type": "String",
+                    "name": "gamemode",
+                    "description": "Set the gamemode.",
+                    "required": true,
+                    "choices": [
+                        {
+                            "name": "Creative",
+                            "value": "creative"
+                        },
+                        {
+                            "name": "Survival",
+                            "value": "survival"
+                        },
+                        {
+                            "name": "Adventure",
+                            "value": "adventure"
+                        },
+                        {
+                            "name": "Spectator",
+                            "value": "spectator"
+                        }
+                    ]
+                }
+            ]
+        },
+        "kick": {
+            "name": "kick",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "KickMembers"
+            ],
+            "long_description": "Kick a player from the **Minecraft server**. Can only be used with `Kick member` permission!",
+            "description": "Kick a player from the Minecraft server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to kick.",
+                    "required": true
+                },
+                {
+                    "type": "String",
+                    "name": "reason",
+                    "description": "Set a reason for the kick.",
+                    "required": false
+                }
+            ]
+        },
+        "op": {
+            "name": "op",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "OP players on the **Minecraft server**. Can only be used by admins.",
+            "description": "OP players on the Minecraft server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to OP.",
+                    "required": true
+                }
+            ]
+        },
+        "unban": {
+            "name": "unban",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "BanMembers"
+            ],
+            "long_description": "Unban a banned player from the **Minecraft server**. Can only be used with `Ban member` permissions.",
+            "description": "Unban a banned player from the Minecraft server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to unban.",
+                    "required": true
+                }
+            ]
+        },
+        "message": {
+            "name": "message",
+            "type": "ChatInput",
+            "long_description": "Send private chat messages to members on the server. Color codes can be found [here](https://minecraft.wiki/w/Formatting_codes#Color_codes).",
+            "description": "Send private chat messages to members on the server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to send a (private) message to.",
+                    "required": true
+                },
+                {
+                    "type": "String",
+                    "name": "message",
+                    "description": "Set the (private) message you want to send to the user.",
+                    "required": true
+                }
+            ]
+        },
+        "serverinfo": {
+            "name": "serverinfo",
+            "type": "ChatInput",
+            "long_description": "View information about the connected **Minecraft server**.",
+            "description": "View information about the connected Minecraft server.",
+            "contexts": [
+                "Guild"
+            ]
+        },
+        "userinfo": {
+            "name": "userinfo",
+            "type": "ChatInput",
+            "long_description": "View information about the specified **Minecraft user**.",
+            "description": "View information about the specified Minecraft user.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "user",
+                    "description": "Set the user you want to view information about.",
+                    "required": true
+                }
+            ]
+        },
+        "account": {
+            "name": "account",
+            "type": "ChatInput",
+            "long_description": "Connect or disconnect your Minecraft Java-Edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
+            "description": "Connect your Minecraft account with the bot.",
+            "contexts": [
+                "Guild",
+                "BotDM"
+            ],
+            "options": [
+                {
+                    "type": "Subcommand",
+                    "name": "connect",
+                    "description": "Connect your Minecraft-account.",
+                    "options": [
+                        {
+                            "type": "String",
+                            "name": "user",
+                            "description": "Set your java-edition username or uuid you want to connect with.",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "disconnect",
+                    "description": "Disconnect your account."
+                },
+                {
+                    "type": "SubcommandGroup",
+                    "name": "dms",
+                    "description": "Manage DMs from Minecraft.",
+                    "options": [
+                        {
+                            "type": "Subcommand",
+                            "name": "block",
+                            "description": "Block DMs from Minecraft. Optionally limit to a specific server or player.",
+                            "options": [
+                                {
+                                    "type": "Boolean",
+                                    "name": "server",
+                                    "description": "Block DMs from the Minecraft server this Discord server is connected to.",
+                                    "required": false
+                                },
+                                {
+                                    "type": "String",
+                                    "name": "player",
+                                    "description": "Block DMs from a specific Minecraft player.",
+                                    "required": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Subcommand",
+                            "name": "unblock",
+                            "description": "Unblock DMs from Minecraft. Optionally limit to a specific server or player.",
+                            "options": [
+                                {
+                                    "type": "Boolean",
+                                    "name": "server",
+                                    "description": "Unblock DMs from the Minecraft server this Discord server is connected to.",
+                                    "required": false
+                                },
+                                {
+                                    "type": "String",
+                                    "name": "player",
+                                    "description": "Unblock DMs from a specific Minecraft player.",
+                                    "required": false,
+                                    "autocomplete": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "statchannel": {
+            "name": "statchannel",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "Manage statchannels in the server. Use online and offline templates with placeholders like %count%, %ip%, %time%, %version% to display live server info in a channel name or topic.",
+            "description": "Manage statchannels in the server.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "Subcommand",
+                    "name": "add",
+                    "description": "Add a statchannel to the server.",
+                    "options": [
+                        {
+                            "type": "Channel",
+                            "name": "channel",
+                            "description": "Set the channel you want to add as a statchannel.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "online",
+                            "description": "Template when server is online. Supports %count%, %ip%, %time%, %version%.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "offline",
+                            "description": "Template when server is offline. Supports %count%, %ip%, %time%, %version%, default online template.",
+                            "required": false
+                        },
+                        {
+                            "type": "String",
+                            "name": "update_target",
+                            "description": "Choose whether to update the channel name or topic/description.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Name (default)",
+                                    "value": "name"
+                                },
+                                {
+                                    "name": "Topic",
+                                    "value": "topic"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "remove",
+                    "description": "Remove a statchannel from the server.",
+                    "options": [
+                        {
+                            "type": "Channel",
+                            "name": "channel",
+                            "description": "Set the channel you want to remove.",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "list",
+                    "description": "List all statchannels in the server."
+                }
+            ]
+        },
+        "chatchannel": {
+            "name": "chatchannel",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
+            "description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "Subcommand",
+                    "name": "add",
+                    "description": "Add a chatchannel.",
+                    "options": [
+                        {
+                            "type": "Channel",
+                            "name": "channel",
+                            "description": "Set the channel.",
+                            "required": true,
+                            "channel_types": [
+                                "GuildText",
+                                "GuildAnnouncement",
+                                "AnnouncementThread",
+                                "PublicThread",
+                                "PrivateThread",
+                                "GuildVoice",
+                                "GuildStageVoice"
+                            ]
+                        },
+                        {
+                            "type": "Boolean",
+                            "name": "discord-to-minecraft",
+                            "description": "Enable chat messages from Discord to Minecraft. (Default: true)",
+                            "required": false
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "remove",
+                    "description": "Remove an existing chatchannel.",
+                    "options": [
+                        {
+                            "type": "Channel",
+                            "name": "channel",
+                            "description": "Set the channel.",
+                            "required": true,
+                            "channel_types": [
+                                "GuildText",
+                                "GuildAnnouncement",
+                                "AnnouncementThread",
+                                "PublicThread",
+                                "PrivateThread",
+                                "GuildVoice",
+                                "GuildStageVoice"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "list",
+                    "description": "List all chatchannels."
+                },
+                {
+                    "type": "SubcommandGroup",
+                    "name": "filter-commands",
+                    "description": "Manage command filters for messages sent from Minecraft to Discord.",
+                    "options": [
+                        {
+                            "type": "Subcommand",
+                            "name": "add",
+                            "description": "Filter command messages from Minecraft to Discord when they start with this value.",
+                            "options": [
+                                {
+                                    "type": "String",
+                                    "name": "command",
+                                    "description": "Set the command prefix you want to filter.",
+                                    "required": true,
+                                    "autocomplete": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Subcommand",
+                            "name": "remove",
+                            "description": "Remove a command filter for messages sent from Minecraft to Discord.",
+                            "options": [
+                                {
+                                    "type": "String",
+                                    "name": "command",
+                                    "description": "Select the filtered command prefix you want to remove.",
+                                    "required": true,
+                                    "autocomplete": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "connect": {
+            "name": "connect",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "Connect your Minecraft Java-Edition server with the bot.\n**You'll first have to download and install the plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/).**",
+            "description": "Connect your Minecraft server with the bot.",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "String",
+                    "name": "join-requirement",
+                    "description": "Set which requirements a user needs to join the server.",
+                    "required": false,
+                    "choices": [
+                        {
+                            "name": "None",
+                            "value": "none"
+                        },
+                        {
+                            "name": "Require Role(s)",
+                            "value": "roles"
+                        },
+                        {
+                            "name": "Require Linked Account",
+                            "value": "link"
+                        }
+                    ]
+                },
+                {
+                    "type": "String",
+                    "name": "display-ip",
+                    "description": "Set the public IP address that will be displayed in some of the bot's commands.",
+                    "required": false
+                },
+                {
+                    "type": "Boolean",
+                    "name": "online",
+                    "description": "Manually set the configured online-mode of the server. For BungeeCord servers, set this to \"True\"",
+                    "required": false
+                }
+            ]
+        },
+        "disconnect": {
+            "name": "disconnect",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
+            "description": "Disconnect your Minecraft server from the bot.",
+            "contexts": [
+                "Guild"
+            ]
+        },
+        "rolesync": {
+            "name": "rolesync",
+            "type": "ChatInput",
+            "default_member_permissions": [
+                "Administrator"
+            ],
+            "long_description": "Manage roles that will sync their members to a Minecraft team, LuckPerms group, or vault-supported group.",
+            "description": "Manage roles that will sync their members to a Minecraft team or group (LuckPerms/Vault).",
+            "contexts": [
+                "Guild"
+            ],
+            "options": [
+                {
+                    "type": "Subcommand",
+                    "name": "add",
+                    "description": "Add a synced role.",
+                    "options": [
+                        {
+                            "type": "Role",
+                            "name": "role",
+                            "description": "Set the role you want to sync.",
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "group_or_team",
+                            "description": "Set the Minecraft team, LuckPerms group, or vault-supported group you want to sync to.",
+                            "autocomplete": true,
+                            "required": true
+                        },
+                        {
+                            "type": "String",
+                            "name": "direction",
+                            "description": "Set the sync direction. Defaults to both.",
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Both",
+                                    "value": "both"
+                                },
+                                {
+                                    "name": "To Minecraft (MC→Discord ❌, Discord→MC ✅)",
+                                    "value": "to_minecraft"
+                                },
+                                {
+                                    "name": "To Discord (MC→Discord ✅, Discord→MC ❌)",
+                                    "value": "to_discord"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "remove",
+                    "description": "Remove an existing synced role.",
+                    "options": [
+                        {
+                            "type": "Role",
+                            "name": "role",
+                            "description": "Set the role you want to remove.",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "list",
+                    "description": "List all synced roles."
+                }
+            ]
+        }
+    },
+    "roles": {
+        "connectedaccount": {
+            "name": "Has Minecraft Account",
+            "type": "BooleanEqual",
+            "key": "connectedaccount",
+            "description": "Has a verified Minecraft account."
+        }
+    }
+}
