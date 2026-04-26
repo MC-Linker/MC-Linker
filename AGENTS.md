@@ -5,6 +5,25 @@
 > leave
 > this file out of date.
 
+## Changelog
+
+A `CHANGELOG.md` exists at the repository root and must be updated **before every pull request** that introduces a
+bigger feature update (new commands, new WS events, significant refactors, new dashboard pages, etc.). Minor bug-fix-only
+PRs may skip a changelog entry.
+
+Each entry follows the format:
+
+```
+## $version - $UpdateName
+```
+
+Keep entries high-level: new feature additions, notable changes, and major bug fixes. Avoid implementation minutiae —
+that belongs in the PR description. The PR title must match the changelog heading exactly.
+
+### Version History
+
+- [4.1.0 - Linked Messages](CHANGELOG.md#410---linked-messages)
+
 ## Project Overview
 
 MC-Linker is a Discord bot that bridges Discord servers and Minecraft servers. It enables chat relay, player
