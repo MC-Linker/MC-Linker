@@ -2474,8 +2474,8 @@
                             }
                         ]
                     },
-                    "footer": "Sent from Minecraft (%ip%) · Reply to this message to send a reply · /account dms to manage DM settings",
-                    "footer_expired": "Sent from Minecraft (%ip%) · Reply window closed"
+                    "footer": "Sent from Minecraft (%ip%) · Reply to this message to send a reply · `/account dms` to manage DM settings",
+                    "footer_expired": "Sent from Minecraft (%ip%) · Reply window closed · `/account dms` to manage DM settings"
                 }
             }
         },
