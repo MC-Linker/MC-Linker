@@ -22,6 +22,7 @@ const socket = io("ws://your-bot-ip:port", {
         path: "/path/to/server",
         online: "true",
         version: "1.20.1",
+        pluginVersion: "4.3.0",        // Optional. Sent from plugin version 4.3.0+. May include a -SNAPSHOT suffix (e.g. "4.3.0-SNAPSHOT").
         worldPath: "world",
         floodgatePrefix: "."
     }
@@ -129,11 +130,12 @@ Sent by the plugin when a player uses `/dm` to message a linked Discord user.
 }
 ```
 
-| Error Code  | Description                                                                                       |
-|-------------|---------------------------------------------------------------------------------------------------|
-| `not_found` | Target could not be resolved to a Discord user (not linked, not in guild, or unknown Discord ID). |
-| `dm_closed` | Target Discord user was found but has DMs disabled.                                               |
-| `unknown`   | Discord lookup/fetch failed for an unexpected reason.                                             |
+| Error Code   | Description                                                                                       |
+|--------------|---------------------------------------------------------------------------------------------------|
+| `not_found`  | Target could not be resolved to a Discord user (not linked, not in guild, or unknown Discord ID). |
+| `dm_closed`  | Target Discord user was found but has DMs disabled.                                               |
+| `dm_blocked` | Target Discord user has blocked DMs globally, from this server, or from the sending player.       |
+| `unknown`    | Discord lookup/fetch failed for an unexpected reason.                                             |
 
 ### `verify-user`
 
