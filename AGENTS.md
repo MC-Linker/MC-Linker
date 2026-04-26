@@ -8,7 +8,8 @@
 ## Changelog
 
 A `CHANGELOG.md` exists at the repository root and must be updated **before every pull request** that introduces a
-bigger feature update (new commands, new WS events, significant refactors, new dashboard pages, etc.). Minor bug-fix-only
+bigger feature update (new commands, new WS events, significant refactors, new dashboard pages, etc.). Minor
+bug-fix-only
 PRs may skip a changelog entry.
 
 Each entry follows the format:
@@ -17,8 +18,18 @@ Each entry follows the format:
 ## $version - $UpdateName
 ```
 
-Keep entries high-level: new feature additions, notable changes, and major bug fixes. Avoid implementation minutiae —
-that belongs in the PR description. The PR title must match the changelog heading exactly.
+**CHANGELOG rules — strictly user-facing only:**
+
+- Document what changed for end-users (new commands, changed behaviour, fixes they'd notice).
+- No implementation details, no internal refactors, no technical terms.
+- Use short bullet points. One sentence per bullet.
+- The PR title must match the changelog heading exactly.
+
+**PR description rules — developer-facing:**
+
+- High-level technical overview: new WS events, schema changes, refactors, architectural decisions.
+- Use technical terms freely. No need to explain every line — just the what and why at a structural level.
+- Group under headings: New Features, Changes/Refactors, Bug Fixes.
 
 ### Version History
 
