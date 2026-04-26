@@ -36,7 +36,10 @@ export default class InteractionCreate extends Event {
             catch(err) {
                 client.analytics.trackCommand(interaction.commandName, interaction.guildId, interaction.user.id, Date.now() - startTime, false);
                 client.analytics.trackError('command', interaction.commandName, interaction.guildId, interaction.user.id, err, null, logger);
-                await interaction.editReplyTl(keys.main.errors.could_not_execute_command);
+                if(interaction.deferred || interaction.replied)
+                    await interaction.editReplyTl(keys.main.errors.could_not_execute_command);
+                else
+                    await interaction.replyTl(keys.main.errors.could_not_execute_command);
             }
         }
         else if(interaction.isAutocomplete()) {
@@ -62,7 +65,10 @@ export default class InteractionCreate extends Event {
             catch(err) {
                 client.analytics.trackComponent(interaction.customId, interaction.guildId, interaction.user.id, Date.now() - startTime, false);
                 client.analytics.trackError('component', interaction.customId, interaction.guildId, interaction.user.id, err, null, logger);
-                await interaction.editReplyTl(keys.main.errors.could_not_execute_button);
+                if(interaction.deferred || interaction.replied)
+                    await interaction.editReplyTl(keys.main.errors.could_not_execute_button);
+                else
+                    await interaction.replyTl(keys.main.errors.could_not_execute_button);
             }
         }
     }
