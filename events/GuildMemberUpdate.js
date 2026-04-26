@@ -73,6 +73,6 @@ export default class GuildMemberUpdate extends Event {
 
         syncedRole.players = resp.data;
         server.syncedRoles[roleIndex] = syncedRole;
-        await server.edit({});
+        await server.edit({ syncedRoles: server.syncedRoles });
     }
 }

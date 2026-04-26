@@ -145,7 +145,7 @@ export default class ChatQueueProcessor {
             this.poolManager.webhookLastActive.delete(webhookId);
             const newId = await this.poolManager.ensureWebhookForChatChannel(chatChannel, server, guild);
             if(newId) {
-                await server.edit({});
+                await server.edit({ chatChannels: server.chatChannels });
                 return { consumed: 0, retryMs: 100 };
             }
             return { consumed: items.length };

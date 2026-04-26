@@ -155,7 +155,7 @@ export default class Account extends AutocompleteCommand {
                 if(!isBlock && dms.enabled) return interaction.editReplyTl(keys.commands.account.warnings.dms_not_blocked_global);
 
                 dms.enabled = !isBlock;
-                await userSettings.edit({});
+                await userSettings.edit({ dms });
                 return interaction.editReplyTl(isBlock ? keys.commands.account.success.dms_block_global : keys.commands.account.success.dms_unblock_global);
             }
 
@@ -189,7 +189,7 @@ export default class Account extends AutocompleteCommand {
                 return interaction.editReplyTl(isBlock ? keys.commands.account.warnings.dms_already_blocked_specific : keys.commands.account.warnings.dms_not_blocked_specific, { target });
             }
 
-            await userSettings.edit({});
+            await userSettings.edit({ dms });
             return interaction.editReplyTl(
                 isBlock ? keys.commands.account.success.dms_block_specific : keys.commands.account.success.dms_unblock_specific,
                 { target: applied.join(', ') },

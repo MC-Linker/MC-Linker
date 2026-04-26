@@ -619,7 +619,7 @@ export default class MCLinkerAPI extends EventEmitter {
             const playerIndex = syncedRole.players.indexOf(uuid);
             if(playerIndex !== -1) syncedRole.players.splice(playerIndex, 1);
         }
-        await server.edit({});
+        await server.edit({ syncedRoles: server.syncedRoles });
 
         // Skip Discord role change if direction is to_minecraft (Discord→MC only)
         if(syncedRole.direction === 'to_minecraft') return;

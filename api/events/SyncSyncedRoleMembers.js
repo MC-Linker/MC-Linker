@@ -89,7 +89,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                                 syncedRole.players.push(uuid);
                                 server.syncedRoles[roleIndex] = syncedRole;
                                 // Required to do before to prevent feedback loop in GuildMemberUpdateEvent
-                                await server.edit({});
+                                await server.edit({ syncedRoles: server.syncedRoles });
                             }
 
                             const member = await guild.members.fetch(conn.id);
@@ -102,7 +102,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                             if(syncedRole.players.includes(uuid)) {
                                 syncedRole.players = syncedRole.players.filter(p => p !== uuid);
                                 server.syncedRoles[roleIndex] = syncedRole;
-                                await server.edit({});
+                                await server.edit({ syncedRoles: server.syncedRoles });
                             }
                         }
                     }
@@ -125,7 +125,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                             syncedRole.players = syncedRole.players.filter(p => p !== uuid);
                             server.syncedRoles[roleIndex] = syncedRole;
                             // Required to do before to prevent feedback loop in GuildMemberUpdateEvent
-                            await server.edit({});
+                            await server.edit({ syncedRoles: server.syncedRoles });
                         }
 
                         await member.roles.remove(discordRole);
@@ -137,7 +137,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         if(!syncedRole.players.includes(uuid)) {
                             syncedRole.players.push(uuid);
                             server.syncedRoles[roleIndex] = syncedRole;
-                            await server.edit({});
+                            await server.edit({ syncedRoles: server.syncedRoles });
                         }
                     }
                 }
@@ -161,7 +161,8 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             // both → union of MC + Discord
             syncedRole.players = [...new Set([...mcPlayers, ...discordPlayerUUIDs.keys()])];
         }
-        await server.edit({});
+        server.syncedRoles[roleIndex] = syncedRole;
+        await server.edit({ syncedRoles: server.syncedRoles });
 
         return { status: 'success', data: { added, removed } };
     }

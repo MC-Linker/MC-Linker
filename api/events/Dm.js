@@ -1,4 +1,5 @@
 import { RESTJSONErrorCodes } from 'discord.js';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
 import {
@@ -23,6 +24,7 @@ export default class Dm extends WSEvent {
     constructor() {
         super({
             event: 'dm',
+            rateLimiter: new RateLimiterMemory({ points: 5, duration: 2 }),
         });
     }
 
@@ -137,7 +139,7 @@ export default class Dm extends WSEvent {
             }));
         }
         catch(err) {
-            logger.warn({ userId: member.id }, 'Could not send DM (user may have DMs disabled)');
+            client.analytics.trackError('api_ws', 'dm', server.id, member.id, err, { stage: 'send_dm' }, logger);
             return { status: 'error', error: ProtocolError.DM_CLOSED };
         }
 
