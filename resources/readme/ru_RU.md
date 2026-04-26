@@ -7,16 +7,18 @@ MC Linker is the easiest way to connect your Minecraft server with Discord. NO c
 ## Features
 
 - **Chat Bridge** — Sync your Minecraft server chat with Discord channels via webhooks. Supports chat messages, join/quit notifications, death messages, advancements, commands, and server start/stop events. Filter which events and commands appear in Discord.
-- **Inventory Viewer** — Render and display any player's inventory directly in Discord, including armor, hotbar, and offhand slots.
+- **Console Channels** — View your server's console output in Discord.
+- **Inventory Viewer** — Render and display any player's inventory directly in Discord.
 - **Stats & Advancements** — Look up detailed Minecraft statistics and advancement trees for any player on your server.
 - **Server Moderation** — Ban, unban, kick, op, deop, and change gamemodes for players directly from Discord.
 - **Remote Commands** — Execute any Minecraft command on your server from Discord with tab-completion support.
 - **Stat Channels** — Automatically updating Discord channels that display your server's online status or player count.
-- **Role Sync** — Sync Discord roles with Minecraft teams and permission groups.
+- **Role Sync** — Sync Discord roles with Minecraft teams and LuckPerms/Vault groups.
 - **Account Linking** — Let players connect their Discord and Minecraft accounts for a seamless experience.
 - **Linked Roles** — Discord linked-role connections powered by OAuth2. Grants a role on linking account and displays a badge on a member profile.
-- **Server & User Info** — View detailed information about your connected server (properties, gamerules, operators, server icon) or any connected user.
+- **Server & User Info** — View detailed information about your connected server (properties, gamerules, operators, server icon) or any user.
 - **Private Messaging** — Send private messages to online players from Discord.
+- **Per-Server Customization** — Adjust the appearance of the bot (avatar, username, banner, etc.) to your likings.
 - **Custom Bot** — Subscribers can run MC Linker as their own custom Discord bot with a custom presence.
 - **Localization** — Translated via [Crowdin](https://crowdin.com/project/minecraft-smp-bot); contributions welcome.
 
@@ -26,7 +28,7 @@ MC Linker is the easiest way to connect your Minecraft server with Discord. NO c
 
 Invite the **MC Linker** bot from the [Discord App Directory](https://discord.com/application-directory/712759741528408064) or from [Top.gg](https://top.gg/bot/712759741528408064).
 
-### 2. Install the Minecraft plugin
+### 2. Install the Minecraft plugin/mod
 
 Add the **Discord-Linker** plugin/mod to your Minecraft Java Edition server from any of these sources:
 
@@ -38,7 +40,7 @@ Add the **Discord-Linker** plugin/mod to your Minecraft Java Edition server from
 | CurseForge   | [curseforge.com](https://legacy.curseforge.com/minecraft/mc-mods/discord-linker) |
 | Aternos      | [aternos.org](https://aternos.org/addons/a/spigot/98749)                         |
 
-The plugin supports **Spigot**, **Paper**, and other Bukkit-compatible servers, as well as **Fabric** and **Forge** via [Stonecutter](https://stonecutter.kikugie.dev/).
+The plugin supports **Spigot**, **Paper**, and other Bukkit-compatible servers on 1.8-latest, as well as **Fabric** and **Forge/NeoForge** via [Stonecutter](https://stonecutter.kikugie.dev/).
 
 ### 3. Connect
 
