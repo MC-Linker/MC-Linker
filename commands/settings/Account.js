@@ -13,6 +13,7 @@ export default class Account extends AutocompleteCommand {
             name: 'account',
             category: 'settings',
             requiresConnectedServer: false,
+            allowUser: true,
             ephemeral: true,
         });
     }
@@ -53,6 +54,7 @@ export default class Account extends AutocompleteCommand {
         const subcommand = subcommandGroup === 'dms' ? args[1] : args[0];
 
         if(subcommand === 'connect') {
+            if(!interaction.inGuild()) return interaction.editReplyTl(keys.main.no_access.not_in_guild);
             if(!server) return interaction.editReplyTl(keys.api.command.errors.server_not_connected);
 
             const usernameOrUUID = args[1];
@@ -125,9 +127,7 @@ export default class Account extends AutocompleteCommand {
         }
         else if(subcommand === 'disconnect') {
             const connection = client.userConnections.cache.get(interaction.user.id);
-            if(!connection) {
-                return interaction.editReplyTl(keys.commands.account.warnings.not_connected);
-            }
+            if(!connection) return interaction.editReplyTl(keys.commands.account.warnings.not_connected);
 
             const settings = await client.userSettingsConnections.cache.get(interaction.user.id);
             if(settings) await settings.updateRoleConnection(connection.username, {

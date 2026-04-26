@@ -8,7 +8,7 @@ import {
     MaxMessageContentLength,
     UUIDRegex,
 } from '../../utilities/utils.js';
-import { addTranslatedResponses, getReplyOptions } from '../../utilities/messages.js';
+import { addPh, addTranslatedResponses, getReplyOptions } from '../../utilities/messages.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 /**
@@ -133,8 +133,7 @@ export default class Dm extends WSEvent {
             msg = await member.send(getReplyOptions(keys.api.plugin.success.dm.message, {
                 username: data.player,
                 message,
-                ip: server.displayIp,
-                footer: keys.api.plugin.success.dm.footer,
+                footer: addPh(keys.api.plugin.success.dm.footer, { ip: server.displayIp }),
             }));
         }
         catch(err) {
@@ -164,8 +163,7 @@ export default class Dm extends WSEvent {
             await msg.editTl(keys.api.plugin.success.dm.message, {
                 username: data.player,
                 message,
-                ip: server.displayIp,
-                footer: keys.api.plugin.success.dm.footer_expired,
+                footer: addPh(keys.api.plugin.success.dm.footer_expired, { ip: server.displayIp }),
             });
         });
 

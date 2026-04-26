@@ -1926,7 +1926,7 @@
                                     "value": "chat"
                                 },
                                 {
-                                    "label": "🖥️ Console Messages",
+                                    "label": "⌨\uFE0F Console Messages",
                                     "description": "Sends the console output to the channel.",
                                     "value": "console"
                                 },
@@ -2678,9 +2678,7 @@
             "type": "ChatInput",
             "long_description": "Look up your and other member's unlocked/completed recipes/advancements. You can find a list of all advancement (ids) [here](https://minecraft.wiki/w/Advancement#List_of_advancements).",
             "description": "Look up your and other member's Minecraft advancements.",
-            "contexts": [
-                "Guild"
-            ],
+            "contexts": ["Guild"],
             "options": [
                 {
                     "type": "Subcommand",
@@ -3339,7 +3337,7 @@
             "type": "ChatInput",
             "long_description": "Connect or disconnect your Minecraft Java-Edition account with/from the bot. Connecting allows you to mention yourself in command arguments.",
             "description": "Connect your Minecraft account with the bot.",
-            "contexts": ["Guild"],
+            "contexts": ["Guild", "BotDM"],
             "options": [
                 {
                     "type": "Subcommand",
