@@ -136,8 +136,7 @@ export default class Account extends AutocompleteCommand {
 
             await client.userConnections.disconnect(interaction.user.id);
 
-            //TODO kick from all servers the user is in
-            if(server?.requiredRoleToJoin) await server.protocol.execute(`kick ${connection.username} §cYou have been disconnected from your account.`);
+            await client.serverConnections.kickFromRequiredRoleServers(interaction.user.id, connection.username, '§cYou have been disconnected from your account.');
             await interaction.editReplyTl(keys.commands.account.success.disconnect);
         }
         else if(subcommand === 'block' || subcommand === 'unblock') {
