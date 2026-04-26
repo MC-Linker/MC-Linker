@@ -35,7 +35,7 @@ export async function handleProtocolResponse(response, protocol, interaction, er
 
 /**
  * Handles multiple responses of protocol calls.
- * @param {?ProtocolResponse[]} responses - The responses to handle.
+ * @param {Array<?ProtocolResponse>} responses - The responses to handle.
  * @param {Protocol} protocol - The protocol that was called.
  * @param {TranslatedResponses} interaction - The interaction to respond to.
  * @param {Object.<string, MessagePayload>} [errorResponses={}] - The responses to use for each error code string. See {@link ProtocolError} for known codes.
