@@ -1657,47 +1657,45 @@
                         }
                     ]
                 },
-                "dms": {
-                    "no_server": {
-                        "embeds": [
-                            {
-                                "title": "Server Not Connected",
-                                "description": "This Discord server has no connected Minecraft server. Run this command in a server that has one, or omit the `server` option."
-                            }
-                        ]
-                    },
-                    "already_blocked_global": {
-                        "embeds": [
-                            {
-                                "title": "Already Blocked",
-                                "description": "You have already blocked all DMs from Minecraft."
-                            }
-                        ]
-                    },
-                    "already_blocked_specific": {
-                        "embeds": [
-                            {
-                                "title": "Already Blocked",
-                                "description": "You have already blocked DMs from **%target%**."
-                            }
-                        ]
-                    },
-                    "not_blocked_global": {
-                        "embeds": [
-                            {
-                                "title": "Not Blocked",
-                                "description": "Your DMs from Minecraft are not globally blocked."
-                            }
-                        ]
-                    },
-                    "not_blocked_specific": {
-                        "embeds": [
-                            {
-                                "title": "Not Blocked",
-                                "description": "**%target%** is not in your blocked list."
-                            }
-                        ]
-                    }
+                "dms_no_server": {
+                    "embeds": [
+                        {
+                            "title": "Server Not Connected",
+                            "description": "This Discord server has no connected Minecraft server. Run this command in a server that has one, or omit the `server` option."
+                        }
+                    ]
+                },
+                "dms_already_blocked_global": {
+                    "embeds": [
+                        {
+                            "title": "Already Blocked",
+                            "description": "You have already blocked all DMs from Minecraft."
+                        }
+                    ]
+                },
+                "dms_already_blocked_specific": {
+                    "embeds": [
+                        {
+                            "title": "Already Blocked",
+                            "description": "You have already blocked DMs from **%target%**."
+                        }
+                    ]
+                },
+                "dms_not_blocked_global": {
+                    "embeds": [
+                        {
+                            "title": "Not Blocked",
+                            "description": "Your DMs from Minecraft are not globally blocked."
+                        }
+                    ]
+                },
+                "dms_not_blocked_specific": {
+                    "embeds": [
+                        {
+                            "title": "Not Blocked",
+                            "description": "**%target%** is not in your blocked list."
+                        }
+                    ]
                 }
             },
             "errors": {
@@ -1737,39 +1735,37 @@
                         }
                     ]
                 },
-                "dms": {
-                    "block_global": {
-                        "embeds": [
-                            {
-                                "title": "DMs Blocked",
-                                "description": "You will no longer receive DMs from Minecraft.\nYou can also block a specific server or player with the `server` or `player` options, or use `/account dms unblock` to revert."
-                            }
-                        ]
-                    },
-                    "unblock_global": {
-                        "embeds": [
-                            {
-                                "title": "DMs Unblocked",
-                                "description": "You will now receive DMs from Minecraft again."
-                            }
-                        ]
-                    },
-                    "block_specific": {
-                        "embeds": [
-                            {
-                                "title": "DMs Blocked",
-                                "description": "You will no longer receive DMs from **%target%**."
-                            }
-                        ]
-                    },
-                    "unblock_specific": {
-                        "embeds": [
-                            {
-                                "title": "DMs Unblocked",
-                                "description": "You will now receive DMs from **%target%** again."
-                            }
-                        ]
-                    }
+                "dms_block_global": {
+                    "embeds": [
+                        {
+                            "title": "DMs Blocked",
+                            "description": "You will no longer receive any DMs from Minecraft.\nYou can also block a specific server or player with the `server` or `player` options."
+                        }
+                    ]
+                },
+                "dms_unblock_global": {
+                    "embeds": [
+                        {
+                            "title": "DMs Unblocked",
+                            "description": "You will now receive DMs from Minecraft again."
+                        }
+                    ]
+                },
+                "dms_block_specific": {
+                    "embeds": [
+                        {
+                            "title": "DMs Blocked",
+                            "description": "You will no longer receive DMs from **%target%**."
+                        }
+                    ]
+                },
+                "dms_unblock_specific": {
+                    "embeds": [
+                        {
+                            "title": "DMs Unblocked",
+                            "description": "You will now receive DMs from **%target%** again."
+                        }
+                    ]
                 }
             }
         },
@@ -3370,7 +3366,7 @@
                                 {
                                     "type": "Boolean",
                                     "name": "server",
-                                    "description": "Block DMs from the Minecraft server connected to this Discord server.",
+                                    "description": "Block DMs from the Minecraft server this Discord server is connected to.",
                                     "required": false
                                 },
                                 {
@@ -3389,7 +3385,7 @@
                                 {
                                     "type": "Boolean",
                                     "name": "server",
-                                    "description": "Unblock DMs from the Minecraft server connected to this Discord server.",
+                                    "description": "Unblock DMs from the Minecraft server this Discord server is connected to.",
                                     "required": false
                                 },
                                 {

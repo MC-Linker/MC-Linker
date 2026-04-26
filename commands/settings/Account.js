@@ -150,47 +150,47 @@ export default class Account extends AutocompleteCommand {
             if(playerArg) {
                 const player = playerArg.toLowerCase();
                 if(isBlock) {
-                    if(userSettings.dms.blockedPlayers.includes(player)) return interaction.editReplyTl(keys.commands.account.warnings.dms.already_blocked_specific, { target: playerArg });
+                    if(userSettings.dms.blockedPlayers.includes(player)) return interaction.editReplyTl(keys.commands.account.warnings.dms_already_blocked_specific, { target: playerArg });
                     userSettings.blockPlayer(player);
                     await userSettings.edit({});
-                    return interaction.editReplyTl(keys.commands.account.success.dms.block_specific, { target: playerArg });
+                    return interaction.editReplyTl(keys.commands.account.success.dms_block_specific, { target: playerArg });
                 }
                 else {
-                    if(!userSettings.dms.blockedPlayers.includes(player)) return interaction.editReplyTl(keys.commands.account.warnings.dms.not_blocked_specific, { target: playerArg });
+                    if(!userSettings.dms.blockedPlayers.includes(player)) return interaction.editReplyTl(keys.commands.account.warnings.dms_not_blocked_specific, { target: playerArg });
                     userSettings.unblockPlayer(player);
                     await userSettings.edit({});
-                    return interaction.editReplyTl(keys.commands.account.success.dms.unblock_specific, { target: playerArg });
+                    return interaction.editReplyTl(keys.commands.account.success.dms_unblock_specific, { target: playerArg });
                 }
             }
             if(serverArg) {
-                if(!server) return interaction.editReplyTl(keys.commands.account.warnings.dms.no_server);
+                if(!server) return interaction.editReplyTl(keys.commands.account.warnings.dms_no_server);
                 const guildId = server.id;
                 if(isBlock) {
-                    if(userSettings.dms.blockedServers.includes(guildId)) return interaction.editReplyTl(keys.commands.account.warnings.dms.already_blocked_specific);
+                    if(userSettings.dms.blockedServers.includes(guildId)) return interaction.editReplyTl(keys.commands.account.warnings.dms_already_blocked_specific);
                     userSettings.blockServer(guildId);
                     await userSettings.edit({});
-                    return interaction.editReplyTl(keys.commands.account.success.dms.block_specific, { target: server.displayIp });
+                    return interaction.editReplyTl(keys.commands.account.success.dms_block_specific, { target: server.displayIp });
                 }
                 else {
-                    if(!userSettings.dms.blockedServers.includes(guildId)) return interaction.editReplyTl(keys.commands.account.warnings.dms.not_blocked_specific);
+                    if(!userSettings.dms.blockedServers.includes(guildId)) return interaction.editReplyTl(keys.commands.account.warnings.dms_not_blocked_specific);
                     userSettings.unblockServer(guildId);
                     await userSettings.edit({});
-                    return interaction.editReplyTl(keys.commands.account.success.dms.unblock_specific, { target: server.displayIp });
+                    return interaction.editReplyTl(keys.commands.account.success.dms_unblock_specific, { target: server.displayIp });
                 }
             }
             else {
                 // Global block/unblock
                 if(isBlock) {
-                    if(!userSettings.dms.enabled) return interaction.editReplyTl(keys.commands.account.warnings.dms.already_blocked_global);
+                    if(!userSettings.dms.enabled) return interaction.editReplyTl(keys.commands.account.warnings.dms_already_blocked_global);
                     userSettings.setDmsEnabled(false);
                     await userSettings.edit({});
-                    return interaction.editReplyTl(keys.commands.account.success.dms.block_global);
+                    return interaction.editReplyTl(keys.commands.account.success.dms_block_global);
                 }
                 else {
-                    if(userSettings.dms.enabled) return interaction.editReplyTl(keys.commands.account.warnings.dms.not_blocked_global);
+                    if(userSettings.dms.enabled) return interaction.editReplyTl(keys.commands.account.warnings.dms_not_blocked_global);
                     userSettings.setDmsEnabled(true);
                     await userSettings.edit({});
-                    return interaction.editReplyTl(keys.commands.account.success.dms.unblock_global);
+                    return interaction.editReplyTl(keys.commands.account.success.dms_unblock_global);
                 }
             }
         }
