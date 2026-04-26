@@ -159,6 +159,7 @@ export default class Dm extends WSEvent {
 
             const resp = await currentServer.protocol.chatPrivate(replyMessage, m.author.displayName, data.player);
             if(resp?.error === ProtocolError.PLAYER_NOT_ONLINE) return await msg.sendTl(keys.commands.message.warnings.player_not_online, { username: data.player });
+            await m.react(client.config.emojis.success).catch(() => {});
         });
 
         collector.on('end', async () => {
