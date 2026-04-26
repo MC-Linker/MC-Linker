@@ -72,7 +72,7 @@ export default class ServerConnectionManager extends ConnectionManager {
                         const server = c.serverConnections.cache.get(serverId);
                         if(!server) return;
 
-                        const guild = c.guilds.cache.get(serverId);
+                        const guild = await c.guilds.fetch(serverId);
                         await guild.members.fetch(userId); // Will throw if user is not part of guild
                         return server.protocol.execute(`kick ${username} ${message}`);
                     }));
