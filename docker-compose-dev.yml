@@ -31,10 +31,10 @@ services:
     networks:
       - mc-linker_mongo-network
 
-  analytics-dashboard:
+  dev-analytics-dashboard:
     build: ./analytics-dashboard
-    image: lianecx/mc-linker-analytics
-    container_name: analytics-dashboard
+    image: lianecx/dev-mc-linker-analytics
+    container_name: dev-analytics-dashboard
     restart: on-failure
     profiles:
       - analytics
