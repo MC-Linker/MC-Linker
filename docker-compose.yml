@@ -55,7 +55,7 @@ services:
     depends_on:
       - mongodb
     ports:
-      - "${DASHBOARD_PORT:-3001}:3000"
+      - "${DASHBOARD_PORT}:3000"
     environment:
       - NUXT_DATABASE_URL=${DATABASE_URL}
       - NUXT_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}

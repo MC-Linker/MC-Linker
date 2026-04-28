@@ -212,7 +212,7 @@ export default class ServerConnection extends Connection {
         this.statChannels = data.statChannels ?? this.statChannels ?? [];
         // Migrate legacy names.members -> names.online & names.offline on load
         for(const channel of this.statChannels) {
-            if(channel.names.members) {
+            if(channel.names?.members) {
                 channel.names.online ??= channel.names.members;
                 channel.names.offline ??= channel.names.members;
                 delete channel.names.members;
