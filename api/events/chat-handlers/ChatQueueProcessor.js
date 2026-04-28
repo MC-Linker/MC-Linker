@@ -5,7 +5,7 @@ import {
     CODE_BLOCK_OVERHEAD_ANSI,
     CODE_BLOCK_OVERHEAD_PLAIN,
     containsAnsiCodes,
-    MaxEmbedDescriptionLength,
+    MaxMessageContentLength,
     toAnsiCodeBlock,
 } from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
@@ -420,6 +420,6 @@ export default class ChatQueueProcessor {
      */
     consoleCharLimit(hasAnsi) {
         // Ansi codes are not parsed over 1000 chars by Discord
-        return hasAnsi ? 1000 - CODE_BLOCK_OVERHEAD_ANSI : MaxEmbedDescriptionLength - CODE_BLOCK_OVERHEAD_PLAIN; // 8 for code block, 12 for code block + 'ansi'
+        return hasAnsi ? 1000 - CODE_BLOCK_OVERHEAD_ANSI : MaxMessageContentLength - CODE_BLOCK_OVERHEAD_PLAIN; // 8 for code block, 12 for code block + 'ansi'
     }
 }
