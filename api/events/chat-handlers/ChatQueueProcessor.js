@@ -1,11 +1,11 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
-import { getEmbed } from '../../../utilities/messages.js';
+import { getEmbed, getReplyOptions } from '../../../utilities/messages.js';
 import {
     CODE_BLOCK_OVERHEAD_ANSI,
     CODE_BLOCK_OVERHEAD_PLAIN,
     containsAnsiCodes,
-    MaxMessageContentLength,
+    MaxComponentsV2Chars,
     toAnsiCodeBlock,
 } from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
@@ -368,8 +368,9 @@ export default class ChatQueueProcessor {
             try {
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
                 logger.debug({ guildId: discordChannel.guildId }, `Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
+                const editOptions = getReplyOptions(keys.api.plugin.events.console.message, { content: toAnsiCodeBlock(nextRaw) });
                 await this.monitor.track('webhook.editMessage', () => webhook.editMessage(lastMessage.id, {
-                    content: toAnsiCodeBlock(nextRaw),
+                    ...editOptions,
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                 }));
                 this.lastConsoleMessages.set(discordChannel.id, {
@@ -398,8 +399,9 @@ export default class ChatQueueProcessor {
         }
 
         logger.debug({ guildId: discordChannel.guildId }, `Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
+        const sendOptions = getReplyOptions(keys.api.plugin.events.console.message, { content: toAnsiCodeBlock(combinedRaw) });
         let sentMessage = await this.monitor.track('webhook.send', () => webhook.send({
-            content: toAnsiCodeBlock(combinedRaw),
+            ...sendOptions,
             ...getSystemWebhookSendOptions(discordChannel),
         }));
 
@@ -420,6 +422,6 @@ export default class ChatQueueProcessor {
      */
     consoleCharLimit(hasAnsi) {
         // Ansi codes are not parsed over 1000 chars by Discord
-        return hasAnsi ? 1000 - CODE_BLOCK_OVERHEAD_ANSI : MaxMessageContentLength - CODE_BLOCK_OVERHEAD_PLAIN; // 8 for code block, 12 for code block + 'ansi'
+        return hasAnsi ? 1000 - CODE_BLOCK_OVERHEAD_ANSI : MaxComponentsV2Chars - CODE_BLOCK_OVERHEAD_PLAIN; // 8 for code block, 12 for code block + 'ansi'
     }
 }
