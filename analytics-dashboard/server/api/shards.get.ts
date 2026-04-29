@@ -31,7 +31,6 @@ export default defineEventHandler(async event => {
         timestamp: latest?.timestamp ?? null,
         shards: latest?.shards ?? [],
         machine: latest?.machine ?? { cpuPercent: 0, memoryUsedMB: 0, memoryTotalMB: 0 },
-        connections: latest?.connections ?? null,
         timeSeries,
     };
 });

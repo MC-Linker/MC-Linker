@@ -5,13 +5,10 @@
       <RangePicker v-model:from="from" v-model:to="to"/>
     </div>
 
-    <div v-if="data?.connections" class="stats-grid">
+    <div v-if="data?.machine" class="stats-grid">
       <StatsCard :value="data.machine?.cpuPercent" format="percent" label="Machine CPU"/>
       <StatsCard :sub="`/ ${data.machine?.memoryTotalMB ?? 0} MB`" :value="data.machine?.memoryUsedMB" format="mb"
                  label="Machine Memory"/>
-      <StatsCard :value="data.connections.servers" label="Server Connections"/>
-      <StatsCard :value="data.connections.users" label="User Connections"/>
-      <StatsCard :value="data.connections.online" label="Online Servers"/>
     </div>
 
     <div v-if="data?.shards?.length" class="card" style="margin-bottom: 20px;">
