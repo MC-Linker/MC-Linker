@@ -368,7 +368,7 @@ export default class ChatQueueProcessor {
             try {
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
                 logger.debug({ guildId: discordChannel.guildId }, `Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
-                const editOptions = getReplyOptions(keys.api.plugin.events.console.message, { content: toAnsiCodeBlock(nextRaw) });
+                const editOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: toAnsiCodeBlock(nextRaw) });
                 await this.monitor.track('webhook.editMessage', () => webhook.editMessage(lastMessage.id, {
                     ...editOptions,
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
@@ -399,7 +399,7 @@ export default class ChatQueueProcessor {
         }
 
         logger.debug({ guildId: discordChannel.guildId }, `Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
-        const sendOptions = getReplyOptions(keys.api.plugin.events.console.message, { content: toAnsiCodeBlock(combinedRaw) });
+        const sendOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: toAnsiCodeBlock(combinedRaw) });
         let sentMessage = await this.monitor.track('webhook.send', () => webhook.send({
             ...sendOptions,
             ...getSystemWebhookSendOptions(discordChannel),

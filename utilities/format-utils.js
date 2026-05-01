@@ -12,15 +12,6 @@ export function stripColorCodes(text) {
 }
 
 /**
- * Removes all ansi codes from a string.
- * @param {string} text - The text to remove ansi codes from.
- * @returns {string} - The text without ansi codes.
- */
-export function stripAnsiCodes(text) {
-    return text.replace(/\u001b\[[0-9;]*m/g, '');
-}
-
-/**
  * Checks whether a string contains any ANSI escape codes.
  * @param {string} text - The text to check.
  * @returns {boolean} - Whether the text contains ANSI codes.
@@ -62,18 +53,12 @@ const colorPattern = /(?<=["'])[&§]([0-9a-fk-or])(?:[&§]([0-9a-fk-or]))?([^'"�
 /**
  * Wraps a string in a discord code block with the ansi language for color formatting.
  * If the string is too long, it will be truncated and an ellipsis will be added at the end.
- * If the string contains more than 1000 characters, all ansi codes will be stripped (discord won't parse them).
  * @param {string} text - The text to wrap in a code block.
  * @returns {`\`\`\`ansi\n${string}\n\`\`\``|`\`\`\`\n${string}\n\`\`\``}
  */
 export function toAnsiCodeBlock(text) {
     text = text.replace(/\u001b\[m/g, '\u001b[0m'); // Discord things
-    let hasAnsi = containsAnsiCodes(text);
-    // Ansi formatting vanishes with more than 1000 characters ¯\_(ツ)_/¯
-    if(hasAnsi && text.length >= 1000 - CODE_BLOCK_OVERHEAD_ANSI) {
-        text = stripAnsiCodes(text);
-        hasAnsi = false;
-    }
+    const hasAnsi = containsAnsiCodes(text);
 
     // -12 for code block (```ansi\n\n```)
     if(text.length > MaxEmbedDescriptionLength - CODE_BLOCK_OVERHEAD_ANSI) text = `${text.substring(0, MaxEmbedDescriptionLength - 13)}…`;

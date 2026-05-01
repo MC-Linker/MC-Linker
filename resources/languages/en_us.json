@@ -2449,6 +2449,20 @@
                                 "timestamp": "%timestamp_now%"
                             }
                         ]
+                    },
+                    "console": {
+                        "flags": ["IsComponentsV2"],
+                        "components": [
+                            {
+                                "type": "Container",
+                                "components": [
+                                    {
+                                        "type": "TextDisplay",
+                                        "content": "%content%"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 },
                 "dm": {
@@ -2476,22 +2490,6 @@
                     },
                     "footer": "Sent from Minecraft (%ip%) · Reply to this message to send a reply · `/account dms` to manage DM settings",
                     "footer_expired": "Sent from Minecraft (%ip%) · Reply window closed · `/account dms` to manage DM settings"
-                },
-                "console": {
-                    "message": {
-                        "flags": ["IsComponentsV2"],
-                        "components": [
-                            {
-                                "type": "Container",
-                                "components": [
-                                    {
-                                        "type": "TextDisplay",
-                                        "content": "%content%"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
                 }
             }
         },
