@@ -1,7 +1,6 @@
 import WSEvent from '../WSEvent.js';
 import { RESTJSONErrorCodes } from 'discord.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
-import { fetchMembersIfCacheDiffers } from '../../utilities/utils.js';
 
 export default class HasRequiredRoleToJoin extends WSEvent {
 
@@ -38,8 +37,6 @@ export default class HasRequiredRoleToJoin extends WSEvent {
         try {
             const guild = await client.guilds.fetch(server.id);
             const member = await guild.members.fetch(user.id);
-
-            await fetchMembersIfCacheDiffers(client, guild);
 
             return { status: 'success', data: { hasRole: server.hasRequiredRole(member) } };
         }

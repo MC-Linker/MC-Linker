@@ -1,4 +1,5 @@
 import WSEvent from '../WSEvent.js';
+import { GatewayRateLimitError } from 'discord.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import { fetchMembersIfCacheDiffers } from '../../utilities/utils.js';
 
@@ -49,6 +50,13 @@ export default class SyncSyncedRoleMembers extends WSEvent {
             await fetchMembersIfCacheDiffers(client, guild);
         }
         catch(err) {
+            if(err instanceof GatewayRateLimitError) {
+                return {
+                    status: 'error',
+                    error: ProtocolError.RATE_LIMITED,
+                    data: { retryMs: Math.ceil(err.data.retry_after * 1000) },
+                };
+            }
             client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }

@@ -2,7 +2,7 @@ import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
-import { Events, MessageType } from 'discord.js';
+import { Events, MessageType, RESTJSONErrorCodes } from 'discord.js';
 
 /**
  * Handles the Discord messageCreate event for the MC-Linker bot.
@@ -47,7 +47,17 @@ export default class MessageCreate extends Event {
                 `${message.attachments.map(attach => `[${attach.name}](${attach.url})`).join(' ')} \n${cleanEmojis(message.cleanContent)}` :
                 cleanEmojis(message.cleanContent);
 
-            const repliedMessage = message.type === MessageType.Reply ? await message.fetchReference() : null;
+            let repliedMessage = null;
+            if(message.type === MessageType.Reply) {
+                try {
+                    repliedMessage = await message.fetchReference();
+                }
+                catch(err) {
+                    if(err.code !== RESTJSONErrorCodes.MissingAccess && err.code !== RESTJSONErrorCodes.UnknownMessage) {
+                        client.analytics.trackError('event', 'MessageCreate', message.guildId, message.author.id, err, null, logger);
+                    }
+                }
+            }
             let repliedContent = null;
             if(repliedMessage) {
                 repliedContent = repliedMessage.attachments.size ?

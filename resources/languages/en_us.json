@@ -2138,6 +2138,14 @@
                             "description": "The specified role is not added."
                         }
                     ]
+                },
+                "rate_limited": {
+                    "embeds": [
+                        {
+                            "title": "Rate Limited",
+                            "description": "Discord is currently rate-limiting member fetches for this server. Please try again in **%retry_after% seconds**."
+                        }
+                    ]
                 }
             },
             "errors": {

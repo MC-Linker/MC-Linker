@@ -1,6 +1,6 @@
 import ServerConnection from '../ServerConnection.js';
 import ConnectionManager from './ConnectionManager.js';
-import { ShardClientUtil } from 'discord.js';
+import { RESTJSONErrorCodes, ShardClientUtil } from 'discord.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../analytics/AnalyticsCollector.js';
@@ -42,6 +42,11 @@ export default class ServerConnectionManager extends ConnectionManager {
                     await webhook.delete();
                 }
                 catch(err) {
+                    if([
+                        RESTJSONErrorCodes.UnknownWebhook,
+                        RESTJSONErrorCodes.UnknownMessage,
+                        RESTJSONErrorCodes.MissingAccess,
+                    ].includes(err.code)) continue;
                     trackError('unhandled', 'ServerConnectionManager.disconnect', connection.id, null, err, { webhookId }, logger);
                 }
             }

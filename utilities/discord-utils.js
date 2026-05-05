@@ -238,14 +238,26 @@ export async function sortChannels(guild) {
     return sortedChannels;
 }
 
+// Per-guild singleflight
+const memberFetchInFlight = new Map();
+
 /**
  * Fetches all members of a guild if the member count differs from the cache.
+ * Concurrent callers for the same guild share one in-flight fetch.
  * @param {Client} client - The client to use for fetching.
  * @param {Guild} guild - The guild to fetch the members of if the member count differs.
+ * @throws {import('discord.js').GatewayRateLimitError} - When opcode 8 is rate-limited.
  */
 export async function fetchMembersIfCacheDiffers(client, guild) {
-    // If cache differs, fetch all members to ensure their roles are cached
-    if(guild.memberCount !== guild.members.cache.size) await guild.members.fetch();
+    if(guild.memberCount === guild.members.cache.size) return;
+
+    const inFlight = memberFetchInFlight.get(guild.id);
+    if(inFlight) return inFlight;
+
+    const promise = guild.members.fetch()
+        .finally(() => memberFetchInFlight.delete(guild.id));
+    memberFetchInFlight.set(guild.id, promise);
+    return promise;
 }
 
 /**

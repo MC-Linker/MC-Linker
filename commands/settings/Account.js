@@ -4,7 +4,6 @@ import * as utils from '../../utilities/utils.js';
 import { UUIDRegex } from '../../utilities/utils.js';
 import Discord from 'discord.js';
 import crypto from 'crypto';
-import MCLinkerAPI from '../../api/MCLinkerAPI.js';
 
 export default class Account extends AutocompleteCommand {
 
@@ -96,7 +95,7 @@ export default class Account extends AutocompleteCommand {
                     return { status: 'success', data };
                 }
                 catch(err) {
-                    if(err instanceof MCLinkerAPI.EventTimeoutError) return { status: 'timeout' };
+                    if(err instanceof c.api.constructor.EventTimeoutError) return { status: 'timeout' };
                     return { status: 'error', error: err.message };
                 }
             }, {
