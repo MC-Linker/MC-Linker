@@ -732,6 +732,72 @@ code {
     border-top: 1px solid var(--border);
 }
 
+.group-expand {
+    padding: 0;
+}
+
+.occurrence-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.occurrence-table th,
+.occurrence-table td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #1a2030;
+    color: var(--text-muted);
+    text-align: left;
+}
+
+.occurrence-table th {
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+}
+
+.occurrence-table tr:last-child td {
+    border-bottom: none;
+}
+
+.error-message {
+    max-width: 340px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.clear-warning {
+    color: #fbbf24;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.btn-clear {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: var(--radius);
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.btn-clear:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.28);
+}
+
+.btn-clear:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Logs page */
 .logs-header {
     margin-bottom: 16px;
