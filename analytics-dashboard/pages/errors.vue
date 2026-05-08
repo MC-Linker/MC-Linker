@@ -11,7 +11,7 @@
           <option value="api_ws">api_ws</option>
           <option value="unhandled">unhandled</option>
         </select>
-        <RangePicker v-model:from="from" v-model:to="to"/>
+        <RangePicker v-model:from="from" v-model:to="to" :min-date="minDates.errors"/>
         <button class="btn-ghost" type="button" @click="exportErrors">Export</button>
         <button class="btn-ghost" type="button" @click="clearConfirming = true">Clear</button>
 
@@ -19,8 +19,8 @@
           <div v-if="clearConfirming" class="modal-backdrop" @click.self="clearConfirming = false">
             <div class="modal">
               <h3 class="modal-title">Clear errors?</h3>
-              <p class="modal-body">This will permanently delete all matching errors. Make sure to export first \u2014
-                this cannot be undone.</p>
+              <p class="modal-body">This will permanently delete all matching errors. Make sure to export first — this
+                cannot be undone.</p>
               <div v-if="clearError" class="error-msg modal-error">{{ clearError }}</div>
               <div class="modal-actions">
                 <button class="btn-ghost" type="button" @click="clearConfirming = false">Cancel</button>
@@ -110,6 +110,8 @@ interface ErrorGroup {
   stack?: string;
   occurrences: Occurrence[];
 }
+
+const minDates = useMinDates();
 
 const from = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 const to = ref(new Date().toISOString().slice(0, 10));

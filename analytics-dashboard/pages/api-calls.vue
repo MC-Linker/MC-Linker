@@ -2,7 +2,7 @@
   <div>
     <div class="page-header">
       <h1>API Calls</h1>
-      <RangePicker v-model:from="from" v-model:to="to"/>
+      <RangePicker v-model:from="from" v-model:to="to" :min-date="minDates.snapshots"/>
     </div>
 
     <div v-if="data?.timeSeries?.length" class="chart-card">
@@ -80,6 +80,8 @@
 
 <script lang="ts" setup>
 import { formatTimeLabel } from '~/composables/useTimeLabel';
+
+const minDates = useMinDates();
 
 const from = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 const to = ref(new Date().toISOString().slice(0, 10));
