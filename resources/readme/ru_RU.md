@@ -99,8 +99,8 @@ The Minecraft server plugin source code is available at [MC-Linker/Discord-Linke
 
 ## Links
 
-- [Website](https://mclinker.com)
-- [Support Server](https://discord.gg/rX36kZUGNK)
+- [Веб-сайт](https://mclinker.com)
+- [Сервер поддержки](https://discord.gg/rX36kZUGNK)
 - [Top.gg](https://top.gg/bot/712759741528408064)
 - [Privacy Policy](https://mclinker.com/privacy)
 - [Terms of Service](https://mclinker.com/tos)
