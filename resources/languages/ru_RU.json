@@ -242,7 +242,7 @@
                             "description": "Congrats! You have successfully set up your bot application. Use the button below to invite it to your server!\nUse `/connect` and other commands as usual (however make sure to choose the commands from your bot!).",
                             "fields": [
                                 {
-                                    "name": "Customize Your Bot",
+                                    "name": "Кастомизировать своего бота",
                                     "value": "You can customize your Bot's appearance in the **General Information** and **Bot** sections to your likings.\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                                 }
                             ]
@@ -268,11 +268,11 @@
             "token_modal": {
                 "type": "Modal",
                 "custom_id": "customize_token_modal",
-                "title": "Enter Token",
+                "title": "Ведите токен",
                 "components": [
                     {
                         "type": "Label",
-                        "label": "Bot Token",
+                        "label": "Бот токен",
                         "description": "The Bot Token can be found in the Bot section of the Developer Portal.",
                         "component": {
                             "type": "TextInput",
@@ -326,7 +326,7 @@
                 "invalid_token": {
                     "embeds": [
                         {
-                            "title": "Incorrect Bot Token",
+                            "title": "Неверный бот токен",
                             "description": "**Please enter a correct token!**\n\nThe **Bot Token** is located in the **Bot** section of the Developer Portal. To obtain the Bot Token, you will have to reset and then copy it into the form that opens when pressing the button below.\n\n**Warning: Do not share the Token with anyone!**\n\n*Need Help? Join the [Support Server](https://discord.gg/rX36kZUGNK)!*"
                         }
                     ],
@@ -363,9 +363,9 @@
         },
         "custom_bot_manager": {
             "status": {
-                "started": "🟢 Started",
-                "stopped": "🔴 Stopped",
-                "deleted": "💀 Deleted"
+                "started": "🟢 Запущен",
+                "stopped": "🔴 Остановлен",
+                "deleted": "💀 Удален"
             },
             "success": {
                 "main": {
@@ -375,12 +375,12 @@
                             "title": "Manage Custom MC Linker",
                             "fields": [
                                 {
-                                    "name": "Status",
+                                    "name": "Статус",
                                     "value": "%status%",
                                     "inline": true
                                 },
                                 {
-                                    "name": "Bot Port",
+                                    "name": "Порт бота",
                                     "value": "%port%",
                                     "inline": true
                                 }
@@ -435,21 +435,21 @@
                 "start": {
                     "type": "Button",
                     "style": "Успешно",
-                    "label": "Start",
+                    "label": "Начать",
                     "emoji": "🟢",
                     "custom_id": "custom_bot_start"
                 },
                 "stop": {
                     "type": "Button",
                     "style": "Danger",
-                    "label": "Stop",
+                    "label": "Остановить",
                     "emoji": "🛑",
                     "custom_id": "custom_bot_stop"
                 },
                 "delete": {
                     "type": "Button",
                     "style": "Danger",
-                    "label": "Delete",
+                    "label": "Удалить",
                     "emoji": "💀",
                     "custom_id": "custom_bot_delete"
                 },
@@ -478,7 +478,7 @@
                         "component": {
                             "type": "TextInput",
                             "custom_id": "confirm_delete",
-                            "placeholder": "delete",
+                            "placeholder": "удалить",
                             "required": true,
                             "min_length": 6,
                             "max_length": 6,
@@ -506,7 +506,7 @@
                 "components": [
                     {
                         "type": "Label",
-                        "label": "Status",
+                        "label": "Статус",
                         "description": "The status of your bot.",
                         "component": {
                             "type": "StringSelect",
@@ -516,7 +516,7 @@
                             "max_values": 1,
                             "options": [
                                 {
-                                    "label": "Online",
+                                    "label": "Онлайн",
                                     "value": "online",
                                     "description": "The bot is online and available.",
                                     "emoji": "🟢",
@@ -609,7 +609,7 @@
                     },
                     {
                         "type": "Label",
-                        "label": "Activity Text",
+                        "label": "Активный текст",
                         "description": "Optional additional text for the activity (seen only in the profile popup).",
                         "component": {
                             "type": "TextInput",
@@ -648,7 +648,7 @@
                     },
                     {
                         "type": "Label",
-                        "label": "Nickname",
+                        "label": "Никнейм",
                         "description": "The nickname to use for MC Linker in this server.",
                         "component": {
                             "type": "TextInput",
@@ -662,7 +662,7 @@
                     },
                     {
                         "type": "Label",
-                        "label": "Bio",
+                        "label": "Био",
                         "description": "The \"About Me\" text to use for MC Linker in this server.",
                         "component": {
                             "type": "TextInput",
@@ -676,7 +676,7 @@
                     },
                     {
                         "type": "Label",
-                        "label": "Avatar",
+                        "label": "Аватар",
                         "description": "The avatar to use for MC Linker in this server.",
                         "component": {
                             "type": "FileUpload",
@@ -688,7 +688,7 @@
                     },
                     {
                         "type": "Label",
-                        "label": "Banner",
+                        "label": "Баннер",
                         "description": "The banner to use for MC Linker in this server.",
                         "component": {
                             "type": "FileUpload",
@@ -1099,7 +1099,7 @@
                 }
             },
             "success": {
-                "title": "%category% Statistics",
+                "title": "%category% Статистика",
                 "stats_button": {
                     "components": [
                         {
@@ -1113,7 +1113,7 @@
                 "final": {
                     "embeds": [
                         {
-                            "title": "Player Statistics",
+                            "title": "Статистика игрока",
                             "description": "Here are the statistics of **%username%**:\n",
                             "image": "attachment://Statistics_Player.png"
                         }
@@ -1125,7 +1125,7 @@
             "success": {
                 "embeds": [
                     {
-                        "title": "Ban Player",
+                        "title": "Бан игрока",
                         "description": "Successfully banned player **%username%**: `%reason%`\n%response%",
                         "color": "Orange"
                     }
@@ -1168,7 +1168,7 @@
             "success": {
                 "embeds": [
                     {
-                        "title": "Change Gamemode",
+                        "title": "Изменить режим игры",
                         "description": "Successfully changed gamemode of **%username%** to **%gamemode%**\n%response%",
                         "color": "Orange"
                     }
@@ -1179,7 +1179,7 @@
             "success": {
                 "embeds": [
                     {
-                        "title": "Kick Player",
+                        "title": "Кикнуть игрока",
                         "description": "Successfully kicked player **%username%**: `%reason%`\n%response%",
                         "color": "Orange"
                     }
@@ -1231,22 +1231,22 @@
         },
         "serverinfo": {
             "difficulty": [
-                "Peaceful",
-                "Easy",
-                "Normal",
-                "Hard"
+                "Мирная",
+                "Легкая",
+                "Нормальная",
+                "Сложная"
             ],
             "success": {
                 "general": {
                     "embeds": [
                         {
-                            "title": "Server Information",
+                            "title": "Информация сервера",
                             "thumbnail": "attachment://server-icon.png",
                             "image": "attachment://server-list.png",
                             "color": "#729e34",
                             "fields": [
                                 {
-                                    "name": "Name",
+                                    "name": "Имя",
                                     "value": "%server_name%",
                                     "inline": true
                                 },
@@ -1256,7 +1256,7 @@
                                     "inline": true
                                 },
                                 {
-                                    "name": "Players",
+                                    "name": "Игроки",
                                     "value": "%online_players%/%max_players%",
                                     "inline": true
                                 }
@@ -1272,7 +1272,7 @@
                         {
                             "fields": [
                                 {
-                                    "name": "Difficulty",
+                                    "name": "Сложность",
                                     "value": "%difficulty% (Hardcore Enabled)"
                                 }
                             ]
@@ -1284,7 +1284,7 @@
                         {
                             "fields": [
                                 {
-                                    "name": "Difficulty",
+                                    "name": "Сложность",
                                     "value": "%difficulty%"
                                 }
                             ]
@@ -1306,7 +1306,7 @@
                                     "value": "End: `%allow_end%`\nNether: `%allow_nether%`"
                                 },
                                 {
-                                    "name": "Difficulty",
+                                    "name": "Сложность",
                                     "value": "%difficulty%",
                                     "inline": true
                                 },
@@ -1395,20 +1395,20 @@
             }
         },
         "userinfo": {
-            "online": "Online",
-            "offline": "Offline",
-            "yes": "Yes",
-            "no": "No",
+            "online": "Онлайн",
+            "offline": "Оффлайн",
+            "yes": "Да",
+            "no": "Нет",
             "gamemode": [
-                "Survival",
-                "Creative",
-                "Adventure",
-                "Spectator"
+                "Выживание",
+                "Креатив",
+                "Приключение",
+                "Спектатор"
             ],
             "dimensions": {
                 "overworld": "Overworld",
-                "the_nether": "Nether",
-                "the_end": "End"
+                "the_nether": "Незер",
+                "the_end": "Энд"
             },
             "success": {
                 "general": {
@@ -1424,12 +1424,12 @@
                             },
                             "fields": [
                                 {
-                                    "name": "Status",
+                                    "name": "Статус",
                                     "value": "%status_emoji% %status%",
                                     "inline": true
                                 },
                                 {
-                                    "name": "Banned",
+                                    "name": "Забанен",
                                     "value": "%banned%",
                                     "inline": true
                                 },
@@ -1470,7 +1470,7 @@
                             },
                             "fields": [
                                 {
-                                    "name": "Gamemode",
+                                    "name": "Режим игры",
                                     "value": "%gamemode%",
                                     "inline": true
                                 },
@@ -1510,7 +1510,7 @@
                                     "inline": true
                                 },
                                 {
-                                    "name": "Effects",
+                                    "name": "Эффекты",
                                     "value": "%effects%",
                                     "inline": true
                                 },
@@ -2140,6 +2140,14 @@
                             "description": "The specified role is not added."
                         }
                     ]
+                },
+                "rate_limited": {
+                    "embeds": [
+                        {
+                            "title": "Rate Limited",
+                            "description": "Discord is currently rate-limiting member fetches for this server. Please try again in **%retry_after% seconds**."
+                        }
+                    ]
                 }
             },
             "errors": {
@@ -2449,6 +2457,22 @@
                                 "description": ":red_circle: **The server has stopped!**",
                                 "color": "Red",
                                 "timestamp": "%timestamp_now%"
+                            }
+                        ]
+                    },
+                    "console": {
+                        "flags": [
+                            "IsComponentsV2"
+                        ],
+                        "components": [
+                            {
+                                "type": "Container",
+                                "components": [
+                                    {
+                                        "type": "TextDisplay",
+                                        "content": "%content%"
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -3244,19 +3268,19 @@
                     "required": true,
                     "choices": [
                         {
-                            "name": "Creative",
+                            "name": "Креатив",
                             "value": "creative"
                         },
                         {
-                            "name": "Survival",
+                            "name": "Выживание",
                             "value": "survival"
                         },
                         {
-                            "name": "Adventure",
+                            "name": "Приключение",
                             "value": "adventure"
                         },
                         {
-                            "name": "Spectator",
+                            "name": "Спектатор",
                             "value": "spectator"
                         }
                     ]
