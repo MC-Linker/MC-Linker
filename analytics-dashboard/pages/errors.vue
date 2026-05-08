@@ -13,14 +13,24 @@
         </select>
         <RangePicker v-model:from="from" v-model:to="to"/>
         <button class="btn-ghost" type="button" @click="exportErrors">Export</button>
-        <template v-if="clearConfirming">
-          <span class="clear-warning">Export first! This cannot be undone.</span>
-          <button class="btn-ghost" type="button" @click="clearConfirming = false">Cancel</button>
-          <button :disabled="clearing" class="btn-clear" type="button" @click="confirmClear">
-            {{ clearing ? 'Clearing…' : 'Confirm Clear' }}
-          </button>
-        </template>
-        <button v-else class="btn-ghost" type="button" @click="clearConfirming = true">Clear</button>
+        <button class="btn-ghost" type="button" @click="clearConfirming = true">Clear</button>
+
+        <Teleport to="body">
+          <div v-if="clearConfirming" class="modal-backdrop" @click.self="clearConfirming = false">
+            <div class="modal">
+              <h3 class="modal-title">Clear errors?</h3>
+              <p class="modal-body">This will permanently delete all matching errors. Make sure to export first \u2014
+                this cannot be undone.</p>
+              <div v-if="clearError" class="error-msg modal-error">{{ clearError }}</div>
+              <div class="modal-actions">
+                <button class="btn-ghost" type="button" @click="clearConfirming = false">Cancel</button>
+                <button :disabled="clearing" class="btn-clear" type="button" @click="confirmClear">
+                  {{ clearing ? 'Clearing\u2026' : 'Confirm Clear' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </Teleport>
       </div>
     </div>
 
@@ -78,7 +88,7 @@
 
     <div v-if="pending" class="loading">Loading…</div>
     <div v-if="fetchError" class="error-msg">{{ fetchError }}</div>
-    <div v-if="clearError" class="error-msg">{{ clearError }}</div>
+    <div v-if="clearError && !clearConfirming" class="error-msg">{{ clearError }}</div>
     <div v-if="!pending && !fetchError && !data?.groups?.length" class="empty">No errors in this range.</div>
   </div>
 </template>
@@ -143,8 +153,10 @@ async function exportErrors() {
     const a = document.createElement('a');
     a.href = url;
     a.download = `errors-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
   catch (err: any) {
     clearError.value = err?.message ?? 'Export failed';
