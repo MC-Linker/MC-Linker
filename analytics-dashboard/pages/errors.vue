@@ -12,36 +12,63 @@
           <option value="unhandled">unhandled</option>
         </select>
         <RangePicker v-model:from="from" v-model:to="to"/>
+        <button class="btn-ghost" type="button" @click="exportErrors">Export</button>
+        <template v-if="clearConfirming">
+          <span class="clear-warning">Export first! This cannot be undone.</span>
+          <button class="btn-ghost" type="button" @click="clearConfirming = false">Cancel</button>
+          <button :disabled="clearing" class="btn-clear" type="button" @click="confirmClear">
+            {{ clearing ? 'Clearing…' : 'Confirm Clear' }}
+          </button>
+        </template>
+        <button v-else class="btn-ghost" type="button" @click="clearConfirming = true">Clear</button>
       </div>
     </div>
 
-    <div v-if="data?.errors?.length" class="card">
+    <div v-if="data?.groups?.length" class="card">
       <table class="data-table">
         <thead>
         <tr>
           <th></th>
-          <th @click="toggleSort('timestamp')">Timestamp{{ sortIcon('timestamp') }}</th>
           <th @click="toggleSort('type')">Type{{ sortIcon('type') }}</th>
           <th @click="toggleSort('name')">Name{{ sortIcon('name') }}</th>
-          <th @click="toggleSort('guildId')">Guild{{ sortIcon('guildId') }}</th>
-          <th @click="toggleSort('shardId')">Shard{{ sortIcon('shardId') }}</th>
           <th>Message</th>
+          <th @click="toggleSort('count')">Occurrences{{ sortIcon('count') }}</th>
+          <th @click="toggleSort('lastSeen')">Last Seen{{ sortIcon('lastSeen') }}</th>
         </tr>
         </thead>
         <tbody>
-        <template v-for="err in sortedErrors" :key="err._id">
-          <tr :class="{ expanded: expanded.has(err._id) }" class="error-row" @click="toggle(err._id)">
-            <td class="expand-cell">{{ expanded.has(err._id) ? '▾' : '▸' }}</td>
-            <td class="nowrap">{{ new Date(err.timestamp).toLocaleString() }}</td>
-            <td><span class="badge badge-danger">{{ err.type }}</span></td>
-            <td><code>{{ err.name ?? '—' }}</code></td>
-            <td class="mono">{{ err.guildId ?? '—' }}</td>
-            <td>{{ err.shardId ?? '—' }}</td>
-            <td>{{ err.error?.message ?? '—' }}</td>
+        <template v-for="(grp, idx) in sortedGroups" :key="idx">
+          <tr :class="{ expanded: expanded.has(idx) }" class="error-row" @click="toggle(idx)">
+            <td class="expand-cell">{{ expanded.has(idx) ? '▾' : '▸' }}</td>
+            <td><span class="badge badge-danger">{{ grp.type ?? '—' }}</span></td>
+            <td><code>{{ grp.name ?? '—' }}</code></td>
+            <td class="error-message">{{ grp.message ?? '—' }}</td>
+            <td>{{ grp.count.toLocaleString() }}</td>
+            <td class="nowrap">{{ grp.lastSeen ? new Date(grp.lastSeen).toLocaleString() : '—' }}</td>
           </tr>
-          <tr v-if="expanded.has(err._id)" class="stack-row">
-            <td colspan="7">
-              <pre class="stack-trace">{{ err.error?.stack ?? 'No stack trace available.' }}</pre>
+          <tr v-if="expanded.has(idx)" class="stack-row">
+            <td colspan="6">
+              <div class="group-expand">
+                <pre class="stack-trace">{{ grp.stack ?? 'No stack trace available.' }}</pre>
+                <table class="occurrence-table">
+                  <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Guild ID</th>
+                    <th>User ID</th>
+                    <th>Shard</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="(occ, oi) in grp.occurrences" :key="oi">
+                    <td class="nowrap">{{ new Date(occ.timestamp).toLocaleString() }}</td>
+                    <td class="mono">{{ occ.guildId ?? '—' }}</td>
+                    <td class="mono">{{ occ.userId ?? '—' }}</td>
+                    <td>{{ occ.shardId ?? '—' }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
             </td>
           </tr>
         </template>
@@ -49,46 +76,85 @@
       </table>
     </div>
 
-    <div v-if="data?.pagination" class="pagination">
-      <button :disabled="page <= 1" class="btn-page" @click="page--">&#8592; Prev</button>
-      <span>Page {{ page }} / {{ data.pagination.pages || 1 }}</span>
-      <button :disabled="page >= (data.pagination.pages || 1)" class="btn-page" @click="page++">Next &#8594;</button>
-    </div>
-
     <div v-if="pending" class="loading">Loading…</div>
-    <div v-if="error" class="error-msg">{{ error }}</div>
-    <div v-if="!pending && !data?.errors?.length" class="empty">No errors in this range.</div>
+    <div v-if="fetchError" class="error-msg">{{ fetchError }}</div>
+    <div v-if="clearError" class="error-msg">{{ clearError }}</div>
+    <div v-if="!pending && !fetchError && !data?.groups?.length" class="empty">No errors in this range.</div>
   </div>
 </template>
 
 <script lang="ts" setup>
+interface Occurrence {
+  timestamp: string;
+  guildId?: string;
+  userId?: string;
+  shardId?: number;
+}
+
+interface ErrorGroup {
+  type?: string;
+  name?: string;
+  message?: string;
+  count: number;
+  lastSeen: string;
+  stack?: string;
+  occurrences: Occurrence[];
+}
+
 const from = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 const to = ref(new Date().toISOString().slice(0, 10));
 const typeFilter = ref('');
-const page = ref(1);
-const expanded = ref(new Set<string>());
+const expanded = ref(new Set<number>());
+const clearConfirming = ref(false);
+const clearing = ref(false);
+const clearError = ref('');
 
 watch([from, to, typeFilter], () => {
-  page.value = 1;
+  clearConfirming.value = false;
 });
 
-function toggle(id: string) {
-  if (expanded.value.has(id)) expanded.value.delete(id);
-  else expanded.value.add(id);
-  expanded.value = new Set(expanded.value); // trigger reactivity
+function toggle(idx: number) {
+  if (expanded.value.has(idx)) expanded.value.delete(idx);
+  else expanded.value.add(idx);
+  expanded.value = new Set(expanded.value);
 }
 
-const { data, pending, error } = await useFetch('/api/errors', {
-  query: computed(() => ({
-    from: from.value,
-    to: to.value,
-    page: page.value,
-    limit: 50,
-    ...(typeFilter.value ? { type: typeFilter.value } : {}),
-  })),
-  watch: [from, to, typeFilter, page],
+const filterQuery = computed(() => ({
+  from: from.value,
+  to: to.value,
+  ...(typeFilter.value ? { type: typeFilter.value } : {}),
+}));
+
+const { data, pending, error: fetchError, refresh } = await useFetch('/api/errors', {
+  query: filterQuery,
+  watch: [filterQuery],
 });
 
-const errorItems = computed(() => data.value?.errors ?? []);
-const { toggleSort, sortIcon, sorted: sortedErrors } = useSortable(errorItems);
+const groupItems = computed(() => (data.value?.groups ?? []) as ErrorGroup[]);
+const { toggleSort, sortIcon, sorted: sortedGroups } = useSortable(groupItems, 'count');
+
+function exportErrors() {
+  const params = new URLSearchParams(filterQuery.value as Record<string, string>);
+  const a = document.createElement('a');
+  a.href = `/api/errors/export?${params.toString()}`;
+  a.download = `errors-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+}
+
+async function confirmClear() {
+  clearing.value = true;
+  clearError.value = '';
+  try {
+    await $fetch('/api/errors', { method: 'DELETE', query: filterQuery.value });
+    clearConfirming.value = false;
+    expanded.value = new Set();
+    await refresh();
+  }
+  catch (err: any) {
+    clearError.value = err?.data?.message ?? err?.message ?? 'Failed to clear errors';
+  }
+  finally {
+    clearing.value = false;
+  }
+}
 </script>

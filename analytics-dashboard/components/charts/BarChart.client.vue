@@ -26,7 +26,7 @@ const mergedOptions = computed(() => ({
   },
   scales: {
     x: { ticks: { color: '#b0b8c8' }, grid: { color: '#2a2f3a' } },
-    y: { ticks: { color: '#b0b8c8' }, grid: { color: '#2a2f3a' }, beginAtZero: true },
+    y: { ticks: { color: '#b0b8c8', autoSkip: false }, grid: { color: '#2a2f3a' }, beginAtZero: true },
   },
   ...props.options,
 }));

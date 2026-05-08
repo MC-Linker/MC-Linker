@@ -68,6 +68,8 @@ const mergedOptions = computed(() => ({
               text: String(label),
               fillStyle: bg,
               strokeStyle: bg,
+              fontColor: '#b0b8c8',
+              color: '#b0b8c8',
               lineWidth: 2,
               hidden: !chart.getDataVisibility(i),
               index: i,

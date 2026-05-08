@@ -4,7 +4,7 @@ import * as utils from '../../utilities/utils.js';
 import { fetchMembersIfCacheDiffers, MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import { ButtonStyle } from 'discord.js';
+import { ButtonStyle, GatewayRateLimitError } from 'discord.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 export default class RoleSync extends AutocompleteCommand {
@@ -78,7 +78,17 @@ export default class RoleSync extends AutocompleteCommand {
             if(server.syncedRoles?.some(r => r.name === name && r.isGroup === isGroup && r.id !== role.id))
                 return interaction.editReplyTl(keys.commands.rolesync.errors.team_group_already_synced);
 
-            await fetchMembersIfCacheDiffers(client, interaction.guild);
+            try {
+                await fetchMembersIfCacheDiffers(client, interaction.guild);
+            }
+            catch(err) {
+                if(err instanceof GatewayRateLimitError) {
+                    return interaction.editReplyTl(keys.commands.rolesync.warnings.rate_limited, {
+                        retry_after: Math.ceil(err.data.retry_after),
+                    });
+                }
+                throw err;
+            }
 
             // Build role data from what we know
             const syncedRoleData = {

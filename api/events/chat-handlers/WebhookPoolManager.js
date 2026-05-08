@@ -4,6 +4,7 @@ import { getEmbed } from '../../../utilities/messages.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
+import { CODE_BLOCK_OVERHEAD_ANSI, MaxComponentsV2Chars } from '../../../utilities/utils.js';
 import {
     CHAT_WEBHOOK_LEGACY_NAMES,
     CHAT_WEBHOOK_NAME,
@@ -58,7 +59,7 @@ export default class WebhookPoolManager {
     /** @type {import('./ChatMonitor.js').default} */
     monitor;
 
-    /** @type {Map<string, { id: string, raw: string, hasAnsi: boolean, webhookId: string }>} */
+    /** @type {Map<string, { id: string, raw: string, webhookId: string }>} */
     lastConsoleMessages;
 
     /**
@@ -104,7 +105,7 @@ export default class WebhookPoolManager {
             // but only while the message has enough headroom for more content.
             const lastMsg = this.lastConsoleMessages.get(channelConfig.id);
             if(lastMsg && webhooks.includes(lastMsg.webhookId)) {
-                const charLimit = lastMsg.hasAnsi ? 1000 : 2000;
+                const charLimit = MaxComponentsV2Chars - CODE_BLOCK_OVERHEAD_ANSI;
                 if(lastMsg.raw.length < charLimit - CONSOLE_AFFINITY_HEADROOM) {
                     this.webhookLastActive.set(lastMsg.webhookId, now);
                     return lastMsg.webhookId;

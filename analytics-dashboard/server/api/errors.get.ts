@@ -1,5 +1,5 @@
 import { verifySession } from '../utils/auth';
-import { getConnection, parseDateRange, parseIntParam } from '../utils/db';
+import { getConnection, parseDateRange } from '../utils/db';
 
 export default defineEventHandler(async event => {
     const { db } = await verifySession(event);
@@ -7,30 +7,44 @@ export default defineEventHandler(async event => {
     const conn = getConnection(db);
 
     const { from, to } = parseDateRange(query);
-    const page = parseIntParam(query.page, 1);
-    const limit = parseIntParam(query.limit, 50, 200);
     const type = query.type as string | undefined;
 
     const filter: Record<string, unknown> = { timestamp: { $gte: from, $lte: to } };
     if (type) filter.type = type;
 
-    const [total, errors] = await Promise.all([
-        conn.models.AnalyticsError.countDocuments(filter),
-        conn.models.AnalyticsError
-            .find(filter)
-            .sort({ timestamp: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit)
-            .lean(),
+    const groups = await conn.models.AnalyticsError.aggregate([
+        { $match: filter },
+        { $sort: { timestamp: -1 } },
+        {
+            $group: {
+                _id: { type: '$type', name: '$name', message: '$error.message' },
+                count: { $sum: 1 },
+                lastSeen: { $first: '$timestamp' },
+                stack: { $first: '$error.stack' },
+                occurrences: {
+                    $push: {
+                        timestamp: '$timestamp',
+                        guildId: '$guildId',
+                        userId: '$userId',
+                        shardId: '$shardId',
+                    },
+                },
+            },
+        },
+        { $sort: { lastSeen: -1 } },
+        {
+            $project: {
+                _id: 0,
+                type: '$_id.type',
+                name: '$_id.name',
+                message: '$_id.message',
+                count: 1,
+                lastSeen: 1,
+                stack: 1,
+                occurrences: { $slice: ['$occurrences', 50] },
+            },
+        },
     ]);
 
-    return {
-        errors,
-        pagination: {
-            page,
-            limit,
-            total,
-            pages: Math.ceil(total / limit),
-        },
-    };
+    return { groups };
 });

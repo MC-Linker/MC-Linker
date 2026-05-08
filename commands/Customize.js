@@ -65,7 +65,7 @@ export default class Customize extends Command {
             modalCollector.on('collect', async modalInteraction => {
                 modalInteraction = addTranslatedResponses(modalInteraction);
 
-                if(modalInteraction.customId === keys.custom_bot.custom_bot_manager.change_presence_modal.data.custom_id) {
+                if(modalInteraction.customId === keys.custom_bot.custom_bot_manager.change_presence_modal.custom_id) {
                     // Change custom bot presence modal
                     const newPresence = client.customBots.parsePresenceModal(modalInteraction);
                     client.user.setPresence(newPresence);

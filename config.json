@@ -21,7 +21,7 @@
         "snapshotIntervalMs": 3600000,
         "cpuSampleIntervalMs": 10000
     },
-    "pluginVersion": "4.3.0",
+    "pluginVersion": "4.3.1",
     "supportServerInvite": "https://discord.gg/rX36kZUGNK",
     "colors": {
         "success": "#43611a",

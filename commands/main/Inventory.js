@@ -99,7 +99,7 @@ export default class Inventory extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-        const mcData = getMinecraftData(server.version); //TODO pass to functions
+        const mcData = getMinecraftData(server.version);
         /** @type {UserResponse} */
         const user = args[0];
         const showDetails = args[1];
@@ -129,6 +129,7 @@ export default class Inventory extends Command {
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
             showDetails ? this.pushInvButton.bind(null, itemButtons, 44, true) : () => {
             }, //Push itemButtons if showDetails is set to true
+            mcData,
         );
 
         async function getSkin(uuidOrUsername) {
@@ -152,7 +153,7 @@ export default class Inventory extends Command {
         // Send without buttons if showDetails is false
         if(!showDetails) return await interaction.editReply({ files: [invAttach], embeds: [invEmbed] });
 
-        const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach);
+        const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach, mcData);
         const pagination = new Pagination(client, interaction, paginationPages, {
             showStartPageOnce: true,
             highlightSelectedButton: ButtonStyle.Primary,
@@ -162,7 +163,7 @@ export default class Inventory extends Command {
     }
 
 
-    addInfo(embed, tag, itemStats) {
+    addInfo(embed, tag, itemStats, mcData) {
         let addedInfo = false;
 
         if(!tag) return addedInfo;
@@ -321,9 +322,10 @@ export default class Inventory extends Command {
      * @param {string} username - The username of the player
      * @param {Discord.EmbedBuilder} embed - The embed to use for each of the pages
      * @param {Discord.AttachmentBuilder} attach - The attachment to use for each of the pages
+     * @param {import('minecraft-data').IndexedData} mcData - The minecraft data for the server version
      * @returns {Promise<PaginationPages>}
      */
-    async getInventoryPages(inventoryButtons, inventory, username, embed, attach) {
+    async getInventoryPages(inventoryButtons, inventory, username, embed, attach, mcData) {
         /** @type {PaginationPages} */
         const paginationPages = {};
 
@@ -359,7 +361,7 @@ export default class Inventory extends Command {
                     avatar: await getMinecraftAvatarURL(username),
                 },
             );
-            const isSpecialItem = this.addInfo(itemEmbed, item.components ?? item.tag, itemStats);
+            const isSpecialItem = this.addInfo(itemEmbed, item.components ?? item.tag, itemStats, mcData);
 
             //If item is a shulker, render shulker inventory
             if(formattedId.endsWith('shulker_box') && (item.components?.['minecraft:container'] ?? item.tag?.BlockEntityTag?.Items)) {
@@ -393,6 +395,7 @@ export default class Inventory extends Command {
                     allItems,
                     shulkerSlotCoords,
                     this.pushInvButton.bind(null, shulkerButtons, 26, false),
+                    mcData,
                 );
 
                 const shulkerAttach = new Discord.AttachmentBuilder(
@@ -410,6 +413,7 @@ export default class Inventory extends Command {
                             username,
                             shulkerEmbed,
                             shulkerAttach,
+                            mcData,
                         ),
                     },
                 };
@@ -468,7 +472,7 @@ export default class Inventory extends Command {
 }
 
 // noinspection JSUnusedLocalSymbols
-async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}) {
+async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}, mcData) {
     const background = await Canvas.loadImage(backgroundPath);
     const canvas = new Canvas.Canvas(background.width, background.height);
     const ctx = canvas.getContext('2d');

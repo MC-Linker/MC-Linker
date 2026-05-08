@@ -238,16 +238,16 @@ export default class Pagination {
             if(['nested_pagination', 'exit_to_parent'].includes(reason)) return;
 
             try {
-                message = await message.fetch(); // Get the latest components
-            }
-            catch {
-                // Ephemeral messages cannot be fetched — fall back to editing without fetch
-            }
-            if(!message?.components) return;
-
-            try {
-                //TODO doesnt work with ephemeral messages i believe, needs to be tested, would have to store interaction (tokens) in that case
-                await message.edit({ components: disableComponents(message.components) });
+                if(this.interaction instanceof BaseInteraction) {
+                    // Interactions (especially ephemeral) must be edited via the token-bearing webhook
+                    const latest = await this.interaction.fetchReply();
+                    await this.interaction.editReply({ components: disableComponents(latest.components) });
+                }
+                else {
+                    // Plain Message (text command) — edit it directly
+                    const latest = await message.fetch();
+                    await message.edit({ components: disableComponents(latest.components) });
+                }
             }
             catch(err) {
                 trackError('unhandled', 'Pagination', this.interaction?.guildId, null, err, null, logger);

@@ -10,7 +10,6 @@ export const MaxActionRowSize = 5;
 export const MaxAutoCompleteChoices = 25;
 export const MaxCommandChoiceLength = 100;
 export const CODE_BLOCK_OVERHEAD_ANSI = 12; // ```ansi\n\n```
-export const CODE_BLOCK_OVERHEAD_PLAIN = 8; // ```\n\n```
 
 export const MaxComponentsV2TopLevel = 10;
 export const MaxComponentsV2Nested = 30;
