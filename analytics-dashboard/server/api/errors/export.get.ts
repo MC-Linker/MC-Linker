@@ -1,5 +1,5 @@
-import { verifySession } from '../utils/auth';
-import { getConnection, parseDateRange } from '../utils/db';
+import { verifySession } from '../../utils/auth';
+import { getConnection, parseDateRange } from '../../utils/db';
 
 export default defineEventHandler(async event => {
     const { db } = await verifySession(event);
