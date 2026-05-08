@@ -54,18 +54,8 @@ import logoSrc from '~/assets/logo.svg';
 const { data: dbData } = await useFetch('/api/databases');
 const databases = computed(() => dbData.value?.databases ?? []);
 
-const sessionCookie = useCookie('session');
-
-// Parse the current db from the JWT payload (middle segment, base64)
-const currentDb = computed(() => {
-  const token = sessionCookie.value;
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    return payload.db ?? null;
-  }
-  catch { return null; }
-});
+const { data: meData } = await useFetch('/api/auth/me');
+const currentDb = computed(() => meData.value?.db ?? null);
 
 async function switchDb(e: Event) {
   const db = (e.target as HTMLSelectElement).value;

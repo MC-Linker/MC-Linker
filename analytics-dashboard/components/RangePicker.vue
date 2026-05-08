@@ -4,6 +4,9 @@
             class="btn-preset" @click="applyPreset(preset)">
       {{ preset.label }}
     </button>
+    <button v-if="minDate" :class="{ active: activePreset === 'Max' }" class="btn-preset" @click="applyMax">
+      Max
+    </button>
     <input :value="from" class="form-control date-input" type="date" @change="onFrom"/>
     <span class="range-sep">–</span>
     <input :value="to" class="form-control date-input" type="date" @change="onTo"/>
@@ -11,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{ from: string; to: string }>();
+const props = defineProps<{ from: string; to: string; minDate?: string | null }>();
 const emit = defineEmits<{ 'update:from': [string]; 'update:to': [string] }>();
 
 const presets = [
@@ -29,6 +32,12 @@ function isoDate(d: Date) {
 function applyPreset(preset: { label: string; days: number }) {
   activePreset.value = preset.label;
   emit('update:from', isoDate(new Date(Date.now() - preset.days * 24 * 60 * 60 * 1000)));
+  emit('update:to', isoDate(new Date()));
+}
+
+function applyMax() {
+  activePreset.value = 'Max';
+  emit('update:from', props.minDate!);
   emit('update:to', isoDate(new Date()));
 }
 

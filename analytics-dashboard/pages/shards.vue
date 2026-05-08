@@ -2,7 +2,7 @@
   <div>
     <div class="page-header">
       <h1>Shards</h1>
-      <RangePicker v-model:from="from" v-model:to="to"/>
+      <RangePicker v-model:from="from" v-model:to="to" :min-date="minDates.snapshots"/>
     </div>
 
     <div v-if="data?.machine" class="stats-grid">
@@ -78,6 +78,8 @@
 import { formatTimeLabel } from '~/composables/useTimeLabel';
 
 const SHARD_COLORS = ['#5b8dee', '#43c59e', '#e05252', '#f59e0b', '#a78bfa', '#2dd4bf', '#f472b6', '#84cc16'];
+
+const minDates = useMinDates();
 
 const from = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 const to = ref(new Date().toISOString().slice(0, 10));
