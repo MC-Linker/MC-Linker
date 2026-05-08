@@ -1,13 +1,7 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
 import { getEmbed, getReplyOptions } from '../../../utilities/messages.js';
-import {
-    CODE_BLOCK_OVERHEAD_ANSI,
-    CODE_BLOCK_OVERHEAD_PLAIN,
-    containsAnsiCodes,
-    MaxComponentsV2Chars,
-    toAnsiCodeBlock,
-} from '../../../utilities/utils.js';
+import { MaxComponentsV2Chars } from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
@@ -343,32 +337,26 @@ export default class ChatQueueProcessor {
     async processConsoleQueue(discordChannel, webhook, items) {
         let consumed = 0;
         let combinedRaw = '';
-        let hasAnsi = false;
 
         for(const item of items) {
             if(item.kind !== 'console') break;
 
             // newlines included
             const candidate = `${combinedRaw}${item.raw}`;
-            const candidateHasAnsi = hasAnsi || containsAnsiCodes(item.raw);
-            const charLimit = this.consoleCharLimit(candidateHasAnsi);
-            if(candidate.length > charLimit && consumed > 0) break;
+            if(candidate.length > this.consoleCharLimit() && consumed > 0) break;
 
             combinedRaw = candidate;
-            hasAnsi = candidateHasAnsi;
             consumed++;
         }
 
         if(consumed <= 0) return { consumed: 1 };
 
         const lastMessage = this.lastConsoleMessages.get(discordChannel.id);
-        const appendHasAnsi = hasAnsi || (lastMessage?.hasAnsi ?? false);
-        const appendCharLimit = this.consoleCharLimit(appendHasAnsi);
-        if(lastMessage && lastMessage.raw.length + combinedRaw.length <= appendCharLimit) {
+        if(lastMessage && lastMessage.raw.length + combinedRaw.length <= this.consoleCharLimit()) {
             try {
                 const nextRaw = `${lastMessage.raw}${combinedRaw}`;
                 logger.debug({ guildId: discordChannel.guildId }, `Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
-                const editOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: toAnsiCodeBlock(nextRaw) });
+                const editOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: Discord.codeBlock('ansi', nextRaw.replace(/\u001b\[m/g, '\u001b[0m')) });
                 await this.monitor.track('webhook.editMessage', () => webhook.editMessage(lastMessage.id, {
                     ...editOptions,
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
@@ -376,7 +364,6 @@ export default class ChatQueueProcessor {
                 this.lastConsoleMessages.set(discordChannel.id, {
                     id: lastMessage.id,
                     raw: nextRaw,
-                    hasAnsi: appendHasAnsi,
                     webhookId: webhook.id,
                 });
                 return { consumed };
@@ -399,7 +386,7 @@ export default class ChatQueueProcessor {
         }
 
         logger.debug({ guildId: discordChannel.guildId }, `Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
-        const sendOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: toAnsiCodeBlock(combinedRaw) });
+        const sendOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: Discord.codeBlock('ansi', combinedRaw.replace(/\u001b\[m/g, '\u001b[0m')) });
         let sentMessage = await this.monitor.track('webhook.send', () => webhook.send({
             ...sendOptions,
             ...getSystemWebhookSendOptions(discordChannel),
@@ -408,7 +395,6 @@ export default class ChatQueueProcessor {
         this.lastConsoleMessages.set(discordChannel.id, {
             id: sentMessage.id,
             raw: combinedRaw,
-            hasAnsi,
             webhookId: webhook.id,
         });
 
@@ -416,12 +402,11 @@ export default class ChatQueueProcessor {
     }
 
     /**
-     * Calculates the character limit for console output, adjusting for ANSI escape codes if present.
-     * @param hasAnsi hasAnsi ? 1000 - 12 : 2000 - 8; // 8 chars for ``` + surrounding newlines, 12 chars for ```ansi + surrounding newlines
-     * @return {number} - The maximum character limit for the console output based on the presence of ANSI codes.
+     * Calculates the character limit for console output (raw text before code block wrapping).
+     * Based on the Components V2 text display limit; ANSI codes are always preserved.
+     * @return {number}
      */
-    consoleCharLimit(hasAnsi) {
-        // Ansi codes are not parsed over 1000 chars by Discord
-        return hasAnsi ? 1000 - CODE_BLOCK_OVERHEAD_ANSI : MaxComponentsV2Chars - CODE_BLOCK_OVERHEAD_PLAIN; // 8 for code block, 12 for code block + 'ansi'
+    consoleCharLimit() {
+        return MaxComponentsV2Chars - 12; // 12 for ```ansi\n\n```
     }
 }
