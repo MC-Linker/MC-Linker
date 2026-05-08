@@ -143,24 +143,12 @@ const { data, pending, error: fetchError, refresh } = await useFetch('/api/error
 const groupItems = computed(() => (data.value?.groups ?? []) as ErrorGroup[]);
 const { toggleSort, sortIcon, sorted: sortedGroups } = useSortable(groupItems, 'count');
 
-async function exportErrors() {
-  try {
-    const params = new URLSearchParams(filterQuery.value as Record<string, string>);
-    const response = await fetch(`/api/errors/export?${params.toString()}`);
-    if (!response.ok) throw new Error(`Export failed: ${response.statusText}`);
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `errors-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
-  }
-  catch (err: any) {
-    clearError.value = err?.message ?? 'Export failed';
-  }
+function exportErrors() {
+  const params = new URLSearchParams(filterQuery.value as Record<string, string>);
+  const a = document.createElement('a');
+  a.href = `/api/errors/export?${params.toString()}`;
+  a.download = `errors-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
 }
 
 async function confirmClear() {

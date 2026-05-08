@@ -789,7 +789,7 @@ code {
 }
 
 .modal {
-    background: var(--card-bg);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 28px 32px;
