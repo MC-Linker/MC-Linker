@@ -10,12 +10,14 @@ import allAdvancements from '../../resources/data/advancements.json' with { type
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 
-const iconSize = 40;
-const frameSize = iconSize + 18;
-const framePadding = 10;
-const imagePadding = 20;
-
 export default class Advancements extends Command {
+
+    _renderingConstants = {
+        iconSize: 40,
+        get frameSize() { return this.iconSize + 18; },
+        framePadding: 10,
+        imagePadding: 20,
+    };
 
     constructor() {
         super({
@@ -34,6 +36,7 @@ export default class Advancements extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
+        const { iconSize, frameSize, framePadding, imagePadding } = this._renderingConstants;
         const mcData = getMinecraftData(server.version);
         let category = args[0];
         if(category === 'minecraft') category = 'story';

@@ -12,9 +12,9 @@ import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import { getChatWebhookCreationOptions } from '../../api/events/chat-handlers/ChatConstants.js';
 
-const CHAT_COMMANDS_LABEL = 'chat commands';
-
 export default class ChatChannel extends AutocompleteCommand {
+
+    _CHAT_COMMANDS_LABEL = 'chat commands';
 
     constructor() {
         super({
@@ -88,7 +88,7 @@ export default class ChatChannel extends AutocompleteCommand {
             if(subcommand === 'add') {
                 await settings.addFilteredCommand(commandName);
                 return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.success.disabled, {
-                    type: CHAT_COMMANDS_LABEL,
+                    type: this._CHAT_COMMANDS_LABEL,
                     disable: commandName,
                 });
             }
@@ -97,14 +97,14 @@ export default class ChatChannel extends AutocompleteCommand {
                     .some(command => command.replace(/^\//, '').trim().toLowerCase() === commandName);
                 if(!hasExactFilter) {
                     return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.warnings.already_enabled, {
-                        type: CHAT_COMMANDS_LABEL,
+                        type: this._CHAT_COMMANDS_LABEL,
                         enable: commandName,
                     });
                 }
 
                 await settings.removeFilteredCommand(commandName);
                 return interaction.editReplyTl(keys.commands.chatchannel.filter_commands.success.enabled, {
-                    type: CHAT_COMMANDS_LABEL,
+                    type: this._CHAT_COMMANDS_LABEL,
                     enable: commandName,
                 });
             }

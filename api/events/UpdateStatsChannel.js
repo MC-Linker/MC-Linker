@@ -114,7 +114,7 @@ export default class UpdateStatsChannel extends WSEvent {
         for(const channel of server.statChannels) {
             // If there's already a pending retry for this channel, skip it.
             // The retry will fetch fresh data when it fires.
-            if(pendingRetries.has(channel.id)) continue;
+            if(UpdateStatsChannel._pendingRetries.has(channel.id)) continue;
 
             try {
                 const discordChannel = await client.channels.fetch(channel.id);
@@ -147,27 +147,27 @@ export default class UpdateStatsChannel extends WSEvent {
      * @param {MCLinker} client - The MCLinker client.
      */
     static scheduleRetry(channelId, retryAfter, channel, serverId, client) {
-        if(pendingRetries.has(channelId)) return; // Already a pending retry for this channel
+        if(UpdateStatsChannel._pendingRetries.has(channelId)) return; // Already a pending retry for this channel
 
         const timer = setTimeout(async () => {
             // Re-resolve server to ensure it still exists
             const server = client.serverConnections.cache.get(serverId);
-            if(!server) return pendingRetries.delete(channelId);
+            if(!server) return UpdateStatsChannel._pendingRetries.delete(channelId);
 
             // Verify this stat channel is still configured and get updated channel
             channel = server.statChannels.find(c => c.id === channelId);
-            if(!channel) return pendingRetries.delete(channelId);
+            if(!channel) return UpdateStatsChannel._pendingRetries.delete(channelId);
 
             try {
                 const discordChannel = await client.channels.fetch(channelId);
                 const newValue = await UpdateStatsChannel.fetchCurrentName(channel, server);
-                if(!newValue) return pendingRetries.delete(channelId);
+                if(!newValue) return UpdateStatsChannel._pendingRetries.delete(channelId);
 
                 await UpdateStatsChannel.applyUpdate(discordChannel, channel, newValue);
-                pendingRetries.delete(channelId);
+                UpdateStatsChannel._pendingRetries.delete(channelId);
             }
             catch(err) {
-                pendingRetries.delete(channelId);
+                UpdateStatsChannel._pendingRetries.delete(channelId);
 
                 if(err instanceof RateLimitError) {
                     // Still rate limited — re-schedule
@@ -183,7 +183,7 @@ export default class UpdateStatsChannel extends WSEvent {
             }
         }, retryAfter);
 
-        pendingRetries.set(channelId, timer);
+        UpdateStatsChannel._pendingRetries.set(channelId, timer);
     }
 
     /**
@@ -216,7 +216,7 @@ export default class UpdateStatsChannel extends WSEvent {
         for(const channel of channels) {
             // If there's already a pending retry for this channel, drop this event.
             // The retry will fetch fresh data from the plugin when it fires.
-            if(pendingRetries.has(channel.id)) continue;
+            if(UpdateStatsChannel._pendingRetries.has(channel.id)) continue;
 
             try {
                 const discordChannel = await client.channels.fetch(channel.id);
