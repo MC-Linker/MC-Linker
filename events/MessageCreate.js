@@ -3,6 +3,7 @@ import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import { Events, MessageType, RESTJSONErrorCodes } from 'discord.js';
+import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 
 /**
  * Handles the Discord messageCreate event for the MC-Linker bot.
@@ -29,6 +30,10 @@ export default class MessageCreate extends Event {
             // Handle DM messages (verification codes)
             if(client.api.usersAwaitingVerification.has(message.content)) {
                 const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
+                if(!uuid) {
+                    trackError('unhandled', 'MessageCreate.verification', null, message.author.id, new Error(`uuid is null for username '${username}' during verification`), { username }, logger);
+                    return await message.replyTl(keys.main.errors.could_not_execute_command);
+                }
                 await client.userConnections.connect({ id: message.author.id, username, uuid });
 
                 await client.serverConnections.syncRolesAcrossAllServers(message.author.id);

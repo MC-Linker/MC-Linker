@@ -52,8 +52,6 @@ export default class AnalyticsAggregator {
                     memoryMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
                     cpuPercent: c.analytics.getCpuPercent(),
                     approximateUsers: c.guilds.cache.reduce((sum, g) => sum + g.memberCount, 0),
-                    serverConnections: c.serverConnections.cache.size,
-                    userConnections: c.userConnections.cache.size,
                     counters,
                 };
             });
@@ -66,8 +64,9 @@ export default class AnalyticsAggregator {
             // Aggregate across shards
             const totalGuilds = shardData.reduce((sum, s) => sum + s.guilds, 0);
             const approximateUsers = shardData.reduce((sum, s) => sum + s.approximateUsers, 0);
-            const totalServerConnections = shardData.reduce((sum, s) => sum + s.serverConnections, 0);
-            const totalUserConnections = shardData.reduce((sum, s) => sum + s.userConnections, 0);
+            // Connections are mirrored across shards — read directly from this shard (shard 0)
+            const totalServerConnections = this.client.serverConnections.cache.size;
+            const totalUserConnections = this.client.userConnections.cache.size;
 
             // Machine-level metrics (OS-wide, not just Node processes)
             const curCpus = os.cpus();

@@ -6,15 +6,14 @@ import { addPh } from '../../utilities/messages.js';
 
 const logger = rootLogger.child({ feature: features.api.events['update-stats-channels'] });
 
-
-/**
- * Pending retry timer Ids by channel Id.
- * When a rate limit is hit, we schedule a deferred re-sync for that channel and drop any subsequent updates until the retry fires.
- * @type {Map<string, number>}
- */
-const pendingRetries = new Map();
-
 export default class UpdateStatsChannel extends WSEvent {
+
+    /**
+     * Pending retry timer Ids by channel Id.
+     * When a rate limit is hit, we schedule a deferred re-sync for that channel and drop any subsequent updates until the retry fires.
+     * @type {Map<string, number>}
+     */
+    static _pendingRetries = new Map();
 
     /**
      * @typedef {Object} UpdateStatsChannelRequest
@@ -26,6 +25,19 @@ export default class UpdateStatsChannel extends WSEvent {
         super({
             event: 'update-stats-channels',
         });
+    }
+
+    /**
+     * Returns whether an error code indicates the bot can no longer access or edit a stats channel.
+     * @param {number} code - The Discord REST error code.
+     * @returns {boolean}
+     */
+    static _isStaleChannel(code) {
+        return [
+            RESTJSONErrorCodes.UnknownChannel,
+            RESTJSONErrorCodes.MissingAccess,
+            RESTJSONErrorCodes.MissingPermissions,
+        ].includes(code);
     }
 
     /**
@@ -116,7 +128,7 @@ export default class UpdateStatsChannel extends WSEvent {
                     logger.debug({ guildId: server.id }, `Rate limited syncing channel ${channel.id}, scheduling retry in ${err.retryAfter}ms`);
                     UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, channel, server.id, client);
                 }
-                else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                else if(UpdateStatsChannel._isStaleChannel(err.code)) {
                     const resp = await server.protocol.removeStatsChannel(channel);
                     if(!resp) continue;
                     await server.edit({ statChannels: server.statChannels.filter(c => c.id !== channel.id) });
@@ -162,7 +174,7 @@ export default class UpdateStatsChannel extends WSEvent {
                     logger.debug({ guildId: serverId }, `Still rate limited for channel ${channelId}, retrying in ${err.retryAfter}ms`);
                     UpdateStatsChannel.scheduleRetry(channelId, err.retryAfter, channel, serverId, client);
                 }
-                else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                else if(UpdateStatsChannel._isStaleChannel(err.code)) {
                     const resp = await server.protocol.removeStatsChannel(channel);
                     if(!resp) return;
                     await server.edit({ statChannels: server.statChannels.filter(c => c.id !== channelId) });
@@ -218,7 +230,7 @@ export default class UpdateStatsChannel extends WSEvent {
                     logger.debug({ guildId: server.id }, `Rate limited for channel ${channel.id}, scheduling retry in ${err.retryAfter}ms`);
                     UpdateStatsChannel.scheduleRetry(channel.id, err.retryAfter, channel, server.id, client);
                 }
-                else if(err.code === RESTJSONErrorCodes.UnknownChannel) {
+                else if(UpdateStatsChannel._isStaleChannel(err.code)) {
                     const resp = await server.protocol.removeStatsChannel(channel);
                     if(!resp) continue;
                     await server.edit({ statChannels: server.statChannels.filter(c => c.id !== channel.id) });
