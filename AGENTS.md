@@ -31,10 +31,6 @@ Each entry follows the format:
 - Use technical terms freely. No need to explain every line — just the what and why at a structural level.
 - Group under headings: New Features, Changes/Refactors, Bug Fixes.
 
-### Version History
-
-- [4.1.0 - Linked Messages](CHANGELOG.md#410---linked-messages)
-
 ## Project Overview
 
 MC-Linker is a Discord bot that bridges Discord servers and Minecraft servers. It enables chat relay, player
@@ -365,6 +361,11 @@ objects are not serializable and must be excluded from broadcasts.
 
 Use JSDoc to describe all classes, methods, and to declare types. This is crucial for maintainability and helps with
 editor autocompletion.
+
+**Class methods over module-level functions:** Helper functions should nearly always be written as `static` (or
+instance) methods on the relevant class, not as module-level functions. Module-level functions are only appropriate
+for truly standalone utilities with no logical owner class (e.g. exports in `utilities/`). Private helpers that
+support a single class must be placed inside that class and prefixed with `_`.
 
 Adhere to the code style of this project for all edits.
 However, do not run linting yourself, write the code adhering to the code style rules already.

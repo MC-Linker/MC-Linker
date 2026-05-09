@@ -14,73 +14,75 @@ import {
 } from '../../utilities/utils.js';
 import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
 
-const armorSlotCoords = {
-    5: [16, 16],
-    6: [16, 52],
-    7: [16, 88],
-    8: [16, 124],
-    45: [154, 124],
-};
-const mainInvSlotCoords = {
-    9: [16, 168],
-    10: [52, 168],
-    11: [88, 168],
-    12: [124, 168],
-    13: [160, 168],
-    14: [196, 168],
-    15: [232, 168],
-    16: [268, 168],
-    17: [304, 168],
-    18: [16, 204],
-    19: [52, 204],
-    20: [88, 204],
-    21: [124, 204],
-    22: [160, 204],
-    23: [196, 204],
-    24: [232, 204],
-    25: [268, 204],
-    26: [304, 204],
-    27: [16, 240],
-    28: [52, 240],
-    29: [88, 240],
-    30: [124, 240],
-    31: [160, 240],
-    32: [196, 240],
-    33: [232, 240],
-    34: [268, 240],
-    35: [304, 240],
-};
-const hotbarSlotCoords = {
-    36: [16, 284],
-    37: [52, 284],
-    38: [88, 284],
-    39: [124, 284],
-    40: [160, 284],
-    41: [196, 284],
-    42: [232, 284],
-    43: [268, 284],
-    44: [304, 284],
-};
-
-//Construct shulkerSlotCoords from player inventory
-const shulkerSlotCoords = Object.assign(
-    //Move mainInvSlotCoords up by 132 and decrease slot number by 9
-    Object.fromEntries(Object.entries(mainInvSlotCoords)
-        .map(([slot, [x, y]]) => [slot - 9, [x, y - 132]])),
-    //Increase slot numbers by 18
-    Object.fromEntries(Object.entries(Object.assign({}, mainInvSlotCoords, hotbarSlotCoords))
-        .map(([slot, [x, y]]) => [+slot + 18, [x, y]])),
-);
-
-const armorSlotNames = {
-    5: keys.commands.inventory.slots.head,
-    6: keys.commands.inventory.slots.chest,
-    7: keys.commands.inventory.slots.legs,
-    8: keys.commands.inventory.slots.feet,
-    45: keys.commands.inventory.slots.offhand,
-};
-
 export default class Inventory extends Command {
+
+    _armorSlotCoords = {
+        5: [16, 16],
+        6: [16, 52],
+        7: [16, 88],
+        8: [16, 124],
+        45: [154, 124],
+    };
+
+    _mainInvSlotCoords = {
+        9: [16, 168],
+        10: [52, 168],
+        11: [88, 168],
+        12: [124, 168],
+        13: [160, 168],
+        14: [196, 168],
+        15: [232, 168],
+        16: [268, 168],
+        17: [304, 168],
+        18: [16, 204],
+        19: [52, 204],
+        20: [88, 204],
+        21: [124, 204],
+        22: [160, 204],
+        23: [196, 204],
+        24: [232, 204],
+        25: [268, 204],
+        26: [304, 204],
+        27: [16, 240],
+        28: [52, 240],
+        29: [88, 240],
+        30: [124, 240],
+        31: [160, 240],
+        32: [196, 240],
+        33: [232, 240],
+        34: [268, 240],
+        35: [304, 240],
+    };
+
+    _hotbarSlotCoords = {
+        36: [16, 284],
+        37: [52, 284],
+        38: [88, 284],
+        39: [124, 284],
+        40: [160, 284],
+        41: [196, 284],
+        42: [232, 284],
+        43: [268, 284],
+        44: [304, 284],
+    };
+
+    //Construct _shulkerSlotCoords from player inventory
+    _shulkerSlotCoords = Object.assign(
+        //Move _mainInvSlotCoords up by 132 and decrease slot number by 9
+        Object.fromEntries(Object.entries(this._mainInvSlotCoords)
+            .map(([slot, [x, y]]) => [slot - 9, [x, y - 132]])),
+        //Increase slot numbers by 18
+        Object.fromEntries(Object.entries(Object.assign({}, this._mainInvSlotCoords, this._hotbarSlotCoords))
+            .map(([slot, [x, y]]) => [+slot + 18, [x, y]])),
+    );
+
+    _armorSlotNames = {
+        5: keys.commands.inventory.slots.head,
+        6: keys.commands.inventory.slots.chest,
+        7: keys.commands.inventory.slots.legs,
+        8: keys.commands.inventory.slots.feet,
+        45: keys.commands.inventory.slots.offhand,
+    };
 
     constructor() {
         super({
@@ -99,6 +101,11 @@ export default class Inventory extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
+        const {
+            _mainInvSlotCoords: mainInvSlotCoords,
+            _armorSlotCoords: armorSlotCoords,
+            _hotbarSlotCoords: hotbarSlotCoords,
+        } = this;
         const mcData = getMinecraftData(server.version);
         /** @type {UserResponse} */
         const user = args[0];
@@ -123,7 +130,7 @@ export default class Inventory extends Command {
         const {
             canvas: invCanvas,
             ctx,
-        } = await renderContainer(
+        } = await this._renderContainer(
             './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
@@ -326,6 +333,11 @@ export default class Inventory extends Command {
      * @returns {Promise<PaginationPages>}
      */
     async getInventoryPages(inventoryButtons, inventory, username, embed, attach, mcData) {
+        const {
+            _armorSlotCoords: armorSlotCoords,
+            _armorSlotNames: armorSlotNames,
+            _shulkerSlotCoords: shulkerSlotCoords,
+        } = this;
         /** @type {PaginationPages} */
         const paginationPages = {};
 
@@ -390,7 +402,7 @@ export default class Inventory extends Command {
                 const allItems = mappedShulkerItems.concat(mappedInvItems);
 
                 const shulkerButtons = []; //Clear previous buttons
-                const { canvas: shulkerImage } = await renderContainer(
+                const { canvas: shulkerImage } = await this._renderContainer(
                     './resources/images/containers/shulker_blank.png',
                     allItems,
                     shulkerSlotCoords,
@@ -469,101 +481,101 @@ export default class Inventory extends Command {
             index -= 79;
         return index;
     }
-}
 
-// noinspection JSUnusedLocalSymbols
-async function renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}, mcData) {
-    const background = await Canvas.loadImage(backgroundPath);
-    const canvas = new Canvas.Canvas(background.width, background.height);
-    const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+    // noinspection JSUnusedLocalSymbols
+    async _renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}, mcData) {
+        const background = await Canvas.loadImage(backgroundPath);
+        const canvas = new Canvas.Canvas(background.width, background.height);
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-    for(let i = 0; i < items.length; i++) {
-        const slot = items[i].slot;
-        const itemId = items[i].id.split(':').pop();
-        const count = items[i].count;
-        const damage = items[i].tag?.Damage;
+        for(let i = 0; i < items.length; i++) {
+            const slot = items[i].slot;
+            const itemId = items[i].id.split(':').pop();
+            const count = items[i].count;
+            const damage = items[i].tag?.Damage;
 
-        const [x, y] = slotCoords[slot] ?? [];
-        if(!x || !y) continue; //Continue for modded slots
+            const [x, y] = slotCoords[slot] ?? [];
+            if(!x || !y) continue; //Continue for modded slots
 
-        drawImage: try {
-            if(itemId === 'air') break drawImage;
+            drawImage: try {
+                if(itemId === 'air') break drawImage;
 
-            let itemImg;
-            if(itemId === 'potion' || itemId === 'splash_potion' || itemId === 'lingering_potion') {
-                const potionId = items[i].components?.['minecraft:potion_contents']?.potion ?? items[i].tag?.Potion;
-                const potionImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
-                const potionOverlayImg = await Canvas.loadImage(`./resources/images/items/potion_overlay.png`);
-                const potionColor = potionColors[potionId.replace(/(minecraft:)?(long_|strong_)?/, '')] ?? potionColors['uncraftable'];
+                let itemImg;
+                if(itemId === 'potion' || itemId === 'splash_potion' || itemId === 'lingering_potion') {
+                    const potionId = items[i].components?.['minecraft:potion_contents']?.potion ?? items[i].tag?.Potion;
+                    const potionImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
+                    const potionOverlayImg = await Canvas.loadImage(`./resources/images/items/potion_overlay.png`);
+                    const potionColor = potionColors[potionId.replace(/(minecraft:)?(long_|strong_)?/, '')] ?? potionColors['uncraftable'];
 
-                const potionCanvas = new Canvas.Canvas(32, 32);
-                const potionCtx = potionCanvas.getContext('2d');
+                    const potionCanvas = new Canvas.Canvas(32, 32);
+                    const potionCtx = potionCanvas.getContext('2d');
 
-                potionCtx.drawImage(potionOverlayImg, 0, 0, 32, 32);
+                    potionCtx.drawImage(potionOverlayImg, 0, 0, 32, 32);
 
-                potionCtx.imageSmoothingEnabled = false;
-                potionCtx.globalCompositeOperation = 'multiply';
-                potionCtx.fillStyle = potionColor;
-                potionCtx.fillRect(0, 0, 32, 32);
+                    potionCtx.imageSmoothingEnabled = false;
+                    potionCtx.globalCompositeOperation = 'multiply';
+                    potionCtx.fillStyle = potionColor;
+                    potionCtx.fillRect(0, 0, 32, 32);
 
-                potionCtx.globalCompositeOperation = 'destination-in';
-                potionCtx.drawImage(potionOverlayImg, 0, 0, 32, 32);
+                    potionCtx.globalCompositeOperation = 'destination-in';
+                    potionCtx.drawImage(potionOverlayImg, 0, 0, 32, 32);
 
-                potionCtx.globalCompositeOperation = 'source-over';
-                potionCtx.drawImage(potionImg, 0, 0, 32, 32);
+                    potionCtx.globalCompositeOperation = 'source-over';
+                    potionCtx.drawImage(potionImg, 0, 0, 32, 32);
 
-                itemImg = potionCanvas;
+                    itemImg = potionCanvas;
+                }
+                else itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
+
+                ctx.drawImage(itemImg, x, y, 32, 32);
             }
-            else itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
+            catch(err) {
+                //Draw name
+                logger.debug(`Could not find item image ${itemId}. Applying text...`);
+                ctx.font = '8px Minecraft';
+                ctx.fillStyle = '#000';
+                const lines = wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);
+                lines.forEach((line, i) => ctx.fillText(line, x, y + 8 + i * 8));
+            }
 
-            ctx.drawImage(itemImg, x, y, 32, 32);
+            //Draw count
+            if(count > 1) drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
+
+            const maxDurability = mcData.itemsByName[itemId]?.maxDurability;
+            if(damage && maxDurability) {
+                const durabilityPercent = 100 - damage / maxDurability * 100;
+                const durabilityPx = Math.floor(durabilityPercent / 100 * 34);
+
+                //Get gradient color between green and red
+                const r = Math.floor((100 - durabilityPercent) * 2.56);
+                const g = Math.floor(durabilityPercent * 2.56);
+                const rgb = [r, g, 0];
+
+                //Draw durability bar
+                ctx.strokeStyle = `rgb(${rgb.join(',')})`;
+                ctx.fillStyle = `rgb(${rgb.join(',')})`;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(x, y + 28);
+                ctx.lineTo(x + durabilityPx, y + 28);
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.strokeStyle = `#000000`;
+                ctx.fillStyle = `#000000`;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(x, y + 31);
+                ctx.lineTo(x + 33, y + 31);
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            loopCode(items[i], i);
         }
-        catch(err) {
-            //Draw name
-            logger.debug(`Could not find item image ${itemId}. Applying text...`);
-            ctx.font = '8px Minecraft';
-            ctx.fillStyle = '#000';
-            const lines = wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);
-            lines.forEach((line, i) => ctx.fillText(line, x, y + 8 + i * 8));
-        }
 
-        //Draw count
-        if(count > 1) drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
-
-        const maxDurability = mcData.itemsByName[itemId]?.maxDurability;
-        if(damage && maxDurability) {
-            const durabilityPercent = 100 - damage / maxDurability * 100;
-            const durabilityPx = Math.floor(durabilityPercent / 100 * 34);
-
-            //Get gradient color between green and red
-            const r = Math.floor((100 - durabilityPercent) * 2.56);
-            const g = Math.floor(durabilityPercent * 2.56);
-            const rgb = [r, g, 0];
-
-            //Draw durability bar
-            ctx.strokeStyle = `rgb(${rgb.join(',')})`;
-            ctx.fillStyle = `rgb(${rgb.join(',')})`;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(x, y + 28);
-            ctx.lineTo(x + durabilityPx, y + 28);
-            ctx.stroke();
-            ctx.closePath();
-
-            ctx.strokeStyle = `#000000`;
-            ctx.fillStyle = `#000000`;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(x, y + 31);
-            ctx.lineTo(x + 33, y + 31);
-            ctx.stroke();
-            ctx.closePath();
-        }
-
-        loopCode(items[i], i);
+        return { canvas, ctx };
     }
-
-    return { canvas, ctx };
 }

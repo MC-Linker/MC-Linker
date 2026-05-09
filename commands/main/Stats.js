@@ -10,17 +10,19 @@ import Pagination from '../../structures/helpers/Pagination.js';
 
 import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
 
-const startCoords = [41, 152];
-const yPadding = 7;
-const numberPadding = [32, 19];
-const maxStatsAmountsY = 8;
-const maxCustomStatsAmountY = 24;
-const headerSize = 74;
-const itemSize = headerSize - 10;
-const numberSize = [30, 45];
-const itemPadding = (headerSize - itemSize) / 2;
-
 export default class Stats extends Command {
+
+    _renderingConstants = {
+        startCoords: [41, 152],
+        yPadding: 7,
+        numberPadding: [32, 19],
+        maxStatsAmountsY: 8,
+        maxCustomStatsAmountY: 24,
+        headerSize: 74,
+        get itemSize() { return this.headerSize - 10; },
+        numberSize: [30, 45],
+        get itemPadding() { return (this.headerSize - this.itemSize) / 2; },
+    };
 
     constructor() {
         super({
@@ -39,6 +41,17 @@ export default class Stats extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
+        const {
+            startCoords,
+            yPadding,
+            numberPadding,
+            maxStatsAmountsY,
+            maxCustomStatsAmountY,
+            headerSize,
+            itemSize,
+            numberSize,
+            itemPadding,
+        } = this._renderingConstants;
         const mcData = getMinecraftData(server.version);
         const category = args[0];
         const user = args[1];
