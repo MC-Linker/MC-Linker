@@ -137,6 +137,7 @@ export default class Inventory extends Command {
             showDetails ? this.pushInvButton.bind(null, itemButtons, 44, true) : () => {
             }, //Push itemButtons if showDetails is set to true
             mcData,
+            logger,
         );
 
         async function getSkin(uuidOrUsername) {
@@ -408,6 +409,7 @@ export default class Inventory extends Command {
                     shulkerSlotCoords,
                     this.pushInvButton.bind(null, shulkerButtons, 26, false),
                     mcData,
+                    logger,
                 );
 
                 const shulkerAttach = new Discord.AttachmentBuilder(
@@ -483,7 +485,7 @@ export default class Inventory extends Command {
     }
 
     // noinspection JSUnusedLocalSymbols
-    async _renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}, mcData) {
+    async _renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}, mcData, logger = null) {
         const background = await Canvas.loadImage(backgroundPath);
         const canvas = new Canvas.Canvas(background.width, background.height);
         const ctx = canvas.getContext('2d');
@@ -533,7 +535,7 @@ export default class Inventory extends Command {
             }
             catch(err) {
                 //Draw name
-                logger.debug(`Could not find item image ${itemId}. Applying text...`);
+                logger?.debug(`Could not find item image ${itemId}. Applying text...`);
                 ctx.font = '8px Minecraft';
                 ctx.fillStyle = '#000';
                 const lines = wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);

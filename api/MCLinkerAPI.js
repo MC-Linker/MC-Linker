@@ -101,7 +101,6 @@ export default class MCLinkerAPI extends EventEmitter {
                 origin: ['https://admin.socket.io'],
                 credentials: true,
             },
-            // transports: ['websocket'], //TODO enable back after most people migrated
             logLevel: 'info',
         });
 

@@ -1,5 +1,6 @@
 import WSEvent from '../WSEvent.js';
-import { fetchUUID } from '../../utilities/utils.js';
+import { fetchUUID } from '../../utilities/uuid-utils.js';
+import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 export default class VerifyUser extends WSEvent {
 
@@ -26,6 +27,7 @@ export default class VerifyUser extends WSEvent {
      */
     async run(data, server, client, logger) {
         const onlineUUID = server.online ? data.uuid : await fetchUUID(data.username);
+        if(!onlineUUID) return { status: 'error', error: ProtocolError.UNKNOWN };
         client.api.usersAwaitingVerification.set(data.code, { uuid: onlineUUID, username: data.username });
         setTimeout(() => client.api.usersAwaitingVerification.delete(data.code), 180_000);
     }
