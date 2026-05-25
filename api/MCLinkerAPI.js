@@ -349,10 +349,15 @@ export default class MCLinkerAPI extends EventEmitter {
             // Reconnection
             // Update data
             const oldSocket = server.protocol.socket;
+            const newOnline = server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true';
+
+            // Handle online-mode flips before mutating server.online — handler compares against the current value.
+            if(newOnline !== server.online) await server.handleOnlineModeFlip(newOnline);
+
             await server.edit({
                 ip: socket.handshake.address,
                 path: socket.handshake.query.path,
-                online: server.forceOnlineMode ? server.online : socket.handshake.query.online === 'true',
+                online: newOnline,
                 floodgatePrefix: socket.handshake.query.floodgatePrefix,
                 version: socket.handshake.query.version ?? null,
                 worldPath: socket.handshake.query.worldPath,
@@ -624,12 +629,12 @@ export default class MCLinkerAPI extends EventEmitter {
         if(syncedRole.direction === 'to_minecraft') return;
 
         try {
-            const member = await guild.members.fetch(connection.id);
+            const member = await guild.members.fetch(connection.discordId);
             if(addOrRemove === 'add') await member.roles.add(role);
             else if(addOrRemove === 'remove') await member.roles.remove(role);
         }
         catch(err) {
-            this.client.analytics.trackError('api_ws', 'updateSyncedRoleMember', server.id, connection.id, err, { roleId }, socketLogger.child({ guildId: server.id }, { track: false }));
+            this.client.analytics.trackError('api_ws', 'updateSyncedRoleMember', server.id, connection.discordId, err, { roleId }, socketLogger.child({ guildId: server.id }, { track: false }));
         }
     }
 }

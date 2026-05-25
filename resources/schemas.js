@@ -46,9 +46,12 @@ export default {
         server: { type: String, ref: 'ServerConnection' },
     },
     UserConnection: {
-        _id: { type: String },
-        uuid: { type: String, unique: true },
+        _id: { type: String }, // composite: `${discordId}:${scope}`
+        discordId: { type: String, index: true },
+        scope: { type: String }, // 'global' | <serverId>
+        uuid: String,
         username: String,
+        premium: Boolean,
         userSettings: { type: String, ref: 'UserSettingsConnection' },
         customBot: { type: String, ref: 'CustomBotConnection' },
     },

@@ -64,7 +64,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
         // Build map of player UUID → Discord member for all members that currently have the Discord role
         const discordPlayerUUIDs = new Map();
         for(const [memberId, member] of discordRole.members) {
-            const userConn = client.userConnections.cache.get(memberId);
+            const userConn = client.userConnections.resolveForServer(memberId, server);
             if(userConn) discordPlayerUUIDs.set(userConn.getUUID(server), member);
             else {
                 // If authoritative side is Discord, remove this member from the role
@@ -100,7 +100,7 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                                 await server.edit({ syncedRoles: server.syncedRoles });
                             }
 
-                            const member = await guild.members.fetch(conn.id);
+                            const member = await guild.members.fetch(conn.discordId);
                             await member.roles.add(discordRole);
                         }
                         catch(err) {

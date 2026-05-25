@@ -51,15 +51,15 @@ export default class Dm extends WSEvent {
      * @returns {Promise<string|null>} Discord user ID, or null if not found.
      */
     async resolveToDiscordId(target, client, server, logger) {
-        // 1. MC UUID
+        // 1. MC UUID (server-scoped)
         if(UUIDRegex.test(target)) {
             const conn = client.userConnections.findByUUID(target, server);
-            return conn?.id ?? null;
+            return conn?.discordId ?? null;
         }
 
-        // 2. MC username
-        const byMcUsername = client.userConnections.cache.find(c => c.username.toLowerCase() === target.toLowerCase());
-        if(byMcUsername) return byMcUsername.id;
+        // 2. MC username (server-scoped — avoids cross-server cracked-username collisions)
+        const byMcUsername = client.userConnections.findByUsername(target, server);
+        if(byMcUsername) return byMcUsername.discordId;
 
         // 3. Discord snowflake ID
         if(/^\d{17,20}$/.test(target)) return target;

@@ -36,7 +36,7 @@ export default class HasRequiredRoleToJoin extends WSEvent {
 
         try {
             const guild = await client.guilds.fetch(server.id);
-            const member = await guild.members.fetch(user.id);
+            const member = await guild.members.fetch(user.discordId);
 
             return { status: 'success', data: { hasRole: server.hasRequiredRole(member) } };
         }

@@ -5,6 +5,8 @@ import fs from 'fs-extra';
 import rootLogger from '../../utilities/logger/Logger.js';
 import features from '../../utilities/logger/features.js';
 import { trackError } from '../analytics/AnalyticsCollector.js';
+import keys from '../../utilities/keys.js';
+import { getReplyOptions } from '../../utilities/messages.js';
 
 const logger = rootLogger.child({ feature: features.structures.connections.server });
 
@@ -272,6 +274,7 @@ export default class ServerConnection extends Connection {
     async syncRolesOfMember(member, userConnection) {
         const guild = member.guild;
         const uuid = userConnection.getUUID(this);
+        if(!uuid) return;
 
         if(this.syncedRoles && this.syncedRoles.length > 0) {
             // Discord→MC: User has Discord role but not in MC group, tell the plugin
@@ -284,14 +287,63 @@ export default class ServerConnection extends Connection {
             for(const syncedRole of this.syncedRoles.filter(r =>
                 r.direction !== 'to_minecraft' && r.players.includes(uuid) && !member.roles.cache.has(r.id))) {
                 try {
-                    const discordMember = await guild.members.fetch(userConnection.id);
+                    const discordMember = await guild.members.fetch(userConnection.discordId);
                     const role = await guild.roles.fetch(syncedRole.id);
                     await discordMember.roles.add(role);
                 }
                 catch(err) {
-                    trackError('unhandled', 'ServerConnection.syncRolesOfMember', this.id, userConnection.id, err, { roleId: syncedRole.id }, logger);
+                    trackError('unhandled', 'ServerConnection.syncRolesOfMember', this.id, userConnection.discordId, err, { roleId: syncedRole.id }, logger);
                 }
             }
+        }
+    }
+
+    /**
+     * Reconciles per-server state when the server's online mode flips. Live UUID resolution is already adapted by
+     * {@link UserConnection#getUUID}, so this only handles the two pieces of stored state that aren't recomputed
+     * on every read:
+     *   1. Synced-role `players` arrays — wiped so the next SyncSyncedRoleMembers event repopulates from
+     *      authoritative state. (Stored UUIDs from before the flip won't match incoming UUIDs after.)
+     *   2. Cracked per-server links — only when flipping to online. Their UUIDs are now invalid (player can't
+     *      join an online server with a non-Mojang account), so they'd just be dead rows otherwise. Owners
+     *      get a best-effort DM about needing to re-verify.
+     *
+     * Must be called *before* `this.online` is updated, so we can compare and skip work if nothing changed.
+     * @param {boolean} newOnline - The new online-mode value about to be applied.
+     * @returns {Promise<void>}
+     */
+    async handleOnlineModeFlip(newOnline) {
+        if(this.online === newOnline) return;
+        const flippedToOnline = newOnline === true && this.online === false;
+
+        // Wipe stored synced-role player arrays — pre-flip UUIDs no longer match server-side UUIDs after the flip.
+        if(this.syncedRoles?.length) {
+            const cleared = this.syncedRoles.map(r => ({ ...r, players: [] }));
+            await this.edit({ syncedRoles: cleared });
+        }
+
+        if(!flippedToOnline) return;
+
+        // Offline → online: cracked per-server links can't authenticate against an online server. Drop them and DM.
+        const deadLinks = this.client.userConnections.cache.values().filter(c => c.scope === this.id && !c.premium);
+
+        for(const link of deadLinks) {
+            const discordId = link.discordId;
+            const username = link.username;
+            const ip = this.displayIp;
+            await this.client.userConnections.disconnect(link);
+
+            // Re-sync LinkedRoles in case this was the user's last remaining link.
+            const settings = this.client.userSettingsConnections.cache.get(discordId);
+            if(settings) await settings.syncLinkedRoles();
+
+            // Best-effort DM; ignore failures (DMs blocked, user gone, etc.)
+            this.client.users.fetch(discordId)
+                .then(user => user.send(getReplyOptions(keys.commands.account.warnings.cracked_link_removed_dm, {
+                    username,
+                    ip,
+                })))
+                .catch(() => {});
         }
     }
 

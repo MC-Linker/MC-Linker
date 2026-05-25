@@ -96,7 +96,7 @@ export default class RoleSync extends AutocompleteCommand {
                 name,
                 isGroup,
                 direction,
-                players: role.members.map(m => client.userConnections.cache.get(m.id)?.getUUID(server)).filter(u => u),
+                players: role.members.map(m => client.userConnections.resolveForServer(m.id, server)?.getUUID(server)).filter(u => u),
             };
 
             const resp = await server.protocol.addSyncedRole(syncedRoleData);
@@ -111,8 +111,8 @@ export default class RoleSync extends AutocompleteCommand {
                 const respPlayers = resp.data?.find(r => r.id === role.id)?.players ?? [];
                 syncedRoleData.players = respPlayers;
 
-                //Map uuids to discord ids
-                const userIds = respPlayers.map(p => client.userConnections.cache.find(u => u.getUUID(server) === p)?.id).filter(u => u);
+                //Map uuids to discord ids (server-scoped)
+                const userIds = respPlayers.map(p => client.userConnections.findByUUID(p, server)?.discordId).filter(u => u);
 
                 //Add the role to the members that are in the group
                 const membersToAdd = userIds.filter(id => !role.members.has(id));

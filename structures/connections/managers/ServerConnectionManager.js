@@ -59,15 +59,16 @@ export default class ServerConnectionManager extends ConnectionManager {
     }
 
     /**
-     * Kicks a player from all connected Minecraft servers that require a linked account to join,
-     * restricted to servers where the given Discord user is an actual guild member.
+     * Kicks a player from connected Minecraft servers that require a linked account to join,
+     * **only on servers where the user no longer has any effective link** (per-server nor global)
+     * after a disconnect. Restricted to servers where the user is an actual guild member.
      * Silently ignores servers that are offline or fail to respond.
      * @param {string} userId - The Discord user ID of the player.
-     * @param {string} username - The Minecraft username to kick.
+     * @param {string} username - The Minecraft username to kick (the one used to join).
      * @param {string} message - The kick message.
      * @returns {Promise<void>}
      */
-    async kickFromRequiredRoleServers(userId, username, message) {
+    async kickFromOrphanedRequiredRoleServers(userId, username, message) {
         const shardMap = this._groupByShardId(conn => !!conn.requiredRoleToJoin);
 
         await Promise.all(
@@ -76,6 +77,8 @@ export default class ServerConnectionManager extends ConnectionManager {
                     await Promise.allSettled(serverIds.map(async serverId => {
                         const server = c.serverConnections.cache.get(serverId);
                         if(!server) return;
+                        // Skip servers where the user still has any effective link (per-server or global fallback)
+                        if(c.userConnections.resolveForServer(userId, server)) return;
 
                         const guild = await c.guilds.fetch(serverId);
                         await guild.members.fetch(userId); // Will throw if user is not part of guild
@@ -84,6 +87,30 @@ export default class ServerConnectionManager extends ConnectionManager {
                 }, { context: { serverIds, userId, username, message }, shard: shardId }),
             ),
         );
+    }
+
+    /**
+     * Kicks a player from a single server if it requires a linked role and the user no longer
+     * has any effective link for it (post-disconnect). Used by per-server link disconnects.
+     * @param {string} userId
+     * @param {string} username
+     * @param {ServerConnectionResolvable} server
+     * @param {string} message
+     * @returns {Promise<void>}
+     */
+    async kickFromServerIfOrphaned(userId, username, server, message) {
+        const conn = this.resolve(server);
+        if(!conn || !conn.requiredRoleToJoin) return;
+        if(this.client.userConnections.resolveForServer(userId, conn)) return;
+
+        try {
+            const guild = await this.client.guilds.fetch(conn.id);
+            await guild.members.fetch(userId);
+            await conn.protocol.execute(`kick ${username} ${message}`);
+        }
+        catch {
+            // Silently ignore — same posture as kickFromOrphanedRequiredRoleServers
+        }
     }
 
     /**
@@ -99,12 +126,12 @@ export default class ServerConnectionManager extends ConnectionManager {
         await Promise.all(
             [...shardMap.entries()].map(([shardId, serverIds]) =>
                 this.client.broadcastEval(async (c, { serverIds, userId }) => {
-                    const userConn = c.userConnections.cache.get(userId);
-                    if(!userConn) return;
-
                     await Promise.allSettled(serverIds.map(async serverId => {
                         const server = c.serverConnections.cache.get(serverId);
                         if(!server) return;
+
+                        const userConn = c.userConnections.resolveForServer(userId, server);
+                        if(!userConn) return;
 
                         const guild = await c.guilds.fetch(serverId);
                         const member = await guild.members.fetch(userId); // Will throw if user is not part of server

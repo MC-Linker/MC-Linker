@@ -29,12 +29,26 @@ export default class MessageCreate extends Event {
         if(!message.inGuild()) {
             // Handle DM messages (verification codes)
             if(client.api.usersAwaitingVerification.has(message.content)) {
-                const { username, uuid } = client.api.usersAwaitingVerification.get(message.content);
+                const { username, uuid, premium, serverId } = client.api.usersAwaitingVerification.get(message.content);
                 if(!uuid) {
                     trackError('unhandled', 'MessageCreate.verification', null, message.author.id, new Error(`uuid is null for username '${username}' during verification`), { username }, logger);
                     return await message.replyTl(keys.main.errors.could_not_execute_command);
                 }
-                await client.userConnections.connect({ id: message.author.id, username, uuid });
+
+                // Decide scope: premium + no global yet → global; otherwise → per-server.
+                const hasGlobal = !!client.userConnections.getGlobal(message.author.id);
+                const scope = premium && !hasGlobal ? 'global' : serverId;
+
+                await client.userConnections.connect({
+                    discordId: message.author.id,
+                    scope,
+                    username,
+                    uuid,
+                    premium,
+                });
+
+                const settings = client.userSettingsConnections.cache.get(message.author.id);
+                if(settings) await settings.syncLinkedRoles();
 
                 await client.serverConnections.syncRolesAcrossAllServers(message.author.id);
 

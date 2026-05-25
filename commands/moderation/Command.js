@@ -34,7 +34,7 @@ export default class Command extends AutocompleteCommand {
         if(command === null) return interaction.editReplyTl(keys.api.command.errors.user_not_connected);
         if(command.startsWith('/')) command = command.slice(1);
 
-        const userConnection = client.userConnections.cache.get(interaction.user.id);
+        const userConnection = client.userConnections.resolveForServer(interaction.user.id, server);
         const resp = await server.protocol.execute(command, userConnection?.getUUID(server));
         if(!await utils.handleProtocolResponse(resp, server.protocol, interaction)) return;
 
@@ -46,9 +46,10 @@ export default class Command extends AutocompleteCommand {
 
     replaceMentionsWithUsernames(commandInput, interaction, client) {
         let command = commandInput;
+        const server = client.serverConnections.cache.get(interaction.guildId);
 
         if(/(^|\s)@s(?=\s|$)/.test(command)) {
-            const selfUsername = client.userConnections.cache.get(interaction.user.id)?.username;
+            const selfUsername = client.userConnections.resolveForServer(interaction.user.id, server)?.username;
             if(!selfUsername) return null;
 
             command = command.replace(/(^|\s)@s(?=\s|$)/g, `$1${selfUsername}`);
@@ -58,7 +59,7 @@ export default class Command extends AutocompleteCommand {
         if(mentionIds.length === 0) return command;
 
         for(const userId of new Set(mentionIds)) {
-            const username = client.userConnections.cache.get(userId)?.username;
+            const username = client.userConnections.resolveForServer(userId, server)?.username;
             if(!username) return null;
 
             command = command.replace(new RegExp(`<@!?${userId}>`, 'g'), username);

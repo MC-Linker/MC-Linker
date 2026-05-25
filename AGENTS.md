@@ -346,6 +346,36 @@ sub-key to obtain a builder, then compose them programmatically.
 **Connection Editing:** Always use `connection.edit(data)` — it persists to MongoDB and broadcasts changes to all
 shards.
 
+**User Account Links:** A `UserConnection` is keyed by `${discordId}:${scope}` where `scope` is either `'global'`
+(authoritative Mojang/Floodgate UUID) or a server (guild) id (per-server profile). Each link has a `premium` boolean
+distinguishing globally-unique authoritative UUIDs from offline UUIDv3 (cracked) which are scope-local.
+
+For lookups, **always use the manager helpers** rather than `cache.get(discordId)`:
+
+- `userConnections.resolveForServer(discordId, server)` — primary helper for server-scoped features. Per-server link
+  takes priority, falls back to global. Use this whenever you have a Discord user id and a server context.
+- `userConnections.findByUUID(uuid, server)` / `findByUsername(username, server)` — server-scoped reverse lookups
+  (UUID/username → connection). Same per-server-first-then-global cascade as `resolveForServer`. Used by `/userinfo`,
+  role sync, the `/dm` command, etc.
+- `userConnections.getGlobal(discordId)` — for cases that specifically need the global-scope link only (rare).
+- `userConnections.getAll(discordId)` — every link a user holds. Used by `/account manage` and by the Linked-Roles
+  metadata sync (any link counts as "connected" — see below).
+
+`UserConnection.getUUID(server)` is the single source of truth for the effective UUID on a given server. Returns
+`null` when the link isn't valid for the requested server scope (cross-scope per-server query, no server context, or
+cracked link on an online-mode server). Adapts to the server's *current* online mode for both global and per-server
+links — Floodgate UUIDs pass through unchanged, premium-Mojang on offline servers becomes `createUUIDv3(username)`.
+For Discord-side IDs use `connection.discordId` (not `connection.id`, which is the composite cache key).
+
+**Linked Roles — application-wide, not per-server:** Discord's Linked-Roles metadata is per-user-per-application;
+there is no API to scope metadata to a Discord server. The `connectedaccount` metadata key therefore means "the user
+has *any* MC-Linker link, global or per-server", and `platform_username` is picked from the global link if present,
+else the first per-server link. Use [
+`UserSettingsConnection.syncLinkedRoles()`](structures/connections/UserSettingsConnection.js)
+after every connect/disconnect/promote — it recomputes both fields from the current connection cache. Server admins
+who need *true* per-server "user is linked to my server" gating must use `requiredRoleToJoin` instead (which is
+per-server-aware via `findByUUID(uuid, server)`).
+
 **Protocol Responses:** All protocol communication uses `{ status: 'success'|'error', data?, error? }` envelope format.
 Error codes are defined in `Protocol.ProtocolError`.
 
@@ -361,6 +391,14 @@ objects are not serializable and must be excluded from broadcasts.
 
 Use JSDoc to describe all classes, methods, and to declare types. This is crucial for maintainability and helps with
 editor autocompletion.
+
+**Every function and method must have JSDoc with typed `@param` annotations and a `@returns` (omit `@returns` only
+for `void`-returning sync functions). No bare `@param interaction` / `@param client` lines — always include the
+`{Type}` brace, even when the type is obvious from context (`{MCLinker}`, `{ServerConnection}`, etc.). Use
+`import('path').Type` syntax for cross-file types when the type isn't already in scope. For object-shaped params,
+write inline literal types (`{{ badge: string, scopeLabel: string }}`) or reference a typedef. Array params should
+use tuple syntax when positional (`[string, number?]`) rather than `any[]`. This is enforced as a code-review
+standard; PRs introducing untyped params should be rejected.
 
 **Class methods over module-level functions:** Helper functions should nearly always be written as `static` (or
 instance) methods on the relevant class, not as module-level functions. Module-level functions are only appropriate

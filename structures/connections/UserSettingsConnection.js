@@ -68,7 +68,30 @@ export default class UserSettingsConnection extends Connection {
     }
 
     /**
+     * Recomputes and writes the user's Linked Roles metadata based on their current link state.
+     *
+     * Discord's Linked-Roles metadata is per-user-per-application — there is no per-server scoping at the Discord
+     * API level. So `connectedaccount` here means "the user has *any* MC-Linker link, global or per-server". Server
+     * admins who need real per-server gating should use `requiredRoleToJoin` instead (which is per-server-aware).
+     *
+     * `platform_username` is picked from the global link if one exists; otherwise the first per-server link; null
+     * when the user has no links at all.
+     * @returns {Promise<boolean>}
+     */
+    async syncLinkedRoles() {
+        const canonical = this.client.userConnections.getGlobal(this.id)
+            ?? this.client.userConnections.getAll(this.id)[0]
+            ?? null;
+
+        return this.updateRoleConnection(canonical?.username ?? null, {
+            'connectedaccount': canonical ? 1 : 0,
+        });
+    }
+
+    /**
      * Updates the user's role connections with the provided metadata.
+     * Prefer {@link syncLinkedRoles} for the standard "did the user's link state change?" path — it derives
+     * username and metadata from the current connection cache.
      * @param {?string} username - The platform username of the user.
      * @param {object} metadata - The data to send to the Discord API.
      * @returns {Promise<boolean>} - True if the request was successful, false otherwise.
