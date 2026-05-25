@@ -7,6 +7,7 @@ import features from '../../utilities/logger/features.js';
 import { trackError } from '../analytics/AnalyticsCollector.js';
 import keys from '../../utilities/keys.js';
 import { getReplyOptions } from '../../utilities/messages.js';
+import { createUUIDv3, isFloodgateUUID } from '../../utilities/utils.js';
 
 const logger = rootLogger.child({ feature: features.structures.connections.server });
 
@@ -300,10 +301,11 @@ export default class ServerConnection extends Connection {
 
     /**
      * Reconciles per-server state when the server's online mode flips. Live UUID resolution is already adapted by
-     * {@link UserConnection#getUUID}, so this only handles the two pieces of stored state that aren't recomputed
+     * {@link UserConnection#getUUID}, so this only handles two pieces of stored state that aren't recomputed
      * on every read:
-     *   1. Synced-role `players` arrays — wiped so the next SyncSyncedRoleMembers event repopulates from
-     *      authoritative state. (Stored UUIDs from before the flip won't match incoming UUIDs after.)
+     *   1. Synced-role `players` arrays — translated UUID-by-UUID so role membership is preserved across the
+     *      flip. The follow-up `sync-synced-role-members` event the plugin sends on reconnect still acts as a
+     *      reconciliation check; this just avoids a brief inconsistent window where members would look removed.
      *   2. Cracked per-server links — only when flipping to online. Their UUIDs are now invalid (player can't
      *      join an online server with a non-Mojang account), so they'd just be dead rows otherwise. Owners
      *      get a best-effort DM about needing to re-verify.
@@ -316,10 +318,15 @@ export default class ServerConnection extends Connection {
         if(this.online === newOnline) return;
         const flippedToOnline = newOnline === true && this.online === false;
 
-        // Wipe stored synced-role player arrays — pre-flip UUIDs no longer match server-side UUIDs after the flip.
+        // Translate stored synced-role player UUIDs so they match what the server uses after the flip.
         if(this.syncedRoles?.length) {
-            const cleared = this.syncedRoles.map(r => ({ ...r, players: [] }));
-            await this.edit({ syncedRoles: cleared });
+            const translated = this.syncedRoles.map(r => ({
+                ...r,
+                players: r.players
+                    .map(uuid => this._translateUUIDForFlip(uuid, newOnline))
+                    .filter(uuid => uuid !== null),
+            }));
+            await this.edit({ syncedRoles: translated });
         }
 
         if(!flippedToOnline) return;
@@ -345,6 +352,23 @@ export default class ServerConnection extends Connection {
                 })))
                 .catch(() => {});
         }
+    }
+
+    /**
+     * Re-derives a stored synced-role UUID for the post-flip online mode. Returns null when the link no longer
+     * applies (unknown UUID, or cracked link on a now-online server). Mirrors {@link UserConnection#getUUID}
+     * inline because `this.online` is still pre-flip at this point.
+     * @param {string} uuid
+     * @param {boolean} newOnline
+     * @returns {?string}
+     * @private
+     */
+    _translateUUIDForFlip(uuid, newOnline) {
+        const conn = this.client.userConnections.findByUUID(uuid, this);
+        if(!conn) return null; // unknown UUID, drop — next sync will repopulate if real
+        if(isFloodgateUUID(conn.uuid)) return conn.uuid;
+        if(newOnline) return conn.premium ? conn.uuid : null;
+        return createUUIDv3(conn.username);
     }
 
     async _output() {
