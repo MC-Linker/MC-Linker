@@ -1945,8 +1945,15 @@
                     "row": {
                         "embeds": [
                             {
-                                "title": "%username%",
-                                "description": "**Type:** %badge%\n**Scope:** %scope%\n**UUID:** `%uuid%`"
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%avatar_url%"
+                                },
+                                "fields": [
+                                    { "name": "Type", "value": "%badge%", "inline": true },
+                                    { "name": "Scope", "value": "%scope%", "inline": true },
+                                    { "name": "UUID", "value": "`%uuid%`", "inline": false }
+                                ]
                             }
                         ]
                     },

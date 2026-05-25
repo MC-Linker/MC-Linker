@@ -237,11 +237,7 @@ export default class Account extends AutocompleteCommand {
     }
 
     /**
-     * Removes a link and applies scope-aware side effects:
-     * - Always re-syncs LinkedRoles metadata (handles global→nothing, global→per-server-remains,
-     *   and per-server→fewer-links cases uniformly).
-     * - Global disconnect: kick from required-role servers where the user has no remaining link.
-     * - Per-server disconnect: kick from that one server only if it requires a role and the user has no global fallback.
+     * Removes a link, re-syncs LinkedRoles, and kicks from required-role servers that no longer have a fallback link.
      * @param {MCLinker} client
      * @param {string} discordId
      * @param {UserConnection} link
@@ -333,15 +329,17 @@ export default class Account extends AutocompleteCommand {
                 actionButtons.push(promoteBtn);
             }
 
-            // Use on this server: stored UUID must match what the server uses (premium↔online, cracked↔offline).
-            if(server && link.premium === server.online && link.scope !== server.id) {
+            // Copy a per-server link onto this server. Premium works anywhere; cracked only on offline servers.
+            if(server && link.scope !== 'global' && link.scope !== server.id && (link.premium || !server.online)) {
                 const useHereBtn = getComponent(manageButtons.use_here, { scope: link.scope });
                 actionButtonIds.add(useHereBtn.data.custom_id);
                 actionButtons.push(useHereBtn);
             }
 
+            const avatarUrl = await utils.getCachedAvatarURL(link.username);
             const pageOptions = getReplyOptions(keys.commands.account.success.manage.row, ph.std(interaction), {
                 username: link.username,
+                avatar_url: avatarUrl,
                 badge,
                 scope: scopeLabel,
                 uuid: link.uuid,
@@ -377,8 +375,7 @@ export default class Account extends AutocompleteCommand {
     }
 
     /**
-     * Dispatches `/account manage` row-button actions. Bound with the originating interaction's `interaction` and
-     * `server` via `.bind(this, ...)`; DefaultButton then appends `(btnInteraction, client, ...)` on click.
+     * Dispatches `/account manage` row-button actions. Bound with the originating `interaction` and `server`.
      * @param {import('discord.js').ChatInputCommandInteraction & TranslatedResponses} originalInteraction
      * @param {?ServerConnection} currentServer
      * @param {import('discord.js').ButtonInteraction & TranslatedResponses} btnInteraction

@@ -441,7 +441,9 @@ export function showModalTl(interaction, key, ...placeholders) {
 }
 
 /**
- * If the path's last or second to last element is contained in the `completions` array of the language file, merge the first embed with the completion.
+ * If one of the last three path segments is contained in the `completions` map of the language file, merge the first
+ * embed with that completion. Checked in order last → second-to-last → third-to-last; more specific wins. Allows
+ * keys nested one level inside a bucket (e.g. `…success.manage.row`) to still inherit success styling.
  * @param {any} key - The language key to add the completion to.
  * @returns {Discord.BaseMessageOptions} - The message with the completion added.
  */
@@ -450,8 +452,13 @@ export function addCompletion(key) {
     const message = key.valueOf();
 
     let completion;
-    if(Object.keys(completions).includes(path[path.length - 1])) completion = completions[path[path.length - 1]];
-    else if(Object.keys(completions).includes(path[path.length - 2])) completion = completions[path[path.length - 2]];
+    for(const i of [1, 2, 3]) {
+        const segment = path[path.length - i];
+        if(completions[segment]) {
+            completion = completions[segment];
+            break;
+        }
+    }
 
     if(completion && message.embeds?.[0]) message.embeds[0] = { ...completion, ...message.embeds[0] }; // original embeds is last, so it overrides the completion
     return message;
