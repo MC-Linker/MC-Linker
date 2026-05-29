@@ -85,7 +85,7 @@ export default class UserConnectionManager extends ConnectionManager {
      * @returns {UserConnection[]}
      */
     getAll(discordId) {
-        return this.cache.values().filter(c => c.discordId === discordId).toArray();
+        return this.cache.filter(c => c.discordId === discordId).toJSON();
     }
 
     /**
