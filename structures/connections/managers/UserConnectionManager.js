@@ -164,7 +164,7 @@ export default class UserConnectionManager extends ConnectionManager {
         const target = utils.addHyphen(uuid);
         const serverData = this.client.serverConnections.resolve(server);
         if(serverData) {
-            const perServer = this.cache.find(c => c.scope === serverData.id && c.uuid === target);
+            const perServer = this.cache.find(c => c.scope === serverData.id && c.getUUID(server) === target);
             if(perServer) return perServer;
         }
         return this.cache.find(c => c.scope === 'global' && c.getUUID(server) === target) ?? null;
