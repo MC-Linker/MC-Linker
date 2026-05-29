@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.2.0 - Cracked Account Support + Per-Server Profiles
+## 4.2.0 - Cracked + Per-Server Accounts
 
 ### New Features
 

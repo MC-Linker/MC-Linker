@@ -55,15 +55,25 @@ class Logger {
         this._filters = filters;
     }
 
-    /** @returns {string} */
+    /**
+     * Resolves the log file path for this startup. The first process to call this
+     * (the ShardingManager parent) resolves a free, date-based filename and stores it
+     * in `process.env.LOG_FILE`. Spawned shard processes inherit that env var and reuse
+     * it, so all shards from the same startup write to a single combined log file.
+     * @returns {string}
+     */
     static _getLogFilePath() {
+        if(process.env.LOG_FILE) return process.env.LOG_FILE;
+
         const date = new Date().toISOString().split('T')[0];
-        const base = path.resolve(`./logs/${date}.log`);
-        if(!fs.existsSync(base)) return base;
-        for(let i = 1; ; i++) {
-            const indexed = path.resolve(`./logs/${date}-${i}.log`);
-            if(!fs.existsSync(indexed)) return indexed;
+        let resolved = path.resolve(`./logs/${date}.log`);
+        if(fs.existsSync(resolved)) {
+            for(let i = 1; fs.existsSync(resolved); i++)
+                resolved = path.resolve(`./logs/${date}-${i}.log`);
         }
+
+        process.env.LOG_FILE = resolved;
+        return resolved;
     }
 
     // -------------------------------------------------------------------------
