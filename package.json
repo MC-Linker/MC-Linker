@@ -15,6 +15,9 @@
     },
     "homepage": "https://github.com/MC-Linker/MC-Linker#readme",
     "type": "module",
+    "engines": {
+        "node": ">=24"
+    },
     "dependencies": {
         "@fastify/cookie": "^9.4.0",
         "@fastify/static": "^7.0.4",
