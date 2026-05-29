@@ -73,6 +73,17 @@ async function main() {
 
         const discordId = doc._id;
         const newId = `${discordId}:global`;
+
+        // If a composite-id row for this user already exists (e.g. the bot started up with the new code at some point
+        // and created the global link via /account connect), don't try to insert a duplicate — just remove the legacy
+        // row and treat it as migrated. The existing composite row takes precedence.
+        const existing = await collection.findOne({ _id: newId });
+        if(existing) {
+            await collection.deleteOne({ _id: discordId });
+            migrated++;
+            continue;
+        }
+
         await collection.deleteOne({ _id: discordId });
         await collection.insertOne({
             _id: newId,
