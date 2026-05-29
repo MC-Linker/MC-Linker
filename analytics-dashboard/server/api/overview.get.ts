@@ -31,6 +31,8 @@ export default defineEventHandler(async event => {
         approximate_users: s.users.approximate,
         commands: s.commands.reduce((c: number, cmd: { count: number }) => c + cmd.count, 0),
         errors: s.commands.reduce((c: number, cmd: { errors: number }) => c + cmd.errors, 0),
+        connectionsServers: s.connections?.servers ?? 0,
+        connectionsUsers: s.connections?.users ?? 0,
     }));
 
     return {
