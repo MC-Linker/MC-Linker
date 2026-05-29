@@ -134,7 +134,7 @@ export default class Inventory extends Command {
             './resources/images/containers/inventory_blank.png',
             playerData.Inventory,
             Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-            showDetails ? this.pushInvButton.bind(null, itemButtons, 44, true) : () => {
+            showDetails ? this.pushInvButton.bind(this, itemButtons, 44, true, mcData) : () => {
             }, //Push itemButtons if showDetails is set to true
             mcData,
             logger,
@@ -161,7 +161,7 @@ export default class Inventory extends Command {
         // Send without buttons if showDetails is false
         if(!showDetails) return await interaction.editReply({ files: [invAttach], embeds: [invEmbed] });
 
-        const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach, mcData);
+        const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach, mcData, logger);
         const pagination = new Pagination(client, interaction, paginationPages, {
             showStartPageOnce: true,
             highlightSelectedButton: ButtonStyle.Primary,
@@ -307,12 +307,22 @@ export default class Inventory extends Command {
         return addedInfo;
     }
 
-    pushInvButton(buttons, maxSlot, doUseArmorSlots, item, index) {
+    /**
+     * Pushes a button for an inventory item. Bound with leading args via `.bind(this, ...)`.
+     * @param {Discord.ButtonBuilder[]} buttons - Accumulator the new button is pushed onto.
+     * @param {number} maxSlot - Items in slots above this are skipped.
+     * @param {boolean} doUseArmorSlots - Whether to label armor slots by name instead of index.
+     * @param {import('minecraft-data').IndexedData} mcData - Minecraft data for the server version.
+     * @param {object} item - The inventory item to build a button for.
+     * @param {number} index - The item's index within its container.
+     */
+    pushInvButton(buttons, maxSlot, doUseArmorSlots, mcData, item, index) {
         if(item.slot > maxSlot) return;
 
         //Push button for each item in the inventory
         const itemId = item.id.split(':').pop();
         const slot = item.slot;
+        const armorSlotNames = this._armorSlotNames;
         buttons.push(getComponent(
             keys.commands.inventory.success.item_button,
             {
@@ -331,9 +341,10 @@ export default class Inventory extends Command {
      * @param {Discord.EmbedBuilder} embed - The embed to use for each of the pages
      * @param {Discord.AttachmentBuilder} attach - The attachment to use for each of the pages
      * @param {import('minecraft-data').IndexedData} mcData - The minecraft data for the server version
+     * @param {import('../../utilities/logger/Logger.js').default} [logger] - Per-execution child logger.
      * @returns {Promise<PaginationPages>}
      */
-    async getInventoryPages(inventoryButtons, inventory, username, embed, attach, mcData) {
+    async getInventoryPages(inventoryButtons, inventory, username, embed, attach, mcData, logger = null) {
         const {
             _armorSlotCoords: armorSlotCoords,
             _armorSlotNames: armorSlotNames,
@@ -407,7 +418,7 @@ export default class Inventory extends Command {
                     './resources/images/containers/shulker_blank.png',
                     allItems,
                     shulkerSlotCoords,
-                    this.pushInvButton.bind(null, shulkerButtons, 26, false),
+                    this.pushInvButton.bind(this, shulkerButtons, 26, false, mcData),
                     mcData,
                     logger,
                 );
@@ -428,6 +439,7 @@ export default class Inventory extends Command {
                             shulkerEmbed,
                             shulkerAttach,
                             mcData,
+                            logger,
                         ),
                     },
                 };
