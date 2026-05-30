@@ -40,9 +40,10 @@ services:
       - analytics
     ports:
       - "${DASHBOARD_PORT}:3000"
-    env_file:
-      - .env
     environment:
+      - NUXT_DATABASE_URL=${DATABASE_URL}
+      - NUXT_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
+      - NUXT_SESSION_SECRET=${DASHBOARD_SESSION_SECRET}
       - NUXT_LOGS_DIR=/usr/src/app/logs
       - NUXT_LOG_FEATURES_PATH=/usr/src/app/logFeatures.json
     volumes:
