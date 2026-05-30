@@ -7,6 +7,19 @@ const logger = rootLogger.child({ feature: features.utilities.utils });
 
 export const UUIDRegex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-5][0-9a-f]{3}-?[089ab][0-9a-f]{3}-?[0-9a-f]{12}$/i;
 
+// Floodgate (Geyser/Bedrock) UUIDs are XUID-derived and globally unique. They follow the pattern
+// 00000000-0000-0000-000x-xxxxxxxxxxxx regardless of the Java server's online mode.
+const FLOODGATE_UUID_PREFIX = '00000000-0000-0000-000';
+
+/**
+ * Returns true if the given UUID is a Floodgate (Bedrock) XUID-derived UUID.
+ * @param {?string} uuid
+ * @returns {boolean}
+ */
+export function isFloodgateUUID(uuid) {
+    return typeof uuid === 'string' && uuid.startsWith(FLOODGATE_UUID_PREFIX);
+}
+
 /**
  * Fetches the uuid of the given username from the Mojang API.
  * @param {string} username - The username to fetch the uuid for.

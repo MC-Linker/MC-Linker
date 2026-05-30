@@ -384,5 +384,12 @@ export default class MCLinker extends Discord.Client {
         // Ensure analytics indexes exist (no-ops if already created)
         this.mongo.models.AnalyticsSnapshot?.collection.createIndex({ timestamp: -1 }).catch(err => trackError('unhandled', 'createIndex', null, null, err, { index: 'AnalyticsSnapshot.timestamp' }, logger));
         this.mongo.models.AnalyticsError?.collection.createIndex({ timestamp: -1 }).catch(err => trackError('unhandled', 'createIndex', null, null, err, { index: 'AnalyticsError.timestamp' }, logger));
+
+        // UserConnection composite uniqueness (per-scope uuid). Drop the legacy globally-unique uuid index if present.
+        await this.mongo.models.UserConnection?.collection.dropIndex('uuid_1').catch(() => {});
+        this.mongo.models.UserConnection?.collection.createIndex({
+            scope: 1,
+            uuid: 1,
+        }, { unique: true }).catch(err => trackError('unhandled', 'createIndex', null, null, err, { index: 'UserConnection.scope_uuid' }, logger));
     }
 }

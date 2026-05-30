@@ -25,7 +25,7 @@ export default class GuildMemberUpdate extends Event {
         const server = client.serverConnections.cache.get(newMember.guild.id);
         if(!server) return;
 
-        const user = client.userConnections.cache.get(newMember.id);
+        const user = client.userConnections.resolveForServer(newMember.id, server);
         const uuid = user?.getUUID(server);
 
         // Required Role To Join

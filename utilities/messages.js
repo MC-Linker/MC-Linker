@@ -441,7 +441,9 @@ export function showModalTl(interaction, key, ...placeholders) {
 }
 
 /**
- * If the path's last or second to last element is contained in the `completions` array of the language file, merge the first embed with the completion.
+ * If one of the last three path segments is contained in the `completions` map of the language file, merge the first
+ * embed with that completion. Checked in order last → second-to-last → third-to-last; more specific wins. Allows
+ * keys nested one level inside a bucket (e.g. `…success.manage.row`) to still inherit success styling.
  * @param {any} key - The language key to add the completion to.
  * @returns {Discord.BaseMessageOptions} - The message with the completion added.
  */
@@ -450,8 +452,13 @@ export function addCompletion(key) {
     const message = key.valueOf();
 
     let completion;
-    if(Object.keys(completions).includes(path[path.length - 1])) completion = completions[path[path.length - 1]];
-    else if(Object.keys(completions).includes(path[path.length - 2])) completion = completions[path[path.length - 2]];
+    for(const i of [1, 2, 3]) {
+        const segment = path[path.length - i];
+        if(completions[segment]) {
+            completion = completions[segment];
+            break;
+        }
+    }
 
     if(completion && message.embeds?.[0]) message.embeds[0] = { ...completion, ...message.embeds[0] }; // original embeds is last, so it overrides the completion
     return message;
@@ -645,6 +652,44 @@ export function getComponent(key, ...placeholders) {
                 .setMinValues(component.min_values ?? 1)
                 .setMaxValues(component.max_values ?? 1);
             break;
+        case Discord.ComponentType.RadioGroup:
+            if(!component.custom_id || !Array.isArray(component.options)) return null;
+            componentBuilder = new Discord.RadioGroupBuilder()
+                .setCustomId(component.custom_id)
+                .setRequired(component.required ?? false);
+            for(const option of component.options) {
+                if(!option.label || !option.value) return null;
+                const optionBuilder = new Discord.RadioGroupOptionBuilder()
+                    .setLabel(option.label)
+                    .setValue(option.value)
+                    .setDefault(option.default ?? false);
+                if(option.description) optionBuilder.setDescription(option.description);
+                componentBuilder.addOptions(optionBuilder);
+            }
+            break;
+        case Discord.ComponentType.CheckboxGroup:
+            if(!component.custom_id || !Array.isArray(component.options)) return null;
+            componentBuilder = new Discord.CheckboxGroupBuilder()
+                .setCustomId(component.custom_id)
+                .setRequired(component.required ?? false);
+            for(const option of component.options) {
+                if(!option.label || !option.value) return null;
+                const optionBuilder = new Discord.CheckboxGroupOptionBuilder()
+                    .setLabel(option.label)
+                    .setValue(option.value)
+                    .setDefault(option.default ?? false);
+                if(option.description) optionBuilder.setDescription(option.description);
+                componentBuilder.addOptions(optionBuilder);
+            }
+            if(typeof component.min_values === 'number') componentBuilder.setMinValues(component.min_values);
+            if(typeof component.max_values === 'number') componentBuilder.setMaxValues(component.max_values);
+            break;
+        case Discord.ComponentType.Checkbox:
+            if(!component.custom_id) return null;
+            componentBuilder = new Discord.CheckboxBuilder()
+                .setCustomId(component.custom_id)
+                .setDefault(component.default ?? false);
+            break;
         case Discord.ComponentType.Label:
             if(!component.label) return null;
 
@@ -674,6 +719,15 @@ export function getComponent(key, ...placeholders) {
                     break;
                 case ComponentType.FileUpload:
                     componentBuilder.setFileUploadComponent(labelComponent);
+                    break;
+                case ComponentType.RadioGroup:
+                    componentBuilder.setRadioGroupComponent(labelComponent);
+                    break;
+                case ComponentType.CheckboxGroup:
+                    componentBuilder.setCheckboxGroupComponent(labelComponent);
+                    break;
+                case ComponentType.Checkbox:
+                    componentBuilder.setCheckboxComponent(labelComponent);
                     break;
             }
             break;

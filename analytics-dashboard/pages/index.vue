@@ -25,6 +25,14 @@
         <h2>Command Volume</h2>
         <ChartsLineChart :data="commandChartData"/>
       </div>
+      <div class="chart-card">
+        <h2>User Connections</h2>
+        <ChartsLineChart :data="userConnectionChartData"/>
+      </div>
+      <div class="chart-card">
+        <h2>Server Connections</h2>
+        <ChartsLineChart :data="serverConnectionChartData"/>
+      </div>
     </div>
 
     <div v-if="pending" class="loading">Loading…</div>
@@ -88,6 +96,36 @@ const commandChartData = computed(() => {
         tension: 0.3,
       },
     ],
+  };
+});
+
+const userConnectionChartData = computed(() => {
+  const ts = data.value?.timeSeries ?? [];
+  return {
+    labels: ts.map(p => formatTimeLabel(p.timestamp, ts.length)),
+    datasets: [{
+      label: 'User Connections',
+      data: ts.map(p => p.connectionsUsers),
+      borderColor: '#b06fd6',
+      backgroundColor: 'rgba(176,111,214,0.15)',
+      fill: true,
+      tension: 0.3,
+    }],
+  };
+});
+
+const serverConnectionChartData = computed(() => {
+  const ts = data.value?.timeSeries ?? [];
+  return {
+    labels: ts.map(p => formatTimeLabel(p.timestamp, ts.length)),
+    datasets: [{
+      label: 'Server Connections',
+      data: ts.map(p => p.connectionsServers),
+      borderColor: '#e0a052',
+      backgroundColor: 'rgba(224,160,82,0.15)',
+      fill: true,
+      tension: 0.3,
+    }],
   };
 });
 </script>

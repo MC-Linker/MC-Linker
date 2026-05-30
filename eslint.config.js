@@ -1,0 +1,56 @@
+import js from '@eslint/js';
+import globals from 'globals';
+
+export default [
+    js.configs.recommended,
+    {
+        languageOptions: {
+            ecmaVersion: 2022,
+            sourceType: 'module',
+            globals: {
+                ...globals.node,
+                ...globals.es2022,
+            },
+        },
+        rules: {
+            'indent': ['error', 4],
+            'quotes': ['error', 'single'],
+            'semi': ['error', 'always'],
+            'no-unused-vars': ['warn'],
+            'no-console': ['off'],
+            'no-var': ['error'],
+            'prefer-const': ['error'],
+            'arrow-spacing': ['error', { 'before': true, 'after': true }],
+            'no-multiple-empty-lines': ['error', { 'max': 1, 'maxEOF': 1 }],
+            'object-curly-spacing': ['error', 'always'],
+            'array-bracket-spacing': ['error', 'never'],
+            'brace-style': ['error', 'stroustrup', { 'allowSingleLine': true }],
+            'comma-dangle': ['error', 'always-multiline'],
+            'no-empty': ['error', { 'allowEmptyCatch': true }],
+            'no-magic-numbers': ['warn', { 'ignore': [0, 1, -1], 'ignoreArrayIndexes': true, 'enforceConst': true }],
+            'no-unused-private-class-members': ['warn'],
+            'sort-imports': ['warn', { 'ignoreCase': true, 'ignoreDeclarationSort': true }],
+            'keyword-spacing': [
+                'error', {
+                    'before': true,
+                    'after': true,
+                    'overrides': {
+                        'if': { 'after': false },
+                        'for': { 'after': false },
+                        'while': { 'after': false },
+                        'catch': { 'after': false },
+                        'switch': { 'after': false },
+                    },
+                },
+            ],
+            'space-before-function-paren': ['error', 'never'],
+            'space-before-blocks': ['error', 'always'],
+            'space-in-parens': ['error', 'never'],
+            'key-spacing': ['error', { 'beforeColon': false, 'afterColon': true }],
+            'comma-spacing': ['error', { 'before': false, 'after': true }],
+            'no-trailing-spaces': ['error'],
+            'eqeqeq': ['error', 'always', { 'null': 'ignore' }],
+            'curly': ['error', 'multi-line'],
+        },
+    },
+];

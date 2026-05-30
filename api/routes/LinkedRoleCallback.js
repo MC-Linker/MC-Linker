@@ -54,10 +54,8 @@ export default class LinkedRole extends Route {
                 },
             });
 
-            const userConnection = client.userConnections.cache.get(user.id);
-            await settings.updateRoleConnection(userConnection?.username, {
-                'connectedaccount': userConnection ? 1 : 0,
-            });
+            // Discord's Linked-Roles metadata is per-application, not per-server: any link counts as "connected".
+            await settings.syncLinkedRoles();
 
             return { body: `You have been authorized as ${user.username}! You can now close this window and go back to Discord.` };
         }

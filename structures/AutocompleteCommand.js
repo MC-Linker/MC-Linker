@@ -54,7 +54,7 @@ export default class AutocompleteCommand extends Command {
                 }, { track: false })));
         }
 
-        const userConnection = client.userConnections.cache.get(interaction.user.id);
+        const userConnection = client.userConnections.resolveForServer(interaction.user.id, server);
         const response = await server.protocol.commandCompletions(focused, userConnection?.getUUID(server));
 
         if(response?.status !== 'success') {

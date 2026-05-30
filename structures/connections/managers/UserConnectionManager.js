@@ -35,6 +35,70 @@ export default class UserConnectionManager extends ConnectionManager {
      */
 
     /**
+     * Connect a new user link. Accepts either a pre-built composite `id` or `discordId`+`scope`
+     * which are normalised to the composite id automatically.
+     * @param {UserConnectionData} data
+     * @returns {Promise<?UserConnection>}
+     */
+    async connect(data) {
+        const normalized = { ...data };
+        if(!normalized.scope) normalized.scope = 'global';
+
+        if(!normalized.discordId && normalized.id && !normalized.id.includes(':')) {
+            // Defensive backwards-compat: legacy callers passed `id: discordId`.
+            normalized.discordId = normalized.id;
+            delete normalized.id;
+        }
+
+        if(!normalized.id) normalized.id = UserConnection.buildId(normalized.discordId, normalized.scope);
+        return super.connect(normalized);
+    }
+
+    /**
+     * Returns the user's global link if one exists.
+     * @param {string} discordId
+     * @returns {?UserConnection}
+     */
+    getGlobal(discordId) {
+        return this.cache.get(UserConnection.buildId(discordId, 'global')) ?? null;
+    }
+
+    /**
+     * Returns the user's effective link for a given server: per-server link takes priority,
+     * with fallback to the global link. This is what every server-scoped feature should use.
+     * @param {string} discordId
+     * @param {ServerConnectionResolvable} server
+     * @returns {?UserConnection}
+     */
+    resolveForServer(discordId, server) {
+        const serverData = this.client.serverConnections.resolve(server);
+        if(serverData) {
+            const perServer = this.cache.get(UserConnection.buildId(discordId, serverData.id));
+            if(perServer) return perServer;
+        }
+        return this.cache.get(UserConnection.buildId(discordId, 'global')) ?? null;
+    }
+
+    /**
+     * Returns all links for a Discord user (global + every per-server).
+     * @param {string} discordId
+     * @returns {UserConnection[]}
+     */
+    getAll(discordId) {
+        return this.cache.values().filter(c => c.discordId === discordId).toArray();
+    }
+
+    /**
+     * Raw lookup by (discordId, scope). Features should call {@link resolveForServer} or {@link getGlobal}.
+     * @param {string} discordId
+     * @param {string} scope
+     * @returns {?UserConnection}
+     */
+    getRaw(discordId, scope) {
+        return this.cache.get(UserConnection.buildId(discordId, scope)) ?? null;
+    }
+
+    /**
      * Returns the uuid and name of a minecraft user from a mention/username.
      * @param {string} arg - The argument to get the uuid and name from.
      * @param {ServerConnectionResolvable} server - The server to resolve the uuid and name from.
@@ -49,8 +113,7 @@ export default class UserConnectionManager extends ConnectionManager {
 
         const id = Discord.MessageMentions.UsersPattern.exec(arg)?.[1];
         if(id) {
-            /** @type {UserConnection} */
-            const cacheConnection = this.cache.get(id);
+            const cacheConnection = this.resolveForServer(id, server);
             if(cacheConnection) {
                 return {
                     uuid: cacheConnection.getUUID(server),
@@ -69,7 +132,7 @@ export default class UserConnectionManager extends ConnectionManager {
             arg = utils.addHyphen(arg);
             const username = await utils.fetchUsername(arg);
             if(username && server.online) return { uuid: arg, username, error: null };
-            else if(username) arg = username; // If the server is offline, we'll calculate the uuid from the username.
+            else if(username) arg = username; // Offline server: derive uuid from username below
             else {
                 await interaction.editReplyTl(keys.api.utils.errors.could_not_fetch_user, { user: arg });
                 return { error: 'fetch', uuid: null, username: null };
@@ -90,18 +153,43 @@ export default class UserConnectionManager extends ConnectionManager {
     }
 
     /**
-     * Finds a UserConnection by Minecraft UUID, respecting the server's online mode.
+     * Finds a UserConnection by Minecraft UUID for a given server.
+     * Prefers a per-server link with that exact UUID; falls back to scanning global links via getUUID.
      * Accepts UUIDs with or without hyphens.
      * @param {string} uuid - The Minecraft UUID to search for.
-     * @param {ServerConnectionResolvable} server - The server to check online mode against.
-     * @returns {UserConnection|undefined}
+     * @param {ServerConnectionResolvable} server
+     * @returns {?UserConnection}
      */
     findByUUID(uuid, server) {
-        return this.cache.find(c => c.getUUID(server) === utils.addHyphen(uuid));
+        const target = utils.addHyphen(uuid);
+        const serverData = this.client.serverConnections.resolve(server);
+        if(serverData) {
+            const perServer = this.cache.find(c => c.scope === serverData.id && c.getUUID(server) === target);
+            if(perServer) return perServer;
+        }
+        return this.cache.find(c => c.scope === 'global' && c.getUUID(server) === target) ?? null;
+    }
+
+    /**
+     * Finds a UserConnection by Minecraft username scoped to a server. Per-server links match first;
+     * global links fall back. This avoids cross-server collisions on cracked usernames.
+     * @param {string} username
+     * @param {ServerConnectionResolvable} server
+     * @returns {?UserConnection}
+     */
+    findByUsername(username, server) {
+        const lower = username.toLowerCase();
+        const serverData = this.client.serverConnections.resolve(server);
+        if(serverData) {
+            const perServer = this.cache.find(c => c.scope === serverData.id && c.username.toLowerCase() === lower);
+            if(perServer) return perServer;
+        }
+        return this.cache.find(c => c.scope === 'global' && c.username.toLowerCase() === lower) ?? null;
     }
 
     async disconnect(connectionResolvable) {
         const connection = this.resolve(connectionResolvable);
+        if(!connection) return false;
 
         if(!await super.disconnect(connection)) return false;
         await connection.removeCache();

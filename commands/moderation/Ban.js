@@ -24,7 +24,7 @@ export default class Ban extends Command {
      */
     async run(interaction, client, args, server, logger) {
         const user = args[0];
-        const userConnection = client.userConnections.cache.get(interaction.user.id);
+        const userConnection = client.userConnections.resolveForServer(interaction.user.id, server);
 
         args.shift(); // Shift user
         const reason = args[0] ? args.join(' ') : 'Banned by an operator.';
