@@ -1698,14 +1698,162 @@
                             "description": "**%target%** is not in your blocked list."
                         }
                     ]
-                }
-            },
-            "errors": {
-                "could_not_fetch_uuid": {
+                },
+                "global_already_linked": {
                     "embeds": [
                         {
-                            "title": "Could Not Fetch User",
-                            "description": "**%user%** is not a valid Minecraft account name/uuid. Geyser/Floodgate/Cracked accounts can't be verified by name and are therefore not possible to connect."
+                            "title": "Already Linked Globally",
+                            "description": "You already have a **global** linked account: **%existing_username%**. Disconnect it via `/account disconnect` (or `/account manage`) before linking another account globally, or pass `set-as-global: False` to link this one per-server only."
+                        }
+                    ]
+                },
+                "server_already_linked": {
+                    "embeds": [
+                        {
+                            "title": "Already Linked Here",
+                            "description": "You already have a per-server linked account for **%ip%**: **%existing_username%**. Disconnect it via `/account disconnect` (or `/account manage`) before linking another account on this server."
+                        }
+                    ]
+                },
+                "link_gone": {
+                    "embeds": [
+                        {
+                            "title": "Link No Longer Exists",
+                            "description": "This linked account was removed in the meantime. Re-open `/account manage` to refresh."
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "disconnect_confirm_modal": {
+                    "type": "Modal",
+                    "custom_id": "account_manage_disconnect_confirm:%token%",
+                    "title": "Confirm Disconnect",
+                    "components": [
+                        {
+                            "type": "Label",
+                            "label": "Disconnect %username%?",
+                            "description": "This unlinks your Minecraft account from MC Linker.",
+                            "component": {
+                                "type": "RadioGroup",
+                                "custom_id": "confirm",
+                                "required": true,
+                                "options": [
+                                    {
+                                        "label": "Yes, disconnect",
+                                        "value": "yes"
+                                    },
+                                    {
+                                        "label": "No, keep it",
+                                        "value": "no",
+                                        "default": true
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "disconnect_cancelled": {
+                    "embeds": [
+                        {
+                            "title": "Cancelled",
+                            "description": "Your linked account was not disconnected."
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "disconnect_timeout": {
+                    "embeds": [
+                        {
+                            "title": "Confirmation Timed Out",
+                            "description": "No confirmation received in time. No changes were made."
+                        }
+                    ]
+                },
+                "promote_not_eligible": {
+                    "embeds": [
+                        {
+                            "title": "Cannot Promote",
+                            "description": "Only premium (Mojang/Bedrock) per-server links can be promoted to global. Cracked accounts are not globally unique."
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "promote_global_exists": {
+                    "embeds": [
+                        {
+                            "title": "Global Link Exists",
+                            "description": "You already have a global linked account. Disconnect it first if you want to promote a different account."
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "use_here_no_server": {
+                    "embeds": [
+                        {
+                            "title": "Run In A Server",
+                            "description": "Use this button from a Discord server connected to a Minecraft server to connect an account to it."
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "use_here_same_server": {
+                    "embeds": [
+                        {
+                            "title": "Already The Active Link",
+                            "description": "This link is already used for the current server."
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "use_here_overwrite": {
+                    "embeds": [
+                        {
+                            "title": "Replace Current Link?",
+                            "description": "This server already has the per-server link **%old_username%**. Replace it with **%new_username%**?"
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "cracked_link_removed_dm": {
+                    "embeds": [
+                        {
+                            "title": "Account Unlinked",
+                            "description": "Your linked Minecraft account **%username%** on `%ip%` was removed because the server switched to online mode. Cracked accounts can't authenticate on online-mode servers. Re-verify with a Mojang account if you want to relink."
+                        }
+                    ]
+                }
+            },
+            "kick_messages": {
+                "disconnected": "§cYou have been disconnected from your account."
+            },
+            "errors": {
+                "could_not_resolve_account_online": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Resolve Account",
+                            "description": "**%user%** is not a recognized premium Minecraft account. This server runs in **online mode**, so only Mojang-authenticated (or Floodgate/Bedrock) accounts can be linked."
+                        }
+                    ]
+                },
+                "could_not_resolve_account_offline": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Resolve Account",
+                            "description": "**%user%** could not be resolved. This server runs in **offline mode**, so any plain username works automatically — this error usually means a UUID or Floodgate/Bedrock name lookup failed. Double-check the value you entered."
                         }
                     ]
                 }
@@ -1716,6 +1864,25 @@
                         {
                             "title": "Account Verification",
                             "description": "%emoji_step% To verify your account, please join the server (**%ip%**) and execute the following command: ```/verify %code%```\n**You have 3 minutes to run the command.**"
+                        }
+                    ]
+                },
+                "disconnecting": {
+                    "embeds": [
+                        {
+                            "title": "Disconnecting…",
+                            "description": "Disconnecting **%username%**…"
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "use_here_connecting": {
+                    "embeds": [
+                        {
+                            "title": "Connecting To Server…",
+                            "description": "Setting up your linked account for this server…"
                         }
                     ]
                 }
@@ -1768,6 +1935,114 @@
                             "description": "You will now receive DMs from **%target%** again."
                         }
                     ]
+                },
+                "promote": {
+                    "embeds": [
+                        {
+                            "title": "Promoted To Global",
+                            "description": "**%username%** is now your global linked account."
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "use_here": {
+                    "embeds": [
+                        {
+                            "title": "Connected To This Server",
+                            "description": "**%username%** is now the active link for **%ip%**."
+                        }
+                    ],
+                    "flags": [
+                        "Ephemeral"
+                    ]
+                },
+                "manage": {
+                    "badge_cracked": "Cracked",
+                    "badge_bedrock": "Bedrock",
+                    "badge_premium": "Premium",
+                    "scope_global": "Global",
+                    "scope_server": "Server: %ip%",
+                    "row": {
+                        "embeds": [
+                            {
+                                "author": {
+                                    "name": "%username%",
+                                    "icon_url": "%avatar_url%"
+                                },
+                                "fields": [
+                                    {
+                                        "name": "Type",
+                                        "value": "%badge%",
+                                        "inline": true
+                                    },
+                                    {
+                                        "name": "Scope",
+                                        "value": "%scope%",
+                                        "inline": true
+                                    },
+                                    {
+                                        "name": "UUID",
+                                        "value": "`%uuid%`",
+                                        "inline": false
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "row_button": {
+                        "components": [
+                            {
+                                "type": "Button",
+                                "label": "%label%",
+                                "custom_id": "account_manage_page:%index%",
+                                "style": "Secondary"
+                            }
+                        ]
+                    },
+                    "buttons": {
+                        "disconnect": {
+                            "components": [
+                                {
+                                    "type": "Button",
+                                    "label": "Disconnect",
+                                    "custom_id": "account_manage_disconnect:%scope%",
+                                    "style": "Danger"
+                                }
+                            ]
+                        },
+                        "promote": {
+                            "components": [
+                                {
+                                    "type": "Button",
+                                    "label": "Promote To Global",
+                                    "custom_id": "account_manage_promote:%scope%",
+                                    "style": "Primary"
+                                }
+                            ]
+                        },
+                        "use_here": {
+                            "components": [
+                                {
+                                    "type": "Button",
+                                    "label": "Use On This Server",
+                                    "custom_id": "account_manage_use_here:%scope%",
+                                    "style": "Primary"
+                                }
+                            ]
+                        },
+                        "use_here_overwrite": {
+                            "components": [
+                                {
+                                    "type": "Button",
+                                    "label": "Replace",
+                                    "custom_id": "account_manage_use_here_overwrite:%token%",
+                                    "style": "Danger"
+                                }
+                            ]
+                        }
+                    }
                 }
             }
         },
@@ -3422,13 +3697,24 @@
                             "name": "user",
                             "description": "Set your java-edition username or uuid you want to connect with.",
                             "required": true
+                        },
+                        {
+                            "type": "Boolean",
+                            "name": "set-as-global",
+                            "description": "If true, use as your global account (Defaults to true when possible).",
+                            "required": false
                         }
                     ]
                 },
                 {
                     "type": "Subcommand",
                     "name": "disconnect",
-                    "description": "Disconnect your account."
+                    "description": "Disconnect your account on this server, or your global account if no per-server link exists."
+                },
+                {
+                    "type": "Subcommand",
+                    "name": "manage",
+                    "description": "View and manage all your linked accounts (global + per-server)."
                 },
                 {
                     "type": "SubcommandGroup",
