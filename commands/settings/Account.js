@@ -167,7 +167,15 @@ export default class Account extends AutocompleteCommand {
             const key = scope === 'global'
                 ? keys.commands.account.warnings.global_already_linked
                 : keys.commands.account.warnings.server_already_linked;
-            return interaction.editReplyTl(key, { existing_username: existing.username, ip: server.displayIp });
+            return void interaction.editReplyTl(key, { existing_username: existing.username, ip: server.displayIp });
+        }
+
+        // Pre-check: another Discord user already owns this UUID at the chosen scope.
+        const otherOwner = client.userConnections.cache.find(c => c.scope === scope && c.uuid === uuid && c.discordId !== interaction.user.id);
+        if(otherOwner) {
+            return void interaction.editReplyTl(keys.commands.account.warnings.account_already_taken, {
+                mc_username: username,
+            });
         }
 
         const code = crypto.randomBytes(16).toString('hex').slice(0, 5);
@@ -199,16 +207,18 @@ export default class Account extends AutocompleteCommand {
             shard: 0,
         });
 
-        if(verificationResponse.status === 'timeout') return interaction.editReplyTl(keys.commands.account.warnings.verification_timeout);
-        else if(verificationResponse.status !== 'success') return interaction.editReplyTl(keys.main.errors.could_not_execute_command);
+        if(verificationResponse.status === 'timeout') return void interaction.editReplyTl(keys.commands.account.warnings.verification_timeout);
+        else if(verificationResponse.status !== 'success') return void interaction.editReplyTl(keys.main.errors.could_not_execute_command);
 
-        await client.userConnections.connect({
+        const newLink = await client.userConnections.connect({
             discordId: interaction.user.id,
             scope,
             uuid,
             username,
             premium,
         });
+        // Race fallback: another Discord user beat us to this (scope, uuid) between the pre-check and the insert.
+        if(!newLink) return void interaction.editReplyTl(keys.commands.account.warnings.connect_failed);
 
         const settings = client.userSettingsConnections.cache.get(interaction.user.id);
         if(settings) await settings.syncLinkedRoles();
