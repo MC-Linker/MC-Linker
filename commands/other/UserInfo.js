@@ -29,7 +29,6 @@ export default class UserInfo extends Command {
         super({
             name: 'userinfo',
             category: 'other',
-            ephemeral: true,
             requiresUserIndex: 0,
         });
     }

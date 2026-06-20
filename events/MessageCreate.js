@@ -2,7 +2,7 @@ import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
 import { cleanEmojis } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
-import { Events, MessageType, RESTJSONErrorCodes } from 'discord.js';
+import { Events, MessageType, RESTJSONErrorCodes, userMention } from 'discord.js';
 import { trackError } from '../structures/analytics/AnalyticsCollector.js';
 
 /**
@@ -39,13 +39,27 @@ export default class MessageCreate extends Event {
                 const hasGlobal = !!client.userConnections.getGlobal(message.author.id);
                 const scope = premium && !hasGlobal ? 'global' : serverId;
 
-                await client.userConnections.connect({
+                // Pre-check: another Discord user already owns this UUID at the chosen scope.
+                const otherOwner = client.userConnections.cache.find(c => c.scope === scope && c.uuid === uuid && c.discordId !== message.author.id);
+                if(otherOwner) {
+                    client.api.usersAwaitingVerification.delete(message.content);
+                    return await message.replyTl(keys.commands.account.warnings.account_already_taken_owner, {
+                        mc_username: username,
+                        owner: userMention(otherOwner.discordId),
+                    });
+                }
+
+                const newLink = await client.userConnections.connect({
                     discordId: message.author.id,
                     scope,
                     username,
                     uuid,
                     premium,
                 });
+                if(!newLink) {
+                    client.api.usersAwaitingVerification.delete(message.content);
+                    return await message.replyTl(keys.commands.account.warnings.connect_failed);
+                }
 
                 const settings = client.userSettingsConnections.cache.get(message.author.id);
                 if(settings) await settings.syncLinkedRoles();

@@ -1713,6 +1713,30 @@
                         }
                     ]
                 },
+                "account_already_taken": {
+                    "embeds": [
+                        {
+                            "title": "Account Already Linked",
+                            "description": "**%mc_username%** is already linked to another Discord user. That user must `/account disconnect` it first before you can link it."
+                        }
+                    ]
+                },
+                "account_already_taken_owner": {
+                    "embeds": [
+                        {
+                            "title": "Account Already Linked",
+                            "description": "**%mc_username%** is already linked to %owner%. That user must `/account disconnect` it first before you can link it."
+                        }
+                    ]
+                },
+                "connect_failed": {
+                    "embeds": [
+                        {
+                            "title": "Could Not Save Link",
+                            "description": "An unexpected error prevented saving your account link (likely a race with another verification). Please try again."
+                        }
+                    ]
+                },
                 "link_gone": {
                     "embeds": [
                         {
