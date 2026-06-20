@@ -1,5 +1,5 @@
 import WSEvent from '../WSEvent.js';
-import { createUUIDv3, fetchUUID } from '../../utilities/uuid-utils.js';
+import { addHyphen, createUUIDv3, fetchUUID, isFloodgateUUID } from '../../utilities/uuid-utils.js';
 
 export default class VerifyUser extends WSEvent {
 
@@ -25,11 +25,27 @@ export default class VerifyUser extends WSEvent {
      * @param logger
      */
     async run(data, server, client, logger) {
-        // On online-mode servers, the plugin already provides the authoritative Mojang UUID.
-        // On offline-mode servers, attempt a Mojang lookup by username; fall back to offline-v3 for cracked players.
-        const mojangUUID = server.online ? data.uuid : await fetchUUID(data.username);
-        const premium = !!mojangUUID;
-        const uuid = mojangUUID ?? createUUIDv3(data.username);
+        // Normalise to the hyphenated form the rest of the bot stores/compares with.
+        const pluginUUID = data.uuid ? addHyphen(data.uuid) : null;
+        let uuid, premium;
+
+        if(isFloodgateUUID(pluginUUID)) {
+            // Bedrock player via Floodgate: the XUID-based UUID the plugin provided is authoritative on any mode
+            // (Floodgate handles Bedrock auth itself, independent of the Java server's online-mode flag).
+            uuid = pluginUUID;
+            premium = true;
+        }
+        else if(server.online) {
+            // Online Java server: plugin's UUID is the Mojang UUID.
+            uuid = pluginUUID;
+            premium = true;
+        }
+        else {
+            // Offline Java server: attempt a Mojang lookup by username; fall back to offline-v3 for cracked players.
+            const mojangUUID = await fetchUUID(data.username);
+            premium = !!mojangUUID;
+            uuid = mojangUUID ?? createUUIDv3(data.username);
+        }
 
         client.api.usersAwaitingVerification.set(data.code, {
             uuid,
