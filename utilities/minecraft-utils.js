@@ -255,7 +255,7 @@ export async function getLivePlayerNbt(server, user, interaction) {
         // else fall back to downloading the nbt file
     }
 
-    const nbtResponse = await server.protocol.getWithCache(...FilePath.PlayerData(server.worldPath, user.uuid));
+    const nbtResponse = await server.protocol.getWithCache(...FilePath.PlayerData(server.worldPath, user.uuid, server.version));
 
     // handleProtocolResponse if interaction is set, otherwise manually check the status code
     if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction, {

@@ -2,6 +2,7 @@ import { Base } from 'discord.js';
 import fs from 'fs-extra';
 import rootLogger from '../../utilities/logger/Logger.js';
 import features from '../../utilities/logger/features.js';
+import { compareMinecraftVersions } from '../../utilities/minecraft-utils.js';
 
 const logger = rootLogger.child({ feature: features.structures.protocol.websocket });
 
@@ -14,27 +15,37 @@ export const FilePath = {
      * Constructs the path to the user's advancements file.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
+     * @param {string} version - Version of the server.
      * @returns {[`${worldPath}/advancements/${uuid}.json`, `./download-cache/advancements/${uuid}.json`]} - The path to the advancements file on the server and the local cache.
      */
-    Advancements: (worldPath, uuid) => {
+    Advancements: (worldPath, uuid, version) => {
+        if(compareMinecraftVersions('26', version) >= 0)
+            // worldpath is <world>/dimensions/minecraft/overworld
+            return [`${worldPath}/../../../players/advancements/${uuid}.json`, `./download-cache/advancements/${uuid}.json`];
         return [`${worldPath}/advancements/${uuid}.json`, `./download-cache/advancements/${uuid}.json`];
     },
     /**
      * Constructs the path to the user's stats file.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
+     * @param {string} version - Version of the server.
      * @returns {[`${worldPath}/stats/${uuid}.json`, `./download-cache/stats/${uuid}.json`]} - The path to the stats file on the server and the local cache.
      */
-    Stats: (worldPath, uuid) => {
+    Stats: (worldPath, uuid, version) => {
+        if(compareMinecraftVersions('26', version) >= 0)
+            return [`${worldPath}/../../../players/stats/${uuid}.json`, `./download-cache/stats/${uuid}.json`];
         return [`${worldPath}/stats/${uuid}.json`, `./download-cache/stats/${uuid}.json`];
     },
     /**
      * Constructs the path to the user's playerdata folder.
      * @param {string} worldPath - The path to the world folder.
      * @param {string} uuid - The user's UUID.
+     * @param {string} version - Version of the server.
      * @returns {[`${worldPath}/playerdata/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`]} - The path to the playerdata folder on the server and the local cache.
      */
-    PlayerData: (worldPath, uuid) => {
+    PlayerData: (worldPath, uuid, version) => {
+        if(compareMinecraftVersions('26', version) >= 0)
+            return [`${worldPath}/../../../players/data/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`];
         return [`${worldPath}/playerdata/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`];
     },
 
@@ -42,22 +53,28 @@ export const FilePath = {
      * Constructs the path to the world's level.dat file.
      * @param {string} worldPath - The path to the world folder.
      * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
-     * @returns {string[]|`${string}/level.dat`} - The path to the world's level.dat file.
+     * @param {string} version - Version of the server.
+     * @returns {[`${worldPath}/level.dat`, `${string}/level.dat`]} - The path to the world's level.dat file.
      */
-    LevelDat: (worldPath, serverId) => {
+    LevelDat: (worldPath, serverId, version) => {
+        if(compareMinecraftVersions('26', version) >= 0)
+            return [`${worldPath}/../../../level.dat`, `./download-cache/serverConnection/${serverId}/level.dat`];
         const levelDatPath = `${worldPath}/level.dat`;
-        return serverId ? [levelDatPath, `./download-cache/serverConnection/${serverId}/level.dat`] : levelDatPath;
+        return [levelDatPath, `./download-cache/serverConnection/${serverId}/level.dat`];
     },
 
     /**
      * Constructs the path to the world's scoreboard.dat file.
      * @param {string} worldPath - The path to the world folder.
-     * @param {?string} [serverId=null] - The server's ID. If provided, this method will return an array of the remote and the local path.
-     * @returns {string[]|`${string}/data/scoreboard.dat`}
+     * @param {?string} [serverId] - The server's ID.
+     * @param {string} version - Version of the server.
+     * @returns {[`${string}/data/minecraft/scoreboard.dat`, `${string}/data/scoreboard.dat`]}
      */
-    Scoreboards: (worldPath, serverId) => {
+    Scoreboards: (worldPath, serverId, version) => {
+        if(compareMinecraftVersions('26', version) >= 0)
+            return [`${worldPath}/../../../data/minecraft/scoreboard.dat`, `./download-cache/serverConnection/${serverId}/scoreboard.dat`];
         const scoreboardsPath = `${worldPath}/data/scoreboard.dat`;
-        return serverId ? [scoreboardsPath, `./download-cache/serverConnection/${serverId}/scoreboard.dat`] : scoreboardsPath;
+        return [scoreboardsPath, `./download-cache/serverConnection/${serverId}/scoreboard.dat`];
     },
 
     /**

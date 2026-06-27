@@ -29,7 +29,7 @@ export default class ServerInfo extends Command {
      */
     async run(interaction, client, args, server, logger) {
         const serverProperties = await server.protocol.getWithCache(...FilePath.ServerProperties(server.path, server.id));
-        const levelDat = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
+        const levelDat = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id, server.version));
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download,
         }, { category: 'server-info' })) return await server.protocol.endBatch();

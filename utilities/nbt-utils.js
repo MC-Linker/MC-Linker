@@ -3,6 +3,10 @@ import mojangson from 'mojangson';
 import keys from './keys.js';
 import { ph } from './messages.js';
 import { stripColorCodes } from './format-utils.js';
+import rootLogger from './logger/Logger.js';
+import features from './logger/features.js';
+
+const logger = rootLogger.child({ feature: features.utilities.nbt });
 
 /**
  * Creates a JS object from an nbt buffer.
@@ -40,7 +44,8 @@ export function nbtStringToObject(string, interaction) {
         return simplified;
     }
     catch(err) {
-        interaction?.editReplyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        if(interaction) void interaction.editReplyTl(keys.api.ftp.errors.could_not_parse, ph.error(err));
+        logger.debug(err, 'Failed to parse SNBT');
         return undefined;
     }
 }

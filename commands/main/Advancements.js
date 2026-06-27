@@ -44,7 +44,7 @@ export default class Advancements extends Command {
         const user = args[1];
         const showDetails = args[2];
 
-        const amFile = await server.protocol.getWithCache(...FilePath.Advancements(server.worldPath, user.uuid));
+        const amFile = await server.protocol.getWithCache(...FilePath.Advancements(server.worldPath, user.uuid, server.version));
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.warnings.could_not_download_user_files,
         }, { category: 'advancements' }, ph.colors())) return;

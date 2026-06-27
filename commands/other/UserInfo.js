@@ -50,10 +50,10 @@ export default class UserInfo extends Command {
         const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
         if(onlinePlayersResponse?.status === 'success') onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
 
-        const scoreboardDatResponse = await server.protocol.getWithCache(...FilePath.Scoreboards(server.worldPath, server.id));
-        const levelDatResponse = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
+        const scoreboardDatResponse = await server.protocol.getWithCache(...FilePath.Scoreboards(server.worldPath, server.id, server.version));
+        const levelDatResponse = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id, server.version));
 
-        let stats = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid));
+        let stats = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid, server.version));
         let operators = await server.protocol.getWithCache(...FilePath.Operators(server.path, server.id));
         let whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
         let bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
