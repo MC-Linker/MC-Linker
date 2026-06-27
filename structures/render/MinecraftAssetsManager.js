@@ -190,7 +190,7 @@ export default class MinecraftAssetsManager {
             // Atomic-ish swap: remove any stale dir, then move the fully-extracted temp dir into place.
             await fs.remove(dir);
             await fs.move(tmpDir, dir);
-            logger.info(`Extracted Minecraft ${resolvedId} assets to ${dir}`);
+            logger.debug(`Extracted Minecraft ${resolvedId} assets to ${dir}`);
         }
         finally {
             await fs.remove(jarPath).catch(() => {});

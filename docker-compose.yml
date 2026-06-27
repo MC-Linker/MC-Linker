@@ -13,6 +13,9 @@ services:
         source: ./download-cache
         target: /usr/src/app/download-cache
       - type: bind
+        source: ./resources/minecraft-assets
+        target: /usr/src/app/resources/minecraft-assets
+      - type: bind
         source: ./logs
         target: /usr/src/app/logs
       - type: bind
