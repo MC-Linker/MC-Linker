@@ -19,20 +19,21 @@ const mcDataCache = new Map();
  * Falls back to {@link MinecraftDataVersion} if the requested version is unsupported.
  * @param {string} [version] - The Minecraft version string (e.g. "1.21", "26.1"). Defaults to MinecraftDataVersion.
  * @returns {import('minecraft-data').IndexedData}
+ * @throws {Error} If neither the requested version nor {@link MinecraftDataVersion} is supported by minecraft-data.
  */
 export function getMinecraftData(version) {
     version ??= MinecraftDataVersion;
     if(mcDataCache.has(version)) return mcDataCache.get(version);
-    try {
-        const data = MinecraftData(version);
-        mcDataCache.set(version, data);
-        return data;
-    }
-    catch {
-        // Version not in minecraft-data; fall back
+
+    // MinecraftData() returns null (doesn't throw) for an unresolvable version, e.g. snapshots/build ids.
+    const data = MinecraftData(version);
+    if(!data) {
         if(version !== MinecraftDataVersion) return getMinecraftData(MinecraftDataVersion);
         throw new Error(`minecraft-data does not support version ${version}`);
     }
+
+    mcDataCache.set(version, data);
+    return data;
 }
 
 const mcData = getMinecraftData(MinecraftDataVersion);

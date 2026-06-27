@@ -158,6 +158,7 @@ export default class MinecraftAssetsManager {
         const tmpDir = `${dir}.tmp`;
 
         try {
+            logger.debug(`Downloading Minecraft ${resolvedId} assets from ${clientUrl}`);
             await downloadFile(clientUrl, jarPath);
 
             //remove to clear previous contents
