@@ -396,13 +396,17 @@ Use JSDoc to describe all classes, methods, and to declare types. This is crucia
 editor autocompletion.
 
 **Every function and method must have JSDoc with typed `@param` annotations and a `@returns` (omit `@returns` only
-for `void`-returning sync functions). Document errors a function intentionally throws with `@throws {Type}`. No bare
-`@param interaction` / `@param client` lines — always include the
+for `void`-returning sync functions). No bare `@param interaction` / `@param client` lines — always include the
 `{Type}` brace, even when the type is obvious from context (`{MCLinker}`, `{ServerConnection}`, etc.). Use
 `import('path').Type` syntax for cross-file types when the type isn't already in scope. For object-shaped params,
 write inline literal types (`{{ badge: string, scopeLabel: string }}`) or reference a typedef. Array params should
 use tuple syntax when positional (`[string, number?]`) rather than `any[]`. This is enforced as a code-review
 standard; PRs introducing untyped params should be rejected.
+
+**Every function that can throw must have `@throws {Type}` in its JSDoc**, describing when/why — whether the
+`throw` is explicit in the function body, or it propagates from a call the function makes without catching it. This
+is not optional/best-effort: a reader must be able to tell from the JSDoc alone whether calling a function needs a
+`try`/`catch`, without reading its implementation.
 
 **Tie everything to a class where reasonable:** Helper functions should nearly always be written as `static` (or
 instance) methods on the relevant class, not as module-level functions, and constants that belong to a class (config
