@@ -11,7 +11,7 @@ services:
         source: ${DATA_FOLDER}/download-cache
         target: /usr/src/app/download-cache
       - type: bind
-        source: ${DATA_FOLDER}/minecraft-assets
+        source: ${ASSETS_DIR}
         target: /usr/src/app/resources/minecraft-assets
       - type: bind
         source: ${DATA_FOLDER}/logs
