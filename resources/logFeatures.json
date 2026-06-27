@@ -97,6 +97,12 @@
         },
         "helpers": {
             "pagination": null
+        },
+        "render": {
+            "assetsManager": null,
+            "containerRenderer": null,
+            "itemImages": null,
+            "itemRenderer": null
         }
     },
     "utilities": {

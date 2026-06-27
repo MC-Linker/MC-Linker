@@ -384,6 +384,9 @@ objects are not serializable and must be excluded from broadcasts.
 
 ## File Operations
 
+**Creating files:** Whenever you create a new file, immediately `git add` it so it is tracked. Never leave newly created
+source files as untracked — stage them as part of the same change that introduces them.
+
 **Renaming files:** Always use `git mv <old> <new>` to rename or move files. Never use OS-level commands (`Rename-Item`,
 `mv`, etc.) directly, as they cause git to see a delete + untracked add instead of a rename.
 
@@ -393,17 +396,27 @@ Use JSDoc to describe all classes, methods, and to declare types. This is crucia
 editor autocompletion.
 
 **Every function and method must have JSDoc with typed `@param` annotations and a `@returns` (omit `@returns` only
-for `void`-returning sync functions). No bare `@param interaction` / `@param client` lines — always include the
+for `void`-returning sync functions). Document errors a function intentionally throws with `@throws {Type}`. No bare
+`@param interaction` / `@param client` lines — always include the
 `{Type}` brace, even when the type is obvious from context (`{MCLinker}`, `{ServerConnection}`, etc.). Use
 `import('path').Type` syntax for cross-file types when the type isn't already in scope. For object-shaped params,
 write inline literal types (`{{ badge: string, scopeLabel: string }}`) or reference a typedef. Array params should
 use tuple syntax when positional (`[string, number?]`) rather than `any[]`. This is enforced as a code-review
 standard; PRs introducing untyped params should be rejected.
 
-**Class methods over module-level functions:** Helper functions should nearly always be written as `static` (or
-instance) methods on the relevant class, not as module-level functions. Module-level functions are only appropriate
-for truly standalone utilities with no logical owner class (e.g. exports in `utilities/`). Private helpers that
-support a single class must be placed inside that class and prefixed with `_`.
+**Tie everything to a class where reasonable:** Helper functions should nearly always be written as `static` (or
+instance) methods on the relevant class, not as module-level functions, and constants that belong to a class (config
+values, limits, keys, sentinels, etc.) should be `static` fields on that class rather than module-level `const`s.
+Module-level functions/constants are only appropriate for truly standalone values with no logical owner class (e.g.
+exports in `utilities/`). This applies to JSDoc `@typedef`s too: when a typedef belongs to a class, place its comment
+**inside the class body** (it still resolves module-wide, and cross-file `import('./File.js').TypeName` references
+still work — it's purely organizational). The one standing exception that stays at module scope is the module-level
+child `logger` (see [Logging](#logging)).
+
+**Marking privates:** Private members must be marked `@private` in their JSDoc. The leading-underscore prefix (`_`)
+is **optional, not required** — use it when it aids readability or is needed to avoid a name collision (e.g. a
+private field `_foo` backing a public `get foo()`), but don't underscore every private member by reflex. `@private`
+is the source of truth for visibility; `_` is just a readability aid.
 
 Adhere to the code style of this project for all edits.
 However, do not run linting yourself, write the code adhering to the code style rules already.

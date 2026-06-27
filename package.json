@@ -22,6 +22,8 @@
         "@fastify/cookie": "^9.4.0",
         "@fastify/static": "^7.0.4",
         "@socket.io/admin-ui": "^0.5.1",
+        "adm-zip": "^0.5.17",
+        "block-model-renderer": "^1.3.0",
         "bufferutil": "^4.0.7",
         "d3-hierarchy": "^3.1.2",
         "discord.js": "^14.11.0",
@@ -49,6 +51,7 @@
         "zlib-sync": "^0.1.8"
     },
     "devDependencies": {
+        "@types/adm-zip": "^0.5.7",
         "eslint": "^10.4.0",
         "globals": "^17.6.0",
         "typescript": "^6.0.0"

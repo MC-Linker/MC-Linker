@@ -5,76 +5,14 @@ import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import {
-    drawMinecraftNumber,
     getLivePlayerNbt,
     getMinecraftAvatarURL,
     getMinecraftData,
     stringifyMinecraftJson,
-    wrapText,
 } from '../../utilities/utils.js';
-import potionColors from '../../resources/data/potion_colors.json' with { type: 'json' };
+import ContainerRenderer from '../../structures/render/ContainerRenderer.js';
 
 export default class Inventory extends Command {
-
-    _armorSlotCoords = {
-        5: [16, 16],
-        6: [16, 52],
-        7: [16, 88],
-        8: [16, 124],
-        45: [154, 124],
-    };
-
-    _mainInvSlotCoords = {
-        9: [16, 168],
-        10: [52, 168],
-        11: [88, 168],
-        12: [124, 168],
-        13: [160, 168],
-        14: [196, 168],
-        15: [232, 168],
-        16: [268, 168],
-        17: [304, 168],
-        18: [16, 204],
-        19: [52, 204],
-        20: [88, 204],
-        21: [124, 204],
-        22: [160, 204],
-        23: [196, 204],
-        24: [232, 204],
-        25: [268, 204],
-        26: [304, 204],
-        27: [16, 240],
-        28: [52, 240],
-        29: [88, 240],
-        30: [124, 240],
-        31: [160, 240],
-        32: [196, 240],
-        33: [232, 240],
-        34: [268, 240],
-        35: [304, 240],
-    };
-
-    _hotbarSlotCoords = {
-        36: [16, 284],
-        37: [52, 284],
-        38: [88, 284],
-        39: [124, 284],
-        40: [160, 284],
-        41: [196, 284],
-        42: [232, 284],
-        43: [268, 284],
-        44: [304, 284],
-    };
-
-    //Construct _shulkerSlotCoords from player inventory
-    _shulkerSlotCoords = Object.assign(
-        //Move _mainInvSlotCoords up by 132 and decrease slot number by 9
-        Object.fromEntries(Object.entries(this._mainInvSlotCoords)
-            .map(([slot, [x, y]]) => [slot - 9, [x, y - 132]])),
-        //Increase slot numbers by 18
-        Object.fromEntries(Object.entries(Object.assign({}, this._mainInvSlotCoords, this._hotbarSlotCoords))
-            .map(([slot, [x, y]]) => [+slot + 18, [x, y]])),
-    );
 
     _armorSlotNames = {
         5: keys.commands.inventory.slots.head,
@@ -101,11 +39,6 @@ export default class Inventory extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-        const {
-            _mainInvSlotCoords: mainInvSlotCoords,
-            _armorSlotCoords: armorSlotCoords,
-            _hotbarSlotCoords: hotbarSlotCoords,
-        } = this;
         const mcData = getMinecraftData(server.version);
         /** @type {UserResponse} */
         const user = args[0];
@@ -126,19 +59,17 @@ export default class Inventory extends Command {
             };
         });
 
+        const renderer = new ContainerRenderer(server.version, interaction);
+
         const itemButtons = [];
         const {
             canvas: invCanvas,
             ctx,
-        } = await this._renderContainer(
-            './resources/images/containers/inventory_blank.png',
-            playerData.Inventory,
-            Object.assign({}, mainInvSlotCoords, armorSlotCoords, hotbarSlotCoords),
-            showDetails ? this.pushInvButton.bind(this, itemButtons, 44, true, mcData) : () => {
-            }, //Push itemButtons if showDetails is set to true
+        } = await renderer.renderInventory(playerData.Inventory, {
+            loopCode: showDetails ? this.pushInvButton.bind(this, itemButtons, 44, true, mcData) : undefined,
             mcData,
             logger,
-        );
+        });
 
         async function getSkin(uuidOrUsername) {
             const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`);
@@ -161,7 +92,7 @@ export default class Inventory extends Command {
         // Send without buttons if showDetails is false
         if(!showDetails) return await interaction.editReply({ files: [invAttach], embeds: [invEmbed] });
 
-        const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach, mcData, logger);
+        const paginationPages = await this.getInventoryPages(itemButtons, playerData.Inventory, user.username, invEmbed, invAttach, mcData, renderer, logger);
         const pagination = new Pagination(client, interaction, paginationPages, {
             showStartPageOnce: true,
             highlightSelectedButton: ButtonStyle.Primary,
@@ -170,6 +101,31 @@ export default class Inventory extends Command {
         await pagination.start();
     }
 
+    /**
+     * Pushes a button for an inventory item. Bound with leading args via `.bind(this, ...)`.
+     * @param {Discord.ButtonBuilder[]} buttons - Accumulator the new button is pushed onto.
+     * @param {number} maxSlot - Items in slots above this are skipped.
+     * @param {boolean} doUseArmorSlots - Whether to label armor slots by name instead of index.
+     * @param {import('minecraft-data').IndexedData} mcData - Minecraft data for the server version.
+     * @param {object} item - The inventory item to build a button for.
+     * @param {number} index - The item's index within its container.
+     */
+    pushInvButton(buttons, maxSlot, doUseArmorSlots, mcData, item, index) {
+        if(item.slot > maxSlot) return;
+
+        //Push button for each item in the inventory
+        const itemId = item.id.split(':').pop();
+        const slot = item.slot;
+        const armorSlotNames = this._armorSlotNames;
+        buttons.push(getComponent(
+            keys.commands.inventory.success.item_button,
+            {
+                slot: doUseArmorSlots && armorSlotNames[slot] ? armorSlotNames[slot] : `#${slot}`,
+                index: item.parentIndex ? `${item.parentIndex}_${index}` : index,
+                name: mcData.itemsByName[itemId]?.displayName ?? itemId,
+            },
+        ));
+    }
 
     addInfo(embed, tag, itemStats, mcData) {
         let addedInfo = false;
@@ -308,32 +264,6 @@ export default class Inventory extends Command {
     }
 
     /**
-     * Pushes a button for an inventory item. Bound with leading args via `.bind(this, ...)`.
-     * @param {Discord.ButtonBuilder[]} buttons - Accumulator the new button is pushed onto.
-     * @param {number} maxSlot - Items in slots above this are skipped.
-     * @param {boolean} doUseArmorSlots - Whether to label armor slots by name instead of index.
-     * @param {import('minecraft-data').IndexedData} mcData - Minecraft data for the server version.
-     * @param {object} item - The inventory item to build a button for.
-     * @param {number} index - The item's index within its container.
-     */
-    pushInvButton(buttons, maxSlot, doUseArmorSlots, mcData, item, index) {
-        if(item.slot > maxSlot) return;
-
-        //Push button for each item in the inventory
-        const itemId = item.id.split(':').pop();
-        const slot = item.slot;
-        const armorSlotNames = this._armorSlotNames;
-        buttons.push(getComponent(
-            keys.commands.inventory.success.item_button,
-            {
-                slot: doUseArmorSlots && armorSlotNames[slot] ? armorSlotNames[slot] : `#${slot}`,
-                index: item.parentIndex ? `${item.parentIndex}_${index}` : index,
-                name: mcData.itemsByName[itemId]?.displayName ?? itemId,
-            },
-        ));
-    }
-
-    /**
      * Constructs pagination pages for the specified inventory and buttons
      * @param {Discord.ButtonBuilder[]} inventoryButtons - The buttons to use for each item in the inventory
      * @param {Object} inventory - The inventory nbt data to use
@@ -341,15 +271,13 @@ export default class Inventory extends Command {
      * @param {Discord.EmbedBuilder} embed - The embed to use for each of the pages
      * @param {Discord.AttachmentBuilder} attach - The attachment to use for each of the pages
      * @param {import('minecraft-data').IndexedData} mcData - The minecraft data for the server version
+     * @param {ContainerRenderer} renderer - The container renderer (holds prepared assets + slot coords).
      * @param {import('../../utilities/logger/Logger.js').default} [logger] - Per-execution child logger.
      * @returns {Promise<PaginationPages>}
      */
-    async getInventoryPages(inventoryButtons, inventory, username, embed, attach, mcData, logger = null) {
-        const {
-            _armorSlotCoords: armorSlotCoords,
-            _armorSlotNames: armorSlotNames,
-            _shulkerSlotCoords: shulkerSlotCoords,
-        } = this;
+    async getInventoryPages(inventoryButtons, inventory, username, embed, attach, mcData, renderer, logger = null) {
+        const armorSlotCoords = renderer.armorSlotCoords;
+        const armorSlotNames = this._armorSlotNames;
         /** @type {PaginationPages} */
         const paginationPages = {};
 
@@ -414,14 +342,11 @@ export default class Inventory extends Command {
                 const allItems = mappedShulkerItems.concat(mappedInvItems);
 
                 const shulkerButtons = []; //Clear previous buttons
-                const { canvas: shulkerImage } = await this._renderContainer(
-                    './resources/images/containers/shulker_blank.png',
-                    allItems,
-                    shulkerSlotCoords,
-                    this.pushInvButton.bind(this, shulkerButtons, 26, false, mcData),
+                const { canvas: shulkerImage } = await renderer.renderShulker(allItems, {
+                    loopCode: this.pushInvButton.bind(this, shulkerButtons, 26, false, mcData),
                     mcData,
                     logger,
-                );
+                });
 
                 const shulkerAttach = new Discord.AttachmentBuilder(
                     await shulkerImage.toBuffer('png'),
@@ -439,6 +364,7 @@ export default class Inventory extends Command {
                             shulkerEmbed,
                             shulkerAttach,
                             mcData,
+                            renderer,
                             logger,
                         ),
                     },
@@ -494,102 +420,5 @@ export default class Inventory extends Command {
         else if(index >= 80 && index <= 83)
             index -= 79;
         return index;
-    }
-
-    // noinspection JSUnusedLocalSymbols
-    async _renderContainer(backgroundPath, items, slotCoords, loopCode = (item, index) => {}, mcData, logger = null) {
-        const background = await Canvas.loadImage(backgroundPath);
-        const canvas = new Canvas.Canvas(background.width, background.height);
-        const ctx = canvas.getContext('2d');
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-
-        for(let i = 0; i < items.length; i++) {
-            const slot = items[i].slot;
-            const itemId = items[i].id.split(':').pop();
-            const count = items[i].count;
-            const damage = items[i].tag?.Damage;
-
-            const [x, y] = slotCoords[slot] ?? [];
-            if(!x || !y) continue; //Continue for modded slots
-
-            drawImage: try {
-                if(itemId === 'air') break drawImage;
-
-                let itemImg;
-                if(itemId === 'potion' || itemId === 'splash_potion' || itemId === 'lingering_potion') {
-                    const potionId = items[i].components?.['minecraft:potion_contents']?.potion ?? items[i].tag?.Potion;
-                    const potionImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
-                    const potionOverlayImg = await Canvas.loadImage(`./resources/images/items/potion_overlay.png`);
-                    const potionColor = potionColors[potionId.replace(/(minecraft:)?(long_|strong_)?/, '')] ?? potionColors['uncraftable'];
-
-                    const potionCanvas = new Canvas.Canvas(32, 32);
-                    const potionCtx = potionCanvas.getContext('2d');
-
-                    potionCtx.drawImage(potionOverlayImg, 0, 0, 32, 32);
-
-                    potionCtx.imageSmoothingEnabled = false;
-                    potionCtx.globalCompositeOperation = 'multiply';
-                    potionCtx.fillStyle = potionColor;
-                    potionCtx.fillRect(0, 0, 32, 32);
-
-                    potionCtx.globalCompositeOperation = 'destination-in';
-                    potionCtx.drawImage(potionOverlayImg, 0, 0, 32, 32);
-
-                    potionCtx.globalCompositeOperation = 'source-over';
-                    potionCtx.drawImage(potionImg, 0, 0, 32, 32);
-
-                    itemImg = potionCanvas;
-                }
-                else itemImg = await Canvas.loadImage(`./resources/images/items/${itemId}.png`);
-
-                ctx.drawImage(itemImg, x, y, 32, 32);
-            }
-            catch(err) {
-                //Draw name
-                logger?.debug(`Could not find item image ${itemId}. Applying text...`);
-                ctx.font = '8px Minecraft';
-                ctx.fillStyle = '#000';
-                const lines = wrapText(ctx, mcData.itemsByName[itemId]?.displayName ?? itemId, 32);
-                lines.forEach((line, i) => ctx.fillText(line, x, y + 8 + i * 8));
-            }
-
-            //Draw count
-            if(count > 1) drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
-
-            const maxDurability = mcData.itemsByName[itemId]?.maxDurability;
-            if(damage && maxDurability) {
-                const durabilityPercent = 100 - damage / maxDurability * 100;
-                const durabilityPx = Math.floor(durabilityPercent / 100 * 34);
-
-                //Get gradient color between green and red
-                const r = Math.floor((100 - durabilityPercent) * 2.56);
-                const g = Math.floor(durabilityPercent * 2.56);
-                const rgb = [r, g, 0];
-
-                //Draw durability bar
-                ctx.strokeStyle = `rgb(${rgb.join(',')})`;
-                ctx.fillStyle = `rgb(${rgb.join(',')})`;
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(x, y + 28);
-                ctx.lineTo(x + durabilityPx, y + 28);
-                ctx.stroke();
-                ctx.closePath();
-
-                ctx.strokeStyle = `#000000`;
-                ctx.fillStyle = `#000000`;
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(x, y + 31);
-                ctx.lineTo(x + 33, y + 31);
-                ctx.stroke();
-                ctx.closePath();
-            }
-
-            loopCode(items[i], i);
-        }
-
-        return { canvas, ctx };
     }
 }
