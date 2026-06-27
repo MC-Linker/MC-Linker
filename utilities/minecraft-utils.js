@@ -323,8 +323,8 @@ export function parseProperties(properties) {
  * @returns {-1|0|1} Negative if a < b, zero if equal, positive if a > b.
  */
 export function compareMinecraftVersions(a, b) {
-    const pa = String(a).split('.').map(Number);
-    const pb = String(b).split('.').map(Number);
+    const pa = a.split('.').slice(0, 3).map(Number);
+    const pb = b.split('.').slice(0, 3).map(Number);
     for(let i = 0; i < Math.max(pa.length, pb.length); i++) {
         const diff = (pa[i] ?? 0) - (pb[i] ?? 0);
         if(diff !== 0) return diff < 0 ? -1 : 1;
