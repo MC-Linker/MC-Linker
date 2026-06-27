@@ -19,7 +19,7 @@ export const FilePath = {
      * @returns {[`${worldPath}/advancements/${uuid}.json`, `./download-cache/advancements/${uuid}.json`]} - The path to the advancements file on the server and the local cache.
      */
     Advancements: (worldPath, uuid, version) => {
-        if(compareMinecraftVersions('26', version) >= 0)
+        if(compareMinecraftVersions('26', version) <= 0)
             // worldpath is <world>/dimensions/minecraft/overworld
             return [`${worldPath}/../../../players/advancements/${uuid}.json`, `./download-cache/advancements/${uuid}.json`];
         return [`${worldPath}/advancements/${uuid}.json`, `./download-cache/advancements/${uuid}.json`];
@@ -32,7 +32,7 @@ export const FilePath = {
      * @returns {[`${worldPath}/stats/${uuid}.json`, `./download-cache/stats/${uuid}.json`]} - The path to the stats file on the server and the local cache.
      */
     Stats: (worldPath, uuid, version) => {
-        if(compareMinecraftVersions('26', version) >= 0)
+        if(compareMinecraftVersions('26', version) <= 0)
             return [`${worldPath}/../../../players/stats/${uuid}.json`, `./download-cache/stats/${uuid}.json`];
         return [`${worldPath}/stats/${uuid}.json`, `./download-cache/stats/${uuid}.json`];
     },
@@ -44,7 +44,7 @@ export const FilePath = {
      * @returns {[`${worldPath}/playerdata/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`]} - The path to the playerdata folder on the server and the local cache.
      */
     PlayerData: (worldPath, uuid, version) => {
-        if(compareMinecraftVersions('26', version) >= 0)
+        if(compareMinecraftVersions('26', version) <= 0)
             return [`${worldPath}/../../../players/data/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`];
         return [`${worldPath}/playerdata/${uuid}.dat`, `./download-cache/playerdata/${uuid}.dat`];
     },
@@ -57,7 +57,7 @@ export const FilePath = {
      * @returns {[`${worldPath}/level.dat`, `${string}/level.dat`]} - The path to the world's level.dat file.
      */
     LevelDat: (worldPath, serverId, version) => {
-        if(compareMinecraftVersions('26', version) >= 0)
+        if(compareMinecraftVersions('26', version) <= 0)
             return [`${worldPath}/../../../level.dat`, `./download-cache/serverConnection/${serverId}/level.dat`];
         const levelDatPath = `${worldPath}/level.dat`;
         return [levelDatPath, `./download-cache/serverConnection/${serverId}/level.dat`];
@@ -71,7 +71,7 @@ export const FilePath = {
      * @returns {[`${string}/data/minecraft/scoreboard.dat`, `${string}/data/scoreboard.dat`]}
      */
     Scoreboards: (worldPath, serverId, version) => {
-        if(compareMinecraftVersions('26', version) >= 0)
+        if(compareMinecraftVersions('26', version) <= 0)
             return [`${worldPath}/../../../data/minecraft/scoreboard.dat`, `./download-cache/serverConnection/${serverId}/scoreboard.dat`];
         const scoreboardsPath = `${worldPath}/data/scoreboard.dat`;
         return [scoreboardsPath, `./download-cache/serverConnection/${serverId}/scoreboard.dat`];
