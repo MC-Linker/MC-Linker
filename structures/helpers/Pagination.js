@@ -38,6 +38,7 @@ export default class Pagination {
      * @property {ButtonBuilder} [backButton] - The button to use for going to the previous page
      * @property {ButtonBuilder} [exitButton] - The button to use for exiting the nested pagination
      * @property {boolean} [showSelectedButton=true] - Whether the currently selected button should be shown
+     * @property {boolean} [disableSelectedButton=false] - Whether the currently selected button should be disabled
      * @property {boolean} [showStartPageOnce=false] - Whether the starting page should only be shown once
      * @property {number} [timeout] - The timeout for the buttons of the pagination in ms
      * @property {Pagination} [parent] - The parent of this pagination (only used for nested paginations)
@@ -146,6 +147,7 @@ export default class Pagination {
             exitButton: getComponent(keys.api.component.success.exit_button, { id: Pagination.NAVIGATION_BUTTON_IDS.EXIT }),
             timeout: DefaultCollectorTimeout,
             showSelectedButton: true,
+            disableSelectedButton: false,
             highlightSelectedButton: ButtonStyle.Primary,
             showStartPageOnce: false,
             ...options,
@@ -384,9 +386,11 @@ export default class Pagination {
         const selectedButtonIndex = components.findIndex(b => b.data.custom_id === selectedButtonId);
         if(selectedButtonIndex === -1) return components;
         if(!this.options.showSelectedButton) components.splice(selectedButtonIndex, 1);
-        else if(this.options.highlightSelectedButton) {
-            components[selectedButtonIndex] = ButtonBuilder.from(components[selectedButtonIndex].data)
-                .setStyle(this.options.highlightSelectedButton);
+        else {
+            let selectedButton = ButtonBuilder.from(components[selectedButtonIndex].data);
+            if(this.options.highlightSelectedButton) selectedButton.setStyle(this.options.highlightSelectedButton);
+            if(this.options.disableSelectedButton) selectedButton.setDisabled(true);
+            components[selectedButtonIndex] = selectedButton;
         }
         return components;
     }
