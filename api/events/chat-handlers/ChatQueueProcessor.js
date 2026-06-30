@@ -1,7 +1,7 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
 import { getEmbed, getReplyOptions } from '../../../utilities/messages.js';
-import { MaxComponentsV2Chars } from '../../../utilities/utils.js';
+import { CODE_BLOCK_OVERHEAD_ANSI, MaxComponentsV2Chars } from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
@@ -343,7 +343,7 @@ export default class ChatQueueProcessor {
 
             // newlines included
             const candidate = `${combinedRaw}${item.raw}`;
-            if(candidate.length > this.consoleCharLimit() && consumed > 0) break;
+            if(candidate.replace(/\[m/g, '[0m').length > this.consoleCharLimit() && consumed > 0) break;
 
             combinedRaw = candidate;
             consumed++;
@@ -352,11 +352,11 @@ export default class ChatQueueProcessor {
         if(consumed <= 0) return { consumed: 1 };
 
         const lastMessage = this.lastConsoleMessages.get(discordChannel.id);
-        if(lastMessage && lastMessage.raw.length + combinedRaw.length <= this.consoleCharLimit()) {
+        const nextRaw = lastMessage ? `${lastMessage.raw}${combinedRaw}` : combinedRaw;
+        if(lastMessage && nextRaw.replace(/\[m/g, '[0m').length <= this.consoleCharLimit()) {
             try {
-                const nextRaw = `${lastMessage.raw}${combinedRaw}`;
                 logger.debug({ guildId: discordChannel.guildId }, `Appending console payload to previous message in channel ${discordChannel.id} (consumed=${consumed}, addedLength=${combinedRaw.length})`);
-                const editOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: Discord.codeBlock('ansi', nextRaw.replace(/\u001b\[m/g, '\u001b[0m')) });
+                const editOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: this.formatConsoleContent(nextRaw) });
                 await this.monitor.track('webhook.editMessage', () => webhook.editMessage(lastMessage.id, {
                     ...editOptions,
                     ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
@@ -386,7 +386,7 @@ export default class ChatQueueProcessor {
         }
 
         logger.debug({ guildId: discordChannel.guildId }, `Sending new console payload to channel ${discordChannel.id} (consumed=${consumed}, length=${combinedRaw.length})`);
-        const sendOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: Discord.codeBlock('ansi', combinedRaw.replace(/\u001b\[m/g, '\u001b[0m')) });
+        const sendOptions = getReplyOptions(keys.api.plugin.success.messages.console, { content: this.formatConsoleContent(combinedRaw) });
         let sentMessage = await this.monitor.track('webhook.send', () => webhook.send({
             ...sendOptions,
             ...getSystemWebhookSendOptions(discordChannel),
@@ -402,11 +402,25 @@ export default class ChatQueueProcessor {
     }
 
     /**
-     * Calculates the character limit for console output (raw text before code block wrapping).
-     * Based on the Components V2 text display limit; ANSI codes are always preserved.
+     * Calculates the character limit for console output (text before code block wrapping).
+     * Based on the Components V2 text display limit; ANSI codes are always preserved. Length checks must use the post-rewrite text, since rewriting each bare reset (`ESC[m`) to `ESC[0m` adds a character.
      * @return {number}
      */
     consoleCharLimit() {
-        return MaxComponentsV2Chars - 12; // 12 for ```ansi\n\n```
+        return MaxComponentsV2Chars - CODE_BLOCK_OVERHEAD_ANSI;
+    }
+
+    /**
+     * Builds the ANSI code-block content for a console message, guaranteeing the result never exceeds
+     * Discord's Components V2 text display limit — even for a single line longer than the limit, which
+     * the batching loop cannot split. Rewrites bare ANSI resets to the explicit form Discord renders, then clamps before wrapping.
+     * @param {string} raw - The raw console text.
+     * @returns {string} The code-block-wrapped content, clamped to the limit.
+     */
+    formatConsoleContent(raw) {
+        const limit = this.consoleCharLimit();
+        let content = raw.replace(/\[m/g, '[0m');
+        if(content.length > limit) content = `${content.slice(0, limit - 1)}…`;
+        return Discord.codeBlock('ansi', content);
     }
 }
