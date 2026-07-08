@@ -274,8 +274,11 @@ function formatRaw(log: LogData): string {
 }
 
 function formatTimestamp(value: unknown): string {
-  if (!value) return '—';
-  const date = new Date(String(value));
+  if (value === null || value === undefined || value === '') return '—';
+  // pino writes `time` as epoch milliseconds (number). A numeric string must be parsed as
+  // epoch too — `new Date("1716750000000")` yields Invalid Date, while `new Date(1716750000000)` works.
+  const numeric = typeof value === 'number' ? value : /^\d+$/.test(String(value)) ? Number(value) : null;
+  const date = numeric !== null ? new Date(numeric) : new Date(String(value));
   if (Number.isNaN(date.getTime())) return String(value);
   return date.toLocaleString();
 }
