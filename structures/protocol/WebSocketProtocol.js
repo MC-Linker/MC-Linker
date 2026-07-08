@@ -282,12 +282,13 @@ export default class WebSocketProtocol extends Protocol {
             }, { track: false });
             return await new Promise(resolve => {
                 /** @type {WebSocketProtocol} */
-                const protocol = c.serverConnections.cache.get(id).protocol;
-                if(!protocol.socket) return resolve(null);
+                const protocol = c.serverConnections.cache.get(id)?.protocol;
+                if(!protocol?.socket) return resolve(null);
                 clog.debug(`Sending event ${name} with data: ${JSON.stringify(data)}`);
                 protocol.socket.timeout(10_000).emit(name, ...data, (err, response) => {
                     if(err) {
-                        c.analytics.trackError('unhandled', 'WebSocketProtocol._sendRaw', id, null, err, { event: name }, clog);
+                        const type = err?.message === 'operation has timed out' ? 'ws_timeout' : 'unhandled';
+                        c.analytics.trackError(type, 'WebSocketProtocol._sendRaw', id, null, err, { event: name }, clog);
                         return resolve(null);
                     }
 
