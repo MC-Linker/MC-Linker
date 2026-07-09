@@ -13,6 +13,7 @@ import Component from './Component.js';
 import Event from './Event.js';
 import MCLinkerAPI from '../api/MCLinkerAPI.js';
 import AnalyticsCollector, { trackError } from './analytics/AnalyticsCollector.js';
+import HeapMonitor from './HeapMonitor.js';
 import * as utils from '../utilities/utils.js';
 import mongoose, { Schema } from 'mongoose';
 import Schemas from '../resources/schemas.js';
@@ -227,6 +228,12 @@ export default class MCLinker extends Discord.Client {
          * @type {AnalyticsCollector}
          */
         this.analytics = new AnalyticsCollector(this);
+
+        /**
+         * The heap memory monitor for debugging OOM spikes.
+         * @type {HeapMonitor}
+         */
+        this.heapMonitor = new HeapMonitor(85, './heaps');
 
         /**
          * BroadcastEval with MCLinker typing.

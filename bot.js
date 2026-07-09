@@ -20,6 +20,8 @@ async function shutdown() {
     catch(err) { logger.error(err, 'Failed to destroy analytics aggregator during shutdown'); }
     try { await client?.analytics?.destroy(); }
     catch(err) { logger.error(err, 'Failed to destroy analytics during shutdown'); }
+    try { client?.heapMonitor?.destroy(); }
+    catch(err) { logger.error(err, 'Failed to destroy heap monitor during shutdown'); }
     process.exit(0);
 }
 

@@ -81,6 +81,7 @@
     },
     "structures": {
         "mclinker": null,
+        "heapMonitor": null,
         "protocol": {
             "base": null,
             "websocket": null

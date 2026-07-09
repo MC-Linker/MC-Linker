@@ -432,9 +432,10 @@ The full ruleset is in `.eslintrc.json`. Key conventions:
 - **Single quotes** for strings
 - **Always semicolons**
 - **Trailing commas** in multiline objects/arrays (`always-multiline`)
-- **Stroustrup brace style** (`else`, `catch`, etc. on a new line after `}`), single-line blocks allowed
+- **Stroustrup brace style** (`else`, `catch`, etc. on a new line after `}`), **no braces for single-statement blocks**:
+  `if(condition) statement;` not `if(condition) { statement; }`
 - **No space** between control keywords and parentheses: `if(`, `for(`, `while(`, `catch(`, `switch(`
-- **Space before blocks:** `if(condition) {`
+- **Space before blocks:** `if(condition) {` (when braces are used)
 - **Space inside object braces:** `{ key: value }`, but **not** inside array brackets: `[1, 2]`
 - **Max 1 empty line** between code blocks, max 1 at end of file
 - **No trailing whitespace**
