@@ -81,9 +81,15 @@ export default class WebSocketProtocol extends Protocol {
      */
     disconnect() {
         return this.client.broadcastEval(async (c, { id }) => {
+            const connection = c.serverConnections.cache.get(id);
+            if(!connection) return { status: 'success', data: null };
+
+            c.api.hashIndex.delete(connection.hash);
+
             /** @type {WebSocketProtocol} */
-            const protocol = c.serverConnections.cache.get(id).protocol;
+            const protocol = connection.protocol;
             if(!protocol.socket) return { status: 'success', data: null };
+
             protocol.socket.disconnect(true);
             return { status: 'success', data: null };
         }, { context: { id: this.id }, shard: 0 });

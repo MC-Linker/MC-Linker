@@ -301,7 +301,10 @@ export default class MCLinkerAPI extends EventEmitter {
             readonly: true,
         });
 
-        this.websocket.engine.on('connection_error', err => this.client.analytics.trackError('api_ws', 'engine.connection_error', null, null, err, null, socketLogger));
+        this.websocket.engine.on('connection_error', err => {
+            // Track only the useful fields to avoid log overloading
+            this.client.analytics.trackError('api_ws', 'engine.connection_error', null, null, { message: err?.message, code: err?.code }, { sid: err?.context?.sid }, socketLogger);
+        });
 
         this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
             if(err) {
@@ -511,8 +514,11 @@ export default class MCLinkerAPI extends EventEmitter {
 
         socketLogger.debug({ guildId: server?.id }, `Found server for event ${route.event}: ${server ? server.displayIp : 'none'}`);
 
-        //If no connection on that guild, disconnect socket
-        if(!server) return socket.disconnect();
+        //If no connection on that guild, ack and disconnecting
+        if(!server) {
+            callback?.({ status: 'error', error: ProtocolError.NOT_CONNECTED });
+            return socket.disconnect();
+        }
 
         const startTime = Date.now();
         try {
@@ -543,7 +549,7 @@ export default class MCLinkerAPI extends EventEmitter {
      * @param {string} hash - The hash to use for verifying server-connections.
      */
     addWebsocketListeners(socket, serverResolvable, hash) {
-        this.hashIndex.set(hash, typeof serverResolvable === 'string' ? serverResolvable : serverResolvable.id);
+        this.hashIndex.set(hash, this.client.serverConnections.resolveId(serverResolvable));
 
         for(const route of this.wsEvents.values())
             socket.on(route.event, this.wsEventHandler.bind(this, socket, route.event, hash));
@@ -569,7 +575,8 @@ export default class MCLinkerAPI extends EventEmitter {
                     // Send disconnect messages to chat channels
                     for(const chatChannel of server.chatChannels) {
                         const channel = await c.channels.fetch(chatChannel.id).catch(() => null);
-                        if(channel) await channel.send({ embeds: [embedJson] }).catch(() => {});
+                        if(channel) await channel.send({ embeds: [embedJson] }).catch(() => {
+                        });
                     }
 
                     // Update stat channels to reflect offline state

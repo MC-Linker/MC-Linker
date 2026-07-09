@@ -439,6 +439,15 @@ The full ruleset is in `.eslintrc.json`. Key conventions:
 - **Max 1 empty line** between code blocks, max 1 at end of file
 - **No trailing whitespace**
 
+### Comments
+
+Comment sparingly. Only explain the non-obvious *why*, never restate *what* the code already says.
+Prefer clear names over narration, and don't annotate obvious steps or standard language/library
+behaviour. In most cases a single line of code does **not** warrant a multi-line comment block — if a
+brief one-line note doesn't cover it, reconsider whether the comment is needed at all. Reserve longer
+comments for genuinely subtle logic (races, ordering constraints, workarounds) where the reasoning
+can't be inferred from the code.
+
 ## Logging
 
 The logger is a `Logger` class instance (wrapping pino) exported as the default from `utilities/logger/Logger.js`.
