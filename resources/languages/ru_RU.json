@@ -33,7 +33,7 @@
         }
     },
     "common": {
-        "unknown": "*Unknown*",
+        "unknown": "*Неизвестно*",
         "enabled": "Enabled",
         "disabled": "Disabled",
         "no_description_available": "No description available...",
