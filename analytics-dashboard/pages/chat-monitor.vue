@@ -6,8 +6,8 @@
     </div>
 
     <div v-if="data?.latest" class="stats-grid">
-      <StatsCard :value="data.latest.incoming" label="Incoming (last)"/>
-      <StatsCard :value="data.latest.processed" label="Processed (last)"/>
+      <StatsCard :value="data.totals?.incoming" label="Incoming (total)"/>
+      <StatsCard :value="data.totals?.processed" label="Processed (total)"/>
       <StatsCard :value="data.latest.queueItems" label="Queue Items"/>
       <StatsCard :value="data.latest.queueDestinations" label="Queue Destinations"/>
       <StatsCard :value="data.totals?.rateLimits" label="Rate Limits (total)"/>
@@ -68,20 +68,20 @@
 </template>
 
 <script lang="ts" setup>
-import { formatTimeLabel } from '~/composables/useTimeLabel';
+import {formatTimeLabel} from '~/composables/useTimeLabel';
 
 const minDates = useMinDates();
 
 const from = ref(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 const to = ref(new Date().toISOString().slice(0, 10));
 
-const { data, pending, error } = await useFetch('/api/chat-monitor', {
-  query: computed(() => ({ from: from.value, to: to.value })),
+const {data, pending, error} = await useFetch('/api/chat-monitor', {
+  query: computed(() => ({from: from.value, to: to.value})),
   watch: [from, to],
 });
 
 const opItems = computed(() => data.value?.operations ?? []);
-const { toggleSort, sortIcon, sorted: sortedOps } = useSortable(opItems, 'count');
+const {toggleSort, sortIcon, sorted: sortedOps} = useSortable(opItems, 'count');
 
 const throughputChartData = computed(() => {
   const ts = data.value?.timeSeries ?? [];
