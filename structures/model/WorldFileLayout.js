@@ -14,6 +14,8 @@ export default class WorldFileLayout {
      * @property {string} playerData - The directory holding the per-player `.dat` files.
      * @property {string} levelDat - The world's level.dat file.
      * @property {string} scoreboard - The world's scoreboard.dat file.
+     * @property {?string} gameRules - The world's game rules file, or null while they live inside level.dat.
+     * @property {?string} worldGenSettings - The world's generator settings file, or null while they live inside level.dat.
      */
 
     /**
@@ -32,6 +34,9 @@ export default class WorldFileLayout {
         playerData: 'playerdata',
         levelDat: 'level.dat',
         scoreboard: 'data/scoreboard.dat',
+        // Both still live inside level.dat on this layout.
+        gameRules: null,
+        worldGenSettings: null,
     });
 
     /**
@@ -45,6 +50,10 @@ export default class WorldFileLayout {
         playerData: 'players/data',
         levelDat: 'level.dat',
         scoreboard: 'data/minecraft/scoreboard.dat',
+        // 26.1 moved these out of level.dat into their own files. They are stored per dimension rather
+        // than under the world's `data` directory, so the overworld copy is the world-level one.
+        gameRules: 'dimensions/minecraft/overworld/data/minecraft/game_rules.dat',
+        worldGenSettings: 'dimensions/minecraft/overworld/data/minecraft/world_gen_settings.dat',
     });
 
     /**

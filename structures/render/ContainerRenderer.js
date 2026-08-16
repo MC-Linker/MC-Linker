@@ -166,7 +166,7 @@ export default class ContainerRenderer {
             if(count > 1) drawMinecraftNumber(ctx, count, x, y + 16, 10, 14);
 
             //Draw durability bar
-            const damage = item.tag?.Damage;
+            const damage = item.components?.['minecraft:damage'] ?? item.tag?.Damage;
             const maxDurability = mcData.itemsByName[itemId]?.maxDurability;
             if(damage && maxDurability) {
                 const durabilityPercent = 100 - damage / maxDurability * 100;

@@ -123,6 +123,28 @@ export default class ServerFiles {
     }
 
     /**
+     * Downloads the game rules file of the world. Only exists from 26.1; earlier versions keep the rules
+     * inside level.dat.
+     * @returns {?Promise<?import('./Protocol.js').ProtocolResponse & { data: Buffer, cached: boolean }>} - The downloaded file, or null if this version keeps the rules in level.dat.
+     */
+    gameRules() {
+        const layout = this.server.worldFileLayout;
+        if(!layout.gameRules) return null;
+        return this._worldFile(layout.gameRules, 'game_rules.dat');
+    }
+
+    /**
+     * Downloads the world generator settings file of the world. Only exists from 26.1; earlier versions
+     * keep the settings inside level.dat.
+     * @returns {?Promise<?import('./Protocol.js').ProtocolResponse & { data: Buffer, cached: boolean }>} - The downloaded file, or null if this version keeps the settings in level.dat.
+     */
+    worldGenSettings() {
+        const layout = this.server.worldFileLayout;
+        if(!layout.worldGenSettings) return null;
+        return this._worldFile(layout.worldGenSettings, 'world_gen_settings.dat');
+    }
+
+    /**
      * Downloads the server.properties file of the server.
      * @returns {Promise<?import('./Protocol.js').ProtocolResponse & { data: Buffer, cached: boolean }>} - The downloaded file.
      */

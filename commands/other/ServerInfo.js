@@ -138,21 +138,35 @@ export default class ServerInfo extends Command {
             keys.commands.serverinfo.difficulty[propertiesObject['difficulty']] :
             utils.toTitleCase(propertiesObject['difficulty']);
 
-        const gamerulesObject = datObject.Data.GameRules ?? {};
+        // Renamed `GameRules` -> `game_rules` in the 1.21 line, then moved out of level.dat in 26.1.
+        let gamerulesObject = datObject.Data.GameRules ?? datObject.Data.game_rules ?? {};
+        if(!Object.keys(gamerulesObject).length) {
+            const gameRulesFile = await server.files.gameRules();
+            if(gameRulesFile?.status === 'success') {
+                const parsed = await utils.nbtBufferToObject(gameRulesFile.data, null);
+                gamerulesObject = parsed?.data ?? {};
+                if(gameRulesFile.cached) isCached = true;
+            }
+        }
+
+        // 26.1 keys the rules as namespaced snake_case; earlier versions use bare camelCase.
         const filteredGamerules = Object.entries(gamerulesObject)
+            .map(([key, value]) => [utils.toCamelCase(key), value])
             .filter(([key, value]) => {
                 const rule = gamerules.find(rule => rule.name === key);
                 if(!rule) return true;
-                if(rule.type === 'bool') return rule.default !== (value === 'true');
+                // Rules are strings before 26.1 and numbers from it.
+                if(rule.type === 'bool') return rule.default !== (value === 'true' || value === 1);
                 if(rule.type === 'int') return rule.default !== Number(value);
                 return rule.default !== value;
             })
             .map(([key, value]) => `${key}: ${value}`);
 
         const worldEmbed = getEmbed(keys.commands.serverinfo.success.world, {
-            spawn_x: datObject.Data.SpawnX ?? datObject.Data.spawn.pos[0],
-            spawn_y: datObject.Data.SpawnY ?? datObject.Data.spawn.pos[1],
-            spawn_z: datObject.Data.SpawnZ ?? datObject.Data.spawn.pos[2],
+            // The flat Spawn* tags were replaced by a `spawn` compound in the 1.21 line.
+            spawn_x: datObject.Data.SpawnX ?? datObject.Data.spawn?.pos?.[0] ?? '?',
+            spawn_y: datObject.Data.SpawnY ?? datObject.Data.spawn?.pos?.[1] ?? '?',
+            spawn_z: datObject.Data.SpawnZ ?? datObject.Data.spawn?.pos?.[2] ?? '?',
             spawn_world: datObject.Data.LevelName,
             allow_end: propertiesObject['allow-end'] ? keys.common.enabled : keys.common.disabled,
             allow_nether: propertiesObject['allow-nether'] ? keys.common.enabled : keys.common.disabled,
@@ -194,9 +208,21 @@ export default class ServerInfo extends Command {
         };
 
         if(isAdmin) {
+            // `Data.RandomSeed` before 1.16, `Data.WorldGenSettings.seed` until 26.1, own file after.
+            let seed = datObject.Data.WorldGenSettings?.seed ?? datObject.Data.RandomSeed;
+            if(seed === undefined || seed === null) {
+                const worldGenFile = await server.files.worldGenSettings();
+                if(worldGenFile?.status === 'success') {
+                    const parsed = await utils.nbtBufferToObject(worldGenFile.data, null);
+                    seed = parsed?.data?.seed;
+                    if(worldGenFile.cached) isCached = true;
+                }
+            }
+
             const adminEmbed = getEmbed(keys.commands.serverinfo.success.admin, {
                 enable_whitelist: propertiesObject['white-list'] ? keys.common.enabled : keys.common.disabled,
-                seed: datObject.Data.WorldGenSettings?.seed ?? keys.common.unknown,
+                // A long, so prismarine-nbt yields a BigInt.
+                seed: seed !== undefined && seed !== null ? String(seed) : keys.common.unknown,
             });
             const newFields = [];
             if(plugins.length > 0) newFields.push(addPh(keys.commands.serverinfo.success.admin.embeds[0].fields[0], { plugins: plugins.join('\n') }));

@@ -184,3 +184,26 @@ export function toTitleCase(str, snakeCase = false, noNumberSpace = false) {
     else t = str;
     return t.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()).trim();
 }
+
+/**
+ * Converts a snake_case string to camelCase, dropping any namespace prefix.
+ * @example toCamelCase('minecraft:advance_weather') -> 'advanceWeather'
+ * @param {string} str - The string to convert.
+ * @returns {string} - The camelCase string.
+ */
+export function toCamelCase(str) {
+    return str.replace(/^[a-z0-9_]+:/, '')
+        .replace(/[_-]([a-z0-9])/g, (_, character) => character.toUpperCase());
+}
+
+/**
+ * Converts a camelCase string to snake_case, dropping any namespace prefix.
+ * @example toSnakeCase('advanceWeather') -> 'advance_weather'
+ * @param {string} str - The string to convert.
+ * @returns {string} - The snake_case string.
+ */
+export function toSnakeCase(str) {
+    return str.replace(/^[a-z0-9_]+:/, '')
+        .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+        .toLowerCase();
+}

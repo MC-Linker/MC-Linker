@@ -318,6 +318,30 @@ export function normalizeWorldPath(worldPath) {
 }
 
 /**
+ * The dimension a numeric id refers to, as written by minecraft versions before 1.16.
+ * @type {Readonly<Object<number, string>>}
+ */
+export const NumericDimensions = Object.freeze({
+    '-1': 'the_nether',
+    '0': 'overworld',
+    '1': 'the_end',
+});
+
+/**
+ * Normalizes a dimension from player or level NBT to its bare name (e.g. "overworld").
+ * Stored as an int (-1, 0, 1) before 1.16 and a namespaced string from 1.16, so calling string methods on
+ * the raw tag throws on older servers.
+ * @param {?string|?number} dimension - The raw dimension value from NBT.
+ * @returns {?string} The dimension name without its namespace, or null if there is no usable value.
+ */
+export function normalizeDimension(dimension) {
+    if(dimension === null || dimension === undefined) return null;
+    if(typeof dimension === 'number') return NumericDimensions[dimension] ?? null;
+    if(typeof dimension !== 'string') return null;
+    return dimension.replace('minecraft:', '');
+}
+
+/**
  * Compares two Minecraft version strings (e.g. "1.21", "1.21.3", "26.1").
  * Only major.minor.fix are compared, any build or snapshot suffix (e.g. "1.21.1-R0.1-SNAPSHOT", which
  * outdated plugin versions send) is ignored. A missing or unparsable version is treated as older than
