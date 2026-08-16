@@ -1,6 +1,5 @@
 import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
-import { FilePath } from '../../structures/protocol/Protocol.js';
 import * as utils from '../../utilities/utils.js';
 import {
     codeBlockFromCommandResponse,
@@ -8,7 +7,7 @@ import {
     formatDuration,
     getMinecraftAvatarURL,
     getMinecraftData,
-    stringifyMinecraftJson,
+    stringifyMinecraftJson
 } from '../../utilities/utils.js';
 import {
     addPh,
@@ -50,13 +49,13 @@ export default class UserInfo extends Command {
         const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
         if(onlinePlayersResponse?.status === 'success') onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
 
-        const scoreboardDatResponse = await server.protocol.getWithCache(...FilePath.Scoreboards(server.worldPath, server.id, server.version));
-        const levelDatResponse = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id, server.version));
+        const scoreboardDatResponse = await server.files.scoreboard();
+        const levelDatResponse = await server.files.levelDat();
 
-        let stats = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid, server.version));
-        let operators = await server.protocol.getWithCache(...FilePath.Operators(server.path, server.id));
-        let whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
-        let bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
+        let stats = await server.files.stats(user.uuid);
+        let operators = await server.files.operators();
+        let whitelistedUsers = await server.files.whitelist();
+        let bannedUsers = await server.files.bannedPlayers();
 
         const playerDatResult = await utils.getLivePlayerNbt(server, user, null);
         const playerDat = playerDatResult?.data ?? null;

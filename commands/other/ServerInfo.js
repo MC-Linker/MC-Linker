@@ -1,6 +1,6 @@
 import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
-import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
+import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../utilities/utils.js';
 import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
@@ -28,8 +28,8 @@ export default class ServerInfo extends Command {
      * @param logger
      */
     async run(interaction, client, args, server, logger) {
-        const serverProperties = await server.protocol.getWithCache(...FilePath.ServerProperties(server.path, server.id));
-        const levelDat = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id, server.version));
+        const serverProperties = await server.files.serverProperties();
+        const levelDat = await server.files.levelDat();
         if(!await utils.handleProtocolResponses([serverProperties, levelDat], server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.errors.could_not_download,
         }, { category: 'server-info' })) return await server.protocol.endBatch();
@@ -40,7 +40,7 @@ export default class ServerInfo extends Command {
         if(!datObject) return;
         const propertiesObject = utils.parseProperties(serverProperties.data.toString('utf-8'));
 
-        const serverIcon = await server.protocol.getWithCache(...FilePath.ServerIcon(server.path, server.id));
+        const serverIcon = await server.files.serverIcon();
         if(serverIcon?.cached) isCached = true;
 
         let operators = [];
@@ -52,12 +52,12 @@ export default class ServerInfo extends Command {
         let datapacks = [];
         const isAdmin = interaction.member.permissions.has(Discord.PermissionFlagsBits.Administrator);
         if(isAdmin) {
-            operators = await server.protocol.getWithCache(...FilePath.Operators(server.path, server.id));
-            whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
-            bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
-            bannedIPs = await server.protocol.getWithCache(...FilePath.BannedIPs(server.path, server.id));
-            plugins = await server.protocol.list(FilePath.Plugins(server.path));
-            mods = await server.protocol.list(FilePath.Mods(server.path));
+            operators = await server.files.operators();
+            whitelistedUsers = await server.files.whitelist();
+            bannedUsers = await server.files.bannedPlayers();
+            bannedIPs = await server.files.bannedIPs();
+            plugins = await server.files.plugins();
+            mods = await server.files.mods();
 
             if(operators?.cached || whitelistedUsers?.cached || bannedUsers?.cached || bannedIPs?.cached) isCached = true;
 

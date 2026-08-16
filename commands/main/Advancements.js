@@ -3,7 +3,7 @@ import { getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/mes
 import * as utils from '../../utilities/utils.js';
 import { getMinecraftData } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
-import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
+import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import * as d3 from 'd3-hierarchy';
 import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
@@ -44,7 +44,7 @@ export default class Advancements extends Command {
         const user = args[1];
         const showDetails = args[2];
 
-        const amFile = await server.protocol.getWithCache(...FilePath.Advancements(server.worldPath, user.uuid, server.version));
+        const amFile = await server.files.advancements(user.uuid);
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.warnings.could_not_download_user_files,
         }, { category: 'advancements' }, ph.colors())) return;

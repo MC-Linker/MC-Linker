@@ -1,6 +1,7 @@
 import { createUUIDv3, isFloodgateUUID } from '../../utilities/utils.js';
 import Connection from './Connection.js';
 import fs from 'fs-extra';
+import ServerFiles from '../protocol/ServerFiles.js';
 
 export default class UserConnection extends Connection {
 
@@ -106,12 +107,20 @@ export default class UserConnection extends Connection {
     }
 
     /**
-     * Removes the download cache folder of this user connection.
+     * Removes the cached player files of this user connection.
+     * The files are cached per server, so a global link removes them from every server, while a
+     * per-server link only removes them from the server it is scoped to.
      * @returns {Promise<boolean>}
      */
     async removeCache() {
         try {
-            await fs.rm(`./download-cache/userConnection/${this.discordId}/${this.scope}/`, { recursive: true });
+            const serverIds = this.scope === 'global'
+                ? await fs.readdir(`${ServerFiles.CACHE_ROOT}/serverConnection`).catch(() => [])
+                : [this.scope];
+
+            await Promise.all(serverIds
+                .flatMap(serverId => ServerFiles.playerCachePaths(serverId, this.uuid))
+                .map(path => fs.rm(path, { force: true })));
             return true;
         }
         catch {

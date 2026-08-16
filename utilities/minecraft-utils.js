@@ -2,7 +2,7 @@ import MinecraftData from 'minecraft-data';
 import keys from './keys.js';
 import advancementData from '../resources/data/advancements.json' with { type: 'json' };
 import customStats from '../resources/data/stats_custom.json' with { type: 'json' };
-import { FilePath, ProtocolError } from '../structures/protocol/Protocol.js';
+import { ProtocolError } from '../structures/protocol/Protocol.js';
 import { handleProtocolResponse } from './protocol-utils.js';
 import { nbtBufferToObject, nbtStringToObject } from './nbt-utils.js';
 
@@ -255,7 +255,7 @@ export async function getLivePlayerNbt(server, user, interaction) {
         // else fall back to downloading the nbt file
     }
 
-    const nbtResponse = await server.protocol.getWithCache(...FilePath.PlayerData(server.worldPath, user.uuid, server.version));
+    const nbtResponse = await server.files.playerData(user.uuid);
 
     // handleProtocolResponse if interaction is set, otherwise manually check the status code
     if(interaction && !await handleProtocolResponse(nbtResponse, server.protocol, interaction, {
@@ -266,29 +266,6 @@ export async function getLivePlayerNbt(server, user, interaction) {
         return parsed ? { data: parsed, cached: nbtResponse.cached ?? false } : null;
     }
     else return null;
-}
-
-/**
- * Gets the configured floodgate prefix of a server by downloading the floodgate config file.
- * @param {import('../structures/protocol/Protocol.js')} protocol - The protocol to get the config with.
- * @param {string} path - The path to the server.
- * @param {string} id - The id of the server.
- * @returns {Promise<?string>} - The configured prefix or undefined if floodgate is not installed or an error occurred.
- */
-export async function getFloodgatePrefix(protocol, path, id) {
-    const response = await protocol.get(...FilePath.FloodgateConfig(path, id));
-    if(response?.status === 'success') {
-        //parse yml without module
-        const searchKey = 'username-prefix:';
-        const lines = response.data.toString().split('\n');
-        for(const line of lines) {
-            if(line.startsWith(searchKey)) {
-                return line.substring(searchKey.length).trim()
-                    // Remove quotes at the start and end of the string
-                    .replace(/^["'](.+(?=["']$))["']$/, '$1');
-            }
-        }
-    }
 }
 
 /**
@@ -317,14 +294,43 @@ export function parseProperties(properties) {
 }
 
 /**
+ * Matches a trailing `dimensions/<namespace>/<dimension>` segment of a path. The leading separator is
+ * required, so that a relative path which only consists of that segment can never be reduced to nothing.
+ * @type {RegExp}
+ */
+const dimensionSuffix = /[\\/]dimensions[\\/][^\\/]+[\\/][^\\/]+[\\/]*$/i;
+
+/**
+ * Normalizes a world path reported by the plugin to the root of the world folder.
+ * Since minecraft 26.1 the overworld is stored in `<world>/dimensions/minecraft/overworld`, so outdated
+ * plugin versions report that dimension folder instead of the world root. All world paths of
+ * {@link ServerFiles} are relative to the world root, which is why this is applied once when the
+ * world path is received in {@link ServerConnection#_patch}. This method is idempotent and does not
+ * modify paths that already point at the world root.
+ * @param {?string} worldPath - The world path reported by the plugin. Non-strings are returned unchanged.
+ * @returns {?string} - The path to the world root.
+ */
+export function normalizeWorldPath(worldPath) {
+    if(typeof worldPath !== 'string' || worldPath === '') return worldPath;
+
+    const worldRoot = worldPath.replace(dimensionSuffix, '');
+    return worldRoot === '' ? worldPath : worldRoot;
+}
+
+/**
  * Compares two Minecraft version strings (e.g. "1.21", "1.21.3", "26.1").
- * @param {string} a - The first version.
- * @param {string} b - The second version.
+ * Only major.minor.fix are compared, any build or snapshot suffix (e.g. "1.21.1-R0.1-SNAPSHOT", which
+ * outdated plugin versions send) is ignored. A missing or unparsable version is treated as older than
+ * every real version, so that callers fall back to their oldest supported behaviour instead of throwing.
+ * @param {?string} a - The first version.
+ * @param {?string} b - The second version.
  * @returns {-1|0|1} Negative if a < b, zero if equal, positive if a > b.
  */
 export function compareMinecraftVersions(a, b) {
-    const pa = a.split('.').slice(0, 3).map(Number);
-    const pb = b.split('.').slice(0, 3).map(Number);
+    const parseVersion = version => String(version ?? '').split('.').slice(0, 3)
+        .map(part => Number.parseInt(part, 10) || 0);
+    const pa = parseVersion(a);
+    const pb = parseVersion(b);
     for(let i = 0; i < Math.max(pa.length, pb.length); i++) {
         const diff = (pa[i] ?? 0) - (pb[i] ?? 0);
         if(diff !== 0) return diff < 0 ? -1 : 1;

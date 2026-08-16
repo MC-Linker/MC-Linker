@@ -7,7 +7,9 @@ import features from '../../utilities/logger/features.js';
 import { trackError } from '../analytics/AnalyticsCollector.js';
 import keys from '../../utilities/keys.js';
 import { getReplyOptions } from '../../utilities/messages.js';
-import { createUUIDv3, isFloodgateUUID } from '../../utilities/utils.js';
+import { createUUIDv3, isFloodgateUUID, normalizeWorldPath } from '../../utilities/utils.js';
+import WorldFileLayout from '../model/WorldFileLayout.js';
+import ServerFiles from '../protocol/ServerFiles.js';
 
 const logger = rootLogger.child({ feature: features.structures.connections.server });
 
@@ -51,7 +53,7 @@ export default class ServerConnection extends Connection {
      * @property {string} ip - The ip of the server.
      * @property {number} port - The port used to connect to the server plugin.
      * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
-     * @property {string} worldPath - The path to the world folder of the server.
+     * @property {string} worldPath - The path to the root of the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {string} token - The connection token used to connect to the server plugin.
      * @property {boolean} online - Whether online mode is enabled on this server.
@@ -70,7 +72,7 @@ export default class ServerConnection extends Connection {
      * @property {string} password - The ftp password used to connect to the server.
      * @property {number} port - The ftp port used to connect to the server.
      * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
-     * @property {string} worldPath - The path to the world folder of the server.
+     * @property {string} worldPath - The path to the root of the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {boolean} online - Whether the server-connection has online mode enabled or not.
      * @property {string} [floodgatePrefix] - The prefix used for floodgate usernames.
@@ -82,7 +84,7 @@ export default class ServerConnection extends Connection {
      * @property {string} id - The id of the server.
      * @property {string} ip - The ip of the server.
      * @property {string} version - The minecraft version of the server (e.g. "1.21", "26.1").
-     * @property {string} worldPath - The path to the world folder of the server.
+     * @property {string} worldPath - The path to the root of the world folder of the server.
      * @property {string} path - The path to the server folder of the server.
      * @property {string} hash - The connection hash used to authenticate the plugin for websocket connections.
      * @property {boolean} online - Whether online mode is enabled on this server.
@@ -137,6 +139,23 @@ export default class ServerConnection extends Connection {
         this._patch(data);
     }
 
+    /**
+     * The world layout of this server, which determines where the world files are located.
+     * Used by {@link ServerFiles} to build the paths to the world files.
+     * @type {import('../model/WorldFileLayout.js').WorldFileLayoutData}
+     */
+    get worldFileLayout() {
+        return WorldFileLayout.forVersion(this.version);
+    }
+
+    /**
+     * The file interface of this server. Every file the bot downloads from this server is accessed through this.
+     * @type {ServerFiles}
+     */
+    get files() {
+        return this._files ??= new ServerFiles(this);
+    }
+
     _patch(data) {
         /**
          * The id of this server.
@@ -159,10 +178,12 @@ export default class ServerConnection extends Connection {
         this.version = data.version ?? this.version;
 
         /**
-         * The path to the world folder of this server.
+         * The path to the root of the world folder of this server.
+         * Normalized on ingest, because outdated plugin versions report a dimension folder on
+         * minecraft 26.1 and higher (see {@link normalizeWorldPath}).
          * @type {string}
          * */
-        this.worldPath = data.worldPath ?? this.worldPath;
+        this.worldPath = normalizeWorldPath(data.worldPath ?? this.worldPath);
 
         /**
          * The path to the server folder of this server.
@@ -279,14 +300,12 @@ export default class ServerConnection extends Connection {
 
         if(this.syncedRoles && this.syncedRoles.length > 0) {
             // Discord→MC: User has Discord role but not in MC group, tell the plugin
-            for(const syncedRole of this.syncedRoles.filter(r =>
-                r.direction !== 'to_discord' && !r.players.includes(uuid) && member.roles.cache.has(r.id))) {
+            for(const syncedRole of this.syncedRoles.filter(r => r.direction !== 'to_discord' && !r.players.includes(uuid) && member.roles.cache.has(r.id))) {
                 await this.protocol.addSyncedRoleMember(syncedRole, uuid);
             }
 
             // MC→Discord: User is in MC group but doesn't have Discord role
-            for(const syncedRole of this.syncedRoles.filter(r =>
-                r.direction !== 'to_minecraft' && r.players.includes(uuid) && !member.roles.cache.has(r.id))) {
+            for(const syncedRole of this.syncedRoles.filter(r => r.direction !== 'to_minecraft' && r.players.includes(uuid) && !member.roles.cache.has(r.id))) {
                 try {
                     const discordMember = await guild.members.fetch(userConnection.discordId);
                     const role = await guild.roles.fetch(syncedRole.id);
@@ -372,8 +391,7 @@ export default class ServerConnection extends Connection {
     }
 
     async _output() {
-        if(await super._output()) return await this.settings._output();
-        else return false;
+        if(await super._output()) return await this.settings._output(); else return false;
     }
 
     /**
@@ -382,7 +400,7 @@ export default class ServerConnection extends Connection {
      */
     async removeCache() {
         try {
-            await fs.rm(`./download-cache/serverConnection/${this.id}/`, { recursive: true });
+            await fs.rm(ServerFiles.cacheFolder(this.id), { recursive: true });
             return true;
         }
         catch {
