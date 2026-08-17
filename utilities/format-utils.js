@@ -186,6 +186,19 @@ export function toTitleCase(str, snakeCase = false, noNumberSpace = false) {
 }
 
 /**
+ * Removes the vanilla `minecraft:` namespace from an id.
+ *
+ * Ids of any other namespace are returned untouched, so a modded `create:cogwheel` stays distinguishable
+ * from a vanilla `cogwheel` rather than silently colliding with it.
+ * @example stripNamespace('minecraft:wooden_pickaxe') -> 'wooden_pickaxe'
+ * @param {string} id - The id, namespaced or not.
+ * @returns {string} - The id without its vanilla namespace.
+ */
+export function stripNamespace(id) {
+    return id.startsWith('minecraft:') ? id.slice('minecraft:'.length) : id;
+}
+
+/**
  * Converts a snake_case string to camelCase, dropping any namespace prefix.
  * @example toCamelCase('minecraft:advance_weather') -> 'advanceWeather'
  * @param {string} str - The string to convert.

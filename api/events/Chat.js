@@ -7,6 +7,7 @@ import WebhookPoolManager from './chat-handlers/WebhookPoolManager.js';
 import WebhookResolver from './chat-handlers/WebhookResolver.js';
 import ChatQueueProcessor from './chat-handlers/ChatQueueProcessor.js';
 import ChatMonitor from './chat-handlers/ChatMonitor.js';
+import AssetsManager from '../../structures/render/MinecraftAssetsManager.js';
 import {
     DISPATCH_HIGH_LOAD_ENTER_THRESHOLD,
     DISPATCH_HIGH_LOAD_EXIT_THRESHOLD,
@@ -102,7 +103,10 @@ export default class Chat extends WSEvent {
             if(message.startsWith('minecraft:recipes')) return; //Dont process recipes
 
             const [category, id] = message.replace('minecraft:', '').split('/');
-            const advancement = searchAdvancements(id, category, false, true, 1)[0];
+            // Must not stall the relay on a jar download, so this falls back to the baseline and warms
+            // the version's own advancements in the background.
+            const { advancements } = await AssetsManager.getGameData(server.version, { wait: false });
+            const advancement = searchAdvancements(id, category, false, true, 1, advancements)[0];
 
             if(!advancement) return; // Advancement not found
 

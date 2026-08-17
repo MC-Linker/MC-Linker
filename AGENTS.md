@@ -120,13 +120,14 @@ MC-Linker/
 │   └── sharding-utils.js     # Cross-shard helper functions
 │
 ├── resources/
-│   ├── data/                # Static game data JSON (advancements, stats definitions)
+│   ├── data/                # Generated game data JSON (advancements, stats, game rules) — see scripts/gamedata/
 │   ├── languages/           # Translation files
 │   ├── emojis/              # Emoji image assets
 │   ├── fonts/               # Minecraft font for canvas rendering
 │   └── images/              # Image assets
 │
 ├── scripts/                 # Build/deployment scripts
+│   └── gamedata/            # Regenerates resources/data/ from the client jar + wiki (see Game Data)
 ├── private/                 # SSL certs (gitignored)
 ├── oci/                     # Oracle Cloud Infrastructure configs
 ├── docker-compose.yml       # Production deployment
@@ -411,6 +412,40 @@ Downloaded files are cached **per server** under `download-cache/serverConnectio
 server for the same player, which offline mode servers hit every time (their uuids are derived from the username).
 `ServerFiles` is the only place that builds cache paths; use `ServerFiles.cacheFolder(serverId)` and
 `ServerFiles.playerCachePaths(serverId, uuid)` when removing them.
+
+**Game Data (advancements, custom stats, game rules):** Never hand-edit `resources/data/advancements.json`,
+`stats_custom.json` or `gamerules.json` — they are generated, and a hand edit is lost on the next run.
+
+Everything is derived from the official client jar by
+[structures/render/GameDataDeriver.js](structures/render/GameDataDeriver.js), which is pure (a language map and
+advancement files in, plain data out) so the same code produces both the committed baselines and a connected
+server's runtime data.
+
+- **At runtime**, use `AssetsManager.getGameData(server.version)` — never import the JSON directly. It returns
+  `{ advancements, customStats, gameRules }` for that *exact* version, derived while the version's jar is already open
+  for asset extraction and cached as `derived/game-data.json` (~40 KB) next to its `assets/`. Version accuracy is the
+  whole point: 26.2 ships 126 advancements and 59 game rules, 1.16.5 only 80 and 32.
+- **`wait: false`** returns immediately with whatever is cached (falling back to the committed baseline) and warms the
+  real data in the background. Use it anywhere a 30 MB download would be unacceptable — the chat relay does.
+  Failures back off for `WARM_RETRY_COOLDOWN`.
+- **Game rule defaults** are the one thing a jar cannot give: they are bytecode operands in `GameRules.class`. They are
+  harvested from the wiki into `resources/data/gamerules/defaults.json` by `scripts/gamedata/`. Everything else about a
+  rule — its existence, its display name, and the pre-26.1 rename map — comes from the jar.
+- **26.1 renamed 26 game rules** (`doTileDrops` -> `block_drops`) and *inverted* three of them, so a rule must be looked
+  up by both its modern id and its `legacyName`, and an inverted rule matched by legacy name compares against the
+  negated default. `ServerInfo.indexGameRules()` does this; matching on the modern id alone silently reports every rule
+  of a pre-26.1 world as changed.
+
+Regenerating (only needed when a new Minecraft version ships):
+
+```bash
+node scripts/gamedata/harvest-gamerules.js && node scripts/gamedata/generate-game-data.js
+```
+
+The harvest captures pinned wiki revisions into `resources/data/gamerules/raw/` so the generator runs offline and two
+harvests can be diffed. The generator cross-checks its output against the jar and writes
+`resources/data/gamerules/needs-review.json`, exiting non-zero if anything is unaccounted for — do not commit a run
+with a non-empty review file.
 
 **Cross-Shard Sync:** Connections are cached per-shard. Edits broadcast via `client.broadcastEval()`. Socket objects are
 not serializable and must be excluded from broadcasts.

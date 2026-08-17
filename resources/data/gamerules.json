@@ -1,308 +1,533 @@
 [
-    {
-        "name": "announceAdvancements",
-        "description": "Whether advancements should be announced in chat",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "blockExplosionDropDecay",
-        "description": "Whether block loot is dropped by all blocks (true) or randomly (false) depending on how far the block is from the center of the explosion",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "commandBlockOutput",
-        "description": "Whether command blocks should notify admins when they perform commands",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "disableElytraMovementCheck",
-        "description": "Whether the server should skip checking player speed when the player is wearing elytra. Often helps with jittering due to lag in multiplayer.",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "disableRaids",
-        "description": "Whether raids are disabled.",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "doDaylightCycle",
-        "description": "Whether the daylight cycle and moon phases progress",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doEntityDrops",
-        "description": "Whether entities that are not mobs should have drops",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doFireTick",
-        "description": "Whether fire should spread and naturally extinguish",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doImmediateRespawn",
-        "description": "Players respawn immediately without showing the death screen",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "doInsomnia",
-        "description": "Whether phantoms can spawn in the nighttime",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doLimitedCrafting",
-        "description": "Whether players can craft only those recipes that they have unlocked",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "doMobLoot",
-        "description": "Whether mobs should drop items and experience orbs",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doMobSpawning",
-        "description": "Whether mobs should naturally spawn. Does not affect monster spawners.",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doPatrolSpawning",
-        "description": "Whether patrols can spawn",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doTileDrops",
-        "description": "Whether blocks should have drops",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doTraderSpawning",
-        "description": "Whether wandering traders can spawn",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doWardenSpawning",
-        "description": "Whether wardens can spawn",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doWeatherCycle",
-        "description": "Whether the weather can change naturally. The /weather command can still change weather.",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "drowningDamage",
-        "description": "Whether the player should take damage when drowning",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "enderPearlsVanishOnDeath",
-        "description": "Controls whether thrown ender pearls vanish when the player diess",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "fallDamage",
-        "description": "Whether the player should take fall damage",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "fireDamage",
-        "description": "Whether the player should take damage in fire, lava, campfires, or on magma blocks.",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "forgiveDeadPlayers",
-        "description": "Makes angered neutral mobs stop being angry when the targeted player dies nearby",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "freezeDamage",
-        "description": "Whether the player should take damage when inside powder snow",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "globalSoundEvents",
-        "description": "Whether sound events are heard by all players regardless of location",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "keepInventory",
-        "description": "Whether the player should keep items and experience in their inventory after death",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "lavaSourceConversion",
-        "description": "Whether new sources of lava are allowed to form",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "logAdminCommands",
-        "description": "Whether to log admin commands to server log",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "maxCommandChainLength",
-        "description": "The maximum length of a chain of commands that can be executed during one tick. Applies to command blocks and functions.",
-        "default": 65536,
-        "type": "int"
-    },
-    {
-        "name": "maxCommandForkCount",
-        "description": "The maximum number of forks (contexts) that can be created during one tick. Applies to command blocks and functions.",
-        "default": 65536,
-        "type": "int"
-    },
-    {
-        "name": "maxEntityCramming",
-        "description": "The maximum number of pushable entities a mob or player can push, before taking 6 suffocation damage per half-second.  Setting to 0 or lower disables the rule.  Damage affects survival-mode or adventure-mode players, and all mobs but bats. Pushable entities include non-spectator-mode players, any mob except bats, as well as boats and minecarts.",
-        "default": 24,
-        "type": "int"
-    },
-    {
-        "name": "minecartMaxSpeed",
-        "description": "The maximum speed a minecart may reach.",
-        "default": 8,
-        "type": "int"
-    },
-    {
-        "name": "mobExplosionDropDecay",
-        "description": "Whether mob loot is dropped by all mobs (true) or randomly (false) depending on how far the mob is from the center of the explosion",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "mobGriefing",
-        "description": "Whether creepers, zombies, endermen, ghasts, withers, ender dragons, rabbits, sheep, villagers, silverfish, snow golems, and end crystals should be able to change blocks, and whether mobs can pick up items. When mobGriefing is disabled, piglins do not pick up gold ingots, but a player can still barter with them by using the item on the mob. Similarly, villagers do not pick up food items but can still breed until they run out of any food already in their inventory. This also affects the capability of zombie-like creatures like zombified piglins and drowned to pathfind to turtle eggs.",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "naturalRegeneration",
-        "description": "Whether the player can regenerate health naturally if their hunger is full enough (doesn't affect external healing, such as golden apples, the Regeneration effect, etc.)",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "playersNetherPortalDefaultDelay",
-        "description": "Controls the time that a creative player needs to stand in a nether portal before changing dimensions.",
-        "default": 80,
-        "type": "int"
-    },
-    {
-        "name": "playersNetherPortalCreativeDelay",
-        "description": "Controls the time that a non-creative player needs to stand in a nether portal before changing dimensions.",
-        "default": 1,
-        "type": "int"
-    },
-    {
-        "name": "playersSleepingPercentage",
-        "description": "What percentage of players must sleep to skip the night.",
-        "default": 100,
-        "type": "int"
-    },
-    {
-        "name": "projectilesCanBreakBlocks",
-        "description": "Whether impact projectiles destroy blocks that are destructible by them, i.e. chorus flowers, pointed dripstone, and decorated pots.",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "randomTickSpeed",
-        "description": "How often a random block tick occurs (such as plant growth, leaf decay, etc.) per chunk section per game tick. 0 and negative values disables random ticks, higher numbers increase random ticks. Setting to a high integer results in high speeds of decay and growth. Numbers over 4096 make plant growth or leaf decay instantaneous.",
-        "default": 3,
-        "type": "int"
-    },
-    {
-        "name": "reducedDebugInfo",
-        "description": "Whether the debug screen shows all or reduced information; and whether the effects of F3+B (entity hitboxes) and F3+G (chunk boundaries) are shown.",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "sendCommandFeedback",
-        "description": "Whether the feedback from commands executed by a player should show up in chat. Also affects the default behavior of whether command blocks store their output text",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "showDeathMessages",
-        "description": "Whether death messages are put into chat when a player dies. Also affects whether a message is sent to the pet's owner when the pet dies.",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "snowAccumulationHeight",
-        "description": "The maximum number of snow layers that can be accumulated on each block",
-        "default": 1,
-        "type": "int"
-    },
-    {
-        "name": "spawnChunkRadius",
-        "description": "The size of the spawn chunks of the world.",
-        "default": 2,
-        "type": "int"
-    },
-    {
-        "name": "spawnRadius",
-        "description": "The number of blocks outward from the world spawn coordinates that a player spawns in when first joining a server or when dying without a personal spawnpoint. Has no effect on servers where the default game mode is adventure.",
-        "default": 10,
-        "type": "int"
-    },
-    {
-        "name": "spectatorsGenerateChunks",
-        "description": "Whether players in spectator mode can generate chunks",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "tntExplosionDropDecay",
-        "description": "Whether block loot is dropped by all blocks (true) or randomly (false) depending on how far the block is from the center of the explosion",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "universalAnger",
-        "description": "Makes angered neutral mobs attack any nearby player, not just the player that angered them. Works best if forgiveDeadPlayers is disabled.",
-        "default": false,
-        "type": "bool"
-    },
-    {
-        "name": "waterSourceConversion",
-        "description": "Whether new sources of water are allowed to form",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doVinesSpread",
-        "description": "Whether vines can spread to other blocks. Cave vines, weeping vines, and twisting vines are not affected.",
-        "default": true,
-        "type": "bool"
-    }
+  {
+    "id": "advance_time",
+    "legacyName": "doDaylightCycle",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Advance time of day",
+    "description": null
+  },
+  {
+    "id": "advance_weather",
+    "legacyName": "doWeatherCycle",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Update weather",
+    "description": null
+  },
+  {
+    "id": "allow_entering_nether_using_portals",
+    "legacyName": "allowEnteringNetherUsingPortals",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Allow Nether",
+    "description": "Controls whether players are allowed to enter the Nether."
+  },
+  {
+    "id": "block_drops",
+    "legacyName": "doTileDrops",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Drop blocks",
+    "description": "Controls resource drops from blocks, including experience orbs."
+  },
+  {
+    "id": "block_explosion_drop_decay",
+    "legacyName": "blockExplosionDropDecay",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "In block interaction explosions, some blocks won't drop their loot",
+    "description": "Some of the drops from blocks destroyed by explosions caused by block interactions are lost in the explosion."
+  },
+  {
+    "id": "command_block_output",
+    "legacyName": "commandBlockOutput",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Broadcast command block output",
+    "description": null
+  },
+  {
+    "id": "command_blocks_work",
+    "legacyName": "commandBlocksEnabled",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Enable Command Blocks",
+    "description": null
+  },
+  {
+    "id": "drowning_damage",
+    "legacyName": "drowningDamage",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Deal drowning damage",
+    "description": null
+  },
+  {
+    "id": "elytra_movement_check",
+    "legacyName": "disableElytraMovementCheck",
+    "inverted": true,
+    "type": "Bool",
+    "default": true,
+    "name": "Do elytra movement check",
+    "description": null
+  },
+  {
+    "id": "ender_pearls_vanish_on_death",
+    "legacyName": "enderPearlsVanishOnDeath",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Thrown Ender Pearls vanish on death",
+    "description": "Whether Ender Pearls thrown by a player vanish when that player dies."
+  },
+  {
+    "id": "entity_drops",
+    "legacyName": "doEntityDrops",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Drop entity equipment",
+    "description": "Controls drops from minecarts (including inventories), item frames, boats, etc."
+  },
+  {
+    "id": "fall_damage",
+    "legacyName": "fallDamage",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Deal fall damage",
+    "description": null
+  },
+  {
+    "id": "fire_damage",
+    "legacyName": "fireDamage",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Deal fire damage",
+    "description": null
+  },
+  {
+    "id": "fire_spread_radius_around_player",
+    "legacyName": null,
+    "inverted": false,
+    "type": "Int",
+    "default": 128,
+    "name": "Fire spread radius",
+    "description": "The radius in blocks around a player in which fire can spread"
+  },
+  {
+    "id": "forgive_dead_players",
+    "legacyName": "forgiveDeadPlayers",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Forgive dead players",
+    "description": "Angered neutral mobs stop being angry when the targeted player dies nearby."
+  },
+  {
+    "id": "freeze_damage",
+    "legacyName": "freezeDamage",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Deal freeze damage",
+    "description": null
+  },
+  {
+    "id": "global_sound_events",
+    "legacyName": "globalSoundEvents",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Global sound events",
+    "description": "When certain game events happen, like a boss spawning, the sound is heard everywhere."
+  },
+  {
+    "id": "immediate_respawn",
+    "legacyName": "doImmediateRespawn",
+    "inverted": false,
+    "type": "Bool",
+    "default": false,
+    "name": "Respawn immediately",
+    "description": null
+  },
+  {
+    "id": "keep_inventory",
+    "legacyName": "keepInventory",
+    "inverted": false,
+    "type": "Bool",
+    "default": false,
+    "name": "Keep inventory after death",
+    "description": null
+  },
+  {
+    "id": "lava_source_conversion",
+    "legacyName": "lavaSourceConversion",
+    "inverted": false,
+    "type": "Bool",
+    "default": false,
+    "name": "Lava converts to source",
+    "description": "When flowing lava is surrounded on two sides by lava sources, it converts into a source."
+  },
+  {
+    "id": "limited_crafting",
+    "legacyName": "doLimitedCrafting",
+    "inverted": false,
+    "type": "Bool",
+    "default": false,
+    "name": "Require recipe for crafting",
+    "description": "If enabled, players will be able to craft only unlocked recipes."
+  },
+  {
+    "id": "locator_bar",
+    "legacyName": "locatorBar",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Enable player Locator Bar",
+    "description": "When enabled, a bar is shown on the screen to indicate the direction of players."
+  },
+  {
+    "id": "log_admin_commands",
+    "legacyName": "logAdminCommands",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Broadcast admin commands",
+    "description": null
+  },
+  {
+    "id": "max_block_modifications",
+    "legacyName": "commandModificationBlockLimit",
+    "inverted": false,
+    "type": "Int",
+    "default": 32768,
+    "name": "Command modification block limit",
+    "description": "The number of blocks that can be changed at once by one command, such as fill or clone."
+  },
+  {
+    "id": "max_command_forks",
+    "legacyName": "maxCommandForkCount",
+    "inverted": false,
+    "type": "Int",
+    "default": 65536,
+    "name": "Command context limit",
+    "description": "Maximum number of contexts that can be used by commands like 'execute as'."
+  },
+  {
+    "id": "max_command_sequence_length",
+    "legacyName": "maxCommandChainLength",
+    "inverted": false,
+    "type": "Int",
+    "default": 65536,
+    "name": "Command chain size limit",
+    "description": "Applies to command block chains and functions."
+  },
+  {
+    "id": "max_entity_cramming",
+    "legacyName": "maxEntityCramming",
+    "inverted": false,
+    "type": "Int",
+    "default": 24,
+    "name": "Entity cramming threshold",
+    "description": null
+  },
+  {
+    "id": "max_minecart_speed",
+    "legacyName": "minecartMaxSpeed",
+    "inverted": false,
+    "type": "Int",
+    "default": 8,
+    "name": "Minecart max speed",
+    "description": "Maximum default speed of a moving Minecart on land."
+  },
+  {
+    "id": "max_snow_accumulation_height",
+    "legacyName": "snowAccumulationHeight",
+    "inverted": false,
+    "type": "Int",
+    "default": 1,
+    "name": "Snow accumulation height",
+    "description": "When it snows, layers of snow form on the ground up to at most this number of layers."
+  },
+  {
+    "id": "mob_drops",
+    "legacyName": "doMobLoot",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Drop mob loot",
+    "description": "Controls resource drops from mobs, including experience orbs."
+  },
+  {
+    "id": "mob_explosion_drop_decay",
+    "legacyName": "mobExplosionDropDecay",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "In mob explosions, some blocks won't drop their loot",
+    "description": "Some of the drops from blocks destroyed by explosions caused by mobs are lost in the explosion."
+  },
+  {
+    "id": "mob_griefing",
+    "legacyName": "mobGriefing",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Allow destructive mob actions",
+    "description": null
+  },
+  {
+    "id": "natural_health_regeneration",
+    "legacyName": "naturalRegeneration",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Regenerate health",
+    "description": null
+  },
+  {
+    "id": "player_movement_check",
+    "legacyName": "disablePlayerMovementCheck",
+    "inverted": true,
+    "type": "Bool",
+    "default": true,
+    "name": "Do player movement check",
+    "description": null
+  },
+  {
+    "id": "players_nether_portal_creative_delay",
+    "legacyName": "playersNetherPortalCreativeDelay",
+    "inverted": false,
+    "type": "Int",
+    "default": 0,
+    "name": "Player's Nether Portal delay in creative mode",
+    "description": "Time (in ticks) that a creative mode player needs to stand in a Nether Portal before changing dimensions."
+  },
+  {
+    "id": "players_nether_portal_default_delay",
+    "legacyName": "playersNetherPortalDefaultDelay",
+    "inverted": false,
+    "type": "Int",
+    "default": 80,
+    "name": "Player's Nether Portal delay in non-creative mode",
+    "description": "Time (in ticks) that a non-creative mode player needs to stand in a Nether Portal before changing dimensions."
+  },
+  {
+    "id": "players_sleeping_percentage",
+    "legacyName": "playersSleepingPercentage",
+    "inverted": false,
+    "type": "Int",
+    "default": 100,
+    "name": "Sleep percentage",
+    "description": "The percentage of players who must be sleeping to skip the night."
+  },
+  {
+    "id": "projectiles_can_break_blocks",
+    "legacyName": "projectilesCanBreakBlocks",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Projectiles can break blocks",
+    "description": "Controls whether impact projectiles will destroy blocks that are destructible by them."
+  },
+  {
+    "id": "pvp",
+    "legacyName": "pvp",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Enable pvp",
+    "description": "Controls whether players are allowed to damage other players."
+  },
+  {
+    "id": "raids",
+    "legacyName": "disableRaids",
+    "inverted": true,
+    "type": "Bool",
+    "default": true,
+    "name": "Do raids",
+    "description": null
+  },
+  {
+    "id": "random_tick_speed",
+    "legacyName": "randomTickSpeed",
+    "inverted": false,
+    "type": "Int",
+    "default": 3,
+    "name": "Random tick speed rate",
+    "description": null
+  },
+  {
+    "id": "reduced_debug_info",
+    "legacyName": "reducedDebugInfo",
+    "inverted": false,
+    "type": "Bool",
+    "default": false,
+    "name": "Reduce debug info",
+    "description": "Limits contents of debug screen."
+  },
+  {
+    "id": "respawn_radius",
+    "legacyName": "spawnRadius",
+    "inverted": false,
+    "type": "Int",
+    "default": 10,
+    "name": "Respawn location radius",
+    "description": "Controls the size of the area around the spawn point that players can spawn in."
+  },
+  {
+    "id": "send_command_feedback",
+    "legacyName": "sendCommandFeedback",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Send command feedback",
+    "description": null
+  },
+  {
+    "id": "show_advancement_messages",
+    "legacyName": "announceAdvancements",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Announce advancements",
+    "description": null
+  },
+  {
+    "id": "show_death_messages",
+    "legacyName": "showDeathMessages",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Show death messages",
+    "description": null
+  },
+  {
+    "id": "spawn_mobs",
+    "legacyName": "doMobSpawning",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Spawn mobs",
+    "description": "Some entities might have separate rules."
+  },
+  {
+    "id": "spawn_monsters",
+    "legacyName": "spawnMonsters",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Spawn Monsters",
+    "description": "Controls whether monsters naturally spawn."
+  },
+  {
+    "id": "spawn_patrols",
+    "legacyName": "doPatrolSpawning",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Spawn pillager patrols",
+    "description": null
+  },
+  {
+    "id": "spawn_phantoms",
+    "legacyName": "doInsomnia",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Spawn phantoms",
+    "description": null
+  },
+  {
+    "id": "spawn_wandering_traders",
+    "legacyName": "doTraderSpawning",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Spawn Wandering Traders",
+    "description": null
+  },
+  {
+    "id": "spawn_wardens",
+    "legacyName": "doWardenSpawning",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Spawn Wardens",
+    "description": null
+  },
+  {
+    "id": "spawner_blocks_work",
+    "legacyName": "spawnerBlocksEnabled",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Enable Spawner Blocks",
+    "description": null
+  },
+  {
+    "id": "spectators_generate_chunks",
+    "legacyName": "spectatorsGenerateChunks",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Allow spectators to generate terrain",
+    "description": null
+  },
+  {
+    "id": "spread_vines",
+    "legacyName": "doVinesSpread",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Vines spread",
+    "description": "Controls whether the Vines block spreads randomly to adjacent blocks. Does not affect other types of vine blocks such as Weeping Vines, Twisting Vines, etc."
+  },
+  {
+    "id": "tnt_explodes",
+    "legacyName": "tntExplodes",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Allow TNT to be activated and to explode",
+    "description": null
+  },
+  {
+    "id": "tnt_explosion_drop_decay",
+    "legacyName": "tntExplosionDropDecay",
+    "inverted": false,
+    "type": "Bool",
+    "default": false,
+    "name": "In TNT explosions, some blocks won't drop their loot",
+    "description": "Some of the drops from blocks destroyed by explosions caused by TNT are lost in the explosion."
+  },
+  {
+    "id": "universal_anger",
+    "legacyName": "universalAnger",
+    "inverted": false,
+    "type": "Bool",
+    "default": false,
+    "name": "Universal anger",
+    "description": "Angered neutral mobs attack any nearby player, not just the player that angered them. Works best if forgiveDeadPlayers is disabled."
+  },
+  {
+    "id": "water_source_conversion",
+    "legacyName": "waterSourceConversion",
+    "inverted": false,
+    "type": "Bool",
+    "default": true,
+    "name": "Water converts to source",
+    "description": "When flowing water is surrounded on two sides by water sources, it converts into a source."
+  }
 ]

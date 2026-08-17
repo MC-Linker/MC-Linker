@@ -6,10 +6,10 @@ import keys from '../../utilities/keys.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import * as d3 from 'd3-hierarchy';
 import Canvas from 'skia-canvas';
-import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import ItemRenderer from '../../structures/render/ItemRenderer.js';
+import AssetsManager from '../../structures/render/MinecraftAssetsManager.js';
 
 export default class Advancements extends Command {
 
@@ -50,7 +50,9 @@ export default class Advancements extends Command {
         }, { category: 'advancements' }, ph.colors())) return;
         const completedAdvancements = JSON.parse(amFile.data.toString());
 
-        const treeData = this.getTreeData(category, completedAdvancements);
+        // The server version's own tree — both members and categories differ between versions.
+        const { advancements } = await AssetsManager.getGameData(server.version, { interaction });
+        const treeData = this.getTreeData(category, completedAdvancements, advancements);
 
         const root = d3.hierarchy(treeData);
         const tree = d3.tree().nodeSize([frameSize + framePadding, frameSize + framePadding]).separation(() => 1);
@@ -120,9 +122,11 @@ export default class Advancements extends Command {
             ctx.drawImage(frame, node.x - frameSize / 2, node.y - frameSize / 2, frameSize, frameSize);
 
             //Collect the icon for the batched render; composited later in this same (translated) space.
+            // Without components the dyed-banner and decorated-pot icons render blank.
             iconPlacements.push({
                 id: node.data.icon,
-                key: ItemRenderer.imageKey(server.version, node.data.icon),
+                components: node.data.components,
+                key: ItemRenderer.imageKey(server.version, node.data.icon, node.data.components),
                 x: node.x - iconSize / 2,
                 y: node.y - iconSize / 2,
             });
@@ -169,7 +173,7 @@ export default class Advancements extends Command {
             files: [advancementsAttach],
         });
 
-        const paginationPages = await this.getAdvancementPages(advancementDataList, user.username, advancementsEmbed, advancementsAttach);
+        const paginationPages = await this.getAdvancementPages(advancementDataList, user.username, advancementsEmbed, advancementsAttach, mcData);
         const pagination = new Pagination(client, interaction, paginationPages, {
             showStartPageOnce: true,
             timeout: 60000 * 5, // 5 minutes
@@ -178,7 +182,14 @@ export default class Advancements extends Command {
         await pagination.start();
     }
 
-    getTreeData(category, completedAdvancements) {
+    /**
+     * Builds the nested tree the renderer walks, marking which advancements the player has obtained.
+     * @param {string} category - The advancement category.
+     * @param {Object} completedAdvancements - The parsed contents of the player's advancement file.
+     * @param {Object<string, import('../../utilities/minecraft-utils.js').AdvancementData[]>} allAdvancements - The advancements of the server's version.
+     * @returns {Object} The root advancement, with its children nested beneath it.
+     */
+    getTreeData(category, completedAdvancements, allAdvancements) {
         function toNestedObject(advancement) {
             if(!advancement) return null;
 
@@ -194,7 +205,16 @@ export default class Advancements extends Command {
         return toNestedObject(allAdvancements[category].find(a => a.value === 'root'));
     }
 
-    async getAdvancementPages(advancementDataList, username, advancementsEmbed, advancementsAttach) {
+    /**
+     * Builds the detail pages shown behind the rendered tree, one per advancement.
+     * @param {Object[]} advancementDataList - The advancements drawn in the tree.
+     * @param {string} username - The player's username.
+     * @param {import('discord.js').EmbedBuilder} advancementsEmbed - The embed shown on every page.
+     * @param {import('discord.js').AttachmentBuilder} advancementsAttach - The rendered tree image.
+     * @param {import('minecraft-data').IndexedData} mcData - Minecraft data for the server version.
+     * @returns {Promise<Object>} The pagination pages, keyed by button custom id.
+     */
+    async getAdvancementPages(advancementDataList, username, advancementsEmbed, advancementsAttach, mcData) {
         const paginationPages = {};
 
         for(const advancement of advancementDataList) {

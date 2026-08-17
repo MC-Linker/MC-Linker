@@ -6,31 +6,61 @@
       "description": "The heart and story of the game",
       "icon": "grass_block",
       "type": "task",
-      "children": ["mine_stone"]
+      "children": [
+        "mine_stone"
+      ]
     },
     {
       "name": "Stone Age",
       "value": "mine_stone",
-      "description": "Mine stone with your new pickaxe",
+      "description": "Mine Stone with your new Pickaxe",
       "icon": "wooden_pickaxe",
       "type": "task",
-      "children": ["upgrade_tools"]
+      "children": [
+        "upgrade_tools"
+      ]
     },
     {
       "name": "Getting an Upgrade",
       "value": "upgrade_tools",
-      "description": "Construct a better pickaxe",
+      "description": "Construct a better Pickaxe",
       "icon": "stone_pickaxe",
       "type": "task",
-      "children": ["smelt_iron"]
+      "children": [
+        "smelt_iron"
+      ]
     },
     {
       "name": "Acquire Hardware",
       "value": "smelt_iron",
-      "description": "Smelt an iron ingot",
+      "description": "Smelt an Iron Ingot",
       "icon": "iron_ingot",
       "type": "task",
-      "children": ["obtain_armor", "lava_bucket", "iron_tools"]
+      "children": [
+        "iron_tools",
+        "lava_bucket",
+        "obtain_armor"
+      ]
+    },
+    {
+      "name": "Isn't It Iron Pick",
+      "value": "iron_tools",
+      "description": "Upgrade your Pickaxe",
+      "icon": "iron_pickaxe",
+      "type": "task",
+      "children": [
+        "mine_diamond"
+      ]
+    },
+    {
+      "name": "Hot Stuff",
+      "value": "lava_bucket",
+      "description": "Fill a Bucket with lava",
+      "icon": "lava_bucket",
+      "type": "task",
+      "children": [
+        "form_obsidian"
+      ]
     },
     {
       "name": "Suit Up",
@@ -38,39 +68,9 @@
       "description": "Protect yourself with a piece of iron armor",
       "icon": "iron_chestplate",
       "type": "task",
-      "children": ["deflect_arrow"]
-    },
-    {
-      "name": "Hot Stuff",
-      "value": "lava_bucket",
-      "description": "Fill a bucket with lava",
-      "icon": "lava_bucket",
-      "type": "task",
-      "children": ["form_obsidian"]
-    },
-    {
-      "name": "Isn't It Iron Pick",
-      "value": "iron_tools",
-      "description": "Upgrade your pickaxe",
-      "icon": "iron_pickaxe",
-      "type": "task",
-      "children": ["mine_diamond"]
-    },
-    {
-      "name": "Not Today, Thank You",
-      "value": "deflect_arrow",
-      "description": "Block a projectile using your shield.",
-      "icon": "shield",
-      "type": "task",
-      "children": []
-    },
-    {
-      "name": "Ice Bucket Challenge",
-      "value": "form_obsidian",
-      "description": "Obtain a block of obsidian",
-      "icon": "obsidian",
-      "type": "task",
-      "children": ["enter_the_nether"]
+      "children": [
+        "deflect_arrow"
+      ]
     },
     {
       "name": "Diamonds!",
@@ -78,18 +78,39 @@
       "description": "Acquire diamonds",
       "icon": "diamond",
       "type": "task",
-      "children": ["shiny_gear", "enchant_item"]
+      "children": [
+        "enchant_item",
+        "shiny_gear"
+      ]
     },
     {
-      "name": "We Need to Go Deeper",
-      "value": "enter_the_nether",
-      "description": "Build, light and enter a Nether Portal",
-      "icon": "flint_and_steel",
+      "name": "Ice Bucket Challenge",
+      "value": "form_obsidian",
+      "description": "Obtain a block of Obsidian",
+      "icon": "obsidian",
       "type": "task",
-      "children": ["cure_zombie_villager", "follow_ender_eye"]
+      "children": [
+        "enter_the_nether"
+      ]
     },
     {
-      "name": "Cover Me With Diamonds",
+      "name": "Not Today, Thank You",
+      "value": "deflect_arrow",
+      "description": "Deflect a projectile with a Shield",
+      "icon": "shield",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "Enchanter",
+      "value": "enchant_item",
+      "description": "Enchant an item at an Enchanting Table",
+      "icon": "enchanted_book",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "Cover Me with Diamonds",
       "value": "shiny_gear",
       "description": "Diamond armor saves lives",
       "icon": "diamond_chestplate",
@@ -97,12 +118,15 @@
       "children": []
     },
     {
-      "name": "Enchanter",
-      "value": "enchant_item",
-      "description": "Enchant an item at an Enchantment Table",
-      "icon": "enchanted_book",
+      "name": "We Need to Go Deeper",
+      "value": "enter_the_nether",
+      "description": "Build, light, and enter a Nether Portal",
+      "icon": "flint_and_steel",
       "type": "task",
-      "children": []
+      "children": [
+        "cure_zombie_villager",
+        "follow_ender_eye"
+      ]
     },
     {
       "name": "Zombie Doctor",
@@ -115,10 +139,12 @@
     {
       "name": "Eye Spy",
       "value": "follow_ender_eye",
-      "description": "Follow an Ender Eye",
+      "description": "Follow an Eye of Ender",
       "icon": "ender_eye",
       "type": "task",
-      "children": ["enter_the_end"]
+      "children": [
+        "enter_the_end"
+      ]
     },
     {
       "name": "The End?",
@@ -134,60 +160,18 @@
       "name": "Nether",
       "value": "root",
       "description": "Bring summer clothes",
-      "icon": "netherrack",
+      "icon": "red_nether_bricks",
       "type": "task",
       "children": [
-        "return_to_sender", "find_bastion", "obtain_ancient_debris", "fast_travel", "find_fortress",
-        "obtain_crying_obsidian", "distract_piglin", "ride_strider"
+        "distract_piglin",
+        "fast_travel",
+        "find_bastion",
+        "find_fortress",
+        "obtain_ancient_debris",
+        "obtain_crying_obsidian",
+        "return_to_sender",
+        "ride_strider"
       ]
-    },
-    {
-      "name": "Return to Sender",
-      "value": "return_to_sender",
-      "description": "Destroy a Ghast with a fireball",
-      "icon": "fire_charge",
-      "type": "challenge",
-      "children": ["uneasy_alliance"]
-    },
-    {
-      "name": "Those Were the Days",
-      "value": "find_bastion",
-      "description": "Enter a Bastion Remnant",
-      "icon": "polished_blackstone_bricks",
-      "type": "task",
-      "children": ["loot_bastion"]
-    },
-    {
-      "name": "Hidden in the Depths",
-      "value": "obtain_ancient_debris",
-      "description": "Obtain Ancient Debris",
-      "icon": "ancient_debris",
-      "type": "task",
-      "children": ["use_lodestone", "netherite_armor"]
-    },
-    {
-      "name": "Subspace Bubble",
-      "value": "fast_travel",
-      "description": "Use the Nether to travel 7 km in the Overworld",
-      "icon": "paper",
-      "type": "challenge",
-      "children": []
-    },
-    {
-      "name": "A Terrible Fortress",
-      "value": "find_fortress",
-      "description": "Break your way into a Nether Fortress",
-      "icon": "nether_bricks",
-      "type": "goal",
-      "children": ["get_wither_skull", "obtain_blaze_rod"]
-    },
-    {
-      "name": "Who is Cutting Onions?",
-      "value": "obtain_crying_obsidian",
-      "description": "Obtain Crying Obsidian",
-      "icon": "crying_obsidian",
-      "type": "task",
-      "children": ["charge_respawn_anchor"]
     },
     {
       "name": "Oh Shiny",
@@ -198,36 +182,102 @@
       "children": []
     },
     {
+      "name": "Subspace Bubble",
+      "value": "fast_travel",
+      "description": "Use the Nether to travel 7 km in the Overworld",
+      "icon": "map",
+      "type": "challenge",
+      "children": []
+    },
+    {
+      "name": "Those Were the Days",
+      "value": "find_bastion",
+      "description": "Enter a Bastion Remnant",
+      "icon": "polished_blackstone_bricks",
+      "type": "task",
+      "children": [
+        "loot_bastion"
+      ]
+    },
+    {
+      "name": "A Terrible Fortress",
+      "value": "find_fortress",
+      "description": "Break your way into a Nether Fortress",
+      "icon": "nether_bricks",
+      "type": "task",
+      "children": [
+        "get_wither_skull",
+        "obtain_blaze_rod"
+      ]
+    },
+    {
+      "name": "Hidden in the Depths",
+      "value": "obtain_ancient_debris",
+      "description": "Obtain Ancient Debris",
+      "icon": "ancient_debris",
+      "type": "task",
+      "children": [
+        "netherite_armor"
+      ]
+    },
+    {
+      "name": "Who is Cutting Onions?",
+      "value": "obtain_crying_obsidian",
+      "description": "Obtain Crying Obsidian",
+      "icon": "crying_obsidian",
+      "type": "task",
+      "children": [
+        "charge_respawn_anchor"
+      ]
+    },
+    {
+      "name": "Return to Sender",
+      "value": "return_to_sender",
+      "description": "Destroy a Ghast with a fireball",
+      "icon": "fire_charge",
+      "type": "challenge",
+      "children": [
+        "uneasy_alliance"
+      ]
+    },
+    {
       "name": "This Boat Has Legs",
       "value": "ride_strider",
       "description": "Ride a Strider with a Warped Fungus on a Stick",
       "icon": "warped_fungus_on_a_stick",
       "type": "task",
-      "children": ["ride_strider_in_overworld_lava", "explore_nether"]
-    },
-    {
-      "name": "Uneasy Alliance",
-      "value": "uneasy_alliance",
-      "description": "Rescue a Ghast from the Nether, bring it safely home to the Overworld... and then kill it",
-      "icon": "ghast_tear",
-      "type": "challenge",
-      "children": []
+      "children": [
+        "explore_nether",
+        "ride_strider_in_overworld_lava"
+      ]
     },
     {
       "name": "War Pigs",
       "value": "loot_bastion",
-      "description": "Loot a chest in a Bastion Remnant",
+      "description": "Loot a Chest in a Bastion Remnant",
       "icon": "chest",
       "type": "task",
       "children": []
     },
     {
-      "name": "Country Lode, Take Me Home",
-      "value": "use_lodestone",
-      "description": "Use a compass on a Lodestone",
-      "icon": "lodestone",
+      "name": "Spooky Scary Skeleton",
+      "value": "get_wither_skull",
+      "description": "Obtain a Wither Skeleton's skull",
+      "icon": "wither_skeleton_skull",
       "type": "task",
-      "children": []
+      "children": [
+        "summon_wither"
+      ]
+    },
+    {
+      "name": "Into Fire",
+      "value": "obtain_blaze_rod",
+      "description": "Relieve a Blaze of its rod",
+      "icon": "blaze_rod",
+      "type": "task",
+      "children": [
+        "brew_potion"
+      ]
     },
     {
       "name": "Cover Me in Debris",
@@ -238,22 +288,6 @@
       "children": []
     },
     {
-      "name": "Spooky Scary Skeleton",
-      "value": "get_wither_skull",
-      "description": "Obtain a Wither Skeleton's skull",
-      "icon": "wither_skeleton_skull",
-      "type": "task",
-      "children": ["summon_wither"]
-    },
-    {
-      "name": "Into Fire",
-      "value": "obtain_blaze_rod",
-      "description": "Relieve a Blaze of its rod",
-      "icon": "blaze_rod",
-      "type": "task",
-      "children": ["brew_potion"]
-    },
-    {
       "name": "Not Quite \"Nine\" Lives",
       "value": "charge_respawn_anchor",
       "description": "Charge a Respawn Anchor to the maximum",
@@ -262,11 +296,11 @@
       "children": []
     },
     {
-      "name": "Feels like home",
-      "value": "ride_strider_in_overworld_lava",
-      "description": "Take a Strider for a loooong ride on a lava lake in the Overworld",
-      "icon": "warped_fungus_on_a_stick",
-      "type": "task",
+      "name": "Uneasy Alliance",
+      "value": "uneasy_alliance",
+      "description": "Rescue a Ghast from the Nether, bring it safely home to the Overworld... and then kill it",
+      "icon": "ghast_tear",
+      "type": "challenge",
       "children": []
     },
     {
@@ -278,28 +312,42 @@
       "children": []
     },
     {
+      "name": "Feels Like Home",
+      "value": "ride_strider_in_overworld_lava",
+      "description": "Take a Strider for a loooong ride on a lava lake in the Overworld",
+      "icon": "warped_fungus_on_a_stick",
+      "type": "task",
+      "children": []
+    },
+    {
       "name": "Withering Heights",
       "value": "summon_wither",
       "description": "Summon the Wither",
       "icon": "nether_star",
       "type": "task",
-      "children": ["create_beacon"]
+      "children": [
+        "create_beacon"
+      ]
     },
     {
       "name": "Local Brewery",
       "value": "brew_potion",
-      "description": "Brew a potion",
+      "description": "Brew a Potion",
       "icon": "potion",
       "type": "task",
-      "children": ["all_potions"]
+      "children": [
+        "all_potions"
+      ]
     },
     {
       "name": "Bring Home the Beacon",
       "value": "create_beacon",
-      "description": "Construct and place a beacon",
+      "description": "Construct and place a Beacon",
       "icon": "beacon",
       "type": "task",
-      "children": ["create_full_beacon"]
+      "children": [
+        "create_full_beacon"
+      ]
     },
     {
       "name": "A Furious Cocktail",
@@ -307,12 +355,14 @@
       "description": "Have every potion effect applied at the same time",
       "icon": "milk_bucket",
       "type": "challenge",
-      "children": ["all_effects"]
+      "children": [
+        "all_effects"
+      ]
     },
     {
       "name": "Beaconator",
       "value": "create_full_beacon",
-      "description": "Bring a beacon to full power",
+      "description": "Bring a Beacon to full power",
       "icon": "beacon",
       "type": "goal",
       "children": []
@@ -328,12 +378,14 @@
   ],
   "end": [
     {
-      "name": "The End?",
+      "name": "The End",
       "value": "root",
       "description": "Or the beginning?",
       "icon": "end_stone",
       "type": "task",
-      "children": ["kill_dragon"]
+      "children": [
+        "kill_dragon"
+      ]
     },
     {
       "name": "Free the End",
@@ -341,7 +393,20 @@
       "description": "Good luck",
       "icon": "dragon_head",
       "type": "task",
-      "children": ["dragon_egg", "enter_end_gateway", "respawn_dragon", "dragon_breath"]
+      "children": [
+        "dragon_breath",
+        "dragon_egg",
+        "enter_end_gateway",
+        "respawn_dragon"
+      ]
+    },
+    {
+      "name": "You Need a Mint",
+      "value": "dragon_breath",
+      "description": "Collect Dragon's Breath in a Glass Bottle",
+      "icon": "dragon_breath",
+      "type": "goal",
+      "children": []
     },
     {
       "name": "The Next Generation",
@@ -357,7 +422,9 @@
       "description": "Escape the island",
       "icon": "ender_pearl",
       "type": "task",
-      "children": ["find_end_city"]
+      "children": [
+        "find_end_city"
+      ]
     },
     {
       "name": "The End... Again...",
@@ -368,25 +435,20 @@
       "children": []
     },
     {
-      "name": "You Need a Mint",
-      "value": "dragon_breath",
-      "description": "Collect dragon's breath in a glass bottle",
-      "icon": "dragon_breath",
-      "type": "task",
-      "children": []
-    },
-    {
       "name": "The City at the End of the Game",
       "value": "find_end_city",
       "description": "Go on in, what could happen?",
       "icon": "purpur_block",
       "type": "task",
-      "children": ["levitate", "elytra"]
+      "children": [
+        "elytra",
+        "levitate"
+      ]
     },
     {
       "name": "Sky's the Limit",
       "value": "elytra",
-      "description": "Find elytra",
+      "description": "Find Elytra",
       "icon": "elytra",
       "type": "goal",
       "children": []
@@ -404,84 +466,51 @@
     {
       "name": "Adventure",
       "value": "root",
-      "description": "Adventure, exploration, and combat",
-      "icon": "paper",
+      "description": "Adventure, exploration and combat",
+      "icon": "map",
       "type": "task",
       "children": [
-        "voluntary_exile", "spyglass_at_parrot", "kill_a_mob", "read_power_of_chiseled_bookshelf", "trade",
-        "trim_with_any_armor_pattern", "honey_block_slide", "ol_betsy", "lightning_rod_with_villager_no_fire",
-        "fall_from_world_height", "salvage_sherd", "avoid_vibration", "sleep_in_bed"
+        "avoid_vibration",
+        "brush_armadillo",
+        "crafters_crafting_crafters",
+        "fall_from_world_height",
+        "heart_transplanter",
+        "honey_block_slide",
+        "kill_a_mob",
+        "lightning_rod_with_villager_no_fire",
+        "minecraft_trials_edition",
+        "ol_betsy",
+        "read_power_of_chiseled_bookshelf",
+        "salvage_sherd",
+        "sleep_in_bed",
+        "spyglass_at_parrot",
+        "trade",
+        "trim_with_any_armor_pattern",
+        "use_lodestone",
+        "voluntary_exile"
       ]
     },
     {
-      "name": "Voluntary Exile",
-      "value": "voluntary_exile",
-      "description": "Kill a raid captain.\nMaybe consider staying away from villages for the time being...",
-      "icon": "white_banner",
-      "type": "task",
-      "children": ["hero_of_the_village"]
-    },
-    {
-      "name": "Is It a Bird?",
-      "value": "spyglass_at_parrot",
-      "description": "Look at a parrot through a spyglass",
-      "icon": "spyglass",
-      "type": "task",
-      "children": ["spyglass_at_ghast"]
-    },
-    {
-      "name": "Monster Hunter",
-      "value": "kill_a_mob",
-      "description": "Kill any hostile monster",
-      "icon": "iron_sword",
-      "type": "task",
-      "children": ["kill_all_mobs", "totem_of_undying", "throw_trident", "kill_mob_near_sculk_catalyst", "shoot_arrow"]
-    },
-    {
-      "name": "The Power of Books",
-      "value": "read_power_of_chiseled_bookshelf",
-      "description": "Read the power signal of a Chiseled Bookshelf using a Comparator",
-      "icon": "chiseled_bookshelf",
+      "name": "Sneak 100",
+      "value": "avoid_vibration",
+      "description": "Sneak near a Sculk Sensor or Warden to prevent it from detecting you",
+      "icon": "sculk_sensor",
       "type": "task",
       "children": []
     },
     {
-      "name": "What a Deal!",
-      "value": "trade",
-      "description": "Successfully trade with a Villager",
-      "icon": "emerald",
-      "type": "task",
-      "children": ["summon_iron_golem", "trade_at_world_height"]
-    },
-    {
-      "name": "Crafting a New Look",
-      "value": "trim_with_any_armor_pattern",
-      "description": "Craft a trimmed armor at a Smithing Table",
-      "icon": "dune_armor_trim_smithing_template",
-      "type": "task",
-      "children": ["trim_with_all_exclusive_armor_patterns"]
-    },
-    {
-      "name": "Sticky Situation",
-      "value": "honey_block_slide",
-      "description": "Jump into a Honey Block to break your fall",
-      "icon": "honey_block",
+      "name": "Isn't It Scute?",
+      "value": "brush_armadillo",
+      "description": "Get Armadillo Scutes from an Armadillo using a Brush",
+      "icon": "armadillo_scute",
       "type": "task",
       "children": []
     },
     {
-      "name": "Ol' Betsy",
-      "value": "ol_betsy",
-      "description": "Shoot a crossbow",
-      "icon": "crossbow",
-      "type": "task",
-      "children": ["two_birds_one_arrow", "whos_the_pillager_now", "arbalistic"]
-    },
-    {
-      "name": "Surge Protector",
-      "value": "lightning_rod_with_villager_no_fire",
-      "description": "Protect a villager from an undesired shock without starting a fire",
-      "icon": "lightning_rod",
+      "name": "Crafters Crafting Crafters",
+      "value": "crafters_crafting_crafters",
+      "description": "Be near a Crafter when it crafts a Crafter",
+      "icon": "crafter",
       "type": "task",
       "children": []
     },
@@ -494,52 +523,201 @@
       "children": []
     },
     {
+      "name": "Heart Transplanter",
+      "value": "heart_transplanter",
+      "description": "Place a Creaking Heart with the correct alignment between two Pale Oak Log blocks",
+      "icon": "creaking_heart",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "Sticky Situation",
+      "value": "honey_block_slide",
+      "description": "Jump into a Honey Block to break your fall",
+      "icon": "honey_block",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "Monster Hunter",
+      "value": "kill_a_mob",
+      "description": "Kill any hostile monster",
+      "icon": "iron_sword",
+      "type": "task",
+      "children": [
+        "kill_all_mobs",
+        "kill_mob_near_sculk_catalyst",
+        "shoot_arrow",
+        "spear_many_mobs",
+        "throw_trident",
+        "totem_of_undying"
+      ]
+    },
+    {
+      "name": "Surge Protector",
+      "value": "lightning_rod_with_villager_no_fire",
+      "description": "Protect a Villager from an undesired shock without starting a fire",
+      "icon": "lightning_rod",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "Minecraft: Trial(s) Edition",
+      "value": "minecraft_trials_edition",
+      "description": "Step foot in a Trial Chamber",
+      "icon": "chiseled_tuff",
+      "type": "task",
+      "children": [
+        "blowback",
+        "lighten_up",
+        "overoverkill",
+        "under_lock_and_key",
+        "who_needs_rockets"
+      ]
+    },
+    {
+      "name": "Ol' Betsy",
+      "value": "ol_betsy",
+      "description": "Shoot a Crossbow",
+      "icon": "crossbow",
+      "type": "task",
+      "children": [
+        "arbalistic",
+        "two_birds_one_arrow",
+        "whos_the_pillager_now"
+      ]
+    },
+    {
+      "name": "The Power of Books",
+      "value": "read_power_of_chiseled_bookshelf",
+      "description": "Read the power signal of a Chiseled Bookshelf using a Comparator",
+      "icon": "chiseled_bookshelf",
+      "type": "task",
+      "children": []
+    },
+    {
       "name": "Respecting the Remnants",
       "value": "salvage_sherd",
       "description": "Brush a Suspicious block to obtain a Pottery Sherd",
       "icon": "brush",
       "type": "task",
-      "children": ["craft_decorated_pot_using_only_sherds"]
-    },
-    {
-      "name": "Sneak 100",
-      "value": "avoid_vibration",
-      "description": "Sneak near a Sculk Sensor, Sculk Shrieker or Warden to prevent it from hearing you",
-      "icon": "sculk_sensor",
-      "type": "task",
-      "children": []
+      "children": [
+        "craft_decorated_pot_using_only_sherds"
+      ]
     },
     {
       "name": "Sweet Dreams",
       "value": "sleep_in_bed",
-      "description": "Sleep in a bed to change your respawn point",
+      "description": "Sleep in a Bed to change your respawn point",
       "icon": "red_bed",
       "type": "task",
-      "children": ["walk_on_powder_snow_with_leather_boots", "adventuring_time", "play_jukebox_in_meadows"]
+      "children": [
+        "adventuring_time",
+        "play_jukebox_in_meadows",
+        "walk_on_powder_snow_with_leather_boots"
+      ]
     },
     {
-      "name": "Hero of the Village",
-      "value": "hero_of_the_village",
-      "description": "Successfully defend a village from a raid",
-      "icon": "white_banner",
-      "type": "challenge",
+      "name": "Is It a Bird?",
+      "value": "spyglass_at_parrot",
+      "description": "Look at a Parrot through a Spyglass",
+      "icon": "spyglass",
+      "type": "task",
+      "children": [
+        "spyglass_at_ghast"
+      ]
+    },
+    {
+      "name": "What a Deal!",
+      "value": "trade",
+      "description": "Successfully trade with a Villager",
+      "icon": "emerald",
+      "type": "task",
+      "children": [
+        "summon_iron_golem",
+        "trade_at_world_height"
+      ]
+    },
+    {
+      "name": "Crafting a New Look",
+      "value": "trim_with_any_armor_pattern",
+      "description": "Craft trimmed armor at a Smithing Table",
+      "icon": "dune_armor_trim_smithing_template",
+      "type": "task",
+      "children": [
+        "trim_with_all_exclusive_armor_patterns"
+      ]
+    },
+    {
+      "name": "Country Lode, Take Me Home",
+      "value": "use_lodestone",
+      "description": "Use a Compass on a Lodestone",
+      "icon": "lodestone",
+      "type": "task",
       "children": []
     },
     {
-      "name": "Is It a Balloon?",
-      "value": "spyglass_at_ghast",
-      "description": "Look at a ghast through a spyglass",
-      "icon": "spyglass",
+      "name": "Voluntary Exile",
+      "value": "voluntary_exile",
+      "description": "Kill a raid captain.\nMaybe consider staying away from villages for the time being...",
+      "icon": "white_banner",
       "type": "task",
-      "children": ["spyglass_at_dragon"]
+      "components": {
+        "minecraft:banner_patterns": [
+          {
+            "color": "cyan",
+            "pattern": "minecraft:rhombus"
+          },
+          {
+            "color": "light_gray",
+            "pattern": "minecraft:stripe_bottom"
+          },
+          {
+            "color": "gray",
+            "pattern": "minecraft:stripe_center"
+          },
+          {
+            "color": "light_gray",
+            "pattern": "minecraft:border"
+          },
+          {
+            "color": "black",
+            "pattern": "minecraft:stripe_middle"
+          },
+          {
+            "color": "light_gray",
+            "pattern": "minecraft:half_horizontal"
+          },
+          {
+            "color": "light_gray",
+            "pattern": "minecraft:circle"
+          },
+          {
+            "color": "black",
+            "pattern": "minecraft:border"
+          }
+        ],
+        "minecraft:item_name": {
+          "translate": "block.minecraft.ominous_banner"
+        },
+        "minecraft:rarity": "uncommon",
+        "minecraft:tooltip_display": {
+          "hidden_components": [
+            "minecraft:banner_patterns"
+          ]
+        }
+      },
+      "children": [
+        "hero_of_the_village"
+      ]
     },
     {
-      "name": "A Throwaway Joke",
-      "value": "throw_trident",
-      "description": "Throw a trident at something.\nNote: Throwing away your only weapon is not a good idea.",
-      "icon": "trident",
-      "type": "task",
-      "children": ["very_very_frightening"]
+      "name": "Monsters Hunted",
+      "value": "kill_all_mobs",
+      "description": "Kill one of every hostile monster",
+      "icon": "diamond_sword",
+      "type": "challenge",
+      "children": []
     },
     {
       "name": "It Spreads",
@@ -552,18 +730,31 @@
     {
       "name": "Take Aim",
       "value": "shoot_arrow",
-      "description": "Shoot something with an arrow",
+      "description": "Shoot something with an Arrow",
       "icon": "bow",
       "type": "task",
-      "children": ["bullseye", "sniper_duel"]
+      "children": [
+        "bullseye",
+        "sniper_duel"
+      ]
     },
     {
-      "name": "Monsters Hunted",
-      "value": "kill_all_mobs",
-      "description": "Kill one of every hostile monster",
-      "icon": "diamond_sword",
-      "type": "challenge",
+      "name": "Mob Kabob",
+      "value": "spear_many_mobs",
+      "description": "Hit five mobs in the same Charge attack using the Spear",
+      "icon": "iron_spear",
+      "type": "goal",
       "children": []
+    },
+    {
+      "name": "A Throwaway Joke",
+      "value": "throw_trident",
+      "description": "Throw a Trident at something.\nNote: Throwing away your only weapon is not a good idea.",
+      "icon": "trident",
+      "type": "task",
+      "children": [
+        "very_very_frightening"
+      ]
     },
     {
       "name": "Postmortal",
@@ -574,43 +765,45 @@
       "children": []
     },
     {
-      "name": "Hired Help",
-      "value": "summon_iron_golem",
-      "description": "Summon an Iron Golem to help defend a village",
-      "icon": "carved_pumpkin",
-      "type": "task",
-      "children": []
-    },
-    {
-      "name": "Star Trader",
-      "value": "trade_at_world_height",
-      "description": "Trade with a Villager at the build height limit",
-      "icon": "emerald",
-      "type": "task",
-      "children": []
-    },
-    {
-      "name": "Smithing with Style",
-      "value": "trim_with_all_exclusive_armor_patterns",
-      "description": "Apply these smithing templates at least once: Spire, Snout, Rib, Ward, Silence, Vex, Tide, Wayfinder",
-      "icon": "silence_armor_trim_smithing_template",
+      "name": "Blowback",
+      "value": "blowback",
+      "description": "Kill a Breeze with a deflected Breeze-shot Wind Charge",
+      "icon": "wind_charge",
       "type": "challenge",
       "children": []
     },
     {
-      "name": "Who's the Pillager Now?",
-      "value": "whos_the_pillager_now",
-      "description": "Give a Pillager a taste of their own medicine",
-      "icon": "crossbow",
-        "type": "task",
+      "name": "Lighten Up",
+      "value": "lighten_up",
+      "description": "Scrape a Copper Bulb with an Axe to make it brighter",
+      "icon": "copper_bulb",
+      "type": "task",
       "children": []
     },
     {
-      "name": "Two Birds, One Arrow",
-      "value": "two_birds_one_arrow",
-      "description": "Kill two Phantoms with a piercing arrow",
-      "icon": "crossbow",
+      "name": "Over-Overkill",
+      "value": "overoverkill",
+      "description": "Deal 50 hearts of damage in a single hit using the Mace",
+      "icon": "mace",
       "type": "challenge",
+      "children": []
+    },
+    {
+      "name": "Under Lock and Key",
+      "value": "under_lock_and_key",
+      "description": "Unlock a Vault with a Trial Key",
+      "icon": "trial_key",
+      "type": "task",
+      "children": [
+        "revaulting"
+      ]
+    },
+    {
+      "name": "Who Needs Rockets?",
+      "value": "who_needs_rockets",
+      "description": "Use a Wind Charge to launch yourself upward 8 blocks",
+      "icon": "wind_charge",
+      "type": "task",
       "children": []
     },
     {
@@ -622,11 +815,35 @@
       "children": []
     },
     {
+      "name": "Two Birds, One Arrow",
+      "value": "two_birds_one_arrow",
+      "description": "Kill two Phantoms with a piercing Arrow",
+      "icon": "crossbow",
+      "type": "challenge",
+      "children": []
+    },
+    {
+      "name": "Who's the Pillager Now?",
+      "value": "whos_the_pillager_now",
+      "description": "Give a Pillager a taste of their own medicine",
+      "icon": "crossbow",
+      "type": "task",
+      "children": []
+    },
+    {
       "name": "Careful Restoration",
       "value": "craft_decorated_pot_using_only_sherds",
       "description": "Make a Decorated Pot out of 4 Pottery Sherds",
-      "icon": "crossbow",
-      "type": "challenge",
+      "icon": "decorated_pot",
+      "type": "task",
+      "components": {
+        "minecraft:pot_decorations": [
+          "minecraft:brick",
+          "minecraft:heart_pottery_sherd",
+          "minecraft:brick",
+          "minecraft:explorer_pottery_sherd"
+        ]
+      },
       "children": []
     },
     {
@@ -648,33 +865,96 @@
     {
       "name": "Light as a Rabbit",
       "value": "walk_on_powder_snow_with_leather_boots",
-      "description": "Walk on powder snow...without sinking in it",
+      "description": "Walk on Powder Snow... without sinking in it",
       "icon": "leather_boots",
       "type": "task",
       "children": []
     },
     {
-      "name": "Is It a Plane?",
-      "value": "spyglass_at_dragon",
-      "description": "Look at the Ender Dragon through a spyglass",
+      "name": "Is It a Balloon?",
+      "value": "spyglass_at_ghast",
+      "description": "Look at a Ghast through a Spyglass",
       "icon": "spyglass",
       "type": "task",
+      "children": [
+        "spyglass_at_dragon"
+      ]
+    },
+    {
+      "name": "Hired Help",
+      "value": "summon_iron_golem",
+      "description": "Summon an Iron Golem to help defend a village",
+      "icon": "carved_pumpkin",
+      "type": "goal",
       "children": []
     },
     {
-      "name": "Very Very Frightening",
-      "value": "very_very_frightening",
-      "description": "Strike a Villager with lightning",
-      "icon": "trident",
+      "name": "Star Trader",
+      "value": "trade_at_world_height",
+      "description": "Trade with a Villager at the build height limit",
+      "icon": "emerald",
       "type": "task",
       "children": []
     },
     {
-      "name": "Sniper Duel",
-      "value": "sniper_duel",
-      "description": "Kill a Skeleton from at least 50 meters away",
-      "icon": "arrow",
+      "name": "Smithing with Style",
+      "value": "trim_with_all_exclusive_armor_patterns",
+      "description": "Apply these smithing templates at least once: Spire, Snout, Rib, Ward, Silence, Vex, Tide, Wayfinder",
+      "icon": "silence_armor_trim_smithing_template",
       "type": "challenge",
+      "children": []
+    },
+    {
+      "name": "Hero of the Village",
+      "value": "hero_of_the_village",
+      "description": "Successfully defend a village from a raid",
+      "icon": "white_banner",
+      "type": "challenge",
+      "components": {
+        "minecraft:banner_patterns": [
+          {
+            "color": "cyan",
+            "pattern": "minecraft:rhombus"
+          },
+          {
+            "color": "light_gray",
+            "pattern": "minecraft:stripe_bottom"
+          },
+          {
+            "color": "gray",
+            "pattern": "minecraft:stripe_center"
+          },
+          {
+            "color": "light_gray",
+            "pattern": "minecraft:border"
+          },
+          {
+            "color": "black",
+            "pattern": "minecraft:stripe_middle"
+          },
+          {
+            "color": "light_gray",
+            "pattern": "minecraft:half_horizontal"
+          },
+          {
+            "color": "light_gray",
+            "pattern": "minecraft:circle"
+          },
+          {
+            "color": "black",
+            "pattern": "minecraft:border"
+          }
+        ],
+        "minecraft:item_name": {
+          "translate": "block.minecraft.ominous_banner"
+        },
+        "minecraft:rarity": "uncommon",
+        "minecraft:tooltip_display": {
+          "hidden_components": [
+            "minecraft:banner_patterns"
+          ]
+        }
+      },
       "children": []
     },
     {
@@ -686,11 +966,35 @@
       "children": []
     },
     {
-      "name": "Isn't It Scute?",
-      "value": "brush_armadillo",
-      "description": "Get Armadillo Scutes from an Armadillo using a Brush",
-      "icon": "scute",
+      "name": "Sniper Duel",
+      "value": "sniper_duel",
+      "description": "Kill a Skeleton from at least 50 meters away",
+      "icon": "arrow",
       "type": "challenge",
+      "children": []
+    },
+    {
+      "name": "Very Very Frightening",
+      "value": "very_very_frightening",
+      "description": "Strike a Villager with lightning",
+      "icon": "trident",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "Revaulting",
+      "value": "revaulting",
+      "description": "Unlock an Ominous Vault with an Ominous Trial Key",
+      "icon": "ominous_trial_key",
+      "type": "goal",
+      "children": []
+    },
+    {
+      "name": "Is It a Plane?",
+      "value": "spyglass_at_dragon",
+      "description": "Look at the Ender Dragon through a Spyglass",
+      "icon": "spyglass",
+      "type": "task",
       "children": []
     }
   ],
@@ -702,26 +1006,20 @@
       "icon": "hay_block",
       "type": "task",
       "children": [
-        "safely_harvest_honey", "breed_an_animal", "allay_deliver_item_to_player", "ride_a_boat_with_a_goat",
-        "tame_an_animal", "make_a_sign_glow", "fishy_business", "silk_touch_nest", "tadpole_in_a_bucket",
-        "obtain_sniffer_egg", "plant_seed"
+        "allay_deliver_item_to_player",
+        "breed_an_animal",
+        "fishy_business",
+        "make_a_sign_glow",
+        "obtain_sniffer_egg",
+        "place_dried_ghast_in_water",
+        "plant_seed",
+        "ride_a_boat_with_a_goat",
+        "safely_harvest_honey",
+        "silk_touch_nest",
+        "tadpole_in_a_bucket",
+        "tame_an_animal",
+        "uh_oh"
       ]
-    },
-    {
-      "name": "Bee Our Guest",
-      "value": "safely_harvest_honey",
-      "description": "Use a Campfire to collect Honey from a Beehive using a Bottle without aggravating the bees",
-      "icon": "honey_bottle",
-      "type": "task",
-      "children": ["wax_on"]
-    },
-    {
-      "name": "The Parrots and the Bats",
-      "value": "breed_an_animal",
-      "description": "Breed two animals together",
-      "icon": "wheat",
-      "type": "task",
-      "children": ["bred_all_animals"]
     },
     {
       "name": "You've Got a Friend in Me",
@@ -729,7 +1027,66 @@
       "description": "Have an Allay deliver items to you",
       "icon": "cookie",
       "type": "task",
-      "children": ["allay_deliver_cake_to_note_block"]
+      "children": [
+        "allay_deliver_cake_to_note_block"
+      ]
+    },
+    {
+      "name": "The Parrots and the Bats",
+      "value": "breed_an_animal",
+      "description": "Breed two animals together",
+      "icon": "wheat",
+      "type": "task",
+      "children": [
+        "bred_all_animals"
+      ]
+    },
+    {
+      "name": "Fishy Business",
+      "value": "fishy_business",
+      "description": "Catch a fish",
+      "icon": "fishing_rod",
+      "type": "task",
+      "children": [
+        "tactical_fishing"
+      ]
+    },
+    {
+      "name": "Glow and Behold!",
+      "value": "make_a_sign_glow",
+      "description": "Make the text of any kind of sign glow",
+      "icon": "glow_ink_sac",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "Smells Interesting",
+      "value": "obtain_sniffer_egg",
+      "description": "Obtain a Sniffer Egg",
+      "icon": "sniffer_egg",
+      "type": "task",
+      "children": [
+        "feed_snifflet"
+      ]
+    },
+    {
+      "name": "Stay Hydrated!",
+      "value": "place_dried_ghast_in_water",
+      "description": "Place a Dried Ghast block into water",
+      "icon": "dried_ghast",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "A Seedy Place",
+      "value": "plant_seed",
+      "description": "Plant a seed and watch it grow",
+      "icon": "wheat",
+      "type": "task",
+      "children": [
+        "balanced_diet",
+        "obtain_netherite_hoe"
+      ]
     },
     {
       "name": "Whatever Floats Your Goat!",
@@ -740,33 +1097,19 @@
       "children": []
     },
     {
-      "name": "Best Friends Forever",
-      "value": "tame_an_animal",
-      "description": "Tame an animal",
-      "icon": "lead",
+      "name": "Bee Our Guest",
+      "value": "safely_harvest_honey",
+      "description": "Use a Campfire to collect Honey from a Beehive using a Glass Bottle without aggravating the Bees",
+      "icon": "honey_bottle",
       "type": "task",
-      "children": ["complete_catalogue", "repair_wolf_armor", "whole_pack", "remove_wolf_armor"]
-    },
-    {
-      "name": "Glow and Behold!",
-      "value": "make_a_sign_glow",
-      "description": "Make the text of a sign glow",
-      "icon": "glow_ink_sac",
-      "type": "task",
-      "children": []
-    },
-    {
-      "name": "Fishy Business",
-      "value": "fishy_business",
-      "description": "Catch a fish",
-      "icon": "fishing_rod",
-      "type": "task",
-      "children": ["tactical_fishing"]
+      "children": [
+        "wax_on"
+      ]
     },
     {
       "name": "Total Beelocation",
       "value": "silk_touch_nest",
-      "description": "Move a Bee Nest, with 3 bees inside, using Silk Touch",
+      "description": "Move a Bee Nest or Beehive, with 3 Bees inside, using Silk Touch",
       "icon": "bee_nest",
       "type": "task",
       "children": []
@@ -777,31 +1120,38 @@
       "description": "Catch a Tadpole in a Bucket",
       "icon": "tadpole_bucket",
       "type": "task",
-      "children": ["leash_all_frog_variants"]
+      "children": [
+        "leash_all_frog_variants"
+      ]
     },
     {
-      "name": "Smells Interesting",
-      "value": "obtain_sniffer_egg",
-      "description": "Obtain a Sniffer Egg",
-      "icon": "sniffer_egg",
+      "name": "Best Friends Forever",
+      "value": "tame_an_animal",
+      "description": "Tame an animal",
+      "icon": "lead",
       "type": "task",
-      "children": ["feed_snifflet"]
+      "children": [
+        "complete_catalogue",
+        "remove_wolf_armor",
+        "repair_wolf_armor",
+        "whole_pack"
+      ]
     },
     {
-      "name": "A Seedy Place",
-      "value": "plant_seed",
-      "description": "Plant a seed and watch it grow",
-      "icon": "wheat",
+      "name": "Uh Oh",
+      "value": "uh_oh",
+      "description": "Have a Sulfur Cube absorb a TNT block",
+      "icon": "tnt",
       "type": "task",
-      "children": ["balanced_diet", "obtain_netherite_hoe"]
+      "children": []
     },
     {
-      "name": "Wax On",
-      "value": "wax_on",
-      "description": "Apply Honeycomb to a Copper block!",
-      "icon": "honeycomb",
+      "name": "Birthday Song",
+      "value": "allay_deliver_cake_to_note_block",
+      "description": "Have an Allay drop a Cake at a Note Block",
+      "icon": "note_block",
       "type": "task",
-      "children": ["wax_off"]
+      "children": []
     },
     {
       "name": "Two by Two",
@@ -812,36 +1162,14 @@
       "children": []
     },
     {
-      "name": "Birthday Song",
-      "value": "allay_deliver_cake_to_note_block",
-      "description": "Have an Allay drop a Cake at a Note Block!",
-      "icon": "note_block",
-      "type": "task",
-      "children": []
-    },
-    {
-      "name": "A Complete Catalogue",
-      "value": "complete_catalogue",
-      "description": "Tame all cat variants!",
-      "icon": "cod",
-      "type": "challenge",
-      "children": []
-    },
-    {
       "name": "Tactical Fishing",
       "value": "tactical_fishing",
-      "description": "Catch a fish... without a fishing rod!",
+      "description": "Catch a Fish... without a Fishing Rod!",
       "icon": "pufferfish_bucket",
       "type": "task",
-      "children": ["axolotl_in_a_bucket"]
-    },
-    {
-      "name": "When the Squad Hops into Town",
-      "value": "leash_all_frog_variants",
-      "description": "Get each Frog variant on a Lead",
-      "icon": "lead",
-      "type": "task",
-      "children": ["froglights"]
+      "children": [
+        "axolotl_in_a_bucket"
+      ]
     },
     {
       "name": "Little Sniffs",
@@ -849,7 +1177,9 @@
       "description": "Feed a Snifflet",
       "icon": "torchflower_seeds",
       "type": "task",
-      "children": ["plant_any_sniffer_seed"]
+      "children": [
+        "plant_any_sniffer_seed"
+      ]
     },
     {
       "name": "A Balanced Diet",
@@ -862,55 +1192,51 @@
     {
       "name": "Serious Dedication",
       "value": "obtain_netherite_hoe",
-      "description": "Use a Netherite Ingot to upgrade a hoe, and then reevaluate your life choices",
+      "description": "Use a Netherite Ingot to upgrade a Hoe, and then reevaluate your life choices",
       "icon": "netherite_hoe",
       "type": "challenge",
       "children": []
     },
     {
-      "name": "Wax Off",
-      "value": "wax_off",
-      "description": "Scrape Wax off of a Copper block!",
-      "icon": "stone_axe",
+      "name": "Wax On",
+      "value": "wax_on",
+      "description": "Apply Honeycomb to a Copper block!",
+      "icon": "honeycomb",
       "type": "task",
-      "children": []
+      "children": [
+        "wax_off"
+      ]
     },
     {
-      "name": "The Cutest Predator",
-      "value": "axolotl_in_a_bucket",
-      "description": "Catch an axolotl in a bucket",
-      "icon": "axolotl_bucket",
+      "name": "When the Squad Hops into Town",
+      "value": "leash_all_frog_variants",
+      "description": "Get each Frog variant on a Lead",
+      "icon": "lead",
       "type": "task",
-      "children": ["kill_axolotl_target"]
+      "children": [
+        "froglights"
+      ]
     },
     {
-      "name": "With Our Powers Combined!",
-      "value": "froglights",
-      "description": "Have all Froglights in your inventory",
-      "icon": "verdant_froglight",
+      "name": "A Complete Catalogue",
+      "value": "complete_catalogue",
+      "description": "Tame all Cat variants!",
+      "icon": "cod",
       "type": "challenge",
       "children": []
     },
     {
-      "name": "Planting the Past",
-      "value": "plant_any_sniffer_seed",
-      "description": "Plant any Sniffer seed",
-      "icon": "pitcher_pod",
-      "type": "task",
-      "children": []
-    },
-    {
-      "name": "The Healing Power of Friendship!",
-      "value": "kill_axolotl_target",
-      "description": "Team up with an axolotl and win a fight",
-      "icon": "tropical_fish_bucket",
+      "name": "Shear Brilliance",
+      "value": "remove_wolf_armor",
+      "description": "Remove Wolf Armor from a Wolf using Shears",
+      "icon": "shears",
       "type": "task",
       "children": []
     },
     {
       "name": "Good as New",
       "value": "repair_wolf_armor",
-      "description": "Repair a damaged Wolf Armor using Armadillo Scutes",
+      "description": "Fully repair damaged Wolf Armor using Armadillo Scutes",
       "icon": "wolf_armor",
       "type": "task",
       "children": []
@@ -924,10 +1250,44 @@
       "children": []
     },
     {
-      "name": "Shear Brilliance",
-      "value": "remove_wolf_armor",
-      "description": "Remove Wolf Armor from a Wolf using Shears",
-      "icon": "shears",
+      "name": "The Cutest Predator",
+      "value": "axolotl_in_a_bucket",
+      "description": "Catch an Axolotl in a Bucket",
+      "icon": "axolotl_bucket",
+      "type": "task",
+      "children": [
+        "kill_axolotl_target"
+      ]
+    },
+    {
+      "name": "Planting the Past",
+      "value": "plant_any_sniffer_seed",
+      "description": "Plant any Sniffer seed",
+      "icon": "pitcher_pod",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "Wax Off",
+      "value": "wax_off",
+      "description": "Scrape Wax off of a Copper block!",
+      "icon": "stone_axe",
+      "type": "task",
+      "children": []
+    },
+    {
+      "name": "With Our Powers Combined!",
+      "value": "froglights",
+      "description": "Have all Froglights in your inventory",
+      "icon": "verdant_froglight",
+      "type": "challenge",
+      "children": []
+    },
+    {
+      "name": "The Healing Power of Friendship!",
+      "value": "kill_axolotl_target",
+      "description": "Team up with an Axolotl and win a fight",
+      "icon": "tropical_fish_bucket",
       "type": "task",
       "children": []
     }

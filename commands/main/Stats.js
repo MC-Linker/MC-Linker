@@ -9,7 +9,7 @@ import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import ItemRenderer from '../../structures/render/ItemRenderer.js';
 
-import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
+import AssetsManager from '../../structures/render/MinecraftAssetsManager.js';
 
 export default class Stats extends Command {
 
@@ -54,6 +54,8 @@ export default class Stats extends Command {
             itemPadding,
         } = this._renderingConstants;
         const mcData = getMinecraftData(server.version);
+        // The custom stats of the server's own version — the set shifts between versions.
+        const { customStats } = await AssetsManager.getGameData(server.version, { interaction });
         const category = args[0];
         const user = args[1];
         const sorting = args[2] ?? 'descending';
@@ -103,7 +105,7 @@ export default class Stats extends Command {
                 // Format custom statistics
                 stats = Object.fromEntries(Object.entries(stats).map(([id, value]) => {
                     id = id.replace('minecraft:', '');
-                    return [customStats.stats.find(stat => stat.value === id)?.name ?? id, this.formatCustomStatsValue(id, value)];
+                    return [customStats.find(stat => stat.value === id)?.name ?? id, this.formatCustomStatsValue(id, value)];
                 }, this));
 
                 const longestNameInColumn = utils.memoize(columnIndex => {

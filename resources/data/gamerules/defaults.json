@@ -1,0 +1,415 @@
+[
+  {
+    "id": "advance_time",
+    "legacyName": "doDaylightCycle",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "advance_weather",
+    "legacyName": "doWeatherCycle",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "allow_entering_nether_using_portals",
+    "legacyName": "allowEnteringNetherUsingPortals",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "block_drops",
+    "legacyName": "doTileDrops",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "block_explosion_drop_decay",
+    "legacyName": "blockExplosionDropDecay",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "command_block_output",
+    "legacyName": "commandBlockOutput",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "command_blocks_work",
+    "legacyName": "commandBlocksEnabled",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "drowning_damage",
+    "legacyName": "drowningDamage",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "elytra_movement_check",
+    "legacyName": "disableElytraMovementCheck",
+    "inverted": true,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "ender_pearls_vanish_on_death",
+    "legacyName": "enderPearlsVanishOnDeath",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "entity_drops",
+    "legacyName": "doEntityDrops",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "fall_damage",
+    "legacyName": "fallDamage",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "fire_damage",
+    "legacyName": "fireDamage",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "fire_spread_radius_around_player",
+    "legacyName": null,
+    "inverted": false,
+    "type": "Int",
+    "default": 128
+  },
+  {
+    "id": "forgive_dead_players",
+    "legacyName": "forgiveDeadPlayers",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "freeze_damage",
+    "legacyName": "freezeDamage",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "global_sound_events",
+    "legacyName": "globalSoundEvents",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "immediate_respawn",
+    "legacyName": "doImmediateRespawn",
+    "inverted": false,
+    "type": "Bool",
+    "default": false
+  },
+  {
+    "id": "keep_inventory",
+    "legacyName": "keepInventory",
+    "inverted": false,
+    "type": "Bool",
+    "default": false
+  },
+  {
+    "id": "lava_source_conversion",
+    "legacyName": "lavaSourceConversion",
+    "inverted": false,
+    "type": "Bool",
+    "default": false
+  },
+  {
+    "id": "limited_crafting",
+    "legacyName": "doLimitedCrafting",
+    "inverted": false,
+    "type": "Bool",
+    "default": false
+  },
+  {
+    "id": "locator_bar",
+    "legacyName": "locatorBar",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "log_admin_commands",
+    "legacyName": "logAdminCommands",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "max_block_modifications",
+    "legacyName": "commandModificationBlockLimit",
+    "inverted": false,
+    "type": "Int",
+    "default": 32768
+  },
+  {
+    "id": "max_command_forks",
+    "legacyName": "maxCommandForkCount",
+    "inverted": false,
+    "type": "Int",
+    "default": 65536
+  },
+  {
+    "id": "max_command_sequence_length",
+    "legacyName": "maxCommandChainLength",
+    "inverted": false,
+    "type": "Int",
+    "default": 65536
+  },
+  {
+    "id": "max_entity_cramming",
+    "legacyName": "maxEntityCramming",
+    "inverted": false,
+    "type": "Int",
+    "default": 24
+  },
+  {
+    "id": "max_minecart_speed",
+    "legacyName": "minecartMaxSpeed",
+    "inverted": false,
+    "type": "Int",
+    "default": 8
+  },
+  {
+    "id": "max_snow_accumulation_height",
+    "legacyName": "snowAccumulationHeight",
+    "inverted": false,
+    "type": "Int",
+    "default": 1
+  },
+  {
+    "id": "mob_drops",
+    "legacyName": "doMobLoot",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "mob_explosion_drop_decay",
+    "legacyName": "mobExplosionDropDecay",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "mob_griefing",
+    "legacyName": "mobGriefing",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "natural_health_regeneration",
+    "legacyName": "naturalRegeneration",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "player_movement_check",
+    "legacyName": "disablePlayerMovementCheck",
+    "inverted": true,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "players_nether_portal_creative_delay",
+    "legacyName": "playersNetherPortalCreativeDelay",
+    "inverted": false,
+    "type": "Int",
+    "default": 0
+  },
+  {
+    "id": "players_nether_portal_default_delay",
+    "legacyName": "playersNetherPortalDefaultDelay",
+    "inverted": false,
+    "type": "Int",
+    "default": 80
+  },
+  {
+    "id": "players_sleeping_percentage",
+    "legacyName": "playersSleepingPercentage",
+    "inverted": false,
+    "type": "Int",
+    "default": 100
+  },
+  {
+    "id": "projectiles_can_break_blocks",
+    "legacyName": "projectilesCanBreakBlocks",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "pvp",
+    "legacyName": "pvp",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "raids",
+    "legacyName": "disableRaids",
+    "inverted": true,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "random_tick_speed",
+    "legacyName": "randomTickSpeed",
+    "inverted": false,
+    "type": "Int",
+    "default": 3
+  },
+  {
+    "id": "reduced_debug_info",
+    "legacyName": "reducedDebugInfo",
+    "inverted": false,
+    "type": "Bool",
+    "default": false
+  },
+  {
+    "id": "respawn_radius",
+    "legacyName": "spawnRadius",
+    "inverted": false,
+    "type": "Int",
+    "default": 10
+  },
+  {
+    "id": "send_command_feedback",
+    "legacyName": "sendCommandFeedback",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "show_advancement_messages",
+    "legacyName": "announceAdvancements",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "show_death_messages",
+    "legacyName": "showDeathMessages",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spawn_mobs",
+    "legacyName": "doMobSpawning",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spawn_monsters",
+    "legacyName": "spawnMonsters",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spawn_patrols",
+    "legacyName": "doPatrolSpawning",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spawn_phantoms",
+    "legacyName": "doInsomnia",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spawn_wandering_traders",
+    "legacyName": "doTraderSpawning",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spawn_wardens",
+    "legacyName": "doWardenSpawning",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spawner_blocks_work",
+    "legacyName": "spawnerBlocksEnabled",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spectators_generate_chunks",
+    "legacyName": "spectatorsGenerateChunks",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "spread_vines",
+    "legacyName": "doVinesSpread",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "tnt_explodes",
+    "legacyName": "tntExplodes",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  },
+  {
+    "id": "tnt_explosion_drop_decay",
+    "legacyName": "tntExplosionDropDecay",
+    "inverted": false,
+    "type": "Bool",
+    "default": false
+  },
+  {
+    "id": "universal_anger",
+    "legacyName": "universalAnger",
+    "inverted": false,
+    "type": "Bool",
+    "default": false
+  },
+  {
+    "id": "water_source_conversion",
+    "legacyName": "waterSourceConversion",
+    "inverted": false,
+    "type": "Bool",
+    "default": true
+  }
+]

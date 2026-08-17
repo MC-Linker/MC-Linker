@@ -11,9 +11,18 @@
   them, shown as a short "Preparing Minecraft Assets" step. Every later command uses them instantly.
 - **Minecraft 26 support:** `/stats`, `/advancements`, `/inventory` and `/userinfo` now work on Minecraft 26 servers,
   which store player files in a new location.
+- **Version-accurate advancements, statistics and game rules:** these now come from the server's own Minecraft version
+  instead of a fixed bundled list, so anything added in a newer version shows up and anything that version never had
+  no longer appears.
 
 ### Bug Fixes
 
+- Fixed advancements added in recent versions, such as Blowback, Over-Overkill and Uh Oh, posting no chat message at
+  all when earned.
+- Fixed `/serverinfo` listing every game rule as changed on Minecraft 26 servers.
+- Fixed `/advancements` erroring instead of opening the per-advancement detail pages.
+- Fixed the Hero of the Village and Voluntary Exile advancements showing a blank banner icon.
+- Fixed `/advancements` showing Lodestone-related progress under the wrong tab.
 - Fixed commands occasionally showing a player's data from a different server while a server was offline.
 - Fixed Bedrock accounts being linked with the wrong UUID, which made them unrecognised on the server.
 - Linking a Minecraft account that already belongs to another Discord user now shows a clear message naming that user

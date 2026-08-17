@@ -4,7 +4,7 @@ import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import Discord from 'discord.js';
 import * as utils from '../../utilities/utils.js';
 import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
-import gamerules from '../../resources/data/gamerules.json' with { type: 'json' };
+import AssetsManager from '../../structures/render/MinecraftAssetsManager.js';
 import { unraw } from 'unraw';
 import Pagination from '../../structures/helpers/Pagination.js';
 import fs from 'fs-extra';
@@ -12,11 +12,62 @@ import Canvas from 'skia-canvas';
 
 export default class ServerInfo extends Command {
 
+    /** @typedef {{ rule: import('../../structures/render/GameDataDeriver.js').GameRule, legacy: boolean }} GameRuleMatch - A matched rule and whether the world named it by its pre-26.1 name. */
+
     constructor() {
         super({
             name: 'serverinfo',
             category: 'other',
         });
+    }
+
+    /**
+     * Reduces a game rule key to a spelling-insensitive form, so `keepInventory` and
+     * `minecraft:keep_inventory` both collapse to `keepinventory`.
+     * @param {string} key - The key as stored in the world.
+     * @returns {string} The normalized key.
+     */
+    static normalizeGameRuleKey(key) {
+        return utils.stripNamespace(key).toLowerCase().replace(/_/g, '');
+    }
+
+    /**
+     * Indexes the rules of a version under every spelling a world might store them as.
+     *
+     * 26.1 renamed 26 rules outright (`doTileDrops` -> `block_drops`), so matching on the modern id alone
+     * reports every rule of a pre-26.1 world as changed.
+     * @param {import('../../structures/render/GameDataDeriver.js').GameRule[]} gameRules - The version's game rules.
+     * @returns {Map<string, GameRuleMatch>} Each rule keyed by its normalized modern id and legacy name.
+     */
+    static indexGameRules(gameRules) {
+        /** @type {Map<string, GameRuleMatch>} */
+        const rulesByKey = new Map();
+        for(const rule of gameRules) rulesByKey.set(this.normalizeGameRuleKey(rule.id), { rule, legacy: false });
+
+        // Second pass so a modern id always wins a collision with some other rule's legacy name.
+        for(const rule of gameRules) {
+            if(!rule.legacyName) continue;
+
+            const key = this.normalizeGameRuleKey(rule.legacyName);
+            if(!rulesByKey.has(key)) rulesByKey.set(key, { rule, legacy: true });
+        }
+
+        return rulesByKey;
+    }
+
+    /**
+     * Whether a stored game rule value differs from its default, and so is worth showing.
+     * @param {string|number} value - The value as stored in the world; a string before 26.1, a number from it.
+     * @param {GameRuleMatch} match - The matched rule.
+     * @returns {boolean} `true` if the rule is not at its default.
+     */
+    static isNonDefault(value, { rule, legacy }) {
+        // 26.1 inverted three rules, so a world naming one by its old name stores the opposite of the
+        // modern default (`disableElytraMovementCheck` false is `elytra_movement_check` true).
+        const expected = legacy && rule.inverted ? !rule.default : rule.default;
+
+        if(typeof expected === 'boolean') return expected !== (value === 'true' || value === true || value === 1);
+        return expected !== Number(value);
     }
 
     /**
@@ -149,16 +200,14 @@ export default class ServerInfo extends Command {
             }
         }
 
-        // 26.1 keys the rules as namespaced snake_case; earlier versions use bare camelCase.
+        const { gameRules } = await AssetsManager.getGameData(server.version, { wait: false });
+        const rulesByKey = ServerInfo.indexGameRules(gameRules);
+
         const filteredGamerules = Object.entries(gamerulesObject)
-            .map(([key, value]) => [utils.toCamelCase(key), value])
+            .map(([key, value]) => [utils.stripNamespace(key), value])
             .filter(([key, value]) => {
-                const rule = gamerules.find(rule => rule.name === key);
-                if(!rule) return true;
-                // Rules are strings before 26.1 and numbers from it.
-                if(rule.type === 'bool') return rule.default !== (value === 'true' || value === 1);
-                if(rule.type === 'int') return rule.default !== Number(value);
-                return rule.default !== value;
+                const match = rulesByKey.get(ServerInfo.normalizeGameRuleKey(key));
+                return match ? ServerInfo.isNonDefault(value, match) : true;
             })
             .map(([key, value]) => `${key}: ${value}`);
 
