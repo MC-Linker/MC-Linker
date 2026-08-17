@@ -21,6 +21,19 @@ RUN echo \
 
 RUN apt-get install -y docker-ce-cli docker-compose-plugin
 
+# Native build deps for `gl` (headless-gl, pulled in by block-model-renderer's headless-three).
+# xvfb: headless-gl still opens a GLX context, which needs a (virtual) X server even for software
+# rendering (Mesa llvmpipe) — there's no real GPU/display in this container, so run under Xvfb.
+RUN apt-get install -y \
+    python-is-python3 \
+    build-essential \
+    pkg-config \
+    libgl1-mesa-dev \
+    libxi-dev \
+    libx11-dev \
+    libxext-dev \
+    xvfb
+
 # Download Socket.IO Admin UI ui/dist folder
 RUN git init socket.io-admin-ui && \
     cd socket.io-admin-ui && \
@@ -41,4 +54,4 @@ RUN npm ci
 # Bundle app source
 COPY . .
 
-CMD node --max-old-space-size=$NODE_MAX_HEAP_SIZE main.js
+CMD xvfb-run -a node --max-old-space-size=$NODE_MAX_HEAP_SIZE main.js

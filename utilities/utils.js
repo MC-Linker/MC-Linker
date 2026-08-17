@@ -18,6 +18,7 @@ export * from './format-utils.js';
 export * from './protocol-utils.js';
 export * from './discord-utils.js';
 export * from './sharding-utils.js';
+export * from './http-utils.js';
 
 /**
  * Promisified version of exec.

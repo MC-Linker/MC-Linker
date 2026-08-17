@@ -3,12 +3,13 @@ import { getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/mes
 import * as utils from '../../utilities/utils.js';
 import { getMinecraftData } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
-import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
+import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import * as d3 from 'd3-hierarchy';
 import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import ItemRenderer from '../../structures/render/ItemRenderer.js';
 
 export default class Advancements extends Command {
 
@@ -43,7 +44,7 @@ export default class Advancements extends Command {
         const user = args[1];
         const showDetails = args[2];
 
-        const amFile = await server.protocol.getWithCache(...FilePath.Advancements(server.worldPath, user.uuid));
+        const amFile = await server.files.advancements(user.uuid);
         if(!await utils.handleProtocolResponse(amFile, server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.warnings.could_not_download_user_files,
         }, { category: 'advancements' }, ph.colors())) return;
@@ -80,9 +81,14 @@ export default class Advancements extends Command {
         ctx.scale(0.5, 0.5); // Reset scale
 
         //Center tree
-        ctx.translate((frameSize + framePadding) / 2 + 0.5, (advancementCanvas.height - height) / 2);
+        const translateX = (frameSize + framePadding) / 2 + 0.5;
+        const translateY = (advancementCanvas.height - height) / 2;
+        ctx.translate(translateX, translateY);
 
+        /** @type {object[]} */
         const advancementDataList = [];
+        /** @type {Array<{ id: string, key: string, x: number, y: number }>} */
+        const iconPlacements = [];
         // Draw tree
         for(const node of treeResult.descendants()) {
             // Draw connection
@@ -113,22 +119,18 @@ export default class Advancements extends Command {
             const frame = await Canvas.loadImage(`./resources/images/advancements/${node.data.type ?? 'task'}_frame_${node.data.obtained ?? true ? 'obtained' : 'unobtained'}.png`);
             ctx.drawImage(frame, node.x - frameSize / 2, node.y - frameSize / 2, frameSize, frameSize);
 
-            try {
-                //Draw icon
-                const icon = await Canvas.loadImage(`./resources/images/items/${node.data.icon}.png`);
-                ctx.drawImage(icon, node.x - iconSize / 2, node.y - iconSize / 2, iconSize, iconSize);
-            }
-            catch(err) {
-                //Draw name
-                logger.debug(`Could not find item image ${node.data.icon}. Applying text...`);
-                ctx.font = '8px Minecraft';
-                ctx.fillStyle = '#000';
-                const lines = utils.wrapText(ctx, mcData.itemsByName[node.data.icon]?.displayName ?? node.data.icon, frameSize);
-                lines.forEach((line, i) => ctx.fillText(line, node.x - iconSize / 2, node.y - iconSize / 2 + 8 + i * 8));
-            }
+            //Collect the icon for the batched render; composited later in this same (translated) space.
+            iconPlacements.push({
+                id: node.data.icon,
+                key: ItemRenderer.imageKey(server.version, node.data.icon),
+                x: node.x - iconSize / 2,
+                y: node.y - iconSize / 2,
+            });
 
             //Push advancement data
+            /** @type {string[]} */
             const advancementCriteria = [];
+            /** @type {string[]} */
             const advancementTimestamps = [];
             for(const [criteria, date] of Object.entries(node.data.criteria)) {
                 let formattedCriteria = criteria.split(':').pop();
@@ -143,6 +145,16 @@ export default class Advancements extends Command {
                 criteria: advancementCriteria.join('\n'),
                 timestamps: advancementTimestamps.join('\n'),
             });
+        }
+
+        if(iconPlacements.length) {
+            const icons = await ItemRenderer.getItemImages(iconPlacements, server.version, interaction);
+
+            for(const p of iconPlacements) {
+                if(await icons.draw(ctx, p.key, p.x, p.y, iconSize)) continue;
+                logger.debug(`Could not render icon ${p.id}. Applying text...`);
+                utils.drawFittedText(ctx, mcData.itemsByName[p.id]?.displayName ?? p.id, p.x, p.y, iconSize, iconSize, { maxFontSize: 10 });
+            }
         }
 
         const advancementsAttach = new Discord.AttachmentBuilder(

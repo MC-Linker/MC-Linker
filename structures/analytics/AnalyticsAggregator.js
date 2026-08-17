@@ -2,7 +2,7 @@ import os from 'node:os';
 import rootLogger from '../../utilities/logger/Logger.js';
 import features from '../../utilities/logger/features.js';
 
-const logger = rootLogger.child({ feature: features.analytics.aggregator });
+const logger = rootLogger.child({feature: features.analytics.aggregator});
 
 /**
  * Shard-0-only aggregator that collects counters from all shards via broadcastEval
@@ -32,7 +32,7 @@ export default class AnalyticsAggregator {
     async start() {
         logger.debug('Analytics aggregator starting');
         await this._takeSnapshot();
-        const { snapshotIntervalMs } = this.client.config.analytics;
+        const {snapshotIntervalMs} = this.client.config.analytics;
         this._snapshotTimer = setInterval(() => this._takeSnapshot(), snapshotIntervalMs);
         this._snapshotTimer.unref();
     }
@@ -44,6 +44,10 @@ export default class AnalyticsAggregator {
         try {
             const shardData = await this.client.broadcastEval(c => {
                 const counters = c.analytics.getCounters();
+                // Chat pipeline metrics live on each shard: chat events are dispatched to the
+                // shard owning the guild (evalOnGuildShard), so recordIncoming/processed/etc.
+                // increment that shard's ChatMonitor — not shard 0's. Collect from every shard.
+                const chatMonitor = c.api?.wsEvents?.get('chat')?.monitor?.getCounters() ?? null;
                 return {
                     shardId: c.shard.ids[0],
                     guilds: c.guilds.cache.size,
@@ -53,6 +57,7 @@ export default class AnalyticsAggregator {
                     cpuPercent: c.analytics.getCpuPercent(),
                     approximateUsers: c.guilds.cache.reduce((sum, g) => sum + g.memberCount, 0),
                     counters,
+                    chatMonitor,
                 };
             });
 
@@ -71,8 +76,8 @@ export default class AnalyticsAggregator {
             // Machine-level metrics (OS-wide, not just Node processes)
             const curCpus = os.cpus();
             let totalIdle = 0, totalTick = 0;
-            for(let i = 0; i < curCpus.length; i++) {
-                const prev = this._prevCpus[i]?.times ?? { user: 0, nice: 0, sys: 0, idle: 0, irq: 0 };
+            for (let i = 0; i < curCpus.length; i++) {
+                const prev = this._prevCpus[i]?.times ?? {user: 0, nice: 0, sys: 0, idle: 0, irq: 0};
                 const cur = curCpus[i].times;
                 const idle = cur.idle - prev.idle;
                 const tick = (cur.user - prev.user) + (cur.nice - prev.nice) + (cur.sys - prev.sys) + (cur.idle - prev.idle) + (cur.irq - prev.irq);
@@ -92,32 +97,32 @@ export default class AnalyticsAggregator {
             let totalGuildsJoined = 0;
             let totalGuildsLeft = 0;
 
-            for(const shard of shardData) {
-                const { counters } = shard;
+            for (const shard of shardData) {
+                const {counters} = shard;
 
-                for(const [name, data] of Object.entries(counters.commands)) {
-                    const entry = mergedCommands[name] ??= { count: 0, errors: 0, totalDurationMs: 0 };
+                for (const [name, data] of Object.entries(counters.commands)) {
+                    const entry = mergedCommands[name] ??= {count: 0, errors: 0, totalDurationMs: 0};
                     entry.count += data.count;
                     entry.errors += data.errors;
                     entry.totalDurationMs += data.totalDurationMs;
                 }
 
-                for(const [name, data] of Object.entries(counters.components)) {
-                    const entry = mergedComponents[name] ??= { count: 0, errors: 0, totalDurationMs: 0 };
+                for (const [name, data] of Object.entries(counters.components)) {
+                    const entry = mergedComponents[name] ??= {count: 0, errors: 0, totalDurationMs: 0};
                     entry.count += data.count;
                     entry.errors += data.errors;
                     entry.totalDurationMs += data.totalDurationMs;
                 }
 
-                for(const [name, data] of Object.entries(counters.apiCalls.rest)) {
-                    const entry = mergedRestCalls[name] ??= { count: 0, errors: 0, totalDurationMs: 0 };
+                for (const [name, data] of Object.entries(counters.apiCalls.rest)) {
+                    const entry = mergedRestCalls[name] ??= {count: 0, errors: 0, totalDurationMs: 0};
                     entry.count += data.count;
                     entry.errors += data.errors;
                     entry.totalDurationMs += data.totalDurationMs;
                 }
 
-                for(const [name, data] of Object.entries(counters.apiCalls.ws)) {
-                    const entry = mergedWsCalls[name] ??= { count: 0, errors: 0, totalDurationMs: 0 };
+                for (const [name, data] of Object.entries(counters.apiCalls.ws)) {
+                    const entry = mergedWsCalls[name] ??= {count: 0, errors: 0, totalDurationMs: 0};
                     entry.count += data.count;
                     entry.errors += data.errors;
                     entry.totalDurationMs += data.totalDurationMs;
@@ -127,14 +132,51 @@ export default class AnalyticsAggregator {
                 totalGuildsLeft += counters.guildsLeft;
             }
 
+            // Merge chat monitor counters from all shards. Throughput/failures/rate limits/
+            // operations are cumulative counters (sum). Queue depth is an instantaneous gauge
+            // (sum of each shard's current depth).
+            let chatMonitor = null;
+            const cmShards = shardData.map(s => s.chatMonitor).filter(Boolean);
+            if (cmShards.length) {
+                const throughput = {incoming: 0, enqueued: 0, processed: 0};
+                const queue = {destinations: 0, items: 0};
+                const failures = {permission: 0, creation: 0};
+                const rateLimits = {};
+                const mergedOps = {};
+
+                for (const cm of cmShards) {
+                    throughput.incoming += cm.throughput?.incoming ?? 0;
+                    throughput.enqueued += cm.throughput?.enqueued ?? 0;
+                    throughput.processed += cm.throughput?.processed ?? 0;
+                    queue.destinations += cm.queue?.destinations ?? 0;
+                    queue.items += cm.queue?.items ?? 0;
+                    failures.permission += cm.failures?.permission ?? 0;
+                    failures.creation += cm.failures?.creation ?? 0;
+
+                    for (const [cat, count] of Object.entries(cm.rateLimits ?? {})) {
+                        rateLimits[cat] = (rateLimits[cat] ?? 0) + count;
+                    }
+                    for (const op of cm.operations ?? []) {
+                        const entry = mergedOps[op.name] ??= {count: 0, rateLimits: 0};
+                        entry.count += op.count;
+                        entry.rateLimits += op.rateLimits;
+                    }
+                }
+
+                chatMonitor = {
+                    throughput,
+                    queue,
+                    rateLimits,
+                    failures,
+                    operations: Object.entries(mergedOps).map(([name, op]) => ({
+                        name, count: op.count, rateLimits: op.rateLimits,
+                    })),
+                };
+            }
+
             // Build snapshot document
             const now = new Date();
             const bucketKey = now.toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
-
-            // Chat monitor counters (shard 0 only — Chat WS event handler runs here)
-            const chatEvent = this.client.api?.wsEvents?.get('chat');
-            const chatMonitor = chatEvent?.monitor?.getCounters() ?? null;
-            if(chatEvent?.monitor) chatEvent.monitor.resetCounters();
 
             const snapshot = {
                 _id: bucketKey,
@@ -195,17 +237,19 @@ export default class AnalyticsAggregator {
             };
 
             await this.client.mongo.models.AnalyticsSnapshot.updateOne(
-                { _id: bucketKey },
+                {_id: bucketKey},
                 snapshot,
-                { upsert: true },
+                {upsert: true},
             );
 
-            // Reset counters on all shards
-            await this.client.broadcastEval(c => c.analytics.resetCounters());
+            // Reset counters on all shards (analytics collector + per-shard chat monitor)
+            await this.client.broadcastEval(c => {
+                c.analytics.resetCounters();
+                c.api?.wsEvents?.get('chat')?.monitor?.resetCounters();
+            });
 
             logger.debug(`Analytics snapshot saved: ${bucketKey} (${totalGuilds} guilds, ${Object.keys(mergedCommands).length} commands tracked)`);
-        }
-        catch(err) {
+        } catch (err) {
             logger.error(err, 'Failed to take analytics snapshot');
         }
     }
@@ -214,7 +258,7 @@ export default class AnalyticsAggregator {
      * Stops the aggregator and clears the timer.
      */
     async destroy() {
-        if(this._snapshotTimer) {
+        if (this._snapshotTimer) {
             clearInterval(this._snapshotTimer);
             this._snapshotTimer = null;
         }

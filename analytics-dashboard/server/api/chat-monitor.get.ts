@@ -1,28 +1,36 @@
-import { verifySession } from '../utils/auth';
-import { getConnection, parseDateRange } from '../utils/db';
+import {verifySession} from '../utils/auth';
+import {getConnection, parseDateRange} from '../utils/db';
 
 export default defineEventHandler(async event => {
-    const { db } = await verifySession(event);
+    const {db} = await verifySession(event);
     const query = getQuery(event);
     const conn = getConnection(db);
 
-    const { from, to } = parseDateRange(query);
+    const {from, to} = parseDateRange(query);
 
     const snapshots = await conn.models.AnalyticsSnapshot
-        .find({ timestamp: { $gte: from, $lte: to } })
-        .sort({ timestamp: 1 })
+        .find({timestamp: {$gte: from, $lte: to}})
+        .sort({timestamp: 1})
         .select('timestamp chatMonitor')
         .lean();
 
-    // Aggregate rate limits and operations across all snapshots
+    // Aggregate rate limits, throughput and operations across all snapshots
     const rateLimitTotals: Record<string, number> = {};
     let totalRateLimits = 0;
     let totalFailures = 0;
+    let totalIncoming = 0;
+    let totalEnqueued = 0;
+    let totalProcessed = 0;
     const opTotals: Record<string, { count: number; rateLimits: number }> = {};
 
     for (const snap of snapshots) {
         const cm = snap.chatMonitor as any;
         if (!cm) continue;
+
+        // Throughput
+        totalIncoming += cm.throughput?.incoming ?? 0;
+        totalEnqueued += cm.throughput?.enqueued ?? 0;
+        totalProcessed += cm.throughput?.processed ?? 0;
 
         // Rate limits
         const rl = cm.rateLimits;
@@ -39,14 +47,14 @@ export default defineEventHandler(async event => {
 
         // Operations
         for (const op of cm.operations ?? []) {
-            const entry = opTotals[op.name] ??= { count: 0, rateLimits: 0 };
+            const entry = opTotals[op.name] ??= {count: 0, rateLimits: 0};
             entry.count += op.count;
             entry.rateLimits += op.rateLimits;
         }
     }
 
     const operations = Object.entries(opTotals)
-        .map(([name, v]) => ({ name, count: v.count, rateLimits: v.rateLimits }))
+        .map(([name, v]) => ({name, count: v.count, rateLimits: v.rateLimits}))
         .sort((a, b) => b.count - a.count);
 
     // Time series for charts
@@ -85,6 +93,9 @@ export default defineEventHandler(async event => {
             rateLimits: totalRateLimits,
             failures: totalFailures,
             rateLimitsByCategory: rateLimitTotals,
+            incoming: totalIncoming,
+            enqueued: totalEnqueued,
+            processed: totalProcessed,
         },
         operations,
         latest: latestCm ? {

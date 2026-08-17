@@ -13,8 +13,14 @@ services:
         source: ./download-cache
         target: /usr/src/app/download-cache
       - type: bind
+        source: ./resources/minecraft-assets
+        target: /usr/src/app/resources/minecraft-assets
+      - type: bind
         source: ./logs
         target: /usr/src/app/logs
+      - type: bind
+        source: ./heaps
+        target: /usr/src/app/heaps
       - type: bind
         source: ./config.json
         target: /usr/src/app/config.json

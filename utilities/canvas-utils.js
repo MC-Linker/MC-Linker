@@ -173,3 +173,79 @@ export function wrapText(ctx, text, maxWidth) {
     lines.push(currentLine);
     return lines;
 }
+
+/**
+ * Wraps text to a max width, additionally hard-breaking any single word that is itself wider than the
+ * limit (so long item ids like `prismarine_brick_slab` don't overflow the box).
+ * @param {CanvasRenderingContext2D} ctx - The canvas context (its current font is used to measure).
+ * @param {string} text - The text to wrap.
+ * @param {number} maxWidth - The max line width in px.
+ * @returns {string[]} The wrapped lines.
+ */
+function wrapTextHard(ctx, text, maxWidth) {
+    /** @type {string[]} */
+    const lines = [];
+    for(const word of text.split(' ')) {
+        if(ctx.measureText(word).width <= maxWidth) {
+            lines.push(word);
+            continue;
+        }
+        // Break an over-long word character by character.
+        let chunk = '';
+        for(const char of word) {
+            if(ctx.measureText(chunk + char).width > maxWidth && chunk) {
+                lines.push(chunk);
+                chunk = char;
+            }
+            else chunk += char;
+        }
+        if(chunk) lines.push(chunk);
+    }
+    return lines.length ? lines : [text];
+}
+
+/**
+ * Draws text fitted and centered inside a box: the font size is shrunk until the wrapped text fits the
+ * box both horizontally and vertically, then the block of lines is centered. Used as the readable
+ * fallback when an item/block can't be rendered to an image.
+ * @param {CanvasRenderingContext2D} ctx - The canvas context to draw on.
+ * @param {string} text - The text to draw.
+ * @param {number} x - The box's top-left x.
+ * @param {number} y - The box's top-left y.
+ * @param {number} boxWidth - The box width in px.
+ * @param {number} boxHeight - The box height in px.
+ * @param {{ maxFontSize?: number, minFontSize?: number, color?: string, fontFamily?: string, lineSpacing?: number }} [options] - Sizing/appearance options.
+ */
+export function drawFittedText(ctx, text, x, y, boxWidth, boxHeight, {
+    maxFontSize = 12,
+    minFontSize = 5,
+    color = '#000',
+    fontFamily = 'Minecraft',
+    lineSpacing = 1.1,
+} = {}) {
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    let fontSize = maxFontSize;
+    /** @type {string[]} */
+    let lines = [];
+    for(; fontSize >= minFontSize; fontSize--) {
+        ctx.font = `${fontSize}px ${fontFamily}`;
+        lines = wrapTextHard(ctx, text, boxWidth);
+        const widest = Math.max(...lines.map(line => ctx.measureText(line).width));
+        if(widest <= boxWidth && lines.length * fontSize * lineSpacing <= boxHeight) break;
+    }
+
+    const lineHeight = fontSize * lineSpacing;
+    const centerX = x + boxWidth / 2;
+    let lineY = y + boxHeight / 2 - (lines.length - 1) * lineHeight / 2;
+    for(const line of lines) {
+        ctx.fillText(line, centerX, lineY);
+        lineY += lineHeight;
+    }
+
+    ctx.restore();
+}

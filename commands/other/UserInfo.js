@@ -1,6 +1,5 @@
 import Command from '../../structures/Command.js';
 import keys from '../../utilities/keys.js';
-import { FilePath } from '../../structures/protocol/Protocol.js';
 import * as utils from '../../utilities/utils.js';
 import {
     codeBlockFromCommandResponse,
@@ -8,7 +7,8 @@ import {
     formatDuration,
     getMinecraftAvatarURL,
     getMinecraftData,
-    stringifyMinecraftJson,
+    normalizeDimension,
+    stringifyMinecraftJson
 } from '../../utilities/utils.js';
 import {
     addPh,
@@ -50,13 +50,13 @@ export default class UserInfo extends Command {
         const onlinePlayersResponse = await server.protocol.getOnlinePlayers();
         if(onlinePlayersResponse?.status === 'success') onlinePlayers = onlinePlayersResponse.data.map(p => p.toLowerCase());
 
-        const scoreboardDatResponse = await server.protocol.getWithCache(...FilePath.Scoreboards(server.worldPath, server.id));
-        const levelDatResponse = await server.protocol.getWithCache(...FilePath.LevelDat(server.worldPath, server.id));
+        const scoreboardDatResponse = await server.files.scoreboard();
+        const levelDatResponse = await server.files.levelDat();
 
-        let stats = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid));
-        let operators = await server.protocol.getWithCache(...FilePath.Operators(server.path, server.id));
-        let whitelistedUsers = await server.protocol.getWithCache(...FilePath.Whitelist(server.path, server.id));
-        let bannedUsers = await server.protocol.getWithCache(...FilePath.BannedPlayers(server.path, server.id));
+        let stats = await server.files.stats(user.uuid);
+        let operators = await server.files.operators();
+        let whitelistedUsers = await server.files.whitelist();
+        let bannedUsers = await server.files.bannedPlayers();
 
         const playerDatResult = await utils.getLivePlayerNbt(server, user, null);
         const playerDat = playerDatResult?.data ?? null;
@@ -114,13 +114,20 @@ export default class UserInfo extends Command {
             placeholders.health = (playerDat.Health / 2).toFixed(1);
             placeholders.score = playerDat.Score;
             placeholders.gamemode = keys.commands.userinfo.gamemode[playerDat.playerGameType] ?? keys.common.unknown;
-            placeholders.dimension = keys.commands.userinfo.dimensions[playerDat.Dimension.replace('minecraft:', '')] ?? keys.common.unknown;
+            placeholders.dimension = keys.commands.userinfo.dimensions[normalizeDimension(playerDat.Dimension)] ?? keys.common.unknown;
             playerDat.Pos = playerDat.Pos.map(pos => Math.round(pos)); // Round the position to the nearest integer
             placeholders.position = `${playerDat.Pos[0]}, ${playerDat.Pos[1]}, ${playerDat.Pos[2]}`;
             placeholders.death_location = `${playerDat.LastDeathLocation?.pos?.[0] ?? '?'}, ${playerDat.LastDeathLocation?.pos?.[1] ?? '?'}, ${playerDat.LastDeathLocation?.pos?.[2] ?? '?'}`;
-            placeholders.death_dimension = keys.commands.userinfo.dimensions[playerDat.LastDeathLocation?.dimension?.replace('minecraft:', '')] ?? keys.common.unknown;
-            placeholders.spawn_location = playerDat.SpawnX && playerDat.SpawnY && playerDat.SpawnZ ? `${playerDat.SpawnX}, ${playerDat.SpawnY}, ${playerDat.SpawnZ}` : null; // set it from level.dat
-            placeholders.spawn_dimension = playerDat.SpawnDimension ? keys.commands.userinfo.dimensions[playerDat.SpawnDimension.replace('minecraft:', '')] : null; // set it from level.dat
+            placeholders.death_dimension = keys.commands.userinfo.dimensions[normalizeDimension(playerDat.LastDeathLocation?.dimension)] ?? keys.common.unknown;
+            // The six flat Spawn* tags were merged into a single `respawn` compound in 1.21.5.
+            const respawnPos = playerDat.respawn?.pos
+                ?? (playerDat.SpawnX !== undefined && playerDat.SpawnY !== undefined && playerDat.SpawnZ !== undefined
+                    ? [playerDat.SpawnX, playerDat.SpawnY, playerDat.SpawnZ]
+                    : null);
+            const respawnDimension = playerDat.respawn?.dimension ?? playerDat.SpawnDimension;
+
+            placeholders.spawn_location = respawnPos ? respawnPos.join(', ') : null; // else set it from level.dat
+            placeholders.spawn_dimension = respawnDimension ? keys.commands.userinfo.dimensions[normalizeDimension(respawnDimension)] : null; // else set it from level.dat
             // these values will be an integer if it's coming from the data command and a bigint if it's coming from the playerdata file
             if(playerDat.bukkit?.firstPlayed && typeof playerDat.bukkit.firstPlayed !== 'bigint') playerDat.bukkit.firstPlayed = BigInt(playerDat.bukkit.firstPlayed);
             if(playerDat.bukkit?.firstPlayed && typeof playerDat.bukkit.lastPlayed !== 'bigint') playerDat.bukkit.lastPlayed = BigInt(playerDat.bukkit.lastPlayed);
@@ -137,9 +144,13 @@ export default class UserInfo extends Command {
             )));
         }
         if(!placeholders.spawn_location || !placeholders.spawn_dimension) {
-            // If the spawn location is not in the playerdata file, try to get it from the level.dat file
-            placeholders.spawn_location = `${levelDat?.Data?.SpawnX ?? '?'}, ${levelDat?.Data?.SpawnY ?? '?'}, ${levelDat?.Data?.SpawnZ ?? '?'}`;
-            placeholders.spawn_dimension = keys.commands.userinfo.dimensions.overworld;
+            // If the spawn location is not in the playerdata file, try to get it from the level.dat file.
+            // The flat Data.Spawn* tags were replaced by a `spawn` compound in the 1.21 line.
+            const worldSpawn = levelDat?.Data?.spawn?.pos
+                ?? [levelDat?.Data?.SpawnX, levelDat?.Data?.SpawnY, levelDat?.Data?.SpawnZ];
+            placeholders.spawn_location = `${worldSpawn[0] ?? '?'}, ${worldSpawn[1] ?? '?'}, ${worldSpawn[2] ?? '?'}`;
+            placeholders.spawn_dimension = keys.commands.userinfo.dimensions[normalizeDimension(levelDat?.Data?.spawn?.dimension) ?? 'overworld']
+                ?? keys.commands.userinfo.dimensions.overworld;
 
             //replace the spawn location and dimension field
             if(newAdminFields.length !== 0) newAdminFields.splice(1, 1, addPh(

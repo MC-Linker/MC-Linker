@@ -69,10 +69,12 @@ export default class CustomBotConnection extends Connection {
 
         /**
          * The env passed to docker commands.
-         * @type {{ DATA_FOLDER: string, CONTAINER_NAME: string, BOT_PORT: number }}
+         * @type {{ DATA_FOLDER: string, ASSETS_DIR: string, CONTAINER_NAME: string, BOT_PORT: number }}
          */
         this.dockerEnv = {
             DATA_FOLDER: `${process.env.WORKING_DIR}/${this.dataFolder}`,
+            // Shared with the main bot so every custom bot reuses the main bot's downloaded/extracted assets
+            ASSETS_DIR: `${process.env.WORKING_DIR}/resources/minecraft-assets`,
             CONTAINER_NAME: this.containerName,
             BOT_PORT: this.port,
         };

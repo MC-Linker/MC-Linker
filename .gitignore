@@ -8,6 +8,7 @@
 .claude/
 .github/copilot-instructions.md
 CODEX.md
+.idea/claudeCodeTabState.xml
 
 # Bot dependencies & runtime data
 /node_modules/
@@ -17,6 +18,9 @@ CODEX.md
 /microsoft-cache/
 /private/
 /oci/
+/resources/minecraft-assets/
+/logs/
+/heaps/
 
 # ------------------------------
 # IDE

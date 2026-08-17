@@ -9,8 +9,7 @@
 
 A `CHANGELOG.md` exists at the repository root and must be updated **before every pull request** that introduces a
 bigger feature update (new commands, new WS events, significant refactors, new dashboard pages, etc.). Minor
-bug-fix-only
-PRs may skip a changelog entry.
+bug-fix-only PRs may skip a changelog entry.
 
 Each entry follows the format:
 
@@ -38,9 +37,9 @@ stat/advancement/inventory viewing, role synchronization (Discord roles <-> Luck
 moderation, account linking, and server status monitoring.
 
 **This repository is only one half of the project** — the **bot side**, which runs on an Oracle Cloud VM. The other half
-is the **MC-Linker Plugin**, a Minecraft server plugin in a separate
-repository (https://github.com/MC-Linker/Discord-Linker). The plugin runs on users' Minecraft servers and connects to
-this bot over **WebSocket (Socket.io)**.
+is the **MC-Linker Plugin**, a Minecraft server plugin in a separate repository
+(https://github.com/MC-Linker/Discord-Linker). The plugin runs on users' Minecraft servers and connects to this bot over
+**WebSocket (Socket.io)**.
 
 > **Whenever you make changes that affect the WebSocket protocol, event schemas, response formats, or any bot<->plugin
 communication, directly formulate a ready-to-use prompt describing the required plugin-side changes.** This includes
@@ -101,8 +100,11 @@ MC-Linker/
 │   │   ├── UserSettingsConnection.js
 │   │   ├── CustomBotConnection.js
 │   │   └── managers/        # CachedManagers for each connection type
+│   ├── model/               # Version-dependent minecraft domain model (pure, no I/O and no logging)
+│   │   └── WorldFileLayout.js # World file layouts per minecraft version (LEGACY, V26) + forVersion()
 │   ├── protocol/            # Communication strategies with Minecraft servers
-│   │   ├── Protocol.js      # Base class + FilePath helper for MC server files
+│   │   ├── Protocol.js      # Base class + ProtocolError codes
+│   │   ├── ServerFiles.js   # Server-bound access to every minecraft file the bot downloads
 │   │   └── WebSocketProtocol.js  # Socket.io communication (primary)
 │   ├── ftp/                 # FTP/SFTP client implementations
 │   └── helpers/             # UI helpers (Pagination, Wizard, DefaultButton)
@@ -220,8 +222,8 @@ export default class MyCommand extends Command {
 }
 ```
 
-The base `execute()` method handles deferring, permission checks, server connection validation, user resolution,
-and creates a child logger. It then delegates to `run()` with the logger as the last argument. Subclasses implement
+The base `execute()` method handles deferring, permission checks, server connection validation, user resolution, and
+creates a child logger. It then delegates to `run()` with the logger as the last argument. Subclasses implement
 `run()` — never override `execute()` and never call `super.run()`.
 
 #### New Discord Event
@@ -297,8 +299,8 @@ export default class MyEvent extends WSEvent {
 }
 ```
 
-The base `execute()` creates a child logger bound to `features.api.events[this.event]` and `server.id`,
-then delegates to `run()` with the logger as the 4th argument.
+The base `execute()` creates a child logger bound to `features.api.events[this.event]` and `server.id`, then delegates
+to `run()` with the logger as the 4th argument.
 
 #### New Component
 
@@ -323,8 +325,8 @@ export default class MyButton extends Component {
 }
 ```
 
-The base `execute()` handles deferring, permission checks, author validation, and SKU checks, creates a child
-logger bound to `features.components[this.id]`, then delegates to `run()`.
+The base `execute()` handles deferring, permission checks, author validation, and SKU checks, creates a child logger
+bound to `features.components[this.id]`, then delegates to `run()`.
 
 ### Key Patterns
 
@@ -334,9 +336,8 @@ Translation keys are in `utilities/keys.js`, language files in `resources/langua
 **Component Building:** Never instantiate discord.js builders (`ContainerBuilder`, `TextDisplayBuilder`,
 `ActionRowBuilder`, `ButtonBuilder`, etc.) directly. Instead, define component structures in the language files
 (`resources/languages/`) and use `getComponent()` / `getActionRows()` / `getReplyOptions()` from `utilities/messages.js`
-to build them.
-When dynamic content needs to be injected, use `%placeholder%` in the language key or call `getComponent()` on a
-sub-key to obtain a builder, then compose them programmatically.
+to build them. When dynamic content needs to be injected, use `%placeholder%` in the language key or call
+`getComponent()` on a sub-key to obtain a builder, then compose them programmatically.
 
 **Language File Conventions:**
 
@@ -364,25 +365,60 @@ For lookups, **always use the manager helpers** rather than `cache.get(discordId
 `UserConnection.getUUID(server)` is the single source of truth for the effective UUID on a given server. Returns
 `null` when the link isn't valid for the requested server scope (cross-scope per-server query, no server context, or
 cracked link on an online-mode server). Adapts to the server's *current* online mode for both global and per-server
-links — Floodgate UUIDs pass through unchanged, premium-Mojang on offline servers becomes `createUUIDv3(username)`.
-For Discord-side IDs use `connection.discordId` (not `connection.id`, which is the composite cache key).
+links — Floodgate UUIDs pass through unchanged, premium-Mojang on offline servers becomes `createUUIDv3(username)`. For
+Discord-side IDs use `connection.discordId` (not `connection.id`, which is the composite cache key).
 
-**Linked Roles — application-wide, not per-server:** Discord's Linked-Roles metadata is per-user-per-application;
-there is no API to scope metadata to a Discord server. The `connectedaccount` metadata key therefore means "the user
-has *any* MC-Linker link, global or per-server", and `platform_username` is picked from the global link if present,
-else the first per-server link. Use [
+**Linked Roles — application-wide, not per-server:** Discord's Linked-Roles metadata is per-user-per-application; there
+is no API to scope metadata to a Discord server. The `connectedaccount` metadata key therefore means "the user has *any*
+MC-Linker link, global or per-server", and `platform_username` is picked from the global link if present, else the first
+per-server link. Use [
 `UserSettingsConnection.syncLinkedRoles()`](structures/connections/UserSettingsConnection.js)
-after every connect/disconnect/promote — it recomputes both fields from the current connection cache. Server admins
-who need *true* per-server "user is linked to my server" gating must use `requiredRoleToJoin` instead (which is
+after every connect/disconnect/promote — it recomputes both fields from the current connection cache. Server admins who
+need *true* per-server "user is linked to my server" gating must use `requiredRoleToJoin` instead (which is
 per-server-aware via `findByUUID(uuid, server)`).
 
 **Protocol Responses:** All protocol communication uses `{ status: 'success'|'error', data?, error? }` envelope format.
 Error codes are defined in `Protocol.ProtocolError`.
 
-**Cross-Shard Sync:** Connections are cached per-shard. Edits broadcast via `client.broadcastEval()`. Socket
-objects are not serializable and must be excluded from broadcasts.
+**Minecraft Server Files:** Never hardcode a path to a minecraft server file and never call `protocol.get`/
+`getWithCache`/`list` with a path directly. Every file the bot downloads is accessed through
+`server.files` ([structures/protocol/ServerFiles.js](structures/protocol/ServerFiles.js)), which knows the paths, the
+world layout and the cache location of the server it is bound to:
+
+```js
+const statFile = await server.files.stats(user.uuid);   // world file, version-dependent path
+const levelDat = await server.files.levelDat();
+const plugins = await server.files.plugins();          // directory listing
+```
+
+Each method returns the usual protocol envelope, so `handleProtocolResponse()` and `response.cached` work as before.
+Adding a file the bot reads means adding a method there, not a path at the call site.
+
+- **World files** (`advancements`, `stats`, `playerData`, `levelDat`, `scoreboard`, `datapacks`) are version-dependent:
+  minecraft 26.1 moved the per-player files into `players/` and namespaced the saved data
+  (`data/minecraft/scoreboard.dat`). Their paths are built from `server.worldFileLayout`, and **every version-specific
+  path literal belongs in [structures/model/WorldFileLayout.js](structures/model/WorldFileLayout.js) and nowhere
+  else** — supporting a new minecraft layout means adding a `WorldFileLayout` there.
+- **Server files** (`serverProperties`, `serverIcon`, `whitelist`, `operators`, `bannedPlayers`, `bannedIPs`,
+  `floodgateConfig`, `plugins`, `mods`) are the same on every version.
+
+`server.worldPath` is normalized to the **world root** when it is received in `ServerConnection._patch()`
+(outdated plugin versions report `<world>/dimensions/minecraft/overworld` on minecraft 26.1+), so every world path may
+assume the world root.
+
+Downloaded files are cached **per server** under `download-cache/serverConnection/<serverId>/`, because
+`getWithCache()` falls back to the cache when a server is offline — a shared cache would serve the files of a different
+server for the same player, which offline mode servers hit every time (their uuids are derived from the username).
+`ServerFiles` is the only place that builds cache paths; use `ServerFiles.cacheFolder(serverId)` and
+`ServerFiles.playerCachePaths(serverId, uuid)` when removing them.
+
+**Cross-Shard Sync:** Connections are cached per-shard. Edits broadcast via `client.broadcastEval()`. Socket objects are
+not serializable and must be excluded from broadcasts.
 
 ## File Operations
+
+**Creating files:** Whenever you create a new file, immediately `git add` it so it is tracked. Never leave newly created
+source files as untracked — stage them as part of the same change that introduces them.
 
 **Renaming files:** Always use `git mv <old> <new>` to rename or move files. Never use OS-level commands (`Rename-Item`,
 `mv`, etc.) directly, as they cause git to see a delete + untracked add instead of a rename.
@@ -392,22 +428,35 @@ objects are not serializable and must be excluded from broadcasts.
 Use JSDoc to describe all classes, methods, and to declare types. This is crucial for maintainability and helps with
 editor autocompletion.
 
-**Every function and method must have JSDoc with typed `@param` annotations and a `@returns` (omit `@returns` only
-for `void`-returning sync functions). No bare `@param interaction` / `@param client` lines — always include the
+**Every function and method must have JSDoc with typed `@param` annotations and a `@returns` (omit `@returns` only for
+`void`-returning sync functions). No bare `@param interaction` / `@param client` lines — always include the
 `{Type}` brace, even when the type is obvious from context (`{MCLinker}`, `{ServerConnection}`, etc.). Use
-`import('path').Type` syntax for cross-file types when the type isn't already in scope. For object-shaped params,
-write inline literal types (`{{ badge: string, scopeLabel: string }}`) or reference a typedef. Array params should
-use tuple syntax when positional (`[string, number?]`) rather than `any[]`. This is enforced as a code-review
-standard; PRs introducing untyped params should be rejected.
+`import('path').Type` syntax for cross-file types when the type isn't already in scope. For object-shaped params, write
+inline literal types (`{{ badge: string, scopeLabel: string }}`) or reference a typedef. Array params should use tuple
+syntax when positional (`[string, number?]`) rather than `any[]`. This is enforced as a code-review standard; PRs
+introducing untyped params should be rejected.
 
-**Class methods over module-level functions:** Helper functions should nearly always be written as `static` (or
-instance) methods on the relevant class, not as module-level functions. Module-level functions are only appropriate
-for truly standalone utilities with no logical owner class (e.g. exports in `utilities/`). Private helpers that
-support a single class must be placed inside that class and prefixed with `_`.
+**Every function that can throw must have `@throws {Type}` in its JSDoc**, describing when/why — whether the
+`throw` is explicit in the function body, or it propagates from a call the function makes without catching it. This is
+not optional/best-effort: a reader must be able to tell from the JSDoc alone whether calling a function needs a
+`try`/`catch`, without reading its implementation.
 
-Adhere to the code style of this project for all edits.
-However, do not run linting yourself, write the code adhering to the code style rules already.
-The full ruleset is in `.eslintrc.json`. Key conventions:
+**Tie everything to a class where reasonable:** Helper functions should nearly always be written as `static` (or
+instance) methods on the relevant class, not as module-level functions, and constants that belong to a class (config
+values, limits, keys, sentinels, etc.) should be `static` fields on that class rather than module-level `const`s.
+Module-level functions/constants are only appropriate for truly standalone values with no logical owner class (e.g.
+exports in `utilities/`). This applies to JSDoc `@typedef`s too: when a typedef belongs to a class, place its comment
+**inside the class body** (it still resolves module-wide, and cross-file `import('./File.js').TypeName` references still
+work — it's purely organizational). The one standing exception that stays at module scope is the module-level child
+`logger` (see [Logging](#logging)).
+
+**Marking privates:** Private members must be marked `@private` in their JSDoc. The leading-underscore prefix (`_`)
+is **optional, not required** — use it when it aids readability or is needed to avoid a name collision (e.g. a private
+field `_foo` backing a public `get foo()`), but don't underscore every private member by reflex. `@private`
+is the source of truth for visibility; `_` is just a readability aid.
+
+Adhere to the code style of this project for all edits. However, do not run linting yourself, write the code adhering to
+the code style rules already. The full ruleset is in `.eslintrc.json`. Key conventions:
 
 ### Formatting
 
@@ -415,20 +464,29 @@ The full ruleset is in `.eslintrc.json`. Key conventions:
 - **Single quotes** for strings
 - **Always semicolons**
 - **Trailing commas** in multiline objects/arrays (`always-multiline`)
-- **Stroustrup brace style** (`else`, `catch`, etc. on a new line after `}`), single-line blocks allowed
+- **Stroustrup brace style** (`else`, `catch`, etc. on a new line after `}`), **no braces for single-statement blocks**:
+  `if(condition) statement;` not `if(condition) { statement; }`
 - **No space** between control keywords and parentheses: `if(`, `for(`, `while(`, `catch(`, `switch(`
-- **Space before blocks:** `if(condition) {`
+- **Space before blocks:** `if(condition) {` (when braces are used)
 - **Space inside object braces:** `{ key: value }`, but **not** inside array brackets: `[1, 2]`
 - **Max 1 empty line** between code blocks, max 1 at end of file
 - **No trailing whitespace**
+
+### Comments
+
+Comment sparingly. Only explain the non-obvious *why*, never restate *what* the code already says. Prefer clear names
+over narration, and don't annotate obvious steps or standard language/library behaviour. In most cases a single line of
+code does **not** warrant a multi-line comment block — if a brief one-line note doesn't cover it, reconsider whether the
+comment is needed at all. Reserve longer comments for genuinely subtle logic (races, ordering constraints, workarounds)
+where the reasoning can't be inferred from the code.
 
 ## Logging
 
 The logger is a `Logger` class instance (wrapping pino) exported as the default from `utilities/logger/Logger.js`.
 
 **For commands, events, WS events, and components:** the base handler (`Command`, `Event`, `WSEvent`, `Component`)
-creates a per-execution child logger and passes it to `run()` — subclasses should use that `logger` parameter
-directly. Do **not** create module-level loggers in these files.
+creates a per-execution child logger and passes it to `run()` — subclasses should use that `logger` parameter directly.
+Do **not** create module-level loggers in these files.
 
 **For other files** (utilities, structures, chat-handlers, etc.): create a module-level child logger:
 
@@ -444,10 +502,10 @@ The `features` proxy auto-derives the dotted path from the access chain:
 autocomplete is backed by `resources/logFeatures.json`. Feature paths for WS events live under `features.api.events`,
 while `features.api.socketio` is reserved for socket.io infrastructure (connection, middleware, chatHandlers).
 
-**`logFeatures.json` maintenance:** Every feature path used via `features.x.y.z` **must** have a corresponding entry
-in `resources/logFeatures.json`. The file should be comprehensive — all commands, Discord events, WS events, REST
-routes, components, and structural modules must be listed, even if they don't currently create a module-level logger.
-When adding a new command, event, route, component, or structural module, add its entry to `logFeatures.json` as well.
+**`logFeatures.json` maintenance:** Every feature path used via `features.x.y.z` **must** have a corresponding entry in
+`resources/logFeatures.json`. The file should be comprehensive — all commands, Discord events, WS events, REST routes,
+components, and structural modules must be listed, even if they don't currently create a module-level logger. When
+adding a new command, event, route, component, or structural module, add its entry to `logFeatures.json` as well.
 
 ### Adding context to log calls
 
@@ -458,8 +516,8 @@ logger.debug({ guildId: server.id }, 'Enqueue payload for channel ...');
 logger.error(err, 'Something failed'); // pino arg order: error object first, message second
 ```
 
-For classes where all methods share the same guildId/userId (e.g. a per-server connection), create an
-instance child in the constructor:
+For classes where all methods share the same guildId/userId (e.g. a per-server connection), create an instance child in
+the constructor:
 
 ```javascript
 // module level
@@ -473,15 +531,15 @@ constructor()
 
 ### Runtime debug filtering
 
-`debug` and `trace` are suppressed by default. Filters are checked **per log call**: the logger's static
-filters (set via `child()`) are merged with any structured object passed as the first argument, then tested
-against the active filter map. This means `{ guildId }` passed at the call site is filter-aware even on a
-module-level logger that has no `guildId` in its static filters.
+`debug` and `trace` are suppressed by default. Filters are checked **per log call**: the logger's static filters (set
+via `child()`) are merged with any structured object passed as the first argument, then tested against the active filter
+map. This means `{ guildId }` passed at the call site is filter-aware even on a module-level logger that has no`guildId`
+in its static filters.
 
 `info`/`warn`/`error`/`fatal` always pass through unconditionally — there is no log-level control.
 
-All public debug filter methods operate across all shards via `broadcastEval`. Single-shard methods are
-prefixed with `_` and should not be used directly.
+All public debug filter methods operate across all shards via `broadcastEval`. Single-shard methods are prefixed with`_`
+and should not be used directly.
 
 ```javascript
 // Enable debug filter (always cross-shard)
@@ -506,10 +564,14 @@ Initial debug filters can be set in `config.json`:
 
 ```json
 {
-    "initialDebugFilters": [
-        { "feature": "api.events" },
-        { "guildId": "123456789" }
-    ]
+  "initialDebugFilters": [
+    {
+      "feature": "api.events"
+    },
+    {
+      "guildId": "123456789"
+    }
+  ]
 }
 ```
 
@@ -550,8 +612,8 @@ collections, and provides a live log viewer backed by the bot's pino log files. 
 The Server Connections page has a single pie chart with drill-down behaviour:
 
 - **Main view** ("Feature Adoption"): shows how many servers use each feature.
-- **Drill-down**: clicking a drillable segment (Chat Channels, Synced Roles) replaces the chart with a breakdown view.
-  A back button returns to the main view. Non-drillable segments (Required Role, Floodgate) do nothing on click.
+- **Drill-down**: clicking a drillable segment (Chat Channels, Synced Roles) replaces the chart with a breakdown view. A
+  back button returns to the main view. Non-drillable segments (Required Role, Floodgate) do nothing on click.
 
 When a **new server connection feature** is added to the bot, update these places:
 

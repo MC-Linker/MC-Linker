@@ -2,11 +2,12 @@ import * as utils from '../../utilities/utils.js';
 import { getMinecraftData } from '../../utilities/utils.js';
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
-import { FilePath, ProtocolError } from '../../structures/protocol/Protocol.js';
+import { ProtocolError } from '../../structures/protocol/Protocol.js';
 import Canvas from 'skia-canvas';
 import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/messages.js';
 import Discord, { ButtonStyle } from 'discord.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import ItemRenderer from '../../structures/render/ItemRenderer.js';
 
 import customStats from '../../resources/data/stats_custom.json' with { type: 'json' };
 
@@ -59,7 +60,7 @@ export default class Stats extends Command {
 
         const argPlaceholder = { 'stat_category': category, 'username': user.username };
 
-        const statFile = await server.protocol.getWithCache(...FilePath.Stats(server.worldPath, user.uuid));
+        const statFile = await server.files.stats(user.uuid);
         if(!await utils.handleProtocolResponse(statFile, server.protocol, interaction, {
             [ProtocolError.NOT_FOUND]: keys.api.command.warnings.could_not_download_user_files,
         }, { category: 'stats' })) return;
@@ -80,6 +81,9 @@ export default class Stats extends Command {
             stats = Object.fromEntries(Object.entries(stats).sort((a, b) => a[1] - b[1]));
         else if(sorting === 'alphabetically')
             stats = Object.fromEntries(Object.entries(stats).sort((a, b) => a[0].localeCompare(b[0])));
+
+        // Entity stats (killed/killed_by) keep their static PNGs; item categories render in 3D.
+        const isEntityCategory = ['killed', 'killed_by'].includes(category);
 
         const paginationPages = {};
         // [currentColumnIndex, currentRowIndex]
@@ -165,6 +169,9 @@ export default class Stats extends Command {
                 let x = (statsCanvas.width - sizeOfAllItems) / 2;
                 let y = startCoords[1];
 
+                /** @type {Array<{ id: string, key: string, x: number, y: number }>} */
+                const itemPlacements = [];
+
                 for(let [id, value] of Object.entries(stats).slice(startIndex)) {
                     // make negative numbers positive (its how minecraft does it)
                     if(value < 0) value = Math.abs(value);
@@ -178,32 +185,25 @@ export default class Stats extends Command {
                     const headerImg = await Canvas.loadImage(`./resources/images/statistics/header.png`);
                     ctx.drawImage(headerImg, x, y, headerSize, headerSize);
 
-                    try {
-                        //Draw image
-                        let img;
-                        if(['killed', 'killed_by'].includes(category)) img = await Canvas.loadImage(`./resources/images/entities/${id}.png`);
-                        else img = await Canvas.loadImage(`./resources/images/items/${id}.png`);
-
-                        ctx.drawImage(
-                            img,
-                            x + itemPadding,
-                            y + itemPadding,
-                            itemSize, itemSize,
-                        );
+                    if(isEntityCategory) {
+                        //Draw entity image (static PNG), or its name fitted in the header
+                        try {
+                            const img = await Canvas.loadImage(`./resources/images/entities/${id}.png`);
+                            ctx.drawImage(img, x + itemPadding, y + itemPadding, itemSize, itemSize);
+                        }
+                        catch(err) {
+                            logger.debug(`Could not find entity image ${id}. Applying text...`);
+                            utils.drawFittedText(ctx, mcData.entitiesByName[id]?.displayName ?? id, x + itemPadding, y + itemPadding, itemSize, itemSize, { maxFontSize: 14 });
+                        }
                     }
-                    catch(err) {
-                        //Draw name
-                        logger.debug(`Could not find item image ${id}. Applying text...`);
-                        const fontSize = 12;
-                        ctx.font = `${fontSize}px Minecraft`;
-                        ctx.fillStyle = '#000';
-
-                        let displayName;
-                        if(['killed', 'killed_by'].includes(category)) displayName = mcData.entitiesByName[id]?.displayName;
-                        else displayName = mcData.itemsByName[id]?.displayName;
-                        if(!displayName) displayName = id;
-                        const lines = utils.wrapText(ctx, displayName, itemSize);
-                        lines.forEach((line, i) => ctx.fillText(line, x + itemPadding, y + itemPadding + fontSize + i * fontSize));
+                    else {
+                        //Items are batched and composited after the loop
+                        itemPlacements.push({
+                            id,
+                            key: ItemRenderer.imageKey(server.version, id),
+                            x: x + itemPadding,
+                            y: y + itemPadding,
+                        });
                     }
 
                     // Draw number
@@ -223,6 +223,17 @@ export default class Stats extends Command {
                         currentStatAmounts[0]++;
                     }
                     else y += headerSize + yPadding;
+                }
+
+                // Render only the uncached item icons (one GL pass) and composite each cached image
+                if(itemPlacements.length) {
+                    const itemImages = await ItemRenderer.getItemImages(itemPlacements, server.version, interaction);
+
+                    for(const p of itemPlacements) {
+                        if(await itemImages.draw(ctx, p.key, p.x, p.y, itemSize)) continue;
+                        logger.debug(`Could not render item ${p.id}. Applying text...`);
+                        utils.drawFittedText(ctx, mcData.itemsByName[p.id]?.displayName ?? p.id, p.x, p.y, itemSize, itemSize, { maxFontSize: 14 });
+                    }
                 }
             }
 
