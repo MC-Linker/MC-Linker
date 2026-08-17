@@ -1,7 +1,31 @@
 [
     {
+        "name": "advanceTime",
+        "description": "Whether the daylight cycle and moon phases progress",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "advanceWeather",
+        "description": "Whether the weather can change naturally. The /weather command can still change weather.",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "allowEnteringNetherUsingPortals",
+        "description": "Controls whether players are allowed to enter the Nether.",
+        "default": true,
+        "type": "bool"
+    },
+    {
         "name": "announceAdvancements",
         "description": "Whether advancements should be announced in chat",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "blockDrops",
+        "description": "Controls resource drops from blocks, including experience orbs.",
         "default": true,
         "type": "bool"
     },
@@ -14,6 +38,12 @@
     {
         "name": "commandBlockOutput",
         "description": "Whether command blocks should notify admins when they perform commands",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "commandBlocksWork",
+        "description": null,
         "default": true,
         "type": "bool"
     },
@@ -96,6 +126,12 @@
         "type": "bool"
     },
     {
+        "name": "doVinesSpread",
+        "description": "Whether vines can spread to other blocks. Cave vines, weeping vines, and twisting vines are not affected.",
+        "default": true,
+        "type": "bool"
+    },
+    {
         "name": "doWardenSpawning",
         "description": "Whether wardens can spawn",
         "default": true,
@@ -114,8 +150,20 @@
         "type": "bool"
     },
     {
+        "name": "elytraMovementCheck",
+        "description": "Whether the server should skip checking player speed when the player is wearing elytra. Often helps with jittering due to lag in multiplayer.",
+        "default": true,
+        "type": "bool"
+    },
+    {
         "name": "enderPearlsVanishOnDeath",
         "description": "Controls whether thrown ender pearls vanish when the player diess",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "entityDrops",
+        "description": "Controls drops from minecarts (including inventories), item frames, boats, etc.",
         "default": true,
         "type": "bool"
     },
@@ -130,6 +178,12 @@
         "description": "Whether the player should take damage in fire, lava, campfires, or on magma blocks.",
         "default": true,
         "type": "bool"
+    },
+    {
+        "name": "fireSpreadRadiusAroundPlayer",
+        "description": "The radius in blocks around a player in which fire can spread",
+        "default": 128,
+        "type": "int"
     },
     {
         "name": "forgiveDeadPlayers",
@@ -150,6 +204,12 @@
         "type": "bool"
     },
     {
+        "name": "immediateRespawn",
+        "description": "Players respawn immediately without showing the death screen",
+        "default": false,
+        "type": "bool"
+    },
+    {
         "name": "keepInventory",
         "description": "Whether the player should keep items and experience in their inventory after death",
         "default": false,
@@ -162,10 +222,28 @@
         "type": "bool"
     },
     {
+        "name": "limitedCrafting",
+        "description": "If enabled, players will be able to craft only unlocked recipes.",
+        "default": false,
+        "type": "bool"
+    },
+    {
+        "name": "locatorBar",
+        "description": "When enabled, a bar is shown on the screen to indicate the direction of players.",
+        "default": true,
+        "type": "bool"
+    },
+    {
         "name": "logAdminCommands",
         "description": "Whether to log admin commands to server log",
         "default": true,
         "type": "bool"
+    },
+    {
+        "name": "maxBlockModifications",
+        "description": "The number of blocks that can be changed at once by one command, such as fill or clone.",
+        "default": 32768,
+        "type": "int"
     },
     {
         "name": "maxCommandChainLength",
@@ -180,9 +258,33 @@
         "type": "int"
     },
     {
+        "name": "maxCommandForks",
+        "description": "Maximum number of contexts that can be used by commands like 'execute as'.",
+        "default": 65536,
+        "type": "int"
+    },
+    {
+        "name": "maxCommandSequenceLength",
+        "description": "Applies to command block chains and functions.",
+        "default": 65536,
+        "type": "int"
+    },
+    {
         "name": "maxEntityCramming",
         "description": "The maximum number of pushable entities a mob or player can push, before taking 6 suffocation damage per half-second.  Setting to 0 or lower disables the rule.  Damage affects survival-mode or adventure-mode players, and all mobs but bats. Pushable entities include non-spectator-mode players, any mob except bats, as well as boats and minecarts.",
         "default": 24,
+        "type": "int"
+    },
+    {
+        "name": "maxMinecartSpeed",
+        "description": "Maximum default speed of a moving Minecart on land.",
+        "default": 8,
+        "type": "int"
+    },
+    {
+        "name": "maxSnowAccumulationHeight",
+        "description": "When it snows, layers of snow form on the ground up to at most this number of layers.",
+        "default": 1,
         "type": "int"
     },
     {
@@ -190,6 +292,12 @@
         "description": "The maximum speed a minecart may reach.",
         "default": 8,
         "type": "int"
+    },
+    {
+        "name": "mobDrops",
+        "description": "Controls resource drops from mobs, including experience orbs.",
+        "default": true,
+        "type": "bool"
     },
     {
         "name": "mobExplosionDropDecay",
@@ -204,21 +312,33 @@
         "type": "bool"
     },
     {
+        "name": "naturalHealthRegeneration",
+        "description": "Whether the player can regenerate health naturally if their hunger is full enough (doesn't affect external healing, such as golden apples, the Regeneration effect, etc.)",
+        "default": true,
+        "type": "bool"
+    },
+    {
         "name": "naturalRegeneration",
         "description": "Whether the player can regenerate health naturally if their hunger is full enough (doesn't affect external healing, such as golden apples, the Regeneration effect, etc.)",
         "default": true,
         "type": "bool"
     },
     {
-        "name": "playersNetherPortalDefaultDelay",
-        "description": "Controls the time that a creative player needs to stand in a nether portal before changing dimensions.",
-        "default": 80,
-        "type": "int"
+        "name": "playerMovementCheck",
+        "description": null,
+        "default": true,
+        "type": "bool"
     },
     {
         "name": "playersNetherPortalCreativeDelay",
         "description": "Controls the time that a non-creative player needs to stand in a nether portal before changing dimensions.",
         "default": 1,
+        "type": "int"
+    },
+    {
+        "name": "playersNetherPortalDefaultDelay",
+        "description": "Controls the time that a creative player needs to stand in a nether portal before changing dimensions.",
+        "default": 80,
         "type": "int"
     },
     {
@@ -230,6 +350,18 @@
     {
         "name": "projectilesCanBreakBlocks",
         "description": "Whether impact projectiles destroy blocks that are destructible by them, i.e. chorus flowers, pointed dripstone, and decorated pots.",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "pvp",
+        "description": "Controls whether players are allowed to damage other players.",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "raids",
+        "description": "Whether raids are disabled.",
         "default": true,
         "type": "bool"
     },
@@ -246,8 +378,20 @@
         "type": "bool"
     },
     {
+        "name": "respawnRadius",
+        "description": "Controls the size of the area around the spawn point that players can spawn in.",
+        "default": 10,
+        "type": "int"
+    },
+    {
         "name": "sendCommandFeedback",
         "description": "Whether the feedback from commands executed by a player should show up in chat. Also affects the default behavior of whether command blocks store their output text",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "showAdvancementMessages",
+        "description": "Whether advancements should be announced in chat",
         "default": true,
         "type": "bool"
     },
@@ -270,14 +414,68 @@
         "type": "int"
     },
     {
+        "name": "spawnerBlocksWork",
+        "description": null,
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "spawnMobs",
+        "description": "Some entities might have separate rules.",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "spawnMonsters",
+        "description": "Controls whether monsters naturally spawn.",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "spawnPatrols",
+        "description": "Whether patrols can spawn",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "spawnPhantoms",
+        "description": "Whether phantoms can spawn in the nighttime",
+        "default": true,
+        "type": "bool"
+    },
+    {
         "name": "spawnRadius",
         "description": "The number of blocks outward from the world spawn coordinates that a player spawns in when first joining a server or when dying without a personal spawnpoint. Has no effect on servers where the default game mode is adventure.",
         "default": 10,
         "type": "int"
     },
     {
+        "name": "spawnWanderingTraders",
+        "description": "Whether wandering traders can spawn",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "spawnWardens",
+        "description": "Whether wardens can spawn",
+        "default": true,
+        "type": "bool"
+    },
+    {
         "name": "spectatorsGenerateChunks",
         "description": "Whether players in spectator mode can generate chunks",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "spreadVines",
+        "description": "Controls whether the Vines block spreads randomly to adjacent blocks. Does not affect other types of vine blocks such as Weeping Vines, Twisting Vines, etc.",
+        "default": true,
+        "type": "bool"
+    },
+    {
+        "name": "tntExplodes",
+        "description": null,
         "default": true,
         "type": "bool"
     },
@@ -296,12 +494,6 @@
     {
         "name": "waterSourceConversion",
         "description": "Whether new sources of water are allowed to form",
-        "default": true,
-        "type": "bool"
-    },
-    {
-        "name": "doVinesSpread",
-        "description": "Whether vines can spread to other blocks. Cave vines, weeping vines, and twisting vines are not affected.",
         "default": true,
         "type": "bool"
     }

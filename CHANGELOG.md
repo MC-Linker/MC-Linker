@@ -11,6 +11,8 @@
   them, shown as a short "Preparing Minecraft Assets" step. Every later command uses them instantly.
 - **Minecraft 26 support:** `/stats`, `/advancements`, `/inventory` and `/userinfo` now work on Minecraft 26 servers,
   which store player files in a new location.
+- **Advancements up to Minecraft 26:** `/advancements` now lists the newer advancements as well, including the Trial
+  Chamber, Happy Ghast and Creaking ones.
 
 ### Bug Fixes
 
@@ -21,6 +23,8 @@
 - Fixed `/inventory` item buttons showing wrong details and shulker box pages not opening.
 - Fixed per-server accounts sometimes not being found, so commands fell back to the global account.
 - Fixed the console channel dropping or cutting off long lines of server output.
+- Fixed `/serverinfo` listing almost every game rule of a Minecraft 26 world as changed, because those rules were
+  renamed in that version.
 
 ## 4.2.0 - Cracked + Per-Server Accounts
 
