@@ -1,8 +1,8 @@
-import fs from 'fs-extra';
 import path from 'path';
 import v8 from 'v8';
 import rootLogger from '../utilities/logger/Logger.js';
 import features from '../utilities/logger/features.js';
+import { trackError } from './analytics/AnalyticsCollector.js';
 
 const logger = rootLogger.child({ feature: features.structures.heapMonitor });
 
@@ -55,20 +55,19 @@ export default class HeapMonitor {
      */
     captureSnapshot() {
         if(!v8.writeHeapSnapshot) {
-            logger.error('v8.writeHeapSnapshot not available');
+            trackError('unhandled', 'HeapMonitor.captureSnapshot', null, null, { message: 'v8.writeHeapSnapshot not available' }, null, logger);
             return null;
         }
 
         try {
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const snapshotPath = path.join(this._snapshotDir, `heap-${timestamp}.heapsnapshot`);
-            const file = fs.createWriteStream(snapshotPath);
-            v8.writeHeapSnapshot(file);
+            v8.writeHeapSnapshot(snapshotPath);
             logger.info({ path: snapshotPath }, 'Captured heap snapshot');
             return snapshotPath;
         }
         catch(err) {
-            logger.error(err, 'Failed to capture heap snapshot');
+            trackError('unhandled', 'HeapMonitor.captureSnapshot', null, null, err, null, logger);
             return null;
         }
     }

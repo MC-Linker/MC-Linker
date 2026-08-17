@@ -19,6 +19,8 @@ CODEX.md
 /private/
 /oci/
 /resources/minecraft-assets/
+/logs/
+/heaps/
 
 # ------------------------------
 # IDE

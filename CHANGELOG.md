@@ -4,9 +4,9 @@
 
 ### New Features
 
-- **Dynamic 3D item and block images:** inventories, stats and advancements now show items dynamically rendered
-- from the server's own Minecraft version instead of a fixed set of bundled images. Items added in newer versions
-  automatically show up correctly.
+- **Dynamic 3D item and block images:** inventories, stats and advancements now show items dynamically rendered from the
+  server's own Minecraft version instead of a fixed set of bundled images. Items added in newer versions automatically
+  show up correctly.
 - **Automatic asset downloads:** the assets for a version are downloaded the first time a server on that version uses
   them, shown as a short "Preparing Minecraft Assets" step. Every later command uses them instantly.
 - **Minecraft 26 support:** `/stats`, `/advancements`, `/inventory` and `/userinfo` now work on Minecraft 26 servers,
