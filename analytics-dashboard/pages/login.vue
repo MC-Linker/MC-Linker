@@ -52,6 +52,14 @@ async function submit() {
       method: 'POST',
       body: { password: password.value, db: selectedDb.value },
     });
+
+    // The login can succeed while the browser drops the cookie (e.g. Secure on a plain-HTTP origin)
+    if (!document.cookie.split('; ').some(c => c.startsWith('session='))) {
+      error.value = 'Login succeeded, but your browser did not store the session cookie. '
+          + 'Check that cookies are enabled for this site.';
+      return;
+    }
+
     await navigateTo('/');
   }
   catch (e: unknown) {

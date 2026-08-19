@@ -607,6 +607,22 @@ collections, and provides a live log viewer backed by the bot's pino log files. 
 | Errors             | `/errors`       | `errors.get.ts`       | Error log table with type, name, guild, timestamp                                                 |
 | Logs               | `/logs`         | `logs/*.get.ts`       | Live tail + historical viewer for pino JSON log files with filtering and JSON drill-down          |
 
+### Authentication
+
+Single shared password (`NUXT_DASHBOARD_PASSWORD`) plus a database choice, exchanged by
+`server/api/auth/login.post.ts` for an HS256 JWT stored in the `session` cookie
+(`server/utils/auth.ts`). The cookie is deliberately **not** `httpOnly` — the global route
+middleware (`middleware/auth.global.ts`) reads it client-side; the JWT is signed and only carries
+the db name. Server routes call `verifySession(event)`.
+
+The cookie's `Secure` attribute follows the protocol the request arrived on (`x-forwarded-proto`,
+else the socket), **never** `NODE_ENV` — Nitro inlines `process.env.NODE_ENV` as `"production"` at
+build time, so a build-mode check marks the cookie `Secure` on plain-HTTP deployments too, and
+browsers then drop the session silently (Safari does this even on localhost, so port-forwarded
+access from a phone can log in but never stay logged in). A TLS-terminating reverse proxy must
+therefore send `X-Forwarded-Proto`. `SameSite` is `lax` so an external link into the dashboard
+still sends the session.
+
 ### Server Connections — Interactive Pie Chart
 
 The Server Connections page has a single pie chart with drill-down behaviour:
@@ -686,6 +702,11 @@ MICROSOFT_PASSWORD=
 AZURE_CLIENT_ID=
 PLUGIN_VERSION=3.6              # Version of the Minecraft plugin
 PLUGIN_PORT=11111               # Port for the Minecraft plugin
+
+# Analytics Dashboard
+DASHBOARD_PORT=3001             # Host port for the dashboard container
+DASHBOARD_PASSWORD=             # Shared dashboard login password
+DASHBOARD_SESSION_SECRET=       # Session JWT signing secret
 
 # Optional
 TOPGG_TOKEN=                    # Top.gg integration
