@@ -1,15 +1,19 @@
 <template>
   <div class="range-picker">
-    <button v-for="preset in presets" :key="preset.label" :class="{ active: activePreset === preset.label }"
-            class="btn-preset" @click="applyPreset(preset)">
-      {{ preset.label }}
-    </button>
-    <button v-if="minDate" :class="{ active: activePreset === 'Max' }" class="btn-preset" @click="applyMax">
-      Max
-    </button>
-    <input :value="from" class="form-control date-input" type="date" @change="onFrom"/>
-    <span class="range-sep">–</span>
-    <input :value="to" class="form-control date-input" type="date" @change="onTo"/>
+    <div class="range-presets">
+      <button v-for="preset in presets" :key="preset.label" :class="{ active: activePreset === preset.label }"
+              class="btn-preset" @click="applyPreset(preset)">
+        {{ preset.label }}
+      </button>
+      <button v-if="minDate" :class="{ active: activePreset === 'Max' }" class="btn-preset" @click="applyMax">
+        Max
+      </button>
+    </div>
+    <div class="range-dates">
+      <input :value="from" class="form-control date-input" type="date" @change="onFrom"/>
+      <span class="range-sep">–</span>
+      <input :value="to" class="form-control date-input" type="date" @change="onTo"/>
+    </div>
   </div>
 </template>
 

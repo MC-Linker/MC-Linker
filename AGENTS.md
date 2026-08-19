@@ -623,6 +623,23 @@ access from a phone can log in but never stay logged in). A TLS-terminating reve
 therefore send `X-Forwarded-Proto`. `SameSite` is `lax` so an external link into the dashboard
 still sends the session.
 
+### Responsive Layout
+
+The dashboard is used from phones (often through an SSH tunnel), so every page must work down to ~360px wide.
+All responsive rules live in `assets/css/main.css` at the bottom, under two breakpoints: **900px** (sidebar becomes a
+drawer, charts go single-column) and **600px** (phone spacing, 16px form fields, tighter cards).
+
+- **Sidebar drawer:** below 900px `layouts/default.vue` shows a sticky topbar with a hamburger, and `.sidebar` becomes
+  a fixed off-canvas drawer over a backdrop. State lives in `composables/useSidebar.ts` (`useState`), shared with
+  `AppNavbar`. It closes on route change, backdrop click, Escape, and its own close button (the topbar button sits
+  underneath the open drawer), and locks body scroll while open.
+- **Tables:** wrap every `<table class="data-table">` in `<div class="table-scroll">` so a wide table scrolls inside
+  its card instead of widening the page. Below 600px those tables keep a 520px min-width rather than crushing columns.
+- **Forms:** inputs are 16px below 600px — anything smaller makes iOS Safari zoom the page on focus.
+- **Charts:** `.charts-grid` / `.charts-row` collapse to one column below 900px, and `PieChart` moves its legend below
+  the chart under 700px.
+- New pages must not introduce horizontal page scroll at 390px; put any wide content in its own scroll container.
+
 ### Server Connections — Interactive Pie Chart
 
 The Server Connections page has a single pie chart with drill-down behaviour:

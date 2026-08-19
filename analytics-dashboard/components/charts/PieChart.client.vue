@@ -21,6 +21,22 @@ const emit = defineEmits<{
 
 const chartRef = ref<InstanceType<typeof Doughnut> | null>(null);
 
+// A legend on the right leaves almost no room for the chart on a phone
+const narrow = ref(false);
+let mq: MediaQueryList | null = null;
+
+function onMqChange(e: MediaQueryListEvent) {
+  narrow.value = e.matches;
+}
+
+onMounted(() => {
+  mq = window.matchMedia('(max-width: 700px)');
+  narrow.value = mq.matches;
+  mq.addEventListener('change', onMqChange);
+});
+
+onBeforeUnmount(() => mq?.removeEventListener('change', onMqChange));
+
 const chartData = computed(() => {
   const source = props.data as any;
   const datasets = Array.isArray(source?.datasets)
@@ -50,10 +66,11 @@ const mergedOptions = computed(() => ({
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: 'right' as const,
+      position: narrow.value ? 'bottom' as const : 'right' as const,
       labels: {
         color: '#b0b8c8',
-        padding: 12,
+        padding: narrow.value ? 8 : 12,
+        boxWidth: narrow.value ? 10 : undefined,
         usePointStyle: true,
         pointStyle: 'line' as const,
         generateLabels(chart: any) {

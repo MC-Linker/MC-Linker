@@ -27,6 +27,11 @@ body {
     font-size: 14px;
     line-height: 1.5;
     min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+}
+
+body.no-scroll {
+    overflow: hidden;
 }
 
 a {
@@ -308,16 +313,6 @@ tr:hover td {
     cursor: pointer;
 }
 
-.error-message {
-    background: rgba(229, 57, 53, 0.1);
-    border: 1px solid rgba(229, 57, 53, 0.3);
-    border-radius: var(--radius);
-    color: #e57373;
-    padding: 10px 14px;
-    font-size: 13px;
-    margin-top: 12px;
-}
-
 .empty-state {
     text-align: center;
     padding: 48px 0;
@@ -468,6 +463,11 @@ tr:hover td {
 }
 
 /* Data table */
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -560,6 +560,13 @@ tr:hover td {
 }
 
 .range-picker {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.range-presets, .range-dates {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1089,8 +1096,230 @@ code {
     justify-content: flex-end;
 }
 
+/* Mobile topbar + drawer chrome (hidden on desktop) */
+.mobile-topbar {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px;
+}
+
+.mobile-topbar-title {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.menu-toggle:hover {
+    background: var(--surface2);
+}
+
+.sidebar-backdrop, .sidebar-close {
+    display: none;
+}
+
 @media (max-width: 900px) {
     .log-controls-grid {
         grid-template-columns: 1fr;
+    }
+
+    .app-layout {
+        flex-direction: column;
+    }
+
+    .mobile-topbar {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        padding-top: calc(10px + env(safe-area-inset-top));
+        padding-left: calc(14px + env(safe-area-inset-left));
+    }
+
+    /* Sidebar becomes an off-canvas drawer */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 50;
+        width: 260px;
+        max-width: 84vw;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        padding-top: calc(20px + env(safe-area-inset-top));
+    }
+
+    .sidebar.open {
+        transform: none;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .sidebar-open .sidebar-backdrop {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Nav links are the primary touch targets in the drawer */
+    .sidebar-link {
+        padding: 12px 20px;
+    }
+
+    .sidebar-brand {
+        padding: 0 14px 16px;
+        font-size: 14px;
+    }
+
+    .sidebar-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        margin-left: auto;
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+
+    .sidebar-close:hover {
+        color: var(--text);
+    }
+
+    .main-content {
+        padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+    }
+
+    .charts-grid, .charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        height: 240px;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-content {
+        padding: 14px 12px calc(16px + env(safe-area-inset-bottom));
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .page-header-controls, .log-header-actions {
+        flex-wrap: wrap;
+    }
+
+    .page-header-controls .form-control {
+        width: 100%;
+    }
+
+    /* Presets on one row, the two dates sharing the next */
+    .range-presets, .range-dates {
+        flex: 1 1 100%;
+    }
+
+    .date-input {
+        flex: 1 1 0;
+        width: auto !important;
+    }
+
+    /* 16px keeps iOS from zooming the page when a field takes focus */
+    input, select, .form-control {
+        font-size: 16px;
+    }
+
+    .btn-preset, .btn-ghost, .btn-page, .range-btn, .btn-clear {
+        min-height: 36px;
+    }
+
+    .card, .chart-card {
+        padding: 14px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .stats-card, .stat-card {
+        padding: 14px;
+    }
+
+    .stats-card-value, .stat-value {
+        font-size: 22px;
+    }
+
+    .chart-container {
+        height: 220px;
+    }
+
+    /* Tables stay readable and scroll inside their card instead of stretching the page */
+    .table-scroll .data-table {
+        min-width: 520px;
+    }
+
+    .error-message {
+        max-width: 200px;
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+
+    .log-list {
+        max-height: 60vh;
+    }
+
+    .modal {
+        padding: 20px;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    .login-page {
+        padding: 20px;
+    }
+
+    .login-card {
+        padding: 28px 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar, .sidebar-backdrop {
+        transition: none;
     }
 }

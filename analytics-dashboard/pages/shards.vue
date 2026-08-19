@@ -12,38 +12,40 @@
     </div>
 
     <div v-if="data?.shards?.length" class="card" style="margin-bottom: 20px;">
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th @click="toggleSort('id')">Shard{{ sortIcon('id') }}</th>
-          <th @click="toggleSort('guilds')">Guilds{{ sortIcon('guilds') }}</th>
-          <th @click="toggleSort('ping')">Ping{{ sortIcon('ping') }}</th>
-          <th @click="toggleSort('memoryMB')">Memory{{ sortIcon('memoryMB') }}</th>
-          <th @click="toggleSort('cpuPercent')">CPU{{ sortIcon('cpuPercent') }}</th>
-          <th @click="toggleSort('uptime')">Uptime{{ sortIcon('uptime') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="shard in sortedShards" :key="shard.id">
-          <td>#{{ shard.id }}</td>
-          <td>{{ shard.guilds.toLocaleString() }}</td>
-          <td>
-                            <span
-                                :class="['badge', shard.ping > 200 ? 'badge-danger' : shard.ping > 100 ? 'badge-warn' : 'badge-ok']">
-                                {{ shard.ping }}ms
-                            </span>
-          </td>
-          <td>{{ shard.memoryMB.toFixed(1) }} MB</td>
-          <td>
-                            <span
-                                :class="['badge', (shard.cpuPercent ?? 0) > 80 ? 'badge-danger' : (shard.cpuPercent ?? 0) > 40 ? 'badge-warn' : 'badge-ok']">
-                                {{ (shard.cpuPercent ?? 0).toFixed(1) }}%
-                            </span>
-          </td>
-          <td>{{ formatUptime(shard.uptime) }}</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th @click="toggleSort('id')">Shard{{ sortIcon('id') }}</th>
+            <th @click="toggleSort('guilds')">Guilds{{ sortIcon('guilds') }}</th>
+            <th @click="toggleSort('ping')">Ping{{ sortIcon('ping') }}</th>
+            <th @click="toggleSort('memoryMB')">Memory{{ sortIcon('memoryMB') }}</th>
+            <th @click="toggleSort('cpuPercent')">CPU{{ sortIcon('cpuPercent') }}</th>
+            <th @click="toggleSort('uptime')">Uptime{{ sortIcon('uptime') }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="shard in sortedShards" :key="shard.id">
+            <td>#{{ shard.id }}</td>
+            <td>{{ shard.guilds.toLocaleString() }}</td>
+            <td>
+                              <span
+                                  :class="['badge', shard.ping > 200 ? 'badge-danger' : shard.ping > 100 ? 'badge-warn' : 'badge-ok']">
+                                  {{ shard.ping }}ms
+                              </span>
+            </td>
+            <td>{{ shard.memoryMB.toFixed(1) }} MB</td>
+            <td>
+                              <span
+                                  :class="['badge', (shard.cpuPercent ?? 0) > 80 ? 'badge-danger' : (shard.cpuPercent ?? 0) > 40 ? 'badge-warn' : 'badge-ok']">
+                                  {{ (shard.cpuPercent ?? 0).toFixed(1) }}%
+                              </span>
+            </td>
+            <td>{{ formatUptime(shard.uptime) }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div v-if="data?.timeSeries?.length" class="charts-grid">

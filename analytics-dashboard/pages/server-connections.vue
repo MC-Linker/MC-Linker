@@ -148,6 +148,7 @@ function highlightJson(obj: unknown): string {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .search-bar input {
@@ -158,6 +159,23 @@ function highlightJson(obj: unknown): string {
   color: #e0e6ed;
   font-size: 0.9rem;
   width: 260px;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .search-bar input {
+    flex: 1 1 160px;
+    width: auto;
+    font-size: 16px;
+  }
+
+  .search-bar button {
+    min-height: 36px;
+  }
+
+  .json-block {
+    max-height: 50vh;
+  }
 }
 
 .search-bar button {

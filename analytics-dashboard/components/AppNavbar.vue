@@ -1,8 +1,15 @@
 <template>
-  <nav class="sidebar">
+  <nav id="app-sidebar" :class="{ open: isOpen }" class="sidebar">
     <div class="sidebar-brand">
       <img :src="logoSrc" alt="MC-Linker" class="sidebar-logo">
       MC-Linker Analytics
+      <!-- The drawer covers the topbar's menu button, so it needs its own way out -->
+      <button aria-label="Close navigation" class="sidebar-close" type="button" @click="close">
+        <svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-linecap="round"
+             stroke-width="2" viewBox="0 0 24 24" width="20">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
     </div>
 
     <div class="sidebar-section">
@@ -50,6 +57,8 @@
 
 <script lang="ts" setup>
 import logoSrc from '~/assets/logo.svg';
+
+const { isOpen, close } = useSidebar();
 
 const { data: dbData } = await useFetch('/api/databases');
 const databases = computed(() => dbData.value?.databases ?? []);
