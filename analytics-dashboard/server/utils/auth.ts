@@ -10,6 +10,12 @@ function getSecret(): Uint8Array {
     return new TextEncoder().encode(config.sessionSecret);
 }
 
+// Follows the request protocol, never NODE_ENV — Nitro inlines that as "production" at build time,
+// so plain-HTTP deployments would set Secure and browsers would silently drop the session.
+function useSecureCookie(event: H3Event): boolean {
+    return getRequestProtocol(event) === 'https';
+}
+
 export async function createSessionToken(db: string): Promise<string> {
     return new SignJWT({ db })
         .setProtectedHeader({ alg: 'HS256' })
@@ -33,8 +39,9 @@ export async function verifySession(event: H3Event): Promise<{ db: string }> {
 
 export function setSessionCookie(event: H3Event, token: string): void {
     setCookie(event, COOKIE_NAME, token, {
-        sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production',
+        // 'lax' so an external link into the dashboard still sends the session; POST/DELETE stay protected
+        sameSite: 'lax',
+        secure: useSecureCookie(event),
         // Not httpOnly so Nuxt's useCookie() can read it client-side for the auth middleware.
         // The JWT is signed (HS256) so it cannot be forged; it contains only the db name.
         maxAge: 60 * 60 * 24 * 7, // 7 days
@@ -43,5 +50,10 @@ export function setSessionCookie(event: H3Event, token: string): void {
 }
 
 export function clearSessionCookie(event: H3Event): void {
-    deleteCookie(event, COOKIE_NAME);
+    // Attributes must match setSessionCookie() or the browser keeps the cookie
+    deleteCookie(event, COOKIE_NAME, {
+        sameSite: 'lax',
+        secure: useSecureCookie(event),
+        path: '/',
+    });
 }

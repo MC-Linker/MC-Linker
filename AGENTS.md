@@ -607,6 +607,39 @@ collections, and provides a live log viewer backed by the bot's pino log files. 
 | Errors             | `/errors`       | `errors.get.ts`       | Error log table with type, name, guild, timestamp                                                 |
 | Logs               | `/logs`         | `logs/*.get.ts`       | Live tail + historical viewer for pino JSON log files with filtering and JSON drill-down          |
 
+### Authentication
+
+Single shared password (`NUXT_DASHBOARD_PASSWORD`) plus a database choice, exchanged by
+`server/api/auth/login.post.ts` for an HS256 JWT stored in the `session` cookie
+(`server/utils/auth.ts`). The cookie is deliberately **not** `httpOnly` — the global route
+middleware (`middleware/auth.global.ts`) reads it client-side; the JWT is signed and only carries
+the db name. Server routes call `verifySession(event)`.
+
+The cookie's `Secure` attribute follows the protocol the request arrived on (`x-forwarded-proto`,
+else the socket), **never** `NODE_ENV` — Nitro inlines `process.env.NODE_ENV` as `"production"` at
+build time, so a build-mode check marks the cookie `Secure` on plain-HTTP deployments too, and
+browsers then drop the session silently (Safari does this even on localhost, so port-forwarded
+access from a phone can log in but never stay logged in). A TLS-terminating reverse proxy must
+therefore send `X-Forwarded-Proto`. `SameSite` is `lax` so an external link into the dashboard
+still sends the session.
+
+### Responsive Layout
+
+The dashboard is used from phones (often through an SSH tunnel), so every page must work down to ~360px wide.
+All responsive rules live in `assets/css/main.css` at the bottom, under two breakpoints: **900px** (sidebar becomes a
+drawer, charts go single-column) and **600px** (phone spacing, 16px form fields, tighter cards).
+
+- **Sidebar drawer:** below 900px `layouts/default.vue` shows a sticky topbar with a hamburger, and `.sidebar` becomes
+  a fixed off-canvas drawer over a backdrop. State lives in `composables/useSidebar.ts` (`useState`), shared with
+  `AppNavbar`. It closes on route change, backdrop click, Escape, and its own close button (the topbar button sits
+  underneath the open drawer), and locks body scroll while open.
+- **Tables:** wrap every `<table class="data-table">` in `<div class="table-scroll">` so a wide table scrolls inside
+  its card instead of widening the page. Below 600px those tables keep a 520px min-width rather than crushing columns.
+- **Forms:** inputs are 16px below 600px — anything smaller makes iOS Safari zoom the page on focus.
+- **Charts:** `.charts-grid` / `.charts-row` collapse to one column below 900px, and `PieChart` moves its legend below
+  the chart under 700px.
+- New pages must not introduce horizontal page scroll at 390px; put any wide content in its own scroll container.
+
 ### Server Connections — Interactive Pie Chart
 
 The Server Connections page has a single pie chart with drill-down behaviour:
@@ -686,6 +719,11 @@ MICROSOFT_PASSWORD=
 AZURE_CLIENT_ID=
 PLUGIN_VERSION=3.6              # Version of the Minecraft plugin
 PLUGIN_PORT=11111               # Port for the Minecraft plugin
+
+# Analytics Dashboard
+DASHBOARD_PORT=3001             # Host port for the dashboard container
+DASHBOARD_PASSWORD=             # Shared dashboard login password
+DASHBOARD_SESSION_SECRET=       # Session JWT signing secret
 
 # Optional
 TOPGG_TOKEN=                    # Top.gg integration

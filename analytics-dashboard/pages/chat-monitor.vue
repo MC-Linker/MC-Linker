@@ -38,26 +38,28 @@
 
     <div v-if="data?.operations?.length" class="card" style="margin-top: 20px;">
       <h2 class="table-title">Operations</h2>
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th @click="toggleSort('name')">Name{{ sortIcon('name') }}</th>
-          <th @click="toggleSort('count')">Count{{ sortIcon('count') }}</th>
-          <th @click="toggleSort('rateLimits')">Rate Limits{{ sortIcon('rateLimits') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="op in sortedOps" :key="op.name">
-          <td><code>{{ op.name }}</code></td>
-          <td>{{ op.count.toLocaleString() }}</td>
-          <td>
-            <span :class="['badge', op.rateLimits > 0 ? 'badge-warn' : 'badge-ok']">
-              {{ op.rateLimits.toLocaleString() }}
-            </span>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th @click="toggleSort('name')">Name{{ sortIcon('name') }}</th>
+            <th @click="toggleSort('count')">Count{{ sortIcon('count') }}</th>
+            <th @click="toggleSort('rateLimits')">Rate Limits{{ sortIcon('rateLimits') }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="op in sortedOps" :key="op.name">
+            <td><code>{{ op.name }}</code></td>
+            <td>{{ op.count.toLocaleString() }}</td>
+            <td>
+              <span :class="['badge', op.rateLimits > 0 ? 'badge-warn' : 'badge-ok']">
+                {{ op.rateLimits.toLocaleString() }}
+              </span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div v-if="pending" class="loading">Loading...</div>

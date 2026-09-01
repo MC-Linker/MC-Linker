@@ -17,31 +17,33 @@
     </div>
 
     <div v-if="data?.commands?.length" class="card">
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th @click="toggleSort('name')">Command{{ sortIcon('name') }}</th>
-          <th @click="toggleSort('count')">Uses{{ sortIcon('count') }}</th>
-          <th @click="toggleSort('errors')">Errors{{ sortIcon('errors') }}</th>
-          <th @click="toggleSort('errorRate')">Error Rate{{ sortIcon('errorRate') }}</th>
-          <th @click="toggleSort('avgDurationMs')">Avg Duration{{ sortIcon('avgDurationMs') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="cmd in sortedCommands" :key="cmd.name">
-          <td><code>{{ cmd.name }}</code></td>
-          <td>{{ cmd.count.toLocaleString() }}</td>
-          <td>{{ cmd.errors.toLocaleString() }}</td>
-          <td>
-                            <span
-                                :class="['badge', cmd.errorRate > 10 ? 'badge-danger' : cmd.errorRate > 2 ? 'badge-warn' : 'badge-ok']">
-                                {{ cmd.errorRate }}%
-                            </span>
-          </td>
-          <td>{{ cmd.avgDurationMs }}ms</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th @click="toggleSort('name')">Command{{ sortIcon('name') }}</th>
+            <th @click="toggleSort('count')">Uses{{ sortIcon('count') }}</th>
+            <th @click="toggleSort('errors')">Errors{{ sortIcon('errors') }}</th>
+            <th @click="toggleSort('errorRate')">Error Rate{{ sortIcon('errorRate') }}</th>
+            <th @click="toggleSort('avgDurationMs')">Avg Duration{{ sortIcon('avgDurationMs') }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="cmd in sortedCommands" :key="cmd.name">
+            <td><code>{{ cmd.name }}</code></td>
+            <td>{{ cmd.count.toLocaleString() }}</td>
+            <td>{{ cmd.errors.toLocaleString() }}</td>
+            <td>
+                              <span
+                                  :class="['badge', cmd.errorRate > 10 ? 'badge-danger' : cmd.errorRate > 2 ? 'badge-warn' : 'badge-ok']">
+                                  {{ cmd.errorRate }}%
+                              </span>
+            </td>
+            <td>{{ cmd.avgDurationMs }}ms</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div v-if="pending" class="loading">Loading…</div>

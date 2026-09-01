@@ -23,51 +23,55 @@
 
     <div v-if="data?.rest?.length" class="card" style="margin-bottom: 20px;">
       <h2 class="table-title">REST Endpoints</h2>
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th @click="restSort.toggleSort('name')">Endpoint{{ restSort.sortIcon('name') }}</th>
-          <th @click="restSort.toggleSort('count')">Calls{{ restSort.sortIcon('count') }}</th>
-          <th @click="restSort.toggleSort('avgDurationMs')">Avg Duration{{ restSort.sortIcon('avgDurationMs') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="r in sortedRest" :key="r.name">
-          <td><code>{{ r.name }}</code></td>
-          <td>{{ r.count.toLocaleString() }}</td>
-          <td>{{ r.avgDurationMs }}ms</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th @click="restSort.toggleSort('name')">Endpoint{{ restSort.sortIcon('name') }}</th>
+            <th @click="restSort.toggleSort('count')">Calls{{ restSort.sortIcon('count') }}</th>
+            <th @click="restSort.toggleSort('avgDurationMs')">Avg Duration{{ restSort.sortIcon('avgDurationMs') }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="r in sortedRest" :key="r.name">
+            <td><code>{{ r.name }}</code></td>
+            <td>{{ r.count.toLocaleString() }}</td>
+            <td>{{ r.avgDurationMs }}ms</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div v-if="data?.ws?.length" class="card">
       <h2 class="table-title">WebSocket Events</h2>
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th @click="wsSort.toggleSort('name')">Event{{ wsSort.sortIcon('name') }}</th>
-          <th @click="wsSort.toggleSort('count')">Calls{{ wsSort.sortIcon('count') }}</th>
-          <th @click="wsSort.toggleSort('errors')">Errors{{ wsSort.sortIcon('errors') }}</th>
-          <th @click="wsSort.toggleSort('errorRate')">Error Rate{{ wsSort.sortIcon('errorRate') }}</th>
-          <th @click="wsSort.toggleSort('avgDurationMs')">Avg Duration{{ wsSort.sortIcon('avgDurationMs') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="w in sortedWs" :key="w.name">
-          <td><code>{{ w.name }}</code></td>
-          <td>{{ w.count.toLocaleString() }}</td>
-          <td>{{ w.errors.toLocaleString() }}</td>
-          <td>
-                            <span
-                                :class="['badge', w.errorRate > 10 ? 'badge-danger' : w.errorRate > 2 ? 'badge-warn' : 'badge-ok']">
-                                {{ w.errorRate }}%
-                            </span>
-          </td>
-          <td>{{ w.avgDurationMs }}ms</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th @click="wsSort.toggleSort('name')">Event{{ wsSort.sortIcon('name') }}</th>
+            <th @click="wsSort.toggleSort('count')">Calls{{ wsSort.sortIcon('count') }}</th>
+            <th @click="wsSort.toggleSort('errors')">Errors{{ wsSort.sortIcon('errors') }}</th>
+            <th @click="wsSort.toggleSort('errorRate')">Error Rate{{ wsSort.sortIcon('errorRate') }}</th>
+            <th @click="wsSort.toggleSort('avgDurationMs')">Avg Duration{{ wsSort.sortIcon('avgDurationMs') }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="w in sortedWs" :key="w.name">
+            <td><code>{{ w.name }}</code></td>
+            <td>{{ w.count.toLocaleString() }}</td>
+            <td>{{ w.errors.toLocaleString() }}</td>
+            <td>
+                              <span
+                                  :class="['badge', w.errorRate > 10 ? 'badge-danger' : w.errorRate > 2 ? 'badge-warn' : 'badge-ok']">
+                                  {{ w.errorRate }}%
+                              </span>
+            </td>
+            <td>{{ w.avgDurationMs }}ms</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div v-if="pending" class="loading">Loading…</div>
