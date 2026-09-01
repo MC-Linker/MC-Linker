@@ -99,7 +99,7 @@ export default class ChatMonitor {
         return {
             throughput: { incoming: this.incoming, enqueued: this.enqueued, processed: this.processed },
             queue: { destinations: queueDestinations, items: queueItems },
-            rateLimits: Object.fromEntries(this.rateLimitsByCategory),
+            rateLimits: [...this.rateLimitsByCategory.entries()].map(([category, count]) => ({ category, count })),
             failures: { permission: this.permissionFailures, creation: this.creationFailures },
             operations: [...this.operations.entries()].map(([name, op]) => ({
                 name, count: op.count, rateLimits: op.rateLimits,

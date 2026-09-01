@@ -145,10 +145,11 @@ export default {
                 destinations: Number,
                 items: Number,
             },
-            rateLimits: {
-                type: Map,
-                of: Number,
-            },
+            rateLimits: [{
+                _id: false,
+                category: String,
+                count: Number,
+            }],
             failures: {
                 permission: Number,
                 creation: Number,

@@ -1,47 +1,47 @@
 {
-    "prefix": "$",
-    "commandsPath": "./commands",
-    "componentsPath": "./components",
-    "eventsPath": "./events",
-    "restRoutesPath": "./api/routes",
-    "wsEventsPath": "./api/events",
-    "initialDebugFilters": [],
-    "presence": {
-        "status": "online",
-        "activities": [
-            {
-                "name": "/help",
-                "type": "Listening"
-            }
-        ]
-    },
-    "analytics": {
-        "flushIntervalMs": 30000,
-        "maxErrorBufferSize": 100,
-        "snapshotIntervalMs": 3600000,
-        "cpuSampleIntervalMs": 10000
-    },
-    "pluginVersion": "4.3.2",
-    "supportServerInvite": "https://discord.gg/rX36kZUGNK",
-    "colors": {
-        "success": "#43611a",
-        "error": "#9e3436",
-        "warning": "#f1c40f",
-        "step": "#f88239",
-        "green": "#43611a",
-        "brown": "#915d2a"
-    },
-    "emojis": {
-        "command": "<:command:1432509023969611877>",
-        "command_block": "<:command_block:1432509024968118353>",
-        "death": "<:death:1432509025643401217>",
-        "join": "<:join:1432518915656781948>",
-        "leave": "<:leave:1432518916953079960>",
-        "no_access": "<:no_access:1432509026846900317>",
-        "redsuccess": "<:redsuccess:1432509028155789432>",
-        "step": "<:step:1432509028969349186>",
-        "success": "<:success:1432518917548544144>",
-        "warning": "<:warning:1432518918596984917>",
-        "error": "<:error:1433545543455604856>"
-    }
+  "prefix": "$",
+  "commandsPath": "./commands",
+  "componentsPath": "./components",
+  "eventsPath": "./events",
+  "restRoutesPath": "./api/routes",
+  "wsEventsPath": "./api/events",
+  "initialDebugFilters": [],
+  "presence": {
+    "status": "online",
+    "activities": [
+      {
+        "name": "/help",
+        "type": "Listening"
+      }
+    ]
+  },
+  "analytics": {
+    "flushIntervalMs": 30000,
+    "maxErrorBufferSize": 100,
+    "snapshotIntervalMs": 3600000,
+    "cpuSampleIntervalMs": 10000
+  },
+  "pluginVersion": "4.4.0",
+  "supportServerInvite": "https://discord.gg/rX36kZUGNK",
+  "colors": {
+    "success": "#43611a",
+    "error": "#9e3436",
+    "warning": "#f1c40f",
+    "step": "#f88239",
+    "green": "#43611a",
+    "brown": "#915d2a"
+  },
+  "emojis": {
+    "command": "<:command:1432509023969611877>",
+    "command_block": "<:command_block:1432509024968118353>",
+    "death": "<:death:1432509025643401217>",
+    "join": "<:join:1432518915656781948>",
+    "leave": "<:leave:1432518916953079960>",
+    "no_access": "<:no_access:1432509026846900317>",
+    "redsuccess": "<:redsuccess:1432509028155789432>",
+    "step": "<:step:1432509028969349186>",
+    "success": "<:success:1432518917548544144>",
+    "warning": "<:warning:1432518918596984917>",
+    "error": "<:error:1433545543455604856>"
+  }
 }

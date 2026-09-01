@@ -290,7 +290,7 @@ async function seed() {
                         destinations: rand(2, Math.round(12 * trafficMult) + 2),
                         items: rand(0, Math.round(30 * trafficMult)),
                     },
-                    rateLimits: rlMap,
+                    rateLimits: [...rlMap.entries()].map(([category, count]) => ({ category, count })),
                     failures: {
                         permission: Math.random() < 0.15 ? rand(1, 5) : 0,
                         creation: Math.random() < 0.08 ? rand(1, 3) : 0,

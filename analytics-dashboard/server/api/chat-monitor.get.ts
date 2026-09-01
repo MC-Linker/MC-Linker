@@ -33,13 +33,9 @@ export default defineEventHandler(async event => {
         totalProcessed += cm.throughput?.processed ?? 0;
 
         // Rate limits
-        const rl = cm.rateLimits;
-        if (rl) {
-            const entries = rl instanceof Map ? rl.entries() : Object.entries(rl);
-            for (const [cat, count] of entries) {
-                rateLimitTotals[cat] = (rateLimitTotals[cat] ?? 0) + (count as number);
-                totalRateLimits += count as number;
-            }
+        for (const {category, count} of cm.rateLimits ?? []) {
+            rateLimitTotals[category] = (rateLimitTotals[category] ?? 0) + count;
+            totalRateLimits += count;
         }
 
         // Failures
@@ -65,11 +61,7 @@ export default defineEventHandler(async event => {
         const f = cm?.failures;
 
         let rlTotal = 0;
-        const rl = cm?.rateLimits;
-        if (rl) {
-            const values = rl instanceof Map ? rl.values() : Object.values(rl);
-            for (const v of values) rlTotal += v as number;
-        }
+        for (const {count} of cm?.rateLimits ?? []) rlTotal += count;
 
         return {
             timestamp: s.timestamp,

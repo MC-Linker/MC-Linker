@@ -11,19 +11,18 @@ export function parseDateRange(query: Record<string, unknown>): { from: Date; to
     const toStr = query.to as string | undefined;
 
     const from = fromStr ? new Date(fromStr) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    if (isNaN(from.getTime())) throw createError({ status: 400, message: 'Invalid "from" date' });
+    if (isNaN(from.getTime())) throw createError({status: 400, message: 'Invalid "from" date'});
 
     let to: Date;
     if (toStr) {
         // Only append time suffix if the string looks like a plain date (no 'T')
         to = new Date(toStr.includes('T') ? toStr : toStr + 'T23:59:59.999Z');
-    }
-    else {
+    } else {
         to = new Date();
     }
-    if (isNaN(to.getTime())) throw createError({ status: 400, message: 'Invalid "to" date' });
+    if (isNaN(to.getTime())) throw createError({status: 400, message: 'Invalid "to" date'});
 
-    return { from, to };
+    return {from, to};
 }
 
 /**
@@ -39,8 +38,8 @@ const analyticsSnapshotSchema = new mongoose.Schema({
     _id: String,
     timestamp: Date,
     period: String,
-    guilds: { total: Number, joined: Number, left: Number },
-    users: { approximate: Number },
+    guilds: {total: Number, joined: Number, left: Number},
+    users: {approximate: Number},
     shards: [{
         _id: false,
         id: Number,
@@ -50,20 +49,20 @@ const analyticsSnapshotSchema = new mongoose.Schema({
         memoryMB: Number,
         cpuPercent: Number
     }],
-    commands: [{ _id: false, name: String, count: Number, errors: Number, avgDurationMs: Number }],
-    components: [{ _id: false, name: String, count: Number, errors: Number, avgDurationMs: Number }],
+    commands: [{_id: false, name: String, count: Number, errors: Number, avgDurationMs: Number}],
+    components: [{_id: false, name: String, count: Number, errors: Number, avgDurationMs: Number}],
     apiCalls: {
-        rest: [{ _id: false, name: String, count: Number, avgDurationMs: Number }],
-        ws: [{ _id: false, name: String, count: Number, errors: Number, avgDurationMs: Number }],
+        rest: [{_id: false, name: String, count: Number, avgDurationMs: Number}],
+        ws: [{_id: false, name: String, count: Number, errors: Number, avgDurationMs: Number}],
     },
-    machine: { cpuPercent: Number, memoryUsedMB: Number, memoryTotalMB: Number },
-    connections: { servers: Number, users: Number, online: Number },
+    machine: {cpuPercent: Number, memoryUsedMB: Number, memoryTotalMB: Number},
+    connections: {servers: Number, users: Number, online: Number},
     chatMonitor: {
-        throughput: { incoming: Number, enqueued: Number, processed: Number },
-        queue: { destinations: Number, items: Number },
-        rateLimits: { type: Map, of: Number },
-        failures: { permission: Number, creation: Number },
-        operations: [{ _id: false, name: String, count: Number, rateLimits: Number }],
+        throughput: {incoming: Number, enqueued: Number, processed: Number},
+        queue: {destinations: Number, items: Number},
+        rateLimits: [{_id: false, category: String, count: Number}],
+        failures: {permission: Number, creation: Number},
+        operations: [{_id: false, name: String, count: Number, rateLimits: Number}],
     },
 });
 
@@ -76,7 +75,7 @@ const serverConnectionSchema = new mongoose.Schema({
     online: Boolean,
     forceOnlineMode: Boolean,
     floodgatePrefix: String,
-    requiredRoleToJoin: { method: { type: String, enum: ['all', 'any'] }, roles: [String] },
+    requiredRoleToJoin: {method: {type: String, enum: ['all', 'any']}, roles: [String]},
     displayIp: String,
     port: Number,
     chatChannels: [{
@@ -87,27 +86,27 @@ const serverConnectionSchema = new mongoose.Schema({
     }],
     statChannels: [{
         _id: String,
-        type: { type: String, enum: ['member-counter', 'status'] },
-        names: { online: String, offline: String, members: String },
+        type: {type: String, enum: ['member-counter', 'status']},
+        names: {online: String, offline: String, members: String},
     }],
     syncedRoles: [{
         _id: String,
         name: String,
         isGroup: Boolean,
         players: [String],
-        direction: { type: String, enum: ['both', 'to_minecraft', 'to_discord'], default: 'both' },
+        direction: {type: String, enum: ['both', 'to_minecraft', 'to_discord'], default: 'both'},
     }],
-}, { strict: false });
+}, {strict: false});
 
 const analyticsErrorSchema = new mongoose.Schema({
-    timestamp: { type: Date, default: Date.now },
+    timestamp: {type: Date, default: Date.now},
     type: String,
     name: String,
     guildId: String,
     userId: String,
     shardId: Number,
-    error: { message: String, stack: String, code: String },
-    context: { type: Map, of: String },
+    error: {message: String, stack: String, code: String},
+    context: {type: Map, of: String},
 });
 
 /**
@@ -149,9 +148,8 @@ export async function listAnalyticsDatabases(): Promise<string[]> {
     try {
         await adminConn.asPromise();
         const adminDb = adminConn.db!.admin();
-        ({ databases } = await adminDb.listDatabases());
-    }
-    finally {
+        ({databases} = await adminDb.listDatabases());
+    } finally {
         await adminConn.close();
     }
 
@@ -165,7 +163,7 @@ export async function listAnalyticsDatabases(): Promise<string[]> {
     for (const name of names) {
         const conn = getConnection(name);
         await conn.asPromise();
-        const collections = await conn.db!.listCollections({ name: 'analyticssnapshots' }).toArray();
+        const collections = await conn.db!.listCollections({name: 'analyticssnapshots'}).toArray();
         if (collections.length > 0) results.push(name);
         else {
             connections.delete(name);
