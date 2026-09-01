@@ -64,6 +64,16 @@
                     }
                 ]
             }
+        },
+        "step": {
+            "loading_assets": {
+                "embeds": [
+                    {
+                        "title": "Preparing Minecraft Assets",
+                        "description": "%emoji_step% *Downloading Minecraft %version% assets — this only happens once per version, hang tight...*"
+                    }
+                ]
+            }
         }
     },
     "main": {
