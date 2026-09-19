@@ -175,7 +175,7 @@ export default class Advancements extends Command {
             files: [advancementsAttach],
         });
 
-        const paginationPages = await this.getAdvancementPages(advancementDataList, user.username, advancementsEmbed, advancementsAttach);
+        const paginationPages = await this.getAdvancementPages(advancementDataList, user.username, advancementsEmbed, advancementsAttach, mcData);
         const pagination = new Pagination(client, interaction, paginationPages, {
             showStartPageOnce: true,
             timeout: 60000 * 5, // 5 minutes
@@ -200,7 +200,17 @@ export default class Advancements extends Command {
         return toNestedObject(allAdvancements[category].find(a => a.value === 'root'));
     }
 
-    async getAdvancementPages(advancementDataList, username, advancementsEmbed, advancementsAttach) {
+    /**
+     * Builds the detail pages shown behind the rendered advancement tree.
+     * @param {Object[]} advancementDataList - The advancements drawn in the tree.
+     * @param {string} username - The player's username.
+     * @param {Discord.EmbedBuilder} advancementsEmbed - The summary embed shown on every page.
+     * @param {Discord.AttachmentBuilder} advancementsAttach - The rendered advancement tree image.
+     * @param {import('minecraft-data').IndexedData} mcData - Minecraft data for the server version.
+     * @returns {Promise<Object>} Pagination pages keyed by button custom id.
+     * @throws {Error} If a page component or player avatar cannot be built.
+     */
+    async getAdvancementPages(advancementDataList, username, advancementsEmbed, advancementsAttach, mcData) {
         const paginationPages = {};
 
         for(const advancement of advancementDataList) {
