@@ -280,6 +280,14 @@ export default class ChatQueueProcessor {
         else {
             const payload = buildChatPayload(items);
             if(payload.consumed <= 0) return { consumed: 1 };
+            if(!payload.content.trim()) {
+                logger.debug({
+                    guildId: discordChannel.guildId,
+                    channelId,
+                    consumed: payload.consumed
+                }, 'Skipping empty chat payload');
+                return { consumed: payload.consumed, batchMode: false };
+            }
 
             logger.debug({ guildId: discordChannel.guildId }, `Sending chat payload to channel ${channelId} (consumed=${payload.consumed}, length=${payload.content.length})`);
             await this.monitor.track('webhook.send', () => webhook.send({
