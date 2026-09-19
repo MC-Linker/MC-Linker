@@ -27,8 +27,12 @@ export function isFloodgateUUID(uuid) {
  */
 export async function fetchUUID(username) {
     try {
-        const data = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`)
-            .then(data => data.json());
+        const response = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
+        if(!response.ok) return undefined;
+
+        const body = await response.text();
+        if(!body.trim()) return undefined;
+        const data = JSON.parse(body);
 
         if(!data.id) return undefined;
         return addHyphen(data.id);
@@ -45,8 +49,12 @@ export async function fetchUUID(username) {
  */
 export async function fetchUsername(uuid) {
     try {
-        const data = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`)
-            .then(data => data.json());
+        const response = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`);
+        if(!response.ok) return undefined;
+
+        const body = await response.text();
+        if(!body.trim()) return undefined;
+        const data = JSON.parse(body);
 
         return data?.name;
     }
@@ -62,8 +70,12 @@ export async function fetchUsername(uuid) {
  */
 export async function fetchFloodgateUUID(username) {
     try {
-        const data = await fetch(`https://api.geysermc.org/v2/xbox/xuid/${username}`)
-            .then(data => data.json());
+        const response = await fetch(`https://api.geysermc.org/v2/xbox/xuid/${username}`);
+        if(!response.ok) return undefined;
+
+        const body = await response.text();
+        if(!body.trim()) return undefined;
+        const data = JSON.parse(body);
 
         if(!data?.xuid) return undefined;
         /** @type {number} */

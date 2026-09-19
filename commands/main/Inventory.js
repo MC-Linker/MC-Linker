@@ -31,6 +31,33 @@ export default class Inventory extends Command {
     }
 
     /**
+     * Fetches a player's positioned skin image, returning null if the skin service fails.
+     * @private
+     * @param {string} uuidOrUsername - The player UUID or username used by the skin service.
+     * @param {import('pino').Logger} logger - The command logger.
+     * @returns {Promise<Canvas.Image|null>} The skin image, or null if the request fails.
+     */
+    async getSkin(uuidOrUsername, logger) {
+        const url = `https://skinrender.dev/render/${encodeURIComponent(uuidOrUsername)}/body?width=195&height=393&pitch=10&yaw=5&headYaw=10&default=none`;
+
+        try {
+            const response = await fetch(url);
+            if(!response.ok) throw new Error(`GET ${url} → ${response.status}`);
+
+            const contentType = response.headers.get('content-type');
+            if(!contentType?.startsWith('image/png')) throw new Error(`GET ${url} returned ${contentType ?? 'no content type'}`);
+
+            const image = Buffer.from(await response.arrayBuffer());
+            if(!image.length) throw new Error(`GET ${url} returned an empty image`);
+            return await Canvas.loadImage(image);
+        }
+        catch(err) {
+            logger.warn({ err, player: uuidOrUsername }, 'Could not load player skin; leaving the player area blank');
+            return null;
+        }
+    }
+
+    /**
      * @inheritdoc
      * @param interaction
      * @param client
@@ -71,17 +98,8 @@ export default class Inventory extends Command {
             logger,
         });
 
-        async function getSkin(uuidOrUsername) {
-            const skinJson = await fetch(`https://minecraft-api.com/api/skins/${uuidOrUsername}/body/10.5/10/json`);
-            const { skin } = await skinJson.json();
-            const image = await Canvas.loadImage(`data:image/png;base64, ${skin}`);
-            //check dimensions of skinImg
-            if(image.width !== 195 || image.height !== 393) return await getSkin('MHF_Steve');
-            return image;
-        }
-
-        const skinImg = await getSkin(server.online ? user.uuid : user.username);
-        ctx.drawImage(skinImg, 70, 20, 65, 131);
+        const skinImg = await this.getSkin(server.online ? user.uuid : user.username, logger);
+        if(skinImg) ctx.drawImage(skinImg, 70, 20, 65, 131);
 
         const invAttach = new Discord.AttachmentBuilder(
             await invCanvas.toBuffer('png'),
