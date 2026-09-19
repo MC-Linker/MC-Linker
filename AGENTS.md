@@ -106,6 +106,7 @@ MC-Linker/
 │   │   ├── Protocol.js      # Base class + ProtocolError codes
 │   │   ├── ServerFiles.js   # Server-bound access to every minecraft file the bot downloads
 │   │   └── WebSocketProtocol.js  # Socket.io communication (primary)
+│   ├── render/              # Version-aware Minecraft asset download, item rendering and container compositing
 │   ├── ftp/                 # FTP/SFTP client implementations
 │   └── helpers/             # UI helpers (Pagination, Wizard, DefaultButton)
 │

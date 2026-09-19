@@ -1,4 +1,5 @@
 import Discord, { time } from 'discord.js';
+import path from 'node:path';
 import { getComponent, getEmbed, ph, setCachedFooter } from '../../utilities/messages.js';
 import * as utils from '../../utilities/utils.js';
 import { getMinecraftData } from '../../utilities/utils.js';
@@ -10,6 +11,7 @@ import allAdvancements from '../../resources/data/advancements.json' with { type
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import ItemRenderer from '../../structures/render/ItemRenderer.js';
+import MinecraftAssetsManager from '../../structures/render/MinecraftAssetsManager.js';
 
 export default class Advancements extends Command {
 
@@ -74,7 +76,11 @@ export default class Advancements extends Command {
         ctx.imageSmoothingEnabled = false;
 
         // Tile background
-        const background = await Canvas.loadImage('./resources/images/advancements/stone.png');
+        const assets = await MinecraftAssetsManager.getAssets(server.version, interaction);
+        const guiTextures = path.join(assets, 'assets', 'minecraft', 'textures', 'gui');
+        const advancementTextures = path.join(guiTextures, 'advancements');
+        const backgroundPath = path.join(advancementTextures, 'backgrounds', 'stone.png');
+        const background = await Canvas.loadImage(backgroundPath);
         ctx.scale(2, 2);
         ctx.fillStyle = ctx.createPattern(background, 'repeat');
         ctx.fillRect(0, 0, advancementCanvas.width, advancementCanvas.height);

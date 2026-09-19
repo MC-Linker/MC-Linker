@@ -145,7 +145,14 @@ export default class Inventory extends Command {
         ));
     }
 
-
+    /**
+     * Adds details from modern item components or legacy item NBT to an item embed.
+     * @param {Discord.EmbedBuilder} embed - The item embed to extend.
+     * @param {?object} tag - Modern components or legacy tag data.
+     * @param {?object} itemStats - Minecraft item metadata.
+     * @param {import('minecraft-data').IndexedData} mcData - Minecraft data for the server version.
+     * @returns {boolean} Whether any detail fields were added.
+     */
     addInfo(embed, tag, itemStats, mcData) {
         let addedInfo = false;
 
@@ -197,11 +204,12 @@ export default class Inventory extends Command {
         }
 
         //Add enchantments info
-        if(tag['minecraft:enchantments'] || tag['minecraft:stored_enchantments'] || tag.Enchantments || tag.StoredEnchantments) {
-            const enchantments = tag['minecraft:enchantments'] ?? tag['minecraft:stored_enchantments']?.levels ?? tag.Enchantments ?? tag.StoredEnchantments;
+        const componentEnchantments = tag['minecraft:enchantments'] ?? tag['minecraft:stored_enchantments'];
+        const enchantments = componentEnchantments?.levels ?? componentEnchantments ?? tag.Enchantments ?? tag.StoredEnchantments;
+        if(enchantments) {
 
             let formattedEnchantments;
-            if(tag['minecraft:enchantments'] || tag['minecraft:stored_enchantments']) {
+            if(componentEnchantments) {
                 formattedEnchantments = Object.entries(enchantments).map(([id, lvl]) => {
                     return `- ${mcData.enchantmentsByName[id.split(':').pop()]?.displayName ?? id} ${this.romanNumber(lvl)}`;
                 }).join('\n');
@@ -212,12 +220,14 @@ export default class Inventory extends Command {
                 }).join('\n');
             }
 
-            embed.addFields(addPh(
-                keys.commands.inventory.success.item_enchantments.embeds[0].fields,
-                { enchantments: formattedEnchantments },
-            ));
+            if(formattedEnchantments) {
+                embed.addFields(addPh(
+                    keys.commands.inventory.success.item_enchantments.embeds[0].fields,
+                    { enchantments: formattedEnchantments },
+                ));
 
-            addedInfo = true;
+                addedInfo = true;
+            }
         }
 
         if(tag['minecraft:potion_contents'] || tag?.Potion) {
