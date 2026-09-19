@@ -129,11 +129,11 @@ export default class Inventory extends Command {
      * @param {number} index - The item's index within its container.
      */
     pushInvButton(buttons, maxSlot, doUseArmorSlots, mcData, item, index) {
-        if(item.slot > maxSlot) return;
+        if((item.slot ?? item.Slot) > maxSlot) return;
 
         //Push button for each item in the inventory
         const itemId = item.id.split(':').pop();
-        const slot = item.slot;
+        const slot = item.slot ?? item.Slot;
         const armorSlotNames = this._armorSlotNames;
         buttons.push(getComponent(
             keys.commands.inventory.success.item_button,
@@ -144,6 +144,7 @@ export default class Inventory extends Command {
             },
         ));
     }
+
 
     addInfo(embed, tag, itemStats, mcData) {
         let addedInfo = false;
@@ -316,7 +317,7 @@ export default class Inventory extends Command {
             }
 
             const formattedId = item.id.split(':').pop();
-            const slot = item.slot;
+            const slot = item.slot ?? item.Slot;
             const itemStats = mcData.itemsByName[formattedId];
 
             const itemEmbed = getEmbed(
@@ -339,10 +340,10 @@ export default class Inventory extends Command {
 
                 //Increase slot numbers by 18 in inventory
                 const mappedInvItems = inventory.map(item => {
-                    if(armorSlotCoords[item.slot]) return; //Exclude armor slots
+                    if(armorSlotCoords[item.slot ?? item.Slot]) return; //Exclude armor slots
                     return {
                         ...item,
-                        slot: item.slot + 18,
+                        slot: (item.slot ?? item.Slot) + 18,
                     };
                 }).filter(i => i); //Remove undefined items
 
@@ -351,7 +352,7 @@ export default class Inventory extends Command {
                     return {
                         ...(item.item ?? item),
                         parentIndex: buttonId.split(/slot_?/).pop(),
-                        slot: item.Slot ?? item.slot,
+                        slot: item.slot ?? item.Slot,
                         count: item.item?.count ?? item.Count,
                     };
                 });
