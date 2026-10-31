@@ -111,9 +111,6 @@ export default class MCLinker extends Discord.Client {
             makeCache: Options.cacheWithLimits({
                 // Don’t cache any messages
                 MessageManager: 0,
-                // Limit number of members cached per guild
-                GuildMemberManager: 100,
-                UserManager: 100,
                 ReactionManager: 0,
                 PresenceManager: 0,
             }),

@@ -345,6 +345,11 @@ to build them. When dynamic content needs to be injected, use `%placeholder%` in
 - Never specify `ActionRow` objects directly in language keys — `getActionRows()` wraps buttons/selects automatically.
 - Never write inline (single-line) JSON objects in language files; always expand every object onto its own lines.
 
+**Member Cache:** The guild member cache is intentionally uncapped (no `GuildMemberManager` limit in `MCLinker.js`), so
+role sync can rely on `role.members` after `fetchMembersIfCacheDiffers()`. Don't reintroduce a `GuildMemberManager`
+limit — it evicts `guild.members.me` and makes `role.members` incomplete. `fetchMembersIfCacheDiffers()` can throw
+`GatewayRateLimitError` and `DiscordjsErrorCodes.GuildMembersTimeout`; handle both.
+
 **Connection Editing:** Always use `connection.edit(data)` — it persists to MongoDB and broadcasts changes to all
 shards.
 
@@ -605,14 +610,14 @@ collections, and provides a live log viewer backed by the bot's pino log files. 
 | Guilds             | `/guilds`       | `guilds.get.ts`       | Guild join/leave trends                                                                           |
 | Server Connections | `/servers`      | `servers.get.ts`      | Interactive pie chart with drill-down (feature adoption → breakdowns), guild search with raw JSON |
 | Chat Monitor       | `/chat-monitor` | `chat-monitor.get.ts` | Chat pipeline throughput, queue depth, rate limits by category, operations table                  |
-| Errors             | `/errors`       | `errors.get.ts`       | Error log table with type, name, guild, timestamp                                                 |
+| Errors             | `/errors`       | `errors.get.ts`       | Error log table with type, name, guild, timestamp, failed request and context per occurrence      |
 | Logs               | `/logs`         | `logs/*.get.ts`       | Live tail + historical viewer for pino JSON log files with filtering and JSON drill-down          |
 
 ### Authentication
 
 Single shared password (`NUXT_DASHBOARD_PASSWORD`) plus a database choice, exchanged by
-`server/api/auth/login.post.ts` for an HS256 JWT stored in the `session` cookie
-(`server/utils/auth.ts`). The cookie is deliberately **not** `httpOnly` — the global route
+`server/api/auth/login.post.ts` for an HS256 JWT stored in the `session` cookie (`server/utils/auth.ts`). The cookie is
+deliberately **not** `httpOnly` — the global route
 middleware (`middleware/auth.global.ts`) reads it client-side; the JWT is signed and only carries
 the db name. Server routes call `verifySession(event)`.
 
@@ -676,6 +681,10 @@ contextual logger) and buffers it for the analytics error collection.
   `client` access. Safe no-op before analytics is initialised.
 - **Logger param**: always pass the contextual `logger` (module-level or method parameter) as the last argument to
   preserve the correct `feature` tag and any bound fields.
+- **Request fields**: for errors that carry a failed request (`DiscordAPIError`, `HTTPError`), `trackError` stores
+  `error.method`, `error.path` (no origin, api version or query; path segments of 40+ token characters, i.e.
+  webhook/interaction tokens, redacted) and `error.status`
+  automatically — don't pass them as `context`.
 - **Exceptions**: `AnalyticsCollector.js` flush errors and `AnalyticsAggregator.js` snapshot errors use `logger.error`
   directly to avoid infinite loops.
 
@@ -683,6 +692,13 @@ When adding a new `catch` block or error path anywhere in the bot, use `trackErr
 `logger.warn`. Never use `logger.warn` or `logger.error` directly for error handling — always route through `trackError`
 so errors are both logged and buffered for the analytics error collection. The only exceptions are the self-referential
 cases listed above.
+
+**Expected Discord API errors** (`UnknownMember`, `UnknownMessage`, `UnknownWebhook`, `InvalidWebhookToken`, and
+user-caused `*_RATE_LIMIT` form errors in `Customize`) may be `logger.debug`-logged instead of tracked, using
+`isDiscordError(err, ...codes)` from `utilities/discord-utils.js`. Every other error at the same call site must still go
+through `trackError`. `MissingAccess`/`MissingPermissions` in `ChatQueueProcessor` mean the bot lost access to a chat
+channel: the chat channel is removed (the owner re-adds it to see the missing permissions) and the error is
+debug-logged.
 
 ## Environment & Deployment
 
