@@ -1,0 +1,25 @@
+# Tells MC-Linker/guide that this repo got a push, so the guide auto-update can check it.
+# Needs the secret GUIDE_DISPATCH_TOKEN: a fine-grained token with "Contents: read and write"
+# on MC-Linker/guide. Without it this workflow skips quietly.
+name: Notify guide
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send repository_dispatch to the guide
+        env:
+          GH_TOKEN: ${{ secrets.GUIDE_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::GUIDE_DISPATCH_TOKEN is not set, so the guide was not notified."
+            exit 0
+          fi
+          gh api repos/MC-Linker/guide/dispatches -f event_type=source-pushed \
+            -F "client_payload[repo]=${{ github.repository }}" \
+            -F "client_payload[before]=${{ github.event.before }}" \
+            -F "client_payload[after]=${{ github.event.after }}"
