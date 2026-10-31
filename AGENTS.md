@@ -199,6 +199,16 @@ Minecraft Plugin event
         → Discord API (update channels/roles/messages)
 ```
 
+**`chat` fast path (shard 0):** `chat` is by far the busiest event, and shard 0 hosts the Socket.io API, so
+`wsEventHandler` handles it specially to keep shard 0's CPU low:
+
+- **Early ack:** `chat` sets `ackEarly: true` in its `WSEvent` options, so `wsEventHandler` acks
+  (`{ status: 'success' }`) immediately instead of waiting for the guild shard; errors still go to
+  `analytics.trackError`. Events without `ackEarly` await the result, then ack. Newer plugins send `chat` without an
+  ack, so `callback` may be `undefined` (use `callback?.()`).
+- **Admin UI:** the socket.io admin UI (`instrument`) is opt-in via `IO_ADMIN_UI`: `true` enables it with aggregated
+  data only (`mode: 'production'`), `debug` also streams every event to the UI (`mode: 'development'`, expensive).
+
 ### Adding New Features
 
 #### New Command
@@ -729,6 +739,9 @@ DATABASE_URL=mongodb://localhost:27017/mc-linker
 BOT_PORT=3000                   # Port for the bot's API server
 COOKIE_SECRET=                  # For secure cookies
 LINKED_ROLES_REDIRECT_URI=      # http://your_ip/linked-role/callback
+IO_USERNAME=                    # socket.io admin dashboard login
+IO_PASSWORD=
+IO_ADMIN_UI=false               # false = off (default), true = socket.io admin dashboard, debug = dashboard with every event
 
 # Microsoft / Minecraft Integration
 MICROSOFT_EMAIL=

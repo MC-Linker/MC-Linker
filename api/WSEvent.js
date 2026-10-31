@@ -11,6 +11,7 @@ export default class WSEvent {
      * @property {string} event - The websocket event of this route.
      * @property {import('rate-limiter-flexible').RateLimiterMemory|((data: Object) => ?RateLimiterMemory)} rateLimiter - The rate limiter for this event or a function that returns a rate limiter based on the request data.
      * @property {boolean} [dispatchToGuildShard=true] - Whether this event should be dispatched to the shard owning the guild. Set to false for events that must run on shard 0 (e.g. VerifyUser).
+     * @property {boolean} [ackEarly=false] - Whether to ack `{ status: 'success' }` right away instead of waiting for the event to finish and acking its response.
      */
 
     /**
@@ -34,6 +35,12 @@ export default class WSEvent {
          * @type {boolean}
          */
         this.dispatchToGuildShard = options.dispatchToGuildShard ?? true;
+
+        /**
+         * Whether to ack right away instead of after the event finished.
+         * @type {boolean}
+         */
+        this.ackEarly = options.ackEarly ?? false;
     }
 
     /**

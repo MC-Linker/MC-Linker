@@ -292,14 +292,20 @@ export default class MCLinkerAPI extends EventEmitter {
 
         this.websocket.on('connection', this.wsHandleConnection.bind(this));
 
-        instrument(this.websocket, {
-            auth: {
-                type: 'basic',
-                username: process.env.IO_USERNAME,
-                password: process.env.IO_PASSWORD,
-            },
-            readonly: true,
-        });
+        // Opt-in: the admin UI adds noticeable overhead on shard 0.
+        // 'true' sends only aggregated data to the UI, 'debug' streams every event (much more expensive).
+        const adminUi = process.env.IO_ADMIN_UI;
+        if(adminUi === 'true' || adminUi === 'debug') {
+            instrument(this.websocket, {
+                auth: {
+                    type: 'basic',
+                    username: process.env.IO_USERNAME,
+                    password: process.env.IO_PASSWORD,
+                },
+                readonly: true,
+                mode: adminUi === 'debug' ? 'development' : 'production',
+            });
+        }
 
         this.websocket.engine.on('connection_error', err => {
             // Code 1 (session ID unknown) is a stale client session, e.g. after a bot restart
@@ -526,25 +532,40 @@ export default class MCLinkerAPI extends EventEmitter {
         }
 
         const startTime = Date.now();
+
+        // Events with ackEarly are acked right away, so shard 0 doesn't wait for the guild shard
+        if(route.ackEarly) callback?.({ status: 'success' });
+
         try {
             let response;
             if(route.dispatchToGuildShard) {
-                response = await evalOnGuildShard(this.client, server.id, async (c, { eventName, data, serverId }) => {
-                    const server = c.serverConnections.cache.get(serverId);
-                    if(!server) return null;
-                    return c.api.wsEvents.get(eventName).execute(data, server, c);
-                }, { eventName, data, serverId: server.id });
+                response = await this._dispatchToGuildShard(eventName, data, server.id);
             }
             else response = await route.execute(data, server, this.client);
             socketLogger.debug({ response, guildId: server.id }, `Response for event ${route.event}`);
-            callback?.(response);
+            if(!route.ackEarly) callback?.(response);
             this.client.analytics.trackApiCall('ws', eventName, server.id, Date.now() - startTime);
         }
         catch(err) {
             this.client.analytics.trackApiCall('ws', eventName, server.id, Date.now() - startTime, false);
             this.client.analytics.trackError('api_ws', eventName, server.id, null, err, null, socketLogger.child({ guildId: server.id }, { track: false }));
-            callback?.({ status: 'error', error: ProtocolError.UNKNOWN });
+            if(!route.ackEarly) callback?.({ status: 'error', error: ProtocolError.UNKNOWN });
         }
+    }
+
+    /**
+     * Runs a WS event on the shard that hosts the given guild.
+     * @param {string} eventName - The name of the event.
+     * @param {Object} data - The parsed event data.
+     * @param {string} serverId - The id of the server-connection.
+     * @returns {Promise<?Object>} The event's response.
+     */
+    _dispatchToGuildShard(eventName, data, serverId) {
+        return evalOnGuildShard(this.client, serverId, async (c, { eventName, data, serverId }) => {
+            const server = c.serverConnections.cache.get(serverId);
+            if(!server) return null;
+            return c.api.wsEvents.get(eventName).execute(data, server, c);
+        }, { eventName, data, serverId });
     }
 
     /**

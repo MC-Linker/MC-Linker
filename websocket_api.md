@@ -96,6 +96,11 @@ Sends a game event (chat message, death, advancement, etc.) to Discord.
 }
 ```
 
+**Response (Callback):** Optional. The plugin may send `chat` without an ack callback and the bot doesn't require one.
+When a callback is provided, the bot acknowledges immediately with `{ "status": "success" }`, before the message has
+been relayed to Discord.
+Plugins should still use an ack for the final `close` event if they need delivery confirmation before shutting down.
+
 ### `dm`
 
 Sent by the plugin when a player uses `/dm` to message a linked Discord user.
