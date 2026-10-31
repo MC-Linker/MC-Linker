@@ -3024,7 +3024,7 @@
       "long_description": "Customize the bot's appearance in your server: nickname, bio, avatar and banner.",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
       "contexts": [
         "Guild"
@@ -3533,9 +3533,9 @@
       "name": "command",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
-      "long_description": "Execute any command on the **Minecraft-server**. Can only be executed by admins.",
+      "long_description": "Execute any command on the **Minecraft-server**. Can only be executed by members with the `Manage Server` permission.",
       "description": "Execute any command on the Minecraft-server.",
       "contexts": [
         "Guild"
@@ -3554,9 +3554,9 @@
       "name": "deop",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
-      "long_description": "Deop players on the **Minecraft-server**. Can only be used by admins.",
+      "long_description": "Deop players on the **Minecraft-server**. Can only be used by members with the `Manage Server` permission.",
       "description": "Deop players on the Minecraft-server.",
       "contexts": [
         "Guild"
@@ -3574,9 +3574,9 @@
       "name": "gamemode",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
-      "long_description": "Change the gamemode of a player on the **Minecraft server**. Can only be used by admins.",
+      "long_description": "Change the gamemode of a player on the **Minecraft server**. Can only be used by members with the `Manage Server` permission.",
       "description": "Change the gamemode of a player on the Minecraft-server.",
       "contexts": [
         "Guild"
@@ -3644,9 +3644,9 @@
       "name": "op",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
-      "long_description": "OP players on the **Minecraft server**. Can only be used by admins.",
+      "long_description": "OP players on the **Minecraft server**. Can only be used by members with the `Manage Server` permission.",
       "description": "OP players on the Minecraft server.",
       "contexts": [
         "Guild"
@@ -3820,7 +3820,7 @@
       "name": "statchannel",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
       "long_description": "Manage statchannels in the server. Use online and offline templates with placeholders like %count%, %ip%, %time%, %version% to display live server info in a channel name or topic.",
       "description": "Manage statchannels in the server.",
@@ -3893,7 +3893,7 @@
       "name": "chatchannel",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
       "long_description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
       "description": "Manage channels in which the bot will send Minecraft chat messages and logs.",
@@ -3997,7 +3997,7 @@
       "name": "connect",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
       "long_description": "Connect your Minecraft Java-Edition server with the bot.\n**You'll first have to download and install the plugin from [SpigotMC](https://www.spigotmc.org/resources/discord-linker.98749/).**",
       "description": "Connect your Minecraft server with the bot.",
@@ -4043,7 +4043,7 @@
       "name": "disconnect",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
       "long_description": "Disconnect your Minecraft Java-Edition server from the bot and delete all saved credentials. To connect again, use `/connect`.",
       "description": "Disconnect your Minecraft server from the bot.",
@@ -4055,7 +4055,7 @@
       "name": "rolesync",
       "type": "ChatInput",
       "default_member_permissions": [
-        "Administrator"
+        "ManageGuild"
       ],
       "long_description": "Manage roles that will sync their members to a Minecraft team, LuckPerms group, or vault-supported group.",
       "description": "Manage roles that will sync their members to a Minecraft team or group (LuckPerms/Vault).",
