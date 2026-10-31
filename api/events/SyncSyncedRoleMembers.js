@@ -1,7 +1,7 @@
 import WSEvent from '../WSEvent.js';
-import { GatewayRateLimitError } from 'discord.js';
+import { DiscordjsErrorCodes, GatewayRateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
-import { fetchMembersIfCacheDiffers } from '../../utilities/utils.js';
+import { fetchMembersIfCacheDiffers, isDiscordError } from '../../utilities/utils.js';
 
 
 export default class SyncSyncedRoleMembers extends WSEvent {
@@ -58,6 +58,13 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                 };
             }
             client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
+            if(err.code === DiscordjsErrorCodes.GuildMembersTimeout) {
+                return {
+                    status: 'error',
+                    error: ProtocolError.RATE_LIMITED,
+                    data: { retryMs: 60000 },
+                };
+            }
             return { status: 'error', error: ProtocolError.UNKNOWN };
         }
 
@@ -73,7 +80,11 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
-                        client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, memberId, err, null, logger);
+                        if(isDiscordError(err, RESTJSONErrorCodes.UnknownMember)) logger.debug({
+                            guildId: server.id,
+                            userId: memberId
+                        }, 'Member left the guild, skipping');
+                        else client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, memberId, err, null, logger);
                     }
                 }
             }
@@ -92,6 +103,9 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                     const conn = client.userConnections.findByUUID(uuid, server);
                     if(conn) {
                         try {
+                            // Fetch first so departed members don't cause a pointless edit
+                            const member = await guild.members.fetch(conn.discordId);
+
                             if(!syncedRole.players.includes(uuid)) {
                                 // Add to synced role's player list
                                 syncedRole.players.push(uuid);
@@ -100,18 +114,14 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                                 await server.edit({ syncedRoles: server.syncedRoles });
                             }
 
-                            const member = await guild.members.fetch(conn.discordId);
                             await member.roles.add(discordRole);
                         }
                         catch(err) {
-                            client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
-
-                            // Revert players list change if role grant fails
-                            if(syncedRole.players.includes(uuid)) {
-                                syncedRole.players = syncedRole.players.filter(p => p !== uuid);
-                                server.syncedRoles[roleIndex] = syncedRole;
-                                await server.edit({ syncedRoles: server.syncedRoles });
-                            }
+                            if(isDiscordError(err, RESTJSONErrorCodes.UnknownMember)) logger.debug({
+                                guildId: server.id,
+                                userId: conn.discordId
+                            }, 'Member left the guild, skipping');
+                            else client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
                         }
                     }
                 }
@@ -139,14 +149,11 @@ export default class SyncSyncedRoleMembers extends WSEvent {
                         await member.roles.remove(discordRole);
                     }
                     catch(err) {
-                        client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
-
-                        // Revert players list change if role revoke fails
-                        if(!syncedRole.players.includes(uuid)) {
-                            syncedRole.players.push(uuid);
-                            server.syncedRoles[roleIndex] = syncedRole;
-                            await server.edit({ syncedRoles: server.syncedRoles });
-                        }
+                        if(isDiscordError(err, RESTJSONErrorCodes.UnknownMember)) logger.debug({
+                            guildId: server.id,
+                            userId: member.id
+                        }, 'Member left the guild, skipping');
+                        else client.analytics.trackError('api_ws', 'SyncSyncedRoleMembers', server.id, null, err, null, logger);
                     }
                 }
                 else {

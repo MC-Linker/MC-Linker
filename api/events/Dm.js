@@ -6,6 +6,7 @@ import {
     cleanEmojis,
     DefaultCollectorTimeout,
     findMemberByUsername,
+    isDiscordError,
     MaxMessageContentLength,
     UUIDRegex,
 } from '../../utilities/utils.js';
@@ -30,13 +31,16 @@ export default class Dm extends WSEvent {
 
     /**
      * Returns whether a Discord fetch error simply means "not found/invalid input".
-     * @param {Error & { code?: number|string }} err
+     * @param {unknown} err
      * @returns {boolean}
      */
     static isLookupMiss(err) {
-        return err?.code === RESTJSONErrorCodes.UnknownUser
-            || err?.code === RESTJSONErrorCodes.UnknownMember
-            || err?.code === RESTJSONErrorCodes.InvalidFormBodyOrContentType;
+        return isDiscordError(
+            err,
+            RESTJSONErrorCodes.UnknownUser,
+            RESTJSONErrorCodes.UnknownMember,
+            RESTJSONErrorCodes.InvalidFormBodyOrContentType,
+        );
     }
 
     /**
@@ -163,11 +167,18 @@ export default class Dm extends WSEvent {
         });
 
         collector.on('end', async () => {
-            await msg.editTl(keys.api.plugin.success.dm.message, {
-                username: data.player,
-                message,
-                footer: addPh(keys.api.plugin.success.dm.footer_expired, { ip: server.displayIp }),
-            });
+            try {
+                await msg.editTl(keys.api.plugin.success.dm.message, {
+                    username: data.player,
+                    message,
+                    footer: addPh(keys.api.plugin.success.dm.footer_expired, { ip: server.displayIp }),
+                });
+            }
+            catch(err) {
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownMessage, RESTJSONErrorCodes.UnknownWebhook, RESTJSONErrorCodes.InvalidWebhookToken))
+                    logger.debug({ guildId: server.id, userId: member.id }, 'Message or interaction gone, skipping');
+                else client.analytics.trackError('unhandled', 'Dm.collectorEnd', server.id, member.id, err, null, logger);
+            }
         });
 
         return { status: 'success' };

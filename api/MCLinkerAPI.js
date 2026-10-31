@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import { createHash, evalOnGuildShard } from '../utilities/utils.js';
+import { createHash, evalOnGuildShard, isDiscordError } from '../utilities/utils.js';
 import { getEmbed } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { EventEmitter } from 'node:events';
@@ -7,7 +7,7 @@ import fastifyCookie from '@fastify/cookie';
 import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
-import { Collection } from 'discord.js';
+import { Collection, RESTJSONErrorCodes } from 'discord.js';
 import rootLogger from '../utilities/logger/Logger.js';
 import features from '../utilities/logger/features.js';
 import path from 'path';
@@ -302,8 +302,13 @@ export default class MCLinkerAPI extends EventEmitter {
         });
 
         this.websocket.engine.on('connection_error', err => {
+            // Code 1 (session ID unknown) is a stale client session, e.g. after a bot restart
+            if(err?.code === 1) socketLogger.debug({ sid: err?.context?.sid }, 'Socket.io session ID unknown, skipping');
             // Track only the useful fields to avoid log overloading
-            this.client.analytics.trackError('api_ws', 'engine.connection_error', null, null, { message: err?.message, code: err?.code }, { sid: err?.context?.sid }, socketLogger);
+            else this.client.analytics.trackError('api_ws', 'engine.connection_error', null, null, {
+                message: err?.message,
+                code: err?.code
+            }, { sid: err?.context?.sid }, socketLogger);
         });
 
         this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
@@ -625,7 +630,9 @@ export default class MCLinkerAPI extends EventEmitter {
         const syncedRole = server.syncedRoles[roleIndex];
 
         // Always update the players list to reflect MC-side reality
-        if(addOrRemove === 'add') syncedRole.players.push(uuid);
+        if(addOrRemove === 'add') {
+            if(!syncedRole.players.includes(uuid)) syncedRole.players.push(uuid);
+        }
         else if(addOrRemove === 'remove') {
             const playerIndex = syncedRole.players.indexOf(uuid);
             if(playerIndex !== -1) syncedRole.players.splice(playerIndex, 1);
@@ -641,7 +648,9 @@ export default class MCLinkerAPI extends EventEmitter {
             else if(addOrRemove === 'remove') await member.roles.remove(role);
         }
         catch(err) {
-            this.client.analytics.trackError('api_ws', 'updateSyncedRoleMember', server.id, connection.discordId, err, { roleId }, socketLogger.child({ guildId: server.id }, { track: false }));
+            const memberLogger = socketLogger.child({ guildId: server.id }, { track: false });
+            if(isDiscordError(err, RESTJSONErrorCodes.UnknownMember)) memberLogger.debug({ userId: connection.discordId }, 'Member left the guild, skipping');
+            else this.client.analytics.trackError('api_ws', 'updateSyncedRoleMember', server.id, connection.discordId, err, { roleId }, memberLogger);
         }
     }
 }

@@ -71,6 +71,29 @@ export default class AnalyticsCollector {
     }
 
     /**
+     * Extracts the failed request of an error that carries one (DiscordAPIError, HTTPError), so errors without app stack frames can be traced.
+     * Only the path is kept (no origin, api version or query) and any path segment that looks like a token is redacted.
+     * @param {*} error - The error to extract the request from.
+     * @returns {{ method?: string, path?: string, status?: number }} - The request fields, empty if the error carries no request.
+     * @private
+     */
+    static _getRequest(error) {
+        if(!error?.method || !error?.url) return {};
+
+        const path = String(error.url)
+            .replace(/^https?:\/\/[^/]+(\/api(\/v\d+)?)?/, '')
+            .split('?')[0]
+            // Webhook/interaction tokens are the only long opaque segments (snowflakes have at most 20 digits)
+            .replace(/(?<=\/)[\w.-]{40,}(?=\/|$)/g, '<token>');
+
+        return {
+            method: String(error.method),
+            path,
+            status: typeof error.status === 'number' ? error.status : undefined
+        };
+    }
+
+    /**
      * Track a slash command execution.
      * @param {string} name - Command name.
      * @param {?string} guildId
@@ -159,6 +182,7 @@ export default class AnalyticsCollector {
                 message: error?.message ?? String(error),
                 stack: error?.stack ?? null,
                 code: error?.code ?? null,
+                ...AnalyticsCollector._getRequest(error),
             },
             context: context ?? null,
         });

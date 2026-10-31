@@ -654,7 +654,7 @@
                 "components": [
                     {
                         "type": "TextDisplay",
-                        "content": "**Note**: Leaving a field empty will reset it to default."
+                        "content": "**Note**: Leaving a field empty will reset it to default.\nDiscord limits how often the bot's profile can be changed. Changing it repeatedly in a short time will fail temporarily."
                     },
                     {
                         "type": "Label",
@@ -739,6 +739,14 @@
                         {
                             "title": "Customization Failed",
                             "description": "You might be uploading invalid images or customizing too fast. Ensure to upload valid images or try again later."
+                        }
+                    ]
+                },
+                "appearance_rate_limited": {
+                    "embeds": [
+                        {
+                            "title": "Customizing Too Fast",
+                            "description": "You're changing the bot's appearance too fast. Discord limits how often this can be changed. Please try again later."
                         }
                     ]
                 }
@@ -2421,6 +2429,14 @@
                         {
                             "title": "Rate Limited",
                             "description": "Discord is currently rate-limiting member fetches for this server. Please try again in **%retry_after% seconds**."
+                        }
+                    ]
+                },
+                "members_timeout": {
+                    "embeds": [
+                        {
+                            "title": "Fetching Members Timed Out",
+                            "description": "Fetching this server's members took too long. Please try again in a minute."
                         }
                     ]
                 }

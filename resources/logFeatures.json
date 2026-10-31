@@ -98,7 +98,8 @@
       "userSettingsManager": null
     },
     "helpers": {
-      "pagination": null
+      "pagination": null,
+      "wizard": null
     },
     "model": {
       "worldFileLayout": null

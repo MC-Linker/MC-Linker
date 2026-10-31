@@ -105,7 +105,7 @@ const analyticsErrorSchema = new mongoose.Schema({
     guildId: String,
     userId: String,
     shardId: Number,
-    error: {message: String, stack: String, code: String},
+    error: {message: String, stack: String, code: String, method: String, path: String, status: Number},
     context: {type: Map, of: String},
 });
 

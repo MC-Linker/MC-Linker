@@ -1,8 +1,14 @@
 import Command from '../structures/Command.js';
 import keys from '../utilities/keys.js';
-import { ComponentType, InteractionCollector, InteractionType, PermissionFlagsBits } from 'discord.js';
+import {
+    ComponentType,
+    InteractionCollector,
+    InteractionType,
+    PermissionFlagsBits,
+    RESTJSONErrorCodes,
+} from 'discord.js';
 import { addTranslatedResponses, getComponent, getReplyOptions } from '../utilities/messages.js';
-import { DefaultCollectorTimeout, disableComponents } from '../utilities/utils.js';
+import { DefaultCollectorTimeout, disableComponents, isDiscordError } from '../utilities/utils.js';
 import CustomBotConnectionManager from '../structures/connections/managers/CustomBotConnectionManager.js';
 
 export default class Customize extends Command {
@@ -55,7 +61,20 @@ export default class Customize extends Command {
                     await btnInteraction.showModalTl(keys.custom_bot.custom_bot_manager.change_presence_modal);
                 else await btnInteraction.showModalTl(keys.commands.customize.customize_guild_appearance_modal);
             });
-            buttonCollector.on('end', () => message.edit({ components: disableComponents(message.components) }));
+            buttonCollector.on('end', async () => {
+                try {
+                    // The follow-up is ephemeral, so it can only be edited through the interaction webhook
+                    await interaction.webhook.editMessage(message, { components: disableComponents(message.components) });
+                }
+                catch(err) {
+                    if(isDiscordError(err, RESTJSONErrorCodes.UnknownMessage, RESTJSONErrorCodes.UnknownWebhook, RESTJSONErrorCodes.InvalidWebhookToken))
+                        logger.debug({
+                            guildId: interaction.guildId,
+                            userId: interaction.user.id
+                        }, 'Message or interaction gone, skipping');
+                    else client.analytics.trackError('unhandled', 'Customize.collectorEnd', interaction.guildId, interaction.user.id, err, null, logger);
+                }
+            });
 
             const modalCollector = new InteractionCollector(client, {
                 time: DefaultCollectorTimeout,
@@ -87,6 +106,15 @@ export default class Customize extends Command {
                         });
                     }
                     catch(err) {
+                        // Field rate limits (e.g. AVATAR_RATE_LIMIT) are a 400 Invalid Form Body, not a 429
+                        if(isDiscordError(err, RESTJSONErrorCodes.InvalidFormBodyOrContentType) && JSON.stringify(err.rawError?.errors ?? {}).includes('_RATE_LIMIT')) {
+                            logger.debug({
+                                guildId: interaction.guildId,
+                                userId: interaction.user.id
+                            }, 'Bot appearance rate-limited, skipping');
+                            return await modalInteraction.replyTl(keys.commands.customize.errors.appearance_rate_limited);
+                        }
+
                         client.analytics.trackError('component', 'Customize', interaction.guildId, interaction.user.id, err, null, logger);
                         return await modalInteraction.replyTl(keys.commands.customize.errors.guild_appearance_update_failed);
                     }

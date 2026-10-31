@@ -1,10 +1,10 @@
 import AutocompleteCommand from '../../structures/AutocompleteCommand.js';
 import keys from '../../utilities/keys.js';
 import * as utils from '../../utilities/utils.js';
-import { fetchMembersIfCacheDiffers, MaxAutoCompleteChoices } from '../../utilities/utils.js';
+import { fetchMembersIfCacheDiffers, isDiscordError, MaxAutoCompleteChoices } from '../../utilities/utils.js';
 import { getComponent, getEmbed, ph } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
-import { ButtonStyle, GatewayRateLimitError } from 'discord.js';
+import { ButtonStyle, DiscordjsErrorCodes, GatewayRateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
 
 export default class RoleSync extends AutocompleteCommand {
@@ -87,6 +87,10 @@ export default class RoleSync extends AutocompleteCommand {
                         retry_after: Math.ceil(err.data.retry_after),
                     });
                 }
+                if(err.code === DiscordjsErrorCodes.GuildMembersTimeout) {
+                    client.analytics.trackError('component', 'RoleSync', interaction.guildId, interaction.user.id, err, null, logger);
+                    return interaction.editReplyTl(keys.commands.rolesync.warnings.members_timeout);
+                }
                 throw err;
             }
 
@@ -122,20 +126,27 @@ export default class RoleSync extends AutocompleteCommand {
                         await discordMember.roles.add(role);
                     }
                     catch(err) {
-                        client.analytics.trackError('component', 'RoleSync', interaction.guildId, interaction.user.id, err, null, logger);
+                        if(isDiscordError(err, RESTJSONErrorCodes.UnknownMember)) logger.debug({
+                            guildId: interaction.guildId,
+                            userId: member
+                        }, 'Member left the guild, skipping');
+                        else client.analytics.trackError('component', 'RoleSync', interaction.guildId, interaction.user.id, err, null, logger);
                     }
                 }
 
                 if(direction === 'to_discord') {
                     //Remove the role from members that are not in the group
                     const membersToRemove = role.members.filter(m => !userIds.includes(m.id));
-                    for(const member of membersToRemove) {
+                    for(const member of membersToRemove.values()) {
                         try {
-                            const discordMember = await interaction.guild.members.fetch(member.id);
-                            await discordMember.roles.remove(role);
+                            await member.roles.remove(role);
                         }
                         catch(err) {
-                            client.analytics.trackError('component', 'RoleSync', interaction.guildId, interaction.user.id, err, null, logger);
+                            if(isDiscordError(err, RESTJSONErrorCodes.UnknownMember)) logger.debug({
+                                guildId: interaction.guildId,
+                                userId: member.id
+                            }, 'Member left the guild, skipping');
+                            else client.analytics.trackError('component', 'RoleSync', interaction.guildId, interaction.user.id, err, null, logger);
                         }
                     }
                 }
