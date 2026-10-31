@@ -1,5 +1,7 @@
 # To Build Run: docker build . -t lianecx/mc-linker
-FROM node:lts
+# Pinned: `gl` (headless-gl) only ships prebuilt binaries for some Node ABIs; newer majors fall back to
+# node-gyp, which fails on arm64 (clang-only -Wshorten-64-to-32 flag under g++). Bump only after checking gl prebuilds.
+FROM node:24
 
 # Create app directory
 WORKDIR /usr/src/app

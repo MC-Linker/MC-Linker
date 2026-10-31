@@ -173,10 +173,10 @@ export default {
             message: String,
             stack: String,
             code: String,
+            method: String,
+            path: String,
+            status: Number,
         },
-        context: {
-            type: Map,
-            of: String,
-        },
+        context: { type: Map, of: String },
     },
 };

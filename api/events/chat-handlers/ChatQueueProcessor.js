@@ -1,7 +1,7 @@
 import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import keys from '../../../utilities/keys.js';
 import { getEmbed, getReplyOptions } from '../../../utilities/messages.js';
-import { CODE_BLOCK_OVERHEAD_ANSI, MaxComponentsV2Chars } from '../../../utilities/utils.js';
+import { CODE_BLOCK_OVERHEAD_ANSI, isDiscordError, MaxComponentsV2Chars } from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
@@ -96,7 +96,7 @@ export default class ChatQueueProcessor {
         const discordChannel = await this.monitor.track('channels.fetch', () =>
             guild.channels.fetch(channelId)
                 .catch(async err => {
-                    if(err?.code === RESTJSONErrorCodes.UnknownChannel) await this.poolManager.removeChatChannel(server, chatChannel);
+                    if(isDiscordError(err, RESTJSONErrorCodes.UnknownChannel)) await this.poolManager.removeChatChannel(server, chatChannel);
                     return null;
                 }),
         );
@@ -133,7 +133,7 @@ export default class ChatQueueProcessor {
      * @returns {Promise<import('./ChatDispatchHandler.js').ProcessResult>}
      */
     async handleWebhookSendError(err, items, webhookId, chatChannel, server, guild, logContext) {
-        if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) {
+        if(isDiscordError(err, RESTJSONErrorCodes.UnknownWebhook, RESTJSONErrorCodes.InvalidWebhookToken)) {
             this.poolManager.evictWebhookClient(webhookId);
             chatChannel.webhooks = chatChannel.webhooks.filter(id => id !== webhookId);
             this.poolManager.webhookLastActive.delete(webhookId);
@@ -145,7 +145,17 @@ export default class ChatQueueProcessor {
             return { consumed: items.length };
         }
 
-        if(err?.code === RESTJSONErrorCodes.UnknownChannel) {
+        if(isDiscordError(err, RESTJSONErrorCodes.UnknownChannel)) {
+            await this.poolManager.removeChatChannel(server, chatChannel);
+            return { consumed: items.length };
+        }
+
+        if(isDiscordError(err, RESTJSONErrorCodes.MissingAccess, RESTJSONErrorCodes.MissingPermissions)) {
+            // The bot lost access to the channel; the owner can re-add it to see which permissions are missing
+            logger.debug({
+                guildId: guild.id,
+                channelId: chatChannel.id
+            }, 'Missing access to chat channel, removing it');
             await this.poolManager.removeChatChannel(server, chatChannel);
             return { consumed: items.length };
         }
@@ -247,7 +257,14 @@ export default class ChatQueueProcessor {
             });
         }
         catch(err) {
-            trackError('api_ws', 'ChatQueue', item.guildId, null, err, null, logger);
+            if(isDiscordError(err, RESTJSONErrorCodes.MissingAccess, RESTJSONErrorCodes.MissingPermissions)) {
+                logger.debug({
+                    guildId: item.guildId,
+                    channelId: item.channelId
+                }, 'Missing access to chat channel, removing it');
+                await this.poolManager.removeChatChannel(ctx.server, ctx.chatChannel);
+            }
+            else trackError('api_ws', 'ChatQueue', item.guildId, null, err, null, logger);
         }
     }
 
@@ -379,14 +396,14 @@ export default class ChatQueueProcessor {
             catch(err) {
                 if(err instanceof RateLimitError) throw err;
 
-                if(err?.code === RESTJSONErrorCodes.UnknownChannel) {
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownChannel)) {
                     const server = discordChannel.client.serverConnections.cache.get(discordChannel.guildId);
                     const chatChannel = server?.chatChannels.find(c => c.id === discordChannel.id);
                     if(chatChannel) await this.poolManager.removeChatChannel(server, chatChannel);
                     return { consumed: items.length };
                 }
 
-                if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.InvalidWebhookToken) throw err;
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownWebhook, RESTJSONErrorCodes.InvalidWebhookToken)) throw err;
                 // Previous console message no longer editable/deleted; reset and send a fresh message below.
                 this.lastConsoleMessages.delete(discordChannel.id);
                 logger.debug({ guildId: discordChannel.guildId }, `Falling back to fresh console webhook send for channel ${discordChannel.id}: ${err?.message ?? 'unknown error'}`);

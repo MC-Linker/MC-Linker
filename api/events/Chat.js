@@ -40,6 +40,7 @@ export default class Chat extends WSEvent {
     constructor() {
         super({
             event: 'chat',
+            ackEarly: true, // Busiest event: the plugin doesn't need the result, so don't wait for the guild shard
         });
 
         this.monitor = new ChatMonitor();

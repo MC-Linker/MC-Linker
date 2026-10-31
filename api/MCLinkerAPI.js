@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import { createHash, evalOnGuildShard } from '../utilities/utils.js';
+import { createHash, evalOnGuildShard, isDiscordError } from '../utilities/utils.js';
 import { getEmbed } from '../utilities/messages.js';
 import keys from '../utilities/keys.js';
 import { EventEmitter } from 'node:events';
@@ -7,7 +7,7 @@ import fastifyCookie from '@fastify/cookie';
 import { instrument } from '@socket.io/admin-ui';
 import fastifyIO from 'fastify-socket.io';
 import fastifyStatic from '@fastify/static';
-import { Collection } from 'discord.js';
+import { Collection, RESTJSONErrorCodes } from 'discord.js';
 import rootLogger from '../utilities/logger/Logger.js';
 import features from '../utilities/logger/features.js';
 import path from 'path';
@@ -292,18 +292,29 @@ export default class MCLinkerAPI extends EventEmitter {
 
         this.websocket.on('connection', this.wsHandleConnection.bind(this));
 
-        instrument(this.websocket, {
-            auth: {
-                type: 'basic',
-                username: process.env.IO_USERNAME,
-                password: process.env.IO_PASSWORD,
-            },
-            readonly: true,
-        });
+        // Opt-in: the admin UI adds noticeable overhead on shard 0.
+        // 'true' sends only aggregated data to the UI, 'debug' streams every event (much more expensive).
+        const adminUi = process.env.IO_ADMIN_UI;
+        if(adminUi === 'true' || adminUi === 'debug') {
+            instrument(this.websocket, {
+                auth: {
+                    type: 'basic',
+                    username: process.env.IO_USERNAME,
+                    password: process.env.IO_PASSWORD,
+                },
+                readonly: true,
+                mode: adminUi === 'debug' ? 'development' : 'production',
+            });
+        }
 
         this.websocket.engine.on('connection_error', err => {
+            // Code 1 (session ID unknown) is a stale client session, e.g. after a bot restart
+            if(err?.code === 1) socketLogger.debug({ sid: err?.context?.sid }, 'Socket.io session ID unknown, skipping');
             // Track only the useful fields to avoid log overloading
-            this.client.analytics.trackError('api_ws', 'engine.connection_error', null, null, { message: err?.message, code: err?.code }, { sid: err?.context?.sid }, socketLogger);
+            else this.client.analytics.trackError('api_ws', 'engine.connection_error', null, null, {
+                message: err?.message,
+                code: err?.code
+            }, { sid: err?.context?.sid }, socketLogger);
         });
 
         this.fastify.listen({ port: process.env.BOT_PORT, host: '0.0.0.0' }, (err, address) => {
@@ -521,25 +532,40 @@ export default class MCLinkerAPI extends EventEmitter {
         }
 
         const startTime = Date.now();
+
+        // Events with ackEarly are acked right away, so shard 0 doesn't wait for the guild shard
+        if(route.ackEarly) callback?.({ status: 'success' });
+
         try {
             let response;
             if(route.dispatchToGuildShard) {
-                response = await evalOnGuildShard(this.client, server.id, async (c, { eventName, data, serverId }) => {
-                    const server = c.serverConnections.cache.get(serverId);
-                    if(!server) return null;
-                    return c.api.wsEvents.get(eventName).execute(data, server, c);
-                }, { eventName, data, serverId: server.id });
+                response = await this._dispatchToGuildShard(eventName, data, server.id);
             }
             else response = await route.execute(data, server, this.client);
             socketLogger.debug({ response, guildId: server.id }, `Response for event ${route.event}`);
-            callback?.(response);
+            if(!route.ackEarly) callback?.(response);
             this.client.analytics.trackApiCall('ws', eventName, server.id, Date.now() - startTime);
         }
         catch(err) {
             this.client.analytics.trackApiCall('ws', eventName, server.id, Date.now() - startTime, false);
             this.client.analytics.trackError('api_ws', eventName, server.id, null, err, null, socketLogger.child({ guildId: server.id }, { track: false }));
-            callback?.({ status: 'error', error: ProtocolError.UNKNOWN });
+            if(!route.ackEarly) callback?.({ status: 'error', error: ProtocolError.UNKNOWN });
         }
+    }
+
+    /**
+     * Runs a WS event on the shard that hosts the given guild.
+     * @param {string} eventName - The name of the event.
+     * @param {Object} data - The parsed event data.
+     * @param {string} serverId - The id of the server-connection.
+     * @returns {Promise<?Object>} The event's response.
+     */
+    _dispatchToGuildShard(eventName, data, serverId) {
+        return evalOnGuildShard(this.client, serverId, async (c, { eventName, data, serverId }) => {
+            const server = c.serverConnections.cache.get(serverId);
+            if(!server) return null;
+            return c.api.wsEvents.get(eventName).execute(data, server, c);
+        }, { eventName, data, serverId });
     }
 
     /**
@@ -625,7 +651,9 @@ export default class MCLinkerAPI extends EventEmitter {
         const syncedRole = server.syncedRoles[roleIndex];
 
         // Always update the players list to reflect MC-side reality
-        if(addOrRemove === 'add') syncedRole.players.push(uuid);
+        if(addOrRemove === 'add') {
+            if(!syncedRole.players.includes(uuid)) syncedRole.players.push(uuid);
+        }
         else if(addOrRemove === 'remove') {
             const playerIndex = syncedRole.players.indexOf(uuid);
             if(playerIndex !== -1) syncedRole.players.splice(playerIndex, 1);
@@ -641,7 +669,9 @@ export default class MCLinkerAPI extends EventEmitter {
             else if(addOrRemove === 'remove') await member.roles.remove(role);
         }
         catch(err) {
-            this.client.analytics.trackError('api_ws', 'updateSyncedRoleMember', server.id, connection.discordId, err, { roleId }, socketLogger.child({ guildId: server.id }, { track: false }));
+            const memberLogger = socketLogger.child({ guildId: server.id }, { track: false });
+            if(isDiscordError(err, RESTJSONErrorCodes.UnknownMember)) memberLogger.debug({ userId: connection.discordId }, 'Member left the guild, skipping');
+            else this.client.analytics.trackError('api_ws', 'updateSyncedRoleMember', server.id, connection.discordId, err, { roleId }, memberLogger);
         }
     }
 }

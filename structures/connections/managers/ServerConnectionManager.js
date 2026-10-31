@@ -4,6 +4,7 @@ import { RESTJSONErrorCodes, ShardClientUtil } from 'discord.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../analytics/AnalyticsCollector.js';
+import { isDiscordError } from '../../../utilities/discord-utils.js';
 
 const logger = rootLogger.child({ feature: features.structures.connections.server });
 
@@ -42,11 +43,12 @@ export default class ServerConnectionManager extends ConnectionManager {
                     await webhook.delete();
                 }
                 catch(err) {
-                    if([
+                    if(isDiscordError(
+                        err,
                         RESTJSONErrorCodes.UnknownWebhook,
                         RESTJSONErrorCodes.UnknownMessage,
                         RESTJSONErrorCodes.MissingAccess,
-                    ].includes(err.code)) continue;
+                    )) continue;
                     trackError('unhandled', 'ServerConnectionManager.disconnect', connection.id, null, err, { webhookId }, logger);
                 }
             }

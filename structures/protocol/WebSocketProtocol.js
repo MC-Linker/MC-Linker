@@ -1,5 +1,7 @@
 import Protocol, { ProtocolError } from './Protocol.js';
 import fs from 'fs-extra';
+import { RESTJSONErrorCodes } from 'discord.js';
+import { isDiscordError } from '../../utilities/discord-utils.js';
 import rootLogger from '../../utilities/logger/Logger.js';
 import features from '../../utilities/logger/features.js';
 import { trackError } from '../analytics/AnalyticsCollector.js';
@@ -154,7 +156,8 @@ export default class WebSocketProtocol extends Protocol {
                 await webhook.delete();
             }
             catch(err) {
-                trackError('unhandled', 'WebSocketProtocol.removeChatChannel', this.id, null, err, { webhookId }, logger);
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownWebhook)) logger.debug({ guildId: this.id }, `Webhook ${webhookId} already deleted, skipping`);
+                else trackError('unhandled', 'WebSocketProtocol.removeChatChannel', this.id, null, err, { webhookId }, logger);
             }
         }
 

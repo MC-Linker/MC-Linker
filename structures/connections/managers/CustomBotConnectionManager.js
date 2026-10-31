@@ -11,8 +11,14 @@ import Discord, {
     InteractionCollector,
     InteractionType,
     MessageFlags,
+    RESTJSONErrorCodes,
 } from 'discord.js';
-import { DefaultCollectorTimeout, disableComponents, generateDefaultInvite } from '../../../utilities/utils.js';
+import {
+    DefaultCollectorTimeout,
+    disableComponents,
+    generateDefaultInvite,
+    isDiscordError
+} from '../../../utilities/utils.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../analytics/AnalyticsCollector.js';
@@ -200,7 +206,18 @@ export default class CustomBotConnectionManager extends ConnectionManager {
                     break;
             }
         });
-        buttonCollector.on('end', () => interaction.editReply({ components: disableComponents(mainMessage.components) }));
+        buttonCollector.on('end', async () => {
+            try {
+                await interaction.editReply({ components: disableComponents(mainMessage.components) });
+            }
+            catch(err) {
+                const guildId = interaction.guildId ?? null;
+                const userId = interaction.user?.id ?? null;
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownMessage, RESTJSONErrorCodes.UnknownWebhook, RESTJSONErrorCodes.InvalidWebhookToken))
+                    logger.debug({ guildId, userId }, 'Message or interaction gone, skipping');
+                else trackError('unhandled', 'CustomBotConnectionManager.collectorEnd', guildId, userId, err, null, logger);
+            }
+        });
         const modalCollector = new InteractionCollector(this.client, {
             time: DefaultCollectorTimeout,
             interactionType: InteractionType.ModalSubmit,

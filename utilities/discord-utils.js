@@ -3,6 +3,7 @@ import Discord, {
     ApplicationCommandOptionType,
     ChannelType,
     CommandInteraction,
+    DiscordAPIError,
     GuildChannel,
     MessageMentions,
     PermissionFlagsBits,
@@ -247,6 +248,7 @@ const memberFetchInFlight = new Map();
  * @param {Client} client - The client to use for fetching.
  * @param {Guild} guild - The guild to fetch the members of if the member count differs.
  * @throws {import('discord.js').GatewayRateLimitError} - When opcode 8 is rate-limited.
+ * @throws {import('discord.js').DiscordjsError} - With code `GuildMembersTimeout` when the gateway does not answer in time.
  */
 export async function fetchMembersIfCacheDiffers(client, guild) {
     if(guild.memberCount === guild.members.cache.size) return;
@@ -258,6 +260,16 @@ export async function fetchMembersIfCacheDiffers(client, guild) {
         .finally(() => memberFetchInFlight.delete(guild.id));
     memberFetchInFlight.set(guild.id, promise);
     return promise;
+}
+
+/**
+ * Checks whether an error is a Discord API error with one of the given codes.
+ * @param {unknown} err - The error to check.
+ * @param {...number} codes - The RESTJSONErrorCodes to match.
+ * @returns {boolean} - Whether the error matches one of the codes.
+ */
+export function isDiscordError(err, ...codes) {
+    return err instanceof DiscordAPIError && codes.includes(err.code);
 }
 
 /**

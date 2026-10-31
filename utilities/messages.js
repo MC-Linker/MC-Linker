@@ -18,7 +18,18 @@ import util from 'util';
 import rootLogger from './logger/Logger.js';
 import features from './logger/features.js';
 import { trackError } from '../structures/analytics/AnalyticsCollector.js';
-import { ComponentSizeInActionRow, MaxActionRows, MaxActionRowSize } from './utils.js';
+import {
+    ComponentSizeInActionRow,
+    MaxActionRows,
+    MaxActionRowSize,
+    MaxEmbedAuthorNameLength,
+    MaxEmbedDescriptionLength,
+    MaxEmbedFieldNameLength,
+    MaxEmbedFieldValueLength,
+    MaxEmbedFooterTextLength,
+    MaxEmbedTitleLength,
+    truncate,
+} from './utils.js';
 
 const logger = rootLogger.child({ feature: features.utilities.messages });
 
@@ -486,17 +497,30 @@ export function getEmbed(key, ...placeholders) {
 
     for(const field of key.fields ?? []) {
         if(!field.name || !field.value) continue;
-        embed.addFields({ name: field.name, value: field.value, inline: field.inline ?? false });
+        embed.addFields({
+            name: truncate(field.name, MaxEmbedFieldNameLength),
+            value: truncate(field.value, MaxEmbedFieldValueLength),
+            inline: field.inline ?? false,
+        });
     }
 
-    if(key.title) embed.setTitle(key.title);
-    if(key.description) embed.setDescription(key.description);
+    if(key.title) embed.setTitle(truncate(key.title, MaxEmbedTitleLength));
+    if(key.description) embed.setDescription(truncate(key.description, MaxEmbedDescriptionLength));
     if(key.color) embed.setColor(key.color);
-    if(key.author?.name) embed.setAuthor({ iconURL: key.author.icon_url, name: key.author.name, url: key.author.url });
+    if(key.author?.name) {
+        embed.setAuthor({
+            iconURL: key.author.icon_url,
+            name: truncate(key.author.name, MaxEmbedAuthorNameLength),
+            url: key.author.url,
+        });
+    }
     if(key.image) embed.setImage(key.image);
     if(key.thumbnail) embed.setThumbnail(key.thumbnail);
     if(key.timestamp) embed.setTimestamp(Number(key.timestamp));
-    if(key.footer?.text) embed.setFooter({ text: key.footer.text, iconURL: key.footer.icon_url });
+    if(key.footer?.text) embed.setFooter({
+        text: truncate(key.footer.text, MaxEmbedFooterTextLength),
+        iconURL: key.footer.icon_url
+    });
     if(key.url) embed.setURL(key.url);
 
     return embed;

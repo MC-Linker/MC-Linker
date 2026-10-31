@@ -4,7 +4,7 @@ import { getEmbed } from '../../../utilities/messages.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
-import { CODE_BLOCK_OVERHEAD_ANSI, MaxComponentsV2Chars } from '../../../utilities/utils.js';
+import { CODE_BLOCK_OVERHEAD_ANSI, isDiscordError, MaxComponentsV2Chars } from '../../../utilities/utils.js';
 import {
     CHAT_WEBHOOK_LEGACY_NAMES,
     CHAT_WEBHOOK_NAME,
@@ -197,7 +197,7 @@ export default class WebhookPoolManager {
                     logger.debug({ guildId: guild.id }, `Rate-limited deleting idle webhook ${webhookId}, deferring prune`);
                     break;
                 }
-                if(err?.code === RESTJSONErrorCodes.UnknownWebhook || err?.code === RESTJSONErrorCodes.UnknownChannel) {
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownWebhook, RESTJSONErrorCodes.UnknownChannel)) {
                     removed.push(webhookId);
                 }
                 else {
@@ -252,7 +252,7 @@ export default class WebhookPoolManager {
                     this.monitor?.recordRateLimit('channels.fetch');
                     return null;
                 }
-                if(err?.code === RESTJSONErrorCodes.UnknownChannel) await this.removeChatChannel(server, channel);
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownChannel)) await this.removeChatChannel(server, channel);
                 return null;
             });
         if(!discordChannel) return null;

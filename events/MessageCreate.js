@@ -1,6 +1,6 @@
 import Event from '../structures/Event.js';
 import { addTranslatedResponses, ph } from '../utilities/messages.js';
-import { cleanEmojis } from '../utilities/utils.js';
+import { cleanEmojis, isDiscordError } from '../utilities/utils.js';
 import keys from '../utilities/keys.js';
 import { Events, MessageType, RESTJSONErrorCodes, userMention } from 'discord.js';
 import { trackError } from '../structures/analytics/AnalyticsCollector.js';
@@ -86,7 +86,7 @@ export default class MessageCreate extends Event {
                     repliedMessage = await message.fetchReference();
                 }
                 catch(err) {
-                    if(err.code !== RESTJSONErrorCodes.MissingAccess && err.code !== RESTJSONErrorCodes.UnknownMessage) {
+                    if(!isDiscordError(err, RESTJSONErrorCodes.MissingAccess, RESTJSONErrorCodes.UnknownMessage)) {
                         client.analytics.trackError('event', 'MessageCreate', message.guildId, message.author.id, err, null, logger);
                     }
                 }

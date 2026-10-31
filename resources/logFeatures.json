@@ -41,6 +41,7 @@
     "messageCreate": null
   },
   "components": {
+    "customize_guild_appearance_modal": null,
     "customize_token_modal": null
   },
   "api": {
@@ -98,7 +99,8 @@
       "userSettingsManager": null
     },
     "helpers": {
-      "pagination": null
+      "pagination": null,
+      "wizard": null
     },
     "model": {
       "worldFileLayout": null

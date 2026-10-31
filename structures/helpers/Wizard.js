@@ -1,8 +1,25 @@
-import { BaseGuildTextChannel, BaseInteraction, ComponentType, Message, MessageFlags } from 'discord.js';
+import {
+    BaseGuildTextChannel,
+    BaseInteraction,
+    ComponentType,
+    Message,
+    MessageFlags,
+    RESTJSONErrorCodes,
+} from 'discord.js';
 import { addTranslatedResponses, createActionRows, getComponent } from '../../utilities/messages.js';
 import keys from '../../utilities/keys.js';
-import { DefaultCollectorTimeout, disableComponents, flattenActionRows } from '../../utilities/utils.js';
+import {
+    DefaultCollectorTimeout,
+    disableComponents,
+    flattenActionRows,
+    isDiscordError
+} from '../../utilities/utils.js';
 import DefaultButton from './DefaultButton.js';
+import rootLogger from '../../utilities/logger/Logger.js';
+import features from '../../utilities/logger/features.js';
+import { trackError } from '../analytics/AnalyticsCollector.js';
+
+const logger = rootLogger.child({ feature: features.structures.helpers.wizard });
 
 export default class Wizard {
 
@@ -165,9 +182,18 @@ export default class Wizard {
         });
         this.collector.on('collect', interaction => this.buttons.get(interaction.customId)?.execute(interaction, this.client));
         this.collector.on('end', async () => {
-            if(!this.message.flags.has(MessageFlags.Ephemeral)) this.message = await this.message.fetch(); // Get the latest components
-            if(!this.message.flags.has(MessageFlags.Ephemeral)) await this.message.edit({ components: disableComponents(this.message.components) });
-            else if(this.interaction.update) await this.interaction.update({ components: disableComponents(this.message.components) });
+            try {
+                if(!this.message.flags.has(MessageFlags.Ephemeral)) this.message = await this.message.fetch(); // Get the latest components
+                if(!this.message.flags.has(MessageFlags.Ephemeral)) await this.message.edit({ components: disableComponents(this.message.components) });
+                else if(this.interaction.update) await this.interaction.update({ components: disableComponents(this.message.components) });
+            }
+            catch(err) {
+                const guildId = this.interaction.guildId ?? null;
+                const userId = this.interaction.user?.id ?? null;
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownMessage, RESTJSONErrorCodes.UnknownWebhook, RESTJSONErrorCodes.InvalidWebhookToken))
+                    logger.debug({ guildId, userId }, 'Message or interaction gone, skipping');
+                else trackError('unhandled', 'Wizard.collectorEnd', guildId, userId, err, null, logger);
+            }
         });
     }
 

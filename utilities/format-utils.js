@@ -3,6 +3,17 @@ import emoji from 'emojione';
 import { CODE_BLOCK_OVERHEAD_ANSI, MaxEmbedDescriptionLength } from './discord-constants.js';
 
 /**
+ * Shortens a string to a maximum length, replacing the cut-off part with an ellipsis.
+ * @param {string} text - The text to shorten.
+ * @param {number} max - The maximum length of the returned text, including the ellipsis.
+ * @returns {string} - The text, unchanged if it is not longer than `max`.
+ */
+export function truncate(text, max) {
+    text = String(text);
+    return text.length > max ? text.slice(0, max - 1) + '…' : text;
+}
+
+/**
  * Removes all minecraft color codes from a string.
  * @param {string} text - The text to remove color codes from.
  * @returns {string} - The text without color codes.

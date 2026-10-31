@@ -770,6 +770,10 @@ code {
     border-bottom: none;
 }
 
+.occurrence-table .context-cell {
+    word-break: break-all;
+}
+
 .error-message {
     max-width: 340px;
     overflow: hidden;

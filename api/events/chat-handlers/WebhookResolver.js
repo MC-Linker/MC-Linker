@@ -2,6 +2,7 @@ import Discord, { RateLimitError, RESTJSONErrorCodes } from 'discord.js';
 import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
+import { isDiscordError } from '../../../utilities/utils.js';
 import { WEBHOOK_TOKEN_REFRESH_TTL_MS } from './ChatConstants.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.webhookResolver });
@@ -75,7 +76,7 @@ export default class WebhookResolver {
                 logger.debug({ guildId: guild.id }, `Rate-limited refreshing webhook ${webhookId} for channel ${channelConfig.id}`);
                 return null;
             }
-            if(err?.code !== RESTJSONErrorCodes.UnknownWebhook) {
+            if(!isDiscordError(err, RESTJSONErrorCodes.UnknownWebhook)) {
                 trackError('api_ws', 'WebhookResolver', guild.id, null, err, { webhookId }, logger);
                 return null;
             }
@@ -102,7 +103,7 @@ export default class WebhookResolver {
                     this.monitor?.recordRateLimit('fetchWebhook');
                     continue;
                 }
-                if(err?.code === RESTJSONErrorCodes.UnknownWebhook) {
+                if(isDiscordError(err, RESTJSONErrorCodes.UnknownWebhook)) {
                     this.poolManager.evictWebhookClient(altId);
                     channelConfig.webhooks = channelConfig.webhooks.filter(id => id !== altId);
                     this.poolManager.webhookLastActive.delete(altId);

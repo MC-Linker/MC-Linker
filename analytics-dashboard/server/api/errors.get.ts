@@ -1,37 +1,41 @@
-import { verifySession } from '../utils/auth';
-import { getConnection, parseDateRange } from '../utils/db';
+import {verifySession} from '../utils/auth';
+import {getConnection, parseDateRange} from '../utils/db';
 
 export default defineEventHandler(async event => {
-    const { db } = await verifySession(event);
+    const {db} = await verifySession(event);
     const query = getQuery(event);
     const conn = getConnection(db);
 
-    const { from, to } = parseDateRange(query);
+    const {from, to} = parseDateRange(query);
     const type = query.type as string | undefined;
 
-    const filter: Record<string, unknown> = { timestamp: { $gte: from, $lte: to } };
+    const filter: Record<string, unknown> = {timestamp: {$gte: from, $lte: to}};
     if (type) filter.type = type;
 
     const groups = await conn.models.AnalyticsError.aggregate([
-        { $match: filter },
-        { $sort: { timestamp: -1 } },
+        {$match: filter},
+        {$sort: {timestamp: -1}},
         {
             $group: {
-                _id: { type: '$type', name: '$name', message: '$error.message' },
-                count: { $sum: 1 },
-                lastSeen: { $first: '$timestamp' },
-                stack: { $first: '$error.stack' },
+                _id: {type: '$type', name: '$name', message: '$error.message'},
+                count: {$sum: 1},
+                lastSeen: {$first: '$timestamp'},
+                stack: {$first: '$error.stack'},
                 occurrences: {
                     $push: {
                         timestamp: '$timestamp',
                         guildId: '$guildId',
                         userId: '$userId',
                         shardId: '$shardId',
+                        method: '$error.method',
+                        path: '$error.path',
+                        status: '$error.status',
+                        context: '$context',
                     },
                 },
             },
         },
-        { $sort: { lastSeen: -1 } },
+        {$sort: {lastSeen: -1}},
         {
             $project: {
                 _id: 0,
@@ -41,10 +45,10 @@ export default defineEventHandler(async event => {
                 count: 1,
                 lastSeen: 1,
                 stack: 1,
-                occurrences: { $slice: ['$occurrences', 50] },
+                occurrences: {$slice: ['$occurrences', 50]},
             },
         },
     ]);
 
-    return { groups };
+    return {groups};
 });

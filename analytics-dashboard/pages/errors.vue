@@ -68,6 +68,8 @@
                       <th>Guild ID</th>
                       <th>User ID</th>
                       <th>Shard</th>
+                      <th>Request</th>
+                      <th>Context</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -76,6 +78,17 @@
                       <td class="mono">{{ occ.guildId ?? '—' }}</td>
                       <td class="mono">{{ occ.userId ?? '—' }}</td>
                       <td>{{ occ.shardId ?? '—' }}</td>
+                      <td class="mono context-cell">
+                        <template v-if="occ.method">{{ occ.method }} {{
+                            occ.path
+                          }}{{ occ.status ? ` (${occ.status})` : '' }}
+                        </template>
+                        <template v-else>—</template>
+                      </td>
+                      <td class="mono context-cell">
+                        <div v-for="(value, key) in occ.context ?? {}" :key="key">{{ key }}={{ value }}</div>
+                        <template v-if="!occ.context || !Object.keys(occ.context).length">—</template>
+                      </td>
                     </tr>
                     </tbody>
                   </table>
@@ -101,6 +114,10 @@ interface Occurrence {
   guildId?: string;
   userId?: string;
   shardId?: number;
+  method?: string;
+  path?: string;
+  status?: number;
+  context?: Record<string, string> | null;
 }
 
 interface ErrorGroup {
@@ -136,16 +153,16 @@ function toggle(idx: number) {
 const filterQuery = computed(() => ({
   from: from.value,
   to: to.value,
-  ...(typeFilter.value ? { type: typeFilter.value } : {}),
+  ...(typeFilter.value ? {type: typeFilter.value} : {}),
 }));
 
-const { data, pending, error: fetchError, refresh } = await useFetch('/api/errors', {
+const {data, pending, error: fetchError, refresh} = await useFetch('/api/errors', {
   query: filterQuery,
   watch: [filterQuery],
 });
 
 const groupItems = computed(() => (data.value?.groups ?? []) as ErrorGroup[]);
-const { toggleSort, sortIcon, sorted: sortedGroups } = useSortable(groupItems, 'count');
+const {toggleSort, sortIcon, sorted: sortedGroups} = useSortable(groupItems, 'count');
 
 function exportErrors() {
   const params = new URLSearchParams(filterQuery.value as Record<string, string>);
@@ -159,15 +176,13 @@ async function confirmClear() {
   clearing.value = true;
   clearError.value = '';
   try {
-    await $fetch('/api/errors', { method: 'DELETE', query: filterQuery.value });
+    await $fetch('/api/errors', {method: 'DELETE', query: filterQuery.value});
     clearConfirming.value = false;
     expanded.value = new Set();
     await refresh();
-  }
-  catch (err: any) {
+  } catch (err: any) {
     clearError.value = err?.data?.message ?? err?.message ?? 'Failed to clear errors';
-  }
-  finally {
+  } finally {
     clearing.value = false;
   }
 }

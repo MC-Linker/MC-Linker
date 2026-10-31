@@ -1,6 +1,7 @@
 import WSEvent from '../WSEvent.js';
 import { RESTJSONErrorCodes } from 'discord.js';
 import { ProtocolError } from '../../structures/protocol/Protocol.js';
+import { isDiscordError } from '../../utilities/utils.js';
 
 export default class HasRequiredRoleToJoin extends WSEvent {
 
@@ -41,7 +42,10 @@ export default class HasRequiredRoleToJoin extends WSEvent {
             return { status: 'success', data: { hasRole: server.hasRequiredRole(member) } };
         }
         catch(err) {
-            if(err.code === RESTJSONErrorCodes.UnknownMember) return { status: 'success', data: { hasRole: false } }; // Member not in server
+            if(isDiscordError(err, RESTJSONErrorCodes.UnknownMember)) return {
+                status: 'success',
+                data: { hasRole: false }
+            }; // Member not in server
             else return { status: 'error', error: ProtocolError.UNKNOWN };
         }
     }
