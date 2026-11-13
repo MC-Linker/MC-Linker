@@ -9,8 +9,13 @@ import AssetsManager from './MinecraftAssetsManager.js';
 const logger = rootLogger.child({ feature: features.structures.render.playerHeadRenderer });
 
 /**
- * Renders player head avatars (face + hat overlay) straight from Mojang-hosted skin textures. Static singleton.
- * Skins are fetched from `textures.minecraft.net` by texture hash (the last path segment of the skin url in a
+ * Player head avatars, built only from Mojang data. Static singleton.
+ *
+ * Lookup: {@link getAvatarURL} resolves username → uuid via `api.mojang.com`, reads the skin texture hash from the
+ * `sessionserver.mojang.com` profile and returns `<PUBLIC_URL>/avatar/<hash>.png`, served by `api/routes/Avatar.js`.
+ * Lookups are cached per username and paused while Mojang rate limits the bot.
+ *
+ * Rendering: {@link getHead} draws the face + hat overlay from the skin texture. Skins are fetched from `textures.minecraft.net` by texture hash (the last path segment of the skin url in a
  * player's session profile), so a hash fully identifies an image and rendered heads can be cached indefinitely.
  * The Steve fallback is cropped from the default skin inside the official client assets ({@link AssetsManager}).
  */
@@ -20,6 +25,8 @@ export default class PlayerHeadRenderer {
     static TEXTURE_BASE_URL = 'https://textures.minecraft.net/texture/';
     /** Valid texture hash (Mojang uses lowercase hex sha256 hashes; older skins may be shorter). */
     static TEXTURE_HASH_REGEX = /^[0-9a-f]{32,64}$/;
+    /** Player names Mojang accepts. Anything else (e.g. Floodgate-prefixed Bedrock names) can't have a Java skin. */
+    static USERNAME_REGEX = /^[A-Za-z0-9_]{1,16}$/;
     /** Special id used for the default Steve head. */
     static STEVE_ID = 'steve';
     /** Path of the default Steve skin inside an extracted client asset pack (1.19.3+ layout). */
@@ -28,8 +35,18 @@ export default class PlayerHeadRenderer {
     static SIZE = 128;
     /** Max number of rendered heads kept in memory (~1-3 KB each). */
     static CACHE_MAX_SIZE = 2000;
-    /** Timeout (ms) for downloading a skin texture. */
+    /** Timeout (ms) for every Mojang request, so a slow Mojang API can't stall commands (falls back to Steve). */
     static FETCH_TIMEOUT_MS = 5000;
+    /** How long a username → avatar url lookup is cached. */
+    static AVATAR_CACHE_TTL_MS = 60 * 60_000;
+    /** How long a failed lookup (rate limit, network error) is cached, so it's retried sooner. */
+    static AVATAR_FAILURE_CACHE_TTL_MS = 5 * 60_000;
+    /** Max number of cached username lookups. */
+    static AVATAR_CACHE_MAX_SIZE = 5000;
+    /** How long to stop querying Mojang after a 429 without a `Retry-After` header, or after repeated failures. */
+    static MOJANG_BACKOFF_MS = 60_000;
+    /** Consecutive failed lookups (timeouts, network/5xx errors) before backing off. */
+    static MOJANG_MAX_CONSECUTIVE_FAILURES = 3;
 
     /**
      * Rendered head PNGs keyed by texture hash (or {@link STEVE_ID}). Insertion-ordered for LRU-ish eviction.
@@ -44,6 +61,170 @@ export default class PlayerHeadRenderer {
      * @type {Map<string, Promise<?Buffer>>}
      */
     static pending = new Map();
+
+    /**
+     * Cached username lookups keyed by lowercased username. Insertion-ordered for LRU-ish eviction.
+     * @private
+     * @type {Map<string, { url: ?string, expiresAt: number }>}
+     */
+    static avatarCache = new Map();
+
+    /**
+     * In-flight lookups keyed by lowercased username, so concurrent callers share one Mojang request.
+     * @private
+     * @type {Map<string, Promise<?string>>}
+     */
+    static pendingAvatars = new Map();
+
+    /**
+     * Timestamp until which no Mojang lookups are sent.
+     * @private
+     * @type {number}
+     */
+    static mojangBackoffUntil = 0;
+
+    /**
+     * Number of failed Mojang lookups in a row.
+     * @private
+     * @type {number}
+     */
+    static mojangConsecutiveFailures = 0;
+
+    /**
+     * Returns the public base url of this bot's API, under which `/avatar/:id` serves rendered player heads.
+     * Uses `PUBLIC_URL`, falling back to the origin of `LINKED_ROLES_REDIRECT_URI` (which already points at the API).
+     * @returns {?string} The base url without a trailing slash, or `null` if none is configured.
+     */
+    static getPublicApiURL() {
+        if(process.env.PUBLIC_URL) return process.env.PUBLIC_URL.replace(/\/+$/, '');
+        try {
+            return new URL(process.env.LINKED_ROLES_REDIRECT_URI).origin;
+        }
+        catch(err) {
+            return null;
+        }
+    }
+
+    /**
+     * Builds the url of a rendered player head served by this bot's API (see `api/routes/Avatar.js`).
+     * @param {string} id - The skin texture hash or {@link STEVE_ID}.
+     * @returns {?string} The url, or `null` if no public API url is configured.
+     */
+    static getHeadURL(id) {
+        const base = this.getPublicApiURL();
+        return base ? `${base}/avatar/${id}.png` : null;
+    }
+
+    /**
+     * Returns the url of the given player's head avatar, rendered from their Mojang skin. Cached per username, only
+     * querying Mojang when the cache is expired or missing. Falls back to Steve if the player doesn't exist, has no
+     * custom skin, or the lookup fails (in which case a previously known head is kept).
+     * @param {string} username - The player's username.
+     * @returns {Promise<?string>} The avatar url, or `null` if no public API url is configured.
+     */
+    static async getAvatarURL(username) {
+        const key = String(username).toLowerCase();
+        const cached = this.avatarCache.get(key);
+        if(cached && Date.now() < cached.expiresAt) return cached.url;
+        if(this.pendingAvatars.has(key)) return await this.pendingAvatars.get(key);
+
+        const promise = this.fetchSkinTextureHash(username).then(({ hash, definitive }) => {
+            let url = this.getHeadURL(hash ?? this.STEVE_ID);
+            // On a failed lookup (rate limit, Mojang down), keep showing the player's last known head instead of Steve.
+            if(!definitive && cached?.url) url = cached.url;
+
+            this.avatarCache.delete(key); // Re-insert to keep insertion order ~ recency for eviction
+            this.avatarCache.set(key, {
+                url,
+                expiresAt: Date.now() + (definitive ? this.AVATAR_CACHE_TTL_MS : this.AVATAR_FAILURE_CACHE_TTL_MS),
+            });
+            if(this.avatarCache.size > this.AVATAR_CACHE_MAX_SIZE) this.avatarCache.delete(this.avatarCache.keys().next().value);
+            return url;
+        });
+
+        this.pendingAvatars.set(key, promise);
+        try {
+            return await promise;
+        }
+        finally {
+            this.pendingAvatars.delete(key);
+        }
+    }
+
+    /**
+     * Looks up the skin texture hash of a player directly from Mojang: username → uuid via `api.mojang.com`, then the
+     * session profile's `textures` property via `sessionserver.mojang.com`.
+     * @param {string} username - The player's username.
+     * @returns {Promise<{ hash: ?string, definitive: boolean }>} `hash` is the texture hash, or `null` if the player
+     * doesn't exist or has no custom skin. `definitive` is `false` when the lookup failed (network error, rate limit,
+     * backoff), so callers can retry sooner.
+     */
+    static async fetchSkinTextureHash(username) {
+        if(!this.USERNAME_REGEX.test(username ?? '')) return { hash: null, definitive: true };
+        // While Mojang is rate limiting us (or down), don't send more requests: they'd only prolong the limit.
+        if(Date.now() < this.mojangBackoffUntil) return { hash: null, definitive: false };
+
+        const signal = () => AbortSignal.timeout(this.FETCH_TIMEOUT_MS);
+        try {
+            const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(username)}`, { signal: signal() });
+            if(profileRes.status === 404 || profileRes.status === 204) return this.lookupSucceeded({ hash: null, definitive: true });
+            if(!profileRes.ok) return this.lookupFailed(profileRes);
+            const { id } = await profileRes.json();
+            if(!id) return this.lookupSucceeded({ hash: null, definitive: true });
+
+            const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${id}`, { signal: signal() });
+            if(sessionRes.status === 404 || sessionRes.status === 204) return this.lookupSucceeded({ hash: null, definitive: true });
+            if(!sessionRes.ok) return this.lookupFailed(sessionRes);
+            const session = await sessionRes.json();
+
+            const texturesProperty = session.properties?.find(p => p.name === 'textures')?.value;
+            if(!texturesProperty) return this.lookupSucceeded({ hash: null, definitive: true });
+            const skinURL = JSON.parse(Buffer.from(texturesProperty, 'base64').toString('utf8')).textures?.SKIN?.url;
+            if(!skinURL) return this.lookupSucceeded({ hash: null, definitive: true }); // Default skin
+
+            const hash = new URL(skinURL).pathname.split('/').pop().toLowerCase();
+            return this.lookupSucceeded({ hash, definitive: true });
+        }
+        catch(err) {
+            return this.lookupFailed(null);
+        }
+    }
+
+    /**
+     * Records a lookup that reached Mojang successfully.
+     * @private
+     * @template T
+     * @param {T} result
+     * @returns {T}
+     */
+    static lookupSucceeded(result) {
+        this.mojangConsecutiveFailures = 0;
+        return result;
+    }
+
+    /**
+     * Records a failed lookup and starts a backoff on a 429 (honouring `Retry-After`) or after repeated failures.
+     * @private
+     * @param {?Response} res - The failed response, or `null` on a network error / timeout.
+     * @returns {{ hash: null, definitive: false }}
+     */
+    static lookupFailed(res) {
+        this.mojangConsecutiveFailures++;
+        let backoff = 0;
+        if(res?.status === 429) {
+            const retryAfterSeconds = Number(res.headers.get('retry-after'));
+            backoff = retryAfterSeconds > 0 ? retryAfterSeconds * 1000 : this.MOJANG_BACKOFF_MS;
+        }
+        else if(this.mojangConsecutiveFailures >= this.MOJANG_MAX_CONSECUTIVE_FAILURES) {
+            backoff = this.MOJANG_BACKOFF_MS;
+        }
+
+        if(backoff > 0) {
+            this.mojangBackoffUntil = Math.max(this.mojangBackoffUntil, Date.now() + backoff);
+            this.mojangConsecutiveFailures = 0;
+        }
+        return { hash: null, definitive: false };
+    }
 
     /**
      * Returns whether the given id can be rendered (a texture hash or {@link STEVE_ID}).

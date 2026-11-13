@@ -4,8 +4,8 @@ import { addPh, getComponent, getEmbed, setCachedFooter } from '../../utilities/
 import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import PlayerHeadRenderer from '../../structures/render/PlayerHeadRenderer.js';
 import {
-    getCachedAvatarURL,
     getLivePlayerNbt,
     getMinecraftData,
     stringifyMinecraftJson,
@@ -339,7 +339,7 @@ export default class Inventory extends Command {
                     count: item.count ?? item.Count,
                     max_count: itemStats?.stackSize ?? 64,
                     username: username,
-                    avatar: await getCachedAvatarURL(username),
+                    avatar: await PlayerHeadRenderer.getAvatarURL(username),
                 },
             );
             const isSpecialItem = this.addInfo(itemEmbed, item.components ?? item.tag, itemStats, mcData);

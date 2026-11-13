@@ -12,7 +12,7 @@ export default class Avatar extends Route {
 
     /**
      * Serves a player head PNG rendered from a Mojang skin texture. `id` is the skin's texture hash
-     * (optionally suffixed with `.png`) or `steve`. Urls are built by `getMinecraftAvatarURL`.
+     * (optionally suffixed with `.png`) or `steve`. Urls are built by `PlayerHeadRenderer.getAvatarURL`.
      * @param {MCLinker} client - The MCLinker client.
      * @param {import('fastify').FastifyRequest} req - The incoming request object.
      * @param {import('fastify').FastifyReply} res - The outgoing response object.

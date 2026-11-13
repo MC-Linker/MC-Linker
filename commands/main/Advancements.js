@@ -10,6 +10,7 @@ import Canvas from 'skia-canvas';
 import allAdvancements from '../../resources/data/advancements.json' with { type: 'json' };
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import PlayerHeadRenderer from '../../structures/render/PlayerHeadRenderer.js';
 import ItemRenderer from '../../structures/render/ItemRenderer.js';
 import MinecraftAssetsManager from '../../structures/render/MinecraftAssetsManager.js';
 
@@ -224,7 +225,7 @@ export default class Advancements extends Command {
                 advancement_icon: mcData.itemsByName[advancement.icon]?.displayName ?? utils.toTitleCase(advancement.icon, true),
                 advancement_obtained: advancement.obtained ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
                 username,
-                user_icon: await utils.getCachedAvatarURL(username),
+                user_icon: await PlayerHeadRenderer.getAvatarURL(username),
             };
 
             const advancementEmbed = getEmbed(keys.commands.advancements.success.details, allPlaceholders);

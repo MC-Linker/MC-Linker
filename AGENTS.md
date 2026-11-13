@@ -434,10 +434,10 @@ not serializable and must be excluded from broadcasts.
 ### Player Avatars
 
 Player head avatars come **only from Mojang** — never add third-party skin/avatar services (crafatar, minotar,
-mc-heads, …). `getCachedAvatarURL(username)` (`utilities/minecraft-utils.js`) resolves username → uuid via
+mc-heads, …). `PlayerHeadRenderer.getAvatarURL(username)` (`structures/render/`) resolves username → uuid via
 `api.mojang.com`, reads the skin texture hash from the `sessionserver.mojang.com` profile, and returns
-`<PUBLIC_URL>/avatar/<hash>.png`. The `Avatar` REST route serves that url: `PlayerHeadRenderer`
-(`structures/render/`) downloads the skin from `textures.minecraft.net` and composites face + hat overlay into a PNG.
+`<PUBLIC_URL>/avatar/<hash>.png`. The `Avatar` REST route serves that url: `PlayerHeadRenderer.getHead()`
+downloads the skin from `textures.minecraft.net` and composites face + hat overlay into a PNG.
 Players without a custom skin, unknown players and failed lookups fall back to `/avatar/steve.png` (cropped from the
 client assets). Lookups are cached per username (1 h, 5 min after a failed lookup) and rendered heads per hash.
 
