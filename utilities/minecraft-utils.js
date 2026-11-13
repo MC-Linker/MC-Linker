@@ -69,34 +69,77 @@ export function getPublicApiURL() {
  */
 export async function fetchSkinTextureHash(username) {
     if(!MINECRAFT_USERNAME_REGEX.test(username ?? '')) return { hash: null, definitive: true };
+    // While Mojang is rate limiting us (or down), don't send more requests: they'd only prolong the limit.
+    if(Date.now() < mojangBackoffUntil) return { hash: null, definitive: false };
 
     try {
         const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(username)}`, {
             signal: AbortSignal.timeout(MOJANG_LOOKUP_TIMEOUT_MS),
         });
-        if(profileRes.status === 404 || profileRes.status === 204) return { hash: null, definitive: true };
-        if(!profileRes.ok) return { hash: null, definitive: false };
+        if(profileRes.status === 404 || profileRes.status === 204) return lookupSucceeded({ hash: null, definitive: true });
+        if(!profileRes.ok) return lookupFailed(profileRes);
         const { id } = await profileRes.json();
         if(!id) return { hash: null, definitive: true };
 
         const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${id}`, {
             signal: AbortSignal.timeout(MOJANG_LOOKUP_TIMEOUT_MS),
         });
-        if(sessionRes.status === 404 || sessionRes.status === 204) return { hash: null, definitive: true };
-        if(!sessionRes.ok) return { hash: null, definitive: false };
+        if(sessionRes.status === 404 || sessionRes.status === 204) return lookupSucceeded({ hash: null, definitive: true });
+        if(!sessionRes.ok) return lookupFailed(sessionRes);
         const session = await sessionRes.json();
 
         const texturesProperty = session.properties?.find(p => p.name === 'textures')?.value;
-        if(!texturesProperty) return { hash: null, definitive: true };
+        if(!texturesProperty) return lookupSucceeded({ hash: null, definitive: true });
         const skinURL = JSON.parse(Buffer.from(texturesProperty, 'base64').toString('utf8')).textures?.SKIN?.url;
-        if(!skinURL) return { hash: null, definitive: true }; // Default skin
+        if(!skinURL) return lookupSucceeded({ hash: null, definitive: true }); // Default skin
 
         const hash = new URL(skinURL).pathname.split('/').pop().toLowerCase();
-        return { hash, definitive: true };
+        return lookupSucceeded({ hash, definitive: true });
     }
     catch(err) {
-        return { hash: null, definitive: false };
+        return lookupFailed(null);
     }
+}
+
+/** How long to stop querying Mojang after a 429 without a `Retry-After` header, or after repeated failures. */
+const MOJANG_BACKOFF_MS = 60_000;
+/** Consecutive failed lookups (timeouts, network/5xx errors) before backing off. */
+const MOJANG_MAX_CONSECUTIVE_FAILURES = 3;
+
+/** Timestamp until which no Mojang lookups are sent. */
+let mojangBackoffUntil = 0;
+/** Number of failed Mojang lookups in a row. */
+let mojangConsecutiveFailures = 0;
+
+/**
+ * Records a lookup that reached Mojang successfully.
+ * @template T
+ * @param {T} result
+ * @returns {T}
+ */
+function lookupSucceeded(result) {
+    mojangConsecutiveFailures = 0;
+    return result;
+}
+
+/**
+ * Records a failed lookup and starts a backoff on a 429 (honouring `Retry-After`) or after repeated failures.
+ * @param {?Response} res - The failed response, or `null` on a network error / timeout.
+ * @returns {{ hash: null, definitive: false }}
+ */
+function lookupFailed(res) {
+    mojangConsecutiveFailures++;
+    if(res?.status === 429) {
+        const retryAfterSeconds = Number(res.headers.get('retry-after'));
+        const backoff = retryAfterSeconds > 0 ? retryAfterSeconds * 1000 : MOJANG_BACKOFF_MS;
+        mojangBackoffUntil = Math.max(mojangBackoffUntil, Date.now() + backoff);
+        mojangConsecutiveFailures = 0;
+    }
+    else if(mojangConsecutiveFailures >= MOJANG_MAX_CONSECUTIVE_FAILURES) {
+        mojangBackoffUntil = Math.max(mojangBackoffUntil, Date.now() + MOJANG_BACKOFF_MS);
+        mojangConsecutiveFailures = 0;
+    }
+    return { hash: null, definitive: false };
 }
 
 /**
@@ -155,6 +198,8 @@ export async function getCachedAvatarURL(player) {
     if(pendingAvatars.has(key)) return await pendingAvatars.get(key);
 
     const promise = resolveAvatar(player).then(({ url, definitive }) => {
+        // On a failed lookup (rate limit, Mojang down), keep showing the player's last known head instead of Steve.
+        if(!definitive && cached?.url) url = cached.url;
         avatarCache.delete(key); // Re-insert to keep insertion order ~ recency for eviction
         avatarCache.set(key, {
             url,
