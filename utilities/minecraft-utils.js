@@ -41,6 +41,9 @@ const mcData = getMinecraftData(MinecraftDataVersion);
 /** Player names Mojang accepts. Anything else (e.g. Floodgate-prefixed Bedrock names) can't have a Java skin. */
 const MINECRAFT_USERNAME_REGEX = /^[A-Za-z0-9_]{1,16}$/;
 
+/** Timeout for Mojang profile lookups, so a slow Mojang API can't stall commands (falls back to Steve). */
+const MOJANG_LOOKUP_TIMEOUT_MS = 5000;
+
 /**
  * Returns the public base url of this bot's API, under which `/avatar/:id` serves rendered player heads.
  * Uses `PUBLIC_URL`, falling back to the origin of `LINKED_ROLES_REDIRECT_URI` (which already points at the API).
@@ -68,13 +71,17 @@ export async function fetchSkinTextureHash(username) {
     if(!MINECRAFT_USERNAME_REGEX.test(username ?? '')) return { hash: null, definitive: true };
 
     try {
-        const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(username)}`);
+        const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(username)}`, {
+            signal: AbortSignal.timeout(MOJANG_LOOKUP_TIMEOUT_MS),
+        });
         if(profileRes.status === 404 || profileRes.status === 204) return { hash: null, definitive: true };
         if(!profileRes.ok) return { hash: null, definitive: false };
         const { id } = await profileRes.json();
         if(!id) return { hash: null, definitive: true };
 
-        const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${id}`);
+        const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${id}`, {
+            signal: AbortSignal.timeout(MOJANG_LOOKUP_TIMEOUT_MS),
+        });
         if(sessionRes.status === 404 || sessionRes.status === 204) return { hash: null, definitive: true };
         if(!sessionRes.ok) return { hash: null, definitive: false };
         const session = await sessionRes.json();

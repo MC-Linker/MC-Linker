@@ -5,8 +5,8 @@ import keys from '../../utilities/keys.js';
 import Command from '../../structures/Command.js';
 import Pagination from '../../structures/helpers/Pagination.js';
 import {
-    getLivePlayerNbt,
     getCachedAvatarURL,
+    getLivePlayerNbt,
     getMinecraftData,
     stringifyMinecraftJson,
 } from '../../utilities/utils.js';

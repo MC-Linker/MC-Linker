@@ -28,6 +28,8 @@ export default class PlayerHeadRenderer {
     static SIZE = 128;
     /** Max number of rendered heads kept in memory (~1-3 KB each). */
     static CACHE_MAX_SIZE = 2000;
+    /** Timeout (ms) for downloading a skin texture. */
+    static FETCH_TIMEOUT_MS = 5000;
 
     /**
      * Rendered head PNGs keyed by texture hash (or {@link STEVE_ID}). Insertion-ordered for LRU-ish eviction.
@@ -99,7 +101,7 @@ export default class PlayerHeadRenderer {
      * @returns {Promise<Buffer>}
      */
     static async fetchSkin(hash) {
-        const res = await fetch(this.TEXTURE_BASE_URL + hash);
+        const res = await fetch(this.TEXTURE_BASE_URL + hash, { signal: AbortSignal.timeout(this.FETCH_TIMEOUT_MS) });
         if(!res.ok) throw new Error(`GET ${this.TEXTURE_BASE_URL}${hash} → ${res.status}`);
         return Buffer.from(await res.arrayBuffer());
     }
