@@ -224,7 +224,7 @@ export default class Advancements extends Command {
                 advancement_icon: mcData.itemsByName[advancement.icon]?.displayName ?? utils.toTitleCase(advancement.icon, true),
                 advancement_obtained: advancement.obtained ? keys.commands.advancements.acquired : keys.commands.advancements.not_acquired,
                 username,
-                user_icon: await utils.getMinecraftAvatarURL(username),
+                user_icon: await utils.getCachedAvatarURL(username),
             };
 
             const advancementEmbed = getEmbed(keys.commands.advancements.success.details, allPlaceholders);

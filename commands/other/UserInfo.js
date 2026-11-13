@@ -5,7 +5,7 @@ import {
     codeBlockFromCommandResponse,
     DefaultCollectorTimeout,
     formatDuration,
-    getMinecraftAvatarURL,
+    getCachedAvatarURL,
     getMinecraftData,
     normalizeDimension,
     stringifyMinecraftJson
@@ -83,7 +83,7 @@ export default class UserInfo extends Command {
         const placeholders = {
             name: user.username,
             uuid: user.uuid,
-            icon_url: await getMinecraftAvatarURL(user.username),
+            icon_url: await getCachedAvatarURL(user.username),
             status: onlinePlayers.includes(user.username.toLowerCase()) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
             status_emoji: onlinePlayers.includes(user.username.toLowerCase()) ? ':green_circle:' : ':red_circle:',
             operator: matchingOp ? keys.commands.userinfo.yes : keys.commands.userinfo.no,

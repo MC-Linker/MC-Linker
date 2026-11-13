@@ -106,7 +106,7 @@ MC-Linker/
 │   │   ├── Protocol.js      # Base class + ProtocolError codes
 │   │   ├── ServerFiles.js   # Server-bound access to every minecraft file the bot downloads
 │   │   └── WebSocketProtocol.js  # Socket.io communication (primary)
-│   ├── render/              # Version-aware Minecraft asset download, item rendering and container compositing
+│   ├── render/              # Version-aware Minecraft asset download, item rendering, container compositing and player heads
 │   ├── ftp/                 # FTP/SFTP client implementations
 │   └── helpers/             # UI helpers (Pagination, Wizard, DefaultButton)
 │
@@ -431,6 +431,16 @@ server for the same player, which offline mode servers hit every time (their uui
 **Cross-Shard Sync:** Connections are cached per-shard. Edits broadcast via `client.broadcastEval()`. Socket objects are
 not serializable and must be excluded from broadcasts.
 
+### Player Avatars
+
+Player head avatars come **only from Mojang** — never add third-party skin/avatar services (crafatar, minotar,
+mc-heads, …). `getCachedAvatarURL(username)` (`utilities/minecraft-utils.js`) resolves username → uuid via
+`api.mojang.com`, reads the skin texture hash from the `sessionserver.mojang.com` profile, and returns
+`<PUBLIC_URL>/avatar/<hash>.png`. The `Avatar` REST route serves that url: `PlayerHeadRenderer`
+(`structures/render/`) downloads the skin from `textures.minecraft.net` and composites face + hat overlay into a PNG.
+Players without a custom skin, unknown players and failed lookups fall back to `/avatar/steve.png` (cropped from the
+client assets). Lookups are cached per username (1 h, 5 min after a failed lookup) and rendered heads per hash.
+
 ## File Operations
 
 **Creating files:** Whenever you create a new file, immediately `git add` it so it is tracked. Never leave newly created
@@ -739,6 +749,7 @@ DATABASE_URL=mongodb://localhost:27017/mc-linker
 BOT_PORT=3000                   # Port for the bot's API server
 COOKIE_SECRET=                  # For secure cookies
 LINKED_ROLES_REDIRECT_URI=      # http://your_ip/linked-role/callback
+PUBLIC_URL=                     # Public base url of the API server (defaults to the LINKED_ROLES_REDIRECT_URI origin); player avatar urls point at <PUBLIC_URL>/avatar/<hash>.png
 IO_USERNAME=                    # socket.io admin dashboard login
 IO_PASSWORD=
 IO_ADMIN_UI=false               # false = off (default), true = socket.io admin dashboard, debug = dashboard with every event

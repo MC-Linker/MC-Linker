@@ -38,52 +38,138 @@ export function getMinecraftData(version) {
 
 const mcData = getMinecraftData(MinecraftDataVersion);
 
+/** Player names Mojang accepts. Anything else (e.g. Floodgate-prefixed Bedrock names) can't have a Java skin. */
+const MINECRAFT_USERNAME_REGEX = /^[A-Za-z0-9_]{1,16}$/;
+
 /**
- * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.
- * @param {string} username - The username to get the avatar for.
- * @returns {Promise<string>} - The url of the avatar.
+ * Returns the public base url of this bot's API, under which `/avatar/:id` serves rendered player heads.
+ * Uses `PUBLIC_URL`, falling back to the origin of `LINKED_ROLES_REDIRECT_URI` (which already points at the API).
+ * @returns {?string} The base url without a trailing slash, or `null` if none is configured.
  */
-export async function getMinecraftAvatarURL(username) {
-    const url = `https://minotar.net/helm/${username}`;
+export function getPublicApiURL() {
+    if(process.env.PUBLIC_URL) return process.env.PUBLIC_URL.replace(/\/+$/, '');
     try {
-        const res = await fetch(url);
-        //If the user doesn't exist, return steve
-        if(res.status === 404) return url.replace(username, 'MHF_STEVE');
-        return url;
+        return new URL(process.env.LINKED_ROLES_REDIRECT_URI).origin;
     }
     catch(err) {
-        return url.replace(username, 'MHF_STEVE');
+        return null;
     }
 }
 
+/**
+ * Looks up the skin texture hash of a player directly from Mojang: username → uuid via `api.mojang.com`, then the
+ * session profile's `textures` property via `sessionserver.mojang.com`.
+ * @param {string} username - The player's username.
+ * @returns {Promise<{ hash: ?string, definitive: boolean }>} `hash` is the texture hash, or `null` if the player
+ * doesn't exist or has no custom skin. `definitive` is `false` when the lookup failed (network error, rate limit),
+ * so callers can retry sooner.
+ */
+export async function fetchSkinTextureHash(username) {
+    if(!MINECRAFT_USERNAME_REGEX.test(username ?? '')) return { hash: null, definitive: true };
+
+    try {
+        const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(username)}`);
+        if(profileRes.status === 404 || profileRes.status === 204) return { hash: null, definitive: true };
+        if(!profileRes.ok) return { hash: null, definitive: false };
+        const { id } = await profileRes.json();
+        if(!id) return { hash: null, definitive: true };
+
+        const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${id}`);
+        if(sessionRes.status === 404 || sessionRes.status === 204) return { hash: null, definitive: true };
+        if(!sessionRes.ok) return { hash: null, definitive: false };
+        const session = await sessionRes.json();
+
+        const texturesProperty = session.properties?.find(p => p.name === 'textures')?.value;
+        if(!texturesProperty) return { hash: null, definitive: true };
+        const skinURL = JSON.parse(Buffer.from(texturesProperty, 'base64').toString('utf8')).textures?.SKIN?.url;
+        if(!skinURL) return { hash: null, definitive: true }; // Default skin
+
+        const hash = new URL(skinURL).pathname.split('/').pop().toLowerCase();
+        return { hash, definitive: true };
+    }
+    catch(err) {
+        return { hash: null, definitive: false };
+    }
+}
+
+/**
+ * Builds the url of a rendered player head served by this bot's API (see `api/routes/Avatar.js`).
+ * @param {string} id - The skin texture hash or `steve`.
+ * @returns {?string} The url, or `null` if no public API url is configured.
+ */
+export function getAvatarURLForTexture(id) {
+    const base = getPublicApiURL();
+    return base ? `${base}/avatar/${id}.png` : null;
+}
+
+/**
+ * Retrieves a url to the head avatar of the given player, rendered from their Mojang skin. Falls back to Steve if
+ * the player doesn't exist, has no custom skin, or the lookup fails.
+ * @param {string} username - The username to get the avatar for.
+ * @returns {Promise<?string>} - The url of the avatar, or `null` if no public API url is configured.
+ */
+export async function getMinecraftAvatarURL(username) {
+    return (await resolveAvatar(username)).url;
+}
+
+/**
+ * @param {string} username
+ * @returns {Promise<{ url: ?string, definitive: boolean }>}
+ */
+async function resolveAvatar(username) {
+    const { hash, definitive } = await fetchSkinTextureHash(username);
+    return { url: getAvatarURLForTexture(hash ?? 'steve'), definitive };
+}
+
 const AVATAR_CACHE_TTL_MS = 60 * 60_000; // 1 hour
+const AVATAR_FAILURE_CACHE_TTL_MS = 5 * 60_000; // 5 minutes for failed lookups
 const AVATAR_CACHE_MAX_SIZE = 5000;
 
 /**
- * @type {Map<string, { url: string, cachedAt: number }>}
+ * @type {Map<string, { url: ?string, expiresAt: number }>}
  */
 const avatarCache = new Map();
 
 /**
- * Returns a cached Minecraft avatar URL, only making the HTTP call when the cache is expired or missing.
+ * In-flight lookups keyed by lowercased username so concurrent callers share one Mojang request.
+ * @type {Map<string, Promise<?string>>}
+ */
+const pendingAvatars = new Map();
+
+/**
+ * Returns a cached Minecraft avatar URL, only querying Mojang when the cache is expired or missing.
  * @param {string} player - The player username.
- * @returns {Promise<string>} The avatar URL.
+ * @returns {Promise<?string>} The avatar URL.
  */
 export async function getCachedAvatarURL(player) {
-    const cached = avatarCache.get(player);
-    if(cached && Date.now() - cached.cachedAt < AVATAR_CACHE_TTL_MS) return cached.url;
+    const key = String(player).toLowerCase();
+    const cached = avatarCache.get(key);
+    if(cached && Date.now() < cached.expiresAt) return cached.url;
+    if(pendingAvatars.has(key)) return await pendingAvatars.get(key);
 
-    const url = await getMinecraftAvatarURL(player);
-    avatarCache.set(player, { url, cachedAt: Date.now() });
+    const promise = resolveAvatar(player).then(({ url, definitive }) => {
+        avatarCache.delete(key); // Re-insert to keep insertion order ~ recency for eviction
+        avatarCache.set(key, {
+            url,
+            expiresAt: Date.now() + (definitive ? AVATAR_CACHE_TTL_MS : AVATAR_FAILURE_CACHE_TTL_MS),
+        });
 
-    // Evict oldest entries when cache grows too large
-    if(avatarCache.size > AVATAR_CACHE_MAX_SIZE) {
-        const deleteCount = avatarCache.size - AVATAR_CACHE_MAX_SIZE;
-        const iterator = avatarCache.keys();
-        for(let i = 0; i < deleteCount; i++) avatarCache.delete(iterator.next().value);
+        // Evict oldest entries when cache grows too large
+        if(avatarCache.size > AVATAR_CACHE_MAX_SIZE) {
+            const deleteCount = avatarCache.size - AVATAR_CACHE_MAX_SIZE;
+            const iterator = avatarCache.keys();
+            for(let i = 0; i < deleteCount; i++) avatarCache.delete(iterator.next().value);
+        }
+        return url;
+    });
+
+    pendingAvatars.set(key, promise);
+    try {
+        return await promise;
     }
-
-    return url;
+    finally {
+        pendingAvatars.delete(key);
+    }
 }
 
 /**
