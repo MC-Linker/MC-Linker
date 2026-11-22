@@ -509,7 +509,7 @@ export function getEmbed(key, ...placeholders) {
     if(key.color) embed.setColor(key.color);
     if(key.author?.name) {
         embed.setAuthor({
-            iconURL: key.author.icon_url,
+            iconURL: asIconURL(key.author.icon_url),
             name: truncate(key.author.name, MaxEmbedAuthorNameLength),
             url: key.author.url,
         });
@@ -519,11 +519,21 @@ export function getEmbed(key, ...placeholders) {
     if(key.timestamp) embed.setTimestamp(Number(key.timestamp));
     if(key.footer?.text) embed.setFooter({
         text: truncate(key.footer.text, MaxEmbedFooterTextLength),
-        iconURL: key.footer.icon_url
+        iconURL: asIconURL(key.footer.icon_url),
     });
     if(key.url) embed.setURL(key.url);
 
     return embed;
+}
+
+/**
+ * Returns the given value if it's a url Discord accepts for embed icons, otherwise `undefined`. Guards against
+ * unresolved placeholders (e.g. a `null` avatar url leaving `%avatar%` in place), which discord.js would reject.
+ * @param {*} url
+ * @returns {string|undefined}
+ */
+function asIconURL(url) {
+    return typeof url === 'string' && /^(https?|attachment):\/\//.test(url) ? url : undefined;
 }
 
 /**

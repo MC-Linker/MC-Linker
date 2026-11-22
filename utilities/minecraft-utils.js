@@ -39,54 +39,6 @@ export function getMinecraftData(version) {
 const mcData = getMinecraftData(MinecraftDataVersion);
 
 /**
- * Retrieves a url to the minecraft avatar for the given username. If the user doesn't exist, this will return steve's avatar.
- * @param {string} username - The username to get the avatar for.
- * @returns {Promise<string>} - The url of the avatar.
- */
-export async function getMinecraftAvatarURL(username) {
-    const url = `https://minotar.net/helm/${username}`;
-    try {
-        const res = await fetch(url);
-        //If the user doesn't exist, return steve
-        if(res.status === 404) return url.replace(username, 'MHF_STEVE');
-        return url;
-    }
-    catch(err) {
-        return url.replace(username, 'MHF_STEVE');
-    }
-}
-
-const AVATAR_CACHE_TTL_MS = 60 * 60_000; // 1 hour
-const AVATAR_CACHE_MAX_SIZE = 5000;
-
-/**
- * @type {Map<string, { url: string, cachedAt: number }>}
- */
-const avatarCache = new Map();
-
-/**
- * Returns a cached Minecraft avatar URL, only making the HTTP call when the cache is expired or missing.
- * @param {string} player - The player username.
- * @returns {Promise<string>} The avatar URL.
- */
-export async function getCachedAvatarURL(player) {
-    const cached = avatarCache.get(player);
-    if(cached && Date.now() - cached.cachedAt < AVATAR_CACHE_TTL_MS) return cached.url;
-
-    const url = await getMinecraftAvatarURL(player);
-    avatarCache.set(player, { url, cachedAt: Date.now() });
-
-    // Evict oldest entries when cache grows too large
-    if(avatarCache.size > AVATAR_CACHE_MAX_SIZE) {
-        const deleteCount = avatarCache.size - AVATAR_CACHE_MAX_SIZE;
-        const iterator = avatarCache.keys();
-        for(let i = 0; i < deleteCount; i++) avatarCache.delete(iterator.next().value);
-    }
-
-    return url;
-}
-
-/**
  * @typedef {object} AdvancementData
  * @property {string} name - The name of the advancement.
  * @property {string} value - The id of the advancement.

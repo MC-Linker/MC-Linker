@@ -2,12 +2,13 @@ import { getChatWebhookIdentity } from './ChatConstants.js';
 
 /**
  * Returns options used for system-style webhook messages in chat channels.
+ * Uses the bot's per-guild profile of the destination guild, see {@link getChatWebhookIdentity}.
  * @param {import('discord.js').TextChannel} discordChannel - The destination channel.
  * @returns {{ username: string, avatarURL: string, threadId?: string }}
  */
 export function getSystemWebhookSendOptions(discordChannel) {
     return {
-        ...getChatWebhookIdentity(),
+        ...getChatWebhookIdentity(discordChannel.guild),
         ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
     };
 }

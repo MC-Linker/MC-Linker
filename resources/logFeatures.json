@@ -71,6 +71,7 @@
       "verify-user": null
     },
     "routes": {
+      "avatar": null,
       "customBotApiReady": null,
       "linkedRole": null,
       "linkedRoleCallback": null,
@@ -109,7 +110,8 @@
       "assetsManager": null,
       "containerRenderer": null,
       "itemImages": null,
-      "itemRenderer": null
+      "itemRenderer": null,
+      "playerHeadRenderer": null
     }
   },
   "utilities": {

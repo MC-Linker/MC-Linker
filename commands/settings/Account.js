@@ -13,6 +13,7 @@ import {
     ph,
 } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import PlayerHeadRenderer from '../../structures/render/PlayerHeadRenderer.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
 
 export default class Account extends AutocompleteCommand {
@@ -346,7 +347,7 @@ export default class Account extends AutocompleteCommand {
                 actionButtons.push(useHereBtn);
             }
 
-            const avatarUrl = await utils.getCachedAvatarURL(link.username);
+            const avatarUrl = await PlayerHeadRenderer.getAvatarURL(link.username);
             const pageOptions = getReplyOptions(keys.commands.account.success.manage.row, ph.std(interaction), {
                 username: link.username,
                 avatar_url: avatarUrl,

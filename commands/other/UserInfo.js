@@ -5,7 +5,6 @@ import {
     codeBlockFromCommandResponse,
     DefaultCollectorTimeout,
     formatDuration,
-    getMinecraftAvatarURL,
     getMinecraftData,
     normalizeDimension,
     stringifyMinecraftJson
@@ -20,6 +19,7 @@ import {
     setCachedFooter,
 } from '../../utilities/messages.js';
 import Pagination from '../../structures/helpers/Pagination.js';
+import PlayerHeadRenderer from '../../structures/render/PlayerHeadRenderer.js';
 import DefaultButton from '../../structures/helpers/DefaultButton.js';
 import Discord, { ComponentType, time, userMention } from 'discord.js';
 
@@ -83,7 +83,7 @@ export default class UserInfo extends Command {
         const placeholders = {
             name: user.username,
             uuid: user.uuid,
-            icon_url: await getMinecraftAvatarURL(user.username),
+            icon_url: await PlayerHeadRenderer.getAvatarURL(user.username),
             status: onlinePlayers.includes(user.username.toLowerCase()) ? keys.commands.userinfo.online : keys.commands.userinfo.offline,
             status_emoji: onlinePlayers.includes(user.username.toLowerCase()) ? ':green_circle:' : ':red_circle:',
             operator: matchingOp ? keys.commands.userinfo.yes : keys.commands.userinfo.no,

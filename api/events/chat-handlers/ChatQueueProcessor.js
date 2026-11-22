@@ -6,6 +6,7 @@ import rootLogger from '../../../utilities/logger/Logger.js';
 import features from '../../../utilities/logger/features.js';
 import { trackError } from '../../../structures/analytics/AnalyticsCollector.js';
 import { buildChatBatchPayload, buildChatPayload, getSystemWebhookSendOptions } from './ChatPayloadBuilder.js';
+import { getChatWebhookIdentity } from './ChatConstants.js';
 
 const logger = rootLogger.child({ feature: features.api.socketio.chatHandlers.queueProcessor });
 
@@ -310,7 +311,8 @@ export default class ChatQueueProcessor {
             await this.monitor.track('webhook.send', () => webhook.send({
                 content: payload.content,
                 username: payload.username,
-                avatarURL: payload.avatarURL,
+                // Players without a resolvable head fall back to the bot's (per-guild) avatar
+                avatarURL: payload.avatarURL ?? getChatWebhookIdentity(discordChannel.guild).avatarURL,
                 ...(discordChannel.isThread() ? { threadId: discordChannel.id } : {}),
                 allowedMentions: { parse: [Discord.AllowedMentionsTypes.User] },
             }));

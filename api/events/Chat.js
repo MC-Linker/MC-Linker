@@ -1,6 +1,7 @@
 import WSEvent from '../WSEvent.js';
 import keys from '../../utilities/keys.js';
-import { getCachedAvatarURL, parseMentions, searchAdvancements } from '../../utilities/utils.js';
+import { parseMentions, searchAdvancements } from '../../utilities/utils.js';
+import PlayerHeadRenderer from '../../structures/render/PlayerHeadRenderer.js';
 import { addPh, getEmbed } from '../../utilities/messages.js';
 import ChatDispatchHandler from './chat-handlers/ChatDispatchHandler.js';
 import WebhookPoolManager from './chat-handlers/WebhookPoolManager.js';
@@ -94,7 +95,7 @@ export default class Chat extends WSEvent {
         if(['player_command', 'console_command', 'block_command'].includes(type) && server.settings.isFilteredCommand(message)) return;
 
         const guildId = server.id;
-        const authorURL = player ? await this.monitor.track('avatarURL', () => getCachedAvatarURL(player)) : null;
+        const authorURL = player ? await this.monitor.track('avatarURL', () => PlayerHeadRenderer.getAvatarURL(player)) : null;
 
         const placeholders = { username: player, author_url: authorURL, message };
 
