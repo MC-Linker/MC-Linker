@@ -12,14 +12,46 @@ export const CONSOLE_AFFINITY_HEADROOM = 150;
 export const CREATION_FAILURE_COOLDOWN_MS = 5 * 60_000;
 
 /**
- * Returns the default webhook identity used for chat-channel webhook messages.
- * @returns {import('discord.js').WebhookMessageCreateOptions['username'|'avatarURL']}
+ * Discord rejects webhook usernames containing these substrings (400 Invalid Form Body).
+ * @type {RegExp}
  */
-export function getChatWebhookIdentity() {
-    return {
-        username: CHAT_WEBHOOK_NAME,
-        avatarURL: CHAT_WEBHOOK_AVATAR_URL,
-    };
+const FORBIDDEN_WEBHOOK_USERNAME = /discord|clyde/i;
+
+/**
+ * Returns the webhook identity used for system-style chat-channel webhook messages.
+ * Uses the bot's per-guild profile (nickname/avatar set via /customize) when available.
+ * The bot's own guild member is kept in discord.js's member cache from GUILD_CREATE and updated
+ * through GUILD_MEMBER_UPDATE (GuildMembers intent), so no extra fetching or TTL is needed.
+ * Each field falls back independently to the global profile: the custom bot's own user for
+ * custom bots, otherwise the MC Linker default name and logo.
+ * @param {?import('discord.js').Guild} [guild] - The guild the message is sent in.
+ * @returns {{ username: string, avatarURL: string }}
+ */
+export function getChatWebhookIdentity(guild) {
+    const client = guild?.client;
+    const globalUser = client?.isCustomBot?.() ? client.user : null;
+
+    let username = CHAT_WEBHOOK_NAME;
+    let avatarURL = CHAT_WEBHOOK_AVATAR_URL;
+    if(globalUser) {
+        if(isValidWebhookUsername(globalUser.displayName)) username = globalUser.displayName;
+        avatarURL = globalUser.displayAvatarURL({ extension: 'png', size: 256 });
+    }
+
+    const me = guild?.members?.me;
+    if(me?.nickname && isValidWebhookUsername(me.nickname)) username = me.nickname;
+    if(me?.avatar) avatarURL = me.avatarURL({ extension: 'png', size: 256 });
+
+    return { username, avatarURL };
+}
+
+/**
+ * Checks whether a name can be used as a webhook message username.
+ * @param {?string} name - The name to check.
+ * @returns {boolean}
+ */
+function isValidWebhookUsername(name) {
+    return typeof name === 'string' && name.trim().length > 0 && name.length <= 80 && !FORBIDDEN_WEBHOOK_USERNAME.test(name);
 }
 
 /**
